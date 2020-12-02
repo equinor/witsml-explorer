@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_weather">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Operations Weather Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dTim" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time the information is related to.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="agency" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of company that supplied the data.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="barometricPressure" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Atmospheric pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="beaufortScaleNumber" type="witsml:beaufortScaleIntegerCode" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The Beaufort wind scale is a system used to estimate and report wind speeds 
+					when no measuring apparatus is available. It was invented in the early 19th Century by Admiral 
+					Sir Francis Beaufort of the British Navy as a way to interpret winds from conditions.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempSurfaceMn" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum temperature above ground. Temperature of the atmosphere.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempSurfaceMx" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum temperature above ground.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempWindChill" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A measure of the combined chilling effect of wind and low temperature on 
+					living things, also named chill factor, e.g., according to US weather service table, an air 
+					temperature of 30 degF with a 10 mi/h corresponds to a windchill of 22 degF.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempsea" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Sea temperature.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="visibility" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Horizontal visibility.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="aziWave" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The direction from which the waves are coming, measured from true north.
+				</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htWave" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average height of the waves.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="significantWave" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An average of the higher 1/3 of the wave heights passing during a  
+					sample period (typically 20 to 30 minutes). </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxWave" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum wave height.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="periodWave" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The elapsed time between the passing of two wave tops.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="aziWind" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The direction from which the wind is blowing, measured from true north.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="velWind" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Wind speed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typePrecip" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of precipitation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="amtPrecip" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Amount of precipitation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="coverCloud" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of cloud cover.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ceilingCloud" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Height of cloud cover.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="currentSea" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current speed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="aziCurrentSea" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Azimuth of current.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comments" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Comments and remarks.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the weataher.  </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

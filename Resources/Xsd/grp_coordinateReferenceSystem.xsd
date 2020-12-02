@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_standardGeodeticCRS.xsd"/>
+	<xsd:include schemaLocation="cs_standardProjectedCRS.xsd"/>
+	<xsd:include schemaLocation="cs_standardVerticalCRS.xsd"/>
+	<!--                                                         -->
+	
+	<xsd:group name="grp_coordinateReferenceSystem">
+		<xsd:annotation>
+			<xsd:documentation>This is a type for storing standard CRSs. It will handle geodetic, projected, and 
+			vertical CRSs. These are standard, and are specialized for EPSG database, in that there is a direct 
+			reference method for referencing an EPSG CRS. Alternatively, a description of the CRS can be given. 
+			It is advised that EPSG CRSs be referenced, since full information is available from a library service. 
+			Non-EPSG CRSs can be fully described.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:annotation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Non-semantic</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:element name="geodeticCRS" type="witsml:cs_standardGeodeticCRS" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Use this for a geodetic CRS.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="projectedCRS" type="witsml:cs_standardProjectedCRS" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Use this for a projected CRS.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="verticalCRS" type="witsml:cs_standardVerticalCRS" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Use this for a vertical CRS.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:group>
+
+</xsd:schema>

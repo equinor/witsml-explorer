@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<xsd:include schemaLocation="cs_alias.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_drillReportWellboreInfo">
+		<xsd:annotation>
+			<xsd:documentation> General information about a wellbore for a drill operations report. </xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-33, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dTimSpud" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at which the well was spudded. 
+					This is when the well drilling equipment begin to bore into 
+					the earth's surface for the purpose of drilling a well. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPreSpud" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at which the well was predrilled. 
+					This is when the well drilling equipment begin to bore into 
+					the earth's surface for the purpose of drilling a well. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dateDrillComplete" type="witsml:date" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date when the drilling activity is completed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="operator" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the drilling Operator company.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="drillContractor" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the drilling Contractor company.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigAlias" type="witsml:cs_alias" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A name of the fixed or movable facility being used to drill the wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

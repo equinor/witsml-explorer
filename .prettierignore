@@ -1,0 +1,12 @@
+# Ignore artifacts:
+Tests
+Src/Witsml
+Src/WitsmlExplorer.Api
+Src/WitsmlExplorer.Frontend/build
+Src/WitsmlExplorer.Frontend/obj
+
+*.md
+*.yml
+.prettierignore
+.github
+.eslintrc.json

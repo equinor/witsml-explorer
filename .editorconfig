@@ -1,0 +1,48 @@
+# This is the top-most .editorconfig file; do not search in parent directories for .editorconfig files.
+root = true
+
+[*]
+charset = UTF-8
+end_of_line = LF
+indent_size = 2
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 180
+
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[*.cs]
+csharp_space_after_cast = true
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+indent_size = 4
+csharp_new_line_before_else = true
+
+[*.sln]
+end_of_line = CRLF
+max_line_length = off
+indent_style = tab
+indent_size = 1
+
+[{ApiClient.cs,yarn.lock,*.md}]
+max_line_length = off
+indent_size = off
+
+[*.DotSettings]
+indent_style = tab
+insert_final_newline = false
+max_line_length = off
+
+[.gitkeep]
+insert_final_newline = false

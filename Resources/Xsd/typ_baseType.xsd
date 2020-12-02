@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-53, Change=Deleted-type:abstractYear</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<!-- ================= ABSTRACT BASE TYPES ================= -->
+	<!--                                                         -->
+	<xsd:simpleType name="abstractBoolean">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" boolean value.
+			This type should not be used directly except to derive another type.
+			All boolean types should be derived from this type rather than using xsd:boolen.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:boolean">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractDateTime">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" dateTime value.
+			This type should not be used directly except to derive another type.
+			All dateTime types should be derived from this type rather than using xsd:dateTime.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:dateTime">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractDate">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" date value.
+			This type should not be used directly except to derive another type.
+			All dateTime types should be derived from this type rather than using xsd:dateTime.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:date">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractDouble">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" double value.
+			This type should not be used directly except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:double">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractShort">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" short value.
+			This type should not be used directly except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:short">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractInt">
+		<xsd:annotation>
+			<xsd:documentation>This type disallows an "empty" int value.
+			This type should not be used directly except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int">
+			<xsd:pattern value=".+"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractString">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all strings.
+			This abstract type allows the control over whitespace for all strings to be defined at a high level. 
+			This type should not be used directly except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:whiteSpace value='collapse'>
+				<xsd:annotation>
+					<xsd:documentation>Replace tab, line feed and carriage return with 
+					a space, collapse contiguous sequences of spaces to a single space 
+					and then remove leading and trailing spaces.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:whiteSpace>
+			<xsd:minLength value='1'>
+				<xsd:annotation>
+					<xsd:documentation>The empty string is not allowed.
+					This constraint conbined with the whiteSpace collapse constraint means
+					that a blank value is not allowed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minLength>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="abstractMeasure" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all quantities that have a value 
+			with a unit of measure. The unit of measure is in the uom attribute of the subtypes. 
+			This type allows all quantities to be profiled to be a 'float' instead of a 'double'.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractDouble"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractMaximumLengthString">
+		<xsd:annotation>
+			<xsd:documentation>This defines the maximum acceptable length of a
+			string that can be stored in a data base.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="4000">
+				<xsd:annotation>
+					<xsd:documentation>This value should be the smallest "maximum 
+					size of a variable length character type" in commonly used DBMSs. 
+					This is the maximum size of a VARCHAR2 in Oracle 8.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:maxLength>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractUncollapsedString">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all strings that must maintain whitespace. 
+			The type abstractString should normally be used.
+			This type should not be used directly except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value='1'>
+				<xsd:annotation>
+					<xsd:documentation>The empty string is not allowed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minLength>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- =========== CONTENT SPECIFIC ABSTRACT TYPES  ========== -->
+	<!--                                                         -->
+	<xsd:simpleType name="abstractPositiveCount">
+		<xsd:annotation>
+			<xsd:documentation>A positive integer (one based count or index) with a maximum value of 32767 (2-bytes).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="1">
+				<xsd:annotation>
+					<xsd:documentation>This value cannot be negative or zero.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- ======= CONTENT SPECIFIC ABSTRACT STRING TYPES  ======= -->
+	<!--                                                         -->
+	<xsd:simpleType name="abstractTimeZone">
+		<xsd:annotation>
+			<xsd:documentation>A time zone conforming to the XSD:dateTime specification.
+			It should be of the form "Z" or "shh.mm" where 
+				"s" is "+" or "-", 
+				"hh" is 00 to 23 and
+				"mm" is 00 to 59.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:pattern value="[Z]|([\-+](([01][0-9])|(2[0-3])):[0-5][0-9])"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractNameString">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all user assigned human 
+			recognizable contextual name types. 
+			There should be no assumption that (interoperable) semantic information will be extracted from the name by a third party.
+			This type of value is generally not guaranteed to be unique and is not a candidate to be replaced by an enumeration.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="64"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractUidString">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all locally unique identifiers. 
+			The value is not intended to convey any semantic content (e.g., it may be computer generated). 
+			The value is only required to be unique within a context in a document (e.g., defined via key and keyref). 
+			There is no guarantee that the same data in multiple documents will utilize the same uid value 
+			unless enforced by the source of the document (e.g., a document server).
+			Spaces are not allowed.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="64"/>
+			<xsd:pattern  value="[^ ]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractCommentString">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all comments or remarks 
+			intended for human consumption. 
+			There should be no assumption that semantics can be extracted from the field by a computer. 
+			Neither should there be an assumption that any two humans will interpret the information 
+			in the same way (i.e., it may not be interoperable).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractMaximumLengthString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractDescriptionString">
+		<xsd:annotation>
+			<xsd:documentation>A textual description of something.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-33, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractString32">
+		<xsd:annotation>
+			<xsd:documentation>A 32 character string.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=Bug, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="32"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractTypeEnum">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all enumerated "types".
+			This abstract type allows the maximum length of a type enumeration to be centrally defined.
+			This type should not be used directly except to derive another type.
+			It should also be used for uncontrolled strings which are candidates to become enumerations at a future date.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="50"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="abstractUomEnum">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all "units of measure".
+			This abstract type allows the maximum length of a UOM enumeration to be centrally defined. 
+			This type is abstract in the sense that it should not be used directly 
+			except to derive another type.</xsd:documentation>
+		</xsd:annotation>
+ 		<xsd:restriction base="witsml:abstractString">
+ 			<xsd:maxLength value="24"/>
+ 		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+</xsd:schema>

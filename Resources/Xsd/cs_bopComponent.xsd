@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_bopComponent">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Blow Out Preventer Component Schema.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="typeBopComp" type="witsml:BopType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of ram/preventer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="descComp" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of component.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idPassThru" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter that tubulars can pass thru.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presWork" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Working rating pressure of the component.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaCloseMn" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum diameter of component it will seal.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaCloseMx" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum diameter of component it will seal.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nomenclature" type="witsml:str2" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Arrangement nomenclature for the Blow Out Preventer stack (e.g. S, R, A).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="isVariable" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Is Ram bore variable or single size? Defaults to false.  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the Blow Out Preventer Component.  </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

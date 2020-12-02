@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stnTrajRawData">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Trajectory Station Raw Data</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="gravAxialRaw" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected gravitational field strength measured in axial direction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTran1Raw" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected gravitational field strength measured in transverse direction.
+				</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTran2Raw" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected gravitational field strength measured in transverse direction, 
+				approximately normal to tran1.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magAxialRaw" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected magnetic field strength measured in axial direction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran1Raw" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected magnetic field strength measured in transverse direction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran2Raw" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Uncorrected magnetic field strength measured in transverse direction, 
+					approximately normal to tran1.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

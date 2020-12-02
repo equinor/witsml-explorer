@@ -1,0 +1,43 @@
+# Autodetect text files
+* text=auto
+
+# Do not change these
+*.jpg binary
+*.png binary
+*.gif binary
+
+# Normalize these files
+*.cs text diff=csharp
+*.json text
+*.yaml text
+*.html text diff=html
+*.css text diff=css
+*.scss text
+*.js text
+
+# Make sure npm package files use LF
+package.json text eol=lf
+
+# Merge rules for certain files
+*.csproj text merge=union
+*.vbproj text merge=union
+*.fsproj text merge=union
+*.dbproj text merge=union
+*.sln text eol=crlf merge=union
+
+# Treat as text files
+.gitattributes text
+.gitignore text
+*.txt text
+*.md text
+*.config text
+*.xml text
+VERSION text
+LICENSE text
+
+# Special Swagger related files
+ApiClient.cs binary
+swagger.json binary
+
+# yarn.lock
+yarn.lock -diff merge=ours

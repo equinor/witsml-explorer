@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_drillingParams.xsd"/>
+
+	<!--                                                         -->
+	<xsd:group name="grp_bhaRun">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML bottom hole assembly run object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="tubular" type="witsml:refNameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This represents a foreign key to the tubular (assembly) 
+					that was utilized in this run.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that activities started.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStop" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that activities stopped.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStartDrilling" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Start on bottom - date and time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStopDrilling" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Start off bottom - date and time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="planDogleg" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Planned dogleg severity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="actDogleg" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Actual dogleg severity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="actDoglegMx" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Actual dogleg severity - Maximum.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusBha" type="witsml:BhaStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Bottom hole assembly status.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numBitRun" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Bit run number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numStringRun" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The BHA (drilling string) run number. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="reasonTrip" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Reason for trip.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="objectiveBha" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Objective of bottom hole assembly.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="drillingParams" type="witsml:cs_drillingParams" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Drilling parameters.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-93, Change=Allowed-recurrence</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<!--                                                            -->
+</xsd:schema>

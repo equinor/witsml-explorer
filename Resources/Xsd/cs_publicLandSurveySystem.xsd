@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) -->
+<xsd:schema 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1" >
+        <!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+        <!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_publicLandSurveySystem">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="principalMeridian" type="witsml:PrincipalMeridian" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Principal meridian for this location.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="range" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Range number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rangeDir" type="witsml:EastOrWest" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Range direction.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="township" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Township number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="townshipDir" type="witsml:NorthOrSouth" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Township direction.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="section" type="witsml:sectionNumber" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Section number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="quarterSection" type="witsml:publicLandSurveySystemQuarterSection" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The location of the well within the section, 
+					with the primary component listed first. Spot location will be made some from combination
+					of the following codes: NE, NW, SW, SE, N2, S2, E2, W2, C (center quarter), 
+					LTxx (where xx represents a two digit lot designation), 
+					TRzz (where zz represents a one or two character trac designation). 
+					Free format will allow for entries such as NESW (southwest quarter of northeast quarter), 
+					E2NESE (southeast quarter of northeast quarter of east half), CNE (northeast quarter of center quarter), etc.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="quarterTownship" type="witsml:publicLandSurveySystemQuarterTownship" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Quarter township.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="footageNS" type="witsml:footageNorthSouth" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance inside of the boundary line of the specified section. 
+					North specifies the distance from the north boundary line.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="footageEW" type="witsml:footageEastWest" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance inside of the boundary line of the specified section. 
+					East specifies the distance from the east boundary line.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

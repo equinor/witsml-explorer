@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaErrorCoefficient.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaErrorTerm">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Error Term Component Schema.
+			The reference error terms that are included in error models via ErrorTermValues.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This is the unique mnemonic for this term. 
+					For example, "ABIX" or "DECR".</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="type" type="witsml:ErrorTermSource" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The class of the error source.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="measureClass" type="witsml:MeasureClass" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The kind of quantity that the term represents.
+					This constrains the unit that can be used for any errorTermValues.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="label" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human-readable name for the term, may be presented in 
+					application software. E.g., "MWD: X-Acceleromter Bias with Z-Axis Corr."</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human-readable name for the term, may be presented in 
+					application software. E.g., "MWD: X-Acceleromter Bias with Z-Axis Corr."</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="errorCoefficient" type="witsml:cs_iscwsaErrorCoefficient" minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Describes what measurement(s) the error variance(s) apply to.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>	
+			<xsd:element name="operatingMode" type="witsml:SurveyToolOperatingMode" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Operating mode that is valid for this error term.
+					In the absence of this element assume Stationary.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the node.
+				Since the names must be unique, a best practice is to derive the uid from 
+				the name (e.g., by changing space to underscore).</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

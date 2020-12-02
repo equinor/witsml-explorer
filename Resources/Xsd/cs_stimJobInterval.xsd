@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stimAdditive.xsd" />
+	<xsd:include schemaLocation="cs_stimFlowPath.xsd"/>
+	<xsd:include schemaLocation="cs_stimPdatSession.xsd"/>
+	<xsd:include schemaLocation="cs_stimReservoirInterval.xsd"/>
+	<xsd:include schemaLocation="cs_stimPerforationSet.xsd"/>
+	<xsd:include schemaLocation="cs_stimProppantUsage.xsd"/>
+	<xsd:include schemaLocation="cs_stimShutInPressure.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimJobInterval">
+		<xsd:annotation>
+			<xsd:documentation>Information for a well stimulation job treatment interval</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="uidTreatmentInterval" type="witsml:uidString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Identifier for the stimulation treatment interval unique to the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human recognizable context for the well stimulation treatment name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="number" type="witsml:nonNegativeCount" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The treatment number associated with this interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting date and time for the stimulation treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Ending date and time for the stimulation treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="formationName" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the formation being stimulated.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdFormationTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the top of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdFormationBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the bottom of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdFormationTop" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of the top of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdFormationBottom" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of the bottom of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="openHoleName" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A name for the open hole. To be used for open hole completions.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="openHoleDiameter" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The diameter of the open hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdOpenHoleTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the top open hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdOpenHoleBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the bottom open hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdOpenHoleTop" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of the top open hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdOpenHoleBottom" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of the bottom open hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalFrictionPresLoss" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The total friction pressure loss.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalPumpTime" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The total pumping time for the treatment treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPresTubing" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The highest tubing pressure of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPresCasing" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The highest casing pressure of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPresAnnulus" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The highest annulus pressure of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxFluidRateTubing" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum tubing fluid pumping rate of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxFluidRateCasing" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum casing fluid pumping rate of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxFluidRateAnnulus" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum annulus fluid pumping rate of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgPresTubing" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average tubing pressure of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgPresCasing" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average casing pressure of any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgPresAnnulus" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average annulus pressure for any stage for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="breakDownPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure at which the formation fractures and accepts injected fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="averagePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average pressure for the treatment interval across stages for all flowpaths for the treatment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBaseFluidReturnRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average base fluid pumping rate of all stages for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgSlurryReturnRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average slurry pumping rate of all stages for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBottomholeRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average bottomhole treatment flow rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total volume pumped for the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxProppantConcSurface" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum proppant concentration on the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxProppantConcBottomhole" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum proppant concentration at the bottom of the wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgProppantConcSurface" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average proppant concentration on the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgProppantConcBottomhole" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average proppant concentration at the bottom of the hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perfproppantConc" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The proppant concentration at the perforations.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalProppantMass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The total mass of proppant used in the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalProppantUsage" type="witsml:cs_stimProppantUsage" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The total mass of a particular proppant used in an interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="percentProppantPumped" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total proppant mass used as a percent of the design mass.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellboreProppantMass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The weight of proppant left in the wellbore after pumping has stopped.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="proppantName" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Name of the proppant used for the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="formationProppantMass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The weight of proppant placed in the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perfBallCount" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total number of perforation balls used in the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalN2StdVolume" type="witsml:standardVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of nitrogen used in the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalCO2Mass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mass of carbon dioxide used in the treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidName" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The names of the each fluid used in this interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureGradient" type="witsml:forcePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The formation fracture gradient for this treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="finalFractureGradient" type="witsml:forcePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The formation fracture gradient for this treatment interval after treatment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="initialShutinPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The initial shutin pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="shutinPres"  type="witsml:cs_stimShutInPressure" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The final shutin pressure at a timespan after shutin.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="screenOutPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The screen out pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpOrderedCO2" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Carbon dioxide hydraulic horsepower ordered for the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpOrderedFluid" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid hydraulic horsepower ordered for the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpUsedCO2" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Carbon dioxide hydraulic horsepower actually used for the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpUsedFluid" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid hydraulic horsepower actually used for the interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perfBallSize" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The size of the perforation balls used.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="screenedOut" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Boolean as to whether or not screen out occurred. 
+					True ("true" or "1") indicates that screen out occurred. 
+					False ("false" or "0") or not given indicates otherwise.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgFractureWidth" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average fracture width created during the treatment during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgConductivity" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average conductivity of fracture created during the treatment supported by proppant 
+					during the stimulation services Hydraulic conductivity, symbolically represented as K, is a property of vascular plants, soil or rock,
+					that describes the ease with which water can move through pore spaces or fractures. It depends on the
+					intrinsic permeability of the material and on the degree of saturation. Saturated hydraulic conductivity,
+					Ksat, describes water movement through saturated media.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The difference between the pressure which holds a fracture closed (minimal principal stress)
+					and that pressure which is necessary to open the fracture.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="closurePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An analysis parameter used in hydraulic fracture design to indicate the pressure at which
+					the fracture effectively closes without proppant in place.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="closureDuration" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Delta time recorded for the closure of the fracture to occur during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowPath" type="witsml:cs_stimFlowPath" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The flow paths of this stimulation job treatment interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pdatSession" type="witsml:cs_stimPdatSession" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A pumping diagnostics session.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="reservoirInterval" type="witsml:cs_stimReservoirInterval" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Reservoir Interval Component Schema.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perforationInterval" type="witsml:cs_stimPerforationSet" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A set of perforations being stimulated.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBHStaticTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average static temperature of the 
+					wellbore injection point(s) or formation at equilibrium (steady state) 
+					with no fluid or tool movement, allowing for equilibrium conditions at 
+					the wellbore injection point; (BHST: bottom hole static temperature).
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0003, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBHTreatingTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average measured or calculated temperature 
+					of the wellbore during the treating with well fluid injection or 
+					circulation of the wellbore at the point of interest. Point of interest 
+					is generally the injection point or region of interest for the test 
+					or treatment.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0003, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="additive" type="witsml:cs_stimAdditive" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Additives used in the fluid.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0032, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier that has been assigned to the (XML) node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

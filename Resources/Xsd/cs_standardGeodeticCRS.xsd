@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:import namespace="http://www.opengis.net/gml/3.2"
+		schemaLocation="http://schemas.opengis.net/gml/3.2.1/coordinateReferenceSystems.xsd"/>
+<!-- The following can be used for code generation in place of the above. It represents a profiled subset of the normative GML schema.
+	<xsd:import namespace="http://www.opengis.net/gml/3.2"
+		schemaLocation="../gml_witsml_v1.4.1_profile/gml/3.2.1/gml.xsd"/>
+ -->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_standardGeodeticCRS">
+		<xsd:annotation>
+			<xsd:documentation>The sender may choose to send a nameCRS, with a well known name structure, or the sequence of information that fully defines the CRS. It is recommended that, for the standard CRSs in the EPSG database, the nameCRS be sent.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="nameCRS" type="witsml:wellKnownNameStruct" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The name of the coordinate reference system in a particular naming system. An optional short name (code) can also be specified. Specifying a well known system is highly desired. An example would be to specify a name of 'ED50' with a code of '4230' in the 'EPSG' naming system. Note that specifying a name in the EPSG naming system is asserting that the parameters in the EPSG database are appropriate for this CRS. This is also true for any other naming system. If in doubt, contact your local geodesist.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element ref="gml:GeodeticCRS" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The full set of information for a geodetic CRS, as defined by GML</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

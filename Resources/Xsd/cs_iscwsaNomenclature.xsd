@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_iscwsaNameAndDescription.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaNomenclatureConstant.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaNomenclature">
+		<xsd:annotation>
+			<xsd:documentation>A nomenclature for the description of errror terms.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parameter" type="witsml:cs_iscwsaNameAndDescription" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Variable names used within a function.
+					Each parameter name must be unique within the context of this nomenclature.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="function" type="witsml:cs_iscwsaNameAndDescription" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mathmatical function used to generate error term values from parameters.
+					Each function name must be unique within the context of this nomenclature.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="constant" type="witsml:cs_iscwsaNomenclatureConstant" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Numerical constant used by functions.
+					Each constant name must be unique within the context of this nomenclature.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

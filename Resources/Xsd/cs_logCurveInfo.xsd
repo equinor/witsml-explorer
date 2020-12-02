@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_axisDefinition.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_logCurveInfo">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Log - Curve Information</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Deleted-element:columnIndex</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="mnemonic" type="witsml:shortNameStruct" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The curve name.  
+					This must be unique for all curves in a log.
+					The naming authority for the mnemonic can be catptured in the namingSystem attribute.
+					Since both the mnemonic and uid have similar requirements within the context 
+					of a WITSML server, the uid can be derived from the mnemonic (e.g., by converting blank to underscore).</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-156, Change=Changed-type-from:str32</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-156, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="classWitsml" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The curve classification obtained from a lookup in the vendors 
+					mnemonic catalog.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-022, Change=Changed-type-from:RealtimeData</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="classIndex" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The count relative to (possibly) repeating values of classWitsml.
+					This is used to indicate something like the first pump, second pump, etc.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-78, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="unit" type="witsml:uomString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Unit of measurement of the data values. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mnemAlias" type="witsml:shortNameStruct" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name alias for this trace.
+					The naming authority for the mnemonic can be catptured in the namingSystem attribute.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-156, Change=Changed-type-from:str32</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-156, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nullValue" type="witsml:encodedValueString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An empty string is the default representation of a null value for a 
+					curve (i.e., when the null value representation is not explicitly defined). 
+					If a null value is defined in the logCurveInfo, it overrides any null value specified at the 
+					logHeader level. An empty string is always a valid null value representation in the comma delimited list.
+					An empty string is not a valid null value representation within a space delimited array.
+					Specifying a null value also makes it easier to transform data back to a 
+					legacy format without having to scan the data to insure that the null pattern 
+					does not exist in the data. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Fix-typo</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="alternateIndex" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True (true or 1) if this curve is a candidate to be a primary index.
+					False (false or 0) or not given, indicates otherwise.
+					An index curve should monotonically change when sorted on its own values (i.e., no duplicates). </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellDatum" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the wellDatum that represents the values of this trace.
+					This is only relevant for measured depths, vertical depths or elevations.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minIndex" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The minimum index value of any valid data point in the curve. 
+					Null values are excluded from this determination.
+					The value is the same regardless of the direction of the curve. 
+					This is an API "column-range" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=44, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxIndex" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum index value of any valid data point in the curve. 
+					Null values are excluded from this determination.
+					The value is the same regardless of the direction of the curve.
+					This is an API "column-range" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=44, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minDateTimeIndex" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The minimum index value of any valid data point in the curve. 
+					Null values are excluded from this determination.
+					The value is the same regardless of the direction of the curve.
+					This is an API "column-range" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=44, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxDateTimeIndex" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum index value of any valid data point in the curve. 
+					Null values are excluded from this determination.
+					The value is the same regardless of the direction of the curve.
+					This is an API "column-range" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=44, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="curveDescription" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of the curve.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sensorOffset" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Offset of sensor from a downhole equipment vertical reference (the
+					drill bit, for MWD logs;  the tool zero reference for wireline
+					logs).  This element is only informative (log values are presented
+					at actual depth, not requiring subtraction of an offset).</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dataSource" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Data source, could be tool name/id.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densData" type="witsml:perLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Data density of sample in samples per length unit.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="traceState" type="witsml:LogTraceState" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>State of trace data.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="traceOrigin" type="witsml:LogTraceOrigin" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Origin of trace data.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeLogData" type="witsml:LogDataType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Log data type.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-74, Change=Made-mandatory</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="axisDefinition" type="witsml:cs_axisDefinition" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Indicates that the curve is an array curve (i.e., multi-valued samples), 
+					and provides meta data by which an axis of the array can be understood.
+					A separate definition is required for each axis of an N-dimensional array.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the curve.
+				A suggested algorithm for creating the uid is to derive it from the mnemonic (e.g., converting blanks to underscores). </xsd:documentation>
+				<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Modified-description</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

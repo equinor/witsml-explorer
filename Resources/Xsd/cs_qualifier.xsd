@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_qualifier">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - lithology qualifier Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="type" type="witsml:QualifierType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of qualifier.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:sequence minOccurs="0" maxOccurs="1">
+				<xsd:element name="mdTop" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The measured depth at the top of the interval represented 
+						by the qualifier. This must be within the range of the parent geologic interval.
+						If mdTop and mdBottom are not given then the qualifier is deemed to exist over the 
+						depth range of the parent geologyInterval.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-146, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="mdBottom" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The measured depth at the bottom of the interval represented by the qualifier. 
+						A point can be indicated by specifying bottom=top.
+						This must be within the range of the parent geologic interval.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-145, Change=Made-mandatory</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:element name="abundance" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The relative abundance of the qualifier estimated based on a "visual area" basis by inspecting the cuttings  spread out
+					on the shaker table prior to washing, or in the sample tray after washing.
+					This represents the upper bound of the observed range, and is in the following increments at the upper bound.
+					1 = less than or equal to 1%, 2 = greater than or equal to 1 and less than 2%, 5 = greater than or equal to 2 and less than 5%
+					and then in 5% increments, 10 (=5-10%), 15 (=10-15%) up to 100(=95-100%).
+					The end user can then elect  to either display  the %, or map then to an operator specific term or coding,
+					i.e. 1 less then or equal to 1%=Rare Trace, or occasional, or very sparse etc., depending on the the end users' terminology.)
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="abundanceCode" type="witsml:kindString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. This prior useage for a specific terminology is suggested to no longer be used, as the intent should be to avoid encoding proprietary terms.
+					But, for the sake of interoperability, proprietary descriptive use of a specific term for a percentage, should be derived from
+					the abundance % by the end users' visualization application, using the end users' terminology.
+					(i.e. if 1 less than or equal to  1% = Rare Trace or equivalent terminology for the specific operator;
+					this can be mapped in the end user application, but is redundant to be encoded in the standard.)</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A textual description of the qualifier.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added </xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the lithology qualifier.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

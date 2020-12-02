@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaSurveyToolOperatingInterval">
+		<xsd:annotation>
+			<xsd:documentation>Inclination interval for a particular operating mode.
+			Intervals may overlap to suppress mode flip-flopping, but should cover
+			the entire valid range of the tool.
+			</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+        	</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="mode" type="witsml:SurveyToolOperatingMode" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Tool operating mode over this interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="start" type="witsml:planeAngleMeasure" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inclination at which mode commences.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="end" type="witsml:planeAngleMeasure"  minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inclination at which mode terminates.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="speed" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Running speed for continuous surveys.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sampleRate" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time between survey samples for continuous surveys.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

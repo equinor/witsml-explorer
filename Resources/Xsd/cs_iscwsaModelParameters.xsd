@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaModelParameters">
+		<xsd:annotation>
+			<xsd:documentation>Various parameters controlling the generation of the survey variance.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="misalignmentMode" type="witsml:ErrorModelMisalignmentMode" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Choice of mathmatical modelling of misalignment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gyroInitialization" type="witsml:planeAngleMeasure"  minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inclination at which gyro initialization occurs.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gyroReinitializationDistance" type="witsml:lengthMeasure"  minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum length of continuous survey before re-initialisation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="switching" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True if the survey tool is rotated at inclinations greater than 90 degrees.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="noiseReductionFactor" type="witsml:gtZeroAndLeOne" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Factor applied to Random Noise error terms depending on mode of gyro initialisation.
+					Values must be greater than zero and less than or equal to 1.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gyroRunningSpeed" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Speed at which the tool traverses the wellbore during continuous survey.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

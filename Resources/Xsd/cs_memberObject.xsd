@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_memberObject">
+		<xsd:annotation>
+			<xsd:documentation>Defines a member of an objectGroup.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-025, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="objectReference" type="witsml:refObjectString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A reference to an object that is defined within the 
+					context of the specified wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="indexType" type="witsml:LogIndexType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>For a log object, this specifies the kind of the index curve for the log.
+					This is only relevant for a systematically growing object.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:sequence minOccurs="0">
+				<xsd:element name="sequence1" type="witsml:objectSequence" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Defines primary numeric ordering of this object within the group.
+						The meaning of this order will be defined by the groupType.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:sequence minOccurs="0">
+					<xsd:element name="sequence2" type="witsml:objectSequence" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>Defines secondary numeric ordering of this object within the group.
+							The meaning of this order will be defined by the groupType.
+							A value for sequence2 can only be given if a value is given for sequence1.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:sequence minOccurs="0">
+						<xsd:element name="sequence3" type="witsml:objectSequence" minOccurs="1" maxOccurs="1">
+							<xsd:annotation>
+								<xsd:documentation>Defines tertiary numeric ordering of this object within the group.
+								The meaning of this order will be defined by the groupType.
+								A value for sequence3 can only be given if a value is given for sequence2.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:sequence>
+			</xsd:sequence>
+			<xsd:element name="rangeMin" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The minimum growing-object index value that applies to this group.
+					The significance of this range is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rangeMax" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum growing-object index value that applies to this group.
+					The significance of this range is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rangeDateTimeMin" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The minimum log date-time index value that applies to this group.
+					The significance of this range is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rangeDateTimeMax" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The maximum log date-time index value that applies to this group.
+					The significance of this range is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mnemonicList" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A comma delimited list of log curve mnemonics.
+					Each mnemonic should only occur once in the list.
+					If not specified then the group applies to all curves in the log.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="referenceDepth" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A measured depth related to this group. 
+					This does not necessarily represent an actual depth within a growing-object.
+					The significance of this depth is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="referenceDateTime" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A date and time related to this group. 
+					This does not necessarily represent an actual index within a growing-object.
+					The significance of this time is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="param" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Any extra parameter data related to the group. 
+					For this usage the name attribute MUST be specified because it represents the meaning of the data.
+					While the index attribute is mandatory, it is only significant if the same name repeats.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the node.  </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

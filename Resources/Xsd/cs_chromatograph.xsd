@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_chromatograph">
+		<xsd:annotation>
+			<xsd:documentation> WITSML - Chromatographic Component Schema </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dTim" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time at which the gas sample was processed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at top of Interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at base of interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wtMudIn" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mud density in (active pits).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wtMudOut" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mud density out (flowline).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="chromType" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Chromatograph type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimChromCycle" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Chromatograph cycle time. Commonly in seconds.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="chromIntRpt" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Chromatograph integrator report time, format may be variable due to recording equipment  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="methAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Methane (C1) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="methMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Methane (C1) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="methMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Methane (C1) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ethAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Ethane (C2) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ethMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Ethane (C2) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ethMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Ethane (C2) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="propAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Propane (C3) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="propMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Propane (C3) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="propMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Propane (C3) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ibutAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Butane (iC4) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ibutMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Butane (iC4) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ibutMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Butane (iC4) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nbutAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Butane (nC4) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nbutMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Butane (nC4) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nbutMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Butane (nC4) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ipentAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Pentane (iC5) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ipentMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Pentane (iC5) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ipentMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Pentane (iC5) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="npentAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Pentane (nC5) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="npentMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Pentane (nC5) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="npentMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Pentane (nC5) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="epentAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>neo-Pentane (eC5) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="epentMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>neo-Pentane (eC5) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="epentMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>neo-Pentane (eC5) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ihexAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Hexane (iC6) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ihexMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Hexane (iC6) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ihexMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>iso-Hexane (iC6) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nhexAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Hexane (nC6) ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nhexMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Hexane (nC6) ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nhexMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>nor-Hexane (nC6) ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="co2Av" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Carbon Dioxide ppm (average).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="co2Mn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Carbon Dioxide ppm (minimum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="co2Mx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Carbon Dioxide ppm (maximum).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="h2sAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydrogen Sulfide (average) ppm.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="h2sMn" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydrogen Sulfide (minimum) ppm.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="h2sMx" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydrogen Sulfide (maximum) ppm.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="acetylene" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Acetylene.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_documentEvent.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_documentAudit">
+		<xsd:annotation>
+			<xsd:documentation>The audit records what happened to the data, to produce 
+			the data that is in this file. It consists of one or more events.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:auditType</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="event" type="witsml:cs_documentEvent" minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>One event related to the data.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=none, Change=Added-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:auditType</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:Event</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

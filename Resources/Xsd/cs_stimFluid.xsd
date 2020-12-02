@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stimAdditive.xsd"/>
+	<xsd:include schemaLocation="cs_stimProppant.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimFluid">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Stimulation Fluid Component Schema.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="waterSource" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Source of the water used in the fluid. 256 char max size.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="additive" type="witsml:cs_stimAdditive" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Additives used in the fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="proppant" type="witsml:cs_stimProppant" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Proppants used in the fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="density" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The density of the fluid.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pH" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pH of the fluid.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="purpose" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The purpose of the fluid.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The description of the fluid.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="supplier" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+					<xsd:documentation>The supplier of the fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidType" type="witsml:StimFluidType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The fluid types.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidSubtype" type="witsml:StimFluidSubtype" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The fluid subtypes.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0021, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

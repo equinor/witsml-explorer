@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimFetTest">
+		<xsd:annotation>
+			<xsd:documentation>A diagnostic test determining fluid efficiency.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="analysisMethod" type="witsml:StimAnalysisMethod" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An analysis method used for this FET test.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0002, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Start time for the fluid efficiency test (FET).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>End time for the fluid efficiency test.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endPdlDuration" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The end of the pressure dependent leakoff portion of the fluid efficiency test.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureCloseDuration" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The time at which the fracture effectively closes without proppant in place.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureClosePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure at which the fracture effectively closes without proppant in place.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureExtensionPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The fracture pressure limit for an unfractured formation is the fracture initiation pressure.
+					This is typically considered the upper bound for the minimum horizontal stress or closure pressure.
+					A step rate test is used to determine the fracture extension pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The difference between the fracture extension pressure and the pressure that 
+					exists in the fracture.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="porePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure of the liquids in the formation pores.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pseudoRadialPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The Horner plot is used to determine if pseudo-radial flow developed during pressure decline. 
+					If a semi-log straight line is observed and the line can be extrapolated to a reasonable value
+					of reservoir pressure, radial or pseudo-radial flow may be affecting the decline behavior. 
+					This suggests that the fracture is already closed and that data beyond the point of influence 
+					need not be considered in the evaluation of closure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureLength" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fracture length is the length of the fracture tip to tip; fracture half length, 
+					the length of one wing of a fracture from the wellbore to the tip.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureWidth" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The width of a fracture at the wellbore. Hydraulic frac width is 
+					generated by frac fluid viscosity and/or pump rate (i.e., horsepower).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidEfficiency" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A measurement, derived from a data frac, of the efficiency
+					of a particular fluid in creating fracture area on a particular formation at a set of conditions.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pdlCoef" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure dependent leakoff coefficient.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="residualPermeability" type="witsml:permeabilityRockMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>That permeability which remains after a fractured formation has closed, allowing the 
+					the formation fracture face to be pressurized before the fracture is mechanically reopened.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier that has been assigned to the (XML) node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_message">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Message object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="objectReference" type="witsml:refObjectString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A reference to an object that is defined within the 
+					context of a wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="subObjectReference" type="witsml:refObjectString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A reference to an sub-object that is defined within the 
+					context of the object referenced by objectReference.
+					This should only refer to recurring components of a growing object.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTim" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time the information is related to.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="activityCode" type="witsml:ActivityCode" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A code used to define rig activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="detailActivity" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Custom string to further define an activity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="md" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Along hole measured depth of measurement from the drill datum.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBit" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Along hole measured depth of measurement from the drill datum.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeMessage" type="witsml:MessageType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Message type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="messageText" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Message text. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="param" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Any extra numeric data.
+					For this usage the name attribute MUST be specified because it represents the meaning of the data.
+					While the index attribute is mandatory, it is only significant if the same name repeats.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=33, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="severity" type="witsml:MessageSeverity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Severity of incident.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="warnProbability" type="witsml:MessageProbability" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A warning probability (applies to warning).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<!--                                                         -->
+</xsd:schema>

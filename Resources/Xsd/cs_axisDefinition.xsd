@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_axisDefinition">
+		<xsd:annotation>
+			<xsd:documentation>Metadata by which the array structure of a compound value is defined.
+			This defines one axis of an array. 
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="order" type="witsml:positiveCount" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The order of this axis. The order should  
+					begin with one and increment by one for each additional axis. 
+					The order indicates how fast the index of the axis varies 
+					in the serialized list of values. 
+					The index of an axis with an order of one varies the slowest.
+					The index of an axis with an order of two varies the next slowest. 
+					And so on. This is the same ordering that is used in the C programming language.
+					For example, the following array:
+						         [   x axis  ]
+						   |     z11  z12  z13
+						y axis:  z21  z22  z23
+						   |     z31  z32  z33
+						   |     z41  z42  z43
+					may be encoded as follows:
+						axisDefinition[order=1].name='x'
+						axisDefinition[order=1].count='3'
+						axisDefinition[order=2].name='y'
+						axisDefinition[order=2].count='4'
+						{ z11 z21 z31 z41 z12 z22 z32 z42 z13 z23 z33 z43 }
+					or alternatively:
+						axisDefinition[order=1].name='y'
+						axisDefinition[order=1].count='4'
+						axisDefinition[order=2].name='x'
+						axisDefinition[order=2].count='3'
+						{ z11 z12 z13 z21 z22 z23 z31 z32 z33 z41 z42 z43 }
+					STORE UNIQUE KEY: When accessed via the Store Interface, the "order" must be unique.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-49, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="count" type="witsml:positiveCount" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The count of elements along this axis of the array.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the array axis.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="propertyType" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The property type by which the array axis is classified.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="uom" type="witsml:uomString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A string representing the units of measure of the axis values.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice>
+				<xsd:annotation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Non-semantic</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:element name="doubleValues" type="witsml:listOfString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The serialziation of the axis positions of an array as a 
+						whitespace-delimited list values of type xsd:double.  If the length of this list
+						is less than 'count' then the difference in the last two values represents the increment
+						to be used to fill out the list. For example, the list '2 4' with count=4 
+						represents the  list '2 4 6 8'.
+						Note: This has an underlying string type because .NET will not properly handle
+						a "list of double".</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-51, Change=Changed-type-from:listOfDouble</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="stringValues" type="witsml:listOfString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The serialziation of the axis positions of an array as 
+						a whitespace-delimited list values of type xsd:String.
+						Note: the serialization of string elements with embedded whitespace cannot 
+						be properly decoded.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the axis.</xsd:documentation>
+				<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-49, Change=Modified-description</xsd:appinfo>
+				<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-025, Change=Modified-description</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

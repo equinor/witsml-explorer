@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_wellbore">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Wellbore object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parentWellbore" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This is a pointer to the parent wellbore. No parent = starts from top.   </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="number" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Operator borehole number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="suffixAPI" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>API suffix.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numGovt" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Government assigned number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusWellbore" type="witsml:WellStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC wellbore status.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="isActive" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True (="1" or "true") indicates that the wellbore is active.
+					False (="0" or "false") indicates otherwise. It is the servers responsibility to 
+					set this value based on its available internal data (e.g., what objects are changing).</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-60, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="purposeWellbore" type="witsml:WellPurpose" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC wellbore purpose.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeWellbore" type="witsml:WellboreType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of wellbore.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="shape" type="witsml:WellboreShape" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC wellbore trajectory shape.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimKickoff" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time of wellbore kickoff.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="achievedTD" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True ("true" of "1") indicates that the wellbore has 
+					acheieved total depth. That is, drilling has completed. False ("false" or "0") indicates otherwise. 
+					Not given indicates that it is not known whether total depth has been reached.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="md" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth of the borehole. 
+					If status is plugged, indicates the maximum depth reached before plugging.
+					It is recommended that this value be updated about every 10 minutes by an assigned 
+					raw data provider at a site.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-66, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Renamed-from:mdCurrent</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvd" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The  true vertical depth of the borehole.  
+					If status is plugged, indicates the maximum depth reached before plugging. 
+					It is recommended that this value be updated about every 10 minutes by an assigned 
+					raw data provider at a site.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-66, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Renamed-from:tvdCurrent</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBit" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth of the bit. 
+					If isActive=false then this value is not relevant.
+					It is recommended that this value be updated about every 10 minutes by an assigned 
+					raw data provider at a site.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-66, Change=Added</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Renamed-from:mdBitCurrent</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdBit" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The true vertical depth of the bit.
+					If isActive=false then this value is not relevant.
+					It is recommended that this value be updated about every 10 minutes by an assigned 
+					raw data provider at a site.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-66, Change=Added</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Renamed-from:tvdBitCurrent</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-150, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdKickoff" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Kickoff measured depth of the wellbore. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdKickoff" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Kickoff true vertical depth of the wellbore.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdPlanned" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Planned measured depth for the wellbore total depth.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdPlanned" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Planned true vertical depth for the wellbore total depth.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdSubSeaPlanned" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Planned measured for the wellbore total depth - with respect to seabed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdSubSeaPlanned" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Planned true vertical depth for the wellbore total depth - with respect to seabed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dayTarget" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Target days for drilling wellbore.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

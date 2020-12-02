@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_swcSample.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_sidewallCore">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Sidewall Core object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dTimToolRun" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time logging suite run in the hole.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimToolPull" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time logging suite pulled out of the hole.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdToolReference" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Tool reference measured depth.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="coreReferenceLog" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Reference log information.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdCore" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of core.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="serviceCompany" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of contractor who provided the service.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="analysisContractor" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Analysis company  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="analysisBy" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of engineer analyzing sidewall core samples.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sidewallCoringTool" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Sidewall coring tool description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaHole" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole diameter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaPlug" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Diameter of plugs.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numPlugsShot" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of shots fired.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numRecPlugs" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of recovered plugs.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numMisfiredPlugs" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of plugs that misfired.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numEmptyPlugs" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of plugs that fired OK but were empty.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numLostPlugs" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of lost plugs.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numPaidPlugs" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of plugs paid for by client.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="swcSample" type="witsml:cs_swcSample" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Set of plug sample descriptions.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

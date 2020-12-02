@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<xsd:include schemaLocation="cs_customData.xsd"/>
+	<xsd:include schemaLocation="cs_extensionAny.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_motor">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Tubular Motor Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="offsetTool" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Tool offset from bottom.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presLossFact" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pressure loss factor.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowrateMn" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum flow rate.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowrateMx" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum flow rate.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaRotorNozzle" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Diameter of rotor at nozzle.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="clearanceBearBox" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Clearance inside bearing box.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lobesRotor" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of rotor lobes.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lobesStator" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of stator lobes.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeBearing" type="witsml:BearingType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of bearing. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempOpMx" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum operating temperature.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotorCatcher" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Is rotor catcher present?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dumpValve" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Is dump valve present?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaNozzle" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Nozzle diameter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotatable" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Is motor rotatable?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bendSettingsMn" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum bend angle setting.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bendSettingsMx" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum bend angle setting.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="customData" type="witsml:cs_customData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that can contain custom or user defined 
+					data elements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionAny" type="witsml:cs_extensionAny" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema using an xsd:any construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

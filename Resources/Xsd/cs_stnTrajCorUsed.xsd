@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stnTrajCorUsed">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Trajectory Station Corrections Applied</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="gravAxialAccelCor" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated gravitational field strength correction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTran1AccelCor" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The correction applied to a cross-axial (direction 1) component 
+					of the Earths gravitational field.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTran2AccelCor" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The correction applied to a cross-axial (direction 2) component 
+					of the Earths gravitational field.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magAxialDrlstrCor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Axial magnetic drillstring correction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran1DrlstrCor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cross-axial magnetic correction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran2DrlstrCor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cross-axial magnetic correction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran1MSACor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cross-axial (direction 1) magnetic correction due to multi-station analysis process.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTran2MSACor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cross-axial (direction 2) magnetic correction due to multi-station analysis process.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magAxialMSACor" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Axial magnetic correction due to multi-station analysis process.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sagIncCor" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated sag correction to inclination.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sagAziCor" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated cosag correction to azimuth.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stnMagDeclUsed" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Magnetic declination used to correct a Magnetic North referenced azimuth 
+					to a True North azimuth.  Magnetic declination angles are measured positive clockwise 
+					from True North to Magnetic North (or negative in the anti-clockwise direction). 
+					To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-106, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stnGridCorUsed" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED - use stnGridConUsed. Grid Correction (Meridian convergence). The angle between 
+					True North and Grid North. Grid Correction is positive when True North 
+					is west of Grid North. The correction is added to the raw observation, 
+					thus yielding a reduced or corrected observation that can go into 
+					the subsequent calculations.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-106, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stnGridConUsed" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Magnetic declination used to correct a Magnetic North referenced azimuth 
+					to a True North azimuth.  Magnetic declination angles are measured positive clockwise 
+					from True North to Magnetic North (or negative in the anti-clockwise direction). 
+					To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=141rc-106, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dirSensorOffset" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Offset relative to bit.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

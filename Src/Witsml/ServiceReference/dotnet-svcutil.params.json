@@ -1,0 +1,15 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "2.0.1",
+  "options": {
+    "inputs": [
+      "../../../Resources/Wsdl/witsml_v1.4.0_api.wsdl"
+    ],
+    "namespaceMappings": [
+      "*, Witsml.ServiceReference"
+    ],
+    "outputFile": "WitsmlService.cs",
+    "targetFramework": "netstandard2.0",
+    "typeReuseMode": "All"
+  }
+}

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_bopComponent.xsd"/>
+	<xsd:include schemaLocation="cs_nameTag.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_bop">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Rig BOP Component Schema.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="manufacturer" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Manufacturer / supplier of the item.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="model" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Manufacturers designated model.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimInstall" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time of installation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimRemove" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Removal Date.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameTag" type="witsml:cs_nameTag" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An identification tag for the blow out preventer.
+					A serial number is a type of identification tag however
+					some tags contain many pieces of information.
+					This structure just identifies the tag and does not describe the contents.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeConnectionBop" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of connection to Blow Out Preventer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sizeConnectionBop" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Size of connection to Blow Out Preventer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presBopRating" type="witsml:pressureMeasure" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum Pressure rating of Blow Out Preventer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sizeBopSys" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum tubulars passable through Blow Out Preventer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotBop" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Is this a Rotating Blow Out Preventer? Values are "true" (or "1") and "false" (or "0").  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idBoosterLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of Booster Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odBoosterLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Outer diameter of Booster Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenBoosterLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of Booster Line along riser.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idSurfLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of Surface Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odSurfLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Outer diameter of Surface Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenSurfLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of Choke Line along riser.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idChkLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of Choke Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odChkLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Outer diameter of Choke Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenChkLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of Choke Line along riser.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idKillLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of Kill Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odKillLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Outer diameter of Kill Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenKillLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of Kill Line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bopComponent" type="witsml:cs_bopComponent" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Container element for Blow Out Preventer component schema elements.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeDiverter" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Diverter description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaDiverter" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Diameter of diverter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presWorkDiverter" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Working rating pressure of the component.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="accumulator" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of accumulator/description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capAccFluid" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Accumulator fluid capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presAccPreCharge" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Accumulator pre-charge pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volAccPreCharge" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Accumulator pre-charge volume</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presAccOpRating" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Accumulator operating pressure rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeControlManifold" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Blow Out Preventer Control System.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="descControlManifold" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of control system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeChokeManifold" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of choke manifold.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presChokeManifold" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Choke manifold pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  api:
+    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-api:latest
+    container_name: witsmlexplorer-api-dev
+    ports:
+      - 5000:80
+    volumes:
+      - ../../config.json:/app/config.json:ro
+
+  web:
+    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-frontend:latest
+    container_name: witsmlexplorer-frontend-dev
+    ports:
+      - 3000:3000

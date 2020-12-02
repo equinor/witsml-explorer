@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as base
+WORKDIR /app
+COPY witsml-explorer.sln .
+COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
+COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
+COPY Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj
+COPY Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj
+COPY Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj
+
+RUN dotnet restore
+
+FROM base as backend
+WORKDIR /app
+COPY Src/ Src/
+COPY Tests/WitsmlExplorer.Api.Tests Tests/WitsmlExplorer.Api.Tests
+RUN cd Tests/WitsmlExplorer.Api.Tests && dotnet test -c Release
+
+FROM backend as publish
+WORKDIR /app/Src/WitsmlExplorer.Api
+RUN dotnet publish -c Release -o out --no-restore --no-build --no-dependencies
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0
+WORKDIR /app
+COPY --from=publish /app/Src/WitsmlExplorer.Api/out .
+ENV ASPNETCORE_URLS=http://+:80
+EXPOSE 80
+ENTRYPOINT ["dotnet", "WitsmlExplorer.Api.dll"]

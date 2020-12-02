@@ -1,0 +1,14 @@
+FROM mhart/alpine-node:12.12.0 AS builder
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY Src/WitsmlExplorer.Frontend/package.json ./
+COPY yarn.lock ./
+RUN yarn
+COPY Src/WitsmlExplorer.Frontend ./
+RUN npx eclint check . && yarn test
+RUN yarn build
+
+ENV NODE_ENV=production
+ENV PORT=3000
+EXPOSE 3000
+CMD [ "node_modules/.bin/next", "start" ]

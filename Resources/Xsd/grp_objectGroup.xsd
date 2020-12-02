@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_memberObject.xsd"/>
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_objectGroup">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML objectGroup object.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-025, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="groupType" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Defines the type of group.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="groupSubtype" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This is a free-form text field to extend groupType for custom implementations.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0025, Change=Added</xsd:appinfo> 
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sequence" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The sequence number related to the group. 
+					The meaning of the sequence is defined by the groupType.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A description of attachment</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="param" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Any extra parameter data. 
+					For this usage the name attribute MUST be specified because it represents the meaning of the data.
+					While the index attribute is mandatory, it is only significant if the same name repeats.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="memberObject" type="witsml:cs_memberObject" minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>References a specific data-object that is a member of this group.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<!--                                                         -->
+</xsd:schema>

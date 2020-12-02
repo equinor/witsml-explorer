@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_cementPumpSchedule">
+		<xsd:annotation>
+			<xsd:documentation> WITSML - Cement Pump Schedule Component Schema </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="eTimPump" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>(Elapsed time period during the fluid is pumped.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratePump" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rate fluid is pumped. 0 means it is a pause.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volPump" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume pumped = eTimPump * ratePump.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="strokePump" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of pump strokes for the fluid to be pumped (assumes pump output known).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presBack" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Back pressure applied during pumping stage.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimShutdown" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>If shutdown event, the elapsed time duration.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comments" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Comments and Remarks.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<!--                                                         -->
+	<xsd:attributeGroup name="attgrp_objectUid">
+		<xsd:attribute name="uid" type="witsml:uidString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>The unique identifier of an object.
+				This should not be used for child nodes within an object.
+				For an independent object, the value may be globally unique.
+				For a dependent object, the value must be unique (for the same object type) within the context of the parent object.
+				There should be no assumption as to the semantic content of this attribute.
+				The purpose of this type is to facilitate modifying the optionality in derived schemas.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<!--                                                         -->
+</xsd:schema>

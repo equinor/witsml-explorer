@@ -1,0 +1,10 @@
+Dockerfile
+
+**/bin/
+**/obj/
+**/out/
+**/build/
+
+**/node_modules
+
+.DS_Store

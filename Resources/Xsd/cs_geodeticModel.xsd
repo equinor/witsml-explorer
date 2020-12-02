@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_geodeticModel">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Geodetic Model Component Schema.
+			All elements except nameCRS have been deprecated. Either use a well known name of a CRS
+			or use the wellCRS reference to a gmlCoordinateReferenceSystem.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Modified-description</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="nameCRS" type="witsml:wellKnownNameStruct" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the coordinate reference system in a particular naming system.
+					An optional short name (code) can also be specified. Specifying a well known system is highly desired.
+					An example would be to specify a name of 'ED50' with a code of '4230' in
+					the 'EPSG' naming system. Note that specifying a name in the EPSG naming system is asserting
+					that the parameters in the EPSG database are appropriate for this CRS. This is 
+					also true for any other naming system. If in doubt, contact your local geodesist.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="geodeticDatumCode" type="witsml:GeodeticDatum" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Geodetic datum code. This defines a system in the Geoshare naming system
+					and should probably not be used with CRSName.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="xTranslation" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid translation (3). Units are meters by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="yTranslation" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid translation (3). Units are meters by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="zTranslation" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid translation (3). Units are meters by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="xRotation" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="yRotation" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="zRotation" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="scaleFactor" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid scale factor.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ellipsoidCode" type="witsml:Ellipsoid" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid code (spheroid) defining geographic or planar coordinates. 
+					Implied if geodeticDatumCode is specified (and is not user defined). </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ellipsoidSemiMajorAxis" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid semi-major axis size. Implied if geodeticDatumCode or ellipsoidCode 
+					specified.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ellipsoidInverseFlattening" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid inverse flattening value (ie. 1/x). Implied if geodeticDatumCode 
+					or ellipsoidCode specified.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stnTrajValid">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Validation Information for Survey</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="magTotalFieldCalc" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated total intensity of the geomagnetic field as sum of BGGM, 
+					IFR and local field. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magDipAngleCalc" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated magnetic dip (inclination), the angle between the horizontal 
+					and the geomagnetic field (positive down, res .001).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTotalFieldCalc" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Calculated total gravitational field.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

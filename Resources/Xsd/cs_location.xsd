@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_location">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Location Component Schema
+			This is a location that is expressed in terms of 2D coordinates. 
+			In order that the location be understood, the coordinate reference system (CRS) 
+			must be known. The survey location is given by a pair of tagged values. 
+			The pairs may be: 
+			(1) latitude/longitude, 
+			(2) easting/northing, 
+			(3) westing/southing, 
+			(4) projectedX/projectedY, or 
+			(5) localX/localY. 
+			The appropriate pair must be chosen for the data.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="wellCRS" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the wellCRS that defines the CRS for the coordinates. 
+					While optional, it is strongly recommended that this be specified.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice>
+				<xsd:annotation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Non-semantic</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:sequence>
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+					<xsd:element name="latitude" type="witsml:planeAngleMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The latitude with north being positive.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="longitude" type="witsml:planeAngleMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The longitude with east being positive.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:sequence>
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+					<xsd:element name="easting" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected coordinate with east being positive. 
+							This is the most common type of projected coordinates. 
+							UTM coordinates are expressed in Easting and Northing.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="northing" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected coordinate with north being positive. 
+							This is the most common type of projected coordinates. 
+							UTM coordinates are expressed in Easting and Northing.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:sequence>
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+					<xsd:element name="westing" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected coordinate with west being positive. 
+							The positive directions are reversed from the usual Easting and Northing values. 
+							These values are generally located in the southern hemisphere, 
+							most notably in South Africa and Australia.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="southing" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected coordinate with south being positive. 
+							The positive directions are reversed from the usual Easting and Northing values. 
+							These values are generally located in the southern hemisphere, 
+							most notably in South Africa and Australia.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:sequence>
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+					<xsd:element name="projectedX" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected X coordinate with the positive direction unknown.
+							ProjectedX and ProjectedY are used when it is not 
+							known what the meaning of the coordinates is. If the meaning is known, 
+							the Easting/Northing or Westing/Southing should be used. Use of this pair 
+							implies a lack of knowledge on the part of the sender.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="projectedY" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The projected Y coordinate with the positive direction unknown.
+							ProjectedX and ProjectedY are used when it is not 
+							known what the meaning of the coordinates is. If the meaning is known, 
+							the Easting/Northing or Westing/Southing should be used. Use of this pair 
+							implies a lack of knowledge on the part of the sender.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:sequence>
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+					<xsd:element name="localX" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The local (engineering) X coordinate. 
+							The CRS will define the orientation of the axis.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="localY" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>The local (engineering) Y coordinate. 
+							The CRS will define the orientation of the axis.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:choice>
+			<xsd:element name="original" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Flag indicating (if "true" or "1") that this pair of values was 
+					the original data given for the location. If the pair of values was 
+					calculated from an original pair of values, this flag should be "false" (or "0"), 
+					or not present.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A Comment, generally given to help the reader 
+					interpret the coordinates if the CRS and the chosen pair do not make them clear.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>The unique identifier of the location.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

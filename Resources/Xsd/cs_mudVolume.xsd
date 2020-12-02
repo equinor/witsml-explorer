@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_mudLosses.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_mudVolume">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Operations Mud Volume Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="volTotMudStart" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total volume of mud at start of report interval (including pits and hole).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudDumped" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud dumped.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudReceived" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud received from mud warehouse.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudReturned" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud returned to mud warehouse.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mudLosses" type="witsml:cs_mudLosses" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mud losses detailed breakdown between Surface and Down Hole.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudBuilt" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud built.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudString" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud contained within active string.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudCasing" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud contained in casing annulus.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudHole" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud contained in open hole annulus.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volMudRiser" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of mud contained in riser section annulus.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volTotMudEnd" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total volume of mud at the end of the report interval (including pits and hole).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_cementPumpSchedule.xsd"/>
+	<xsd:include schemaLocation="cs_cementAdditive.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_cementingFluid">
+		<xsd:annotation>
+			<xsd:documentation> WITSML - Cementing Fluid Component Schema </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="typeFluid" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid type: Mud, Wash, Spacer, Slurry.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidIndex" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid Index: 1: first fluid pumped (=original mud), 
+					(last-1)=Tail cement, last= displacement mud  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="descFluid" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="purpose" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Purpose description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="classSlurryDryBlend" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Slurry class.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdFluidTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at top of slurry placement.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdFluidBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at bottom of slurry placement.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sourceWater" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Water Source Description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volWater" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Water volume.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volCement" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of cement.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratioMixWater" type="witsml:specificVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mix Water Ratio.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volFluid" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid/Slurry Volume.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementPumpSchedule" type="witsml:cs_cementPumpSchedule" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Set of (Time / Rate / Back Pressure).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="excessPc" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Excess Percent.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volYield" type="witsml:specificVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Slurry Yield.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="density" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fluid density.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="solidVolumeFraction" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Equals 1 - Porosity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volPumped" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume Pumped.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volOther" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Other Volume.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidRheologicalModel" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Newtonian/Bingham/Power Law/Herschel Bulkley.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="vis" type="witsml:dynamicViscosityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Viscosity (Newtonian) or Plastic Viscosity if Bingham.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="yp" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Yield point (Bingham and Herschel Bulkley models).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="n" type="witsml:dimensionlessMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Power Law index (Power Law and HB).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="k" type="witsml:dimensionlessMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Consistency index (Power Law and HB).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel10SecReading" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel reading after 10 seconds.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel10SecStrength" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel strength after 10 seconds.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel1MinReading" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel reading after 1 minute.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel1MinStrength" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel strength after 1 minute.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel10MinReading" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel reading after 10 minutes.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gel10MinStrength" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel strength after 10 minutes.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeBaseFluid" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of base fluid: Fresh water, Sea water, Brine, Brackish water.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densBaseFluid" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Density of base fluid.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dryBlendName" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of dry blend.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dryBlendDescription" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of dry blend.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="massDryBlend" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mass of dry blend: the blend is made of different solid additives: the volume is not constant.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densDryBlend" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Density of Dry blend.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="massSackDryBlend" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Weight of a sack of dry blend.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementAdditive" type="witsml:cs_cementAdditive" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Additives can be added in slurry but also in spacers, washes, mud.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="foamUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Foam used indicator.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeGasFoam" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gas type used for foam job.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volGasFoam" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume of gas used for foam job.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratioConstGasMethodAv" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Constant gas ratio method ratio  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densConstGasMethod" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Constant gas ratio method average density.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratioConstGasMethodStart" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Constant gas ratio method initial method ratio.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratioConstGasMethodEnd" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Constant gas ratio method final method ratio.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densConstGasFoam" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Constant gas ratio method average density.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimThickening" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test thickening time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempThickening" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test thickening temperature.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presTestThickening" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test thickening pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="consTestThickening" type="witsml:dimensionlessMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test thickening consistency/slurry viscosity - Bearden Consistency (Bc) 0 to 100.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pcFreeWater" type="witsml:volumePerVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test free water na: = mL/250ML.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempFreeWater" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test free water temperature.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volTestFluidLoss" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test fluid loss.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempFluidLoss" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test fluid loss temperature.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presTestFluidLoss" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test Fluid loss pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="timeFluidLoss" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test Fluid loss: dehydrating test period, used to compute the API Fluid Loss.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volAPIFluidLoss" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>API Fluid Loss = 2 * volTestFluidLoss * SQRT(30/timefluidloss).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimComprStren1" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength time 1.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimComprStren2" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength time 2.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presComprStren1" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength pressure 1.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presComprStren2" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength pressure 2.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempComprStren1" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength temperature 1.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tempComprStren2" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Compressive strength temperature 2.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densAtPres" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Slurry density at pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volReserved" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume reserved.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volTotSlurry" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total Slurry Volume.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

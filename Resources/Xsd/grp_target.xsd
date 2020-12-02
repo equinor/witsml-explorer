@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_location.xsd"/>
+	<xsd:include schemaLocation="cs_targetSection.xsd"/>
+
+	<!--                                                         -->
+	<xsd:group name="grp_target">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Target object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="parentTarget" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the parent target. This represents a relationship 
+					between a drillers and geological target.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispNsCenter" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Northing of target center point in map coordinates.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispEwCenter" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Easting of target center point in map coordinates.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvd" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Vertical depth of the measurements.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispNsOffset" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>North-south offset of target intercept point from shape center.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispEwOffset" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>East-west offset of target intercept point from shape center.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="thickAbove" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Height of target above center point.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="thickBelow" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Depth of target below center point.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dip" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Angle of dip with respect to horizontal.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="strike" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction of dip with respect to north azimuth reference.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotation" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction of target geometry with respect to north azimuth reference.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenMajorAxis" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance from center to perimeter in rotation direction.  
+					This may be ignored depending on the value of typeTargetScope.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="widMinorAxis" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance from center to perimeter at 90 deg to rotation direction.  
+					This may be ignored depending on the value of typeTargetScope. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeTargetScope" type="witsml:TargetScope" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of scope of the drilling target.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispNsSectOrig" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Origin north-south used as starting point for sections, mandatory parameter when sections are used..  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispEwSectOrig" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Origin east-west used as starting point for sections, mandatory parameter when sections are used.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="aziRef" type="witsml:AziRef" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the definition of north.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="catTarg" type="witsml:TargetCategory" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Geological or drillers target.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="location" type="witsml:cs_location" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The 2D coordinates of the item at the start of the 
+					section. The location object is mandatory for the first section starting point.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="targetSection" type="witsml:cs_targetSection" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Sections describing target. These may be ignored depending on the value of typeTargetScope.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

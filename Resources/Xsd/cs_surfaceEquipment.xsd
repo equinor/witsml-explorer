@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_surfaceEquipment">
+		<xsd:annotation>
+			<xsd:documentation> WITSML - Rig Surface Equipment Component Schema </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of item and details.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presRating" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pressure rating of the item.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeSurfEquip" type="witsml:SurfEquipType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Surface equipment type (IADC1-4,Custom, Coiled Tubing). </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="usePumpDischarge" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use pump discharge Line. Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useStandpipe" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use standpipe geometry.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useHose" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use kelly hose geometry.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useSwivel" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use swivel geometry.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useKelly" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use kelly geometry.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useTopStack" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use top stack height.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useInjStack" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use injector stack height.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useSurfaceIron" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Use surface iron description.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idStandpipe" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of standpipe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenStandpipe" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of standpipe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idHose" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of kelly hose.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenHose" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of kelly hose.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idSwivel" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of swivel.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenSwivel" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of swivel.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idKelly" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of kelly hose.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenKelly" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of kelly.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idSurfaceIron" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Inner diameter of surface iron.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenSurfaceIron" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of surface iron.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htSurfaceIron" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Height of surface iron.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idDischargeLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Inner diameter of pump discharge line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenDischargeLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Length of pump discharge line.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ctWrapType" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Coiled tubing wrap type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odReel" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Specifies the OD of the coiled tubing reel.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odCore" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Outer diameter of the reel core that the coiled tubing is wrapped around.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="widReelWrap" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Width of the reel core. This is the inside dimension.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenReel" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Length of the coiled tubing remaining on the reel.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="injStkUp" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Injector Stack Up.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htInjStk" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing -The length of tubing from the end of the coil reel to the rotary kelly bushing. 
+					Basically we define what is in the hole and on the reel.  This measurement takes into account 
+					the 20 or so feet of tubing that is being straightened and shoved through the injector head.  
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="umbInside" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Umbilical inside, true/false check box so that you can account for the 
+					wireline inside the coiled tubing.  With this pressure loss calculation, you can calculate 
+					for the strings used for logging, wire line coring, etc.  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odUmbilical" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Outer diameter of the umbilical.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenUmbilical" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing - Length of the umbilical.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idTopStk" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Top drive - Inner diameter of top stack.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htTopStk" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Top drive - The distance that the mud travels from the end of the standpipe 
+					hose to the drill pipe connection at the bottom of the top drive. We are measuring the 
+					distance that the mud will flow through the top drive.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htFlange" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Height of flange. If you select Top Drive Stackup Height, Swivel and Kelly
+					are disabled so that you can specify the top-drive rotary system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

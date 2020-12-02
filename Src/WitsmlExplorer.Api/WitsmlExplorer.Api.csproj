@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>5de2e6cd-e42c-4fca-905c-39f60e8b2ea8</UserSecretsId>
+    <AssemblyName>WitsmlExplorer.Api</AssemblyName>
+    <RootNamespace>WitsmlExplorer.Api</RootNamespace>
+  </PropertyGroup>
+  <Target Name="DisplayMessages" BeforeTargets="Build">
+    <Message Importance="high" Text="Building with $(Configuration) configuration" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="carter" Version="5.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0" />
+    <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
+    <PackageReference Include="NetCore.AutoRegisterDi" Version="2.1.0" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Witsml\Witsml.csproj" />
+  </ItemGroup>
+</Project>

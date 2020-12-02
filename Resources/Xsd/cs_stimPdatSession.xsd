@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stimStepTest.xsd"/>
+	<xsd:include schemaLocation="cs_stimStepDownTest.xsd"/>
+	<xsd:include schemaLocation="cs_stimFetTest.xsd"/>
+	<xsd:include schemaLocation="cs_stimPumpFlowBackTest.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimPdatSession">
+		<xsd:annotation>
+			<xsd:documentation>A pumping diagnostics session.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the session.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A description of the session.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="number" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The number of this pumping diagnostics session.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPumpOn" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time pumping began.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPumpOff" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time pumping ended.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimWellShutin" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time at which a well ceases flowing and the valves are closed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimFractureClose" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time when the fluid in the fracture is completely leaked off 
+					into the formation and the fracture closes on its faces.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pumpDuration" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The time between the shutin time and the pump on time.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBottomholeTreatmentPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average bottomhole treatment pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bottomholeHydrostaticPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Bottomhole hydrostatic pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bubblePointPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure at which gas begins to break out of an under saturated oil and form a 
+					free gas phase in the matrix or a gas cap.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fractureClosePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure when the fracture width becoms zero.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="frictionPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure loss due to fluid friction with the pipe while a fluid is being pumped.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="initialShutinPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Initial shutin pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="porePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pressure of the liquids in the formation pores.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBottomholeTreatmentRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average bottomhole treatment flow rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidDensity" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The density of the fluid.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="baseFluidVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base fluid volume entering equipment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellboreVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume of fluid in the wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdSurface" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth of the wellbore to its injection point.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBottomhole" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth of the bottom of the hole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdMidPerforation" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth of the middle perforation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdMidPerforation" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The true vertical depth of the middle perforation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="surfaceTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The constant earth temperature at a given depth specific to a region.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bottomholeTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Static bottomhole temperature.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="surfaceFluidTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Temperature of the fluid at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidCompressibility" type="witsml:compressibilityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume change of a fluid when pressure is applied.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="reservoirTotalCompressibility" type="witsml:compressibilityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume change of a reservoir material when pressure is applied.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidNprimeFactor" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Power law component. As n decreases from 1, the fluid becomes more shear thinning. 
+					Reducing n produces more non-Newtonian behavior.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidKprimeFactor" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The consistency index K is the shear stress or viscosity of the fluid at one sec-1 shear rate.
+					An increasing K raises the effective viscosity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidSpecificHeat" type="witsml:specificHeatCapacityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The heat required to raise one unit mass of a substance by one degree.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidThermalConductivity" type="witsml:thermalConductivityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>In physics, thermal conductivity is the property of a material describing its ability to conduct heat. 
+					It appears primarily in Fourier's Law for heat conduction. Thermal conductivity is measured in watts per kelvin-meter. 
+					Multiplied by a temperature difference (in kelvins) and an area (in square meters), and divided by a 
+					thickness (in meters), the thermal conductivity predicts the rate of energy loss (in watts) through a piece of material.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidThermalExpansionCoefficient" type="witsml:thermalVolumetricExpansionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Dimensional response to temperature change is expressed by its coefficient of thermal expansion.
+					When the temperature of a substance changes, the energy that is stored in the intermolecular bonds 
+					between atoms changes. When the stored energy increases, so does the length of the molecular bonds. 
+					As a result, solids typically expand in response to heating and contract on cooling. 
+					The degree of expansion divided by the change in temperature is called the material's coefficient 
+					of thermal expansion and generally varies with temperature.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidEfficiency" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A measurement, derived from a data frac, of the efficiency
+					of a particular fluid in creating fracture area on a particular formation at a set of conditions.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="foamQuality" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Foam quality percentage of foam for the job during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="percentPad" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume of the pad divided by the (volume of the pad + the volume of the proppant laden fluid).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stageNumber" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The number of a stage associated with this diagnostics session.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="temperatureCorrectionApplied" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Are the calculations corrected for temperature.
+					A value of "true" (or "1") indicates that the calculations were corrected for temperature. 
+					A value of "false" (or "0") or not given indicates otherwise.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stepRateTest" type="witsml:cs_stimStepTest" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An injection test, plotted pressure against injection rate, where a curve deflection and
+					change of slope indicates the fracture breakdown pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidEfficiencyTest" type="witsml:cs_stimFetTest" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A diagnostic test determining fluid efficiency.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pumpFlowBackTest" type="witsml:cs_stimPumpFlowBackTest" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A diagnostic test involving flowing a well back after treatment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stepDownTest" type="witsml:cs_stimStepDownTest" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An injection test involving multiple steps of injection rate and pressure, where a curve deflection and
+					change of slope indicates the fracture breakdown pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier that has been assigned to the (XML) node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

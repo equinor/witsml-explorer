@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_logCurveInfo.xsd"/>
+	<xsd:include schemaLocation="cs_logData.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_log">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Log.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Deleted-element:dataRowCount</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="objectGrowing" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The growing state of the object.
+					This value is only relevant within the context of a server.
+					This is an API server parameter releted to the "Special Handling of Change Information" within a server. 
+					See the relevant API specification for the  behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-035, Change=Changed-type-from:ObjectGrowingState</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-65, Change=Changed-type-from:logicalBoolean</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-65, Change=Changed-type-from:Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dataUpateRate" type="witsml:positiveBigCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The data append rate (in seconds) of this growing object.
+					This is an API server parameter releted to the "Special Handling Systematically Growing Objects" within a server. 
+					See the relevant API specification for the  behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-031, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<!-- Deleted-in-version=1.4.1.1 element requestLatestValue as per WITS-CR-2 -->
+			<xsd:element name="curveSensorsAligned" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This value is only relevant within the context of a server.
+					True ("true" or "1") indicates that all curves have
+					the same sensor offset from the downhole equipment vertical reference. 
+					False ("false" or 0") or not given indicates otherwise.
+					For a growing log, a value of true will allow a query 
+					to use the the endIndex from the previous query as the startIndex of the next query.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-78, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dataGroup" type="witsml:kindString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the grouping represented by curves in this log.
+					A group represents a named combination of curves and the curves in a particular
+					log should be represented in that list.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-78, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="serviceCompany" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of contractor who provided the service.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="runNumber" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Log run number. This should normally be a number; however 
+					some legacy systems encode other information in this value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bhaRunNumber" type="witsml:positiveCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The bottom hole assembly run number associated with this log.
+					This should match the run number on the BHA run object.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pass" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Identifies the pass within the run.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="creationDate" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that the log was created.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of item and details.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dataDelimiter" type="witsml:str2" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The value delimiter in the data string. Defaults to a comma.
+					Note that this does not affect any space delimited array data.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-43, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="indexType" type="witsml:LogIndexType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Primary index type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:sequence minOccurs="1" maxOccurs="1">
+				<xsd:element name="startIndex" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>When the log header defines the direction as "Increasing", 
+						the startIndex is the starting (minimum) index value at which the first non-null data point
+						is located.  When the log header defines the direction as "Decreasing", the startIndex 
+						is the starting (maximum) index value at which the first non-null data point is located.
+						Either a quantity index set (start and end) or a date time index set must be given.
+						If both sets are given then "indexType" and 
+						"indexCurve" must represent an elapsed time from "startDateTimeIndex".
+						This is an API "structural-range" query parameter for growing objects. 
+						See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="endIndex" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>When the log header defines the direction as "Increasing", the endIndex 
+						is the ending (maximum) index value at which the last non-null data point is located.  
+						When the log header defines the direction as Decreasing, the endIndex is the ending 
+						(minimum) index value at which the last non-null data point is located.
+						This is an API "structural-range" query parameter for growing objects. 
+						See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-70, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="stepIncrement" type="witsml:ratioGenericMeasure" minOccurs="0" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>The sampling increment. Set to zero for unequal sampling.
+						A non-zero value indicates that the data is regularly sampled even if it has an explicit index curve.
+						If it is zero or not given then assume that it is non-regular even though it may be regular.
+						The problem is that writers generally cannot guarantee the regularity of the log until after they have finished processing it
+						For curves that are originally sampled at a constant increment, this value should
+						be retained because calculated values may have cumulative errors.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-24, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="startDateTimeIndex" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>When the log header defines the direction as "Increasing", 
+						the startIndex is the starting (minimum) index value at which the first non-null data point
+						is located.  When the log header defines the direction as "Decreasing", the startIndex 
+						is the starting (maximum) index value at which the first non-null data point is located.
+						Either a quantity index set (start and end) or a date time index set must be given.
+						If both sets are given then "indexType" and 
+						"indexCurve" must represent an elapsed time from "startDateTimeIndex".
+						This is an API "structural-range" query parameter for growing objects. 
+						See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="endDateTimeIndex" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>When the log header defines the direction as "Increasing", the endIndex 
+						is the ending (maximum) index value at which the last non-null data point is located.  
+						When the log header defines the direction as Decreasing, the endIndex is the ending 
+						(minimum) index value at which the last non-null data point is located. 
+						This is an API "structural-range" query parameter for growing objects. 
+						See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-70, Change=Modified-description</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:element name="direction" type="witsml:LogIndexDirection" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The sort order of the data row index values in the XML instance.
+					For an "Increasing" direction the index value of consecutive data nodes are ascending.
+					For a "Decreasing" direction the index value of consecutive data nodes are descending.
+					The default direction is "Increasing".  The direction of a log cannot be changed 
+					once it has been created. That is, this value cannot be updated in a server.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="indexCurve" type="witsml:str32" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The mnemonic of the index curve.
+					Duplicate index values can exist in a log but a change of direction is not allowed.
+					If a change of direction is required then a new log must be created.
+					Some servers may eliminate (i.e., overwrite) duplicate indexes.
+					The data values associated with this curve represent an API "node-index" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Changed-type-from:indexCurve</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-108, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nullValue" type="witsml:encodedValueString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An empty string is the default representation of a null value for a 
+					curve (i.e. when the null value representation is not explicitly defined). 
+					If a null value representation is defined for a log, this becomes the default for all curves
+					in that log (but can be overridden at the curve level).  
+					An empty string is always a valid null value representation in the comma delimited list.
+					An empty string is not a valid null value representation within a space delimited array.
+					Specifying a null value also makes it easier to transform data back to a 
+					legacy format without having to scan the data to insure that the null pattern 
+					does not exist in the data. 
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="logParam" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Log parameters.  
+					For this usage the name attribute MUST be specified because it represents the meaning of the data.
+					While the index attribute is mandatory, it is only significant if the same name repeats.
+					A parameter name of "multipass" represents a boolean values ("true" or "false").
+					A "multipass" parameter value of "true" asserts that the object contains values for 
+					bhaRunNumber (or runNumber), passNumber and direction.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-57, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=33, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="logCurveInfo" type="witsml:cs_logCurveInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Container element for the log curve information. 
+					This is an API "column-definition" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="logData" type="witsml:cs_logData" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Container for one or more "rows" of log data.
+					The use of more than one logData node represents a sparse view of the actual data and 
+					is contrained for use in the WITSML API for adding and updating sparse data. 
+					Any other usage should utilize only one instance of logData.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Allowed-recurrence</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Moved-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

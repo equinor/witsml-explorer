@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_show">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Geology Show Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="showRat" type="witsml:ShowRating" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Show Rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stainColor" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Visible Stain Color.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stainDistr" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Visible Stain Distribution.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stainPc" type="witsml:areaPerAreaMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Visible Stain (commonly in percent).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="natFlorColor" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Natural Fluorescence Color.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="natFlorPc" type="witsml:areaPerAreaMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Natural fluorescence (commonly in percent).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="natFlorLevel" type="witsml:ShowFluorescence" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Natural fluorescence level.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="natFlorDesc" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Natural fluorescence description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutColor" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut color.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutSpeed" type="witsml:ShowSpeed" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut speed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutStrength" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut strength.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutForm" type="witsml:ShowLevel" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut formulation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutLevel" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut level (Faint, Bright, etc.).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutFlorColor" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut fluorescence color.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutFlorSpeed" type="witsml:ShowSpeed" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut fluorescence speed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutFlorStrength" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut fluorescence strength.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutFlorForm" type="witsml:ShowLevel" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut fluorescence form.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cutFlorLevel" type="witsml:ShowFluorescence" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cut fluorescence level.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="residueColor" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Residue color.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="showDesc" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Free format show description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="impregnatedLitho" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Impregnated lithology.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="odor" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of any hydrocarbon type odors smelled.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_location.xsd"/>
+	<xsd:include schemaLocation="cs_wellDatum.xsd"/>
+	<xsd:include schemaLocation="cs_publicLandSurveySystem.xsd"/>
+	<xsd:include schemaLocation="cs_referencePoint.xsd"/>
+	<xsd:include schemaLocation="cs_wellCRS.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_well">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Well object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="nameLegal" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Legal name of the well.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numLicense" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>License number of the well.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numGovt" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Government assigned well number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimLicense" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time license  was issued.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="field" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of the field in which the well is located.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="country" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Country in which well is located.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="state" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>State or province in which well is located.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="county" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>County in which the well is located.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="region" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Geo-political region.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="district" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Geo-political district name.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="block" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Block name in which well is located.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="timeZone" type="witsml:timeZone" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The time zone in which well is located.  
+					It is the deviation in hours and minutes from UTC.
+					This should be the normal time zone at the well and not a seasonally 
+					adjusted value such as daylight savings time.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Made-mandatory</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="operator" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Operator company name.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="operatorDiv" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Division of operator company.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pcInterest" type="witsml:dimensionlessMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Interest for Operator. Commonly in percent.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numAPI" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>American Petroleum Institute well number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusWell" type="witsml:WellStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC Well status.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="purposeWell" type="witsml:WellPurpose" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC well purpose.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidWell" type="witsml:WellFluid" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC well fluid. The type of fluid being produced from or injected 
+					into a well facility. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="directionWell" type="witsml:WellDirection" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>POSC well direction. The direction of flow of the fluids in a well facility
+					(generally, injected or produced, or some combination). </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimSpud" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at which well was spudded.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPa" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at which well was plugged and abandoned.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellheadElevation" type="witsml:wellElevationCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Elevation of wellhead relative to a wellDatum.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellDatum" type="witsml:cs_wellDatum" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A vertical datum to which elevations and depths are referenced. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="groundElevation" type="witsml:wellElevationCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Elevation of ground level (land rigs).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="waterDepth" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Depth of water (not land rigs).  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-46, Change=Changed-type-from:wellVerticalDepthCoord</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellLocation" type="witsml:cs_location" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>the 2D coordinates of the well surface point in one coordinate reference system. 
+					This is where the well crosses ground level on land and crosses the platform offshore.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellPublicLandSurveySystemLocation" type="witsml:cs_publicLandSurveySystem" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Township, section, range, quarter, and footage calls for
+					USA Public Land Survey System.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="referencePoint" type="witsml:cs_referencePoint" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Defines a reference point within the context of the well.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellCRS" type="witsml:cs_wellCRS" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A coordinate reference system that was used within 
+					the context of this well.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

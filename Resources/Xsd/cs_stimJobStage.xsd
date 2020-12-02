@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stimFluid.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimJobStage">
+		<xsd:annotation>
+			<xsd:documentation>Job stage for a well stimulation treatment, where one or more stages are part
+			of a flow path, one or more flow paths are part of a treatment, and one or more 
+			treatments are part of a job.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="kind" type="witsml:StimStageType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of stage for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A human readable name for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A short description of the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="number" type="witsml:positiveCount" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Stage number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date time of start of this stimulation stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date time of end of this stimulation stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pumpTime" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total pumping time for this stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startRateSurfaceLiquid" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting liquid pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endRateSurfaceLiquid" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final liquid pump rate in volume per time at the surface..</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgRateSurfaceLiquid" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average liquid pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startRateSurfaceCO2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting carbon dioxide pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endRateSurfaceCO2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final carbon dioxide pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgRateSurfaceCO2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average carbon dioxide pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startStdRateSurfaceN2" type="witsml:standardVolumePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting nitrogen pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endStdRateSurfaceN2" type="witsml:standardVolumePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final nitrogen pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgStdRateSurfaceN2" type="witsml:standardVolumePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average nitrogen pump rate in volume per time at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startPresSurface" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting surface pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endPresSurface" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final surface pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="averagePresSurface" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average surface pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startPumpRateBottomhole" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting pump rate in volume per time at bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endPumpRateBottomhole" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final pump rate in volume per time at bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgPumpRateBottomhole" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average pump rate in volume per time at bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startPresBottomhole" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting bottomhole pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endPresBottomhole" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final bottomhole pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="averagePresBottomhole" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average bottomhole pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startProppantConcSurface" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The beginning proppant concentration at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endProppantConcSurface" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The final proppant concentration at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgProppantConcSurface" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average proppant concentration at the surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startProppantConcBottomhole" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The beginning proppant concentration bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endProppantConcBottomhole" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The final proppant concentration bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgProppantConcBottomhole" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The average proppant concentration bottomhole.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startFoamRateN2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting nitrogen foam rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endFoamRateN2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final nitrogen foam rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="startFoamRateCO2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Starting carbon dioxide foam rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="endFoamRateCO2" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Final carbon dioxide foam rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidVolBase" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The stage volume of the base stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidVolSlurry" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume of the slurry (dirty) stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="slurryRateBegin" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The starting slurry rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="slurryRateEnd" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The endinging slurry rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="proppantMassWellHead" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The mass of the proppant at the wellhead.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="proppantMass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The mass of the proppant.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum pumping pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxSlurryRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum slurry rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxWellheadRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum rate at the wellhead.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxN2StdRate" type="witsml:standardVolumePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum nitrogen rate recorded at for the annulus injection for the 
+					zone of interest during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxCO2LiquidRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum carbon dioxide flow rate recorded for the annulus injection for the zone of 
+					interest during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPropConc" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Stage maximum proppant concentration at the wellhead for the stage 
+					during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxSlurryPropConc" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum proppant concentration exiting equipment for the stage 
+					during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgPropConc" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average proppant concentration at the wellhead for the 
+					stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgSlurryPropConc" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average proppant concentration exiting equipment for the stage 
+					during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average fluid temperature during the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgInternalPhaseFraction" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Internal Gas Phase percentage of foam for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBaseFluidQuality" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base quality percentage of foam for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgN2BaseFluidQuality" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base quality nitrogen percentage of foam for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgCO2BaseFluidQuality" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base quality carbon dioxide percent of foam for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgHydraulicPower" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydraulic horse power used for stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgBaseFluidRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average base fluid rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgSlurryRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average slurry rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgWellheadRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average wellhead rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgN2StdRate" type="witsml:standardVolumePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average nitrogen rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgCO2Rate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average carbon dioxide rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="baseFluidVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base fluid volume entering equipment.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="slurryVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Slurry volume exiting equipment (assumption that this will enter well).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellheadVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Slurry volume entering the well.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPmaxPacPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>PMax prediction allows the tool assembly to be designed with expected
+					pressures. It determines maximum allowable surface pressure and is typically calculated
+					as a single number by which the pressure relief valves are set. This variable is the average
+					of all the pmax pressures calculated for this stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPmaxWeaklinkPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable pressure for the zone of interest with respect to the bottomhole assembly
+					during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxGelRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum gel mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxOilRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum oil mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxAcidRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum acid mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgGelRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average gel mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgOilRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average oil mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgAcidRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average acid mixing rate entering the flow stream for the stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gelVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gel fluid volume for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="oilVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Oil fluid volume for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="acidVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Acid fluid volume for the stage during the stimulation services.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="baseFluidBypassVol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Base fluid volume recorded after equipment set to bypass.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="frictionFactor" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Numeric value used to scale a calculated rheological friction.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stageFluid" type="witsml:cs_stimFluid" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The fluid used for this stage of the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier that has been assigned to the (XML) node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

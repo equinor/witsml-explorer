@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_cementStage.xsd"/>
+	<xsd:include schemaLocation="cs_cementTest.xsd"/>
+	<xsd:include schemaLocation="cs_wbGeometry.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_cementJob">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Cement Job.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="jobType" type="witsml:CementJobType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of cement job.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="jobConfig" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Job configuration.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimJob" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time of Cement Job.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameCementedString" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name for the cemented string  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="holeConfig" type="witsml:cs_wbGeometry" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Wellbore Geometry of annulus.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameWorkString" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name for the cement work string  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="contractor" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of cementing contractor.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementEngr" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cementing engineer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="offshoreJob" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Offshore job? Values are "true" (or "1") and "false" (or "0").  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdWater" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Water depth if offshore. The distance from mean sea level to water bottom. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-46, Change=Changed-type-from:measuredDepthCoord</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-46, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="returnsToSeabed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Returns to seabed? Values are "true" (or "1") and "false" (or "0").  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="reciprocating" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe being reciprocated.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="woc" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Duration for waiting on cement to set.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdPlugTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>If Plug, measured depth of top of plug.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdPlugBot" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>If Plug, measured depth of bottom of plug.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdHole" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at bottom of hole.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdShoe" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of previous shoe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdShoe" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True Vertical Depth of previous shoe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdStringSet" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of cement string shoe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdStringSet" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of cement string shoe.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementStage" type="witsml:cs_cementStage" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Set of stages for the job (usually 1 or 2).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementTest" type="witsml:cs_cementTest" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Test results post-job.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typePlug" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Plug type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameCementString" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name for the cementing string  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPlugSet" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that cement plug was set.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementDrillOut" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cement drilled out flag. Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimCementDrillOut" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that cement was drilled out.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeSqueeze" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of squeeze.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdSqueeze" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of squeeze.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimSqueeze" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time of squeeze.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="toolCompany" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Tool Company.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeTool" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cement tool type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPipeRotStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation start time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPipeRotEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation end time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rpmPipe" type="witsml:anglePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation rate (commonly in rpm).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tqInitPipeRot" type="witsml:momentOfForceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation initial torque.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tqPipeAv" type="witsml:momentOfForceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation average torque.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tqPipeMx" type="witsml:momentOfForceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe rotation maximum torque.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimRecipStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at start of pipe reciprocation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimRecipEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at end of pipe reciprocation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="overPull" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>String up weight during reciprocation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="slackOff" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>String down weight during reciprocation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rpmPipeRecip" type="witsml:anglePerTimeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe reciprocation RPM.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lenPipeRecipStroke" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pipe reciprocation stroke length.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="coilTubing" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled Tubing Used (true=CTU used).  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<!--                                                            -->
+</xsd:schema>

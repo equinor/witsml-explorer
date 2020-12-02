@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:import namespace="http://www.energistics.org/schemas/abstract"
+		     schemaLocation="../../abstract_v1.0/xsd_schemas/sub_abstractSubstitutionGroup.xsd"/>
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_documentInfo.xsd"/>
+	<xsd:include schemaLocation="grp_log.xsd"/>
+	<xsd:include schemaLocation="cs_commonData.xsd"/>
+	<xsd:include schemaLocation="cs_customData.xsd"/>
+	<xsd:include schemaLocation="attgrp_objectUid.xsd"/>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:documentation>Log information that supports the WITSML standard.
+		This is a systematically growing object as defined by the API Core Specification.</xsd:documentation>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:element name="logs" type="witsml:obj_logs" substitutionGroup="abs:abstractDataObject">
+		<xsd:annotation>
+			<xsd:documentation>The WITSML API mandated plural root element which allows 
+			multiple singular objects to be sent. The plural name is formed by adding
+			an "s" to the singular name.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-81, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<!--                                                         -->
+	<xsd:complexType name="obj_logs">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-81, Change=Changed-type-from:none</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="abs:abstractObject">
+				<xsd:sequence>
+					<xsd:element name="documentInfo" type="witsml:cs_documentInfo" minOccurs="0" maxOccurs="1">
+						<xsd:annotation>
+							<xsd:documentation>Information about the XML message instance.  </xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="log" type="witsml:obj_log" minOccurs="1" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>A single log.  </xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="version" type="witsml:schemaVersionString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Data object schema version.  The fourth level must match the 
+						version of the schema constraints (enumerations and XML loader files) that are assumed
+						by the document instance.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="obj_log">
+		<xsd:sequence>
+			<xsd:element name="nameWell" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human recognizable context for the well that contains the wellbore.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameWellbore" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human recognizable context for the wellbore that contains the log.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human recognizable context for the log.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:group ref="witsml:grp_log" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The non-contextual elements for a Log.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:group>
+			<xsd:element name="commonData" type="witsml:cs_commonData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that contains elements that are common to all data 
+					objects.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="customData" type="witsml:cs_customData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that can contain custom or user defined 
+					data elements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="uidWell" type="witsml:uidParentString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the well. This uniquely represents 
+				the well referenced by the (possibly non-unique) nameWell. </xsd:documentation>
+				<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Changed-type-from:uidString</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="uidWellbore" type="witsml:uidParentString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the wellbore. This uniquely represents 
+				the wellbore referenced by the (possibly non-unique) nameWellbore. </xsd:documentation>
+				<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Changed-type-from:uidString</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="witsml:attgrp_objectUid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the log.  </xsd:documentation>
+				<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Changed-type-from:attgrp_uid</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_bop.xsd"/>
+	<xsd:include schemaLocation="cs_pit.xsd"/>
+	<xsd:include schemaLocation="cs_pump.xsd"/>
+	<xsd:include schemaLocation="cs_shaker.xsd"/>
+	<xsd:include schemaLocation="cs_centrifuge.xsd"/>
+	<xsd:include schemaLocation="cs_hydrocyclone.xsd"/>
+	<xsd:include schemaLocation="cs_degasser.xsd"/>
+	<xsd:include schemaLocation="cs_surfaceEquipment.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_rig">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Rig object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="owner" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Contractor/owner.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeRig" type="witsml:RigType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="manufacturer" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Manufacturer / supplier of the item.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="yearEntService" type="witsml:calendarYear" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Year entered service (CCYY).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="classRig" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig classification.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="approvals" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig approvals/certification.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="registration" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig registration location.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="telNumber" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig telephone number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="faxNumber" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig fax number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="emailAddress" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig Email address.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameContact" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of contact person.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingDrillDepth" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum hole depth rating for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingWaterDepth" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Working water depth capability of rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="isOffshore" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Flag to indicate that rig is an offshore rig (Drill Ship, Semi, Jack-up, Platform, TADU).  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="airGap" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Air gap from Rig Floor to ground or mean sea level depending on location.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStartOp" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time rig operations started, or date and time object created.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEndOp" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time rig operations ended (May be NULL for active rig).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bop" type="witsml:cs_bop" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Blow out preventer description and components.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pit" type="witsml:cs_pit" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Pit equipment for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pump" type="witsml:cs_pump" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Drilling fluid (mud/cement) pumping units for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="shaker" type="witsml:cs_shaker" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mud cleaning shaker equipment for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="centrifuge" type="witsml:cs_centrifuge" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mud cleaning centrifuge equipment for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hydrocyclone" type="witsml:cs_hydrocyclone" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mud cleaning hydrocyclone equipment for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="degasser" type="witsml:cs_degasser" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mud de-gasser equipment for the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="surfaceEquipment" type="witsml:cs_surfaceEquipment" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Coiled tubing specific equipment configuration.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numDerricks" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of derricks on the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeDerrick" type="witsml:DerrickType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Derrick type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingDerrick" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum support load applied to derrick structure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="htDerrick" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Height of derrick.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingHkld" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum hookload rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capWindDerrick" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Derrick wind capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wtBlock" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Block weight.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingBlock" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Weight rating of the travelling block.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numBlockLines" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of block lines.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeHook" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of hook.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingHook" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Weight rating of the hook.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sizeDrillLine" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Drill line diameter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeDrawWorks" type="witsml:DrawWorksType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Draw-works type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="powerDrawWorks" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Draw works horse power.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingDrawWorks" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Weight rating of the drawworks.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="motorDrawWorks" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of the drawworks motor.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="descBrake" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rig brake description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeSwivel" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of Swivel.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingSwivel" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum swivel rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotSystem" type="witsml:DriveType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Work string drive type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="descRotSystem" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of rotating system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingTqRotSys" type="witsml:momentOfForceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Work string rotational torque rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rotSizeOpening" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rotary size opening.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ratingRotSystem" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Work string rotational torque rating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="scrSystem" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of slow circulation rates system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pipeHandlingSystem" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of pipe handling system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capBulkMud" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Bulk/dry mud storage capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capLiquidMud" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Liquid mud storage capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capDrillWater" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Drill water capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capPotableWater" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Potable water capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capFuel" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Fuel capacity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="capBulkCement" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Capacity of builk cement.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mainEngine" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Power system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="generator" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of the electrical power generating system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cementUnit" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of cement unit on the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numBunks" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of beds available on the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bunksPerRoom" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of bunks per room.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numCranes" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of cranes on the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numAnch" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of anchors.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="moorType" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mooring type.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numGuideTens" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of guideline tensioners.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numRiserTens" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of riser tensioners.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="varDeckLdMx" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Variable deck load maximum (offshore rigs only).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="vdlStorm" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Variable deck load storm rating (offshore rigs only).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numThrusters" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of thrusters.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="azimuthing" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Are the thrusters azimuth.  Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="motionCompensationMn" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum motion compensation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="motionCompensationMx" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum motion compensation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="strokeMotionCompensation" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Length of motion compensation provided by equipment.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="riserAngleLimit" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Riser angle limit.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="heaveMx" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable heave.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gantry" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of gantry.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flares" type="witsml:shortDescriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of flare.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

@@ -1,0 +1,29 @@
+# Rider settings
+.idea/
+
+# VS Code settings
+.vs/
+.vscode/
+
+# User-specific files
+*.user
+
+# Build results
+bin/
+obj/
+Src/**/obj
+Src/**/out/
+
+# Config file
+Tests/Witsml.Tests/config.json
+**/secrets.json
+config.json
+
+# Node output
+node_modules/
+
+# VS Code settings that should be shared
+!.vscode/settings.json
+
+# We ignore package-lock.json since we are using yarn
+package-lock.json

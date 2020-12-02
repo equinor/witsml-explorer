@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stnTrajRawData.xsd"/>
+	<xsd:include schemaLocation="cs_stnTrajCorUsed.xsd"/>
+	<xsd:include schemaLocation="cs_stnTrajValid.xsd"/>
+	<xsd:include schemaLocation="cs_stnTrajMatrixCov.xsd"/>
+	<xsd:include schemaLocation="cs_location.xsd"/>
+	<xsd:include schemaLocation="cs_refWellboreTrajectoryStation.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_commonData.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_trajectoryStation">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Trajectory Station Component Schema</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017.30, Change=Renamed-from:grp_trajectoryStation</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-008, Change=Deleted-element:modelToolError</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="target" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the intended target of this station.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStn" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time the station was measured or created.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeTrajStation" type="witsml:TrajStationType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of survey station.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeSurveyTool" type="witsml:TypeSurveyTool" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of tool used for the measurements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="calcAlgorithm" type="witsml:TrajStnCalcAlgorithm" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of algorithm used in the position calculation.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="md" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of measurement from the drill datum.
+					This is an API "node-index" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvd" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Vertical depth of the measurements.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="incl" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole inclination, measured from vertical.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="azi" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole azimuth. Corrected to wells azimuth reference.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mtf" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Toolface angle (magnetic).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gtf" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Toolface angle (gravity).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispNs" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>North-south offset, positive to the North. 
+					This is relative to wellLocation with a North axis orientation of aziRef.
+					If a displacement with respect to a different point is desired then
+					define a localCRS and specify local coordinates in location.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispEw" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>East-west offset, positive to the East.
+					This is relative to wellLocation with a North axis orientation of aziRef. 
+					If a displacement with respect to a different point is desired then
+					define a localCRS and specify local coordinates in location. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="vertSect" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance along vertical section azimuth plane.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dls" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Dogleg severity.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rateTurn" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Turn rate, radius of curvature computation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rateBuild" type="witsml:anglePerLengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Build Rate, radius of curvature computation.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdDelta" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Delta measured depth from previous station.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-46, Change=Changed-type-from:measuredDepthCoord</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdDelta" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Delta true vertical depth from previous station.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-46, Change=Changed-type-from:wellVerticalDepthCoord</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="modelToolError" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Tool error model used to compute covariance matrix.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="iscwsaToolErrorModel" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Reference to the toolErrorModel object used to compute covariance matrix.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTotalUncert" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Survey tool gravity uncertainty.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dipAngleUncert" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Survey tool dip uncertainty.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTotalUncert" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Survey tool magnetic uncertainty.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravAccelCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was an accelerometer alignment correction applied to survey computation?  
+					Values are "true" (or "1") and "false" (or "0").
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magXAxialCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was a magnetometer alignment correction applied to survey computation?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sagCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was a bottom hole assembly sag correction applied to the survey computation?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magDrlstrCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was a drillstring magnetism correction applied to survey computation?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="infieldRefCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was an In Field Referencing (IFR) correction applied to the azimuth value?  
+					Values are "true" (or "1") and "false" (or "0").
+					An IFR survey measures the strength and direction of the Earth's magnetic field over the area of interest. 
+					By taking a geomagnetic modelled values away 
+					from these field survey results, we are left with a local crustal correction, 
+					which since it is assumed geological in nature, only varies over geological timescales.  
+					For MWD survey operations, these corrections are applied in addition to the geomagnetic model 
+					to provide accurate knowledge of the local magnetic field and hence to improve the 
+					accuracy of MWD magnetic azimuth measurements.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="interpolatedInfieldRefCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was an Interpolated In Field Referencing (IIFR) correction applied to the azimuth value?  
+					Values are "true" (or "1") and "false" (or "0").
+					Interpolated In Field Referencing measures the diurnal Earth magnetic field variations resulting from electrical 
+					currents in the ionosphere and effects of magnetic storms hitting the Earth. It increases again the accuracy 
+					of the magnetic azimuth measurement.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="inHoleRefCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was an In Hole Referencing (IHR) correction applied to the inclination and/or azimuth values?  
+					Values are "true" (or "1") and "false" (or "0").
+					In-Hole Referencing essentially involves comparing gyro surveys to MWD surveys in a tangent 
+					section of a well. Once a small part of a tangent section has been drilled and surveyed using an 
+					MWD tool, then an open hole (OH) gyro is run. By comparing the Gyro surveys to the MWD 
+					surveys a correction can be calculated for the MWD. This correction is then assumed as valid 
+					for the rest of the tangent section allowing to have a near gyro accuracy for the whole section, 
+					therefore reducing the ellipse of uncertainty (EOU) size.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="axialMagInterferenceCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was an Axial Magnetic Interference (AMI) correction applied to the azimuth value?  
+					Values are "true" (or "1") and "false" (or "0").
+					Most of the BHAs used to drill wells include an MWD tool. An MWD is a magnetic survey tool and as 
+					such suffer from magnetic interferences from a wide variety of sources. Magnetic interferences can be 
+					categorized into axial and radial type interferences. 
+					Axial interferences are mainly the result of magnetic poles from the drill string steel components 
+					located below and above the MWD tool. Radial interferences are numerous. 
+					Therefore, there is a risk that magXAxialCorUsed includes both Axial and radial corrections.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="cosagCorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>WWas a Cosag Correction applied to the azimuth values?  
+					Values are "true" (or "1") and "false" (or "0").
+					The BHA Sag Correction is the same as the Sag Correction except it includes the horizontal 
+					misalignment (Cosag).</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element> 
+			<xsd:element name="MSACorUsed" type="witsml:logicalBoolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Was a correction applied to the survey due to a 
+					Multi-Station Analysis process?  
+					Values are "true" (or "1") and "false" (or "0").</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-109, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gravTotalFieldReference" type="witsml:accelerationLinearMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gravitational field theoretical/reference value.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magTotalFieldReference" type="witsml:magneticInductionMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Geomagnetic field theoretical/reference value.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magDipAngleReference" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Magnetic dip angle theoretical/reference value.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magModelUsed" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Geomagnetic model used.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="magModelValid" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current valid interval for the geomagnetic model used.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="geoModelUsed" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Gravitational model used.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusTrajStation" type="witsml:TrajStationStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Status of the station.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rawData" type="witsml:cs_stnTrajRawData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Applies only to measured magnetic stations.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="corUsed" type="witsml:cs_stnTrajCorUsed" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Applies only to measured magnetic stations.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="valid" type="witsml:cs_stnTrajValid" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Applies only to measured magnetic stations.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="matrixCov" type="witsml:cs_stnTrajMatrixCov" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Covariance matrix for error model.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="location" type="witsml:cs_location" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The 2D coordinates of the item. 
+					Note that within the context of trajectory, the "original" coordinates are
+					inherently local coordinates as defined above.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sourceStation" type="witsml:cs_refWellboreTrajectoryStation" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the trajectoryStation from which this station was derived.
+					The trajectoryStation may be in another wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="commonData" type="witsml:cs_commonData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that contains elements that are common to all data 
+					objects.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the trajectory station.  </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

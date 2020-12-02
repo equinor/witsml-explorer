@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_logData">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Log - Curve Information
+			The order of the data should correspond to the 'direction'.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="mnemonicList" type="xsd:string" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A comma delimited list of curve mnemonics.
+					Each mnemonic should only occur once in the list.
+					The order of the mnemonics defines the order of the  delimited values in elements "unitList" and "data". 
+					If the index curve is specified then it must be first in the list.
+					This is an API "column-identifier" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="unitList" type="xsd:string" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A comma delimited list of unit of measure acronyms that represent the values in "data".
+					The units are in the same order as the mnemonics in element mnemonicList.
+					Each unit value must match the value in the logCurveInfo structure for that curve.
+					A null value (i.e., unitless as opposed to dimensionless) will be defined by adjacent commas.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="data" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The actual data corresponding to the curves defined in 
+					the "mnemonicList" element. Normally a comma delimited list of data values (see dataDelimiter) with one 
+					value for each curve on the log (e.g., "xxx,yyy, zzz"). For array curves,
+					the value of the array curve will be a space delimited list of values that
+					are contained within the commas that delimit the value for that curve
+					(e.g., "xxx,aa bb cc,zzz").
+					This essentially represents one row of a table where the curve 
+					mnemonics represent the column headings.
+					This is an API "data-node" query parameter for growing objects. 
+					See the relevant API specification for the query behavior related to this element.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-43, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_drillingParams.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_risk">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Risk object.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue= WCR-2012-0004, Change=Added cs_drillingParams</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="objectReference" type="witsml:refObjectString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A reference to an object that is defined within the context of a wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="type" type="witsml:RiskType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="category" type="witsml:RiskCategory" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The category of risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="subCategory" type="witsml:RiskSubCategory" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The sub category of risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extendCategory" type="witsml:kindString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Custom string to further categorize the risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="affectedPersonnel" type="witsml:RiskAffectedPersonnel" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The personnel afected by the risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that activities started.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time that activities were completed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdHoleStart" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured Depth at start of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdHoleEnd" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured Depth at end of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdHoleStart" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True Vertical Depth at start of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdHoleEnd" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True Vertical Depth at end of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBitStart" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of bit at start of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBitEnd" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of bit at end of activity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaHole" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole diameter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="severityLevel" type="witsml:levelIntegerCode"  minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Severity Level of the Risk. 
+					Values of 1 through 5 with 1 being the lowest.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="probabilityLevel" type="witsml:levelIntegerCode" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Probability Level of the Risk.
+					Values of 1 through 5 with 1 being the lowest.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="summary" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>summary description of risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="details" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Complete description of Risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="identification" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Details for identifing the Risk.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="contingency" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Plan of action if the Risk materializes.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mitigation" type="witsml:descriptionString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Plan of action to ensure the risk does not materialize.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

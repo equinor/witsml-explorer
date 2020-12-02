@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:abs="http://www.energistics.org/schemas/abstract"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="obj_attachment.xsd"/>
+	<xsd:include schemaLocation="obj_bhaRun.xsd"/>
+	<xsd:include schemaLocation="obj_cementJob.xsd"/>
+	<xsd:include schemaLocation="obj_changeLog.xsd"/>
+	<xsd:include schemaLocation="obj_convCore.xsd"/>
+	<xsd:include schemaLocation="obj_coordinateReferenceSystem.xsd"/>
+	<xsd:include schemaLocation="obj_drillReport.xsd"/>
+	<xsd:include schemaLocation="obj_fluidsReport.xsd"/>
+	<xsd:include schemaLocation="obj_formationMarker.xsd"/>
+	<xsd:include schemaLocation="obj_log.xsd"/>
+	<xsd:include schemaLocation="obj_message.xsd"/>
+	<xsd:include schemaLocation="obj_mudLog.xsd"/>
+	<xsd:include schemaLocation="obj_objectGroup.xsd"/>
+	<xsd:include schemaLocation="obj_opsReport.xsd"/>
+	<xsd:include schemaLocation="obj_rig.xsd"/>
+	<xsd:include schemaLocation="obj_risk.xsd"/>
+	<xsd:include schemaLocation="obj_sidewallCore.xsd"/>
+	<xsd:include schemaLocation="obj_stimJob.xsd"/>
+	<xsd:include schemaLocation="obj_surveyProgram.xsd"/>
+	<xsd:include schemaLocation="obj_target.xsd"/>
+	<xsd:include schemaLocation="obj_toolErrorModel.xsd"/>
+	<xsd:include schemaLocation="obj_toolErrorTermSet.xsd"/>
+	<xsd:include schemaLocation="obj_trajectory.xsd"/>
+	<xsd:include schemaLocation="obj_tubular.xsd"/>
+	<xsd:include schemaLocation="obj_wbGeometry.xsd"/>
+	<xsd:include schemaLocation="obj_well.xsd"/>
+	<xsd:include schemaLocation="obj_wellbore.xsd"/>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:documentation>WITSML Object Substitution Group Members.
+		This file is only an example.
+		It defines the available object substitution group member in this release.
+		This is only relevant to the Energistics aggregate object.</xsd:documentation>
+	</xsd:annotation>
+	<!--                                                         -->
+	<!--                                                         -->
+</xsd:schema>

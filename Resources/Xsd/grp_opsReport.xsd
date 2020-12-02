@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_activity.xsd"/>
+	<xsd:include schemaLocation="cs_drillingParams.xsd"/>
+	<xsd:include schemaLocation="cs_wbGeometry.xsd"/>
+	<xsd:include schemaLocation="cs_dayCost.xsd"/>
+	<xsd:include schemaLocation="cs_trajectoryStation.xsd"/>
+	<xsd:include schemaLocation="cs_fluid.xsd"/>
+	<xsd:include schemaLocation="cs_scr.xsd"/>
+	<xsd:include schemaLocation="cs_pitVolume.xsd"/>
+	<xsd:include schemaLocation="cs_mudVolume.xsd"/>
+	<xsd:include schemaLocation="cs_hse.xsd"/>
+	<xsd:include schemaLocation="cs_personnel.xsd"/>
+	<xsd:include schemaLocation="cs_supportCraft.xsd"/>
+	<xsd:include schemaLocation="cs_weather.xsd"/>
+	<xsd:include schemaLocation="cs_inventory.xsd"/>
+	<xsd:include schemaLocation="cs_rigResponse.xsd"/>
+	<xsd:include schemaLocation="cs_pumpOp.xsd"/>
+	<xsd:include schemaLocation="cs_shakerOp.xsd"/>
+
+	<!--                                                         -->
+	<xsd:group name="grp_opsReport">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Operations Report object.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="rig" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the rig utilized in this reporting period.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTim" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time the information is related to.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimStart" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time from start of Operations (commonly in days).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimSpud" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time since bit broke ground (commonly in days).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimLoc" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time rig on location (commonly in days).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdReport" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Wellbore Measured Depth.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdReport" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Wellbore True Vertical Depth.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distDrill" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance drilled since last report.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimDrill" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Drilling time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdPlanned" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of plan for this day number.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ropAv" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average Rate of Penetration through Interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ropCurrent" type="witsml:velocityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rate of penetration at report time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="supervisor" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of operator rig supervisor.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="engineer" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Nae of Engineer.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="geologist" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of operator wellsite geologist.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimDrillRot" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent rotary drilling for report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimDrillSlid" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent slide drilling from start of bit run.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimCirc" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent circulating from start of bit run.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimReam" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent reaming from start of bit run.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimHold" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent with no DD work (commonly in hours).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eTimSteering" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Time spent steering bottom hole assembly (commonly in hours).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distDrillRot" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance drilled - rotating.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distDrillSlid" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance drilled - sliding.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distReam" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance reamed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distHold" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance covered while holding angle with a steerable drilling assembly.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="distSteering" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Distance covered while actively steering with a steerable drilling assembly.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numPob" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total number of personnel on board.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numContract" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of contractor personnel on board.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numOperator" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of Operator personnel on board.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numService" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of service company personnel on board.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="activity" type="witsml:cs_activity" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Activity breakdown, multiple for many activities.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="drillingParams" type="witsml:cs_drillingParams" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Average bottom hole assembly parameters for report duration or actual instances of bottom hole assembly operations.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wbGeometry" type="witsml:cs_wbGeometry" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Record of actual hole geometry at report time.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dayCost" type="witsml:cs_dayCost" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Cost item for the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="trajectoryStation" type="witsml:cs_trajectoryStation" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Survey station recorded during the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluid" type="witsml:cs_fluid" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>One fluid record.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="scr" type="witsml:cs_scr" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Slow circulation rate pressure test for well control operations.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pitVolume" type="witsml:cs_pitVolume" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Pit volume record for the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mudVolume" type="witsml:cs_mudVolume" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description of mud built, received, etc.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mudInventory" type="witsml:cs_inventory" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Mud inventory item and cost for the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bulk" type="witsml:cs_inventory" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Bulk item usage and cost.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigResponse" type="witsml:cs_rigResponse" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average rig response readings for the day.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="pumpOp" type="witsml:cs_pumpOp" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Pump rate/pressure reading.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="shakerOp" type="witsml:cs_shakerOp" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Container element for shaker operation elements.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hse" type="witsml:cs_hse" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Health, safety and environmental information.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="personnel" type="witsml:cs_personnel" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Personnel records.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="supportCraft" type="witsml:cs_supportCraft" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Support craft object container element.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="weather" type="witsml:cs_weather" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Metrological readings for the day.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="numAFE" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>AFE (authorization for expenditure) number that this cost item applies to.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="costDay" type="witsml:cost" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Daily Cost.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="costDayMud" type="witsml:cost" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Daily Mud Cost.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaHole" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole diameter.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="conditionHole" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hole condition description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithology" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Lithology for the Interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameFormation" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of formation.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0006, Change=Changed-type-from:str32</xsd:appinfo> 
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="diaCsgLast" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Diameter of last casing.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdCsgLast" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of last casing.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdCsgLast" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of last casing.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tvdLot" type="witsml:wellVerticalDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>True vertical depth of leak off test point.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presLotEmw" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Leak off test equivalent mud weight.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presKickTol" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Kick tolerance pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="volKickTol" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Kick tolerance volume.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maasp" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable shut-in casing pressure.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tubular" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the tubular (assembly) used in this report period.
+					This represents a foreign key to tubular.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sum24Hr" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>24 hour summary description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="forecast24Hr" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Forecast for next 24 hrs.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusCurrent" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current status description.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

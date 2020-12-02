@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_stimReservoirInterval">
+		<xsd:annotation>
+			<xsd:documentation>Reservoir Interval Component Schema.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="mdLithTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at top of interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdLithBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth at base of interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithFormationPermeability" type="witsml:permeabilityRockMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Formation permeability, a measurement of the ability of a fluid to flow 
+					through a rock. Commonly measured in milliDarcys (1m2 = 0.000000000000986923 Darcy).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithYoungsModulus" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Young's modulus (E) is a measure of the stiffness of an isotropic elastic material. It is also known
+					as the Young modulus, modulus of elasticity, elastic modulus (though Young's modulus is actually one 
+					of several elastic moduli such as the bulk modulus and the shear modulus) or tensile modulus. It is 
+					defined as the ratio of the uniaxial stress over the uniaxial strain.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithPorePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Refers to the pressure of fluids held within a soil or rock, in gaps 
+					between particles formation porosity.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithNetPayThickness" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Net pay is computed. It is the thickness of rock that can deliver hydrocarbons 
+					to the wellbore formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithName" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A name for the formation lithology.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdGrossPayTop" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the top of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdGrossPayBottom" type="witsml:measuredDepthCoord" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measured depth of the bottom of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="grossPayThickness" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The total thickness of the interval being treated, whether or 
+					not it is productive.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayThickness" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The thickness of the most productive part of the interval. 
+					Net pay is a subset of the gross.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayPorePres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The pore pressure of the net pay.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayFluidCompressibility" type="witsml:compressibilityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The volume change of the fluid in the net pay when pressure is applied.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayFluidViscosity" type="witsml:dynamicViscosityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>With respect to the net pay, a measurement of the internal resistance of a fluid to flow
+					against itself. Expressed as the ratio of shear stress to shear rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayName" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name used for the net pay zone.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayFormationPermeability" type="witsml:permeabilityRockMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The permeability of the net pay.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithPoissonsRatio" type="witsml:dimensionlessMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The ratio of the relative contraction strain, or transverse strain (normal to the applied load), 
+					divided by the relative extension strain, or axial strain (in the direction of the applied load).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="netPayFormationPorosity" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Porosity of the net pay formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="formationPermeability" type="witsml:permeabilityRockMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Permeability of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="formationPorosity" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Porosity of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameFormation" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of the formation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier that has been assigned to the (XML) node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

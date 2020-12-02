@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_geodeticModel.xsd"/>
+	<xsd:include schemaLocation="cs_projectionx.xsd"/>
+	<xsd:include schemaLocation="cs_localCRS.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_wellCRS">
+		<xsd:annotation>
+			<xsd:documentation> WITSML - Well Coordinate Reference System Component Schema.
+			Note that this is intended for use with two dimensional coordinates. 
+			That does not prevent the use of a three dimensional CRS. It just means that
+			only two coordinates will be specified in that 3D system. The veritcal coordinates are
+			specified separately and, for 3D systems, one of the linked wellDatums should represent
+			the vertical datum of that 3D system so that the height in the 3d system can be determined. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human recognizable context for the system. 
+					For a geodetic system this is commonly the name of the datum. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice>
+				<xsd:annotation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Non-semantic</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:element name="mapProjection" type="witsml:cs_projectionx" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Map projection system. 
+						Note that these structures do not truly define a CRS but rather specify
+						information that could be used to describe a CRS. </xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="geographic" type="witsml:cs_geodeticModel" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Geographic system. 
+						Note that these structures do not truly define a CRS but rather specify
+						information that could be used to describe a CRS. </xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="mapProjectionCRS" type="witsml:refNameString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A reference to the coordinateReferenceSystems object 
+						representing the Map projection system.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Added</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="geodeticCRS" type="witsml:refNameString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A reference to the coordinateReferenceSystems object 
+						representing the Geodetic (i.e., Geocentric or Geographic) system.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Added</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="localCRS" type="witsml:cs_localCRS" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Local (engineering) system.
+						Note that these structures do not truly define a CRS but rather specify
+						information that could be used to describe a CRS.  </xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Modified-description</xsd:appinfo>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A textual description of the system.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>The unique identifier of the system.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

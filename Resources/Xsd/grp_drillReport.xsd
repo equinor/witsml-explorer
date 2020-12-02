@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_wellDatum.xsd"/>
+	<xsd:include schemaLocation="cs_activity.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportSurveyStation.xsd"/> <!-- Subset of cs_trajectoryStation. -->
+	<xsd:include schemaLocation="cs_fluid.xsd"/>
+	<xsd:include schemaLocation="cs_wellAlias.xsd"/>
+	<xsd:include schemaLocation="cs_wellCRS.xsd"/>
+	<xsd:include schemaLocation="cs_bitRecord.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportWellboreInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportStatusInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportPorePressure.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportLogInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportCoreInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportWellTestInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportFormTestInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportLithShowInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportEquipFailureInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportControlIncidentInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportStratInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportPerfInfo.xsd"/>
+	<xsd:include schemaLocation="cs_drillReportGasReadingInfo.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_drillReport">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Drilling Report object.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-33, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time of the start of the reporting period.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time end of the reporting period.
+					Report periods are commonly 24 hour periods.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="versionKind" type="witsml:OpsReportVersion" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The kind of report version. For example, a 
+					preliminary version.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="createDate" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time of the report creation. A later timestamp
+					indicates a newer version. In order to update values in a report a full 
+					updated copy of the original report should be submitted.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellAlias" type="witsml:cs_wellAlias" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An alternative name of the well (in a naming system).
+					The above well name should be included in the list of aliases so that
+					its origin can be known.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellboreAlias" type="witsml:cs_wellAlias" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An alternative name of the wellbore (in a naming system).
+					The above well name should be included in the list of aliases so that
+					its origin can be known.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellDatum" type="witsml:cs_wellDatum" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Defines a vertical datum used for 
+					measured depths, vertical depths or elevations.
+					This must be specified if one of the aforementioned coordinate
+					values are included in the report. This only applies to this report
+					and is generally a copy of the same information from the well object.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellCRS" type="witsml:cs_wellCRS" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Defines a coordinate reference system used by 
+					coordinates within this report.
+					This must be specified if coordinate values are included in the report 
+					(i.e., in a survey station location). This only applies to this report
+					and is generally a copy of the same information from the well object.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellboreInfo" type="witsml:cs_drillReportWellboreInfo" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>General information about a wellbore. The well is 
+					represented by the original wellbore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="statusInfo" type="witsml:cs_drillReportStatusInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General status information.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bitRecord" type="witsml:cs_bitRecord" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Information about a bit.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluid" type="witsml:cs_fluid" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>One fluid record.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="porePressure" type="witsml:cs_drillReportPorePressure" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Information about the pore pressure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extendedReport" type="witsml:timestampedCommentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A description of what happened from the end of report 
+					to an alternative time before the end of the next report. 
+					This is intended to allow a preliminary description 
+					of what happened from the end of the report (commonly midnight)
+					until the time of submission of a preliminary report (commonly 6:00 in the morning).</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=24, Change=Changed-type-from:timestampedDescriptionString</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="surveyStation" type="witsml:cs_drillReportSurveyStation" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A survey station recorded during the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="activity" type="witsml:cs_activity" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Activity breakdown, multiple for many activities.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="logInfo" type="witsml:cs_drillReportLogInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a log.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="coreInfo" type="witsml:cs_drillReportCoreInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a core.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="wellTestInfo" type="witsml:cs_drillReportWellTestInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a production well test.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="formTestInfo" type="witsml:cs_drillReportFormTestInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a wireline formation test.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithShowInfo" type="witsml:cs_drillReportLithShowInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about the lithology and shows in an interval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="equipFailureInfo" type="witsml:cs_drillReportEquipFailureInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about equipment failure.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="controlIncidentInfo" type="witsml:cs_drillReportControlIncidentInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a well control incident.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stratInfo" type="witsml:cs_drillReportStratInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a well control incident.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perfInfo" type="witsml:cs_drillReportPerfInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a well control incident.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="gasReadingInfo" type="witsml:cs_drillReportGasReadingInfo" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>General information about a gas reading.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

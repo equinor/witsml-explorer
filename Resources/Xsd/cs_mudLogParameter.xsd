@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_commonTime.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_mudLogParameter">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Mud Log Parameter Component Schema</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Deleted-sequence</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="type" type="witsml:MudLogParameterType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of the mud log parameter.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTime" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The data and time related to the parameter.
+					The time refers to the top of the interval. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdTop" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The measured depth at a point or at the top of an interval. </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=changeLog, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdBottom" type="witsml:measuredDepthCoord" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The bottom of an interval along the borehole.
+					A point interval should be indicated by setting mdTop=mdBottom.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=changeLog, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Made-mandatory</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-017, Change=Modified-description</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=42, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice minOccurs="0" maxOccurs="1">
+				<xsd:element name="force" type="witsml:forceMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A force value (e.g., hookload) that represents the parameter.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="concentration" type="witsml:volumePerVolumeMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A concentration value that represents the parameter.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="equivalentMudWeight" type="witsml:densityMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A equivalent mud weight value that represents the parameter. 
+						This commonly used for pressure gradient parameters and pressure parameters.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="pressureGradient" type="witsml:forcePerVolumeMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>A pressure gradient value that represents the parameter.
+						This is sometimes specified instead of an equivalent mud weight.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="text" type="witsml:uncollapsedString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A textual parameter value. This value is typically annotation on the log.
+					All spaces, tabs, line feeds and carriage returns are retained in the string. 
+					Characters representing line breaks should be replaced by a line feed or carriage return.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="commonTime" type="witsml:cs_commonTime" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element for creation and last-change DateTime information.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-012, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the mud parameter.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

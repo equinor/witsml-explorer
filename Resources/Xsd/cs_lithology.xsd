@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	targetNamespace="http://www.witsml.org/schemas/1series"
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_qualifier.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_lithology">
+		<xsd:annotation>
+			<xsd:documentation>
+				WITSML - Lithology Component Schema.
+				The standard for this version is principally intended for the implementation of the graphical columns for lithology
+				and anticipates the use of a free text entry for the description.
+				It is possible in the future the standard may be used to generate a structured text description from discrete entries
+				and so some of terminology has been better defined to enable that useage.
+				Either the free text description should be used, or structured description, but not both.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="type" type="witsml:LithologyType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The geological name for the type of lithology from the enum table listing a 
+					subset of the OneGeology / CGI defined formation types.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-042, Change=Made-mandatory</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="codeLith" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A custom Lithology encoding sceme if desired.
+					(It is recommended that if used, this follows the NPD required useage with the numeric values noted in the enum tables, which was the original intent for this item). 
+					The NPD Coding System assigned a digital code to the main lithologies as per the Norwegian Blue Book data standards.
+					The code was then derived by Lithology = (Main lithology * 10) + cement + (modifier / 100).
+					Example: Calcite cemented silty micaceous sandstone: ( 33 * 10 ) + 1 + (21 / 100) gives a numeric code of 331.21.
+					However the NPD is also working through Energistics/Ceasar to potentially change this useage.)
+					This should not be used for mnemonics, as those vary by operator, and if an abbreviation is 
+					required a local look up table should be used by the rendering client, based on Lithology Type.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithPc" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The lithology represents the portion of the sampled interval this lithology type relates to.
+					The total of the lithologies within an interval should add up to 100 percent.
+					If LithologySource in cs-geology is "interpreted" only 100% is allowed.
+					If "core" or "cuttings" then recommended useage is the creating application uses blocks of 10%. i.e. 10, 20, 30, 40, 50, 60, 70, 80, 90, 100.
+					Ideally the input application should enforce a total of 100% for every defined depth interval.
+					If the total for a depth interval does not add up to 100%, the "undifferentiated" code should be used to fill out to 100%.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Free text sample description of item and details, using a structured approach as per AAPG and Shell style,
+					or specific operator descriptive hierarchy typically in the order of Rock Type, Qualifier,colour, Texture, Cement matrix type, compaction, Fracture, accessories, fossils, structure porosity, Shows.
+					This should be blank if a structured approach to creating the description is used.
+					Example clastic descriptions: SST, qtz, wh lt gy grn, m - c g, well sort, subrnd-subang, sub sph - sph, grst tex, wk calc cmt,
+					fria, glauc rr mica, gd vis por, patchy dk brn oil stn, wk yel dir fluor, bri yel cut fluor, instant blooming yel-wh crush cut 	fluor, dk brn cut col.
+					Example carbonate description: LST; wh buff lt brn, m-c g, bioclastic grst, xln cmt, hd, ang brk, tr pyr, poor vis por.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="lithClass" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Lithology classification description.
+					(In the past this was intended to distinguish between alternative classification schemes such as Dunham or Folk.
+					This is no longer necessary with the classifications included in Lithology Type)</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="grainType" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Use sizeGrain below. Granulometry.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dunhamClass" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Dunham / Embry and Klovan limestone classification.
+					No longer used, as the terms are available as alternates for carbonates within the Lithology type.
+					i.e. A Dunham defined lithology will be plotted graphically as a limestone, but the Dunham terminology will be available to use in a structured description.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="color" type="witsml:str16" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology color description, from Shell 1995 4.3.3.1 and 4.3.3.2 Colours
+					with the addition of Frosted. eg black blue brown buff green grey olive orange pink purple red translucent frosted white yellow,
+					modified by dark, light, moderate, medium, mottled, variegated, slight, weak, strong, vivid.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="texture" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology matrix texture description from Shell 1995 4.3.2.6.
+					crystalline, (often "feather-edge" appearance on breaking),  friable, dull, earthy, 
+					chalky, (particle size less than 20m; often exhibits capillary imbibition) visibly particulate, granular,  
+					sucrosic, (often exhibits capillary imbibition).
+					e.g.: compact interlocking, particulate, (Gradational textures are quite common,) chalky matrix with sucrosic patches, (Composite textures also occur)
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hardness" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Mineral hardness.
+					(Typically this will rarely be used as mineral hardness is not typically recorded.
+					What is recorded is typically compaction. It is retained though for use defined as per Mohs scale of mineral hardness.)
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="compaction" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology compaction from Shell 1995 4.3.1.5.
+					not compacted, slightly compacted, compacted, strongly compacted, friable, indurated, hard.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sizeGrain" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology grain size description.
+					Defined from Shell 4.3.1.1.(Wentworth) modified to remove the ambiguous term Pelite. 
+					Size ranges in millimeter (or micrometer) and Inches.
+					LT 256 mm		LT 10.1 in 		"boulder";
+					64-256 mm		2.5-10.1 in		"cobble";
+					32-64 mm		1.26-2.5 in		"very coarse gravel";
+					16-32 mm		0.63-1.26 in		"coarse gravel";
+					8-16 mm			0.31-0.63 in		"medium gravel";
+					4-8 mm			0.157-0.31 in		"fine gravel";
+					2-4 mm			0.079-0.157 in		"very fine gravel";
+					1-2 mm			0.039-0.079 in		"very coarse sand";
+					0.5-1 mm		0.020-0.039 in		"coarse sand";
+					0.25-0.5 mm		0.010-0.020 in		"medium sand";
+					125-250 um		0.0049-0.010 in		"fine sand";
+					62.5-125 um		0.0025-0.0049 in	"very fine sand";
+					3.90625-62.5 um		0.00015-0.0025 in	"silt";
+					LT 3.90625 um		LT 0.00015 in		"clay";
+					LT 1 um			LT 0.000039 in	 	"colloid"
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="roundness" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology roundness description from Shell 4.3.1.3 Roundness (roundness refers to modal size class).
+					very angular, angular, subangular, subrounded, rounded, well rounded.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sphericity" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology sphericity description for the modal size class of grains in the sample, defined as per Shell 4.3.1.4 Sphericity.
+					very elongated, elongated, slightly elongated, slightly spherical, spherical, very spherical
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sorting" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology sorting descriptione from Shell 4.3.1.2 Sorting.
+					very poorly sorted, unsorted, poorly sorted, poorly to moderately well sorted, moderately well sorted, well sorted, very well sorted, unimodally sorted, bimodally sorted.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="matrixCement" type="witsml:MatrixCementType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology matrix/cement description. Terms will be as defined in the enumeration table.
+					eg. "calcite" (Common) "dolomite", "ankerite" (eg. North Sea HPHT reservoirs such as Elgin and Franklin have almost pure Ankerite cementation,
+					"siderite" (Sherwood sandstones, southern UK typical Siderite cements), "quartz" (grain to grain contact cementation or secondary quartz deposition),
+					"kaolinite", "illite" (eg. Village Fields North Sea), "smectite","chlorite" (Teg, Algeria.)
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Changed-type-from:str32</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="porosityVisible" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology visible porosity description.
+					Defined after BakerHughes definitions, as opposed to Shell, which has no linkage to actual numeric estimates.
+					The theoretical maximum porosity for a clastic rock is about 26%. This is normally much reduced by other factors.
+					When estimating porosities use: MT 15% "good" 10 to 15% "fair" 5 to 10% "poor" LT 5% "trace" 0 "none"
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="porosityFabric" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Visible porosity fabric description from after Shell 4.3.2.1 and 4.3.2.2.
+					intergranular (particle size greater than 20m), fine interparticle (particle size less than 20m), intercrystalline, intragranular, intraskeletal,
+					intracrystalline, mouldic, fenestral, shelter, framework, stylolitic, replacement, solution, vuggy, channel, cavernous.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="permeability" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>STRUCTURED DESCRIPTION USAGE. Lithology permeability description from Shell 4.3.2.5.
+					In future these would benefit from quantification. tight, slightly, fairly, highly.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="densShale" type="witsml:densityMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. This entry for shale density should not be used. 
+					Shale densities should be entered in the Shale Density in cs_geologyInterval.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qualifier" type="witsml:cs_qualifier" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A single qualifier from the Qualifier enum table for graphical representation in the Lithology columns.
+					In mudlogging terms, a qualifier is a graphical symbol in the Interpreted Lithology column of the Formation Evaluation Log (aka "the mudlog").
+					In addition to the major lithologies (e.g., sand, shale, etc) existing in the sample,
+					other minerals (present as accessories or inclusions e.g. chert, pyrite, glauconite) and fossils (forams, oyster shells, bryozoans, etc.) may exist
+					and their abundance is generally categorized using ranges such as Trace.
+					These additional minerals and fossils can be of disproportionately great diagnostic and descriptive value.
+					For example,qualifiers can be used to indicate facies changes, marker beds or something that impacted drilling conditions.
+					These qualifiers (representing accessories, inclusions and/or fossils) are used to rapidly and graphically indicate to the recipient of the mudlog
+					that a significant lithological event was encountered while drilling the well.
+					The qualifier can also be used in creating the structured descriptions.
+					</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the lithology object. </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

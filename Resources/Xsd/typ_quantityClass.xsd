@@ -1,0 +1,1047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:documentation>This file defines a set of standard POSC units of measure 
+		for various quantity classes. This units list captures information contained 
+		in the POSC units dictionary at http://www.posc.org/refs/poscUnits20.xml. 
+		The enumerated lists do not contain any deprecated units. </xsd:documentation>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_baseType.xsd"/>
+	<!--                                                         -->
+	<!-- ======================================================= -->
+	<!-- ================= SPECIAL TYPES ======================= -->
+	<!-- ======================================================= -->
+	<!--                                                         -->
+	<xsd:simpleType name="PercentUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Moved</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="%"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="MeasuredDepthUom">
+		<xsd:annotation>
+			<xsd:documentation>The units of measure that are valid for measured depths in a wellbore.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Moved</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m">
+				<xsd:annotation>
+					<xsd:documentation>meter</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="ft">
+				<xsd:annotation>
+					<xsd:documentation>International Foot</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="ftUS">
+				<xsd:annotation>
+					<xsd:documentation>US Survey Foot</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                     -->
+	<xsd:simpleType name="WellVerticalCoordinateUom">
+		<xsd:annotation>
+			<xsd:documentation>The units of measure that are valid for vertical gravity based 
+			coordinates (i.e., elevation or vertical depth) within the context of a well.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Moved</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m">
+				<xsd:annotation>
+					<xsd:documentation>meter</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="ft">
+				<xsd:annotation>
+					<xsd:documentation>International Foot</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="ftUS">
+				<xsd:annotation>
+					<xsd:documentation>US Survey Foot</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="ftBr(65)">
+				<xsd:annotation>
+					<xsd:documentation>British Foot 1865</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- ======================================================= -->
+	<!-- ================= MEASURE TYPES ======================= -->
+	<!-- ======================================================= -->
+	<xsd:simpleType name="AccelerationLinearUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:accelerationLinearUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m/s2"/>
+			<xsd:enumeration value="cm/s2"/>
+			<xsd:enumeration value="ft/s2"/>
+			<xsd:enumeration value="Gal"/>
+			<xsd:enumeration value="mgn"/>
+			<xsd:enumeration value="gn"/>
+			<xsd:enumeration value="mGal"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="AnglePerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:anglePerLengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="rad/m"/>
+			<xsd:enumeration value="dega/30ft"/>
+			<xsd:enumeration value="dega/ft"/>
+			<xsd:enumeration value="dega/100ft"/>
+			<xsd:enumeration value="dega/m"/>
+			<xsd:enumeration value="dega/30m"/>
+			<xsd:enumeration value="rad/ft"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="AnglePerTimeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:anglePerTimeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="rad/s"/>
+			<xsd:enumeration value="c/s"/>
+			<xsd:enumeration value="dega/h"/>
+			<xsd:enumeration value="dega/min"/>
+			<xsd:enumeration value="dega/s"/>
+			<xsd:enumeration value="rev/s"/>
+			<xsd:enumeration value="rpm"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="AreaUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:areaUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m2"/>
+			<xsd:enumeration value="acre"/>
+			<xsd:enumeration value="b"/>
+			<xsd:enumeration value="cm2"/>
+			<xsd:enumeration value="ft2"/>
+			<xsd:enumeration value="ha"/>
+			<xsd:enumeration value="in2"/>
+			<xsd:enumeration value="km2"/>
+			<xsd:enumeration value="mi2"/>
+			<xsd:enumeration value="miUS2"/>
+			<xsd:enumeration value="mm2"/>
+			<xsd:enumeration value="um2"/>
+			<xsd:enumeration value="yd2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="AreaPerAreaUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:areaPerAreaUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Euc"/>
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="in2/ft2"/>
+			<xsd:enumeration value="in2/in2"/>
+			<xsd:enumeration value="m2/m2"/>
+			<xsd:enumeration value="mm2/mm2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="CompressibilityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="1/psi"/>
+			<xsd:enumeration value="1/upsi"/>
+			<xsd:enumeration value="1/Pa"/>
+			<xsd:enumeration value="1/bar"/>
+			<xsd:enumeration value="1/kPa"/>
+			<xsd:enumeration value="1/pPa"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="DensityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:densityUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="kg/m3"/>
+			<xsd:enumeration value="10Mg/m3"/>
+			<xsd:enumeration value="dAPI"/>
+			<xsd:enumeration value="g/cm3"/>
+			<xsd:enumeration value="g/dm3"/>
+			<xsd:enumeration value="g/galUK"/>
+			<xsd:enumeration value="g/galUS"/>
+			<xsd:enumeration value="g/L"/>
+			<xsd:enumeration value="g/m3"/>
+			<xsd:enumeration value="grain/ft3"/>
+			<xsd:enumeration value="grain/galUS"/>
+			<xsd:enumeration value="grain/100ft3"/>
+			<xsd:enumeration value="kg/dm3"/>
+			<xsd:enumeration value="kg/L"/>
+			<xsd:enumeration value="Mg/m3"/>
+			<xsd:enumeration value="lbm/10bbl"/>
+			<xsd:enumeration value="lbm/bbl"/>
+			<xsd:enumeration value="lbm/ft3"/>
+			<xsd:enumeration value="lbm/galUK"/>
+			<xsd:enumeration value="lbm/1000galUK"/>
+			<xsd:enumeration value="lbm/galUS"/>
+			<xsd:enumeration value="lbm/1000galUS"/>
+			<xsd:enumeration value="lbm/in3"/>
+			<xsd:enumeration value="lbm/Mbbl"/>
+			<xsd:enumeration value="mg/dm3"/>
+			<xsd:enumeration value="mg/galUS"/>
+			<xsd:enumeration value="mg/L"/>
+			<xsd:enumeration value="mg/m3"/>
+			<xsd:enumeration value="ug/cm3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="DimensionlessUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:dimensionlessUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Euc"/>
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="cEuc"/>
+			<xsd:enumeration value="mEuc"/>
+			<xsd:enumeration value="nEuc"/>
+			<xsd:enumeration value="uEuc"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="DynamicViscosityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:dynamicViscosityUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Pa.s"/>
+			<xsd:enumeration value="cP"/>
+			<xsd:enumeration value="P"/>
+			<xsd:enumeration value="psi.s"/>
+			<xsd:enumeration value="dyne.s/cm2"/>
+			<xsd:enumeration value="kgf.s/m2"/>
+			<xsd:enumeration value="lbf.s/ft2"/>
+			<xsd:enumeration value="lbf.s/in2"/>
+			<xsd:enumeration value="mPa.s"/>
+			<xsd:enumeration value="N.s/m2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ElectricCurrentUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:electricCurrentUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="A"/>
+			<xsd:enumeration value="MA"/>
+			<xsd:enumeration value="kA"/>
+			<xsd:enumeration value="mA"/>
+			<xsd:enumeration value="nA"/>
+			<xsd:enumeration value="pA"/>
+			<xsd:enumeration value="uA"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ElectricPotentialUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:electricPotentialUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="V"/>
+			<xsd:enumeration value="kV"/>
+			<xsd:enumeration value="mV"/>
+			<xsd:enumeration value="MV"/>
+			<xsd:enumeration value="uV"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-22, Change=Deleted-type:energyPerAreaUom</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:simpleType name="EquivalentPerMassUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:equivalentPerMassUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="eq/kg"/>
+			<xsd:enumeration value="meq/g"/>
+			<xsd:enumeration value="meq/100g"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ForceUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:forceUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="N"/>
+			<xsd:enumeration value="daN"/>
+			<xsd:enumeration value="dyne"/>
+			<xsd:enumeration value="gf"/>
+			<xsd:enumeration value="kdyne"/>
+			<xsd:enumeration value="kgf"/>
+			<xsd:enumeration value="klbf"/>
+			<xsd:enumeration value="kN"/>
+			<xsd:enumeration value="lbf"/>
+			<xsd:enumeration value="Mgf"/>
+			<xsd:enumeration value="mN"/>
+			<xsd:enumeration value="MN"/>
+			<xsd:enumeration value="ozf"/>
+			<xsd:enumeration value="pdl"/>
+			<xsd:enumeration value="tonfUK"/>
+			<xsd:enumeration value="tonfUS"/>
+			<xsd:enumeration value="uN"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ForcePerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:forcePerLengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="N/30m"/>
+			<xsd:enumeration value="N/m"/>
+			<xsd:enumeration value="dyne/cm"/>
+			<xsd:enumeration value="kN/m"/>
+			<xsd:enumeration value="kgf/cm"/>
+			<xsd:enumeration value="lbf/100ft"/>
+			<xsd:enumeration value="lbf/30m"/>
+			<xsd:enumeration value="lbf/ft"/>
+			<xsd:enumeration value="lbf/in"/>
+			<xsd:enumeration value="mN/km"/>
+			<xsd:enumeration value="mN/m"/>
+			<xsd:enumeration value="pdl/cm"/>
+			<xsd:enumeration value="tonfUK/ft"/>
+			<xsd:enumeration value="tonfUS/ft"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ForcePerVolumeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:forcePerVolumeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="N/m3"/>
+			<xsd:enumeration value="atm/100m"/>
+			<xsd:enumeration value="atm/m"/>
+			<xsd:enumeration value="bar/km"/>
+			<xsd:enumeration value="bar/m"/>
+			<xsd:enumeration value="GPa/cm"/>
+			<xsd:enumeration value="kPa/100m"/>
+			<xsd:enumeration value="kPa/m"/>
+			<xsd:enumeration value="lbf/ft3"/>
+			<xsd:enumeration value="lbf/galUS"/>
+			<xsd:enumeration value="MPa/m"/>
+			<xsd:enumeration value="psi/ft"/>
+			<xsd:enumeration value="psi/100ft"/>
+			<xsd:enumeration value="psi/kft"/>
+			<xsd:enumeration value="psi/m"/>
+			<xsd:enumeration value="Pa/m"/>
+			<xsd:enumeration value="atm/ft"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="IlluminanceUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:illuminanceUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="lx"/>
+			<xsd:enumeration value="lm/m2"/>
+			<xsd:enumeration value="footcandle"/>
+			<xsd:enumeration value="klx"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="LengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:lengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m"/>
+			<xsd:enumeration value="angstrom"/>
+			<xsd:enumeration value="chBnA"/>
+			<xsd:enumeration value="chBnB"/>
+			<xsd:enumeration value="chCla"/>
+			<xsd:enumeration value="chSe"/>
+			<xsd:enumeration value="chUS"/>
+			<xsd:enumeration value="cm"/>
+			<xsd:enumeration value="dm"/>
+			<xsd:enumeration value="fathom"/>
+			<xsd:enumeration value="fm"/>
+			<xsd:enumeration value="ft"/>
+			<xsd:enumeration value="ftBnA"/>
+			<xsd:enumeration value="ftBnB"/>
+			<xsd:enumeration value="ftBr(65)"/>
+			<xsd:enumeration value="ftCla"/>
+			<xsd:enumeration value="ftGC"/>
+			<xsd:enumeration value="ftInd"/>
+			<xsd:enumeration value="ftInd(37)"/>
+			<xsd:enumeration value="ftInd(62)"/>
+			<xsd:enumeration value="ftInd(75)"/>
+			<xsd:enumeration value="ftMA"/>
+			<xsd:enumeration value="ftSe"/>
+			<xsd:enumeration value="ftUS"/>
+			<xsd:enumeration value="in"/>
+			<xsd:enumeration value="in/10"/>
+			<xsd:enumeration value="in/16"/>
+			<xsd:enumeration value="in/32"/>
+			<xsd:enumeration value="in/64"/>
+			<xsd:enumeration value="inUS"/>
+			<xsd:enumeration value="km"/>
+			<xsd:enumeration value="lkBnA"/>
+			<xsd:enumeration value="lkBnB"/>
+			<xsd:enumeration value="lkCla"/>
+			<xsd:enumeration value="lkSe"/>
+			<xsd:enumeration value="lkUS"/>
+			<xsd:enumeration value="mGer"/>
+			<xsd:enumeration value="mi"/>
+			<xsd:enumeration value="mil"/>
+			<xsd:enumeration value="miUS"/>
+			<xsd:enumeration value="mm"/>
+			<xsd:enumeration value="Mm"/>
+			<xsd:enumeration value="nautmi"/>
+			<xsd:enumeration value="nm"/>
+			<xsd:enumeration value="pm"/>
+			<xsd:enumeration value="um"/>
+			<xsd:enumeration value="yd"/>
+			<xsd:enumeration value="ydBnA"/>
+			<xsd:enumeration value="ydBnB"/>
+			<xsd:enumeration value="ydCla"/>
+			<xsd:enumeration value="ydIm"/>
+			<xsd:enumeration value="ydInd"/>
+			<xsd:enumeration value="ydInd(37)"/>
+			<xsd:enumeration value="ydInd(62)"/>
+			<xsd:enumeration value="ydInd(75)"/>
+			<xsd:enumeration value="ydSe"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="LengthPerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:lengthPerLengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="ft/100ft"/>
+			<xsd:enumeration value="ft/ft"/>
+			<xsd:enumeration value="ft/in"/>
+			<xsd:enumeration value="ft/m"/>
+			<xsd:enumeration value="ft/mi"/>
+			<xsd:enumeration value="km/cm"/>
+			<xsd:enumeration value="m/30m"/>
+			<xsd:enumeration value="m/cm"/>
+			<xsd:enumeration value="m/km"/>
+			<xsd:enumeration value="m/m"/>
+			<xsd:enumeration value="mi/in"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-22, Change=Deleted-type:magneticFieldStrengthUom</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:simpleType name="MagneticInductionUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:magneticInductionUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="T"/>
+			<xsd:enumeration value="gauss"/>
+			<xsd:enumeration value="mT"/>
+			<xsd:enumeration value="mgauss"/>
+			<xsd:enumeration value="nT"/>
+			<xsd:enumeration value="uT"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="MassConcentrationUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:massConcentrationUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Euc"/>
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="g/kg"/>
+			<xsd:enumeration value="kg/kg"/>
+			<xsd:enumeration value="kg/sack94"/>
+			<xsd:enumeration value="mg/kg"/>
+			<xsd:enumeration value="permil"/>
+			<xsd:enumeration value="ppdk"/>
+			<xsd:enumeration value="ppk"/>
+			<xsd:enumeration value="ppm"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="MassUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:massUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="kg"/>
+			<xsd:enumeration value="ag"/>
+			<xsd:enumeration value="ct"/>
+			<xsd:enumeration value="cwtUK"/>
+			<xsd:enumeration value="cwtUS"/>
+			<xsd:enumeration value="g"/>
+			<xsd:enumeration value="grain"/>
+			<xsd:enumeration value="klbm"/>
+			<xsd:enumeration value="lbm"/>
+			<xsd:enumeration value="Mg"/>
+			<xsd:enumeration value="mg"/>
+			<xsd:enumeration value="oz(av)"/>
+			<xsd:enumeration value="oz(troy)"/>
+			<xsd:enumeration value="ozm"/>
+			<xsd:enumeration value="sack94"/>
+			<xsd:enumeration value="t"/>
+			<xsd:enumeration value="tonUK"/>
+			<xsd:enumeration value="tonUS"/>
+			<xsd:enumeration value="ug"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="MassPerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:massPerLengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="kg/m"/>
+			<xsd:enumeration value="klbm/in"/>
+			<xsd:enumeration value="lbm/ft"/>
+			<xsd:enumeration value="Mg/in"/>
+			<xsd:enumeration value="kg.m/cm2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="MomentOfForceUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:momentOfForceUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="J"/>
+			<xsd:enumeration value="dN.m"/>
+			<xsd:enumeration value="daN.m"/>
+			<xsd:enumeration value="ft.lbf"/>
+			<xsd:enumeration value="kft.lbf"/>
+			<xsd:enumeration value="kgf.m"/>
+			<xsd:enumeration value="kN.m"/>
+			<xsd:enumeration value="lbf.ft"/>
+			<xsd:enumeration value="lbf.in"/>
+			<xsd:enumeration value="lbm.ft2/s2"/>
+			<xsd:enumeration value="N.m"/>
+			<xsd:enumeration value="pdl.ft"/>
+			<xsd:enumeration value="tonfUS.ft"/>
+			<xsd:enumeration value="tonfUS.mi"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="PerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:perLengthUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="1/m"/>
+			<xsd:enumeration value="1/angstrom"/>
+			<xsd:enumeration value="1/cm"/>
+			<xsd:enumeration value="1/ft"/>
+			<xsd:enumeration value="1/in"/>
+			<xsd:enumeration value="1/mi"/>
+			<xsd:enumeration value="1/mm"/>
+			<xsd:enumeration value="1/nm"/>
+			<xsd:enumeration value="1/yd"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="PermeabilityRockUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="D"/>
+			<xsd:enumeration value="mD"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="PlaneAngleUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:planeAngleUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="rad"/>
+			<xsd:enumeration value="c"/>
+			<xsd:enumeration value="ccgr"/>
+			<xsd:enumeration value="cgr"/>
+			<xsd:enumeration value="dega"/>
+			<xsd:enumeration value="gon"/>
+			<xsd:enumeration value="gr"/>
+			<xsd:enumeration value="Grad"/>
+			<xsd:enumeration value="krad"/>
+			<xsd:enumeration value="mila"/>
+			<xsd:enumeration value="mina"/>
+			<xsd:enumeration value="mrad"/>
+			<xsd:enumeration value="Mrad"/>
+			<xsd:enumeration value="mseca"/>
+			<xsd:enumeration value="seca"/>
+			<xsd:enumeration value="urad"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="PowerUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:powerUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="W"/>
+			<xsd:enumeration value="ch"/>
+			<xsd:enumeration value="CV"/>
+			<xsd:enumeration value="ehp"/>
+			<xsd:enumeration value="GW"/>
+			<xsd:enumeration value="hhp"/>
+			<xsd:enumeration value="hp"/>
+			<xsd:enumeration value="kcal/h"/>
+			<xsd:enumeration value="kW"/>
+			<xsd:enumeration value="MJ/a"/>
+			<xsd:enumeration value="MW"/>
+			<xsd:enumeration value="mW"/>
+			<xsd:enumeration value="nW"/>
+			<xsd:enumeration value="ton of refrig"/>
+			<xsd:enumeration value="TW"/>
+			<xsd:enumeration value="uW"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="PressureUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:pressureUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Pa"/>
+			<xsd:enumeration value="at"/>
+			<xsd:enumeration value="atm"/>
+			<xsd:enumeration value="bar"/>
+			<xsd:enumeration value="cmH2O(4degC)"/>
+			<xsd:enumeration value="dyne/cm2"/>
+			<xsd:enumeration value="GPa"/>
+			<xsd:enumeration value="hbar"/>
+			<xsd:enumeration value="inH2O(39.2F)"/>
+			<xsd:enumeration value="inH2O(60F)"/>
+			<xsd:enumeration value="inHg(32F)"/>
+			<xsd:enumeration value="inHg(60F)"/>
+			<xsd:enumeration value="kgf/cm2"/>
+			<xsd:enumeration value="kgf/mm2"/>
+			<xsd:enumeration value="kN/m2"/>
+			<xsd:enumeration value="kPa"/>
+			<xsd:enumeration value="kpsi"/>
+			<xsd:enumeration value="lbf/ft2"/>
+			<xsd:enumeration value="lbf/100ft2"/>
+			<xsd:enumeration value="lbf/in2"/>
+			<xsd:enumeration value="mbar"/>
+			<xsd:enumeration value="mmHg(0C)"/>
+			<xsd:enumeration value="mPa"/>
+			<xsd:enumeration value="MPa"/>
+			<xsd:enumeration value="Mpsi"/>
+			<xsd:enumeration value="N/m2"/>
+			<xsd:enumeration value="N/mm2"/>
+			<xsd:enumeration value="Pa(g)"/>
+			<xsd:enumeration value="pPa"/>
+			<xsd:enumeration value="psi"/>
+			<xsd:enumeration value="psia"/>
+			<xsd:enumeration value="psig"/>
+			<xsd:enumeration value="tonfUS/ft2"/>
+			<xsd:enumeration value="tonfUS/in2"/>
+			<xsd:enumeration value="torr"/>
+			<xsd:enumeration value="ubar"/>
+			<xsd:enumeration value="umHg(0C)"/>
+			<xsd:enumeration value="uPa"/>
+			<xsd:enumeration value="upsi"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="RelativePowerUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:relativePowerUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="Btu/bhp.hr"/>
+			<xsd:enumeration value="W/kW"/>
+			<xsd:enumeration value="W/W"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="SpecificHeatCapacityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="J/kg.K"/>
+			<xsd:enumeration value="Btu/lbm.degF"/>
+			<xsd:enumeration value="Btu/lbm.degR"/>
+			<xsd:enumeration value="cal/g.K"/>
+			<xsd:enumeration value="J/g.K"/>
+			<xsd:enumeration value="kcal/kg.degC"/>
+			<xsd:enumeration value="kJ/kg.K"/>
+			<xsd:enumeration value="kW.h/kg.degC"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="SpecificVolumeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:specificVolumeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m3/kg"/>
+			<xsd:enumeration value="bbl/tonUK"/>
+			<xsd:enumeration value="bbl/tonUS"/>
+			<xsd:enumeration value="cm3/g"/>
+			<xsd:enumeration value="dm3/kg"/>
+			<xsd:enumeration value="dm3/t"/>
+			<xsd:enumeration value="ft3/kg"/>
+			<xsd:enumeration value="ft3/lbm"/>
+			<xsd:enumeration value="ft3/sack94"/>
+			<xsd:enumeration value="galUS/sack94"/>
+			<xsd:enumeration value="galUK/lbm"/>
+			<xsd:enumeration value="galUS/lbm"/>
+			<xsd:enumeration value="galUS/tonUK"/>
+			<xsd:enumeration value="galUS/tonUS"/>
+			<xsd:enumeration value="L/100kg"/>
+			<xsd:enumeration value="L/kg"/>
+			<xsd:enumeration value="L/t"/>
+			<xsd:enumeration value="L/tonUK"/>
+			<xsd:enumeration value="m3/g"/>
+			<xsd:enumeration value="m3/t"/>
+			<xsd:enumeration value="m3/tonUK"/>
+			<xsd:enumeration value="m3/tonUS"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="StandardVolumeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="scm(15C)"/>
+			<xsd:enumeration value="scm(0C)"/>
+			<xsd:enumeration value="Gsm3"/>
+			<xsd:enumeration value="ksm3"/>
+			<xsd:enumeration value="MMscf(60F)"/>
+			<xsd:enumeration value="MMscm(15C)"/>
+			<xsd:enumeration value="MMstb(60F)"/>
+			<xsd:enumeration value="Mscf(60F)"/>
+			<xsd:enumeration value="Mstb(60F)"/>
+			<xsd:enumeration value="scf(60F)"/>
+			<xsd:enumeration value="stb(60F)"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                        -->
+	<xsd:simpleType name="StandardVolumePerTimeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="scf(60F)/d"/>
+			<xsd:enumeration value="scm(15C)/s"/>
+			<xsd:enumeration value="scm(15C)/d"/>
+			<xsd:enumeration value="stb(60F)/d"/>
+			<xsd:enumeration value="ksm3/d"/>
+			<xsd:enumeration value="Mscm(15C)/d"/>
+			<xsd:enumeration value="MMscm(15C)/d"/>
+			<xsd:enumeration value="Mstb(60F)/d"/>
+			<xsd:enumeration value="MMstb(60F)/d"/>
+			<xsd:enumeration value="Mscf(60F)/d"/>
+			<xsd:enumeration value="MMscf(60F)/d"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ThermalConductivityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="W/m.K"/>
+			<xsd:enumeration value="Btu/hr.ft.degF"/>
+			<xsd:enumeration value="cal/h.cm.degC"/>
+			<xsd:enumeration value="kcal/h.m.degC"/>
+			<xsd:enumeration value="cal/s.cm.degC"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ThermalVolumetricExpansionUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="1/K"/>
+			<xsd:enumeration value="ppm/degC"/>
+			<xsd:enumeration value="ppm/degF"/>
+			<xsd:enumeration value="1/degC"/>
+			<xsd:enumeration value="1/degF"/>
+			<xsd:enumeration value="1/degR"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="ThermodynamicTemperatureUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:thermodynamicTemperatureUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="K"/>
+			<xsd:enumeration value="degC"/>
+			<xsd:enumeration value="degF"/>
+			<xsd:enumeration value="degR"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="TimeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:timeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="s"/>
+			<xsd:enumeration value="a"/>
+			<xsd:enumeration value="cs"/>
+			<xsd:enumeration value="d"/>
+			<xsd:enumeration value="Ga"/>
+			<xsd:enumeration value="h"/>
+			<xsd:enumeration value="100s"/>
+			<xsd:enumeration value="Ma"/>
+			<xsd:enumeration value="min"/>
+			<xsd:enumeration value="ms"/>
+			<xsd:enumeration value="ms/2"/>
+			<xsd:enumeration value="ns"/>
+			<xsd:enumeration value="ps"/>
+			<xsd:enumeration value="us"/>
+			<xsd:enumeration value="wk"/>
+			<xsd:enumeration value="100ka"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="VelocityUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:velocityUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m/s"/>
+			<xsd:enumeration value="cm/a"/>
+			<xsd:enumeration value="cm/s"/>
+			<xsd:enumeration value="dm/s"/>
+			<xsd:enumeration value="ft/d"/>
+			<xsd:enumeration value="ft/h"/>
+			<xsd:enumeration value="ft/min"/>
+			<xsd:enumeration value="ft/ms"/>
+			<xsd:enumeration value="ft/s"/>
+			<xsd:enumeration value="ft/us"/>
+			<xsd:enumeration value="in/a"/>
+			<xsd:enumeration value="in/min"/>
+			<xsd:enumeration value="in/s"/>
+			<xsd:enumeration value="kft/h"/>
+			<xsd:enumeration value="kft/s"/>
+			<xsd:enumeration value="km/h"/>
+			<xsd:enumeration value="km/s"/>
+			<xsd:enumeration value="knot"/>
+			<xsd:enumeration value="m/d"/>
+			<xsd:enumeration value="m/h"/>
+			<xsd:enumeration value="m/min"/>
+			<xsd:enumeration value="m/ms"/>
+			<xsd:enumeration value="mi/h"/>
+			<xsd:enumeration value="mil/yr"/>
+			<xsd:enumeration value="mm/a"/>
+			<xsd:enumeration value="mm/s"/>
+			<xsd:enumeration value="nm/s"/>
+			<xsd:enumeration value="um/s"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="VolumeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:volumeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m3"/>
+			<xsd:enumeration value="acre.ft"/>
+			<xsd:enumeration value="bbl"/>
+			<xsd:enumeration value="bcf"/>
+			<xsd:enumeration value="cm3"/>
+			<xsd:enumeration value="dm3"/>
+			<xsd:enumeration value="flozUK"/>
+			<xsd:enumeration value="flozUS"/>
+			<xsd:enumeration value="ft3"/>
+			<xsd:enumeration value="galUK"/>
+			<xsd:enumeration value="galUS"/>
+			<xsd:enumeration value="ha.m"/>
+			<xsd:enumeration value="hL"/>
+			<xsd:enumeration value="in3"/>
+			<xsd:enumeration value="1000ft3"/>
+			<xsd:enumeration value="km3"/>
+			<xsd:enumeration value="L"/>
+			<xsd:enumeration value="Mbbl"/>
+			<xsd:enumeration value="Mcf"/>
+			<xsd:enumeration value="M(ft3)"/>
+			<xsd:enumeration value="mi3"/>
+			<xsd:enumeration value="mL"/>
+			<xsd:enumeration value="M(m3)"/>
+			<xsd:enumeration value="mm3"/>
+			<xsd:enumeration value="MMbbl"/>
+			<xsd:enumeration value="ptUK"/>
+			<xsd:enumeration value="ptUS"/>
+			<xsd:enumeration value="qtUK"/>
+			<xsd:enumeration value="qtUS"/>
+			<xsd:enumeration value="tcf"/>
+			<xsd:enumeration value="um2.m"/>
+			<xsd:enumeration value="yd3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="VolumeFlowRateUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:volumeFlowRateUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="m3/s"/>
+			<xsd:enumeration value="bbl/d"/>
+			<xsd:enumeration value="bbl/hr"/>
+			<xsd:enumeration value="bbl/min"/>
+			<xsd:enumeration value="cm3/30min"/>
+			<xsd:enumeration value="cm3/h"/>
+			<xsd:enumeration value="cm3/min"/>
+			<xsd:enumeration value="cm3/s"/>
+			<xsd:enumeration value="dm3/s"/>
+			<xsd:enumeration value="ft3/d"/>
+			<xsd:enumeration value="ft3/h"/>
+			<xsd:enumeration value="ft3/min"/>
+			<xsd:enumeration value="ft3/s"/>
+			<xsd:enumeration value="galUK/d"/>
+			<xsd:enumeration value="galUK/hr"/>
+			<xsd:enumeration value="galUK/min"/>
+			<xsd:enumeration value="galUS/d"/>
+			<xsd:enumeration value="galUS/hr"/>
+			<xsd:enumeration value="galUS/min"/>
+			<xsd:enumeration value="kbbl/d"/>
+			<xsd:enumeration value="1000ft3/d"/>
+			<xsd:enumeration value="1000m3/d"/>
+			<xsd:enumeration value="1000m3/h"/>
+			<xsd:enumeration value="L/h"/>
+			<xsd:enumeration value="L/min"/>
+			<xsd:enumeration value="L/s"/>
+			<xsd:enumeration value="m3/d"/>
+			<xsd:enumeration value="m3/h"/>
+			<xsd:enumeration value="m3/min"/>
+			<xsd:enumeration value="Mbbl/d"/>
+			<xsd:enumeration value="M(ft3)/d"/>
+			<xsd:enumeration value="M(m3)/d"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="VolumePerLengthUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="bblPft"/>
+			<xsd:enumeration value="bblPin"/>
+			<xsd:enumeration value="bblPmi"/>
+			<xsd:enumeration value="dm3P100km"/>
+			<xsd:enumeration value="dm3Pkm(100)"/>
+			<xsd:enumeration value="dm3Pm"/>
+			<xsd:enumeration value="ft3Pft"/>
+			<xsd:enumeration value="galUKPmi"/>
+			<xsd:enumeration value="galUSPft"/>
+			<xsd:enumeration value="galUSPmi"/>
+			<xsd:enumeration value="in3Pft"/>
+			<xsd:enumeration value="LP100km"/>
+			<xsd:enumeration value="LPkm(100)"/>
+			<xsd:enumeration value="LPm"/>
+			<xsd:enumeration value="m3Pkm"/>
+			<xsd:enumeration value="m3Pm"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="VolumePerVolumeUom">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:volumePerVolumeUom</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum">
+			<xsd:enumeration value="Euc"/>
+			<xsd:enumeration value="%"/>
+			<xsd:enumeration value="permil"/>
+			<xsd:enumeration value="ppdk"/>
+			<xsd:enumeration value="ppk"/>
+			<xsd:enumeration value="ppm"/>
+			<xsd:enumeration value="bbl/acre.ft"/>
+			<xsd:enumeration value="bbl/bbl"/>
+			<xsd:enumeration value="bbl/ft3"/>
+			<xsd:enumeration value="bbl/100bbl"/>
+			<xsd:enumeration value="bbl/k(ft3)"/>
+			<xsd:enumeration value="bbl/M(ft3)"/>
+			<xsd:enumeration value="cm3/cm3"/>
+			<xsd:enumeration value="cm3/m3"/>
+			<xsd:enumeration value="dm3/m3"/>
+			<xsd:enumeration value="ft3/bbl"/>
+			<xsd:enumeration value="ft3/ft3"/>
+			<xsd:enumeration value="galUS/kgalUS"/>
+			<xsd:enumeration value="galUK/kgalUK"/>
+			<xsd:enumeration value="galUK/ft3"/>
+			<xsd:enumeration value="galUK/Mbbl"/>
+			<xsd:enumeration value="galUS/bbl"/>
+			<xsd:enumeration value="galUS/10bbl"/>
+			<xsd:enumeration value="galUS/ft3"/>
+			<xsd:enumeration value="galUS/Mbbl"/>
+			<xsd:enumeration value="1000ft3/bbl"/>
+			<xsd:enumeration value="ksm3/sm3"/>
+			<xsd:enumeration value="L/10bbl"/>
+			<xsd:enumeration value="L/m3"/>
+			<xsd:enumeration value="m3/ha.m"/>
+			<xsd:enumeration value="m3/m3"/>
+			<xsd:enumeration value="M(ft3)/acre.ft"/>
+			<xsd:enumeration value="mL/galUK"/>
+			<xsd:enumeration value="mL/galUS"/>
+			<xsd:enumeration value="mL/mL"/>
+			<xsd:enumeration value="MMbbl/acre.ft"/>
+			<xsd:enumeration value="MMscf60/stb60"/>
+			<xsd:enumeration value="Mscf60/stb60"/>
+			<xsd:enumeration value="ptUK/Mbbl"/>
+			<xsd:enumeration value="ptUS/10bbl"/>
+			<xsd:enumeration value="pu"/>
+			<xsd:enumeration value="scm15/stb60"/>
+			<xsd:enumeration value="sm3/ksm3"/>
+			<xsd:enumeration value="sm3/sm3"/>
+			<xsd:enumeration value="stb60/MMscf60"/>
+			<xsd:enumeration value="stb60/MMscm15"/>
+			<xsd:enumeration value="stb60/Mscf60"/>
+			<xsd:enumeration value="stb60/Mscm15"/>
+			<xsd:enumeration value="stb60/scm15"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+</xsd:schema>

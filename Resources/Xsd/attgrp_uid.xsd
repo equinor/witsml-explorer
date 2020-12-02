@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<!--                                                         -->
+	<xsd:attributeGroup name="attgrp_uid">
+		<xsd:attribute name="uid" type="witsml:uidString" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>The unique identifier of a container element.
+				This attribute is generally required within the context of a WITSML server.
+				There should be no assumption as to the semantic content of this attribute.
+				This should only be used with recurring container types (i.e., maxOccurs greater than one).
+				The value is only required to be unique within the context of the nearest recurring parent element.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<!--                                                         -->
+</xsd:schema>

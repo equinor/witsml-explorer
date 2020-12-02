@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:documentation>
+		These types represent numeric quantities with a unit of measure implemented as a uom attribute. The units are gathered into single quantity class which represents a group of units. The unit symbols appropriate for the class are captured as enumerated lists. The implementation of this is to develop a type for each uom class that is a union of a standard list, the unknown value, and the Other: extension. Additional files will contain these structures.
+    		</xsd:documentation>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_quantityClass.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="accelerationLinearMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:AccelerationLinearUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:accelerationLinearUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="anglePerLengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:AnglePerLengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:anglePerLengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="anglePerTimeMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:AnglePerTimeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:anglePerTimeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="areaMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:AreaUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:areaUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="areaPerAreaMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:AreaPerAreaUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:areaPerAreaUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="compressibilityMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:CompressibilityUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="densityMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:DensityUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:densityUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="dimensionlessMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:DimensionlessUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:dimensionlessUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="dynamicViscosityMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:DynamicViscosityUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:dynamicViscosityUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="electricCurrentMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ElectricCurrentUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:electricCurrentUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="electricPotentialMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ElectricPotentialUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:electricPotentialUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-22, Change=Deleted-type:energyPerAreaMeasure</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:complexType name="equivalentPerMassMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:EquivalentPerMassUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:equivalentPerMassUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="forceMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ForceUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:forceUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="forcePerLengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ForcePerLengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:forcePerLengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="forcePerVolumeMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ForcePerVolumeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:forcePerVolumeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="illuminanceMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:IlluminanceUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:illuminanceUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="lengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:LengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:lengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="lengthPerLengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:LengthPerLengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:lengthPerLengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-22, Change=Deleted-type:magneticFieldStrengthMeasure</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<xsd:complexType name="magneticInductionMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MagneticInductionUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:magneticInductionUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="massConcentrationMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MassConcentrationUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:massConcentrationUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="massMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MassUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:massUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="massPerLengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MassPerLengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:massPerLengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="momentOfForceMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MomentOfForceUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:momentOfForceUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="perLengthMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PerLengthUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:perLengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="permeabilityRockMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PermeabilityRockUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="planeAngleMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PlaneAngleUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:planeAngleUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="powerMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PowerUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:powerUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="pressureMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PressureUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:pressureUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="relativePowerMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:RelativePowerUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:relativePowerUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="specificHeatCapacityMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:SpecificHeatCapacityUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="specificVolumeMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:SpecificVolumeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:specificVolumeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="standardVolumeMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:StandardVolumeUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                        -->
+	<xsd:complexType name="standardVolumePerTimeMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:StandardVolumePerTimeUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                        -->
+	<xsd:complexType name="thermalConductivityMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ThermalConductivityUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                        -->
+	<xsd:complexType name="thermalVolumetricExpansionMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ThermalVolumetricExpansionUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="thermodynamicTemperatureMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:ThermodynamicTemperatureUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:thermodynamicTemperatureUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="timeMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:TimeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:timeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="velocityMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:VelocityUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:velocityUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="volumeMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:VolumeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:volumeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="volumeFlowRateMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:VolumeFlowRateUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:volumeFlowRateUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="volumePerLengthMeasure">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-010, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:VolumePerLengthUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="volumePerVolumeMeasure">
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:VolumePerVolumeUom" use="required">
+					<xsd:annotation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:volumePerVolumeUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

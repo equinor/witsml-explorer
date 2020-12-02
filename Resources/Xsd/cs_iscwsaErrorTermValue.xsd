@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series"
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:abs="http://www.energistics.org/schemas/abstract"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaErrorTermValue"> 
+		<xsd:annotation>
+			<xsd:documentation>The instantiation of an error term in an error model.
+			The content of this element (a number) is the variance scaling factor of the term in the model.
+			</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="term" type="witsml:refNameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A pointer to the errorTerm represented by this value.
+					This term must exist in the toolErrorTermSet referenced by the parent of this node.
+					The same term may only be referenced once in the model.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="prop" type="witsml:ErrorPropagationMode" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This is the propagation mode for this term in this model.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bias" type="xsd:double" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The mean or expected value of the variance.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="value" type="witsml:measureOrQuantity" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The value of the error term in this model.
+					The unit of measure must be in the set allowed by the 
+					measure class of the referenced error term.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comment" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A textual comment about this error term value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the node.
+				Since the name of the term must be unique, a best practice is to derive the uid from 
+				the name (e.g., by changing space to underscore).</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

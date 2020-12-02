@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_inventory">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Inventory Component Schema </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:str32" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name or type of inventory item.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:choice>
+				<xsd:element name="itemWtPerUnit" type="witsml:massMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Weight per item unit.  </xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="itemVolPerUnit" type="witsml:volumeMeasure" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Volume per item unit.  </xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=41, Change=Made-mandatory-choice</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="pricePerUnit" type="witsml:cost" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Price per item unit, assume same currency for all items.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyStart" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Start quantity for report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyAdjustment" type="witsml:integerCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Daily quantity adjustment/correction.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyReceived" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Quantity received at site.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyReturned" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Quantity returned to base from site.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyUsed" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Quantity used for the report period  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="costItem" type="witsml:cost" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Cost for the product for the interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="qtyOnLocation" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Amount of item remaining on location after all adjustments
+					for the report interval.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the inventory.  </xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

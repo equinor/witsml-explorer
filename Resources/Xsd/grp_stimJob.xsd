@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series"
+	xmlns:abs="http://www.energistics.org/schemas/abstract" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_stimJobInterval.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_stimJob">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML well stimulation Job.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="kind" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Type of well stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="commodityCode" type="witsml:PIDXCommodityCode" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>UNSPSC(Segment 71) Commodity Code from Oil and gas extraction and 
+					production enhancement services family.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="serviceCompany" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of the well stimulation contractor.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="supervisor" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Name of service company supervisor.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="apiNumber" type="witsml:str32" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The API or equivalent identifier number for the well.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="customerName" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Customer or company name.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimArrival" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Date and time at which the stimulation contractor arrives on location.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Start date and time of well stimulation Job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimEnd" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Ending date and time of well stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalPumpTime" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The total pumping time.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxJobPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum pressure encountered during the job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxFluidRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum job fluid pumping rate of any treatment interval of any stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="avgJobPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Average pressure encountered of all treatment interval of any stage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalJobVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total volume pumped for all treatments.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalProppantWt" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total weight of proppant used for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="proppantName" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Name of a proppant used for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perfBallCount" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total number of perforation balls used in the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalN2StdVolume" type="witsml:standardVolumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total volume of nitrogen used in the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalCO2Mass" type="witsml:massMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total mass of carbon dioxide used in the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpOrdered" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydraulic horsepower ordered for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hhpUsed" type="witsml:powerMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Hydraulic horsepower actually used for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="treatmentCount" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of Treatments treated during the stimulation service.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fluidEfficiency" type="witsml:volumePerVolumeMeasurePercent" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Percentage of fluid volume in the fracture at the end of pumping.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowBackPres" type="witsml:pressureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Pressure recorded on fluid returning to surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowBackRate" type="witsml:volumeFlowRateMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Rate recorded on fluid returning to surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="flowBackVolume" type="witsml:volumeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Volume recorded on fluid returning to surface.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="treatmentIntervalCount" type="witsml:nonNegativeCount" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Number of treatment interval (zones), treated during the stimulation service.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bottomholeStaticTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Bottomhole static temperature for the job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="treatingBottomholeTemperature" type="witsml:thermodynamicTemperatureMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Expected or calculated bottomhole treating temperature for the job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="jobInterval" type="witsml:cs_stimJobInterval" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>An interval for the stimulation job.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<!--                                                            -->
+</xsd:schema>

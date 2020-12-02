@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_rigResponse">
+		<xsd:annotation>
+			<xsd:documentation>WITSML - Operations Rig Response Component Schema</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="anchorTension" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Vector of the tension on anchors #1 to #n.  
+					For this usage the name attribute is irrelevant because the semantics are carried in the element name.
+					The index attribute represents which anchor is being described.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=33, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="anchorAngle" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Vector of the angles of the anchors #1 to #n.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigHeading" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction, relative to true north, to which the rig is facing.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigHeave" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum amplitude of the vertical motion of the rig.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigPitchAngle" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measure of the fore-aft rotational movement of the rig due the combined 
+				effects of wind and waves; measured as the angle from horizontal  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="rigRollAngle" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Measure of the side-to-side rotational movement of the rig due the combined 
+				effects of wind and waves; measured as the angle from vertical  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="riserAngle" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Angle of the marine riser with the vertical.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="riserDirection" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction of the marine riser.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="riserTension" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Tension of the marine riser.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="variableDeckLoad" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current temporary load on the rig deck.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="totalDeckLoad" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Total deck load.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="guideBaseAngle" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction of the guide base.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ballJointAngle" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Angle between riser and blow out preventer at the flex joint.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ballJointDirection" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Direction of the ball joint.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="offsetRig" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Horizontal displacement of the rig relative to the wellhead.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="loadLeg1" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Load carried by leg of jackup.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="loadLeg2" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Load carried by leg of jackup.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="loadLeg3" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Load carried by leg of jackup.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="loadLeg4" type="witsml:forceMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Load carried by leg of jackup.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="penetrationLeg1" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Penetration of leg into seabed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="penetrationLeg2" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Penetration of leg into seabed.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="penetrationLeg3" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Penetration of leg into seabed  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="penetrationLeg4" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Penetration of leg into seabed  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dispRig" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Vessel displacement (in water).  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="meanDraft" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Mean draft at mid-section.  </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

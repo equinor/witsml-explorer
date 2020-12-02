@@ -1,0 +1,904 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_measureType.xsd"/>
+	<xsd:include schemaLocation="typ_catalog.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:annotation>
+		<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Deleted-type:indexCurve</xsd:appinfo>
+		<xsd:appinfo>Modified-in-version=1.4.1, By-issue=27, Change=Deleted-type:timestampedDescriptionString</xsd:appinfo>
+	</xsd:annotation>
+	<!--                                                         -->
+	<!-- ================ DATE AND TIME TYPES  ================= -->
+	<!--                                                         -->
+	<xsd:simpleType name="date" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A julian date.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractDate"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="timestamp" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A date with a time of day and a mandatory time zone offset.
+			This must captute the correct date-time relative to UTC. It is not necessary to 
+			use a local time zone because software may convert the date-time to a different 
+			local time zone (while retaining correct date-time relative to UTC).
+			See acquisitionTmeZone in commonData for the original time zone of times in an object.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Modified-description</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Modified-constraint</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractDateTime">
+			<xsd:pattern value=".+T.+[Z+\-].*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="timeZone" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A time zone conforming to the XSD:dateTime specification.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Changed-type-from:abstractString</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTimeZone"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="timestampedTimeZone" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A local time zone conforming to the XSD:dateTime specification.
+			The dTim attribute can capture when the local time zone changed.
+			The use of this type is generally related to a specific (set of) date and time
+			for which the original time zone needs to be captured.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-39, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractTimeZone">
+				<xsd:attribute name="dTim" type="witsml:timestamp" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The date and time when this local time zone became active.
+						This value must be defined on the second and subsequent occurrences.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="calendarYear" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A calendar year (CCYY) in the gregorian calendar.
+			This type is meant to captute original invariant values. 
+			It is not intended to be used in "time math" where knowledge of the time zone is needed.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-53, Change=Changed-type-from:abstractYear</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-53, Change=Modified-constraint</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractInt">
+			<xsd:minInclusive value="1000"/>
+			<xsd:maxInclusive value="9999"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- =============== MISCELLANEOUS TYPES  ================== -->
+	<!--                                                         -->
+	<xsd:simpleType name="logicalBoolean" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Values of "true" (or "1") and "false" (or "0").</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractBoolean"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="yAxisAzimuth" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The angle of a Y axis from North.
+			This is a variation of planeAngleMeasure with an 
+			attribute defining the direction of north.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PlaneAngleUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the azimuth value.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:planeAngleUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="northDirection" type="witsml:AziRef" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Specifies the direction to be considered North for the y axis.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="volumePerVolumeMeasurePercent" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A volume per volume measure that is constrained to a unit of percent.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:PercentUom" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="unitlessQuantity" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A unitless quantity. This should not 
+			be confused with a dimensionless measure.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractDouble"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="measureOrQuantity" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A measure with a uom or a quantity (without a uom).
+			This should not be used except in situations where the underlying class of data is 
+			captured elsewhere. For example, via a measure class.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:uomString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure for the quantity.
+						This value must conform to the values allowed by a measure class. 
+						If the value is a measure then the uom must be specified.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="genericMeasure" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A generic measure type.
+			This should not be used except in situations where the underlying class of data is 
+			captured elsewhere. For example, for a log curve.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:uomString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure for the quantity.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-85, Change=Made-mandatory</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name='ratioGenericMeasure' final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Representation of a number as a double, possibly qualified as a ratio of doubles.	
+			Ratio component attributes 'numerator' and 'denominator' may be both present or both absent.	
+			When ratio component attributes are present, the ratio represented is to be used with
+			the double representation included for human readability.
+			A 'canonical' representation, according to the following rules, is suggested:
+			Only use numerator/denominator when the representation of the number as double is not 
+			sufficiently precise (i. e. causes errors of accumulation).
+			Express both numerator and denominator as integers (doubles with integer values) reduced 
+			to 'least common denominator' if possible.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:uomString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure for the quantity.
+						If for some reason a uom is not appropriate for the quantity,
+						a unit of "Euc" should be used.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name='numerator' type='witsml:unitlessQuantity' use="optional"/>
+				<xsd:attribute name='denominator' type='witsml:unitlessQuantity' use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<!-- ===================== array types ===================== -->
+	<!--                                                         -->
+	<xsd:simpleType name='listOfString' final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A representation of a list of xsd:string values,
+			restricted to strings without embedded whitespace.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Changed-type-from:str32</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:list itemType='witsml:abstractString32'/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- =========== uid and foreign key data types ============ -->
+	<!--                                                         -->
+	<xsd:simpleType name="uidString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A locally unique identifier. 
+			The value is not intended to convey any semantic content (e.g., it may be computer generated). </xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Modified-description</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUidString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="uidParentString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A unique identifier of an object parent. 
+			This should only be used for the uid of a parent object (i.e., a foreign key to another object). 
+			It should not be used for child nodes of an object.
+			The value is not intended to convey any semantic content (e.g., it may be computer generated).
+			The purpose of this type is to facilitate modifying the optionality of parentage uids in derived schemas.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-5, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUidString"/>
+	</xsd:simpleType>
+	<!--                                                     -->
+	<xsd:simpleType name="refString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A reference to the unique identifier of another element. 
+			This value represents a foreign key from one element to another.
+			The value should match the value of an attribute of type uidString.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUidString"/>
+	</xsd:simpleType>
+	<!--                                                     -->
+	<xsd:complexType name="refNameString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A reference to a name in another node of the xml hierachy.
+			This value represents a foreign key from one element to another.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="uidRef" type="witsml:refString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A reference to the unique identifier (uid attribute) in the node
+						referenced by the name value. 
+						This attribute is required within the context of a WITSML server.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="refObjectString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The value of a name element in another data-object.
+			The information in this type represents a foreign key to a data-object instance.
+			Knowledge of the type of object being referenced is defined by an attribute.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="object" type="witsml:nameString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The type of data-object being referenced (e.g., "well", "wellbore").</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="uidRef" type="witsml:refString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A reference to the unique identifier (uid attribute) in the object
+						referenced by the name value. 
+						This attribute is required within the context of a WITSML server.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="refPositiveCount" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A reference to a index value in another node of the xml hierachy.
+			This value represents a foreign key from one element to another.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractPositiveCount">
+				<xsd:attribute name="uidRef" type="witsml:refString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A reference to the unique identifier (uid attribute) in the node
+						referenced by the index value. 
+						This attribute is required within the context of a WITSML server.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                     -->
+	<xsd:simpleType name="refWellDatum" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A reference to a wellDatum in the current well. 
+			This value must match the uid value in a WellDatum. 
+			This value represents a foreign key from one element to another.
+			This is an exception to the convention that a foreign key must utilize both 
+			a human contextual name and a uid value. For messages outside the context of
+			a server then this value will commonly match the value of the name of the 
+			wellDatum (e.g., 'KB') if uids are not not used in that context.
+			This was a compromise in order to allow the coordinate structures to be simple
+			and still be usable both within the context of a server and outside the context of a server.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUidString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- =========== CONTENT SPECIFIC STRING TYPES  ============ -->
+	<!--                                                         -->
+	<xsd:simpleType name="nameString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A user assigned human recognizable contextual name of something. 
+			There should be no assumption that (interoperable) semantic information will be extracted from the name by a third party.
+			This type of value is generally not guaranteed to be unique and is not a candidate to be replaced by an enumeration.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractNameString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="commentString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A comment or remark intended for human consumption. 
+			There should be no assumption that semantics can be extracted from this field by a computer. 
+			Neither should there be an assumption that any two humans will interpret the information 
+			in the same way (i.e., it may not be interoperable).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractCommentString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="descriptionString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A textual description of something.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-33, Change=Changed-type-from:abstractString</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractDescriptionString"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="shortDescriptionString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A short textual description of something.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="64"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="timestampedCommentString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A timestamped textual description.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=25, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+  			<xsd:extension base="witsml:abstractCommentString">
+				<xsd:attribute name="dTim" type="witsml:timestamp" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="encodedValueString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A single value. The encoding may utilize 
+			any of several xsd encodings. Something external to the value must
+			define the encoding.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Changed-type-from:abstractString</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString32"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="extensionvalue" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A extension value.
+			Each standard name should document the expected maximum size. 
+			Knowledge of the semantics must be provided with the context of the usage of this type.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71 Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+  			<xsd:extension base="witsml:abstractMaximumLengthString">
+				<xsd:attribute name="uom" type="witsml:uomString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure for the value.
+						This value must conform to the values allowed by a measure class.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+  			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="kindString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A community assigned human recognizable name. 
+			This type of value is intended to be unique and is generally a candidate to be constrained to an enumerated list.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTypeEnum">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="uomString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A unit of measure acronym from the POSC unit of measure file.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUomEnum"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="schemaVersionString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The version of the schema.
+			The first level is fixed. The fourth level can vary
+			to represent on the constraints defined in enumerations and 
+			XML loader files. </xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=none, Change=Modified-constraint</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.1.1, By-issue=WCR-2012-0033, Change=Modified-pattern</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="16"/>
+			<xsd:pattern value="1\.[4-9]\.[0-9]\.([0-9]|([1-9][0-9]))"/> 
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="nameStruct" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The name of something within a naming system.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="namingSystem" type="witsml:nameString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The naming system within the name is (hopefully) unique.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="shortNameStruct" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The name of something within a naming system.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractString32">
+				<xsd:attribute name="namingSystem" type="witsml:nameString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The naming system within the name is (hopefully) unique.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="wellKnownNameStruct" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The name of something within a mandatory naming system 
+			with an optional code.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="namingSystem" type="witsml:nameString" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The naming system within the name is unique.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="code" type="witsml:kindString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A unique (short) code associated with the name.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="uncollapsedString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A textual string that retains all whitespace.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractUncollapsedString">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="iadcBearingWearCode" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>IADC bearing wear code: integer 0 - 8 or one of the letters E, F, N or X. .</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="1"/>
+			<xsd:pattern value="[0-8EFNX]"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="geodeticZoneString" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A geodetic zone with values from 1 to 60 and a required direction 
+			of "N" (North) or "S" (South). For example, "21N".</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="3"/>
+			<xsd:pattern value="([1-9]|[1-5][0-9]|60)[NS]"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="objectSequence" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Defines a sequence number and with an optional description attribute.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-025, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractPositiveCount">
+				<xsd:attribute name="description" type="witsml:descriptionString" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A description related to the sequence number.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="lithostratigraphyStruct" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>
+				The name of a lithostratigraphy, with the "kind" attribute specifying the lithostratigraphic unit-hierarchy (Group, Formation, Member or Bed).
+				The entry at each level is free text for the local lithostratigraphy at that level in the hierarchy.
+				If a single hierarchy is defined, it is assumed this is at the Formation level in the hierarchy and kind=formation should be used for the entry.
+			</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="kind" type="witsml:LithostratigraphyUnit" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The unit of lithostratigraphy.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="chronostratigraphyStruct" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The name of a chronostratigraphy, with the "kind" attribute specifying
+			the chronostratigraphic unit-hierarchy (Era, Period, Epoch, Stage).</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.1, By-issue=W-CR-043, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractNameString">
+				<xsd:attribute name="kind" type="witsml:ChronostratigraphyUnit" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>The unit of chronostratigraphy.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<!-- =========== Well Based Coordinate Types  ============== -->
+	<!--                                                         -->
+	<xsd:complexType name="measuredDepthCoord" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A measured depth coordinate in a wellbore. 
+			Positive moving from the reference datum toward the bottomhole.
+			All coordinates with the same datum (and same uom) can be considered to be in the same 
+			Coordinate Reference System and are thus directly comparable.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:MeasuredDepthUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the quantity value.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="datum" type="witsml:refWellDatum" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A pointer to the reference datum for this coordinate 
+						value as defined in WellDatum. This value is assumed to match the uid
+						value in a WellDatum.
+						If not given then the default WellDatum must be assumed.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                     -->
+	<xsd:complexType name="wellVerticalDepthCoord" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A vertical (gravity based) depth coordinate within the context of a well.
+			Positive moving downward from the reference datum. 
+			All coordinates with the same datum (and same uom) can be considered to be in the same 
+			Coordinate Reference System and are thus directly comparable.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:WellVerticalCoordinateUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the quantity value.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="datum" type="witsml:refWellDatum" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A pointer to the reference datum for this coordinate 
+						value as defined in WellDatum. 
+						If not given then the default WellDatum must be assumed.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                     -->
+	<xsd:complexType name="wellElevationCoord" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A vertical (gravity based) elevation coordinate within the context of a well.
+			Positive moving upward from the reference datum.  
+			All coordinates with the same datum (and same uom) can be considered to be in the same 
+			Coordinate Reference System and are thus directly comparable.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:WellVerticalCoordinateUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the quantity value.
+						If not given then the default unit of measure of the explicitly
+						or implicitly given datum must be assumed.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="datum" type="witsml:refWellDatum" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>A pointer to the reference datum for this coordinate 
+						value as defined in WellDatum. 
+						If not given then the default WellDatum must be assumed.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<!-- =========== USA based Coordinate Types  =============== -->
+	<!--                                                         -->
+	<xsd:simpleType name="sectionNumber" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Sections are numbered "1" through "36." 
+			Irregular sections may be designated with a single value after a decimal point.
+			USA Public Land Survey System.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:pattern value="[+]?([1-9]|[1-2][0-9]|3[0-6])\.?[0-9]?"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="publicLandSurveySystemQuarterTownship" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Designates a particular quarter of a township.
+			USA Public Land Survey System.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="12"/>
+			<xsd:pattern value="NE|NW|SW|SE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="publicLandSurveySystemQuarterSection" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Some combination of NE,NW,SW,SE,N2,S2,E2,W2,C,TRxx,LTnn.
+			USA Public Land Survey System.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="12"/>
+			<xsd:pattern value="(NE|NW|SW|SE|N2|S2|E2|W2|C|LT[0-9]{2,2}|TR[a-zA-Z0-9]{1,2}){1,3}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:complexType name="footageNorthSouth" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The distance to a one minute boundary on the north or south of a point.
+			USA Public Land Survey System.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:LengthUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the distance value.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:lengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="ref" type="witsml:NorthOrSouth" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Specifies the reference line that is the origin of the distance.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="footageEastWest" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>The distance to a one minute boundary on the east or west of a point.
+			USA Public Land Survey System.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-15, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractMeasure">
+				<xsd:attribute name="uom" type="witsml:LengthUom" use="required">
+					<xsd:annotation>
+						<xsd:documentation>The unit of measure of the distance value.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Changed-type-from:lengthUom</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="ref" type="witsml:EastOrWest" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Specifies the reference line that is the origin of the distance.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<!-- ========== CONTENT SPECIFIC INTEGER TYPES  ============ -->
+	<!--                                                         -->
+	<xsd:simpleType name="gtZeroAndLeOne" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A floating point value which is greater than zero and 
+			less than or equal to one.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractDouble">
+			<xsd:minExclusive value="0"/>
+			<xsd:maxInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="nonNegativeCount" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A non-negative integer (zero based count or index) with a maximum value of 32767 (2-bytes).
+			For items that represent "number of" something or a "sequential" count or index.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="0">
+				<xsd:annotation>
+					<xsd:documentation>This value can be zero but cannot be negative.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="positiveCount" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A positive integer (one based count or index).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractPositiveCount">
+			<xsd:minInclusive value="1">
+				<xsd:annotation>
+					<xsd:documentation>This value cannot be negative or zero.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="positiveBigCount" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A large positive integer (one based count or index) with a maximum value of 2,147,483,647 (4-bytes).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractInt">
+			<xsd:minInclusive value="1">
+				<xsd:annotation>
+					<xsd:documentation>This value cannot be negative or zero.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:minInclusive>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="integerCount" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>A positive or negative count with a maximum positive value of 2147483647 (4-bytes).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractInt"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="beaufortScaleIntegerCode" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>An estimate wind strength based on the Beaufort Wind Scale. 
+			Values range from 0 (calm) to 12 (hurricane). </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="12"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="pumpActionIntegerCode" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Pump Action: 1 = Single acting, 2 = double acting.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="1"/>
+			<xsd:maxInclusive value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="iadcIntegerCode" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>IADC codes: 0 to 8.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="8"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="levelIntegerCode" final="#all">
+		<xsd:annotation>
+			<xsd:documentation>Integer level code from 1 through 5.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractShort">
+			<xsd:minInclusive value="0"/>
+			<xsd:maxInclusive value="8"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<!-- ========== REMAINING V1.2 TYPES  ============ -->
+	<!--                                                         -->
+	<xsd:complexType name="cost" final="#all">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractDouble">
+				<xsd:attribute name="currency" type="witsml:kindString" use="optional"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="indexedObject" final="#all">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="witsml:abstractTypeEnum">
+				<xsd:attribute name="index" type="witsml:positiveCount" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Indexes things with the same name. 
+						That is the first one, the second one, etc.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="name" type="witsml:kindString" use="optional"/>
+				<xsd:attribute name="uom" type="witsml:uomString" use="optional"/>
+				<xsd:attribute name="description" type="witsml:descriptionString" use="optional"/>
+				<xsd:attributeGroup ref="witsml:attgrp_uid">
+					<xsd:annotation>
+						<xsd:documentation>Unique identifier for the node.</xsd:documentation>
+						<xsd:appinfo>Modified-in-version=1.4.1, By-issue=21, Change=Added</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:attributeGroup>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:simpleType name="str2" final="#all">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="str16" final="#all">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString">
+			<xsd:maxLength value="16"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="str32" final="#all">
+		<xsd:annotation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-44, Change=Changed-type-from:abstractString</xsd:appinfo>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-110, Change=Non-semantic</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractString32"/>
+	</xsd:simpleType>
+	<!--                                                         -->
+</xsd:schema>

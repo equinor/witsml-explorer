@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_documentFileCreation.xsd"/>
+	<xsd:include schemaLocation="cs_documentSecurityInfo.xsd"/>
+	<xsd:include schemaLocation="cs_documentAudit.xsd"/>
+	<xsd:include schemaLocation="cs_documentEvent.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_documentInfo">
+		<xsd:annotation>
+			<xsd:documentation>A  schema to capture a set of data that is 
+			relevant for many exchange documents. It includes information about the 
+			file that was created, and high-level information about the data that is 
+			being exchanged within the file.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="documentName" type="witsml:nameStruct" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An identifier for the document. This is 
+					intended to be unique within the context of the NamingSystem.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:DocumentName</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="documentAlias" type="witsml:nameStruct" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Zero or more alternate names for the document. 
+					These names do not need to be unique within the naming system.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:DocumentAlias</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="documentDate" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date of the creation of the document. 
+					This is not the same as the date that the file was created. 
+					For this date, the document is considered to be the set of 
+					information associated with this document information. 
+					For example, the document may be a seismic binset. 
+					This represents the date that the binset was created. 
+					The FileCreation information would capture the date that 
+					the XML file was created to send or exchange the binset.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:DocumentDate</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="documentClass" type="witsml:nameStruct" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A document class. Examples of classes would be a 
+					metadata classification or a set of keywords. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="fileCreationInformation" type="witsml:cs_documentFileCreation" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The information about the creation of the 
+					exchange file. This is not about the creation of the data within 
+					the file, but the creation of the file itself.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:FileCreationInformation</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="securityInformation" type="witsml:cs_documentSecurityInfo" minOccurs="0" maxOccurs="5">
+				<xsd:annotation>
+					<xsd:documentation>Information about the security to be applied to 
+					this file. More than one classification can be given.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:SecurityInformation</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="disclaimer" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A free-form string that allows a disclaimer to 
+					accompany the information.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:Disclaimer</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="auditTrail" type="witsml:cs_documentAudit" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A collection of events that can document the 
+					history of the data.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:AuditTrail</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="owner" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The owner of the data.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:Owner</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comment" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>An optional comment about the document.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-86, Change=Renamed-from:Comment</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

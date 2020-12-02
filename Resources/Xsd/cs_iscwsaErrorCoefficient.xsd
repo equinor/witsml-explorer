@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_iscwsaErrorCoefficient">
+		<xsd:annotation>
+			<xsd:documentation>Describes what survey measurement or value the error term applies to.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice>
+   				<xsd:element name="azi" type="witsml:commentString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Measured horizontal azimuth.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+   				<xsd:element name="inc" type="witsml:commentString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Measured deviation from vertical.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+   				<xsd:element name="depth" type="witsml:commentString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>Measured depth along the wellbore.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+   				<xsd:element name="tvd" type="witsml:commentString" minOccurs="1" maxOccurs="1">
+					<xsd:annotation>
+						<xsd:documentation>True Vertical Depth.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the node.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

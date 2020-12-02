@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="cs_iscwsaAuthorizationData.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaSurveyToolOperatingCondition.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaSurveyToolOperatingInterval.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaModelParameters.xsd"/>
+	<xsd:include schemaLocation="cs_iscwsaErrorTermValue.xsd"/>
+	<!--                                                         -->
+	<xsd:group name="grp_toolErrorModel">
+		<xsd:annotation>
+			<xsd:documentation>The non-contextual content of a WITSML Tool Error Model object.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=W-CR-008, Change=Added</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="authorization" type="witsml:cs_iscwsaAuthorizationData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The definitive source, authority, status and version of this model.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="typeSurveyTool" type="witsml:TypeSurveyTool" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The type of tool used for the measurements.  
+					This is the same list as defined for a trajectoryStation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="operatingCondition" type="witsml:cs_iscwsaSurveyToolOperatingCondition" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The operating condition for this tool. 
+					If not specified then stationary should be assumed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="operatingInterval" type="witsml:cs_iscwsaSurveyToolOperatingInterval" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>The operating interval for this tool. 
+					If not specified then stationary should be assumed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="modelParameters" type="witsml:cs_iscwsaModelParameters" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Values related to the tool running conditions that influence 
+					the variance generation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="useErrorTermSet" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Reference to the toolErrorTermSet object that 
+					contains the error terms used in this model.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="errorTermValue" type="witsml:cs_iscwsaErrorTermValue" minOccurs="1" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Value for an error term that is part of the model.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+</xsd:schema>

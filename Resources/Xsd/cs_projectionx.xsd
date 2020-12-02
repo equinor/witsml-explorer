@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!--                                                         -->
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="typ_dataTypes.xsd"/>
+	<!--                                                         -->
+	<xsd:complexType name="cs_projectionx">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Element Types
+			All elements except nameCRS have been deprecated. Either use a well known name of a CRS
+			or use the wellCRS reference to a gmlCoordinateReferenceSystem.</xsd:documentation>
+			<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Modified-description</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="nameCRS" type="witsml:wellKnownNameStruct" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the coordinate reference system in a particular naming system.
+					An optional short name (code) can also be specified. Specifying a well known system is highly desired.
+					An example would be to specify a name of 'WGS 84 / UTM zone 10N' with a code of '32610' in
+					the 'EPSG' naming system. Note that specifying a name in the EPSG naming system is asserting
+					that the parameters in the EPSG database are appropriate for this CRS. This is 
+					also true for any other naming system. If in doubt, contact your local geodesist.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="projectionCode" type="witsml:Projection" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. A code to identify the type of projection.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="projectedFrom" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. A pointer to the wellCRS that represents the geographic
+					system from which this system was projected.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stdParallel1" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude of first standard parallel.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stdParallel2" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude of second standard parallel, if used.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="centralMeridian" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Longitude of the Y axis of the resulting map.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="originLatitude" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude at which the X axis intersects the central meridian.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="originLongitude" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Longitude of the central meridian.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="latitude1" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude of the first point if the two-point specification 
+					of the central line is used.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="longitude1" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Longitude of the first point if the two-point specification 
+					of the central line is used.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="latitude2" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude of the second point if the two-point specification 
+					of the central line is used.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="longitude2" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Longitude of the second point if the two-point specification 
+					of the central line is used.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="latitudeForScale" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude of a point for which the scale factor is specified exactly. 
+					Default to origin.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="longitudeForScale" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Longitude of a point for which the scale factor is specified exactly. 
+					Default to origin.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="trueScaleLatitude" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Latitude at which the scale on the map is exact. If none is provided, 
+					scale is assumed to be exact at the equator.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="spheroidRadius" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Spheroid radius.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="scaleFactor" type="witsml:unitlessQuantity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Ellipsoid scale factor.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="methodVariant" type="witsml:ProjectionVariantsObliqueMercator" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Projection method variant - establishes minor variations of the projection. 
+					Geoshare proposal.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="perspectiveHeight" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Height above the surface origin location from which the perspective is taken.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="zone" type="witsml:geodeticZoneString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Zone for the type of projection. Zones have values from 1 to 60
+					with a required direction of "N" (North) or "S" (South). For example, "21N". </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="NADType" type="witsml:NADTypes" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. North American Datum type.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="falseEasting" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Artificial value added to the X axis.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="falseNorthing" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Artificial value added to the Y axis.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="bearing" type="witsml:planeAngleMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Bearing angle of the great circle with respect to north at the central 
+					point.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="hemisphere" type="witsml:Hemispheres" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Is the projection in the northern hemisphere or the southern hemisphere.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Description of item and details.  </xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="parameter" type="witsml:indexedObject" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>DEPRECATED. Parameter describing the user-defined projection.  
+					For this usage the name attribute MUST be specified because it represents the meaning of the data.
+					While the index attribute is mandatory, it is only significant if the same name repeats.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3-48, Change=Deprecated</xsd:appinfo>
+					<xsd:appinfo>Modified-in-version=1.4.1, By-issue=33, Change=Modified-description</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
