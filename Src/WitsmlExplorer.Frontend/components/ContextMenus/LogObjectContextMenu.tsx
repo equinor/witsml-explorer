@@ -9,7 +9,6 @@ import { CopyIcon, DeleteIcon, FormatLineSpacingIcon, PasteIcon, RefreshIcon, Se
 import LogObjectService from "../../services/logObjectService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreLogAction, UpdateWellboreLogsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
@@ -17,9 +16,10 @@ import { Server } from "../../models/server";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import NestedMenuItem from "./NestedMenuItem";
+import { LogObjectRow } from "../ContentViews/LogsListView";
 
 export interface LogObjectContextMenuProps {
-  checkedLogObjectRows: LogObject[];
+  checkedLogObjectRows: LogObjectRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   dispatchNavigation: (action: UpdateWellboreLogAction | UpdateWellboreLogsAction) => void;
   servers: Server[];
@@ -163,37 +163,37 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length != 0}>
+        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <RefreshIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
-        <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length != 0}>
+        <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <CopyIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Copy log</Typography>
         </MenuItem>,
-        <MenuItem key={"pastelogcurves"} onClick={onClickPasteLogCurves} disabled={logCurvesReference != null}>
+        <MenuItem key={"pastelogcurves"} onClick={onClickPasteLogCurves} disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <PasteIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Paste log curves</Typography>
         </MenuItem>,
-        <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length != 0}>
+        <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <FormatLineSpacingIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
-        <MenuItem key={"deletelogobject"} onClick={onClickDelete} disabled={checkedLogObjectRows.length < 1}>
+        <MenuItem key={"deletelogobject"} onClick={onClickDelete} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length != 0}>
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length === 0}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
               <Typography color={"primary"}>{server.name}</Typography>
@@ -201,7 +201,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogObjectRows.length != 0}>
+        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>

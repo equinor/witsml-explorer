@@ -1,22 +1,35 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import LogObject from "../../models/logObject";
 import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
 import { calculateLogTypeDepthId, calculateLogTypeId } from "../../models/wellbore";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import NavigationType from "../../contexts/navigationType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+
+export interface LogObjectRow extends ContentTableRow {
+  uid: string;
+  name: string;
+  wellUid: string;
+  wellName?: string;
+  wellboreUid: string;
+  wellboreName?: string;
+  indexType?: string;
+  startIndex?: string;
+  endIndex?: string;
+  runNumber?: string;
+  indexCurve?: string;
+}
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-
   const [logs, setLogs] = useState<LogObject[]>([]);
+
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.logs) {
+    if (selectedWell && selectedWellbore && selectedWellbore.logs) {
       setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
     }
   }, [selectedLogTypeGroup, selectedWellbore]);
@@ -25,15 +38,8 @@ export const LogsListView = (): React.ReactElement => {
     return selectedLogTypeGroup === calculateLogTypeDepthId(selectedWellbore) ? ContentType.Number : ContentType.String;
   };
 
-  const onSelect = (log: any) => {
-    dispatchNavigation({
-      type: NavigationType.SelectLogObject,
-      payload: { log, well: selectedWell, wellbore: selectedWellbore }
-    });
-  };
-
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject) => {
-    const contextProps: LogObjectContextMenuProps = { dispatchNavigation, dispatchOperation, logObject: log, selectedServer, servers };
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogObjectRows: LogObjectRow[]) => {
+    const contextProps: LogObjectContextMenuProps = { checkedLogObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
@@ -47,7 +53,7 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
-  return selectedWellbore ? <ContentTable columns={columns} data={logs} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={logs} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default LogsListView;
