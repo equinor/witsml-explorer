@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ITrimLogObjectWorker trimLogObjectWorker;
         private readonly IModifyLogObjectWorker modifyLogObjectWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
-        private readonly IDeleteLogObjectWorker deleteLogObjectWorker;
+        private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
         private readonly IDeleteWellWorker deleteWellWorker;
         private readonly IDeleteWellboreWorker deleteWellboreWorker;
@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Services
             ITrimLogObjectWorker trimLogObjectWorker,
             IModifyLogObjectWorker modifyLogObjectWorker,
             IDeleteCurveValuesWorker deleteCurveValuesWorker,
-            IDeleteLogObjectWorker deleteLogObjectWorker,
+            IDeleteLogObjectsWorker deleteLogObjectsWorker,
             IDeleteMnemonicsWorker deleteMnemonicsWorker,
             IDeleteTrajectoryWorker deleteTrajectoryWorker,
             IDeleteWellWorker deleteWellWorker,
@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Services
             this.trimLogObjectWorker = trimLogObjectWorker;
             this.modifyLogObjectWorker = modifyLogObjectWorker;
             this.deleteCurveValuesWorker = deleteCurveValuesWorker;
-            this.deleteLogObjectWorker = deleteLogObjectWorker;
+            this.deleteLogObjectsWorker = deleteLogObjectsWorker;
             this.deleteMnemonicsWorker = deleteMnemonicsWorker;
             this.deleteTrajectoryWorker = deleteTrajectoryWorker;
             this.deleteWellWorker = deleteWellWorker;
@@ -106,9 +106,9 @@ namespace WitsmlExplorer.Api.Services
                     var deleteCurveValuesJob = await jobStream.Deserialize<DeleteCurveValuesJob>();
                     (result, refreshAction) = await deleteCurveValuesWorker.Execute(deleteCurveValuesJob);
                     break;
-                case JobType.DeleteLogObject:
-                    var deleteLogObjectJob = await jobStream.Deserialize<DeleteLogObjectJob>();
-                    (result, refreshAction) = await deleteLogObjectWorker.Execute(deleteLogObjectJob);
+                case JobType.DeleteLogObjects:
+                    var deleteLogObjectsJob = await jobStream.Deserialize<DeleteLogObjectsJob>();
+                    (result, refreshAction) = await deleteLogObjectsWorker.Execute(deleteLogObjectsJob);
                     break;
                 case JobType.DeleteMnemonics:
                     var deleteMnemonicsJob = await jobStream.Deserialize<DeleteMnemonicsJob>();
