@@ -9,13 +9,13 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using Witsml.Extensions;
-
+using Newtonsoft.Json;
 
 namespace WitsmlExplorer.Api.Workers
 {
     public interface IDeleteLogObjectsWorker
     {
-        Task<(WorkerResult, RefreshWellbore)> Execute(DeleteLogObjectsJob job);
+        Task<(WorkerResult workerResult, RefreshWellbore refreshAction)> Execute(DeleteLogObjectsJob job);
     }
 
     public class DeleteLogObjectsWorker : IDeleteLogObjectsWorker
@@ -27,11 +27,11 @@ namespace WitsmlExplorer.Api.Workers
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshWellbore)> Execute(DeleteLogObjectsJob job)
+        public async Task<(WorkerResult workerResult, RefreshWellbore refreshAction)> Execute(DeleteLogObjectsJob job)
         {
-            (WorkerResult, RefreshWellbore) results;
+            (WorkerResult workerResult, RefreshWellbore refreshAction) results;
 
-            if (job.LogReference.Any()) throw new ArgumentException($"A minimum of one job is required");
+            if (!job.LogReference.Any()) throw new ArgumentException($"A minimum of one job is required");
             if (job.LogReference.Select(l => l.WellboreUid).Distinct().Count() != 1)  throw new ArgumentException($"All logs should belong to the same Wellbore");
 
             var wellUid = job.LogReference.FirstOrDefault().WellUid;
@@ -44,8 +44,7 @@ namespace WitsmlExplorer.Api.Workers
             var tasks = queries.Select(q=> witsmlClient.DeleteFromStoreAsync(q));
 
             await Task.WhenAll(tasks);
-
-            if (tasks.Any(t => !t.Result.IsSuccessful))
+            if (tasks.Any(t => t.IsFaulted))
             {
                 var numFailed = tasks.Count(t => !t.Result.IsSuccessful);
                 var reasons = string.Join(",",tasks.Where(t => !t.Result.IsSuccessful).Select(t => t.Result.Reason).ToArray());
@@ -64,7 +63,6 @@ namespace WitsmlExplorer.Api.Workers
                     new RefreshWellbore(witsmlClient.GetServerHostname(),wellUid, wellboreUid, RefreshType.Update)
                 );
             }
-
             return results;
         }
 
