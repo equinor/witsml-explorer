@@ -47,7 +47,7 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
-  return selectedWellbore ? <ContentTable columns={columns} data={logs} onContextMenu={onContextMenu} onSelect={onSelect} /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={logs} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows /> : <></>;
 };
 
 export default LogsListView;

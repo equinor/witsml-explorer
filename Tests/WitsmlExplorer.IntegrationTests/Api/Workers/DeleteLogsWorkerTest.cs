@@ -24,12 +24,12 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             worker = new DeleteLogObjectsWorker(witsmlClientProvider);
         }
 
-        [Fact(Skip = "Should only be run manually")]
+        [Fact]
         public async Task DeleteLogs()
         {
             var logs = new LogReference[] {
-                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid>" },
-                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid>" }
+                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_1>" },
+                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_2>" }
             };
             var job = new DeleteLogObjectsJob()
             {

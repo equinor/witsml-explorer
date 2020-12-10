@@ -19,7 +19,7 @@ export enum JobType {
   CreateWellbore = "CreateWellbore",
   CreateLogObject = "CreateLogObject",
   DeleteCurveValues = "DeleteCurveValues",
-  DeleteLogObject = "DeleteLogObject",
+  DeleteLogObjects = "DeleteLogObjects",
   DeleteMnemonics = "DeleteMnemonics",
   DeleteWell = "DeleteWell",
   DeleteWellbore = "DeleteWellbore",
