@@ -28,22 +28,42 @@ Add an initial db username and password by editing the `docker-compose.yml` file
 # Pull and run a default MongoDB locally
 docker-compose up -d
 ```
-The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. 
+The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. After execution `docker-compose up -d `, once, you can reset docker-compose.yml as the environment settings only is required the first time you run your mongoDb.
 
 Add the following configuration to `mysettings.json` so that the backend will be able to connect to our new database:
 ```
 "MongoDb": {
   "Name": "witsml-explorer-db",
-  "ConnectionString": "mongodb://username:password@localhost"
+  "ConnectionString": "mongodb://<username>:<password>@localhost"
 },
 ```
-`username` and `password` is what was configured in the docker-compose.yml file.
+`<username>` and `<password>` is what was configured in the docker-compose.yml file.
 
 #### Populate list of WITSML servers
 The list of WITSML servers a user can connect to is currently not editable by the user itself (feature is disabled until proper authorization is implemented).
-There exists some integration tests that can be run for this purpose.
-The file containing the relevant tests can be found at `Tests/WitsmlExplorer.IntegrationTests/Api/Repositories/MongoDbRepositoryTests.cs`
-Remember to add the same MongoDb configuration as described in the previous section to the configuration file for the [integration tests project](#Integration-tests).
+There exists some integration tests that can be run for this purpose, but first you need to add a file `secrets.json` in the integration test folder `WitsmlExplorer.IntegrationTests`. Include following into `secrets.json`:
+```
+{
+"MongoDb": {
+  "Name": "witsml-explorer",
+  "ConnectionString": "mongodb://<username>:<password>@localhost"
+  }
+}
+```
+`<username>` and `<password>` is what was configured in the docker-compose.yml file.
+
+In the file `WitsmlExplorer.IntegrationTests/Api/Repositories/MongoDbRepositoryTests.cs` you shall use the test AddServer(). First remove `(Skip="Shuld only be run manually")` from the `[Fact]` just above the AddServer() test.
+Then update with details for your specific server:
+```
+var newServer = new Server
+            {
+                Name = "<insert servername>",
+                Url = new Uri("<insert url>"),
+                Description = ""
+            };
+```
+Then run the test from the commandline `dotnet test` or from your IDE. The server is now added to your mongoDB. Repeat this for all your servers.
+After adding your servers, reset file `MongoDbRepositoryTests.cs`.
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
@@ -111,7 +131,7 @@ A db configuration is needed if running tests that uses the database:
 {
   "MongoDb": {
     "Name": "witsml-explorer-db",
-    "ConnectionString": "mongodb://username:password@localhost"
+    "ConnectionString": "mongodb://<username>:<password>@localhost"
   }
 }
 ```
