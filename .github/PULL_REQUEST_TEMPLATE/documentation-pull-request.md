@@ -1,11 +1,3 @@
----
-name: "Documentation \U0001F4D8 "
-about: Use this template for documentation pull requests
-title: "\U0001F4D8"
-labels: documentation
-
----
-
 # Documentation Pull Request Template Witsml Explorer
 Fixes # (issue)
 
