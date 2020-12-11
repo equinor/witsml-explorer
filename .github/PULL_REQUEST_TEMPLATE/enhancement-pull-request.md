@@ -1,11 +1,3 @@
----
-name: Enhancement
-about: Used this template pull request for improvements such as code refactor, added tests etc
-title: ''
-labels: enhancement
-
----
-
 # Enhancement Pull Request Template Witsml Explorer
 Fixes # (issue)
 
