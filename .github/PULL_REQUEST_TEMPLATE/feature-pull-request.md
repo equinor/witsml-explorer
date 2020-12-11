@@ -1,10 +1,3 @@
----
-name: "Feature pull request \U0001F4A1"
-about: Use this template for new features pull request
-title: "\U0001F4A1"
-labels: feature request
-
----
 # Feature Pull Request Template Witsml Explorer
 Fixes # (issue)
 

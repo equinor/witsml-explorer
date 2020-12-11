@@ -1,9 +1,3 @@
----
-name: "Bugfix pull request \U0001F41B"
-about: "Use this template for bugfix pull requests"
-title: "\U0001F41B"
----
-
 # BugFix Pull Request Template Witsml Explorer
 Fixes # (issue)
 
