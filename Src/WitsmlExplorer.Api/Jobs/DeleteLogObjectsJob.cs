@@ -5,6 +5,6 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public class DeleteLogObjectsJob
     {
-        public IEnumerable<LogReference> LogReference { get; set; }
+        public IEnumerable<LogReference> LogReferences { get; set; }
     }
 }

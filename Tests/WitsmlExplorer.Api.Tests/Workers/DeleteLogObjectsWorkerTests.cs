@@ -28,12 +28,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             worker = new DeleteLogObjectsWorker(witsmlClientProvider.Object);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task DeleteLogsSuccessful_ReturnResult()
         {
             var job =  new DeleteLogObjectsJob
             {
-                LogReference = LogUids
+                LogReferences = LogUids
                             .Select( logUid => new LogReference { WellUid = WellUid,WellboreUid = WellboreUid, LogUid = logUid } )
                             .AsEnumerable<LogReference>()
             };

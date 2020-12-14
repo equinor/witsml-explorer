@@ -33,7 +33,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             };
             var job = new DeleteLogObjectsJob()
             {
-                LogReference = logs
+                LogReferences = logs
             };
             await worker.Execute(job);
         }

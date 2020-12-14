@@ -31,16 +31,16 @@ namespace WitsmlExplorer.Api.Workers
         {
             (WorkerResult workerResult, RefreshWellbore refreshAction) results;
 
-            if (!job.LogReference.Any()) throw new ArgumentException($"A minimum of one job is required");
-            if (job.LogReference.Select(l => l.WellboreUid).Distinct().Count() != 1)  throw new ArgumentException($"All logs should belong to the same Wellbore");
+            if (!job.LogReferences.Any()) throw new ArgumentException($"A minimum of one job is required");
+            if (job.LogReferences.Select(l => l.WellboreUid).Distinct().Count() != 1)  throw new ArgumentException($"All logs should belong to the same Wellbore");
 
-            var wellUid = job.LogReference.FirstOrDefault().WellUid;
-            var wellboreUid = job.LogReference.FirstOrDefault().WellboreUid;
+            var wellUid = job.LogReferences.FirstOrDefault().WellUid;
+            var wellboreUid = job.LogReferences.FirstOrDefault().WellboreUid;
 
-            var logsExpanded = $"[ {string.Join(", ",job.LogReference.Select(l=>l.LogUid))} ]";
-            var jobDescription = $"Delete {job.LogReference.Count()} Logs under wellUid: {wellUid}, wellboreUid: {wellboreUid}. Logs: {logsExpanded}";
+            var logsExpanded = $"[ {string.Join(", ",job.LogReferences.Select(l=>l.LogUid))} ]";
+            var jobDescription = $"Delete {job.LogReferences.Count()} Logs under wellUid: {wellUid}, wellboreUid: {wellboreUid}. Logs: {logsExpanded}";
 
-            var queries = job.LogReference.Select( l => CreateRequest(l) );
+            var queries = job.LogReferences.Select( l => CreateRequest(l) );
             var tasks = queries.Select(q=> witsmlClient.DeleteFromStoreAsync(q));
 
             await Task.WhenAll(tasks);

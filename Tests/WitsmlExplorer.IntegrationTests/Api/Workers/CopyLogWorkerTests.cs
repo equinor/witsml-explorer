@@ -71,7 +71,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 LogUid = logUid
             };
 
-            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReference = targetReference.AsSingletonList<LogReference>().ToArray()});
+            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReferences = targetReference.AsSingletonList<LogReference>().ToArray()});
 
             var job = new CopyLogJob
             {
