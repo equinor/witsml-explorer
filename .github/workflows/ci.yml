@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+  pull_request_target:
 
 jobs:
   backend:
