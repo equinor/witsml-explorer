@@ -432,10 +432,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@equinor/eds-tokens@0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.5.2.tgz#9385f0d3f90cdf232f89196f2fc9e63c8c016a6a"
-  integrity sha512-cNiSuYrECTNsPnh+kRzBHdXlc3NnvwVSxKveWutdgpodW6ZLccZINYYpkI6d0bLRgM0rtfRaJjc/vV863lGAIg==
+"@equinor/eds-tokens@0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.5.4.tgz#48985b6d61610a1b3c022af5b57e75f208ca8880"
+  integrity sha512-BByowcN80LCOcK/buD9g+3gK92HsnY/54J9BH9dK5mpFKtFONu5pqBq7C2N6VqjvlLVY/tOG17jdCWMJ8P2eAQ==
 
 "@eslint/eslintrc@^0.2.1":
   version "0.2.1"
