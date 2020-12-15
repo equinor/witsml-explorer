@@ -1,4 +1,3 @@
-
 using System.Diagnostics.CodeAnalysis;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Jobs;

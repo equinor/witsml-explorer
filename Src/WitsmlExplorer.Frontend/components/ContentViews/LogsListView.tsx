@@ -8,19 +8,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 
-export interface LogObjectRow extends ContentTableRow {
-  uid: string;
-  name: string;
-  wellUid: string;
-  wellName?: string;
-  wellboreUid: string;
-  wellboreName?: string;
-  indexType?: string;
-  startIndex?: string;
-  endIndex?: string;
-  runNumber?: string;
-  indexCurve?: string;
-}
+export interface LogObjectRow extends ContentTableRow, LogObject {}
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -46,20 +34,7 @@ export const LogsListView = (): React.ReactElement => {
 
   const getTableData = () => {
     return logs.map((log) => {
-      return {
-        id: log.uid,
-        uid: log.uid,
-        name: log.name,
-        wellUid: log.wellUid,
-        wellName: log.wellName,
-        wellboreUid: log.wellboreUid,
-        wellboreName: log.wellboreName,
-        indexType: log.indexType,
-        startIndex: log.startIndex,
-        endIndex: log.endIndex,
-        runNumber: log.runNumber,
-        indexCurve: log.indexCurve
-      };
+      return { id: log.uid, ...log };
     });
   };
 

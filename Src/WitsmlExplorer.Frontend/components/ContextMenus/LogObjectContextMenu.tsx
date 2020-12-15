@@ -27,7 +27,7 @@ export interface LogObjectContextMenuProps {
 }
 
 const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElement => {
-  const { checkedLogObjectRows: checkedLogObjectRows, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
+  const { checkedLogObjectRows, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
   const [logCurvesReference, setLogCurvesReference] = useState<LogCurvesReference>(null);
 
   useEffect(() => {

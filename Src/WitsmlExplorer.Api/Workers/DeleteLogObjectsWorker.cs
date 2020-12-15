@@ -9,7 +9,6 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using Witsml.Extensions;
-using Newtonsoft.Json;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -51,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers
                 Log.Error($"FAILURE deleting {numFailed} of {tasks.Count()} Logs due to {reasons}");
                 results =
                 (
-                    new WorkerResult(witsmlClient.GetServerHostname(), false, $"Job failed deleting {numFailed} Logs. Reasons: {reasons}"),
+                    new WorkerResult(witsmlClient.GetServerHostname(), false, $"Job failed deleting {numFailed} log objects. Reasons: {reasons}"),
                     null
                 );
 
@@ -59,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
                 Log.Information($"SUCCESS - {jobDescription}");
                 results =
                 (
-                    new WorkerResult(witsmlClient.GetServerHostname(), true, $"{GetType().Name} - Job successful."),
+                    new WorkerResult(witsmlClient.GetServerHostname(), true, $"{tasks.Count()} log objects deleted for wellbore {wellboreUid}"),
                     new RefreshWellbore(witsmlClient.GetServerHostname(),wellUid, wellboreUid, RefreshType.Update)
                 );
             }
