@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/equinor/witsml-explorer.git"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "workspaces": [
     "Src/WitsmlExplorer.Frontend"
   ],

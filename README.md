@@ -17,5 +17,5 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 ## Contributing
 Please see our [contributing.md](/CONTRIBUTING.md).
 
-## License (Soon)
-Witsml Explorer is expected to soon get the Apache 2 License
+## License
+Witsml Explorer has the Apache-2.0 license.
