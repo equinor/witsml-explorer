@@ -44,6 +44,25 @@ export const LogsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
 
+  const getTableData = () => {
+    return logs.map((log) => {
+      return {
+        id: log.uid,
+        uid: log.uid,
+        name: log.name,
+        wellUid: log.wellUid,
+        wellName: log.wellName,
+        wellboreUid: log.wellboreUid,
+        wellboreName: log.wellboreName,
+        indexType: log.indexType,
+        startIndex: log.startIndex,
+        endIndex: log.endIndex,
+        runNumber: log.runNumber,
+        indexCurve: log.indexCurve
+      };
+    });
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },
     { property: "runNumber", label: "Run Number", type: ContentType.String },
@@ -53,7 +72,7 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
-  return selectedWellbore ? <ContentTable columns={columns} data={logs} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default LogsListView;

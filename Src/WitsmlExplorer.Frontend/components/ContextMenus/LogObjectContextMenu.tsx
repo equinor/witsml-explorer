@@ -166,7 +166,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length === 0}>
+        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length !== 0}>
           <ListItemIcon>
             <RefreshIcon />
           </ListItemIcon>
@@ -196,7 +196,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length === 0}>
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length !== 1}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
               <Typography color={"primary"}>{server.name}</Typography>
