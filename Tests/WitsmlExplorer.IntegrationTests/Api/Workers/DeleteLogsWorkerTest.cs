@@ -24,7 +24,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             worker = new DeleteLogObjectsWorker(witsmlClientProvider);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task DeleteLogs()
         {
             var logs = new LogReference[] {

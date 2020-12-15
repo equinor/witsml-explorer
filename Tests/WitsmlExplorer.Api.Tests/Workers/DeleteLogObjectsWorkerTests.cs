@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             worker = new DeleteLogObjectsWorker(witsmlClientProvider.Object);
         }
 
-        [Fact(Skip = "Should only be run manually")]
+        [Fact]
         public async Task DeleteLogsSuccessful_ReturnResult()
         {
             var job =  new DeleteLogObjectsJob
