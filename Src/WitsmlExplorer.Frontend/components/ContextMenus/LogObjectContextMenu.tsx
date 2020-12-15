@@ -166,7 +166,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length !== 0}>
+        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <RefreshIcon />
           </ListItemIcon>
