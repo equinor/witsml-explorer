@@ -105,26 +105,29 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     const trimLogObjectProps: TrimLogObjectModalProps = { dispatchNavigation, dispatchOperation, logObject };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <TrimLogObjectModal {...trimLogObjectProps} /> });
   };
-
+  const blockStyle = {
+    display: "grid"
+  };
   const onClickDelete = async () => {
+    const pluralize = (count: number, noun: any, suffix = "s") => `${count > 1 ? count : ""} ${noun}${count > 1 ? suffix : ""}`;
     const confirmation = (
       <ConfirmModal
-        heading={"Delete selected logs?"}
+        heading={`Delete ${pluralize(checkedLogObjectRows.length, "selected log")}`}
         content={
-          <span>
-            This will permanently delete the selected logs: <strong>{checkedLogObjectRows.map((item) => item.name).join(", ")}</strong>
+          <span style={blockStyle}>
+            This will permanently delete: <strong>{checkedLogObjectRows.map((item) => item.name).join("\n")}</strong>
           </span>
         }
-        onConfirm={deleteLogObject}
+        onConfirm={deleteLogObjects}
         confirmColor={"secondary"}
-        confirmText={"Delete log"}
+        confirmText={`Delete ${pluralize(checkedLogObjectRows.length, "log")}?`}
         switchButtonPlaces={true}
       />
     );
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
   };
 
-  const deleteLogObject = async () => {
+  const deleteLogObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job = {
       logReferences: checkedLogObjectRows.map((row) => ({

@@ -12,12 +12,12 @@ export interface LogObjectRow extends ContentTableRow, LogObject {}
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedServer, servers } = navigationState;
+  const { selectedWellbore, selectedLogTypeGroup, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
 
   useEffect(() => {
-    if (selectedWell && selectedWellbore && selectedWellbore.logs) {
+    if (selectedWellbore && selectedWellbore.logs) {
       setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
     }
   }, [selectedLogTypeGroup, selectedWellbore]);
