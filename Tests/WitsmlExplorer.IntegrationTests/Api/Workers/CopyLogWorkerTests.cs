@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml;
+using Witsml.Extensions;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Query;
@@ -19,7 +20,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker worker;
-        private readonly DeleteLogObjectWorker deleteLogWorker;
+        private readonly DeleteLogObjectsWorker deleteLogsWorker;
         private readonly IWitsmlClient client;
         private readonly LogObjectService logObjectService;
 
@@ -29,7 +30,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             client = witsmlClientProvider.GetClient();
             worker = new CopyLogWorker(witsmlClientProvider);
-            deleteLogWorker = new DeleteLogObjectWorker(witsmlClientProvider);
+            deleteLogsWorker = new DeleteLogObjectsWorker(witsmlClientProvider);
             logObjectService = new LogObjectService(witsmlClientProvider);
         }
 
@@ -70,7 +71,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 LogUid = logUid
             };
 
-            await deleteLogWorker.Execute(new DeleteLogObjectJob {LogObject = targetReference});
+            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReferences = targetReference.AsSingletonList<LogReference>().ToArray()});
 
             var job = new CopyLogJob
             {

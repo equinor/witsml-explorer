@@ -22,7 +22,7 @@ interface LogItemProps {
 }
 
 const LogItem = (props: LogItemProps): React.ReactElement => {
-  const { log, well, wellbore, selected, nodeId } = props;
+  const { log: log, well, wellbore, selected, nodeId } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const {
     dispatchNavigation,
@@ -31,7 +31,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject, selectedServer: Server, servers: Server[]) => {
     preventContextMenuPropagation(event);
-    const contextProps: LogObjectContextMenuProps = { dispatchNavigation, dispatchOperation, logObject: log, selectedServer, servers };
+    const contextProps: LogObjectContextMenuProps = { checkedLogObjectRows: [].concat(log), dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
