@@ -8,6 +8,7 @@ export default interface LogObject {
   indexType?: string;
   startIndex?: string;
   endIndex?: string;
+  serviceCompany?: string;
   runNumber?: string;
   indexCurve?: string;
 }
@@ -23,7 +24,8 @@ export function emptyLogObject(): LogObject {
     indexType: "",
     startIndex: "",
     endIndex: "",
-    indexCurve: ""
+    indexCurve: "",
+    serviceCompany: ""
   };
 }
 
