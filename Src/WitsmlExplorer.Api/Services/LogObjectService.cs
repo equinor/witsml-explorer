@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml.Data;
-using Witsml.Extensions;
 using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
@@ -40,6 +39,7 @@ namespace WitsmlExplorer.Api.Services
                     WellName = log.NameWell,
                     WellboreUid = log.UidWellbore,
                     WellboreName = log.NameWellbore,
+                    ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
                     StartIndex = GetIndexAsString(log.IndexType, log.StartIndex, log.StartDateTimeIndex),
                     EndIndex = GetIndexAsString(log.IndexType, log.EndIndex, log.EndDateTimeIndex),
@@ -70,6 +70,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = witsmlLog.UidWellbore,
                 WellboreName = witsmlLog.NameWellbore,
                 IndexCurve = witsmlLog.IndexCurve.Value,
+                ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber
             };
             if (string.IsNullOrEmpty(witsmlLog.IndexType)) return logObject;
