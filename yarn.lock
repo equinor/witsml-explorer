@@ -7278,10 +7278,10 @@ react-dom@16.13.1:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
-react-idle-timer@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-4.5.0.tgz#7fd1d63763839e8b534c81755631ebc3c3bc5d07"
-  integrity sha512-R6V3eErt+eCDjEkgh5s4bPEMKIEcYsppmfyjhhKrs3D8qxGMkv38zrJHlvkSU9ndtQFBh6eyGkDa45NMBv8Lnw==
+react-idle-timer@^4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-4.5.1.tgz#ecf13e4b6327f11e2543a4fb730a8457e496339d"
+  integrity sha512-SR1A5XgOfjcXb6JbRHiMremcuLBC1ygkSuMqjwLs98ApM3qfMUfabRgHeXSX7/wK89PF7xRODhm0qQ0hQt+jyw==
 
 react-is@16.13.1, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.6:
   version "16.13.1"
