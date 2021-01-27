@@ -79,7 +79,8 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     OptionsIn = optionsIn.GetName(),
-                    QueryIn = XmlHelper.Serialize(query)
+                    QueryIn = XmlHelper.Serialize(query),
+                    CapabilitiesIn = ""
                 };
 
                 var response = await client.WMLS_GetFromStoreAsync(request);
