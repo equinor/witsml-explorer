@@ -13,9 +13,12 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 * Trim log objects and individual curves.
 * Copy log objects and individual curves (also between different servers!).
 * Deep linking directly to objects using the URL
-  
+
 ## Contributing
 Please see our [contributing.md](/CONTRIBUTING.md).
+
+## Community
+Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 
 ## License
 Witsml Explorer has the Apache-2.0 license.
