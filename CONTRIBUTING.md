@@ -12,7 +12,7 @@ Feel free to file new issues for bugs, suggest feature requests or improvements 
 If you wish to contribute with coding please have a look at our [project board](https://github.com/equinor/witsml-explorer/projects/1).
 Issues that are in the TODO column should be ready to go, assign it to yourself and start working on it :computer:
 Especially the ones labeled as a `good first issue` might be a good start. 
-Other issues might need som discussion or clarification before it can be started on, give us your thoughts or suggestions on something you would like to work on, and we can take it from there :smiley: 
+Other issues might need some discussion or clarification before it can be started on, give us your thoughts or suggestions on something you would like to work on, and we can take it from there :smiley: 
 
 ## Contribution process
 We use a [fork and pull request workflow](https://github.com/susam/gitpr). Fork the repo, and get going!
@@ -38,7 +38,7 @@ cd Src/WitsmlExplorer.Api/
 cp appsettings.json mysettings.json
 ```
 
-### Using MongoDB
+### Using MongoDB for storing urls to WitsmlServers
 _Note: WE also supports Cosmos DB, but that requires a little more setup, see the [CosmosDB setup guide](#Cosmos-database)._
 
 To quickly get a development database up and running, a MongoDB docker image can be used. 
