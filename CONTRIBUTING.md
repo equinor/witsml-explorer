@@ -64,11 +64,11 @@ Add the following configuration to `mysettings.json` so that the backend will be
 
 #### Populate list of WITSML servers
 The list of WITSML servers a user can connect to is currently not editable by the user itself (feature is disabled until proper authorization is implemented).
-There exists some integration tests that can be run for this purpose, but first you need to add a file `secrets.json` in the integration test folder `WitsmlExplorer.IntegrationTests`. Include following into `secrets.json`:
+There exists some integration tests that can be run for this purpose, but first you need to add a file `secrets.json` in the integration test folder `WitsmlExplorer.IntegrationTests`. Include following into `secrets.json` (**NB** Use same name as in mySettings.json):
 ```
 {
 "MongoDb": {
-  "Name": "witsml-explorer",
+  "Name": "witsml-explorer-db",
   "ConnectionString": "mongodb://<username>:<password>@localhost"
   }
 }
@@ -149,7 +149,7 @@ The file should contain these fields if running tests against a given WITSML ser
   }
 }
 ```
-A db configuration is needed if running tests that uses the database:
+A db configuration is needed if running tests that uses the database (**NB** Use same name as in mySettings.json) :
 ```json
 {
   "MongoDb": {
