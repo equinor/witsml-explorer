@@ -7,9 +7,9 @@ WITSML Explorer (WE) is still in its infant days, and there is a lot of features
 Contributions are welcome and greatly appreciated :clap:
 
 ## What kind of contributions do we need
-Feel free to file new issues for bugs, suggest feature requests or improvements and so on. 
+Feel free to file new issues for bugs, suggest feature requests or improvements and so on. Please also look into the [UserStory board](https://github.com/equinor/witsml-explorer/projects/2) to get an overview of planned enhancements for WitsmlExplorer.
 
-If you wish to contribute with coding please have a look at our [project board](https://github.com/equinor/witsml-explorer/projects/1).
+If you wish to contribute with coding please have a look at our [Issues board](https://github.com/equinor/witsml-explorer/projects/1).
 Issues that are in the TODO column should be ready to go, assign it to yourself and start working on it :computer:
 Especially the ones labeled as a `good first issue` might be a good start. 
 Other issues might need some discussion or clarification before it can be started on, give us your thoughts or suggestions on something you would like to work on, and we can take it from there :smiley: 
