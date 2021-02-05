@@ -204,17 +204,34 @@ namespace Witsml.ServiceReference
     public partial class WMLS_GetCapRequest
     {
         
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
-        public string OptionsIn;
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0, Name="OptionsIn")]
+        private string optionsIn;
         
         public WMLS_GetCapRequest()
         {
         }
         
-        public WMLS_GetCapRequest(string OptionsIn)
+        public WMLS_GetCapRequest(string OptionsIn )
         {
-            this.OptionsIn = OptionsIn;
+            this.OptionsIn = OptionsIn ;
         }
+
+        /// <summary>
+        /// Quoting the specification : "'dataVersion' is a required optionsIn parameter to be passed as part of the WMLS_GetCap(). 
+        ///                             Not doing so would result in the server returning a -424- error status code"
+        /// The OptionsIn setter method enforce such rule by adding automatically the "dataVersion" parameter if not provided.
+        /// It is to be noted that the data version is fixed to 1.4.1.1 by default and might need to be passed as argument in future 
+        /// if there is a requirement to support a different WITSML version by default.
+        /// </summary>
+        public string OptionsIn {
+            get { return optionsIn ; }
+            set { 
+                optionsIn = value ;
+                if ( ! optionsIn.Contains ("dataVersion") ) 
+                    optionsIn += ";dataVersion=1.4.1.1" ;
+                }
+        }
+
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
