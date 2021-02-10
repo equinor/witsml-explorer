@@ -753,10 +753,10 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
-"@microsoft/signalr@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-5.0.2.tgz#c7ae14f390b54854d317448d473ea3fd99599557"
-  integrity sha512-sIAObG0rj/XCIeKFpQvzIFd7Rnt7yZJn6MW4QfbvE1+XNK173XXYUVy+MQnh1Tw5N4wVQyDcUPZF3sV3K4EASQ==
+"@microsoft/signalr@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-5.0.3.tgz#562762d750333c2154951af5db2327365a655003"
+  integrity sha512-/+8DeefKxsz29+OgLBpMH6xs/akEzFrGTCsBhwQV67x0GR+uN03I74vn8X7FunXWO8BApamOjF2DLmLGU83SFw==
   dependencies:
     abort-controller "^3.0.0"
     eventsource "^1.0.7"
