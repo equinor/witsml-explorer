@@ -7,7 +7,16 @@ WITSML Explorer (WE) is still in its infant days, and there is a lot of features
 Contributions are welcome and greatly appreciated :clap:
 
 ## What kind of contributions do we need
-Feel free to file new issues for bugs, suggest feature requests or improvements and so on. Please also look into the [UserStory board](https://github.com/equinor/witsml-explorer/projects/2) to get an overview of planned enhancements for WitsmlExplorer.
+There are two levels of issues - userstory and issue
+
+### Userstory
+A userstory is describing a functional (high level) enhancement of the WitsmlExplorer. 
+Here is the project board of [proposed and ongoing userstories](https://github.com/equinor/witsml-explorer/projects/2), and here is an [overview of the main contributors](https://github.com/equinor/witsml-explorer/wiki/Backlow-Overview) participating on each userstory.
+Proposals for new user stories are submitted as new issue - [use the Userstory template](https://github.com/equinor/witsml-explorer/issues/new/choose) .
+
+### Issues
+Issues are the feature (code level) enhancement of WitsmlExplorer. Here is the project board for [propoed and ongoing issues](https://github.com/equinor/witsml-explorer/projects/1) .  
+Feel free to file new issues for bugs, suggest feature requests or improvements and so on. Please relate the issue to an UserStory if possible.
 
 If you wish to contribute with coding please have a look at our [Issues board](https://github.com/equinor/witsml-explorer/projects/1).
 Issues that are in the TODO column should be ready to go, assign it to yourself and start working on it :computer:
