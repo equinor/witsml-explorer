@@ -1,3 +1,12 @@
+---
+name: Userstory
+about: Template for Userstory proposals
+labels: userstory
+assignees: ''
+
+---
+
+
 ### User story: [descriptive name]  ###
 
 As a [role]
