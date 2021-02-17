@@ -128,13 +128,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 new IndexRange
                 {
-                    StartIndex = new DateTime(2000, 1, 2).ToString(CultureInfo.InvariantCulture),
-                    EndIndex = new DateTime(2000, 1, 3).ToString(CultureInfo.InvariantCulture)
+                    StartIndex = new DateTime(2000, 1, 2).ToUniversalTime().ToString(DateTimeIndex.IsoPattern),
+                    EndIndex = new DateTime(2000, 1, 3).ToUniversalTime().ToString(DateTimeIndex.IsoPattern)
                 },
                 new IndexRange
                 {
-                    StartIndex = new DateTime(2000, 1, 5).ToString(CultureInfo.InvariantCulture),
-                    EndIndex = new DateTime(2000, 1, 6).ToString(CultureInfo.InvariantCulture)
+                    StartIndex = new DateTime(2000, 1, 5).ToUniversalTime().ToString(DateTimeIndex.IsoPattern),
+                    EndIndex = new DateTime(2000, 1, 6).ToUniversalTime().ToString(DateTimeIndex.IsoPattern)
                 }
             };
 
