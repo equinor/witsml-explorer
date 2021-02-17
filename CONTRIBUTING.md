@@ -15,7 +15,7 @@ Here is the project board of [proposed and ongoing userstories](https://github.c
 Proposals for new user stories are submitted as new issue - [use the Userstory template](https://github.com/equinor/witsml-explorer/issues/new/choose) .
 
 ### Issues
-Issues are the feature (code level) enhancement of WitsmlExplorer. Here is the project board for [propoed and ongoing issues](https://github.com/equinor/witsml-explorer/projects/1) .  
+Issues are the feature (code level) enhancement of WitsmlExplorer. Here is the project board for [proposed and ongoing issues](https://github.com/equinor/witsml-explorer/projects/1).  
 Feel free to file new issues for bugs, suggest feature requests or improvements and so on. Please relate the issue to an UserStory if possible.
 
 If you wish to contribute with coding please have a look at our [Issues board](https://github.com/equinor/witsml-explorer/projects/1).
@@ -62,11 +62,16 @@ docker-compose up -d
 ```
 The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. After execution `docker-compose up -d `, once, you can reset docker-compose.yml as the environment settings only is required the first time you run your mongoDb.
 
-Add the following configuration to `mysettings.json` so that the backend will be able to connect to our new database:
+Change the configuration in `mysettings.json` to the following, so that the backend will be able to connect to our new database:
 ```
-"MongoDb": {
-  "Name": "witsml-explorer-db",
-  "ConnectionString": "mongodb://<username>:<password>@localhost"
+{
+  "LogQueries": false,
+  "AllowedHosts": "*",
+  "Host": "http://localhost",
+  "MongoDb": {
+    "Name": "witsml-explorer-db",
+    "ConnectionString": "mongodb://<username>:<password>@localhost"
+  }
 },
 ```
 `<username>` and `<password>` is what was configured in the docker-compose.yml file.
@@ -84,7 +89,7 @@ There exists some integration tests that can be run for this purpose, but first 
 ```
 `<username>` and `<password>` is what was configured in the docker-compose.yml file.
 
-In the file `WitsmlExplorer.IntegrationTests/Api/Repositories/MongoDbRepositoryTests.cs` you shall use the test AddServer(). First remove `(Skip="Shuld only be run manually")` from the `[Fact]` just above the AddServer() test.
+In the file `WitsmlExplorer.IntegrationTests/Api/Repositories/MongoDbRepositoryTests.cs` you shall use the test AddServer(). First remove `(Skip="Should only be run manually")` from the `[Fact]` just above the AddServer() test.
 Then update with details for your specific server:
 ```
 var newServer = new Server
@@ -213,7 +218,7 @@ This solution consists of 3 projects:
 ### Simplified flow
 This diagram gives a quick overview over the application components and flows.
 
-<img src="./flow-chart.svg">
+<img src="./flow-chart.svg" alt="Diagram showing the application components and flows">
 
 * When the user navigates in the web application, WITSML data is retrieved.
 * When the user adds/updates/deletes, a job is made and a worker is triggered asynchronously on the backend.
@@ -244,7 +249,7 @@ Witsml Explorer requires a database to store application data. One option is to 
 <br>Script to create Cosmos DB: ```./create-cosmos-db.sh```
 <br>Script to run all together: ```./run-azure-scripts.sh```
 4) In file `config.cfg` enter `databaseAccountName` and a name (container) for your database in `databaseName`.  
-5) Run ```./create-cosmos-db.sh``` (prerequsite azure cli installed, and that your are logged in)
+5) Run ```./create-cosmos-db.sh``` (prerequisite azure cli installed, and that your are logged in)
 
 #### Configure backend to use CosmosDB
 If you have a CosmosDB setup and ready, follow these steps to configure the backend properly.
