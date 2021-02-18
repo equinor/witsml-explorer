@@ -3,7 +3,7 @@
 
 Witsml Explorer is a data management tool used for browsing and editing data directly on [WITSML](https://en.wikipedia.org/wiki/Wellsite_information_transfer_standard_markup_language) servers.
 
-<img src="./we-demo.gif">
+<img src="./we-demo.gif" alt="GIF showing the witsml-explorer interface">
 
 ## Key features
 * Runs directly in your browser, no need to install additional software.
