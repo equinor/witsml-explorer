@@ -17,7 +17,7 @@ export default interface Trajectory {
 }
 
 export const calculateTrajectoryId = (trajectory: Trajectory): string => {
-  return trajectory.wellboreUid + trajectory.wellboreUid + trajectory.uid;
+  return trajectory.wellUid + trajectory.wellboreUid + trajectory.uid;
 };
 
 export const getTrajectoryProperties = (trajectory: Trajectory, wellbore: Wellbore): Map<string, string> => {
