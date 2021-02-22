@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;

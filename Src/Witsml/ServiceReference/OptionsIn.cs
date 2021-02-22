@@ -1,5 +1,3 @@
-using System;
-
 namespace Witsml.ServiceReference
 {
     public enum OptionsIn

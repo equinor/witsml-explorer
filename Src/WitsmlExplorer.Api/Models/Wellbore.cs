@@ -1,5 +1,4 @@
 using System;
-using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
