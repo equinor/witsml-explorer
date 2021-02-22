@@ -1,0 +1,5 @@
+# .husky pre-commit
+#
+# ^5.0.0
+
+yarn lint-staged
