@@ -1,5 +1,5 @@
-# .husky pre-commit
-#
-# ^5.0.0
+#!/bin/sh
+# .husky pre-commit  ^5.0.0
+. "$(dirname "$0")/_/husky.sh"
 
 yarn lint-staged
