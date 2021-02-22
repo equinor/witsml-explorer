@@ -57,7 +57,7 @@ namespace Witsml.Query
                 {
                     Uid = wellboreUid,
                     UidWell = wellUid,
-                    Name = "",
+                    Name = ""
                 }.AsSingletonList()
             };
         }

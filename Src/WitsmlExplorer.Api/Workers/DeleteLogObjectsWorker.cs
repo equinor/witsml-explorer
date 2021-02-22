@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     UidWell = logReference.WellUid,
                     UidWellbore = logReference.WellboreUid,
-                    Uid = logReference.LogUid,
+                    Uid = logReference.LogUid
                 }.AsSingletonList()
             };
         }

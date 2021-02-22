@@ -22,14 +22,14 @@ namespace Witsml.Query
                 Wells = new WitsmlWell
                 {
                     Uid = wellUid,
-                    Name = name,
+                    Name = name
                 }.AsSingletonList()
             };
         }
 
         public static WitsmlWells DeleteQuery(string wellUid)
         {
-            return new WitsmlWells {Wells = new WitsmlWell {Uid = wellUid,}.AsSingletonList()};
+            return new WitsmlWells {Wells = new WitsmlWell {Uid = wellUid}.AsSingletonList()};
         }
 
         private static WitsmlWells GetWellQuery(string wellUid = "")

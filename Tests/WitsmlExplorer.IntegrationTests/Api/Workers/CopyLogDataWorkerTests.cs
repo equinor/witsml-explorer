@@ -103,7 +103,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
                     LogUid = "8daba8bd-8d42-4fd0-80e4-b4d1a3a583e3"
-                },
+                }
             };
 
             await worker.Execute(job);
