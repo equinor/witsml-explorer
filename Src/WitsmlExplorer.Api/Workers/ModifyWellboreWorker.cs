@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.Query;
 using Witsml.ServiceReference;

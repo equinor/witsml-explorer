@@ -2,8 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Jobs;
 using System.Threading.Tasks;
-using Witsml;
-
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using Xunit;
