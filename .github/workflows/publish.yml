@@ -26,8 +26,8 @@ jobs:
       - name: Test with dotnet
         run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release --no-restore
       - name: Package
-        run: dotnet pack --configuration Release src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
+        run: dotnet pack --configuration Release Src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
       - name: Publish
-        run: dotnet nuget push src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
+        run: dotnet nuget push Src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
 
 
