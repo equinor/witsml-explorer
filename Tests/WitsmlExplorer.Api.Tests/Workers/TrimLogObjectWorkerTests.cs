@@ -126,7 +126,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
-                .ReturnsAsync(new QueryResult(true));;
+                .ReturnsAsync(new QueryResult(true));
 
             await worker.Execute(job);
 

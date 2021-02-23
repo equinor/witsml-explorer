@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 Target = new WellboreReference
                 {
                     WellUid = WellUid,
-                    WellboreUid = targetWellboreUid,
+                    WellboreUid = targetWellboreUid
                 }
             };
         }

@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Workers
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Uid = logUid,
-                    Name = logObject.Name,
+                    Name = logObject.Name
                 }.AsSingletonList()
             };
         }
