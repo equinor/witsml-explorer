@@ -28,7 +28,7 @@ namespace Witsml
         private readonly Uri serverUrl;
         private Logger queryLogger;
 
-        public WitsmlClient(string hostname, string username, string password, bool logQueries = false)
+        public WitsmlClient(string hostname, string username, string password, bool logQueries = false, bool sslCertAuth = true)
         {
             if (string.IsNullOrEmpty(hostname)) throw new ArgumentNullException(nameof(hostname), "Hostname is required");
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username), "Username is required");
@@ -36,13 +36,22 @@ namespace Witsml
 
             var serviceBinding = CreateBinding();
             var endpointAddress = new EndpointAddress(hostname);
-
+  
             client = new StoreSoapPortClient(serviceBinding, endpointAddress);
             client.ClientCredentials.UserName.UserName = username;
             client.ClientCredentials.UserName.Password = password;
             serverUrl = new Uri(hostname);
 
             client.Endpoint.EndpointBehaviors.Add(new EndpointBehavior());
+            if ( !sslCertAuth ){
+                client.ChannelFactory.Credentials.ServiceCertificate.SslCertificateAuthentication = new X509ServiceCertificateAuthentication
+                {
+                        CertificateValidationMode = X509CertificateValidationMode.None,
+                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck,
+                        TrustedStoreLocation = System.Security.Cryptography.X509Certificates.StoreLocation.LocalMachine
+                };
+            }
+
             SetupQueryLogging(logQueries);
         }
 
@@ -68,6 +77,7 @@ namespace Witsml
                 },
                 MaxReceivedMessageSize = int.MaxValue
             };
+            
             return binding;
         }
 
