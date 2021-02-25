@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Services
         private async Task VerifyCredentials(Uri serverUrl, Credentials credentials)
         {
             var witsmlClient = new WitsmlClient(serverUrl.ToString(), credentials.Username, credentials.Password,
-                StringHelpers.ToBoolean(configuration["LogQueries"]));
+                StringHelpers.ToBoolean(configuration["LogQueries"]),StringHelpers.ToBoolean(configuration["sslCertAuthN"]));
             await witsmlClient.TestConnectionAsync();
         }
     }
