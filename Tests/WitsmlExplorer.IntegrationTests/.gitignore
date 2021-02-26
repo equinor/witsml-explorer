@@ -1,1 +1,3 @@
 secrets.json
+# ignore Visual Code settings as they are often locally customized during development.
+launchSettings.json
