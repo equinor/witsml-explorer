@@ -16,16 +16,11 @@
     "Src/WitsmlExplorer.Frontend"
   ],
   "scripts": {
-    "eclint": "eclint check .",
-    "eclint:fix": "eclint fix .",
     "eslint": "eslint . --cache",
     "eslint:fix": "eslint . --cache --fix",
     "postinstall": "husky install"
   },
   "lint-staged": {
-    "*": [
-      "eclint check"
-    ],
     "*.{ts,tsx}": [
       "eslint",
       "npx prettier --check ."
@@ -35,7 +30,6 @@
     "@types/react": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
-    "eclint": "^2.8.1",
     "eslint-config-react": "^1.1.7",
     "husky": "^5.1.1",
     "lint-staged": "^10.5.4"
