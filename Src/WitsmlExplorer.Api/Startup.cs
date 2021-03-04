@@ -15,8 +15,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api
 {
-    public class Startup
-    {
+    public class Startup {
         readonly string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration configuration)
