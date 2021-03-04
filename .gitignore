@@ -1,3 +1,6 @@
+# ignore .env (dotenv) used for directoryspecific env vars
+.env
+
 # Rider settings
 .idea/
 

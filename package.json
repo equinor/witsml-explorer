@@ -16,15 +16,15 @@
     "Src/WitsmlExplorer.Frontend"
   ],
   "scripts": {
-    "eclint": "eclint check .",
-    "eclint:fix": "eclint fix .",
+    "dotnet-format": "dotnet-format --check",
+    "dotnet-format:fix": "dotnet-format --fix-style error",
     "eslint": "eslint . --cache",
     "eslint:fix": "eslint . --cache --fix",
     "postinstall": "husky install"
   },
   "lint-staged": {
-    "*": [
-      "eclint check"
+    "*.{cs,vb}": [
+      "dotnet-format --check --include "
     ],
     "*.{ts,tsx}": [
       "eslint",

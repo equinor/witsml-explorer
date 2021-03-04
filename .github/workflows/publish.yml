@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET Core
+      - name: Setup .NET5
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.100
+          dotnet-version: 5.0.200
           source-url: https://nuget.pkg.github.com/equinor/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -32,5 +32,3 @@ jobs:
         run: dotnet pack --configuration Release Src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
       - name: Publish
         run: dotnet nuget push Src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
-
-
