@@ -1,4 +1,4 @@
-# ignore .env (dotenv) used for directoryspecific env vars
+# ignore .env (dotenv)
 .env
 
 # Rider settings

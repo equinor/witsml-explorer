@@ -17,14 +17,14 @@
   ],
   "scripts": {
     "dotnet-format": "dotnet-format --check",
-    "dotnet-format:fix": "dotnet-format --fix-style error",
+    "dotnet-format:fix": "dotnet-format",
     "eslint": "eslint . --cache",
     "eslint:fix": "eslint . --cache --fix",
     "postinstall": "husky install"
   },
   "lint-staged": {
     "*.{cs,vb}": [
-      "dotnet-format --check --include "
+      "dotnet-format --check --include"
     ],
     "*.{ts,tsx}": [
       "eslint",
