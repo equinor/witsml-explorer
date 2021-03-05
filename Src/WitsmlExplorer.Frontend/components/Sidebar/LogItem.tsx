@@ -42,7 +42,6 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       key={nodeId}
       nodeId={nodeId}
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
-      leafNode
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectLogObject, payload: { log, well, wellbore } })}
     />

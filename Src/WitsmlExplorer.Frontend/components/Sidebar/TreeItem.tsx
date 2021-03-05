@@ -11,11 +11,10 @@ import NavigationType from "../../contexts/navigationType";
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
   selected?: boolean;
-  leafNode?: boolean;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, leafNode, ...other } = props; // eslint-disable-line
+  const { labelText, selected, ...other } = props; // eslint-disable-line
   const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
