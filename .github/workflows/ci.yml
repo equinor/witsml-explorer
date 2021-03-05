@@ -10,11 +10,11 @@ jobs:
     name: Backend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Setup .NET Core
+      - uses: actions/checkout@v2
+      - name: Setup .NET 5
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.100
+          dotnet-version: 5.0.200
       - name: Build with dotnet
         run: dotnet build /warnaserror --configuration Release
       - name: Test with dotnet

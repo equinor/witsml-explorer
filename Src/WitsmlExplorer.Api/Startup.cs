@@ -1,3 +1,7 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using System;
 using System.Reflection;
 using Carter;
@@ -8,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetCore.AutoRegisterDi;
 using Serilog;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
-using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api

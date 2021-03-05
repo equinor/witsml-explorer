@@ -1,3 +1,6 @@
+# ignore .env (dotenv)
+.env
+
 # Rider settings
 .idea/
 
