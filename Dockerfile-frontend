@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:12.12.0 AS builder
+FROM mhart/alpine-node:14.16.0 AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY Src/WitsmlExplorer.Frontend/package.json ./
