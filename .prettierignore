@@ -4,6 +4,7 @@ Src/Witsml
 Src/WitsmlExplorer.Api
 Src/WitsmlExplorer.Frontend/build
 Src/WitsmlExplorer.Frontend/obj
+Src/WitsmlExplorer.Frontend/bin
 
 *.md
 *.yml
