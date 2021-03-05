@@ -19,8 +19,7 @@
     "dotnet-format": "dotnet-format --check",
     "dotnet-format:fix": "dotnet-format",
     "eslint": "eslint . --cache",
-    "eslint:fix": "eslint . --cache --fix",
-    "postinstall": "husky install"
+    "eslint:fix": "eslint . --cache --fix"
   },
   "lint-staged": {
     "*.{cs,vb}": [
