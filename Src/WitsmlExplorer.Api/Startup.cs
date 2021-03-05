@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Carter;
 using System;
 using System.Reflection;
-using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -114,3 +114,6 @@ namespace WitsmlExplorer.Api
         }
     }
 }
+A
+A
+A
