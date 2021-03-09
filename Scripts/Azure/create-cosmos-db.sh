@@ -5,13 +5,11 @@ declare resourceGroupName
 declare databaseAccountName
 declare databaseName
 
-
 if [[ -f "./config.cfg" ]]; then
 
     . ./config.cfg
 
     echo "Creating account for CosmosDb..."
-    echo """
     az cosmosdb create \
         --subscription "$subscriptionId" \
         --resource-group "$resourceGroupName" \
@@ -29,7 +27,6 @@ if [[ -f "./config.cfg" ]]; then
         --name "$databaseName" \
         --throughput 400 \
         --verbose
-"""
 else
     echo "No config file found 'config.cfg'"
 fi
