@@ -1,3 +1,4 @@
+
 # Rider settings
 .idea/
 
@@ -6,7 +7,11 @@
 .vscode/
 
 # User-specific files
+*.rsuser
+*.suo
 *.user
+*.userosscache
+*.sln.docstates
 
 # Build results
 bin/
@@ -19,11 +24,83 @@ Tests/Witsml.Tests/config.json
 **/secrets.json
 config.json
 
-# Node output
-node_modules/
-
-# VS Code settings that should be shared
-!.vscode/settings.json
+# Common node modules locations
+/node_modules
+/wwwroot/node_modules
 
 # We ignore package-lock.json since we are using yarn
 package-lock.json
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.e2e
+$tf/
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Coverlet is a free, cross platform Code Coverage Tool
+coverage*[.json, .xml, .info]
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+
+# Local History for Visual Studio
+.localhistory/
