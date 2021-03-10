@@ -40,7 +40,6 @@ const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
       key={nodeId}
       nodeId={nodeId}
       labelText={trajectory.name}
-      leafNode
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTrajectory, payload: { trajectory, wellbore, well, trajectoryGroup } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, trajectory)}
