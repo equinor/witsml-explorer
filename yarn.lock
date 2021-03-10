@@ -7436,17 +7436,17 @@ static-extend@^0.1.1:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-ste-core@^2.0.9:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.0.9.tgz#4dd4082bc5aba9a88890947d5006e2af24ef1373"
-  integrity sha512-3Jkj3SckhmexGqtTB39XJx/TiUq5BEh4mNAXhCk3hoXubhs5FmwcUwCZOPZSZ/KamhGQAPsLBQXMuEHSCw0q3Q==
+ste-core@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.1.5.tgz#f7734d689a34438ff5e2428c67ffe2e19cfebc17"
+  integrity sha512-3LdfDu+PrQ5ywIRPoXaYGZezIyi9yl23otvQxtanV9xHRrBe0w1abSaW1L/hWGxH4MOscCGdoCsRe7lQTqGEjQ==
 
-ste-simple-events@^2.0.9:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.0.9.tgz#4dbb71163b5529824489578bf1e321d47fa9909a"
-  integrity sha512-QjquQ0veEA1dSlEmclcOAiwDIqRaiTSSSB8vwXd6nf5IpfhiYP/aivQNyfNpmb2+xHUlG1vc1pjiRBOlHWKuPw==
+ste-simple-events@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.1.5.tgz#dca428e0a2ff6817dca0448022c61d4e9fe52723"
+  integrity sha512-WETrzjkp/c88FLB1ck+/278xunia0R4+KjZiJFKRKJ2PZblX4X53TzsNLNeeKTXUa9aH95rDb2i+dRFVhhj+OA==
   dependencies:
-    ste-core "^2.0.9"
+    ste-core "^2.1.5"
 
 stealthy-require@^1.1.1:
   version "1.1.1"
