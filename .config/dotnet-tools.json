@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-format": {
+      "version": "5.0.211103",
+      "commands": ["dotnet-format"]
+    }
+  }
+}
