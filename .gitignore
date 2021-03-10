@@ -104,3 +104,12 @@ coverage*[.json, .xml, .info]
 
 # Local History for Visual Studio
 .localhistory/
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
