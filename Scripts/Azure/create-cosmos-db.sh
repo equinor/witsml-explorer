@@ -1,24 +1,32 @@
 #!/usr/bin/env bash
 
-#Import configuration
-. "./config.cfg"
+declare subscriptionId
+declare resourceGroupName
+declare databaseAccountName
+declare databaseName
 
-echo "Creating account for CosmosDb..."
-az cosmosdb create \
-    --subscription $subscriptionId \
-    --resource-group $resourceGroupName \
-    --name $databaseAccountName \
-    --kind GlobalDocumentDB \
-    --locations regionName="Norway East" failoverPriority=0 \
-    --default-consistency-level "Session" \
-    --verbose
+if [[ -f "./config.cfg" ]]; then
 
-echo "Creating an SQL database..."
-az cosmosdb sql database create \
-    --subscription $subscriptionId \
-    --resource-group $resourceGroupName \
-    --account-name $databaseAccountName \
-    --name $databaseName \
-    --throughput 400 \
-    --verbose
+    . ./config.cfg
 
+    echo "Creating account for CosmosDb..."
+    az cosmosdb create \
+        --subscription "$subscriptionId" \
+        --resource-group "$resourceGroupName" \
+        --name "$databaseAccountName" \
+        --kind GlobalDocumentDB \
+        --locations regionName="Norway East" failoverPriority=0 \
+        --default-consistency-level "Session" \
+        --verbose
+
+    echo "Creating an SQL database..."
+    az cosmosdb sql database create \
+        --subscription "$subscriptionId" \
+        --resource-group "$resourceGroupName" \
+        --account-name "$databaseAccountName" \
+        --name "$databaseName" \
+        --throughput 400 \
+        --verbose
+else
+    echo "No config file found 'config.cfg'"
+fi
