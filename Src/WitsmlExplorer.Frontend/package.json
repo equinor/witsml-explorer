@@ -48,7 +48,7 @@
     "react-dom": "16.13.1",
     "react-idle-timer": "^4.5.5",
     "react-moment": "1.1.1",
-    "react-virtualized-auto-sizer": "^1.0.4",
+    "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "ste-simple-events": "^2.0.9",
     "styled-components": "^5.2.1",
