@@ -163,6 +163,21 @@ The file should contain these fields if running tests against a given WITSML ser
   }
 }
 ```
+
+For a more secure alternative handling the credentials, you can make use of `dotnet user-secrets` to handle the fields:
+```
+# From the project root
+cd Tests/WitsmlExplorer.IntegrationTests
+
+# Initialize 'UserSecretsId' for this project if not done previously
+dotnet user-secrets init
+
+# Add fields
+dotnet user-secrets set "Witsml:Host" "<url>"
+dotnet user-secrets set "Witsml:Username" "<username>"
+dotnet user-secrets set "Witsml:Password" "<password>"
+```
+
 A db configuration is needed if running tests that uses the database (**NB** Use same name as in mySettings.json) :
 ```json
 {
