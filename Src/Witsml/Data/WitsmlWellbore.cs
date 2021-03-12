@@ -13,5 +13,7 @@ namespace Witsml.Data
         [XmlElement("purposeWellbore")] public string PurposeWellbore { get; set; }
         [XmlElement("typeWellbore")] public string TypeWellbore { get; set; }
         [XmlElement("commonData")] public WitsmlCommonData CommonData { get; set; }
+        [XmlElement("isActive")] public string IsActive { get; set; }
+
     }
 }
