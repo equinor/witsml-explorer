@@ -16,14 +16,14 @@
     "Src/WitsmlExplorer.Frontend"
   ],
   "scripts": {
-    "dotnet-format": "dotnet-format --check",
-    "dotnet-format:fix": "dotnet-format",
+    "dotnet-format": "dotnet tool run dotnet-format --check",
+    "dotnet-format:fix": "dotnet tool run dotnet-format",
     "eslint": "eslint . --cache",
     "eslint:fix": "eslint . --cache --fix"
   },
   "lint-staged": {
     "*.{cs,vb}": [
-      "dotnet-format --check --include"
+      "dotnet tool run dotnet-format --check --include"
     ],
     "*.{ts,tsx}": [
       "eslint",
