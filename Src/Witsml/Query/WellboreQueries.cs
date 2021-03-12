@@ -17,7 +17,9 @@ namespace Witsml.Query
                     NameWell = "",
                     TypeWellbore = "",
                     StatusWellbore = "",
+                    IsActive = "",
                     CommonData = new WitsmlCommonData()
+
                 }.AsSingletonList()
             };
         }

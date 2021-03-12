@@ -7,14 +7,16 @@ import { useTheme } from "@material-ui/core/styles";
 import NavigationContext from "../../contexts/navigationContext";
 import { ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
+import { IsActiveIcon } from "../Icons/IsActiveIcon";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
   selected?: boolean;
+  isActive?: boolean;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, ...other } = props; // eslint-disable-line
+  const { labelText, selected, isActive, ...other } = props; // eslint-disable-line
   const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
@@ -28,6 +30,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
+          {isActive && <IsActiveIcon />}
           <NavigationDrawer selected={selected} compactMode={isCompactMode}>
             {labelText}
           </NavigationDrawer>
