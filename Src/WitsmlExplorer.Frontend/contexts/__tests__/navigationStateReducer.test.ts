@@ -679,9 +679,9 @@ it("Should collapse child nodes when toggling an expanded parent node", () => {
 
 const SERVER_1 = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server" };
 const SERVER_2 = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2" };
-const WELLBORE_1: Wellbore = { uid: "wellbore1", wellUid: "well1", name: "Wellbore 1", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "" };
-const WELLBORE_2: Wellbore = { uid: "wellbore2", wellUid: "well2", name: "Wellbore 2", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "" };
-const WELLBORE_3: Wellbore = { uid: "wellbore3", wellUid: "well3", name: "Wellbore 3", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "" };
+const WELLBORE_1: Wellbore = { uid: "wellbore1", wellUid: "well1", name: "Wellbore 1", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: "" };
+const WELLBORE_2: Wellbore = { uid: "wellbore2", wellUid: "well2", name: "Wellbore 2", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: "" };
+const WELLBORE_3: Wellbore = { uid: "wellbore3", wellUid: "well3", name: "Wellbore 3", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: "" };
 const WELL_1: Well = { uid: "well1", name: "Well 1", wellbores: [WELLBORE_1], field: "", operator: "", country: "" };
 const WELL_2: Well = { uid: "well2", name: "Well 2", wellbores: [WELLBORE_2], field: "", operator: "", country: "" };
 const WELL_3: Well = { uid: "well3", name: "Well 3", wellbores: [WELLBORE_3], field: "", operator: "", country: "" };
