@@ -19,7 +19,6 @@ namespace Witsml.Query
                     StatusWellbore = "",
                     IsActive = "",
                     CommonData = new WitsmlCommonData()
-
                 }.AsSingletonList()
             };
         }
