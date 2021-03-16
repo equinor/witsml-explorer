@@ -10,6 +10,7 @@ export default interface Wellbore {
   wellName?: string;
   wellStatus: string;
   wellType: string;
+  isActive: string;
   wellboreParentUid?: string;
   wellboreParentName?: string;
   wellborePurpose?: string;
@@ -29,6 +30,7 @@ export function emptyWellbore(): Wellbore {
     wellName: "",
     wellStatus: "",
     wellType: "",
+    isActive: "",
     wellboreParentUid: "",
     wellboreParentName: "",
     wellborePurpose: "unknown",

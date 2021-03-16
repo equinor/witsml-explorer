@@ -71,6 +71,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
       wellName: wellbore.wellName,
       wellStatus: "",
       wellType: "",
+      isActive: "",
       wellboreParentUid: wellbore.uid,
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
