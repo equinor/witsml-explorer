@@ -38,8 +38,10 @@ namespace WitsmlExplorer.Api.Services
                     WellName = log.NameWell,
                     WellboreUid = log.UidWellbore,
                     WellboreName = log.NameWellbore,
+                    ObjectGrowing = log.ObjectGrowing,
                     ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
+
                     StartIndex = GetIndexAsString(log.IndexType, log.StartIndex, log.StartDateTimeIndex),
                     EndIndex = GetIndexAsString(log.IndexType, log.EndIndex, log.EndDateTimeIndex),
                     DateTimeLastChange = StringHelpers.ToDateTime(log.CommonData.DTimLastChange),
@@ -69,6 +71,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = witsmlLog.UidWellbore,
                 WellboreName = witsmlLog.NameWellbore,
                 IndexCurve = witsmlLog.IndexCurve.Value,
+                ObjectGrowing = witsmlLog.ObjectGrowing,
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber
             };
@@ -134,7 +137,7 @@ namespace WitsmlExplorer.Api.Services
                 StartIndex = Index.Start(witsmlLog).GetValueAsString(),
                 EndIndex = Index.End(witsmlLog).GetValueAsString(),
                 CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
-                    new CurveSpecification {Mnemonic = mnemonic, Unit = unit}),
+                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }),
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
@@ -147,7 +150,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 var data = new Dictionary<string, LogDataValue>();
                 foreach (var keyValuePair in valueRow.Split(",")
-                    .Select((value, index) => new {index, value}))
+                    .Select((value, index) => new { index, value }))
                 {
                     if (string.IsNullOrEmpty(keyValuePair.value)) continue;
                     data.Add(mnemonics[keyValuePair.index], new LogDataValue(keyValuePair.value));

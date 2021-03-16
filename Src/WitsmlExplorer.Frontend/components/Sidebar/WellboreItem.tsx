@@ -125,6 +125,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         labelText={"Logs"}
         onLabelClick={() => onSelectLogGroup(well, wellbore, logGroupId)}
         onContextMenu={(event) => onLogsContextMenu(event, wellbore)}
+        isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing === "true" || log.objectGrowing === "1")}
       >
         <LogTypeItem well={well} wellbore={wellbore} />
       </TreeItem>

@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string StartIndex { get; set; }
         public string EndIndex { get; set; }
+        public string ObjectGrowing { get; set; }
         public string ServiceCompany { get; set; }
         public string RunNumber { get; set; }
         public DateTime DateTimeCreation { get; set; }
