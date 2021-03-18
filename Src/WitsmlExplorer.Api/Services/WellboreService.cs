@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Services
                         WellName = witsmlWellbore.NameWell,
                         WellStatus = witsmlWellbore.StatusWellbore,
                         WellType = witsmlWellbore.TypeWellbore,
-                        IsActive = witsmlWellbore.IsActive,
+                        IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
                         DateTimeLastChange = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimLastChange)
                     })
                 .OrderBy(wellbore => wellbore.Name).ToList();

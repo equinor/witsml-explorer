@@ -45,7 +45,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       wellName: well.name,
       wellStatus: "",
       wellType: "",
-      isActive: "",
+      isActive: false,
       wellboreParentUid: "",
       wellboreParentName: "",
       wellborePurpose: "unknown"
