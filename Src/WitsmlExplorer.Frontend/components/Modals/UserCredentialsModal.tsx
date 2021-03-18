@@ -112,7 +112,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
         </>
       }
       confirmDisabled={!validText(username) || !validText(password)}
-      confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Save" : "Test"}
+      confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={props.onCancel}
       isLoading={isLoading}
