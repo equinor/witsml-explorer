@@ -19,7 +19,7 @@ interface LogItemProps {
   logTypeGroup: string;
   selected: boolean;
   nodeId: string;
-  objectGrowing: string;
+  objectGrowing: boolean;
 }
 
 const LogItem = (props: LogItemProps): React.ReactElement => {
@@ -44,7 +44,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
-      isActive={objectGrowing === "true" || objectGrowing === "1"}
+      isActive={objectGrowing}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectLogObject, payload: { log, well, wellbore } })}
     />
   );

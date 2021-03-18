@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Services
                     WellName = log.NameWell,
                     WellboreUid = log.UidWellbore,
                     WellboreName = log.NameWellbore,
-                    ObjectGrowing = log.ObjectGrowing,
+                    ObjectGrowing = StringHelpers.ToBooleanSafe(log.ObjectGrowing),
                     ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
 
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = witsmlLog.UidWellbore,
                 WellboreName = witsmlLog.NameWellbore,
                 IndexCurve = witsmlLog.IndexCurve.Value,
-                ObjectGrowing = witsmlLog.ObjectGrowing,
+                ObjectGrowing = StringHelpers.ToBooleanSafe(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber
             };

@@ -49,7 +49,7 @@ const LogTypeItem = (props: LogTypeItemProps): React.ReactElement => {
         nodeId={logTypeGroupDepth}
         onLabelClick={() => onSelectType(logTypeGroupDepth)}
         onContextMenu={(event) => onContextMenu(event, wellbore, IndexCurve.Depth)}
-        isActive={depthLogs.some((log) => log.objectGrowing === "true" || log.objectGrowing === "1")}
+        isActive={depthLogs.some((log) => log.objectGrowing)}
       >
         {listLogItemsByType(depthLogs, WITSML_INDEX_TYPE_MD, well, wellbore, logGroup, selectedLog)}
       </TreeItem>
@@ -58,7 +58,7 @@ const LogTypeItem = (props: LogTypeItemProps): React.ReactElement => {
         labelText={"Time"}
         onLabelClick={() => onSelectType(logTypeGroupTime)}
         onContextMenu={(event) => onContextMenu(event, wellbore, IndexCurve.Time)}
-        isActive={timeLogs.some((log) => log.objectGrowing === "true" || log.objectGrowing === "1")}
+        isActive={timeLogs.some((log) => log.objectGrowing)}
       >
         {listLogItemsByType(timeLogs, WITSML_INDEX_TYPE_DATE_TIME, well, wellbore, logGroup, selectedLog)}
       </TreeItem>
