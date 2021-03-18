@@ -8,7 +8,7 @@ export default interface LogObject {
   indexType?: string;
   startIndex?: string;
   endIndex?: string;
-  objectGrowing?: string;
+  objectGrowing?: boolean;
   serviceCompany?: string;
   runNumber?: string;
   indexCurve?: string;
@@ -26,7 +26,7 @@ export function emptyLogObject(): LogObject {
     startIndex: "",
     endIndex: "",
     indexCurve: "",
-    objectGrowing: "",
+    objectGrowing: false,
     serviceCompany: ""
   };
 }
