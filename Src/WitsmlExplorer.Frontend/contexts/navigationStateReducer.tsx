@@ -15,6 +15,7 @@ import { Server } from "../models/server";
 import ModificationType from "./modificationType";
 import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
+import filter, { EMPTY_FILTER, filterWells } from "./filter";
 
 export interface NavigationState {
   selectedServer: Server;
@@ -31,7 +32,7 @@ export interface NavigationState {
   currentSelected: Selectable;
   wells: Well[];
   filteredWells: Well[];
-  selectedFilter: string;
+  selectedFilter: filter;
   expandedTreeNodes: string[];
   currentProperties: Map<string, string>;
 }
@@ -57,7 +58,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   currentSelected: null,
   wells: [],
   filteredWells: [],
-  selectedFilter: "",
+  selectedFilter: EMPTY_FILTER,
   expandedTreeNodes: [],
   currentProperties: new Map<string, string>()
 };
@@ -616,15 +617,6 @@ const setFilter = (state: NavigationState, { payload }: SetFilterAction) => {
   };
 };
 
-const filterWells = (wells: Well[], filter = ""): Well[] => {
-  const limit = 30;
-  if (filter) {
-    const partialMatchFilter = (well: Well) => well.name.toLowerCase().includes(filter.toLowerCase());
-    return wells.filter(partialMatchFilter).slice(0, limit);
-  }
-  return wells.slice(0, limit);
-};
-
 const treeNodeIsExpanded = (expandedTreeNodes: string[], nodeId: string) => {
   const nodeIndex = expandedTreeNodes.findIndex((expandedNode) => expandedNode === nodeId);
   return nodeIndex !== -1;
@@ -776,7 +768,7 @@ export interface SelectTrajectoryAction extends Action {
 
 export interface SetFilterAction extends Action {
   type: NavigationType.SetFilter;
-  payload: { filter: string };
+  payload: { filter: filter };
 }
 
 export type NavigationAction =

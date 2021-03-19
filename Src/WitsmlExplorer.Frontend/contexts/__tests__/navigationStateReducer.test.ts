@@ -25,6 +25,7 @@ import Trajectory, { getTrajectoryProperties } from "../../models/trajectory";
 import { Server } from "../../models/server";
 import ModificationType from "../modificationType";
 import Rig from "../../models/rig";
+import filter, { EMPTY_FILTER } from "../filter";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -32,7 +33,7 @@ it("Should not update state when selecting current selected server", () => {
     currentSelected: SERVER_1,
     wells: [WELL_1],
     filteredWells: [WELL_1],
-    selectedFilter: WELL_1.name,
+    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_1 } };
@@ -47,7 +48,7 @@ it("Should update state when selecting another server", () => {
     ...getInitialState(),
     wells: [WELL_1],
     filteredWells: [WELL_1],
-    selectedFilter: WELL_1.name,
+    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_2 } };
@@ -700,6 +701,7 @@ const TRAJECTORY_1: Trajectory = {
   dTimTrajEnd: null,
   dTimTrajStart: null
 };
+const FILTER_1: filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
 const TRAJECTORY_GROUP_1 = "TrajectoryGroup";
 
 const getInitialState = (): NavigationState => {
