@@ -171,7 +171,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: WELLS,
-    selectedFilter: "",
+    selectedFilter: EMPTY_FILTER,
     currentProperties: getTrajectoryProperties(TRAJECTORY_1, WELLBORE_2)
   });
 });
@@ -179,7 +179,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
 it("Should filter wells", () => {
   const setFilterAction = {
     type: NavigationType.SetFilter,
-    payload: { filter: "2" }
+    payload: { filter: { ...EMPTY_FILTER, wellName: "2" } }
   };
   const actual = reducer(getInitialState(), setFilterAction);
   expect(actual).toStrictEqual({
@@ -188,7 +188,7 @@ it("Should filter wells", () => {
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: [WELL_2],
-    selectedFilter: "2"
+    selectedFilter: { ...EMPTY_FILTER, wellName: "2" }
   });
 });
 
