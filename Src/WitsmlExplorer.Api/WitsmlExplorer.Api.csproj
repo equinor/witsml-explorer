@@ -6,12 +6,9 @@
     <AssemblyName>WitsmlExplorer.Api</AssemblyName>
     <RootNamespace>WitsmlExplorer.Api</RootNamespace>
   </PropertyGroup>
-  <Target Name="DisplayMessages" BeforeTargets="Build">
-    <Message Importance="high" Text="Building with $(Configuration) configuration" />
-  </Target>
   <ItemGroup>
     <PackageReference Include="carter" Version="5.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.4" />
     <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.0" />
