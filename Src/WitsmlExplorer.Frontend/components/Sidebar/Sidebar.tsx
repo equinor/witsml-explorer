@@ -8,7 +8,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import WellItem from "./WellItem";
 import PropertiesPanel from "./PropertiesPanel";
 import NavigationContext from "../../contexts/navigationContext";
-import filter, { EMPTY_FILTER } from "../../contexts/filter";
+import Filter, { EMPTY_FILTER } from "../../contexts/filter";
 import NavigationType from "../../contexts/navigationType";
 import ServerManager from "./ServerManager";
 import { colors } from "../../styles/Colors";
@@ -18,7 +18,7 @@ import { Checkbox } from "@material-ui/core";
 const Sidebar = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { filteredWells, expandedTreeNodes, currentProperties, selectedFilter } = navigationState;
-  const [filter, setFilter] = useState<filter>(EMPTY_FILTER);
+  const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
 
   useEffect(() => {
     setFilter(selectedFilter);

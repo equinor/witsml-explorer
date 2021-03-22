@@ -1,18 +1,18 @@
 ﻿import Well from "../models/well";
 
-interface filter {
+interface Filter {
   wellName: string;
   isActive: boolean;
   objectGrowing: boolean;
 }
 
-export const EMPTY_FILTER: filter = {
+export const EMPTY_FILTER: Filter = {
   wellName: "",
   isActive: false,
   objectGrowing: false
 };
 
-export const filterWells = (wells: Well[], filter: filter): Well[] => {
+export const filterWells = (wells: Well[], filter: Filter): Well[] => {
   const limit = 30;
 
   if (filter) {
@@ -35,4 +35,4 @@ export const filterWells = (wells: Well[], filter: filter): Well[] => {
   return wells.slice(0, limit);
 };
 
-export default filter;
+export default Filter;

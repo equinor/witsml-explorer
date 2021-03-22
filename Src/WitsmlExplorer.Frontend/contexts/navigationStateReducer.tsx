@@ -15,7 +15,7 @@ import { Server } from "../models/server";
 import ModificationType from "./modificationType";
 import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
-import filter, { EMPTY_FILTER, filterWells } from "./filter";
+import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 
 export interface NavigationState {
   selectedServer: Server;
@@ -32,7 +32,7 @@ export interface NavigationState {
   currentSelected: Selectable;
   wells: Well[];
   filteredWells: Well[];
-  selectedFilter: filter;
+  selectedFilter: Filter;
   expandedTreeNodes: string[];
   currentProperties: Map<string, string>;
 }
@@ -768,7 +768,7 @@ export interface SelectTrajectoryAction extends Action {
 
 export interface SetFilterAction extends Action {
   type: NavigationType.SetFilter;
-  payload: { filter: filter };
+  payload: { filter: Filter };
 }
 
 export type NavigationAction =
