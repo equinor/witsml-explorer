@@ -25,6 +25,7 @@ import Trajectory, { getTrajectoryProperties } from "../../models/trajectory";
 import { Server } from "../../models/server";
 import ModificationType from "../modificationType";
 import Rig from "../../models/rig";
+import Filter, { EMPTY_FILTER } from "../filter";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -32,7 +33,7 @@ it("Should not update state when selecting current selected server", () => {
     currentSelected: SERVER_1,
     wells: [WELL_1],
     filteredWells: [WELL_1],
-    selectedFilter: WELL_1.name,
+    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_1 } };
@@ -47,7 +48,7 @@ it("Should update state when selecting another server", () => {
     ...getInitialState(),
     wells: [WELL_1],
     filteredWells: [WELL_1],
-    selectedFilter: WELL_1.name,
+    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_2 } };
@@ -170,7 +171,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: WELLS,
-    selectedFilter: "",
+    selectedFilter: EMPTY_FILTER,
     currentProperties: getTrajectoryProperties(TRAJECTORY_1, WELLBORE_2)
   });
 });
@@ -178,7 +179,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
 it("Should filter wells", () => {
   const setFilterAction = {
     type: NavigationType.SetFilter,
-    payload: { filter: "2" }
+    payload: { filter: { ...EMPTY_FILTER, wellName: "2" } }
   };
   const actual = reducer(getInitialState(), setFilterAction);
   expect(actual).toStrictEqual({
@@ -187,7 +188,7 @@ it("Should filter wells", () => {
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: [WELL_2],
-    selectedFilter: "2"
+    selectedFilter: { ...EMPTY_FILTER, wellName: "2" }
   });
 });
 
@@ -700,6 +701,7 @@ const TRAJECTORY_1: Trajectory = {
   dTimTrajEnd: null,
   dTimTrajStart: null
 };
+const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
 const TRAJECTORY_GROUP_1 = "TrajectoryGroup";
 
 const getInitialState = (): NavigationState => {

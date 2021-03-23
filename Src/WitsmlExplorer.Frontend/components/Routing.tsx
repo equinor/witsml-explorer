@@ -73,7 +73,7 @@ const Routing = (): React.ReactElement => {
 
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWell) {
-      const setFilterAction: SetFilterAction = { type: NavigationType.SetFilter, payload: { filter: selectedWell.name } };
+      const setFilterAction: SetFilterAction = { type: NavigationType.SetFilter, payload: { filter: { ...navigationState.selectedFilter, wellName: selectedWell.name } } };
       dispatchNavigation(setFilterAction);
     }
   }, [selectedWell]);
