@@ -29,6 +29,22 @@ export const filterWells = (wells: Well[], filter: Filter): Well[] => {
       });
     }
 
+    if (filter.objectGrowing) {
+      filteredWells = filteredWells.map((well) => {
+        return {
+          ...well,
+          wellbores: [
+            ...well.wellbores.map((wellbore) => {
+              return {
+                ...wellbore,
+                logs: wellbore.logs ? [...wellbore.logs.filter((logObject) => logObject.objectGrowing)] : wellbore.logs
+              };
+            })
+          ]
+        };
+      });
+    }
+
     return filteredWells.slice(0, limit);
   }
 
