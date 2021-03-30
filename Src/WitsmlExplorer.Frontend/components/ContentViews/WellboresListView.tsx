@@ -13,7 +13,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell } = navigationState;
+  const { selectedWell, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
@@ -26,7 +26,7 @@ export const WellboresListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
-    const contextMenuProps: WellboreContextMenuProps = { dispatchNavigation, dispatchOperation, wellbore };
+    const contextMenuProps: WellboreContextMenuProps = { dispatchNavigation, dispatchOperation, servers, wellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };
