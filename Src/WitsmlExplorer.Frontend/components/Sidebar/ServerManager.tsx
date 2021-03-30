@@ -144,7 +144,7 @@ const ServerManager = (): React.ReactElement => {
             </MenuItem>
           ))}
           <Divider />
-          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID} disabled>
+          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID}>
             <ListItemIcon>
               <NewIcon />
             </ListItemIcon>
