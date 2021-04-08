@@ -69,39 +69,39 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   // Uncomment to enable user edit of server list
-  // const showDeleteModal = () => {
-  //   const onCancel = () => {
-  //     const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
-  //     dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
-  //   };
-  //
-  //   const onConfirm = async () => {
-  //     const abortController = new AbortController();
-  //
-  //     try {
-  //       await ServerService.removeServer(server.id, abortController.signal);
-  //       dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
-  //     } catch (error) {
-  //       //TODO Add a commmon way to handle such errors.
-  //     } finally {
-  //       dispatchOperation({ type: OperationType.HideModal });
-  //     }
-  //   };
-  //
-  //   const confirmModal = (
-  //     <ModalDialog
-  //       heading={`Remove the server "${server.name}"?`}
-  //       content={<>Removing a server will permanently remove it from the list.</>}
-  //       confirmColor={"secondary"}
-  //       confirmText={"Remove server"}
-  //       onCancel={onCancel}
-  //       onSubmit={onConfirm}
-  //       isLoading={isLoading}
-  //       switchButtonPlaces={true}
-  //     />
-  //   );
-  //   dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
-  // };
+  const showDeleteModal = () => {
+    const onCancel = () => {
+      const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+    };
+
+    const onConfirm = async () => {
+      const abortController = new AbortController();
+
+      try {
+        await ServerService.removeServer(server.id, abortController.signal);
+        dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
+      } catch (error) {
+        //TODO Add a commmon way to handle such errors.
+      } finally {
+        dispatchOperation({ type: OperationType.HideModal });
+      }
+    };
+
+    const confirmModal = (
+      <ModalDialog
+        heading={`Remove the server "${server.name}"?`}
+        content={<>Removing a server will permanently remove it from the list.</>}
+        confirmColor={"secondary"}
+        confirmText={"Remove server"}
+        onCancel={onCancel}
+        onSubmit={onConfirm}
+        isLoading={isLoading}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
+  };
 
   const runServerNameValidation = () => {
     setDisplayServerNameError(server.name.length === 0);
@@ -112,9 +112,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   // Uncomment to enable user edit of server list
-  // const validateForm = () => {
-  //   return server.name.length !== 0 && isUrlValid(server.url);
-  // };
+  const validateForm = () => {
+    return server.name.length !== 0 && isUrlValid(server.url);
+  };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
     setConnectionVerified(false);
@@ -148,7 +148,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               onChange={onChangeUrl}
               onBlur={runUrlValidation}
               required
-              disabled
             />
             {connectionVerified && <ThumbUpOutlinedIcon style={{ color: colors.interactive.successResting }} variant={"outlined"} fontSize={"large"} />}
             <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
@@ -166,7 +165,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onBlur={runServerNameValidation}
             onChange={onChangeName}
             required
-            disabled
           />
           <TextField
             id="description"
@@ -175,15 +173,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             fullWidth
             inputProps={{ maxLength: 64 }}
             onChange={(e) => setServer({ ...server, description: e.target.value })}
-            disabled
           />
         </>
       }
       onSubmit={onSubmit}
       isLoading={isLoading}
-      // onDelete={server.id ? showDeleteModal : null}
-      // confirmDisabled={!validateForm()}
-      confirmDisabled
+      onDelete={server.id ? showDeleteModal : null}
+      confirmDisabled={!validateForm()}
     />
   );
 };
