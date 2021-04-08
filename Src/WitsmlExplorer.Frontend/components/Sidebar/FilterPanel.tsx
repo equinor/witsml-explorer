@@ -34,6 +34,14 @@ const FilterPanel = (): React.ReactElement => {
             value={filter.wellName}
             autoComplete={"off"}
           />
+          <SearchTextField
+            id="filter-wellLimit"
+            label="Limit number of wells (0 for no limit)"
+            type="number"
+            InputProps={{ inputProps: { min: 0 } }}
+            onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellLimit: Number(event.target.value) } } })}
+            value={filter.wellLimit}
+          />
           <FormControlLabel
             control={
               <Checkbox
