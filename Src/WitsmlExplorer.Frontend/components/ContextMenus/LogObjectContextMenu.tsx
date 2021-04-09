@@ -201,7 +201,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)} disabled={checkedLogObjectRows.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
