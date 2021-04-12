@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Wellbore from "../../models/wellbore";
 import LogObject from "../../models/logObject";
 import { v4 as uuid } from "uuid";
-import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface, LogPropertiesModalMode } from "../Modals/LogPropertiesModal";
+import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
@@ -15,6 +15,7 @@ import LogReference from "../../models/jobs/logReference";
 import { Server } from "../../models/server";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import WellboreReference from "../../models/jobs/wellboreReference";
+import { PropertiesModalMode } from "../Modals/ModalParts";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -80,7 +81,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       wellboreName: wellbore.name,
       indexCurve: indexCurve === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth
     };
-    const logPropertiesModalProps: LogPropertiesModalInterface = { mode: LogPropertiesModalMode.New, logObject: newLog, dispatchOperation };
+    const logPropertiesModalProps: LogPropertiesModalInterface = { mode: PropertiesModalMode.New, logObject: newLog, dispatchOperation };
     const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <LogPropertiesModal {...logPropertiesModalProps} /> };
     dispatchOperation(action);
   };
@@ -106,7 +107,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"newlog"} onClick={onClickNewLog}>
+        <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <ListItemIcon>
             <NewIcon />
           </ListItemIcon>

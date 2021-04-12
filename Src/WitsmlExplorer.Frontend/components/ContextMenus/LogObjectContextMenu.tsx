@@ -1,4 +1,4 @@
-import LogPropertiesModal, { LogPropertiesModalMode } from "../Modals/LogPropertiesModal";
+import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
 import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
@@ -17,6 +17,7 @@ import CredentialsService, { ServerCredentials } from "../../services/credential
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import NestedMenuItem from "./NestedMenuItem";
 import { LogObjectRow } from "../ContentViews/LogsListView";
+import { PropertiesModalMode } from "../Modals/ModalParts";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -45,7 +46,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
 
   const onClickProperties = () => {
     const logObject = checkedLogObjectRows[0];
-    const logPropertiesModalProps = { mode: LogPropertiesModalMode.Edit, logObject, dispatchOperation };
+    const logPropertiesModalProps = { mode: PropertiesModalMode.Edit, logObject, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogPropertiesModal {...logPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
