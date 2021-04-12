@@ -15,14 +15,14 @@ it("Should set context menu", () => {
 });
 
 it("Should hide context menu", () => {
-  const removeCurrentcontextMenu = {
+  const removeCurrentContextMenu = {
     type: OperationType.HideContextMenu
   };
   const showingContextMenu = {
     ...getEmptyState(),
     contextMenu: { component: <></>, position: { mouseX: 0, mouseY: 0 } }
   };
-  const actual = reducer(showingContextMenu, removeCurrentcontextMenu);
+  const actual = reducer(showingContextMenu, removeCurrentContextMenu);
   expect(actual).toStrictEqual({
     ...getEmptyState(),
     contextMenu: EMPTY_CONTEXT_MENU
