@@ -6,36 +6,28 @@ import ModalDialog from "./ModalDialog";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
-
-export enum WellborePropertiesModalMode {
-  New,
-  Edit
-}
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export interface WellborePropertiesModalProps {
-  mode: WellborePropertiesModalMode;
+  mode: PropertiesModalMode;
   wellbore: Wellbore;
   dispatchOperation: (action: HideModalAction) => void;
 }
 
 const purposeValues = ["appraisal", "development", "exploration", "fluid storage", "general srvc", "mineral", "unknown"];
 
-const validText = (text: string): boolean => {
-  return text && text.length > 0;
-};
-
 const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.ReactElement => {
   const { mode, wellbore, dispatchOperation } = props;
   const [editableWellbore, setEditableWellbore] = useState<Wellbore>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const editMode = mode === WellborePropertiesModalMode.Edit;
+  const editMode = mode === PropertiesModalMode.Edit;
 
   const onSubmit = async (updatedWellbore: Wellbore) => {
     setIsLoading(true);
     const wellboreJob = {
       wellbore: updatedWellbore
     };
-    await JobService.orderJob(mode == WellborePropertiesModalMode.New ? JobType.CreateWellbore : JobType.ModifyWellbore, wellboreJob);
+    await JobService.orderJob(mode == PropertiesModalMode.New ? JobType.CreateWellbore : JobType.ModifyWellbore, wellboreJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -52,7 +44,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
     <>
       {editableWellbore && (
         <ModalDialog
-          heading={mode == WellborePropertiesModalMode.New ? `New Wellbore` : `Edit properties for ${editableWellbore.name}`}
+          heading={mode == PropertiesModalMode.New ? `New Wellbore` : `Edit properties for ${editableWellbore.name}`}
           content={
             <>
               <TextField
@@ -79,8 +71,8 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
               />
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableWellbore.wellUid} fullWidth />
               <TextField disabled id="wellName" label="well name" defaultValue={editableWellbore.wellName} fullWidth />
-              <TextField disabled id={"wellboreparent"} label={"wellbore parent"} defaultValue={editableWellbore.wellboreParentName} fullWidth />
-              <TextField id={"wellborepurpose"} select label={"wellbore purpose"} value={editableWellbore.wellborePurpose} fullWidth onChange={(e) => onChangePurpose(e)}>
+              <TextField disabled id={"wellboreParent"} label={"wellbore parent"} defaultValue={editableWellbore.wellboreParentName} fullWidth />
+              <TextField id={"wellborePurpose"} select label={"wellbore purpose"} value={editableWellbore.wellborePurpose} fullWidth onChange={(e) => onChangePurpose(e)}>
                 {purposeValues &&
                   purposeValues.map((purposeValue) => (
                     <MenuItem key={purposeValue} value={purposeValue}>

@@ -5,21 +5,13 @@ import ModalDialog from "./ModalDialog";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
-
-export enum WellPropertiesModalMode {
-  New,
-  Edit
-}
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export interface WellPropertiesModalProps {
-  mode: WellPropertiesModalMode;
+  mode: PropertiesModalMode;
   well: Well;
   dispatchOperation: (action: HideModalAction) => void;
 }
-
-const validText = (text: string): boolean => {
-  return text && text.length > 0;
-};
 
 const validTimeZone = (timeZone: string): boolean => {
   const timeZoneValidator = new RegExp("(\\+(0\\d|1[0-4])|-(0\\d|1[0-2])):(00|30|45)");
@@ -30,14 +22,14 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
   const { mode, well, dispatchOperation } = props;
   const [editableWell, setEditableWell] = useState<Well>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const editMode = mode === WellPropertiesModalMode.Edit;
+  const editMode = mode === PropertiesModalMode.Edit;
 
   const onSubmit = async (updatedWell: Well) => {
     setIsLoading(true);
     const wellJob = {
       well: updatedWell
     };
-    await JobService.orderJob(mode == WellPropertiesModalMode.New ? JobType.CreateWell : JobType.ModifyWell, wellJob);
+    await JobService.orderJob(mode == PropertiesModalMode.New ? JobType.CreateWell : JobType.ModifyWell, wellJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -50,7 +42,7 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
     <>
       {editableWell && (
         <ModalDialog
-          heading={mode == WellPropertiesModalMode.New ? `New Well` : `Edit properties for Well: ${editableWell.name}`}
+          heading={mode == PropertiesModalMode.New ? `New Well` : `Edit properties for Well: ${editableWell.name}`}
           content={
             <>
               <TextField
