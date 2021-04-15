@@ -8,7 +8,8 @@ namespace WitsmlExplorer.Api.Models
     {
         Add,
         Remove,
-        Update
+        Update,
+        BatchUpdate
     }
 
     public abstract class RefreshAction
@@ -31,6 +32,19 @@ namespace WitsmlExplorer.Api.Models
         public RefreshWell(Uri serverUrl, string wellUid, RefreshType refreshType) : base(serverUrl)
         {
             WellUid = wellUid;
+            RefreshType = refreshType;
+        }
+    }
+
+    public class RefreshWells : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.Well;
+        public string[] WellUids { get; }
+        public RefreshType RefreshType { get; }
+
+        public RefreshWells(Uri serverUrl, string[] wellUids, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUids = wellUids;
             RefreshType = refreshType;
         }
     }
