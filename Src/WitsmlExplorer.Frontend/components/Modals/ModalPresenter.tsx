@@ -5,7 +5,7 @@ const ModalPresenter = (): React.ReactElement => {
   const { operationState } = React.useContext(OperationContext);
   const { modal } = operationState;
 
-  return <>{modal && modal}</>;
+  return <>{modal}</>;
 };
 
 export default ModalPresenter;

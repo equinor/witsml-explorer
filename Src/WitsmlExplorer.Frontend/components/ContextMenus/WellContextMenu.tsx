@@ -1,19 +1,20 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
 import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import WellPropertiesModal, { WellPropertiesModalMode, WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
+import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
 import { DeleteIcon, NewIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import { v4 as uuid } from "uuid";
 import Wellbore from "../../models/wellbore";
-import WellborePropertiesModal, { WellborePropertiesModalMode, WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
+import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import JobService, { JobType } from "../../services/jobService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import DeleteWellJob from "../../models/jobs/deleteWellJob";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import NestedMenuItem from "./NestedMenuItem";
+import { PropertiesModalMode } from "../Modals/ModalParts";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -33,7 +34,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       country: "",
       timeZone: ""
     };
-    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: WellPropertiesModalMode.New, well: newWell, dispatchOperation };
+    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.New, well: newWell, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
   };
 
@@ -50,7 +51,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       wellboreParentName: "",
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: WellborePropertiesModalMode.New, wellbore: newWellbore, dispatchOperation };
+    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: PropertiesModalMode.New, wellbore: newWellbore, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellborePropertiesModal {...wellborePropertiesModalProps} /> });
   };
 
@@ -84,7 +85,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   };
 
   const onClickProperties = () => {
-    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: WellPropertiesModalMode.Edit, well, dispatchOperation };
+    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.Edit, well, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
   };
 

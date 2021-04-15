@@ -5,11 +5,7 @@ import ModalDialog from "./ModalDialog";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
-
-export enum LogPropertiesModalMode {
-  New,
-  Edit
-}
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export enum IndexCurve {
   Depth = "Depth",
@@ -17,20 +13,16 @@ export enum IndexCurve {
 }
 
 export interface LogPropertiesModalInterface {
-  mode: LogPropertiesModalMode;
+  mode: PropertiesModalMode;
   logObject: LogObject;
   dispatchOperation: (action: HideModalAction) => void;
 }
-
-const validText = (text: string): boolean => {
-  return text && text.length > 0;
-};
 
 const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElement => {
   const { mode, logObject, dispatchOperation } = props;
   const [editableLogObject, setEditableLogObject] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const editMode = mode === LogPropertiesModalMode.Edit;
+  const editMode = mode === PropertiesModalMode.Edit;
   const validIndexCurves = [IndexCurve.Depth, IndexCurve.Time];
 
   const onSubmit = async (updatedLog: LogObject) => {

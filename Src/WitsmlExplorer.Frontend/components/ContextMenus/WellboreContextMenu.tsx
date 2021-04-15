@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
 import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import WellborePropertiesModal, { WellborePropertiesModalMode, WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
+import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+
 import { DeleteIcon, NewIcon, PasteIcon, RefreshIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
@@ -19,7 +21,7 @@ import LogReference from "../../models/jobs/logReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import NestedMenuItem from "./NestedMenuItem";
 import LogObject from "../../models/logObject";
-import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface, LogPropertiesModalMode } from "../Modals/LogPropertiesModal";
+import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreAction } from "../../contexts/navigationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
@@ -76,7 +78,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: WellborePropertiesModalMode.New, wellbore: newWellbore, dispatchOperation };
+    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: PropertiesModalMode.New, wellbore: newWellbore, dispatchOperation };
     const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <WellborePropertiesModal {...wellborePropertiesModalProps} /> };
     dispatchOperation(action);
   };
@@ -91,7 +93,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
       wellboreName: wellbore.name,
       indexCurve: IndexCurve.Depth
     };
-    const logPropertiesModalProps: LogPropertiesModalInterface = { mode: LogPropertiesModalMode.New, logObject: newLog, dispatchOperation };
+    const logPropertiesModalProps: LogPropertiesModalInterface = { mode: PropertiesModalMode.New, logObject: newLog, dispatchOperation };
     const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <LogPropertiesModal {...logPropertiesModalProps} /> };
     dispatchOperation(action);
   };
@@ -187,7 +189,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   const onClickProperties = async () => {
     const controller = new AbortController();
     const detailedWellbore = await WellboreService.getWellbore(wellbore.wellUid, wellbore.uid, controller.signal);
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: WellborePropertiesModalMode.Edit, wellbore: detailedWellbore, dispatchOperation };
+    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: PropertiesModalMode.Edit, wellbore: detailedWellbore, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellborePropertiesModal {...wellborePropertiesModalProps} /> });
   };
 
