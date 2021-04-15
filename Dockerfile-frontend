@@ -5,7 +5,7 @@ COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
 RUN yarn
 COPY Src/WitsmlExplorer.Frontend ./
-RUN npx eclint check . && yarn test
+RUN yarn test
 RUN yarn build
 
 ENV NODE_ENV=production

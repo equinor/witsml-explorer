@@ -11,7 +11,6 @@ interface Action {
 }
 
 interface PayloadAction extends Action {
-  type: OperationType;
   payload: any;
 }
 

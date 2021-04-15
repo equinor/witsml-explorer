@@ -13,7 +13,8 @@ FROM base as backend
 WORKDIR /app
 COPY Src/ Src/
 COPY Tests/WitsmlExplorer.Api.Tests Tests/WitsmlExplorer.Api.Tests
-RUN cd Tests/WitsmlExplorer.Api.Tests && dotnet test -c Release
+WORKDIR /app/Tests/WitsmlExplorer.Api.Tests 
+RUN dotnet test -c Release
 
 FROM backend as publish
 WORKDIR /app/Src/WitsmlExplorer.Api

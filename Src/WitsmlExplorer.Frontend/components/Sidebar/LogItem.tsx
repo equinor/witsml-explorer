@@ -9,7 +9,6 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationType from "../../contexts/operationType";
 import NavigationType from "../../contexts/navigationType";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import { Server } from "../../models/server";
 
 interface LogItemProps {
   log: LogObject;
@@ -30,7 +29,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
     navigationState: { selectedServer, servers }
   } = useContext(NavigationContext);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject, selectedServer: Server, servers: Server[]) => {
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
     const contextProps: LogObjectContextMenuProps = { checkedLogObjectRows: [].concat(log), dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
@@ -39,7 +38,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
 
   return (
     <TreeItem
-      onContextMenu={(event) => onContextMenu(event, log, selectedServer, servers)}
+      onContextMenu={(event) => onContextMenu(event, log)}
       key={nodeId}
       nodeId={nodeId}
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}

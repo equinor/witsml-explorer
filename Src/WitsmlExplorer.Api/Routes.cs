@@ -70,31 +70,28 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(witsmlServers);
         }
 
-        private Task CreateWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task CreateWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
         {
-            throw new NotImplementedException("Need user authorization to be implemented before allowing write actions on server list.");
-            // var witsmlServer = await httpRequest.Body.Deserialize<Server>();
-            // var updatedWitsmlServer = await witsmlServerRepository.CreateDocumentAsync(witsmlServer);
-            // await httpResponse.AsJson(updatedWitsmlServer);
+            var witsmlServer = await httpRequest.Body.Deserialize<Server>();
+            var updatedWitsmlServer = await witsmlServerRepository.CreateDocumentAsync(witsmlServer);
+            await httpResponse.AsJson(updatedWitsmlServer);
         }
 
-        private Task UpdateWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task UpdateWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
         {
-            throw new NotImplementedException("Need user authorization to be implemented before allowing write actions on server list.");
-            // var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
-            // var patchedServer = await httpRequest.Body.Deserialize<Server>();
-            //
-            // var updatedServer = await witsmlServerRepository.UpdateDocumentAsync(witsmlServerId, patchedServer);
-            // await httpResponse.AsJson(updatedServer);
+            var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
+            var patchedServer = await httpRequest.Body.Deserialize<Server>();
+            
+            var updatedServer = await witsmlServerRepository.UpdateDocumentAsync(witsmlServerId, patchedServer);
+            await httpResponse.AsJson(updatedServer);
         }
 
-        private Task DeleteWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task DeleteWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
         {
-            throw new NotImplementedException("Need user authorization to be implemented before allowing write actions on server list.");
-            // var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
-            //
-            // await witsmlServerRepository.DeleteDocumentAsync(witsmlServerId);
-            // httpResponse.StatusCode = StatusCodes.Status204NoContent;
+            var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
+            
+            await witsmlServerRepository.DeleteDocumentAsync(witsmlServerId);
+            httpResponse.StatusCode = StatusCodes.Status204NoContent;
         }
 
         private async Task GetAllWells(HttpRequest httpRequest, HttpResponse httpResponse)
