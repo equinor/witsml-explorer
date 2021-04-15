@@ -16,7 +16,6 @@ import NavigationType from "../../contexts/navigationType";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import { calculateTrajectoryId } from "../../models/trajectory";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
-import { Server } from "../../models/server";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 
@@ -34,7 +33,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, servers: Server[]) => {
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellboreContextMenuProps = { wellbore, servers, dispatchOperation, dispatchNavigation };
     const position = getContextMenuPosition(event);
@@ -111,7 +110,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
   return (
     <TreeItem
-      onContextMenu={(event) => onContextMenu(event, wellbore, servers)}
+      onContextMenu={(event) => onContextMenu(event, wellbore)}
       key={nodeId}
       nodeId={nodeId}
       selected={selected}

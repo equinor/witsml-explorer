@@ -9,7 +9,6 @@ import NavigationType from "../../contexts/navigationType";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 import OperationContext from "../../contexts/operationContext";
-import { Server } from "../../models/server";
 
 interface WellItemProps {
   well: Well;
@@ -21,7 +20,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
   const { selectedWellbore, selectedWell, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well, servers: Server[]) => {
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellContextMenuProps = { well, servers, dispatchOperation };
     const position = getContextMenuPosition(event);
@@ -34,7 +33,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
 
   return (
     <TreeItem
-      onContextMenu={(event) => onContextMenu(event, well, servers)}
+      onContextMenu={(event) => onContextMenu(event, well)}
       selected={selectedWell?.uid === well.uid ? true : undefined}
       key={well.uid}
       labelText={well.name}
