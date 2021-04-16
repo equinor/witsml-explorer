@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Query
                         Uid = well.Uid,
                         Name = well.Name,
                         Field = well.Field,
+                        TimeZone = well.TimeZone,
                         Country = well.Country,
                         Operator = well.Operator
                     }
