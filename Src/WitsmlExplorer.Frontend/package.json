@@ -46,7 +46,7 @@
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "react-idle-timer": "^4.6.0",
+    "react-idle-timer": "^4.6.1",
     "react-moment": "1.1.1",
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
