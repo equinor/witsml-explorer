@@ -159,12 +159,12 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const onClickRefresh = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const log = await LogObjectService.getLog(checkedLogObjectRows[0].wellUid, checkedLogObjectRows[0].wellboreUid, checkedLogObjectRows[0].uid);
     dispatchNavigation({
       type: ModificationType.UpdateLogObject,
       payload: { log: log }
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (
