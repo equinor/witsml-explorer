@@ -72,12 +72,10 @@ const ServerManager = (): React.ReactElement => {
     };
   }, []);
 
-  const onSelectItem = async (event: any) => {
-    const serverId = event.target.value;
-    if (serverId === NEW_SERVER_ID) {
+  const onSelectItem = async (server: Server) => {
+    if (server.id === NEW_SERVER_ID) {
       onEditItem(emptyServer());
     } else {
-      const server = servers.find((server: Server) => server.id == serverId);
       const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
       dispatchNavigation(action);
       CredentialsService.setSelectedServer(server);
@@ -132,9 +130,9 @@ const ServerManager = (): React.ReactElement => {
       <IdleTimer onIdle={onIdle} timeout={IDLE_TIMEOUT} />
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
-        <Select labelId="servers-label" value={selectedServer?.id ?? ""} onChange={onSelectItem} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
+        <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers.map((server: Server) => (
-            <MenuItem value={server.id} key={server.id}>
+            <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
               <Typography color={"initial"}>{server.name}</Typography>
               {isOpen && (
                 <ListItemSecondaryAction onClick={() => onEditItem(server)}>
