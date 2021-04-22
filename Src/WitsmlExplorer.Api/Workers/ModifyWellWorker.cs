@@ -8,7 +8,6 @@ using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -18,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers
         Task<(WorkerResult, RefreshAction)> Execute(ModifyWellJob job);
     }
 
-    public class ModifyWellWorker: IModifyWellWorker
+    public class ModifyWellWorker: AbstractModifyWellWorker, IModifyWellWorker
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -32,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Well);
             var wellUid = job.Well.Uid;
             var wellName = job.Well.Name;
-            var query = WellUpdateQueries.UpdateQuery(job.Well);
+            var query = CreateUpdateQuery(job.Well);
 
             var result = await witsmlClient.UpdateInStoreAsync(query);
             if (result.IsSuccessful)
