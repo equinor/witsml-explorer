@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml;
+using Witsml.Data;
+using Witsml.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
@@ -15,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers
         Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job);
     }
 
-    public class BatchModifyWellWorker : AbstractModifyWellWorker, IBatchModifyWellWorker
+    public class BatchModifyWellWorker : IBatchModifyWellWorker
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -49,6 +51,22 @@ namespace WitsmlExplorer.Api.Workers
         private void Verify(IEnumerable<Well> wells)
         {
             if (!wells.Any()) throw new InvalidOperationException("payload cannot be empty");
+        }
+
+        private static WitsmlWells CreateUpdateQuery(Well well)
+        {
+            return new WitsmlWells
+            {
+                Wells = new WitsmlWell
+                {
+                    Uid = well.Uid,
+                    Name = well.Name,
+                    Field = well.Field,
+                    TimeZone = well.TimeZone,
+                    Country = well.Country,
+                    Operator = well.Operator
+                }.AsSingletonList()
+            };
         }
     }
 }
