@@ -35,6 +35,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICreateLogWorker createLogWorker;
         private readonly ICreateWellWorker createWellWorker;
         private readonly ICreateWellboreWorker createWellboreWorker;
+        private readonly IBatchModifyWellWorker batchModifyWellWorker;
 
         public JobService(
             IHubContext<NotificationsHub> hubContext,
@@ -54,7 +55,8 @@ namespace WitsmlExplorer.Api.Services
             IModifyWellboreWorker modifyWellboreWorker,
             ICreateLogWorker createLogWorker,
             ICreateWellWorker createWellWorker,
-            ICreateWellboreWorker createWellboreWorker)
+            ICreateWellboreWorker createWellboreWorker,
+            IBatchModifyWellWorker batchModifyWellWorker)
         {
             this.hubContext = hubContext;
             this.copyLogWorker = copyLogWorker;
@@ -74,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             this.createLogWorker = createLogWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
+            this.batchModifyWellWorker = batchModifyWellWorker;
         }
 
         public async Task CreateJob(JobType jobType, Stream jobStream)
@@ -149,6 +152,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.CreateWellbore:
                     var createWellboreJob = await jobStream.Deserialize<CreateWellboreJob>();
                     (result, refreshAction) = await createWellboreWorker.Execute(createWellboreJob);
+                    break;
+                case JobType.BatchModifyWell:
+                    var batchModifyWellJob = await jobStream.Deserialize<BatchModifyWellJob>();
+                    (result, refreshAction) = await batchModifyWellWorker.Execute(batchModifyWellJob);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType.GetDisplayName()}");

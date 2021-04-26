@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
+using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Well);
             var wellUid = job.Well.Uid;
             var wellName = job.Well.Name;
-            var query = WellQueries.UpdateQuery(wellUid, wellName);
+            var query = CreateUpdateQuery(job.Well);
 
             var result = await witsmlClient.UpdateInStoreAsync(query);
             if (result.IsSuccessful)
@@ -55,6 +55,22 @@ namespace WitsmlExplorer.Api.Workers
         private void Verify(Well well)
         {
             if (string.IsNullOrEmpty(well.Name)) throw new InvalidOperationException($"{nameof(well.Name)} cannot be empty");
+        }
+
+        private static WitsmlWells CreateUpdateQuery(Well well)
+        {
+            return new WitsmlWells
+            {
+                Wells = new WitsmlWell
+                {
+                    Uid = well.Uid,
+                    Name = well.Name,
+                    Field = well.Field,
+                    TimeZone = well.TimeZone,
+                    Country = well.Country,
+                    Operator = well.Operator
+                }.AsSingletonList()
+            };
         }
     }
 }
