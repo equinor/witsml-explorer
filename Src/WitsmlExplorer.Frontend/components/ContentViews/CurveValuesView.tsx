@@ -1,22 +1,48 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import orderBy from "lodash/orderBy";
 import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentTableColumn, ContentType, VirtualizedContentTable, ContentTableRow } from "./table";
+import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
-import { LinearProgress } from "@material-ui/core";
+import { Button, Grid, LinearProgress } from "@material-ui/core";
+import useExport from "../../hooks/useExport";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore, selectedLog, selectedLogCurveInfo } = navigationState;
-  const [columns, setColumns] = useState<ContentTableColumn[]>([]);
-  const [tableData, setTableData] = useState<CurveValueRow[]>();
+  const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
+  const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+  const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
+  const { exportData, options: exportOptions } = useExport({
+    fileExtension: ".csv",
+    newLineCharacter: "\n",
+    outputMimeType: "text/csv",
+    separator: ",",
+    omitSpecialCharacters: true
+  });
+
+  const rowSelectionCallback = (rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
+    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], sortedColumn, sortOrder));
+  };
+
+  const exportAll = () => {
+    const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
+    const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}-${Date.now()}`, exportColumns, data);
+  };
+
+  const exportSelected = () => {
+    const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
+    const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}-${Date.now()}`, exportColumns, data);
+  };
 
   useEffect(() => {
     setTableData([]);
@@ -48,6 +74,7 @@ export const CurveValuesView = (): React.ReactElement => {
         .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
         .map((curveSpecification) => {
           return {
+            columnOf: curveSpecification,
             property: curveSpecification.mnemonic,
             label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
             type: getColumnType(curveSpecification)
@@ -129,16 +156,41 @@ export const CurveValuesView = (): React.ReactElement => {
 
   return (
     <Container>
+      {Boolean(tableData.length) && (
+        <StyledGrid container spacing={1}>
+          <Grid item>
+            {
+              <Button disabled={isLoading} onClick={() => exportAll()}>
+                Download all as .csv
+              </Button>
+            }
+          </Grid>
+          {Boolean(selectedRows.length) && (
+            <Grid item>
+              {
+                <Button disabled={isLoading} onClick={() => exportSelected()}>
+                  Download selected as .csv
+                </Button>
+              }
+            </Grid>
+          )}
+        </StyledGrid>
+      )}
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
-      {!isLoading && !tableData && <Message>No data</Message>}
-      {columns && tableData?.length > 0 && <VirtualizedContentTable columns={columns} data={tableData} checkableRows={true} />}
+      {!isLoading && !tableData.length && <Message>No data</Message>}
+      {columns && Boolean(tableData.length) && <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} data={tableData} checkableRows={true} />}
     </Container>
   );
 };
 
 const Container = styled.div`
-  height: calc(100% - 5px);
+  height: calc(100% - 55px);
   width: 100%;
+`;
+
+const StyledGrid = styled(Grid)`
+  padding-bottom: 10px;
+  padding-left: 10px;
 `;
 
 const Message = styled.div`

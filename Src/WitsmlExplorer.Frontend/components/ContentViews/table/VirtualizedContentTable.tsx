@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactElement, useContext, useState } from "react";
+import React, { forwardRef, ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
@@ -32,7 +32,7 @@ interface RowProps {
 const columnRefs: string[] = [];
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, data, onSelect, checkableRows } = props;
+  const { columns, data, onSelect, checkableRows, onRowSelectionChange } = props;
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const { navigationState } = useContext(NavigationContext);
@@ -49,6 +49,10 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
     setSortOrder(order);
     setSortedColumn(columnToSort);
   };
+
+  useEffect(() => {
+    onRowSelectionChange([...checkedContentItems], sortOrder, sortedColumn);
+  }, [checkedContentItems, sortOrder, sortedColumn]);
 
   const toggleRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: ContentTableRow) => {
     const isShiftKeyDown = e.shiftKey;
