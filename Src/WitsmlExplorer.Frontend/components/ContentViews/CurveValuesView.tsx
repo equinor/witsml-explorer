@@ -25,7 +25,8 @@ export const CurveValuesView = (): React.ReactElement => {
     newLineCharacter: "\n",
     outputMimeType: "text/csv",
     separator: ",",
-    omitSpecialCharacters: true
+    omitSpecialCharacters: true,
+    appendTimeStamp: true
   });
 
   const rowSelectionCallback = (rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
@@ -35,13 +36,13 @@ export const CurveValuesView = (): React.ReactElement => {
   const exportAll = () => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
-    exportData(`${selectedWellbore.name}-${selectedLog.name}-${Date.now()}`, exportColumns, data);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   };
 
   const exportSelected = () => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
-    exportData(`${selectedWellbore.name}-${selectedLog.name}-${Date.now()}`, exportColumns, data);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   };
 
   useEffect(() => {
