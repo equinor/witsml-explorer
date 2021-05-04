@@ -3,7 +3,7 @@ export interface ExportOptions {
   fileExtension: string;
   separator: string;
   newLineCharacter: string;
-  omitSpecialCharacters?: boolean;
+  omitSpecialCharactersFromFilename?: boolean;
   appendTimeStamp?: boolean;
 }
 interface ExportReturn {
@@ -24,7 +24,7 @@ function useExport(props: ExportOptions): ExportReturn {
         type: props.outputMimeType
       })
     );
-    link.download = props.omitSpecialCharacters
+    link.download = props.omitSpecialCharactersFromFilename
       ? `${omitSpecialCharacters(fileName)}${appendTimeStamp(props.appendTimeStamp)}${props.fileExtension}`
       : `${fileName}${appendTimeStamp(props.appendTimeStamp)}${props.fileExtension}`;
     document.body.appendChild(link);

@@ -25,7 +25,7 @@ export const CurveValuesView = (): React.ReactElement => {
     newLineCharacter: "\n",
     outputMimeType: "text/csv",
     separator: ",",
-    omitSpecialCharacters: true,
+    omitSpecialCharactersFromFilename: true,
     appendTimeStamp: true
   });
 
