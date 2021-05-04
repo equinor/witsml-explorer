@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import orderBy from "lodash/orderBy";
 import LogObjectService from "../../services/logObjectService";
@@ -29,21 +29,21 @@ export const CurveValuesView = (): React.ReactElement => {
     appendTimeStamp: true
   });
 
-  const rowSelectionCallback = (rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
+  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
     setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], sortedColumn, sortOrder));
-  };
+  }, []);
 
-  const exportAll = () => {
+  const exportAll = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
-  };
+  }, [columns, tableData]);
 
-  const exportSelected = () => {
+  const exportSelected = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
-  };
+  }, [columns, selectedRows]);
 
   useEffect(() => {
     setTableData([]);
