@@ -28,5 +28,6 @@ export enum JobType {
   RenameMnemonic = "RenameMnemonic",
   ModifyWell = "ModifyWell",
   ModifyWellbore = "ModifyWellbore",
-  TrimLogObject = "TrimLogObject"
+  TrimLogObject = "TrimLogObject",
+  BatchModifyWell = "BatchModifyWell"
 }

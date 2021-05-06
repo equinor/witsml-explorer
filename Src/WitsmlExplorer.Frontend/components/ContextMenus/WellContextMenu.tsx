@@ -15,15 +15,18 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { Server } from "../../models/server";
 import NestedMenuItem from "./NestedMenuItem";
 import { PropertiesModalMode } from "../Modals/ModalParts";
+import { WellRow } from "../ContentViews/WellsListView";
+import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
   well: Well;
   servers?: Server[];
+  checkedWellRows?: WellRow[];
 }
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, well, servers } = props;
+  const { dispatchOperation, well, servers, checkedWellRows } = props;
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -96,16 +99,21 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const onClickBatchUpdate = () => {
+    const wellBatchUpdateModalProps: WellBatchUpdateModalProps = { wellRows: checkedWellRows, dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <WellBatchUpdateModal {...wellBatchUpdateModalProps} /> });
+  };
+
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"newwell"} onClick={onClickNewWell}>
+        <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <ListItemIcon>
             <NewIcon />
           </ListItemIcon>
           <Typography color={"primary"}>New Well</Typography>
         </MenuItem>,
-        <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
+        <MenuItem key={"newWellbore"} onClick={onClickNewWellbore}>
           <ListItemIcon>
             <NewIcon />
           </ListItemIcon>
@@ -130,7 +138,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
             <SettingsIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
+        </MenuItem>,
+        checkedWellRows && (
+          <MenuItem key={"batchUpdate"} onClick={onClickBatchUpdate} disabled={checkedWellRows.length == 0}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <Typography color={"primary"}>Batch Update</Typography>
+          </MenuItem>
+        )
       ]}
     />
   );
