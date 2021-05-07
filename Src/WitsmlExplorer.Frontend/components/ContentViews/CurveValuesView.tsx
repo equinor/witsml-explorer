@@ -158,7 +158,7 @@ export const CurveValuesView = (): React.ReactElement => {
   return (
     <Container>
       {Boolean(tableData.length) && (
-        <StyledGrid container spacing={1}>
+        <ExportButtonGrid container spacing={1}>
           <Grid item>
             {
               <Button disabled={isLoading} onClick={() => exportAll()}>
@@ -175,11 +175,13 @@ export const CurveValuesView = (): React.ReactElement => {
               }
             </Grid>
           )}
-        </StyledGrid>
+        </ExportButtonGrid>
       )}
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
-      {columns && Boolean(tableData.length) && <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} data={tableData} checkableRows={true} />}
+      {Boolean(columns.length) && Boolean(tableData.length) && (
+        <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} data={tableData} checkableRows={true} />
+      )}
     </Container>
   );
 };
@@ -189,7 +191,7 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const StyledGrid = styled(Grid)`
+const ExportButtonGrid = styled(Grid)`
   padding-bottom: 10px;
   padding-left: 10px;
 `;
