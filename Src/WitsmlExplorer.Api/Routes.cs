@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Carter;
@@ -59,6 +60,9 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
+
+            //Get Requests exceeding the URL limit
+            Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
 
             Post("/api/jobs/{jobType}", CreateJob);
             Post("/api/credentials/authorize", Authorize);
@@ -147,6 +151,32 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var logUid = httpRequest.RouteValues.As<string>("logUid");
             if (httpRequest.Query.TryGetValue("mnemonic", out var mnemonics))
+            {
+                string startIndex = null;
+                string endIndex = null;
+                bool startIndexIsInclusive = true;
+                if (httpRequest.Query.TryGetValue("startIndex", out var startIndexValues)) startIndex = startIndexValues.ToString();
+                if (httpRequest.Query.TryGetValue("endIndex", out var endIndexValues)) endIndex = endIndexValues.ToString();
+                if (httpRequest.Query.TryGetValue("startIndexIsInclusive", out var startIndexIsInclusiveStringValues))
+                    startIndexIsInclusive = bool.Parse(startIndexIsInclusiveStringValues);
+
+                var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
+                await httpResponse.AsJson(logData);
+            }
+            else
+            {
+                httpResponse.StatusCode = StatusCodes.Status400BadRequest;
+                await httpResponse.AsJson("Missing list of mnemonics");
+            }
+        }
+
+        private async Task GetLargeLogData(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var logUid = httpRequest.RouteValues.As<string>("logUid");
+            var mnemonics = await httpRequest.ReadFromJsonAsync<IEnumerable<string>>();
+            if (mnemonics.Any())
             {
                 string startIndex = null;
                 string endIndex = null;
