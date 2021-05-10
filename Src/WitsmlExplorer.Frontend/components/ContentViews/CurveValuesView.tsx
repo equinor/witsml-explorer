@@ -4,19 +4,50 @@ import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentTableColumn, ContentType, VirtualizedContentTable, ContentTableRow } from "./table";
+import { ContentTableColumn, ContentType, VirtualizedContentTable, ContentTableRow, getIndexRanges } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { LinearProgress } from "@material-ui/core";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
+import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import LogObject from "../../models/logObject";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import { LogCurveInfoRow } from "./LogCurveInfoListView";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
+const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
+  const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
+  const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
+
+  const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
+    logReference: {
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
+      logUid: selectedLog.uid
+    },
+    mnemonics: mnemonics,
+    indexRanges: indexRanges
+  };
+  return deleteLogCurveValuesJob;
+};
+
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, selectedLog, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ContentTableColumn[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
+    const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
+    const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
+  };
 
   useEffect(() => {
     setTableData([]);
@@ -96,7 +127,7 @@ export const CurveValuesView = (): React.ReactElement => {
           endIndex,
           controller.signal
         );
-        if (logData.data) {
+        if (logData && logData.data) {
           updateProgress(logData.endIndex, minIndex, maxIndex);
           updateColumns(logData.curveSpecifications);
 
@@ -131,7 +162,7 @@ export const CurveValuesView = (): React.ReactElement => {
     <Container>
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
       {!isLoading && !tableData && <Message>No data</Message>}
-      {columns && tableData?.length > 0 && <VirtualizedContentTable columns={columns} data={tableData} checkableRows={true} />}
+      {columns && tableData?.length > 0 && <VirtualizedContentTable columns={columns} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />}
     </Container>
   );
 };
