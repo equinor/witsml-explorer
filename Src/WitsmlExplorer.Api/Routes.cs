@@ -85,7 +85,7 @@ namespace WitsmlExplorer.Api
         {
             var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
             var patchedServer = await httpRequest.Body.Deserialize<Server>();
-            
+
             var updatedServer = await witsmlServerRepository.UpdateDocumentAsync(witsmlServerId, patchedServer);
             await httpResponse.AsJson(updatedServer);
         }
@@ -93,7 +93,7 @@ namespace WitsmlExplorer.Api
         private async Task DeleteWitsmlServer(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var witsmlServerId = httpRequest.RouteValues.As<Guid>("witsmlServerId");
-            
+
             await witsmlServerRepository.DeleteDocumentAsync(witsmlServerId);
             httpResponse.StatusCode = StatusCodes.Status204NoContent;
         }
