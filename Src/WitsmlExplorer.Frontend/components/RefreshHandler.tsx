@@ -52,6 +52,11 @@ const RefreshHandler = (): React.ReactElement => {
       if (well) {
         dispatchNavigation({ type: modificationType, payload: { well } });
       }
+    } else if (modificationType === ModificationType.BatchUpdateWell) {
+      const wells = await WellService.getWells();
+      if (wells) {
+        dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells } });
+      }
     }
   }
 
