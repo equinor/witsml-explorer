@@ -308,7 +308,27 @@ Add Application under Default Web Site of IIS Manager
 	
 Do IIS restart
 
-Verify sucessful deployment by accessing below url in browser or postman; Expect list of servers
+Verify successful deployment by accessing the url in browser or postman; Expect list of servers
 		https://localhost/witsmlexplorerbackend/api/witsml-servers
 		
 #### Deploy Frontend
+Edit .env.local file in WitsmlExplorer.Frontend project and set these values
+```
+	NEXT_PUBLIC_WE_URL=https://localhost/witsmlexplorer
+	NEXT_PUBLIC_WE_API_URL=https://localhost/witsmlexplorerbackend
+```
+
+Build and export the application to a folder. Eg.: C:\WE_Frontend
+```
+	npm run build
+	npx next export -o C:\WE_Frontend
+```
+Add Application under Default Web Site of IIS Manager
+
+	-	select above output folder as Physical path (C:\WE_Frontend)
+	-	set Alias as 'witsmlexplorer'
+	
+Do IIS restart
+
+Verify successful deployment by accessing the url in browser; Expect WE to work as expected
+		https://localhost/witsmlexplorer
