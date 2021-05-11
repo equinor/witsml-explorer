@@ -42,7 +42,7 @@
     "moment": "^2.29.1",
     "next": "10.2.0",
     "notistack": "^1.0.7",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
@@ -51,7 +51,7 @@
     "react-virtualized-auto-sizer": "^1.0.5",
     "react-window": "^1.8.6",
     "ste-simple-events": "^2.1.7",
-    "styled-components": "^5.2.3",
+    "styled-components": "^5.3.0",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
@@ -59,7 +59,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.168",
-    "@types/node": "^14.14.41",
+    "@types/node": "^15.0.2",
     "@types/react": "^17.0.5",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.3",
@@ -67,10 +67,10 @@
     "@types/uuid": "^8.3.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.6",
-    "eslint": "^7.25.0",
+    "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
     "jest": "^26.6.3",
-    "lint-staged": "^10.5.4",
-    "ts-jest": "^26.5.5"
+    "lint-staged": "^11.0.0",
+    "ts-jest": "^26.5.6"
   }
 }
