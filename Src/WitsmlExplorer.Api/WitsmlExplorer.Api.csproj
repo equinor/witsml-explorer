@@ -5,6 +5,7 @@
     <UserSecretsId>5de2e6cd-e42c-4fca-905c-39f60e8b2ea8</UserSecretsId>
     <AssemblyName>WitsmlExplorer.Api</AssemblyName>
     <RootNamespace>WitsmlExplorer.Api</RootNamespace>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="carter" Version="5.2.0" />
