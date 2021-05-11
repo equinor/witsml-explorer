@@ -26,7 +26,7 @@ export const CurveValuesView = (): React.ReactElement => {
     outputMimeType: "text/csv",
     separator: ",",
     omitSpecialCharactersFromFilename: true,
-    appendTimeStamp: true
+    appendDateTime: true
   });
 
   const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {

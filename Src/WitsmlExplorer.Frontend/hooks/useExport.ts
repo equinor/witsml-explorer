@@ -1,22 +1,23 @@
-export interface ExportOptions {
+export interface ExportProperties {
   outputMimeType: string;
   fileExtension: string;
   separator: string;
   newLineCharacter: string;
   omitSpecialCharactersFromFilename?: boolean;
-  appendTimeStamp?: boolean;
+  appendDateTime?: boolean;
 }
 interface ExportReturn {
   exportData: (fileName: string, header: string, data: string) => void;
-  options: ExportOptions;
+  options: ExportProperties;
 }
 function omitSpecialCharacters(text: string): string {
   return text.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 }
-function appendTimeStamp(append: boolean): string {
-  return append ? `-${Date.now()}` : "";
+function appendDateTime(append: boolean): string {
+  const now = new Date();
+  return append ? `-${now.getFullYear()}-${now.getMonth()}-${now.getDay()}T${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}` : "";
 }
-function useExport(props: ExportOptions): ExportReturn {
+function useExport(props: ExportProperties): ExportReturn {
   const exportData = (fileName: string, header: string, data: string) => {
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(
@@ -25,8 +26,8 @@ function useExport(props: ExportOptions): ExportReturn {
       })
     );
     link.download = props.omitSpecialCharactersFromFilename
-      ? `${omitSpecialCharacters(fileName)}${appendTimeStamp(props.appendTimeStamp)}${props.fileExtension}`
-      : `${fileName}${appendTimeStamp(props.appendTimeStamp)}${props.fileExtension}`;
+      ? `${omitSpecialCharacters(fileName)}${appendDateTime(props.appendDateTime)}${props.fileExtension}`
+      : `${fileName}${appendDateTime(props.appendDateTime)}${props.fileExtension}`;
     document.body.appendChild(link);
     link.click();
     //we might not need a timeout for clean up
