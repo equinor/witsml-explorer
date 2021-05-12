@@ -120,7 +120,7 @@ namespace Witsml.Data
         [XmlElement("magDipAngleReference")] public Measure MagDipAngleReference { get; set; }
         [XmlElement("magModelUsed")] public string MagModelUsed { get; set; }
         [XmlElement("magModelValid")] public string MagModelValid { get; set; }
-        [XmlElement("geoModelValid")] public string GeoModelValid { get; set; }
+        [XmlElement("geoModelUsed")] public string GeoModelUsed { get; set; }
         [XmlElement("statusTrajStation")] public string StatusTrajStation { get; set; }
         [XmlElement("rawData")] public WitsmlTrajRawData RawData { get; set; }
         [XmlElement("corUsed")] public WitsmlStnTrajCorUsed CorUsed { get; set; }
