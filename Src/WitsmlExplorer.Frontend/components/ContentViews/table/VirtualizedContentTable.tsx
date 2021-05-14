@@ -170,6 +170,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
     } else {
       setCheckedContentItems([...data]);
     }
+    setActiveIndexRange([]);
   }, [data.length, checkedContentItems.length]);
 
   const getItemData = memoizeOne(
