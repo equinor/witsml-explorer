@@ -7,7 +7,7 @@ namespace Witsml.Data
     {
         [XmlElement("varianceNN")] public Measure VarianceNn { get; set; }
         [XmlElement("varianceNE")] public Measure VarianceNe { get; set; }
-        [XmlElement("varianceNvert")] public Measure VarianceNVert { get; set; }
+        [XmlElement("varianceNVert")] public Measure VarianceNVert { get; set; }
         [XmlElement("varianceEE")] public Measure VarianceEe { get; set; }
         [XmlElement("varianceEVert")] public Measure VarianceEvert { get; set; }
         [XmlElement("varianceVertVert")] public Measure VarianceVertVert { get; set; }

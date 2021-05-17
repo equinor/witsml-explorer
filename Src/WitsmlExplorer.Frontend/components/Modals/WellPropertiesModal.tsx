@@ -5,18 +5,13 @@ import ModalDialog from "./ModalDialog";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
-import { PropertiesModalMode, validText } from "./ModalParts";
+import { PropertiesModalMode, validText, validTimeZone } from "./ModalParts";
 
 export interface WellPropertiesModalProps {
   mode: PropertiesModalMode;
   well: Well;
   dispatchOperation: (action: HideModalAction) => void;
 }
-
-const validTimeZone = (timeZone: string): boolean => {
-  const timeZoneValidator = new RegExp("(\\+(0\\d|1[0-4])|-(0\\d|1[0-2])):(00|30|45)");
-  return timeZoneValidator.test(timeZone);
-};
 
 const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElement => {
   const { mode, well, dispatchOperation } = props;

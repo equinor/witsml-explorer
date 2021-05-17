@@ -3,6 +3,7 @@ import { TextField } from "@material-ui/core";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
 import { Server } from "../../models/server";
+import { validText } from "./ModalParts";
 
 export interface UserCredentialsModalProps {
   server: Server;
@@ -73,10 +74,6 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       setErrorMessage(error.message);
     }
     setIsLoading(false);
-  };
-
-  const validText = (text: string): boolean => {
-    return text && text.length > 0;
   };
 
   return (

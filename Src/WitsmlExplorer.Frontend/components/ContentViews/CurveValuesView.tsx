@@ -12,8 +12,25 @@ import useExport from "../../hooks/useExport";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
+const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
+  const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
+  const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
+
+  const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
+    logReference: {
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
+      logUid: selectedLog.uid
+    },
+    mnemonics: mnemonics,
+    indexRanges: indexRanges
+  };
+  return deleteLogCurveValuesJob;
+};
+
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, selectedLog, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
@@ -44,6 +61,13 @@ export const CurveValuesView = (): React.ReactElement => {
     const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, selectedRows]);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
+    const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
+    const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
+  };
 
   useEffect(() => {
     setTableData([]);
@@ -124,7 +148,7 @@ export const CurveValuesView = (): React.ReactElement => {
           endIndex,
           controller.signal
         );
-        if (logData.data) {
+        if (logData && logData.data) {
           updateProgress(logData.endIndex, minIndex, maxIndex);
           updateColumns(logData.curveSpecifications);
 

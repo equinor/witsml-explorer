@@ -6,17 +6,11 @@ import { Checkbox, TableCell as MuiTableCell, TableSortLabel } from "@material-u
 import memoizeOne from "memoize-one";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
-import OperationContext from "../../../contexts/operationContext";
-import NavigationContext from "../../../contexts/navigationContext";
-import OperationType from "../../../contexts/operationType";
 import { DateFormat } from "../../Constants";
 import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getSelectedRange, Order } from "./tableParts";
 import { colors } from "../../../styles/Colors";
 import { useTheme } from "@material-ui/core/styles";
-import { getContextMenuPosition } from "../../ContextMenus/ContextMenu";
-import MnemonicsContextMenu from "../../ContextMenus/MnemonicsContextMenu";
-import { LogCurveInfoRow } from "../LogCurveInfoListView";
-import { DeleteLogCurveValuesJob, IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
+import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 
 interface RowProps {
@@ -33,10 +27,8 @@ const columnRefs: string[] = [];
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, data, onSelect, checkableRows, onRowSelectionChange } = props;
+
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
-  const { dispatchOperation } = useContext(OperationContext);
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedLog, selectedLogCurveInfo } = navigationState;
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
   const [sortedColumn, setSortedColumn] = useState<string>(columns[0].property);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
@@ -70,13 +62,6 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
     }
   };
 
-  const onContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-    const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
-    const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
-    const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
-  };
-
   const Row = (props: RowProps) => {
     const {
       index,
@@ -91,7 +76,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
             key={"TableRow-" + index}
             hover
             onClick={(event) => toggleRow(event, item)}
-            onContextMenu={onContextMenu ? (event) => onContextMenu(event) : (e) => e.preventDefault()}
+            onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
           >
             {checkableRows && (
               <TableDataCell key={`${index}-checkbox`} component={"div"}>
@@ -224,22 +209,6 @@ export const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedL
     }
     return accumulator;
   }, []);
-};
-
-const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
-  const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
-  const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
-
-  const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-    logReference: {
-      wellUid: selectedLog.wellUid,
-      wellboreUid: selectedLog.wellboreUid,
-      logUid: selectedLog.uid
-    },
-    mnemonics: mnemonics,
-    indexRanges: indexRanges
-  };
-  return deleteLogCurveValuesJob;
 };
 
 const format = (type: ContentType, data: string | Date): string | ReactElement => {

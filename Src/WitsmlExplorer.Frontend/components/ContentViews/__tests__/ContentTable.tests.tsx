@@ -62,7 +62,7 @@ describe("<ContentTable />", () => {
     };
     const table = mount(<ContentTable columns={columns} data={data} onSelect={onSelect} />);
     const rowToSelect = 1;
-    const firstRow = table.find("tbody").find("tr").at(rowToSelect);
+    const firstRow = table.find("tbody").find("tr").at(rowToSelect).childAt(0);
     firstRow.simulate("click");
     expect(selections).toBe(1);
     expect(selectedRow).toBe(data[rowToSelect]);
