@@ -20,7 +20,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
-  const { exportData, options: exportOptions } = useExport({
+  const { exportData, properties: exportOptions } = useExport({
     fileExtension: ".csv",
     newLineCharacter: "\n",
     outputMimeType: "text/csv",
@@ -33,13 +33,13 @@ export const CurveValuesView = (): React.ReactElement => {
     setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], sortedColumn, sortOrder));
   }, []);
 
-  const exportAll = useCallback(() => {
+  const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, tableData]);
 
-  const exportSelected = useCallback(() => {
+  const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
     const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
@@ -161,7 +161,7 @@ export const CurveValuesView = (): React.ReactElement => {
         <ExportButtonGrid container spacing={1}>
           <Grid item>
             {
-              <Button disabled={isLoading} onClick={() => exportAll()}>
+              <Button disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
                 Download all as .csv
               </Button>
             }
@@ -169,7 +169,7 @@ export const CurveValuesView = (): React.ReactElement => {
           {Boolean(selectedRows.length) && (
             <Grid item>
               {
-                <Button disabled={isLoading} onClick={() => exportSelected()}>
+                <Button disabled={isLoading} onClick={() => exportSelectedDataPoints()}>
                   Download selected as .csv
                 </Button>
               }

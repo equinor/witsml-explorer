@@ -6,9 +6,9 @@ export interface ExportProperties {
   omitSpecialCharactersFromFilename?: boolean;
   appendDateTime?: boolean;
 }
-interface ExportReturn {
+interface ExportObject {
   exportData: (fileName: string, header: string, data: string) => void;
-  options: ExportProperties;
+  properties: ExportProperties;
 }
 function omitSpecialCharacters(text: string): string {
   return text.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
@@ -17,7 +17,7 @@ function appendDateTime(append: boolean): string {
   const now = new Date();
   return append ? `-${now.getFullYear()}-${now.getMonth()}-${now.getDay()}T${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}` : "";
 }
-function useExport(props: ExportProperties): ExportReturn {
+function useExport(props: ExportProperties): ExportObject {
   const exportData = (fileName: string, header: string, data: string) => {
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(
@@ -36,7 +36,7 @@ function useExport(props: ExportProperties): ExportReturn {
       link.remove();
     }, 200);
   };
-  return { exportData: exportData, options: props };
+  return { exportData: exportData, properties: props };
 }
 
 export default useExport;
