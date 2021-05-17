@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactElement, useContext, useEffect, useState } from "react";
+import React, { forwardRef, ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
@@ -26,7 +26,7 @@ interface RowProps {
 const columnRefs: string[] = [];
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, data, onSelect, checkableRows, onRowSelectionChange } = props;
+  const { columns, data, onSelect, checkableRows, onContextMenu, onRowSelectionChange } = props;
 
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);

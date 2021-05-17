@@ -5,10 +5,17 @@ import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order } from "./table";
+import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
 import useExport from "../../hooks/useExport";
+import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import { LogCurveInfoRow } from "./LogCurveInfoListView";
+import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import OperationContext from "../../contexts/operationContext";
+import LogObject from "../../models/logObject";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -204,7 +211,7 @@ export const CurveValuesView = (): React.ReactElement => {
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
-        <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} data={tableData} checkableRows={true} />
+        <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />
       )}
     </Container>
   );
