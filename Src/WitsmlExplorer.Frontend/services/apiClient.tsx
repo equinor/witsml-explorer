@@ -92,7 +92,7 @@ export default class ApiClient {
   public static getBaseUrl(): URL {
     let baseUrl: URL;
     try {
-      const configuredUrl = process.env.NEXT_PUBLIC_WE_API_URL;
+      const configuredUrl = process.env.WITSMLEXPLORER_API_URL;
       if (configuredUrl && configuredUrl.length > 0) {
         baseUrl = new URL(configuredUrl);
       } else {

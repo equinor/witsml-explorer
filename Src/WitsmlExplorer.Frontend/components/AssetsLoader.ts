@@ -1,6 +1,6 @@
 export class AssetsLoader {
-  static getAssetsRoot() {
-    const wePath = process.env.NEXT_PUBLIC_WE_URL;
+  static getAssetsRoot(): string {
+    const wePath = process.env.WITSMLEXPLORER_FRONTEND_URL;
     return wePath && wePath.length > 0 ? wePath : "";
   }
 }

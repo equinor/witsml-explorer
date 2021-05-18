@@ -22,6 +22,7 @@ import { preventContextMenuPropagation } from "../components/ContextMenus/Contex
 import RefreshHandler from "../components/RefreshHandler";
 import { colors } from "../styles/Colors";
 import Routing from "../components/Routing";
+import { AssetsLoader } from "../components/AssetsLoader";
 
 const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
@@ -34,7 +35,7 @@ const Home = (): React.ReactElement => {
           <GlobalStyles />
           <Head>
             <title>WITSML Explorer</title>
-            <link rel="icon" href="/favicon.ico" />
+            <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
           </Head>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
             <Routing />
