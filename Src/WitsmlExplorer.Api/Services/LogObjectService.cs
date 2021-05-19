@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
@@ -41,9 +42,8 @@ namespace WitsmlExplorer.Api.Services
                     ObjectGrowing = StringHelpers.ToBooleanSafe(log.ObjectGrowing),
                     ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
-
-                    StartIndex = GetIndexAsString(log.IndexType, log.StartIndex, log.StartDateTimeIndex),
-                    EndIndex = GetIndexAsString(log.IndexType, log.EndIndex, log.EndDateTimeIndex),
+                    StartIndex = log.GetStartIndexAsString(),
+                    EndIndex = log.GetStartIndexAsString(),
                     DateTimeLastChange = StringHelpers.ToDateTime(log.CommonData.DTimLastChange),
                     IndexCurve = log.IndexCurve.Value
                 }).OrderBy(log => log.Name);
@@ -77,8 +77,8 @@ namespace WitsmlExplorer.Api.Services
             };
             if (string.IsNullOrEmpty(witsmlLog.IndexType)) return logObject;
 
-            logObject.StartIndex = GetIndexAsString(witsmlLog.IndexType, witsmlLog.StartIndex, witsmlLog.StartDateTimeIndex);
-            logObject.EndIndex = GetIndexAsString(witsmlLog.IndexType, witsmlLog.EndIndex, witsmlLog.EndDateTimeIndex);
+            logObject.StartIndex = witsmlLog.GetStartIndexAsString();
+            logObject.EndIndex = witsmlLog.GetEndIndexAsString();
 
             return logObject;
         }
@@ -159,12 +159,6 @@ namespace WitsmlExplorer.Api.Services
             }
 
             return result;
-        }
-
-        private static string GetIndexAsString(string indexType, WitsmlIndex index, string dateTimeIndex)
-        {
-            if (index == null && string.IsNullOrEmpty(dateTimeIndex)) return null;
-            return indexType.Equals(WitsmlLog.WITSML_INDEX_TYPE_MD) ? index != null ? index.ToString() : "" : dateTimeIndex;
         }
     }
 }
