@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
 import { DateFormat } from "../../Constants";
-import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows } from "./";
+import { ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getSelectedRange, Order } from "./";
 import { colors } from "../../../styles/Colors";
+import { IsActiveIcon } from "../../Icons/IsActiveIcon";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows } = props;
@@ -107,12 +108,14 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   );
 };
 
-const format = (type: ContentType, data: string | Date) => {
+const format = (type: ContentType, data: string | Date | boolean) => {
   switch (type) {
     case ContentType.DateTime:
       return formatDate(data as Date, DateFormat.DATETIME_S);
     case ContentType.Date:
       return formatDate(data as Date, DateFormat.DATE);
+    case ContentType.Icon:
+      return data && <IsActiveIcon />;
     default:
       return data;
   }
