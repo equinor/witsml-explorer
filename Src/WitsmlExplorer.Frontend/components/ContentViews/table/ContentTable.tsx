@@ -4,7 +4,7 @@ import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
 import { DateFormat } from "../../Constants";
-import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows } from "./";
+import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows, ContentTableColumn, getComparatorByColumn } from "./";
 import { colors } from "../../../styles/Colors";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
@@ -12,14 +12,14 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
-  const [sortedColumn, setSortedColumn] = useState<string>(columns[0].property);
+  const [sortedColumn, setSortedColumn] = useState<ContentTableColumn>(columns[0]);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
 
   useEffect(() => {
-    setData(orderBy(props.data, sortedColumn, sortOrder));
+    setData(orderBy(props.data, getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
   }, [props.data, sortOrder, sortedColumn]);
 
-  const sortByColumn = (columnToSort: string) => {
+  const sortByColumn = (columnToSort: ContentTableColumn) => {
     const flipOrder = (order: Order) => (order === Order.Ascending ? Order.Descending : Order.Ascending);
     const isSameColumn = columnToSort === sortedColumn;
     const order = isSameColumn ? flipOrder(sortOrder) : Order.Ascending;
@@ -67,7 +67,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
           {columns &&
             columns.map((column) => (
               <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
-                <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
+                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
                   {column.label}
                 </TableSortLabel>
               </TableHeaderCell>

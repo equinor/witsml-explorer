@@ -31,6 +31,25 @@ export enum ContentType {
   DateTime
 }
 
+export const getComparatorByColumn = (column: ContentTableColumn): [(row: any) => any, string] => {
+  let comparator;
+  switch (column.type) {
+    case ContentType.Number:
+      comparator = (row: any): number => Number(row[column.property]);
+      break;
+    case ContentType.Date:
+      comparator = (row: any): Date => new Date(row[column.property]);
+      break;
+    case ContentType.DateTime:
+      comparator = (row: any): Date => new Date(row[column.property]);
+      break;
+    default:
+      comparator = (row: any): string => row[column.property];
+      break;
+  }
+  return [comparator, column.property];
+};
+
 export const getRowsInRange = (rows: ContentTableRow[], indexRange: number[]): ContentTableRow[] => {
   const [firstIndex, secondIndex] = indexRange;
   const needOffset = firstIndex <= secondIndex;

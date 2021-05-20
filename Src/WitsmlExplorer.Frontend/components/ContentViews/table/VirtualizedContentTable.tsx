@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import { DateFormat } from "../../Constants";
-import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getSelectedRange, Order } from "./tableParts";
+import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./tableParts";
 import { colors } from "../../../styles/Colors";
 import { useTheme } from "@material-ui/core/styles";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
@@ -35,8 +35,8 @@ interface VirtualizedTableContext {
   checkedContentItems: ContentTableRow[];
   data: any[];
   storeColumnReference: (ref: any, index: number) => void;
-  sortedColumn: string;
-  sortByColumn: (columnToSort: string) => void;
+  sortedColumn: ContentTableColumn;
+  sortByColumn: (columnToSort: ContentTableColumn) => void;
   sortOrder: Order;
 }
 const TableContext = React.createContext({} as VirtualizedTableContext);
@@ -117,7 +117,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
                 align={column.type === ContentType.Number ? "right" : "left"}
                 ref={(ref: any) => storeColumnReference(ref, index)}
               >
-                <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
+                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
                   {column.label}
                 </TableSortLabel>
               </TableHeaderCell>
@@ -135,16 +135,16 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
-  const [sortedColumn, setSortedColumn] = useState<string>(columns[0].property);
+  const [sortedColumn, setSortedColumn] = useState<ContentTableColumn>(columns[0]);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
   useEffect(() => {
-    setData(() => orderBy(props.data, sortedColumn, sortOrder));
+    setData(() => orderBy(props.data, getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
   }, [props.data, sortOrder, sortedColumn]);
 
   const sortByColumn = useCallback(
-    (columnToSort: string) => {
+    (columnToSort: ContentTableColumn) => {
       const isSameColumn = columnToSort === sortedColumn;
       const order = isSameColumn ? flipOrder(sortOrder) : Order.Ascending;
       setSortOrder(order);
