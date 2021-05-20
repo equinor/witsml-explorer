@@ -58,8 +58,8 @@ namespace WitsmlExplorer.Console.WitsmlClient
             AnsiConsole.MarkupLine($"\nError: {exceptionMessage}\n".WithColor(Color.Red));
             AnsiConsole.MarkupLine("The configuration file should contain:");
             AnsiConsole.MarkupLine("{\n  \"Witsml\": {");
-            AnsiConsole.MarkupLine("    \"Host\": \"<WITSML SERVER URL>\"");
-            AnsiConsole.MarkupLine("    \"Username\": \"<WITSML USERNAME>\"");
+            AnsiConsole.MarkupLine("    \"Host\": \"<WITSML SERVER URL>\",");
+            AnsiConsole.MarkupLine("    \"Username\": \"<WITSML USERNAME>\",");
             AnsiConsole.MarkupLine("    \"Password\": \"<WITSML PASSWORD>\"");
             AnsiConsole.MarkupLine("  }\n}");
         }

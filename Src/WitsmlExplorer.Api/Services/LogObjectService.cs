@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Services
                     ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
                     StartIndex = log.GetStartIndexAsString(),
-                    EndIndex = log.GetStartIndexAsString(),
+                    EndIndex = log.GetEndIndexAsString(),
                     DateTimeLastChange = StringHelpers.ToDateTime(log.CommonData.DTimLastChange),
                     IndexCurve = log.IndexCurve.Value
                 }).OrderBy(log => log.Name);
