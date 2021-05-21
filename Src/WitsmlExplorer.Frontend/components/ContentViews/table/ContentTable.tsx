@@ -66,13 +66,16 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             </TableHeaderCell>
           )}
           {columns &&
-            columns.map((column) => (
-              <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
-                <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
-                  {column.label}
-                </TableSortLabel>
-              </TableHeaderCell>
-            ))}
+            columns.map(
+              (column) =>
+                column && (
+                  <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
+                    <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
+                      {column.label}
+                    </TableSortLabel>
+                  </TableHeaderCell>
+                )
+            )}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -88,18 +91,21 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                 </TableDataCell>
               )}
               {columns &&
-                columns.map((column) => (
-                  <TableDataCell
-                    id={item[column.property] + column.property}
-                    key={item[column.property] + column.property}
-                    clickable={onSelect ? "true" : "false"}
-                    type={column.type}
-                    align={column.type === ContentType.Number ? "right" : "left"}
-                    onClick={(event) => selectRow(event, item)}
-                  >
-                    {format(column.type, item[column.property])}
-                  </TableDataCell>
-                ))}
+                columns.map(
+                  (column) =>
+                    column && (
+                      <TableDataCell
+                        id={item[column.property] + column.property}
+                        key={item[column.property] + column.property}
+                        clickable={onSelect ? "true" : "false"}
+                        type={column.type}
+                        align={column.type === ContentType.Number ? "right" : "left"}
+                        onClick={(event) => selectRow(event, item)}
+                      >
+                        {format(column.type, item[column.property])}
+                      </TableDataCell>
+                    )
+                )}
             </TableRow>
           );
         })}

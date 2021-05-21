@@ -93,7 +93,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "isActive", label: "Active", type: ContentType.Icon },
+    !isDepthIndex && { property: "isActive", label: "Active", type: ContentType.Icon },
     { property: "mnemonic", label: "Mnemonic", type: ContentType.String },
     { property: "minIndex", label: "MinIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
     { property: "maxIndex", label: "MaxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
