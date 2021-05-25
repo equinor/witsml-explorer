@@ -76,7 +76,7 @@ export default class ApiClient {
         reject("Not authorized");
       }
 
-      const url = new URL(pathName, ApiClient.getBaseUrl());
+      const url = new URL(ApiClient.getBaseUrl() + pathName, ApiClient.getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -92,10 +92,15 @@ export default class ApiClient {
   public static getBaseUrl(): URL {
     let baseUrl: URL;
     try {
-      const protocol = window.location.protocol.slice(0, -1);
-      const host = window.location.hostname;
-      const port = window.location.port === "3000" ? ":5000" : "";
-      baseUrl = new URL(`${protocol}://${host}${port}`);
+      const configuredUrl = process.env.WITSMLEXPLORER_API_URL;
+      if (configuredUrl && configuredUrl.length > 0) {
+        baseUrl = new URL(configuredUrl);
+      } else {
+        const protocol = window.location.protocol.slice(0, -1);
+        const host = window.location.hostname;
+        const port = window.location.port === "3000" ? ":5000" : "";
+        baseUrl = new URL(`${protocol}://${host}${port}`);
+      }
     } catch (e) {
       baseUrl = new URL("http://localhost");
     }
