@@ -131,7 +131,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
 innerGridElementType.displayName = "innerGridElementType";
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
@@ -142,6 +142,10 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
   useEffect(() => {
     setData(() => orderBy(props.data, sortedColumn, sortOrder));
   }, [props.data, sortOrder, sortedColumn]);
+
+  useEffect(() => {
+    onRowSelectionChange([...checkedContentItems], sortOrder, sortedColumn);
+  }, [checkedContentItems, sortOrder, sortedColumn]);
 
   const sortByColumn = useCallback(
     (columnToSort: string) => {

@@ -1,19 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import orderBy from "lodash/orderBy";
 import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentTableColumn, ContentType, VirtualizedContentTable, ContentTableRow, getIndexRanges } from "./table";
+import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
-import { LinearProgress } from "@material-ui/core";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import { Button, Grid, LinearProgress } from "@material-ui/core";
+import useExport from "../../hooks/useExport";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import LogObject from "../../models/logObject";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import OperationContext from "../../contexts/operationContext";
+import LogObject from "../../models/logObject";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -37,10 +39,35 @@ export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, selectedLog, selectedLogCurveInfo } = navigationState;
-  const [columns, setColumns] = useState<ContentTableColumn[]>([]);
-  const [tableData, setTableData] = useState<CurveValueRow[]>();
+  const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
+  const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+  const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
+  const { exportData, properties: exportOptions } = useExport({
+    fileExtension: ".csv",
+    newLineCharacter: "\n",
+    outputMimeType: "text/csv",
+    separator: ",",
+    omitSpecialCharactersFromFilename: true,
+    appendDateTime: true
+  });
+
+  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
+    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], sortedColumn, sortOrder));
+  }, []);
+
+  const exportSelectedIndexRange = useCallback(() => {
+    const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
+    const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
+  }, [columns, tableData]);
+
+  const exportSelectedDataPoints = useCallback(() => {
+    const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
+    const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
+  }, [columns, selectedRows]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
     const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
@@ -79,6 +106,7 @@ export const CurveValuesView = (): React.ReactElement => {
         .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
         .map((curveSpecification) => {
           return {
+            columnOf: curveSpecification,
             property: curveSpecification.mnemonic,
             label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
             type: getColumnType(curveSpecification)
@@ -160,16 +188,43 @@ export const CurveValuesView = (): React.ReactElement => {
 
   return (
     <Container>
+      {Boolean(tableData.length) && (
+        <ExportButtonGrid container spacing={1}>
+          <Grid item>
+            {
+              <Button disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
+                Download all as .csv
+              </Button>
+            }
+          </Grid>
+          {Boolean(selectedRows.length) && (
+            <Grid item>
+              {
+                <Button disabled={isLoading} onClick={() => exportSelectedDataPoints()}>
+                  Download selected as .csv
+                </Button>
+              }
+            </Grid>
+          )}
+        </ExportButtonGrid>
+      )}
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
-      {!isLoading && !tableData && <Message>No data</Message>}
-      {columns && tableData?.length > 0 && <VirtualizedContentTable columns={columns} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />}
+      {!isLoading && !tableData.length && <Message>No data</Message>}
+      {Boolean(columns.length) && Boolean(tableData.length) && (
+        <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />
+      )}
     </Container>
   );
 };
 
 const Container = styled.div`
-  height: calc(100% - 5px);
+  height: calc(100% - 55px);
   width: 100%;
+`;
+
+const ExportButtonGrid = styled(Grid)`
+  padding-bottom: 10px;
+  padding-left: 10px;
 `;
 
 const Message = styled.div`

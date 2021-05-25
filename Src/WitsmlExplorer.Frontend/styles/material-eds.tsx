@@ -80,7 +80,10 @@ const edsTheme = createMuiTheme({
         "color": colors.ui.backgroundDefault,
         "fontFamily": "EquinorMedium,Arial,sans-serif",
         "textTransform": "none",
-        "fontSize": "1rem"
+        "fontSize": "1rem",
+        "&:disabled": {
+          backgroundColor: colors.interactive.disabledBorder
+        }
       },
       containedPrimary: {
         "&:hover": {
