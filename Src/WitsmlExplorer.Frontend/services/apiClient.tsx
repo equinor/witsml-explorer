@@ -76,7 +76,7 @@ export default class ApiClient {
         reject("Not authorized");
       }
 
-      const url = new URL(ApiClient.getBaseUrl() + pathName, ApiClient.getBaseUrl());
+      const url = new URL(pathName, ApiClient.getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -93,7 +93,7 @@ export default class ApiClient {
     let baseUrl: URL;
     try {
       const configuredUrl = process.env.WITSMLEXPLORER_API_URL;
-      if (configuredUrl && configuredUrl.length > 0) {
+      if (configuredUrl) {
         baseUrl = new URL(configuredUrl);
       } else {
         const protocol = window.location.protocol.slice(0, -1);

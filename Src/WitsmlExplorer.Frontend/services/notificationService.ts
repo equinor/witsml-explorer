@@ -42,7 +42,7 @@ export default class NotificationService {
 
   private constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${ApiClient.getBaseUrl()}/notifications`, {
+      .withUrl(`${ApiClient.getBaseUrl()}notifications`, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
       })
