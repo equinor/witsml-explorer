@@ -76,7 +76,7 @@ export default class ApiClient {
         reject("Not authorized");
       }
 
-      const url = new URL(ApiClient.getBaseUrl() + pathName, ApiClient.getBaseUrl());
+      const url = new URL(ApiClient.getBasePathName() + pathName, ApiClient.getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -87,6 +87,11 @@ export default class ApiClient {
           reject(error);
         });
     });
+  }
+
+  private static getBasePathName(): string {
+    const basePathName = ApiClient.getBaseUrl().pathname;
+    return basePathName !== "/" ? basePathName : "";
   }
 
   public static getBaseUrl(): URL {
