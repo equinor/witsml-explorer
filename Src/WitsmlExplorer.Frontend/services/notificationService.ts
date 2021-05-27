@@ -46,7 +46,7 @@ export default class NotificationService {
       notificationURL = notificationURL + "/";
     }
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${notificationURL}/notifications`, {
+      .withUrl(`${notificationURL}notifications`, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
       })
