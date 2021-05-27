@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require("webpack");
 const weURL = process.env.WITSMLEXPLORER_FRONTEND_URL;
-const wePath = weURL ? new URL(weURL).pathname : "";
+const wePath = weURL && weURL.length > 0 ? new URL(weURL).pathname : "";
 
 module.exports = {
   distDir: "build",
