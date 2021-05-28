@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<Wellbore> GetWellbore(string wellUid, string wellboreUid);
         Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null);
+        Task<IEnumerable<Wellbore>> GetActiveWellbores();
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -64,6 +65,23 @@ namespace WitsmlExplorer.Api.Services
                 .OrderBy(wellbore => wellbore.Name).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
             Log.Debug($"Fetched {wellbores.Count} wellbores in {elapsed} seconds");
+            return wellbores;
+        }
+
+        public async Task<IEnumerable<Wellbore>> GetActiveWellbores()
+        {
+            var query = WellboreQueries.QueryByStatus();
+            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var wellbores = result.Wellbores
+                .Select(witsmlWellbore =>
+                    new Wellbore
+                    {
+                        Uid = witsmlWellbore.Uid,
+                        Name = witsmlWellbore.Name,
+                        WellUid = witsmlWellbore.UidWell,
+                        WellName = witsmlWellbore.NameWell
+                    })
+                .OrderBy(wellbore => wellbore.Name).ToList();
             return wellbores;
         }
     }

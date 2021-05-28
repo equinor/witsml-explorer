@@ -76,5 +76,18 @@ namespace Witsml.Query
         }
 
 
+        public static WitsmlWellbores QueryByStatus()
+        {
+            return new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    IsActive = "True"
+                }.AsSingletonList()
+            };
+
+        }
+
+
     }
 }

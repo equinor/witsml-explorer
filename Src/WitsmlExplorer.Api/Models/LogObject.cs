@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 namespace WitsmlExplorer.Api.Models
 {
     public class LogObject
@@ -19,5 +19,9 @@ namespace WitsmlExplorer.Api.Models
         public DateTime DateTimeCreation { get; set; }
         public DateTime? DateTimeLastChange { get; set; }
         public string IndexCurve { get; set; }
+        public List<LogCurveInfo> LogCurveInfo { get; set; }
+        public LogData LogData { get; set; }
+        public CommonData CommonData { get; set; }
+
     }
 }

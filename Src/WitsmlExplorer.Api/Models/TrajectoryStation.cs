@@ -13,5 +13,10 @@ namespace WitsmlExplorer.Api.Models
         public decimal Tvd { get; internal set; }
         public decimal Incl { get; internal set; }
         public decimal Azi { get; internal set; }
+        public decimal DispNs { get; set; }
+        public decimal DispEw { get; set; }
+        public decimal VertSect { get; set; }
+        public decimal Dls { get; set; }
+        public CommonData CommonData { get; set; }
     }
 }
