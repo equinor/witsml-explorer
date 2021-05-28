@@ -22,6 +22,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
   wellboreUid: string;
   wellName: string;
   wellboreName: string;
+  isActive: boolean;
 }
 
 export const LogCurveInfoListView = (): React.ReactElement => {
@@ -31,6 +32,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const depthThreshold = 50; // Meters
+  const timeThreshold = 60 * 60 * 1000; // 1 hour in milliseconds
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -57,7 +60,18 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogCurveInfoContextMenu {...contextMenuProps} />, position } });
   };
 
+  const calculateIsCurveActive = (logCurveInfo: LogCurveInfo, maxDepth: number): boolean => {
+    if (isDepthIndex) {
+      return maxDepth - logCurveInfo.maxDepthIndex < depthThreshold;
+    } else {
+      const dateDifference = new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
+      return dateDifference < timeThreshold;
+    }
+  };
+
   const getTableDate = () => {
+    const maxDepth = Math.max(...logCurveInfoList.map((x) => x.maxDepthIndex));
+
     return logCurveInfoList.map((logCurveInfo) => {
       return {
         id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
@@ -72,12 +86,14 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         wellUid: selectedWell.uid,
         wellboreUid: selectedWellbore.uid,
         wellName: selectedWell.name,
-        wellboreName: selectedWellbore.name
+        wellboreName: selectedWellbore.name,
+        isActive: selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth)
       };
     });
   };
 
   const columns: ContentTableColumn[] = [
+    !isDepthIndex && { property: "isActive", label: "Active", type: ContentType.Icon },
     { property: "mnemonic", label: "Mnemonic", type: ContentType.String },
     { property: "minIndex", label: "MinIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
     { property: "maxIndex", label: "MaxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },

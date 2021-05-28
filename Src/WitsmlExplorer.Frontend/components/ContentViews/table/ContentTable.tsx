@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
 import { DateFormat } from "../../Constants";
-import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows } from "./";
+import { ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getSelectedRange, Order } from "./";
 import { colors } from "../../../styles/Colors";
+import { IsActiveIcon } from "../../Icons/IsActiveIcon";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows } = props;
@@ -65,13 +66,16 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             </TableHeaderCell>
           )}
           {columns &&
-            columns.map((column) => (
-              <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
-                <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
-                  {column.label}
-                </TableSortLabel>
-              </TableHeaderCell>
-            ))}
+            columns.map(
+              (column) =>
+                column && (
+                  <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
+                    <TableSortLabel active={sortedColumn === column.property} direction={sortOrder} onClick={() => sortByColumn(column.property)}>
+                      {column.label}
+                    </TableSortLabel>
+                  </TableHeaderCell>
+                )
+            )}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -87,18 +91,21 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                 </TableDataCell>
               )}
               {columns &&
-                columns.map((column) => (
-                  <TableDataCell
-                    id={item[column.property] + column.property}
-                    key={item[column.property] + column.property}
-                    clickable={onSelect ? "true" : "false"}
-                    type={column.type}
-                    align={column.type === ContentType.Number ? "right" : "left"}
-                    onClick={(event) => selectRow(event, item)}
-                  >
-                    {format(column.type, item[column.property])}
-                  </TableDataCell>
-                ))}
+                columns.map(
+                  (column) =>
+                    column && (
+                      <TableDataCell
+                        id={item[column.property] + column.property}
+                        key={item[column.property] + column.property}
+                        clickable={onSelect ? "true" : "false"}
+                        type={column.type}
+                        align={column.type === ContentType.Number ? "right" : "left"}
+                        onClick={(event) => selectRow(event, item)}
+                      >
+                        {format(column.type, item[column.property])}
+                      </TableDataCell>
+                    )
+                )}
             </TableRow>
           );
         })}
@@ -107,12 +114,14 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   );
 };
 
-const format = (type: ContentType, data: string | Date) => {
+const format = (type: ContentType, data: string | Date | boolean) => {
   switch (type) {
     case ContentType.DateTime:
       return formatDate(data as Date, DateFormat.DATETIME_S);
     case ContentType.Date:
       return formatDate(data as Date, DateFormat.DATE);
+    case ContentType.Icon:
+      return data && <IsActiveIcon />;
     default:
       return data;
   }
