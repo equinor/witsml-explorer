@@ -37,6 +37,18 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICreateWellboreWorker createWellboreWorker;
         private readonly IBatchModifyWellWorker batchModifyWellWorker;
 
+        private readonly IModifyMudLogWorker modifyMudLogWorker;
+        private readonly IDeleteLogObjectWorker deleteLogObjectWorker;
+        private readonly IDeleteRiskWorker deleteRiskWorker;
+        private readonly IDeleteFormationMarkerWorker deleteFormationMarkerWorker;
+        private readonly ICreateTrajectoryWorker createTrajectoryWorker;
+        private readonly ICreateLogObjectWorker createLogObjectWorker;
+        private readonly ICreateMudLogWorker createMudLogWorker;
+        private readonly ICreateRiskWorker createRiskWorker;
+        private readonly ICreateFormationMarkerWorker createFormationMarkerWorker;
+
+
+        
         public JobService(
             IHubContext<NotificationsHub> hubContext,
             ICopyLogWorker copyLogWorker,
@@ -56,7 +68,18 @@ namespace WitsmlExplorer.Api.Services
             ICreateLogWorker createLogWorker,
             ICreateWellWorker createWellWorker,
             ICreateWellboreWorker createWellboreWorker,
-            IBatchModifyWellWorker batchModifyWellWorker)
+            IBatchModifyWellWorker batchModifyWellWorker,
+
+            IModifyMudLogWorker modifyMudLogWorker,
+            IDeleteLogObjectWorker deleteLogObjectWorker,
+            IDeleteRiskWorker deleteRiskWorker,
+            IDeleteFormationMarkerWorker deleteFormationMarkerWorker,
+            ICreateTrajectoryWorker createTrajectoryWorker,
+            ICreateLogObjectWorker createLogObjectWorker,
+            ICreateMudLogWorker createMudLogWorker,
+            ICreateRiskWorker createRiskWorker,
+            ICreateFormationMarkerWorker createFormationMarkerWorker
+            )
         {
             this.hubContext = hubContext;
             this.copyLogWorker = copyLogWorker;
@@ -77,6 +100,17 @@ namespace WitsmlExplorer.Api.Services
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
+
+            this.modifyMudLogWorker = modifyMudLogWorker;
+            this.deleteLogObjectWorker = deleteLogObjectWorker;
+            this.deleteRiskWorker = deleteRiskWorker;
+            this.deleteFormationMarkerWorker = deleteFormationMarkerWorker;
+            this.createTrajectoryWorker = createTrajectoryWorker;
+            this.createLogObjectWorker = createLogObjectWorker;
+            this.createMudLogWorker = createMudLogWorker;
+            this.createRiskWorker = createRiskWorker;
+            this.createFormationMarkerWorker = createFormationMarkerWorker;
+
         }
 
         public async Task CreateJob(JobType jobType, Stream jobStream)
@@ -157,6 +191,39 @@ namespace WitsmlExplorer.Api.Services
                     var batchModifyWellJob = await jobStream.Deserialize<BatchModifyWellJob>();
                     (result, refreshAction) = await batchModifyWellWorker.Execute(batchModifyWellJob);
                     break;
+                case JobType.ModifyMudLog:
+                    var modifyMudLogJob = await jobStream.Deserialize<ModifyMudLogJob>();
+                    result = await modifyMudLogWorker.Execute(modifyMudLogJob);
+                    break;
+                case JobType.DeleteLogObject:
+                    var deleteLogObjectJob = await jobStream.Deserialize<DeleteLogObjectJob>();
+                    (result, refreshAction) = await deleteLogObjectWorker.Execute(deleteLogObjectJob);
+                    break;
+                case JobType.DeleteRisk:
+                    var deleteRiskJob = await jobStream.Deserialize<DeleteRiskJob>();
+                    result = await deleteRiskWorker.Execute(deleteRiskJob);
+                    break;
+                case JobType.CreateFormationMarker:
+                    var createFormationMarkerJob = await jobStream.Deserialize<CreateFormationMarkerJob>();
+                    (result, refreshAction) = await createFormationMarkerWorker.Execute(createFormationMarkerJob);
+                    break;
+                case JobType.DeleteFormationMarker:
+                    var deleteFormationMarkerJob = await jobStream.Deserialize<DeleteFormationMarkerJob>();
+                    result = await deleteFormationMarkerWorker.Execute(deleteFormationMarkerJob);
+                    break;
+                case JobType.CreateTrajectory:
+                    var createTrajectoryJob = await jobStream.Deserialize<CreateTrajectoryJob>();
+                    (result, refreshAction) = await createTrajectoryWorker.Execute(createTrajectoryJob);
+                    break;
+                case JobType.CreateMudLog:
+                    var createMudLogJob = await jobStream.Deserialize<CreateMudLogJob>();
+                    (result, refreshAction) = await createMudLogWorker.Execute(createMudLogJob);
+                    break;
+                case JobType.CreateRisk:
+                    var createRiskJob = await jobStream.Deserialize<CreateRiskJob>();
+                    (result, refreshAction) = await createRiskWorker.Execute(createRiskJob);
+                    break;
+                
                 default:
                     throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType.GetDisplayName()}");
             }

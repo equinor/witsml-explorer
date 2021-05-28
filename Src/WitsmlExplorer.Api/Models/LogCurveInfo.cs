@@ -13,5 +13,8 @@ namespace WitsmlExplorer.Api.Models
         public string ClassWitsml { get; internal set; }
         public string Unit { get; internal set; }
         public string MnemAlias { get; internal set; }
+        public string CurveDescription { get; set; }
+        public string NullValue { get; set; }
+        public string TypeLogData { get; set; }
     }
 }

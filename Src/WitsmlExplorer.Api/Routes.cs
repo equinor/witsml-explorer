@@ -22,6 +22,9 @@ namespace WitsmlExplorer.Api
         private readonly IRigService rigService;
         private readonly ITrajectoryService trajectoryService;
         private readonly IJobService jobService;
+        private readonly IMudLogService mudLogService;
+        private readonly IRiskService riskService;
+        private readonly IFormationmarkerService formationmarkerService;
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
@@ -32,6 +35,9 @@ namespace WitsmlExplorer.Api
             IRigService rigService,
             ITrajectoryService trajectoryService,
             IJobService jobService,
+            IMudLogService mudLogService,
+            IRiskService riskService,
+            IFormationmarkerService formationmarkerService,
             IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
             this.credentialsService = credentialsService;
@@ -42,6 +48,9 @@ namespace WitsmlExplorer.Api
             this.trajectoryService = trajectoryService;
             this.jobService = jobService;
             this.witsmlServerRepository = witsmlServerRepository;
+            this.mudLogService = mudLogService;
+            this.riskService = riskService;
+            this.formationmarkerService = formationmarkerService;
 
             Get("/api/witsml-servers", GetWitsmlServers);
             Post("/api/witsml-servers", CreateWitsmlServer);
@@ -49,6 +58,7 @@ namespace WitsmlExplorer.Api
             Delete("/api/witsml-servers/{witsmlServerId}", DeleteWitsmlServer);
 
             Get("/api/wells", GetAllWells);
+            Get("/api/wells/active", GetActiveWellbores);
             Get("/api/wells/{wellUid}", GetWell);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}", GetWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", GetLogsForWellbore);
@@ -59,6 +69,11 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
+
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/formationmarkers", GetFormationmarkersForWellbore);
 
             Post("/api/jobs/{jobType}", CreateJob);
             Post("/api/credentials/authorize", Authorize);
@@ -200,6 +215,44 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(trajectory);
         }
 
+        private async Task GetMudLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var mudLogs = await mudLogService.GetMudLogs(wellUid, wellboreUid);
+            await httpResponse.AsJson(mudLogs);
+        }
+        private async Task GetMudLog(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var mudlogUid = httpRequest.RouteValues.As<string>("mudlogUid");
+            var mudLog = await mudLogService.GetMudLog(wellUid, wellboreUid, mudlogUid);
+            await httpResponse.AsJson(mudLog);
+        }
+
+        private async Task GetRisksForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var risks = await riskService.GetRisks(wellUid, wellboreUid);
+            await httpResponse.AsJson(risks);
+        }
+
+        private async Task GetFormationmarkersForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var risks = await formationmarkerService.GetFormationmarkers(wellUid, wellboreUid);
+            await httpResponse.AsJson(risks);
+        }
+
+        private async Task GetActiveWellbores(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var active = await wellboreService.GetActiveWellbores();
+            await httpResponse.AsJson(active);
+        }
+        
         private async Task CreateJob(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var jobType = httpRequest.RouteValues.As<JobType>("jobType");
