@@ -33,7 +33,8 @@ export enum ContentType {
   String,
   Number,
   Date,
-  DateTime
+  DateTime,
+  Icon
 }
 
 export const getRowsInRange = (rows: ContentTableRow[], indexRange: number[]): ContentTableRow[] => {
