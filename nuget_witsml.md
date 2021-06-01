@@ -1,9 +1,8 @@
 ## Access pre-built Witsml nuget package
 
 If you only need to include the [Witsml](https://github.com/equinor/witsml-explorer/tree/main/Src/Witsml) project
-```csharp
+```sh
 witsml-explorer/Src/Witsml
-```
 
 Witsml nuget package can be added to your own project using [nuget](https://docs.microsoft.com/en-us/nuget/). 
 It is necessary to author a new personal access token to be able to add the package to your project. A `nuget.config` (config file at solution, user or global scope) has to accommodate for username and the token afterwards.
@@ -13,9 +12,8 @@ It is necessary to author a new personal access token to be able to add the pack
 1. Create your api access token at [https://github.com/settings/tokens](https://github.com/settings/tokens)
 2. Make those available through a config file at your preferred location (see: [configuring-nuget-behavior](https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior))
 3. Add Witsml package to your project
-   ```csharp
+   ```sh
    dotnet add PROJECT package Witsml --version 1.0.18
-   ```
 To keep secrets out of your solution, use environment variables or place you nuget.config file under user scope (e.g. `~/.nuget/nuget.config`). An example with credentials as environment variables has been outlined below
 
 ***nuget.conf***
