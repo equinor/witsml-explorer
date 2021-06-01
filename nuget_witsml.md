@@ -1,5 +1,12 @@
-## Access pre-built nuget package
-Witsml nuget package can be added to your own project using [nuget](https://docs.microsoft.com/en-us/nuget/). It is necessary to author a new personal access token to be able to add the package to your project. A `nuget.config` (config file at solution, user or global scope) has to accommodate for username and the token afterwards.
+## Access pre-built Witsml nuget package
+
+If you only need to include the [Witsml](https://github.com/equinor/witsml-explorer/tree/main/Src/Witsml) project
+```csharp
+witsml-explorer/Src/Witsml
+```
+
+Witsml nuget package can be added to your own project using [nuget](https://docs.microsoft.com/en-us/nuget/). 
+It is necessary to author a new personal access token to be able to add the package to your project. A `nuget.config` (config file at solution, user or global scope) has to accommodate for username and the token afterwards.
 
 **Example** 
 
