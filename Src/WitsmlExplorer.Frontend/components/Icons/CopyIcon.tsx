@@ -1,9 +1,10 @@
 import * as React from "react";
+import { AssetsLoader } from "../AssetsLoader";
 
 export function CopyIcon(): React.ReactElement {
   return (
     <div>
-      <img src="/assets/icons/copy.svg" alt="Copy" />
+      <img src={AssetsLoader.getAssetsRoot() + "/assets/icons/copy.svg"} alt="Copy" />
     </div>
   );
 }

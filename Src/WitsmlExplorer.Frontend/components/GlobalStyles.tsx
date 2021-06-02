@@ -1,21 +1,22 @@
 import { createGlobalStyle } from "styled-components";
+import { AssetsLoader } from "./AssetsLoader";
 
 const GlobalStyles = createGlobalStyle`
   @font-face {
     font-family: "EquinorRegular";
-    src: url("/assets/fonts/Equinor-Regular.woff2");
+    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: "EquinorBold";
-    src: url("/assets/fonts/Equinor-Bold.woff2");
+    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Bold.woff2");
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: "EquinorMedium";
-    src: url("/assets/fonts/Equinor-Medium.woff2");
+    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Medium.woff2");
     font-weight: normal;
     font-style: normal;
   }

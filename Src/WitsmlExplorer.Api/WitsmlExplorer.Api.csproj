@@ -5,11 +5,12 @@
     <UserSecretsId>5de2e6cd-e42c-4fca-905c-39f60e8b2ea8</UserSecretsId>
     <AssemblyName>WitsmlExplorer.Api</AssemblyName>
     <RootNamespace>WitsmlExplorer.Api</RootNamespace>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="carter" Version="5.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
     <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.3" />
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.1.0" />

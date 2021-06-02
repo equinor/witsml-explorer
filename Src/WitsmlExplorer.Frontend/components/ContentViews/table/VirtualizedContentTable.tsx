@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactElement, useState } from "react";
+import React, { forwardRef, memo, ReactElement, useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Moment from "react-moment";
 import orderBy from "lodash/orderBy";
@@ -16,119 +16,87 @@ import LogObject from "../../../models/logObject";
 interface RowProps {
   index: number;
   style: any;
-  data: {
-    columns: ContentTableColumn[];
-    width: number;
-    items: any[];
-  };
+  data: RowData;
 }
-
+interface RowData {
+  columns: ContentTableColumn[];
+  width: number;
+  items: any[];
+  onSelect?: (row: ContentTableRow) => void;
+  onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
+  onToggleRow?: (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: ContentTableRow) => void;
+}
+interface VirtualizedTableContext {
+  columns: ContentTableColumn[];
+  checkableRows: boolean;
+  isCompactMode: boolean;
+  storeCheckboxColumnReference: (ref: any) => void;
+  toggleAllRows: () => void;
+  checkedContentItems: ContentTableRow[];
+  data: any[];
+  storeColumnReference: (ref: any, index: number) => void;
+  sortedColumn: string;
+  sortByColumn: (columnToSort: string) => void;
+  sortOrder: Order;
+}
+const TableContext = React.createContext({} as VirtualizedTableContext);
 const columnRefs: string[] = [];
 
-export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, data, onSelect, onContextMenu, checkableRows } = props;
-  const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
-  const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
-  const [sortedColumn, setSortedColumn] = useState<string>(columns[0].property);
-  const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+const Row = memo(({ data, index, style }: RowProps) => {
+  const { columns, width, items, onContextMenu, onSelect, onToggleRow } = data;
+  const { checkableRows, isCompactMode, checkedContentItems } = useContext(TableContext);
+  const item = items[index];
+  return (
+    <RowWrapper key={"Row-" + index} style={style} columns={columns} checkableRows={checkableRows} width={width} compactMode={isCompactMode}>
+      <TableRow
+        key={"TableRow-" + index}
+        hover
+        onClick={(event) => onToggleRow(event, item)}
+        onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
+      >
+        {checkableRows && (
+          <TableDataCell key={`${index}-checkbox`} component={"div"}>
+            <Checkbox
+              onClick={(event) => onToggleRow(event, item)}
+              checked={checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+            />
+          </TableDataCell>
+        )}
+        {columns &&
+          columns.map((column: { property: string; type: ContentType }) => (
+            <TableDataCell
+              id={item[column.property] + column.property}
+              key={column.property + "-" + index}
+              component={"div"}
+              clickable={onSelect ? "true" : "false"}
+              type={column.type}
+              align={column.type === ContentType.Number ? "right" : "left"}
+            >
+              {format(column.type, item[column.property])}
+            </TableDataCell>
+          ))}
+      </TableRow>
+    </RowWrapper>
+  );
+});
+Row.displayName = "VirtualizedRow";
 
-  const sortByColumn = (columnToSort: string) => {
-    const flipOrder = (order: Order) => (order === Order.Ascending ? Order.Descending : Order.Ascending);
-    const isSameColumn = columnToSort === sortedColumn;
-    const order = isSameColumn ? flipOrder(sortOrder) : Order.Ascending;
-    setSortOrder(order);
-    setSortedColumn(columnToSort);
-  };
-
-  const toggleRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: ContentTableRow) => {
-    const isShiftKeyDown = e.shiftKey;
-    const selectedRange = getSelectedRange(isShiftKeyDown, currentRow, data, activeIndexRange);
-    const checkedRows = getCheckedRows(currentRow, data, selectedRange, checkedContentItems);
-    setActiveIndexRange(selectedRange);
-    setCheckedContentItems(checkedRows);
-  };
-
-  const toggleAllRows = () => {
-    if (data.length == checkedContentItems.length) {
-      setCheckedContentItems([]);
-    } else {
-      setCheckedContentItems([...data]);
-    }
-  };
-
-  const Row = (props: RowProps) => {
-    const {
-      index,
-      style,
-      data: { columns, width, items }
-    } = props;
-    const item = items[index];
-    return (
-      <div style={style}>
-        <RowWrapper key={"Row-" + index} columns={columns} checkableRows={checkableRows} width={width} compactMode={isCompactMode}>
-          <TableRow
-            key={"TableRow-" + index}
-            hover
-            onClick={(event) => toggleRow(event, item)}
-            onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
-          >
-            {checkableRows && (
-              <TableDataCell key={`${index}-checkbox`} component={"div"}>
-                <Checkbox
-                  onClick={(event) => toggleRow(event, item)}
-                  checked={
-                    checkedContentItems && checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1
-                  }
-                />
-              </TableDataCell>
-            )}
-            {columns &&
-              columns.map((column) => (
-                <TableDataCell
-                  id={item[column.property] + column.property}
-                  key={column.property + "-" + index}
-                  component={"div"}
-                  clickable={onSelect ? "true" : "false"}
-                  type={column.type}
-                  align={column.type === ContentType.Number ? "right" : "left"}
-                >
-                  {format(column.type, item[column.property])}
-                </TableDataCell>
-              ))}
-          </TableRow>
-        </RowWrapper>
-      </div>
-    );
-  };
-
-  const getItemData = memoizeOne((columns, width, data) => ({
+const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...rest }: any, ref) => {
+  const {
     columns,
-    width,
-    items: orderBy(data, sortedColumn, sortOrder)
-  }));
+    checkableRows,
+    isCompactMode,
+    storeCheckboxColumnReference,
+    toggleAllRows,
+    checkedContentItems,
+    data,
+    sortedColumn,
+    sortOrder,
+    sortByColumn,
+    storeColumnReference
+  } = useContext(TableContext);
 
-  const ROW_SIZE = isCompactMode ? 32 : 48;
-  const itemKey = (index: number, data: any) => data.items[index][columns[0].property];
-
-  const storeCheckboxColumnReference = (ref: any) => {
-    if (columnRefs.length > 0) {
-      columnRefs[0] = ref;
-    } else {
-      columnRefs.push(ref);
-    }
-  };
-
-  const storeColumnReference = (ref: any, index: number) => {
-    const offset = checkableRows ? 1 : 0;
-    if (columnRefs.length > offset) {
-      columnRefs[index + offset] = ref;
-    } else {
-      columnRefs.push(ref);
-    }
-  };
-
-  const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...rest }: any, ref) => (
+  return (
     <div ref={ref} style={rest.style}>
       <TableHeader>
         <RowWrapper columns={columns} checkableRows={checkableRows} isHeader compactMode={isCompactMode}>
@@ -158,25 +126,126 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
       </TableHeader>
       <DataContainer>{children}</DataContainer>
     </div>
-  ));
-  innerGridElementType.displayName = "innerGridElementType";
+  );
+});
+innerGridElementType.displayName = "innerGridElementType";
+
+export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
+  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange } = props;
+  const [data, setData] = useState<any[]>(props.data ?? []);
+  const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
+  const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
+  const [sortedColumn, setSortedColumn] = useState<string>(columns[0].property);
+  const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
+  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+
+  useEffect(() => {
+    setData(() => orderBy(props.data, sortedColumn, sortOrder));
+  }, [props.data, sortOrder, sortedColumn]);
+
+  useEffect(() => {
+    onRowSelectionChange([...checkedContentItems], sortOrder, sortedColumn);
+  }, [checkedContentItems, sortOrder, sortedColumn]);
+
+  const sortByColumn = useCallback(
+    (columnToSort: string) => {
+      const isSameColumn = columnToSort === sortedColumn;
+      const order = isSameColumn ? flipOrder(sortOrder) : Order.Ascending;
+      setSortOrder(order);
+      setSortedColumn(columnToSort);
+    },
+    [sortedColumn, sortOrder]
+  );
+
+  const toggleRow = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: ContentTableRow) => {
+      const isShiftKeyDown = e.shiftKey;
+      const selectedRange = getSelectedRange(isShiftKeyDown, currentRow, data, activeIndexRange);
+      const checkedRows = getCheckedRows(currentRow, data, selectedRange, checkedContentItems);
+      setActiveIndexRange(selectedRange);
+      setCheckedContentItems(checkedRows);
+    },
+    [data, activeIndexRange, checkedContentItems]
+  );
+
+  const toggleAllRows = useCallback(() => {
+    if (data.length == checkedContentItems.length) {
+      setCheckedContentItems([]);
+    } else {
+      setCheckedContentItems([...data]);
+    }
+    setActiveIndexRange([]);
+  }, [data.length, checkedContentItems.length]);
+
+  const getItemData = memoizeOne(
+    (columns, width, items, onContextMenu, onSelect, onToggleRow): RowData => ({
+      columns: columns,
+      width: width,
+      items: items,
+      onContextMenu: onContextMenu,
+      onSelect: onSelect,
+      onToggleRow: onToggleRow
+    })
+  );
+
+  const ROW_SIZE = isCompactMode ? 32 : 48;
+  const itemKey = useCallback((index: number, data: any) => data.items[index][columns[0].property], [columns[0]]);
+
+  const storeCheckboxColumnReference = useCallback(
+    (ref: any) => {
+      if (columnRefs.length > 0) {
+        columnRefs[0] = ref;
+      } else {
+        columnRefs.push(ref);
+      }
+    },
+    [columnRefs.length]
+  );
+
+  const storeColumnReference = useCallback(
+    (ref: any, index: number) => {
+      const offset = checkableRows ? 1 : 0;
+      if (columnRefs.length > offset) {
+        columnRefs[index + offset] = ref;
+      } else {
+        columnRefs.push(ref);
+      }
+    },
+    [checkableRows, columnRefs.length]
+  );
 
   return (
     <>
       {columns && (
         <>
           {data && (
-            <AutoSizer>
-              {({ height, width }) => {
-                const itemData = getItemData(columns, width, data);
-
-                return (
-                  <List height={height} width={width} itemCount={data.length} itemSize={ROW_SIZE} itemKey={itemKey} itemData={itemData} innerElementType={innerGridElementType}>
-                    {Row}
-                  </List>
-                );
+            <TableContext.Provider
+              value={{
+                checkableRows: checkableRows,
+                isCompactMode: isCompactMode,
+                columns: columns,
+                checkedContentItems: checkedContentItems,
+                data: data,
+                sortByColumn: sortByColumn,
+                sortOrder: sortOrder,
+                sortedColumn: sortedColumn,
+                storeCheckboxColumnReference: storeCheckboxColumnReference,
+                storeColumnReference: storeColumnReference,
+                toggleAllRows: toggleAllRows
               }}
-            </AutoSizer>
+            >
+              <AutoSizer>
+                {({ height, width }) => {
+                  const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);
+
+                  return (
+                    <List height={height} width={width} itemCount={data.length} itemSize={ROW_SIZE} itemKey={itemKey} itemData={itemData} innerElementType={innerGridElementType}>
+                      {Row}
+                    </List>
+                  );
+                }}
+              </AutoSizer>
+            </TableContext.Provider>
           )}
         </>
       )}
@@ -206,6 +275,8 @@ export const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedL
   }, []);
 };
 
+const flipOrder = (order: Order) => (order === Order.Ascending ? Order.Descending : Order.Ascending);
+
 const format = (type: ContentType, data: string | Date): string | ReactElement => {
   switch (type) {
     case ContentType.DateTime:
@@ -225,7 +296,7 @@ const formatDate = (date: Date, format: string): string | ReactElement => {
   }
 };
 
-const configureTemplateColumns = memoizeOne((checkableRows: boolean, isHeader: boolean, width: any, columns: ContentTableColumn[]) => {
+const configureTemplateColumns = memoizeOne((checkableRows: boolean, isHeader: boolean, columns: ContentTableColumn[]) => {
   let templateColumns = [];
 
   if (isHeader) {
@@ -255,7 +326,7 @@ interface RowWrapperProps {
 
 const RowWrapper = styled.div<RowWrapperProps>`
   display: grid;
-  grid-template-columns: ${(props) => configureTemplateColumns(props.checkableRows, props.isHeader, props.width, props.columns)};
+  grid-template-columns: ${(props) => configureTemplateColumns(props.checkableRows, props.isHeader, props.columns)};
   grid-auto-rows: minmax(${(props) => (props.compactMode ? "2rem" : "3rem")}, auto);
   font-size: 0.875rem;
   width: 100%;
