@@ -5,7 +5,7 @@ import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges } from "./table";
+import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges, getComparatorByColumn } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
 import useExport from "../../hooks/useExport";
@@ -59,13 +59,17 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
-    const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [Order.Ascending, Order.Ascending]) //Sorted because order is important when importing data
+      .map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator))
+      .join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
-    const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    const data = orderBy(selectedRows, getComparatorByColumn(columns[0]), [Order.Ascending, Order.Ascending]) //Sorted because order is important when importing data
+      .map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator))
+      .join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, selectedRows]);
 
