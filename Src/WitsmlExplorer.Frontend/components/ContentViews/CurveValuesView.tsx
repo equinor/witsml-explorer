@@ -14,7 +14,6 @@ import LogObject from "../../models/logObject";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import OperationContext from "../../contexts/operationContext";
-import LogObject from "../../models/logObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 
