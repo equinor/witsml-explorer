@@ -11,5 +11,5 @@ export interface CurveSpecification {
 }
 
 export interface LogDataRow {
-  [key: string]: number | string;
+  [key: string]: number | string | boolean;
 }

@@ -41,8 +41,12 @@ export default class NotificationService {
   private _onConnectionStateChanged = new SimpleEventDispatcher<boolean>();
 
   private constructor() {
+    let notificationURL = ApiClient.getBaseUrl().toString();
+    if (!notificationURL.endsWith("/")) {
+      notificationURL = notificationURL + "/";
+    }
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${ApiClient.getBaseUrl()}notifications`, {
+      .withUrl(`${notificationURL}notifications`, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
       })

@@ -1,5 +1,9 @@
 import React from "react";
 
+export interface ExportableContentTableColumn<T> extends ContentTableColumn {
+  columnOf: T;
+}
+
 export interface ContentTableColumn {
   property: string;
   label: string;
@@ -17,6 +21,7 @@ export interface ContentTableProps {
   onSelect?: (row: ContentTableRow) => void;
   onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
   checkableRows?: boolean;
+  onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => void;
 }
 
 export enum Order {
@@ -28,7 +33,8 @@ export enum ContentType {
   String,
   Number,
   Date,
-  DateTime
+  DateTime,
+  Icon
 }
 
 export const getComparatorByColumn = (column: ContentTableColumn): [(row: any) => any, string] => {
