@@ -21,7 +21,7 @@ export interface ContentTableProps {
   onSelect?: (row: ContentTableRow) => void;
   onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
   checkableRows?: boolean;
-  onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => void;
+  onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
 }
 
 export enum Order {

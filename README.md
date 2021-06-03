@@ -16,6 +16,9 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 * Copy log objects and individual curves (also between different servers!).
 * Deep linking directly to objects using the URL
 
+## Witsml as a Nuget package
+Please see [nuget.md](/nuget_witsml.md)
+
 ## Contributing
 Please see our [contributing.md](/CONTRIBUTING.md).
 
