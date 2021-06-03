@@ -5,7 +5,7 @@ import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges } from "./table";
+import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges, ContentTableColumn, getComparatorByColumn } from "./table";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
 import useExport from "../../hooks/useExport";
@@ -53,8 +53,8 @@ export const CurveValuesView = (): React.ReactElement => {
     appendDateTime: true
   });
 
-  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: string) => {
-    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], sortedColumn, sortOrder));
+  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => {
+    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
   }, []);
 
   const exportSelectedIndexRange = useCallback(() => {
