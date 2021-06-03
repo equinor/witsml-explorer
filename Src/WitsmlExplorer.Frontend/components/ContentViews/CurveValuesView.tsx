@@ -9,11 +9,11 @@ import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableConten
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
 import useExport from "../../hooks/useExport";
+import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import LogObject from "../../models/logObject";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
 import OperationContext from "../../contexts/operationContext";
-import LogObject from "../../models/logObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 
