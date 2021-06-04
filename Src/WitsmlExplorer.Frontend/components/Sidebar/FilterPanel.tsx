@@ -34,20 +34,21 @@ const FilterPanel = (): React.ReactElement => {
       </FilterPanelHeader>
       {expanded && (
         <>
-          <SearchTextField
+          <TextField
             id="filter-tree"
             label="Filter on well name"
             onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellName: event.target.value } } })}
             value={filter.wellName}
             autoComplete={"off"}
           />
-          <SearchTextField
+          <TextField
             id="filter-wellLimit"
             label="Limit number of wells (0 for no limit)"
             type="number"
             InputProps={{ inputProps: { min: 0 } }}
             onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellLimit: Number(event.target.value) } } })}
             value={filter.wellLimit}
+            autoComplete={"off"}
           />
           <FormControlLabel
             control={
@@ -70,7 +71,7 @@ const FilterPanel = (): React.ReactElement => {
             label={"Show only growing logs"}
           />
           <Divider />
-          <SearchTextField
+          <TextField
             id="curveThreshold-time"
             label="Set threshold for time curve (in minutes)"
             type="number"
@@ -79,6 +80,7 @@ const FilterPanel = (): React.ReactElement => {
               dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, timeInMinutes: Number(event.target.value) } } })
             }
             value={curveThreshold.timeInMinutes}
+            autoComplete={"off"}
           />
         </>
       )}
@@ -101,7 +103,7 @@ const FilterPanelHeader = styled.div`
   font-family: EquinorMedium, sans-serif;
 `;
 
-const SearchTextField = styled(MuiTextField)`
+const TextField = styled(MuiTextField)`
   && {
     margin-left: 0.5rem;
     :hover {
