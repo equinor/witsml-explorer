@@ -11,6 +11,7 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Extensions;
+using System;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -18,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers
     {
         Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(ImportLogDataJob job);
     }
-
+    //Todo: Write tests for the worker
     public class ImportLogDataWorker : IImportLogDataWorker
     {
         private readonly IWitsmlClient witsmlClient;
@@ -35,19 +36,29 @@ namespace WitsmlExplorer.Api.Workers
             return result.Logs.FirstOrDefault();
         }
 
-        private static IEnumerable<WitsmlLogs> CreateImportQueries(WitsmlLog witsmlLog, bool filterExisting)
+        private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
         {
-
-            return new List<WitsmlLogs>
-            {
-                new WitsmlLogs
+            return job.DataRows
+                .Select(row => new WitsmlData { Data = string.Join(',', row) })
+                .Chunk(chunkSize)
+                .Select(logData => new WitsmlLogs
                 {
                     Logs = new List<WitsmlLog>
-                    {
-                        witsmlLog
-                    },
-                }
-            };
+                            {
+                                new WitsmlLog
+                                {
+                                    Uid = job.TargetLog.LogUid,
+                                    UidWellbore = job.TargetLog.WellboreUid,
+                                    UidWell = job.TargetLog.WellUid,
+                                    LogData = new WitsmlLogData
+                                    {
+                                        Data = logData.ToList(),
+                                        MnemonicList = string.Join(',', job.Mnemonics),
+                                        UnitList = string.Join(',', job.Units)
+                                    }
+                                }
+                            },
+                });
         }
 
         public async Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(ImportLogDataJob job)
@@ -63,21 +74,15 @@ namespace WitsmlExplorer.Api.Workers
                 var reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
             }
-            //TODO: split data into batches as some servers have limitations
-            witsmlLog.LogData = new WitsmlLogData
-            {
-                Data = job.DataRows.Select(row => new WitsmlData { Data = string.Join(',', row) }).ToList(),
-                MnemonicList = string.Join(',', job.Mnemonics),
-                UnitList = string.Join(',', job.Units)
-            };
 
-            var queries = CreateImportQueries(witsmlLog, true);
-            foreach (var query in queries)
+            var queries = CreateImportQueries(job, 1000).ToArray();
+            //Todo: update import progress for the user using websockets
+            for (int i = 0; i < queries.Length; i++)
             {
-                var result = await witsmlClient.UpdateInStoreAsync(query);
+                var result = await witsmlClient.UpdateInStoreAsync(queries[i]);
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Job successful.", GetType().Name);
+                    Log.Information("{JobType} - Query {QueryCount}/{CurrentQuery} successful.", GetType().Name, queries.Length, i + 1);
                 }
                 else
                 {
@@ -90,6 +95,8 @@ namespace WitsmlExplorer.Api.Workers
                     return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to add logdata", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
+
+            Log.Information("{JobType} - Job successful.", GetType().Name);
 
             var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
             var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));

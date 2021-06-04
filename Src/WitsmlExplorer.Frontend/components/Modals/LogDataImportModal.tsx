@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import ModalDialog from "./ModalDialog";
-import { Box, Button, Grid, List, ListItem, MenuItem, Select, TextField, Tooltip, Typography } from "@material-ui/core";
+import { Box, Button, Grid, Tooltip, Typography } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
 import JobService, { JobType } from "../../services/jobService";
 import LogObject from "../../models/logObject";
@@ -9,8 +9,6 @@ import { CloudUpload } from "@material-ui/icons";
 import LogObjectService from "../../services/logObjectService";
 import LogCurveInfo from "../../models/logCurveInfo";
 import { truncateAbortHandler } from "../../services/apiClient";
-import styled from "styled-components";
-import { Autocomplete } from "@material-ui/lab";
 import ImportLogDataJob from "../../models/jobs/importLogDataJob";
 
 export interface LogDataImportModalProps {
@@ -33,40 +31,21 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   const [uploadedFileHeader, setUploadedFileHeader] = useState<string>("");
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<ImportColumn[]>([]);
-  const [curveInfoToUploadedFileColumn, setCurveInfoToUploadedFileColumn] = useState<Map<LogCurveInfo, ImportColumn>>(new Map());
   const [uploadedFileText, setUploadedFileText] = useState<string>("");
   const [targetLogCurveInfos, setTargetLogCurveInfos] = useState<LogCurveInfo[]>([]);
-  const [availableUnits, setAvailableUnits] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
 
-  useEffect(() => {
-    console.log(uploadedFileData)
-  }, [uploadedFileData]);
-
-  useEffect(() => {
-    setAvailableUnits(new Set(targetLogCurveInfos.map((curveInfo) => curveInfo.unit)).add(UNITLESS_UNIT));
-  }, [targetLogCurveInfos]);
-
-  useEffect(() => {
-    if (uploadedFileColumns.length > 0) {
-      const map = new Map<LogCurveInfo, ImportColumn>();
-      for (let index = 0; index < targetLogCurveInfos.length; index++) {
-        const curveInfo = targetLogCurveInfos[index];
-        map.set(
-          curveInfo,
-          uploadedFileColumns.find((col) => col.name === curveInfo.mnemonic)
-        );
-      }
-      setCurveInfoToUploadedFileColumn(map);
-    }
-  }, [uploadedFileColumns, targetLogCurveInfos]);
+  const columnsAreValid = useCallback((): boolean => {
+    const curveInfos = new Set(targetLogCurveInfos.map((curve) => curve.mnemonic));
+    return uploadedFileColumns.map((col) => col.name).every((value) => curveInfos.has(value));
+  }, [uploadedFileHeader, uploadedFileColumns, targetLogCurveInfos]);
 
   useEffect(() => {
     setIsLoading(true);
     const controller = new AbortController();
-    //Todo: get witsml server capabilities to determine the maximum datapoints per update
+    
     const getLogCurveInfo = async () => {
       const logCurveInfos = await LogObjectService.getLogCurveInfo(targetLog.wellUid, targetLog.wellboreUid, targetLog.uid, controller.signal);
       setTargetLogCurveInfos(logCurveInfos);
@@ -81,6 +60,19 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   }, [targetLog]);
 
   useEffect(() => {
+    if (error || !uploadedFile) setIsValidData(false);
+    else setIsValidData(true);
+  }, [error, uploadedFile]);
+
+  useEffect(() => {
+    setError("");
+    if (uploadedFileColumns.length) {
+      if (uploadedFileColumns.map((col) => col.name).some((value) => value === "")) setError(IMPORT_FORMAT_INVALID);
+      if (!columnsAreValid()) setError("Uploaded file mnemonics are not matching.");
+    }
+  }, [uploadedFileColumns, targetLogCurveInfos]);
+
+  useEffect(() => {
     if (uploadedFileHeader) {
       const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
       const fileColumns = uploadedFileHeader.split(separator).map((col, index) => {
@@ -91,8 +83,6 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
           unit: unitRegex.exec(col) ? unitRegex.exec(col)[0] : UNITLESS_UNIT
         };
       });
-      if (fileColumns.map((col) => col.name).some((value) => value === "")) setError(IMPORT_FORMAT_INVALID);
-      else setError("");
       setUploadedFileColumns(fileColumns);
     }
   }, [uploadedFileHeader]);
@@ -106,7 +96,6 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
     if (uploadedFile) {
       (async () => {
         setUploadedFileText(await uploadedFile.text());
-        setIsValidData(true);
       })();
     }
   }, [uploadedFile]);
@@ -122,9 +111,9 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
 
     const job: ImportLogDataJob = {
       targetLog: logReference,
-      mnemonics: uploadedFileColumns.map(col => col.name),
-      units: uploadedFileColumns.map(col => col.unit),
-      dataRows: uploadedFileData.map(line => line.split(separator))
+      mnemonics: uploadedFileColumns.map((col) => col.name),
+      units: uploadedFileColumns.map((col) => col.unit),
+      dataRows: uploadedFileData.map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
@@ -158,37 +147,6 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
                   </Grid>
                 )}
               </Grid>
-              {/* <Typography>Column mapping:</Typography>
-              <List dense>
-                {uploadedFileColumns.length > 0 &&
-                  targetLogCurveInfos.map((curveInfo) => (
-                    <ListItem key={curveInfo.uid}>
-                      <Grid container justify={"flex-start"}>
-                        <Grid item xs>
-                          {curveInfo.mnemonic}:
-                        </Grid>
-                        <Grid item xs>
-                          <ImportMapSelect variant={"outlined"} value={curveInfoToUploadedFileColumn.get(curveInfo)?.name ?? ""}>
-                            {uploadedFileColumns.map((col) => (
-                              <MenuItem key={col.index} value={col.name}>
-                                {col.name}
-                              </MenuItem>
-                            ))}
-                          </ImportMapSelect>
-                        </Grid>
-                        <Grid item xs>
-                          <ImportAutocompleteUnitSelector
-                            freeSolo
-                            value={curveInfoToUploadedFileColumn.get(curveInfo)?.unit ?? ""}
-                            defaultValue={UNITLESS_UNIT}
-                            options={Array.from(availableUnits)}
-                            renderInput={(params) => <TextField {...params} variant={"outlined"} margin="none" />}
-                          />
-                        </Grid>
-                      </Grid>
-                    </ListItem>
-                  ))}
-              </List> */}
             </Box>
           }
           confirmDisabled={!isValidData}
@@ -201,14 +159,5 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
     </>
   );
 };
-
-const ImportMapSelect = styled(Select)`
-  min-width: 100px;
-  width: 100%;
-  margin-left:-5px;
-`;
-const ImportAutocompleteUnitSelector = styled(Autocomplete)`
-  min-width: 100px;
-`;
 
 export default LogDataImportModal;
