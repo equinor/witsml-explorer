@@ -11,6 +11,7 @@ enum NavigationType {
   SelectTrajectoryGroup = "SelectTrajectoryGroup",
   SelectTrajectory = "SelectTrajectory",
   SetFilter = "SetFilter",
+  SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues"
 }
 
