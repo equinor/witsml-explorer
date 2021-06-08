@@ -36,13 +36,11 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICreateWellWorker createWellWorker;
         private readonly ICreateWellboreWorker createWellboreWorker;
         private readonly IBatchModifyWellWorker batchModifyWellWorker;
-
         private readonly IModifyMudLogWorker modifyMudLogWorker;
         private readonly IDeleteLogObjectWorker deleteLogObjectWorker;
         private readonly IDeleteRiskWorker deleteRiskWorker;
         private readonly IDeleteFormationMarkerWorker deleteFormationMarkerWorker;
         private readonly ICreateTrajectoryWorker createTrajectoryWorker;
-        private readonly ICreateLogObjectWorker createLogObjectWorker;
         private readonly ICreateMudLogWorker createMudLogWorker;
         private readonly ICreateRiskWorker createRiskWorker;
         private readonly ICreateFormationMarkerWorker createFormationMarkerWorker;
@@ -69,13 +67,11 @@ namespace WitsmlExplorer.Api.Services
             ICreateWellWorker createWellWorker,
             ICreateWellboreWorker createWellboreWorker,
             IBatchModifyWellWorker batchModifyWellWorker,
-
             IModifyMudLogWorker modifyMudLogWorker,
             IDeleteLogObjectWorker deleteLogObjectWorker,
             IDeleteRiskWorker deleteRiskWorker,
             IDeleteFormationMarkerWorker deleteFormationMarkerWorker,
             ICreateTrajectoryWorker createTrajectoryWorker,
-            ICreateLogObjectWorker createLogObjectWorker,
             ICreateMudLogWorker createMudLogWorker,
             ICreateRiskWorker createRiskWorker,
             ICreateFormationMarkerWorker createFormationMarkerWorker
@@ -100,13 +96,11 @@ namespace WitsmlExplorer.Api.Services
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
-
             this.modifyMudLogWorker = modifyMudLogWorker;
             this.deleteLogObjectWorker = deleteLogObjectWorker;
             this.deleteRiskWorker = deleteRiskWorker;
             this.deleteFormationMarkerWorker = deleteFormationMarkerWorker;
             this.createTrajectoryWorker = createTrajectoryWorker;
-            this.createLogObjectWorker = createLogObjectWorker;
             this.createMudLogWorker = createMudLogWorker;
             this.createRiskWorker = createRiskWorker;
             this.createFormationMarkerWorker = createFormationMarkerWorker;

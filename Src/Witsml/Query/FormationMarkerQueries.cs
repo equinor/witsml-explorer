@@ -30,7 +30,5 @@ namespace Witsml.Query
                 }.AsSingletonList()
             };
         }
-
-        
     }
 }
