@@ -44,12 +44,7 @@ namespace WitsmlExplorer.Api.Services
                     MdBitStart = risk.MdBitStart?.Value,
                     MdBitEnd = risk.MdBitEnd?.Value,
                     SourceName = risk.CommonData.SourceName
-                    //DiaHole = risk.DiaHole,
-                    //SeverityLevel = risk.SeverityLevel,
-                    //ProbabilityLevel = risk.ProbabilityLevel
                 }).OrderBy(risk => risk.Name);
         }
-
-        
     }
 }

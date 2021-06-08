@@ -60,9 +60,8 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             return new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete risk", result.Reason, description);
-
-
         }
+
         private static WitsmlRisks DeleteRequest(string wellUid, string wellboreUid, string uid)
         {
             return new WitsmlRisks
@@ -74,12 +73,6 @@ namespace WitsmlExplorer.Api.Workers
                     Uid = uid
                 }.AsSingletonList()
             };
-
-           
-            
         }
-
-
-
     }
 }

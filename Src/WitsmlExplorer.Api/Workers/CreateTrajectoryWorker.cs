@@ -69,8 +69,6 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlTrajectories SetupTrajectoryToCreate(Trajectory trajectory)
         {
-            // TODO: check which properties we need, and read unit (uom) from source instead
-            // TODO: create uid's here or in client?   
             var tStations = trajectory.TrajectoryStations.Select(trajectoryStation => new WitsmlTrajectoryStation()
             {
                 Uid = Guid.NewGuid().ToString(),
@@ -118,7 +116,6 @@ namespace WitsmlExplorer.Api.Workers
 
         private void Verify(Trajectory trajectory)
         {
-            //TODO: add check for all required properties
             if (string.IsNullOrEmpty(trajectory.Uid)) throw new InvalidOperationException($"{nameof(trajectory.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(trajectory.Name)) throw new InvalidOperationException($"{nameof(trajectory.Name)} cannot be empty");
         }

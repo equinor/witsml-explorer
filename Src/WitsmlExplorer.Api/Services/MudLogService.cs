@@ -66,9 +66,8 @@ namespace WitsmlExplorer.Api.Services
                 DateTimeCreation = StringHelpers.ToDateTime(witsmlMudLog.CommonData.DTimCreation),
             };
             return mudlog;
-
-
         }
+
         private List<MudLogGeologyInterval> GetGeologyIntervals(List<WitsmlMudLogGeologyInterval> geologyIntervals)
         {
             return geologyIntervals.Select(geologyInterval =>
@@ -90,7 +89,5 @@ namespace WitsmlExplorer.Api.Services
                     }
                 }).ToList();
         }
-
-
     }
 }

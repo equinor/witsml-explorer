@@ -87,8 +87,6 @@ namespace WitsmlExplorer.Api.Workers
                     AffectedPersonnel = risk.AffectedPersonnel,
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    //MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart},
-                    //MdHoleEnd = new WitsmlIndex { Uom = "m", Value =  risk.MdHoleEnd},
                     TvdHoleStart = risk.TvdHoleStart,
                     TvdHoleEnd = risk.TvdHoleEnd,
                     MdBitStart = new WitsmlIndex { Uom = "m", Value = risk.MdBitStart },

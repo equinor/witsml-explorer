@@ -70,7 +70,6 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlFormationMarkers SetupFormationToCreate(FormationMarker formation)
         {
-
             return new WitsmlFormationMarkers
             {
                 FormationMarkers = new WitsmlFormationMarker
@@ -82,13 +81,10 @@ namespace WitsmlExplorer.Api.Workers
                     NameWellbore = formation.NameWellbore,
                     Name = formation.NameFormation,
                     MdTopSample = new WitsmlMeasuredDepthCoord { Uom = "m", Value = formation.MdTopSample.ToString() },
-                    //TvdTopSample = new WitsmlWellVerticalDepthCoord { Uom = "m", Value = formation.TvdTopSample.ToString() },
-                    //Description = formation.Description,
                     CommonData = new WitsmlCommonData
                     {
                         ItemState = formation.CommonData.ItemState,
                         SourceName = formation.CommonData.SourceName,
-                        //Comments = formation.CommonData.Comments, 
                         DTimCreation = formation.CommonData.DTimCreation?.ToString("o"),
                         DTimLastChange = formation.CommonData.DTimLastChange?.ToString("o"),
                     },

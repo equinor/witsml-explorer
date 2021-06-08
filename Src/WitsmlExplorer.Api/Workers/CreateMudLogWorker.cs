@@ -68,10 +68,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlMudLogs SetupMudLogToCreate(MudLog mudLog)
         {
-
-
             var geologyIntervals = mudLog.GeologyInterval.Select( geologyInterval => new WitsmlMudLogGeologyInterval()
-           {
+            {
                 Uid = geologyInterval.Uid,
                 TypeLithology = geologyInterval.TypeLithology,
                 MdTop = new WitsmlIndex { Uom = "m", Value = geologyInterval.MdTop },

@@ -32,8 +32,6 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(WorkerResult, RefreshWellbore)> Execute(CreateLogObjectJob job)
         {
-            //TODO: Update of logdata. Handle here or in calling client?
-
             var logObject = job.LogObject;
             Verify(logObject);
 
@@ -149,9 +147,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             if (string.IsNullOrEmpty(logObject.Uid)) throw new InvalidOperationException($"{nameof(logObject.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(logObject.Name)) throw new InvalidOperationException($"{nameof(logObject.Name)} cannot be empty");
-
         }
-}
-
+    }
 }
 

@@ -60,8 +60,6 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             return new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete FormationMarker", result.Reason, description);
-
-
         }
         private static WitsmlFormationMarkers DeleteRequest(string wellUid, string wellboreUid, string uid)
         {
@@ -74,12 +72,6 @@ namespace WitsmlExplorer.Api.Workers
                     Uid = uid
                 }.AsSingletonList()
             };
-
-           
-            
         }
-
-
-
     }
 }

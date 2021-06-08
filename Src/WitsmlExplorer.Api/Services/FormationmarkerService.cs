@@ -39,7 +39,5 @@ namespace WitsmlExplorer.Api.Services
                     MdTopSample = formationmarker.MdTopSample?.Value.ToString(),
                 }).OrderBy(formationmarker => formationmarker.NameFormation);
         }
-
-        
     }
 }
