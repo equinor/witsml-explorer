@@ -82,6 +82,18 @@ const FilterPanel = (): React.ReactElement => {
             value={curveThreshold.timeInMinutes}
             autoComplete={"off"}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="curveThreshold-hideInactive"
+                onChange={(event) =>
+                  dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, hideInactiveCurves: event.target.checked } } })
+                }
+                value={curveThreshold}
+              />
+            }
+            label={"Hide inactive curves"}
+          />
         </>
       )}
     </Container>

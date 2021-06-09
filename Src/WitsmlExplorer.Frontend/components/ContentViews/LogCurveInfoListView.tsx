@@ -72,6 +72,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     const maxDepth = Math.max(...logCurveInfoList.map((x) => x.maxDepthIndex));
 
     return logCurveInfoList.map((logCurveInfo) => {
+      const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
       return {
         id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
         uid: logCurveInfo.uid,
@@ -86,9 +87,17 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         wellboreUid: selectedWellbore.uid,
         wellName: selectedWell.name,
         wellboreName: selectedWellbore.name,
-        isActive: selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth)
+        isActive: isActive,
+        isVisibleFunction: isVisibleFunction(isActive)
       };
     });
+  };
+
+  const isVisibleFunction = (isActive: boolean): (() => boolean) => {
+    return () => {
+      if (isDepthIndex) return true;
+      return !(selectedCurveThreshold.hideInactiveCurves && !isActive);
+    };
   };
 
   const columns: ContentTableColumn[] = [
