@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="carter" Version="5.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.7" />
     <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
     <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.1.0" />
