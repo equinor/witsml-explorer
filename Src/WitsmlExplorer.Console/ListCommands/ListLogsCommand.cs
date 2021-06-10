@@ -6,7 +6,6 @@ using Spectre.Console.Cli;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
@@ -83,7 +82,15 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async Task<IEnumerable<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
         {
-            var query = LogQueries.QueryByWellbore(wellUid, wellboreUid);
+            var query = new WitsmlLogs
+            {
+                Logs = new WitsmlLog
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }.AsSingletonList()
+            };
+
             var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
             return result?.Logs;
         }
