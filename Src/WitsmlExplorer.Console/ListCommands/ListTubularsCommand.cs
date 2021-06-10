@@ -5,7 +5,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Witsml;
 using Witsml.Data;
-using Witsml.Query;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
@@ -65,19 +65,30 @@ namespace WitsmlExplorer.Console.ListCommands
             return 0;
         }
 
-        private Table CreateTable()
+        private static Table CreateTable()
         {
             var table = new Table();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
-            table.AddColumn("TypeTubularAssy");
+            table.AddColumn("TypeTubularAssy".Bold());
             return table;
         }
 
         private async Task<IEnumerable<WitsmlTubular>> GetTubulars(string wellUid, string wellboreUid)
         {
-            var query = TubularQueries.QueryByWellbore(wellUid, wellboreUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var query = new WitsmlTubulars
+            {
+                Tubulars = new WitsmlTubular
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = "",
+                    Name = "",
+                    TypeTubularAssy = ""
+                }.AsSingletonList()
+            };
+
+            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
             return result?.Tubulars;
         }
     }

@@ -5,7 +5,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using Witsml;
 using Witsml.Data;
-using Witsml.Query;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
@@ -55,7 +55,16 @@ namespace WitsmlExplorer.Console.ShowCommands
 
         private async Task<WitsmlTubular> GetTubular(string wellUid, string wellboreUid, string tubularUid)
         {
-            var query = TubularQueries.QueryById(wellUid, wellboreUid, tubularUid);
+            var query = new WitsmlTubulars
+            {
+                Tubulars = new WitsmlTubular
+                {
+                    Uid = tubularUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }.AsSingletonList()
+            };
+
             var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.All);
             return result?.Tubulars.FirstOrDefault();
         }
