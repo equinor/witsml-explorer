@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using WitsmlExplorer.Console.ListCommands;
@@ -24,8 +24,10 @@ namespace WitsmlExplorer.Console
 
             config.AddBranch("list", add =>
             {
+                add.AddCommand<ListWellsCommand>("wells").WithDescription("List all wells");
                 add.AddCommand<ListWellboresCommand>("wellbores").WithDescription("List active wellbores");
                 add.AddCommand<ListLogsCommand>("logs").WithDescription("List logs within a well/wellbore");
+                add.AddCommand<ListWellboresCommand>("messageobj").WithDescription("List messageobj");
             });
             return config;
         }
