@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Console.ShowCommands
             [CommandArgument(1, "<WELLBORE_UID>")]
             public string WellboreUid { get; init; }
 
-            [CommandArgument(1, "<TUBULAR_UID>")]
+            [CommandArgument(2, "<TUBULAR_UID>")]
             public string TubularUid { get; init; }
         }
 
