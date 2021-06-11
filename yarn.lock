@@ -701,10 +701,10 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
-"@microsoft/signalr@^5.0.6":
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-5.0.6.tgz#b21887e594981bac1f789276e5f2d00a2d14a332"
-  integrity sha512-ExwKc9L/Dia7gachfekMYNqalH1qAnluNmh1mhTNGqIp0s3SH9DJMi5FSVcmgx8R1K6Sn86Z67lYGBfOlvifLg==
+"@microsoft/signalr@^5.0.7":
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-5.0.7.tgz#e63c04809a408b712322e346e2fded251214ad57"
+  integrity sha512-DqNssGZ8ML8IL4sB4GS+zaX8s2BNnv4acQujs/i/WxojpGQJOZ7OyONfnYbNePRYItXgbHmm7b6SVPikqQcLCg==
   dependencies:
     abort-controller "^3.0.0"
     eventsource "^1.0.7"
@@ -986,10 +986,10 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha512-RJJrrySY7A8havqpGObOB4W92QXKJo63/jFLLgpvOtsGUqbQZ9Sbgl35KMm1DjC6j7AvmmU2bIno+3IyEaemaw==
 
-"@types/styled-components@^5.1.9":
-  version "5.1.9"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.9.tgz#00d3d84b501420521c4db727e3c195459f87a6cf"
-  integrity sha512-kbEG6YlwK8rucITpKEr6pA4Ho9KSQHUUOzZ9lY3va1mtcjvS3D0wDciFyHEiNHKLL/npZCKDQJqm0x44sPO9oA==
+"@types/styled-components@^5.1.10":
+  version "5.1.10"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-5.1.10.tgz#b509da9d62be8a02cefd88ec6b820f417429a503"
+  integrity sha512-g3ZfWlTiyXktASIhcfCicZtqB/fFFnq0a7kPYYxKXNggdrohp8m/9bMmmt3zDvHj2gplWDGCkZByfFnEXfbSWg==
   dependencies:
     "@types/hoist-non-react-statics" "*"
     "@types/react" "*"

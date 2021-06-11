@@ -12,9 +12,9 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ListCommands
 {
-    public class ListLogsCommand : AsyncCommand<ListLogsCommand.ListLogsSettings>
+    public class ListTubularsCommand : AsyncCommand<ListTubularsCommand.ListTubularsSettings>
     {
-        public class ListLogsSettings : CommandSettings
+        public class ListTubularsSettings : CommandSettings
         {
             [CommandArgument(0, "<WELL_UID>")]
             public string WellUid { get; init; }
@@ -25,12 +25,12 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private readonly IWitsmlClient witsmlClient;
 
-        public ListLogsCommand(IWitsmlClientProvider witsmlClientProvider)
+        public ListTubularsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ListLogsSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, ListTubularsSettings settings)
         {
             if (witsmlClient == null) return -1;
 
@@ -40,22 +40,19 @@ namespace WitsmlExplorer.Console.ListCommands
             var wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching logs...".WithColor(Color.Orange1), async ctx =>
+                .StartAsync("Fetching tubulars...".WithColor(Color.Orange1), async ctx =>
                 {
-                    var logs = (await GetLogs(settings.WellUid, settings.WellboreUid)).ToList();
+                    var tubulars = (await GetTubulars(settings.WellUid, settings.WellboreUid)).ToList();
 
-                    wellName = logs.FirstOrDefault()?.NameWell;
-                    wellboreName = logs.FirstOrDefault()?.NameWellbore;
+                    wellName = tubulars.FirstOrDefault()?.NameWell;
+                    wellboreName = tubulars.FirstOrDefault()?.NameWellbore;
 
-                    foreach (var log in logs.OrderBy(l => l.IndexType))
+                    foreach (var tubular in tubulars.OrderBy(l => l.Name))
                     {
                         table.AddRow(
-                            log.Uid,
-                            log.Name,
-                            log.ServiceCompany ?? "",
-                            log.GetStartIndexAsString(),
-                            log.GetEndIndexAsString(),
-                            log.ObjectGrowing == "true" ? ":check_mark:" : "");
+                            tubular.Uid,
+                            tubular.Name,
+                            tubular.TypeTubularAssy);
                     }
                 });
 
@@ -68,31 +65,31 @@ namespace WitsmlExplorer.Console.ListCommands
             return 0;
         }
 
-        private Table CreateTable()
+        private static Table CreateTable()
         {
             var table = new Table();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
-            table.AddColumn("Service company".Bold());
-            table.AddColumn("Start index".Bold());
-            table.AddColumn("End index".Bold());
-            table.AddColumn("Growing".Bold());
+            table.AddColumn("TypeTubularAssy".Bold());
             return table;
         }
 
-        private async Task<IEnumerable<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
+        private async Task<IEnumerable<WitsmlTubular>> GetTubulars(string wellUid, string wellboreUid)
         {
-            var query = new WitsmlLogs
+            var query = new WitsmlTubulars
             {
-                Logs = new WitsmlLog
+                Tubulars = new WitsmlTubular
                 {
                     UidWell = wellUid,
-                    UidWellbore = wellboreUid
+                    UidWellbore = wellboreUid,
+                    Uid = "",
+                    Name = "",
+                    TypeTubularAssy = ""
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
-            return result?.Logs;
+            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
+            return result?.Tubulars;
         }
     }
 }
