@@ -9,12 +9,11 @@ export default interface MessageObject {
 
 export function emptyMessageObject(): MessageObject {
   return {
-      wellboreUid: "",
-      wellboreName: "",
-      wellUid: "",
-      wellName: "",
-      dateTimeCreation: null,
-      dateTimeLastChange: null
-
+    wellboreUid: "",
+    wellboreName: "",
+    wellUid: "",
+    wellName: "",
+    dateTimeCreation: null,
+    dateTimeLastChange: null
   };
 }
