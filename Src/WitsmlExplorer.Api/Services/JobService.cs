@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IModifyWellWorker modifyWellWorker;
         private readonly IModifyWellboreWorker modifyWellboreWorker;
         private readonly ICreateLogWorker createLogWorker;
+        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
         private readonly ICreateWellWorker createWellWorker;
         private readonly ICreateWellboreWorker createWellboreWorker;
         private readonly IBatchModifyWellWorker batchModifyWellWorker;
@@ -54,6 +55,7 @@ namespace WitsmlExplorer.Api.Services
             IModifyWellWorker modifyWellWorker,
             IModifyWellboreWorker modifyWellboreWorker,
             ICreateLogWorker createLogWorker,
+            ICreateMessageObjectWorker createMessageObjectWorker,
             ICreateWellWorker createWellWorker,
             ICreateWellboreWorker createWellboreWorker,
             IBatchModifyWellWorker batchModifyWellWorker)
@@ -74,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
             this.createLogWorker = createLogWorker;
+            this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
@@ -145,6 +148,10 @@ namespace WitsmlExplorer.Api.Services
                     var createLogObject = await jobStream.Deserialize<CreateLogJob>();
                     (result, refreshAction) = await createLogWorker.Execute(createLogObject);
                     break;
+                case JobType.CreateMessageObject:
+                    var createMessageObjectJob = await jobStream.Deserialize<CreateMessageObjectJob>();
+                    (result, refreshAction) = await createMessageObjectWorker.Execute(createMessageObjectJob);
+                    break;
                 case JobType.CreateWell:
                     var createWellJob = await jobStream.Deserialize<CreateWellJob>();
                     (result, refreshAction) = await createWellWorker.Execute(createWellJob);
@@ -163,10 +170,10 @@ namespace WitsmlExplorer.Api.Services
 
             if (hubContext != null)
             {
-                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] {result});
+                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result });
 
                 if (refreshAction != null)
-                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] {refreshAction});
+                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction });
             }
         }
     }
