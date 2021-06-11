@@ -68,15 +68,15 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
             var result = await witsmlClient.GetFromStoreAsync(wellsQuery, OptionsIn.Requested);
-            foreach (var res in result.Wells)
+            foreach (var well in result.Wells)
             {
                 yield return new WitsmlWell
                 {
-                    Uid = res.Uid,
-                    Name = res.Name,
-                    Field = res.Field == null ? "" : res.Field,
-                    Country = res.Country == null ? "" : res.Country,
-                    Operator = res.Operator == null ? "" : res.Operator
+                    Uid = well.Uid,
+                    Name = well.Name,
+                    Field = well.Field != null ? well.Field : "",
+                    Country = well.Country != null ? well.Country : "",
+                    Operator = well.Operator != null ? well.Operator : ""
                 };
             }
         }
