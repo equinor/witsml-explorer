@@ -92,7 +92,7 @@ const FilterPanel = (): React.ReactElement => {
                 value={curveThreshold}
               />
             }
-            label={"Hide inactive curves"}
+            label={"Hide inactive time curves"}
           />
         </>
       )}
