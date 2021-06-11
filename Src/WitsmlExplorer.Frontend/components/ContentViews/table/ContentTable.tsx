@@ -71,13 +71,16 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             </TableHeaderCell>
           )}
           {columns &&
-            columns.map((column) => (
-              <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
-                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
-                  {column.label}
-                </TableSortLabel>
-              </TableHeaderCell>
-            ))}
+            columns.map(
+              (column) =>
+                column && (
+                  <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
+                    <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
+                      {column.label}
+                    </TableSortLabel>
+                  </TableHeaderCell>
+                )
+            )}
         </TableRow>
       </TableHead>
       <TableBody>
