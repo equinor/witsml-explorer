@@ -74,9 +74,9 @@ namespace WitsmlExplorer.Console.ListCommands
                 {
                     Uid = well.Uid,
                     Name = well.Name,
-                    Field = well.Field != null ? well.Field : "",
-                    Country = well.Country != null ? well.Country : "",
-                    Operator = well.Operator != null ? well.Operator : ""
+                    Field = well.Field ?? "",
+                    Country = well.Country ?? "",
+                    Operator = well.Operator ?? ""
                 };
             }
         }
