@@ -23,9 +23,9 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid)
         {
-            var query = CreateMessageObjectQuery(wellUid, wellboreUid, msgUid);
+            var query = CreateMessageQuery(wellUid, wellboreUid, msgUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
-            var messageObject = result.MessageObjects.FirstOrDefault();
+            var messageObject = result.Messages.FirstOrDefault();
             if (messageObject == null) return null;
 
             return new MessageObject
@@ -46,12 +46,12 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
         {
             var start = DateTime.Now;
-            var query = CreateMessageObjectQuery(wellUid, wellboreUid);
+            var query = CreateMessageQuery(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
-            var messageObject = result.MessageObjects.FirstOrDefault();
+            var messageObject = result.Messages.FirstOrDefault();
             if (messageObject == null) return null;
 
-            var messageObjects = result.MessageObjects
+            var messageObjects = result.Messages
                 .Select(messageObject =>
                     new MessageObject
                     {
@@ -69,11 +69,11 @@ namespace WitsmlExplorer.Api.Services
             Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds");
             return messageObjects;
         }
-        private static WitsmlMessageObjects CreateMessageObjectQuery(string wellUid, string wellboreUid, string messageUid)
+        private static WitsmlMessages CreateMessageQuery(string wellUid, string wellboreUid, string messageUid)
         {
-            return new WitsmlMessageObjects
+            return new WitsmlMessages
             {
-                MessageObjects = new WitsmlMessageObject
+                Messages = new WitsmlMessage
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
@@ -82,11 +82,11 @@ namespace WitsmlExplorer.Api.Services
                 }.AsSingletonList()
             };
         }
-        private static WitsmlMessageObjects CreateMessageObjectQuery(string wellUid, string wellboreUid)
+        private static WitsmlMessages CreateMessageQuery(string wellUid, string wellboreUid)
         {
-            return new WitsmlMessageObjects
+            return new WitsmlMessages
             {
-                MessageObjects = new WitsmlMessageObject
+                Messages = new WitsmlMessage
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,

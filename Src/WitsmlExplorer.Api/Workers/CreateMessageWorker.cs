@@ -20,11 +20,11 @@ namespace WitsmlExplorer.Api.Workers
         Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job);
     }
 
-    public class CreateMessageObjectWorker : ICreateMessageObjectWorker
+    public class CreateMessageWorker : ICreateMessageObjectWorker
     {
         private readonly IWitsmlClient witsmlClient;
 
-        public CreateMessageObjectWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CreateMessageWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -33,13 +33,13 @@ namespace WitsmlExplorer.Api.Workers
         {
             var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
             var copyMessageQuery = CreateMessageObjectQuery(job, targetWellbore);
-            var createMessageObjectResult = await witsmlClient.AddToStoreAsync(copyMessageQuery);
-            if (!createMessageObjectResult.IsSuccessful)
+            var createMessageResult = await witsmlClient.AddToStoreAsync(copyMessageQuery);
+            if (!createMessageResult.IsSuccessful)
             {
                 var errorMessage = "Failed to create messageobject.";
                 Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}.",
                     errorMessage, job.MessageObject.WellUid, job.MessageObject.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createMessageObjectResult.Reason), null);
+                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createMessageResult.Reason), null);
             }
 
             Log.Information("{JobType} - Job successful. MessageObject created", GetType().Name);
@@ -49,11 +49,11 @@ namespace WitsmlExplorer.Api.Workers
             return (workerResult, refreshAction);
         }
 
-        private static WitsmlMessageObjects CreateMessageObjectQuery(CreateMessageObjectJob job, WitsmlWellbore targetWellbore)
+        private static WitsmlMessages CreateMessageObjectQuery(CreateMessageObjectJob job, WitsmlWellbore targetWellbore)
         {
-            return new WitsmlMessageObjects
+            return new WitsmlMessages
             {
-                MessageObjects = new WitsmlMessageObject
+                Messages = new WitsmlMessage
                 {
                     UidWell = targetWellbore.UidWell,
                     NameWell = targetWellbore.NameWell,
