@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 namespace Witsml.Data
 {
     [XmlRoot]
-    public class WitsmlMessageObject
+    public class WitsmlMessage
     {
         [XmlAttribute("uidWell")]
         public string UidWell { get; set; }
@@ -22,6 +22,8 @@ namespace Witsml.Data
         [XmlElement("messageText")]
         public string MessageText { get; set; }
 
+        [XmlElement("objectReference")]
+        public WitsmlObjectReference ObjectReference { get; set; }
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
     }
