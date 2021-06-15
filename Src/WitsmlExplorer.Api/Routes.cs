@@ -152,7 +152,7 @@ namespace WitsmlExplorer.Api
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var messageUid = httpRequest.RouteValues.As<string>("messageUid");
-            var message = await logObjectService.GetLog(wellUid, wellboreUid, messageUid);
+            var message = await messageObjectService.GetMessageObject(wellUid, wellboreUid, messageUid);
             await httpResponse.AsJson(message);
         }
         private async Task GetLogCurveInfo(HttpRequest httpRequest, HttpResponse httpResponse)

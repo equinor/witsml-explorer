@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Services
                 WellName = messageObject.NameWell,
                 Uid = messageObject.Uid,
                 Name = messageObject.Name,
-
+                MessageText = messageObject.MessageText,
                 DateTimeCreation = StringHelpers.ToDateTime(messageObject.CommonData.DTimCreation),
                 DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange),
 
@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Services
                         WellboreName = messageObject.NameWellbore,
                         WellUid = messageObject.UidWell,
                         WellName = messageObject.NameWell,
-
+                        MessageText = messageObject.MessageText,
                         DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange)
                     })
                 .OrderBy(messageObject => messageObject.WellboreName).ToList();
