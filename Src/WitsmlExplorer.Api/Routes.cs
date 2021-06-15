@@ -20,6 +20,7 @@ namespace WitsmlExplorer.Api
         private readonly IWellService wellService;
         private readonly IWellboreService wellboreService;
         private readonly ILogObjectService logObjectService;
+        private readonly IMessageObjectService messageObjectService;
         private readonly IRigService rigService;
         private readonly ITrajectoryService trajectoryService;
         private readonly IJobService jobService;
@@ -30,6 +31,7 @@ namespace WitsmlExplorer.Api
             IWellService wellService,
             IWellboreService wellboreService,
             ILogObjectService logObjectService,
+            IMessageObjectService messageObjectService,
             IRigService rigService,
             ITrajectoryService trajectoryService,
             IJobService jobService,
@@ -39,6 +41,7 @@ namespace WitsmlExplorer.Api
             this.wellService = wellService;
             this.wellboreService = wellboreService;
             this.logObjectService = logObjectService;
+            this.messageObjectService = messageObjectService;
             this.rigService = rigService;
             this.trajectoryService = trajectoryService;
             this.jobService = jobService;
@@ -52,7 +55,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells", GetAllWells);
             Get("/api/wells/{wellUid}", GetWell);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}", GetWellbore);
-            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", GetLogsForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", GetMessagesForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", GetMessage);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", GetLog);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", GetLogCurveInfo);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLogData);
@@ -135,7 +139,22 @@ namespace WitsmlExplorer.Api
             var log = await logObjectService.GetLog(wellUid, wellboreUid, logUid);
             await httpResponse.AsJson(log);
         }
+        private async Task GetMessagesForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var messages = await messageObjectService.GetMessageObjects(wellUid, wellboreUid);
+            await httpResponse.AsJson(messages);
+        }
 
+        private async Task GetMessage(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var messageUid = httpRequest.RouteValues.As<string>("messageUid");
+            var message = await logObjectService.GetLog(wellUid, wellboreUid, messageUid);
+            await httpResponse.AsJson(message);
+        }
         private async Task GetLogCurveInfo(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
