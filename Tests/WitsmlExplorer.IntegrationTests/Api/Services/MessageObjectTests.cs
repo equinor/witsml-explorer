@@ -18,12 +18,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
             msgObjectService = new MessageObjectService(witsmlClientProvider);
         }
 
-        [Fact()]
-        //[Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task ReadMessageObject()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
+            var wellUid = "INSERT";
+            var wellboreUid = "INSERT";
             var msgUid = "INSERT";
 
             var msgObject = await msgObjectService.GetMessageObject(wellUid, wellboreUid, msgUid);
