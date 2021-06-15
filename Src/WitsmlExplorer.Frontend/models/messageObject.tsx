@@ -3,6 +3,7 @@ export default interface MessageObject {
   wellboreName: string;
   wellUid: string;
   wellName?: string;
+  messageText: string;
   dateTimeCreation?: Date;
   dateTimeLastChange?: Date;
 }
@@ -13,6 +14,7 @@ export function emptyMessageObject(): MessageObject {
     wellboreName: "",
     wellUid: "",
     wellName: "",
+    messageText: "",
     dateTimeCreation: null,
     dateTimeLastChange: null
   };
