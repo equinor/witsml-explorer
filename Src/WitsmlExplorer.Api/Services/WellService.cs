@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
-using Witsml.Query;
+using Witsml.Data;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -40,8 +41,8 @@ namespace WitsmlExplorer.Api.Services
         private async Task<IEnumerable<Well>> GetWellsInformation(string wellUid = null)
         {
             var start = DateTime.Now;
-            var query = string.IsNullOrEmpty(wellUid) ? WellQueries.QueryAll() : WellQueries.QueryByUid(wellUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
+            WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, OptionsIn.Requested);
             var wells = result.Wells
                 .Select(well => new Well
                     {

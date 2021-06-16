@@ -2,7 +2,7 @@ using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
 
-namespace Witsml.Query
+namespace WitsmlExplorer.Api.Query
 {
     public static class TrajectoryQueries
     {

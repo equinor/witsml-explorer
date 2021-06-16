@@ -6,10 +6,10 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             var well = job.Well;
             Verify(well);
 
-            var wellToCreate = CreateRequest(well);
+            WitsmlWells wellToCreate = WellQueries.CreateWitsmlWell(well);
             var result = await witsmlClient.AddToStoreAsync(wellToCreate);
             if (result.IsSuccessful)
             {
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task WaitUntilWellHasBeenCreated(Well well)
         {
             var isWellCreated = false;
-            var query = WellQueries.QueryByUid(well.Uid);
+            var query = WellQueries.GetWitsmlWellByUid(well.Uid);
             var maxRetries = 30;
             while (!isWellCreated)
             {
@@ -64,22 +64,6 @@ namespace WitsmlExplorer.Api.Workers
                 var wellResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
                 isWellCreated = wellResult.Wells.Any();
             }
-        }
-
-        private static WitsmlWells CreateRequest(Well well)
-        {
-            return new WitsmlWells
-            {
-                Wells = new WitsmlWell
-                {
-                    Uid = well.Uid,
-                    Name = well.Name,
-                    Field = well.Field.NullIfEmpty(),
-                    Country = well.Country.NullIfEmpty(),
-                    Operator = well.Operator.NullIfEmpty(),
-                    TimeZone = well.TimeZone
-                }.AsSingletonList()
-            };
         }
 
         private void Verify(Well well)
