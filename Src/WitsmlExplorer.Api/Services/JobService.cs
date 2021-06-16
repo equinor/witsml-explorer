@@ -23,6 +23,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWorker<CopyTrajectoryJob> copyTrajectoryWorker;
         private readonly IWorker<TrimLogDataJob> trimLogObjectWorker;
         private readonly IWorker<ModifyLogObjectJob> modifyLogObjectWorker;
+        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
@@ -56,7 +57,8 @@ namespace WitsmlExplorer.Api.Services
             IWorker<CreateLogJob> createLogWorker,
             IWorker<CreateWellJob> createWellWorker,
             IWorker<CreateWellboreJob> createWellboreWorker,
-            IWorker<BatchModifyWellJob> batchModifyWellWorker)
+            IWorker<BatchModifyWellJob> batchModifyWellWorker,
+            ICreateMessageObjectWorker createMessageObjectWorker)
         {
             this.hubContext = hubContext;
             this.copyLogWorker = copyLogWorker;
@@ -74,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
             this.createLogWorker = createLogWorker;
+            this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
@@ -144,6 +147,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.CreateLogObject:
                     var createLogObject = await jobStream.Deserialize<CreateLogJob>();
                     (result, refreshAction) = await createLogWorker.Execute(createLogObject);
+                    break;
+                case JobType.CreateMessageObject:
+                    var createMessageObjectJob = await jobStream.Deserialize<CreateMessageObjectJob>();
+                    (result, refreshAction) = await createMessageObjectWorker.Execute(createMessageObjectJob);
                     break;
                 case JobType.CreateWell:
                     var createWellJob = await jobStream.Deserialize<CreateWellJob>();
