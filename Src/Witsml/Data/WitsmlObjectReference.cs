@@ -19,6 +19,7 @@ namespace Witsml.Data
         public WitsmlObjectReference(string obj, string uidRef)
         {
             Object = obj;
+            UidRef = uidRef;
         }
 
         public override string ToString()
