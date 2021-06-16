@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlMessages CreateMessageObjectQuery(CreateMessageObjectJob job, WitsmlWellbore targetWellbore)
         {
-            return new WitsmlMessages
+            return new()
             {
                 Messages = new WitsmlMessage
                 {

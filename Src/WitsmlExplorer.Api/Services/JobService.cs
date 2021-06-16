@@ -17,26 +17,26 @@ namespace WitsmlExplorer.Api.Services
 
     public class JobService : IJobService
     {
-        private readonly IHubContext<NotificationsHub> hubContext;
-        private readonly ICopyLogWorker copyLogWorker;
+        private readonly IBatchModifyWellWorker batchModifyWellWorker;
         private readonly ICopyLogDataWorker copyLogDataWorker;
+        private readonly ICopyLogWorker copyLogWorker;
         private readonly ICopyTrajectoryWorker copyTrajectoryWorker;
-        private readonly ITrimLogObjectWorker trimLogObjectWorker;
-        private readonly IModifyLogObjectWorker modifyLogObjectWorker;
+        private readonly ICreateLogWorker createLogWorker;
+        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
+        private readonly ICreateWellboreWorker createWellboreWorker;
+        private readonly ICreateWellWorker createWellWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
-        private readonly IDeleteWellWorker deleteWellWorker;
-        private readonly IDeleteWellboreWorker deleteWellboreWorker;
         private readonly IDeleteTrajectoryWorker deleteTrajectoryWorker;
-        private readonly IRenameMnemonicWorker renameMnemonicWorker;
-        private readonly IModifyWellWorker modifyWellWorker;
+        private readonly IDeleteWellboreWorker deleteWellboreWorker;
+        private readonly IDeleteWellWorker deleteWellWorker;
+        private readonly IHubContext<NotificationsHub> hubContext;
+        private readonly IModifyLogObjectWorker modifyLogObjectWorker;
         private readonly IModifyWellboreWorker modifyWellboreWorker;
-        private readonly ICreateLogWorker createLogWorker;
-        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
-        private readonly ICreateWellWorker createWellWorker;
-        private readonly ICreateWellboreWorker createWellboreWorker;
-        private readonly IBatchModifyWellWorker batchModifyWellWorker;
+        private readonly IModifyWellWorker modifyWellWorker;
+        private readonly IRenameMnemonicWorker renameMnemonicWorker;
+        private readonly ITrimLogObjectWorker trimLogObjectWorker;
 
         public JobService(
             IHubContext<NotificationsHub> hubContext,

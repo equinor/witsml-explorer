@@ -1,11 +1,9 @@
 using System;
-using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
     public class MessageObject
     {
-
         public string Uid { get; set; }
         public string Name { get; set; }
         public string WellUid { get; set; }
@@ -16,6 +14,5 @@ namespace WitsmlExplorer.Api.Models
 
         public DateTime? DateTimeCreation { get; set; }
         public DateTime? DateTimeLastChange { get; set; }
-
     }
 }
