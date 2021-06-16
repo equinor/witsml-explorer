@@ -600,7 +600,7 @@ const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGr
 };
 
 const selectMessageObject = (state: NavigationState, { payload }: SelectMessageObjectAction) => {
-  const { message, messageGroup, well, wellbore } = payload;
+  const { message, well, wellbore } = payload;
   let expandedTreeNodes = state.expandedTreeNodes;
 
   const messageGroup = calculateMessageGroupId(wellbore);
@@ -790,7 +790,7 @@ export interface SelectWellAction extends Action {
 
 export interface SelectWellboreAction extends Action {
   type: NavigationType.SelectWellbore;
-  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[] };
+  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[]; messages: MessageObject[] };
 }
 
 export interface SelectLogGroupAction extends Action {
@@ -815,7 +815,7 @@ export interface SelectMessageGroupAction extends Action {
 
 export interface SelectMessageObjectAction extends Action {
   type: NavigationType.SelectMessageObject;
-  payload: { message: message; well: Well; wellbore: Wellbore; messageGroup: any };
+  payload: { message: MessageObject; well: Well; wellbore: Wellbore };
 }
 export interface SelectLogCurveInfoAction extends Action {
   type: NavigationType.ShowCurveValues;
@@ -871,7 +871,7 @@ export type NavigationAction =
   | SelectWellboreAction
   | SelectRigGroupAction
   | SelectMessageGroupAction
-  | SelectMessageAction
+  | SelectMessageObjectAction
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction

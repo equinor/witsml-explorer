@@ -9,6 +9,8 @@ import {
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
+  SelectMessageGroupAction,
+  SelectMessageObjectAction,
   SelectRigGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
@@ -18,6 +20,7 @@ import {
 } from "../contexts/navigationStateReducer";
 import Well from "../models/well";
 import LogObject from "../models/logObject";
+import MessageObject from "../models/messageObject";
 import Trajectory from "../models/trajectory";
 import ThemeMenu from "./ThemeMenu";
 
@@ -30,6 +33,8 @@ const Nav = (): React.ReactElement => {
     selectedLogGroup,
     selectedLogTypeGroup,
     selectedLog,
+    selectedMessage,
+    selectedMessageGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -45,6 +50,8 @@ const Nav = (): React.ReactElement => {
       getLogGroupCrumb(selectedLogGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
+      getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation)
@@ -97,12 +104,48 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
         onClick: () =>
           dispatch({
             type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore: selectedWellbore, logs: selectedWellbore.logs, rigs: selectedWellbore.rigs, trajectories: selectedWellbore.trajectories }
+            payload: {
+              well: selectedWell,
+              wellbore: selectedWellbore,
+              logs: selectedWellbore.logs,
+              rigs: selectedWellbore.rigs,
+              trajectories: selectedWellbore.trajectories,
+              messages: selectedWellbore.messages
+            }
           })
       }
     : {};
 };
 
+const getMessageGroupCrumb = (selectedMessageGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMessageGroupAction) => void) => {
+  return selectedMessageGroup
+    ? {
+        name: "Messages",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMessageGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, messageGroup: selectedMessageGroup }
+          })
+      }
+    : {};
+};
+
+const getMessageCrumbs = (selectedMessage: MessageObject, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMessageObjectAction) => void) => {
+  return selectedMessage?.name
+    ? {
+        name: selectedMessage.name,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMessageObject,
+            payload: {
+              well: selectedWell,
+              wellbore: selectedWellbore,
+              message: selectedMessage
+            }
+          })
+      }
+    : {};
+};
 const getLogGroupCrumb = (selectedLogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectLogGroupAction) => void) => {
   return selectedLogGroup
     ? {

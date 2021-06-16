@@ -18,6 +18,7 @@ import { calculateTrajectoryId } from "../../models/trajectory";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
+import MessageObjectService from "../../services/messageObjectService";
 
 interface WellboreItemProps {
   well: Well;
@@ -58,8 +59,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getLogs = LogObjectService.getLogs(well.uid, wellbore.uid, controller.signal);
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
-      const [logs, rigs, trajectories] = await Promise.all([getLogs, getRigs, getTrajectories]);
-      const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories } };
+      const getMessages = MessageObjectService.getMessageObjects(well.uid, wellbore.uid, controller.signal);
+      const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
+      const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories, messages } };
       dispatchNavigation(selectWellbore);
       setIsFetchingData(false);
     }
@@ -86,7 +88,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const onLabelClick = () => {
     const wellboreHasData = wellbore.logs?.length > 0;
     if (wellboreHasData) {
-      const payload = { well, wellbore, logs: wellbore.logs, rigs: wellbore.rigs, trajectories: wellbore.trajectories };
+      const payload = { well, wellbore, logs: wellbore.logs, rigs: wellbore.rigs, trajectories: wellbore.trajectories, messages: wellbore.messages };
       const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload };
       dispatchNavigation(selectWellbore);
     } else {
