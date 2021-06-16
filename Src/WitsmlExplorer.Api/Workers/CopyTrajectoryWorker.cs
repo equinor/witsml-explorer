@@ -14,12 +14,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICopyTrajectoryWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryJob job);
-    }
-
-    public class CopyTrajectoryWorker : ICopyTrajectoryWorker
+    public class CopyTrajectoryWorker : IWorker<CopyTrajectoryJob>
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
@@ -63,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
             trajectory.CustomData ??= new WitsmlCustomData();
             trajectory.CommonData.ItemState = string.IsNullOrEmpty(trajectory.CommonData.ItemState) ? null : trajectory.CommonData.ItemState;
             trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
-            var copyTrajectoryQuery = new WitsmlTrajectories {Trajectories = new List<WitsmlTrajectory> {trajectory}};
+            var copyTrajectoryQuery = new WitsmlTrajectories { Trajectories = new List<WitsmlTrajectory> { trajectory } };
             return copyTrajectoryQuery;
         }
 

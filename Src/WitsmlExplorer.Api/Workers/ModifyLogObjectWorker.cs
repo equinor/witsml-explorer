@@ -13,12 +13,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IModifyLogObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(ModifyLogObjectJob job);
-    }
-
-    public class ModifyLogObjectWorker : IModifyLogObjectWorker
+    public class ModifyLogObjectWorker : IWorker<ModifyLogObjectJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
