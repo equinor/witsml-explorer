@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             var wellUid = job.WellReference.WellUid;
 
-            WitsmlWells witsmlWell = WellQueries.DeleteWitsmlWell(wellUid);
+            var witsmlWell = WellQueries.DeleteWitsmlWell(wellUid);
             var result = await witsmlClient.DeleteFromStoreAsync(witsmlWell);
             if (result.IsSuccessful)
             {

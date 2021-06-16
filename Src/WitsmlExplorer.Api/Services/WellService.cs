@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Services
         private async Task<IEnumerable<Well>> GetWellsInformation(string wellUid = null)
         {
             var start = DateTime.Now;
-            WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
+            var witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
             var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, OptionsIn.Requested);
             var wells = result.Wells
                 .Select(well => new Well

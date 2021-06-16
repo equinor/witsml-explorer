@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             var well = job.Well;
             Verify(well);
 
-            WitsmlWells wellToCreate = WellQueries.CreateWitsmlWell(well);
+            var wellToCreate = WellQueries.CreateWitsmlWell(well);
             var result = await witsmlClient.AddToStoreAsync(wellToCreate);
             if (result.IsSuccessful)
             {

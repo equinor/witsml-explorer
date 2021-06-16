@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Well);
             var wellUid = job.Well.Uid;
             var wellName = job.Well.Name;
-            WitsmlWells witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);
+            var witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);
 
             var result = await witsmlClient.UpdateInStoreAsync(witsmlWellToUpdate);
             if (result.IsSuccessful)
