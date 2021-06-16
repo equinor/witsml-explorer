@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Witsml.Data
@@ -6,13 +5,13 @@ namespace Witsml.Data
     public class WitsmlObjectReference
     {
         [XmlAttribute("object")]
-        public string Object { get; set; } = "";
+        public string Object { get; set; }
 
         [XmlAttribute("uidRef")]
-        public string UidRef { get; set; } = "";
+        public string UidRef { get; set; }
 
         [XmlText]
-        public string Value { get; set; } = "";
+        public string Value { get; set; }
 
         public WitsmlObjectReference() { }
 
