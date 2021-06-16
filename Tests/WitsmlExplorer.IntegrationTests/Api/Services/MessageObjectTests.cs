@@ -7,8 +7,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
 {
     public class MessageObjectTests
     {
-        private readonly ITestOutputHelper output;
         private readonly MessageObjectService msgObjectService;
+        private readonly ITestOutputHelper output;
 
         public MessageObjectTests(ITestOutputHelper output)
         {
@@ -27,9 +27,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
 
             var msgObject = await msgObjectService.GetMessageObject(wellUid, wellboreUid, msgUid);
 
-            output.WriteLine($"To be filled out...");
+            output.WriteLine("To be filled out...");
         }
-
-
     }
 }

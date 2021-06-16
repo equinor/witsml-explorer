@@ -14,12 +14,13 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid);
         Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
-
     }
 
     public class MessageObjectService : WitsmlService, IMessageObjectService
     {
-        public MessageObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
+        public MessageObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider)
+        {
+        }
 
         public async Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid)
         {
@@ -38,8 +39,7 @@ namespace WitsmlExplorer.Api.Services
                 Name = messageObject.Name,
                 MessageText = messageObject.MessageText,
                 DateTimeCreation = StringHelpers.ToDateTime(messageObject.CommonData.DTimCreation),
-                DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange),
-
+                DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange)
             };
         }
 
@@ -69,9 +69,10 @@ namespace WitsmlExplorer.Api.Services
             Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds");
             return messageObjects;
         }
+
         private static WitsmlMessages CreateMessageQuery(string wellUid, string wellboreUid, string messageUid)
         {
-            return new WitsmlMessages
+            return new()
             {
                 Messages = new WitsmlMessage
                 {
@@ -82,9 +83,10 @@ namespace WitsmlExplorer.Api.Services
                 }.AsSingletonList()
             };
         }
+
         private static WitsmlMessages CreateMessageQuery(string wellUid, string wellboreUid)
         {
-            return new WitsmlMessages
+            return new()
             {
                 Messages = new WitsmlMessage
                 {
@@ -94,6 +96,5 @@ namespace WitsmlExplorer.Api.Services
                 }.AsSingletonList()
             };
         }
-
     }
 }
