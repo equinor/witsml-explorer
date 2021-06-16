@@ -17,25 +17,26 @@ namespace WitsmlExplorer.Api.Services
 
     public class JobService : IJobService
     {
-        private readonly IHubContext<NotificationsHub> hubContext;
-        private readonly ICopyLogWorker copyLogWorker;
+        private readonly IBatchModifyWellWorker batchModifyWellWorker;
         private readonly ICopyLogDataWorker copyLogDataWorker;
+        private readonly ICopyLogWorker copyLogWorker;
         private readonly ICopyTrajectoryWorker copyTrajectoryWorker;
-        private readonly ITrimLogObjectWorker trimLogObjectWorker;
-        private readonly IModifyLogObjectWorker modifyLogObjectWorker;
+        private readonly ICreateLogWorker createLogWorker;
+        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
+        private readonly ICreateWellboreWorker createWellboreWorker;
+        private readonly ICreateWellWorker createWellWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
-        private readonly IDeleteWellWorker deleteWellWorker;
-        private readonly IDeleteWellboreWorker deleteWellboreWorker;
         private readonly IDeleteTrajectoryWorker deleteTrajectoryWorker;
-        private readonly IRenameMnemonicWorker renameMnemonicWorker;
-        private readonly IModifyWellWorker modifyWellWorker;
+        private readonly IDeleteWellboreWorker deleteWellboreWorker;
+        private readonly IDeleteWellWorker deleteWellWorker;
+        private readonly IHubContext<NotificationsHub> hubContext;
+        private readonly IModifyLogObjectWorker modifyLogObjectWorker;
         private readonly IModifyWellboreWorker modifyWellboreWorker;
-        private readonly ICreateLogWorker createLogWorker;
-        private readonly ICreateWellWorker createWellWorker;
-        private readonly ICreateWellboreWorker createWellboreWorker;
-        private readonly IBatchModifyWellWorker batchModifyWellWorker;
+        private readonly IModifyWellWorker modifyWellWorker;
+        private readonly IRenameMnemonicWorker renameMnemonicWorker;
+        private readonly ITrimLogObjectWorker trimLogObjectWorker;
 
         public JobService(
             IHubContext<NotificationsHub> hubContext,
@@ -54,6 +55,7 @@ namespace WitsmlExplorer.Api.Services
             IModifyWellWorker modifyWellWorker,
             IModifyWellboreWorker modifyWellboreWorker,
             ICreateLogWorker createLogWorker,
+            ICreateMessageObjectWorker createMessageObjectWorker,
             ICreateWellWorker createWellWorker,
             ICreateWellboreWorker createWellboreWorker,
             IBatchModifyWellWorker batchModifyWellWorker)
@@ -74,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
             this.createLogWorker = createLogWorker;
+            this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
@@ -145,6 +148,10 @@ namespace WitsmlExplorer.Api.Services
                     var createLogObject = await jobStream.Deserialize<CreateLogJob>();
                     (result, refreshAction) = await createLogWorker.Execute(createLogObject);
                     break;
+                case JobType.CreateMessageObject:
+                    var createMessageObjectJob = await jobStream.Deserialize<CreateMessageObjectJob>();
+                    (result, refreshAction) = await createMessageObjectWorker.Execute(createMessageObjectJob);
+                    break;
                 case JobType.CreateWell:
                     var createWellJob = await jobStream.Deserialize<CreateWellJob>();
                     (result, refreshAction) = await createWellWorker.Execute(createWellJob);
@@ -163,10 +170,10 @@ namespace WitsmlExplorer.Api.Services
 
             if (hubContext != null)
             {
-                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] {result});
+                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result });
 
                 if (refreshAction != null)
-                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] {refreshAction});
+                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction });
             }
         }
     }
