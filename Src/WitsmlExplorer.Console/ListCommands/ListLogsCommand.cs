@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching logs...".WithColor(Color.Orange1), async ctx =>
                 {
-                    var logs = (await GetLogs(settings.WellUid, settings.WellboreUid)).ToList();
+                    var logs = await GetLogs(settings.WellUid, settings.WellboreUid);
 
                     wellName = logs.FirstOrDefault()?.NameWell;
                     wellboreName = logs.FirstOrDefault()?.NameWellbore;
@@ -80,7 +80,7 @@ namespace WitsmlExplorer.Console.ListCommands
             return table;
         }
 
-        private async Task<IEnumerable<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
+        private async Task<IList<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
         {
             var query = new WitsmlLogs
             {
