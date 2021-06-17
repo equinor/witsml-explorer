@@ -24,6 +24,7 @@ namespace WitsmlExplorer.Api
         private readonly ITrajectoryService trajectoryService;
         private readonly IWellboreService wellboreService;
         private readonly IWellService wellService;
+        private readonly IRiskService riskService;
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
@@ -35,6 +36,7 @@ namespace WitsmlExplorer.Api
             IRigService rigService,
             ITrajectoryService trajectoryService,
             IJobService jobService,
+            IRiskService riskService,
             IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
             this.credentialsService = credentialsService;
@@ -45,6 +47,7 @@ namespace WitsmlExplorer.Api
             this.rigService = rigService;
             this.trajectoryService = trajectoryService;
             this.jobService = jobService;
+            this.riskService = riskService;
             this.witsmlServerRepository = witsmlServerRepository;
 
             Get("/api/witsml-servers", GetWitsmlServers);
@@ -64,6 +67,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
 
             //Get Requests exceeding the URL limit
             Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
@@ -249,6 +253,13 @@ namespace WitsmlExplorer.Api
             var trajectoryUid = httpRequest.RouteValues.As<string>("trajectoryUid");
             var trajectory = await trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid);
             await httpResponse.AsJson(trajectory);
+        }
+        private async Task GetRisksForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var risks = await riskService.GetRisks(wellUid, wellboreUid);
+            await httpResponse.AsJson(risks);
         }
 
         private async Task CreateJob(HttpRequest httpRequest, HttpResponse httpResponse)

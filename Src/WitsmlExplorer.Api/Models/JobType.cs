@@ -14,12 +14,14 @@ namespace WitsmlExplorer.Api.Models
         DeleteTrajectory,
         DeleteWell,
         DeleteWellbore,
+        DeleteRisk,
         RenameMnemonic,
         ModifyWell,
         ModifyWellbore,
         CreateLogObject,
         CreateWell,
         CreateWellbore,
+        CreateRisk,
         BatchModifyWell
     }
 }
