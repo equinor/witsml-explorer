@@ -29,6 +29,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
         private readonly IDeleteWellWorker deleteWellWorker;
         private readonly IDeleteWellboreWorker deleteWellboreWorker;
+        private readonly IDeleteRiskWorker deleteRiskWorker;
         private readonly IDeleteTrajectoryWorker deleteTrajectoryWorker;
         private readonly IRenameMnemonicWorker renameMnemonicWorker;
         private readonly IWorker<ModifyWellJob> modifyWellWorker;
@@ -36,6 +37,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWorker<CreateLogJob> createLogWorker;
         private readonly IWorker<CreateWellJob> createWellWorker;
         private readonly IWorker<CreateWellboreJob> createWellboreWorker;
+        private readonly IWorker<CreateRiskJob> createRiskWorker;
         private readonly IWorker<BatchModifyWellJob> batchModifyWellWorker;
 
         public JobService(
@@ -51,12 +53,14 @@ namespace WitsmlExplorer.Api.Services
             IDeleteTrajectoryWorker deleteTrajectoryWorker,
             IDeleteWellWorker deleteWellWorker,
             IDeleteWellboreWorker deleteWellboreWorker,
+            IDeleteRiskWorker deleteRiskWorker,
             IRenameMnemonicWorker renameMnemonicWorker,
             IWorker<ModifyWellJob> modifyWellWorker,
             IWorker<ModifyWellboreJob> modifyWellboreWorker,
             IWorker<CreateLogJob> createLogWorker,
             IWorker<CreateWellJob> createWellWorker,
             IWorker<CreateWellboreJob> createWellboreWorker,
+            IWorker<CreateRiskJob> createRiskWorker,
             IWorker<BatchModifyWellJob> batchModifyWellWorker,
             ICreateMessageObjectWorker createMessageObjectWorker)
         {
@@ -72,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             this.deleteTrajectoryWorker = deleteTrajectoryWorker;
             this.deleteWellWorker = deleteWellWorker;
             this.deleteWellboreWorker = deleteWellboreWorker;
+            this.deleteRiskWorker = deleteRiskWorker;
             this.renameMnemonicWorker = renameMnemonicWorker;
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
@@ -79,6 +84,7 @@ namespace WitsmlExplorer.Api.Services
             this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
+            this.createRiskWorker = createRiskWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
         }
 
@@ -128,6 +134,10 @@ namespace WitsmlExplorer.Api.Services
                     var deleteWellboreJob = await jobStream.Deserialize<DeleteWellboreJob>();
                     (result, refreshAction) = await deleteWellboreWorker.Execute(deleteWellboreJob);
                     break;
+                case JobType.DeleteRisk:
+                    var deleteRiskJob = await jobStream.Deserialize<DeleteRiskJob>();
+                    (result, refreshAction) = await deleteRiskWorker.Execute(deleteRiskJob);
+                    break;
                 case JobType.RenameMnemonic:
                     var modifyLogCurveInfoJob = await jobStream.Deserialize<RenameMnemonicJob>();
                     (result, refreshAction) = await renameMnemonicWorker.Execute(modifyLogCurveInfoJob);
@@ -159,6 +169,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.CreateWellbore:
                     var createWellboreJob = await jobStream.Deserialize<CreateWellboreJob>();
                     (result, refreshAction) = await createWellboreWorker.Execute(createWellboreJob);
+                    break;
+                case JobType.CreateRisk:
+                    var createRiskJob = await jobStream.Deserialize<CreateRiskJob>();
+                    (result, refreshAction) = await createRiskWorker.Execute(createRiskJob);
                     break;
                 case JobType.BatchModifyWell:
                     var batchModifyWellJob = await jobStream.Deserialize<BatchModifyWellJob>();
