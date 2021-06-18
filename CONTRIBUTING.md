@@ -33,6 +33,9 @@ When a PR is opened, a CI job will be run to verify that everything is being bui
 
 After the CI job is passed, a review will be done. A maintainer will merge the PR when all is good :thumbsup:
 
+### Reviewing
+If you are reviewing a pull request, please follow the [guidelines](https://github.com/equinor/witsml-explorer/blob/main/PR_REVIEW_CHECKLIST.md).
+
 ## Set up development environment
 After forking the repo to your own github account, do the following:
 ```
