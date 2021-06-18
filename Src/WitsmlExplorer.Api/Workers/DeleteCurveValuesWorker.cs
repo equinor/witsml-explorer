@@ -5,10 +5,10 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
