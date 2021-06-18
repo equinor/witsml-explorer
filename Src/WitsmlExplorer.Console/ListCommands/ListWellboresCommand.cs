@@ -13,10 +13,8 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ListCommands
 {
-    public class ListWellboresCommand : AsyncCommand<ListWellboresCommand.ListWellboresSettings>
+    public class ListWellboresCommand : AsyncCommand
     {
-        public class ListWellboresSettings : CommandSettings { }
-
         private readonly IWitsmlClient witsmlClient;
 
         public ListWellboresCommand(IWitsmlClientProvider witsmlClientProvider)
@@ -24,7 +22,7 @@ namespace WitsmlExplorer.Console.ListCommands
             witsmlClient = witsmlClientProvider?.GetClient() ?? throw new ArgumentNullException(nameof(witsmlClientProvider));
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ListWellboresSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context)
         {
             if (witsmlClient == null) return -1;
 
