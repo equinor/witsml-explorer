@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Wells);
 
             var wellsToUpdate = job.Wells.Select(well => WellQueries.UpdateWitsmlWell(well));
-            var UpdateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));
+            var updateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));
 
             Task resultTask = Task.WhenAll(updateWellTasks);
             await resultTask;
