@@ -14,12 +14,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateLogWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job);
-    }
-
-    public class CreateLogWorker : ICreateLogWorker
+    public class CreateLogWorker : IWorker<CreateLogJob>
     {
         private readonly IWitsmlClient witsmlClient;
 

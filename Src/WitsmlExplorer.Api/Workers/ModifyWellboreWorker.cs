@@ -12,12 +12,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IModifyWellboreWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(ModifyWellboreJob job);
-    }
-
-    public class ModifyWellboreWorker: IModifyWellboreWorker
+    public class ModifyWellboreWorker : IWorker<ModifyWellboreJob>
     {
         private readonly IWitsmlClient witsmlClient;
 

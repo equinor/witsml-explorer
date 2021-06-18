@@ -14,12 +14,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ITrimLogObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job);
-    }
-
-    public class TrimLogObjectWorker: ITrimLogObjectWorker
+    public class TrimLogObjectWorker : IWorker<TrimLogDataJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -123,7 +118,7 @@ namespace WitsmlExplorer.Api.Workers
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {witsmlLog}
+                Logs = new List<WitsmlLog> { witsmlLog }
             };
         }
 

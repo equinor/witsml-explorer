@@ -13,12 +13,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IBatchModifyWellWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job);
-    }
-
-    public class BatchModifyWellWorker : IBatchModifyWellWorker
+    public class BatchModifyWellWorker : IWorker<BatchModifyWellJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -30,10 +25,11 @@ namespace WitsmlExplorer.Api.Workers
         public async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)
         {
             Verify(job.Wells);
-            var wellsToUpdate = job.Wells.Select(well => WellQueries.UpdateWitsmlWell(well));
-            var UpdateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));           
 
-            Task resultTask = Task.WhenAll(UpdateWellTasks);
+            var wellsToUpdate = job.Wells.Select(well => WellQueries.UpdateWitsmlWell(well));
+            var updateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));
+
+            Task resultTask = Task.WhenAll(updateWellTasks);
             await resultTask;
 
             if (resultTask.Status == TaskStatus.Faulted)

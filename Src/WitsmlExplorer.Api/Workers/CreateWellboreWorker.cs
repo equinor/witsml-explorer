@@ -14,12 +14,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateWellboreWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job);
-    }
-
-    public class CreateWellboreWorker: ICreateWellboreWorker
+    public class CreateWellboreWorker : IWorker<CreateWellboreJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
