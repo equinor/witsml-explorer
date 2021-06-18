@@ -8,6 +8,7 @@ using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -31,9 +32,9 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Well);
             var wellUid = job.Well.Uid;
             var wellName = job.Well.Name;
-            var query = CreateUpdateQuery(job.Well);
+            var witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);
 
-            var result = await witsmlClient.UpdateInStoreAsync(query);
+            var result = await witsmlClient.UpdateInStoreAsync(witsmlWellToUpdate);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
@@ -42,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers
                 return (workerResult, refreshAction);
             }
 
-            var updatedWells = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            var updatedWells = await witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, OptionsIn.IdOnly);
             var updatedWell = updatedWells.Wells.First();
             var description = new EntityDescription
             {
@@ -55,22 +56,6 @@ namespace WitsmlExplorer.Api.Workers
         private void Verify(Well well)
         {
             if (string.IsNullOrEmpty(well.Name)) throw new InvalidOperationException($"{nameof(well.Name)} cannot be empty");
-        }
-
-        private static WitsmlWells CreateUpdateQuery(Well well)
-        {
-            return new WitsmlWells
-            {
-                Wells = new WitsmlWell
-                {
-                    Uid = well.Uid,
-                    Name = well.Name,
-                    Field = well.Field,
-                    TimeZone = well.TimeZone,
-                    Country = well.Country,
-                    Operator = well.Operator
-                }.AsSingletonList()
-            };
         }
     }
 }

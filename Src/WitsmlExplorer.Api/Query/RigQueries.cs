@@ -1,7 +1,7 @@
 using Witsml.Data;
 using Witsml.Extensions;
 
-namespace Witsml.Query
+namespace WitsmlExplorer.Api.Query
 {
     public static class RigQueries
     {
