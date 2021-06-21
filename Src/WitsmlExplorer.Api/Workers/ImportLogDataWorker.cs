@@ -4,23 +4,17 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.Curves;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Extensions;
-using System;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IImportLogDataWorker
-    {
-        Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(ImportLogDataJob job);
-    }
     //Todo: Write tests for the worker
-    public class ImportLogDataWorker : IImportLogDataWorker
+    public class ImportLogDataWorker : IWorker<ImportLogDataJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -61,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers
                 });
         }
 
-        public async Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(ImportLogDataJob job)
+        public async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
             var wellUid = job.TargetLog.WellUid;
             var wellboreUid = job.TargetLog.WellboreUid;

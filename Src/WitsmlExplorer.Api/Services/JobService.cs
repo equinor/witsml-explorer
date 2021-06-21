@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWorker<CreateWellJob> createWellWorker;
         private readonly IWorker<CreateWellboreJob> createWellboreWorker;
         private readonly IWorker<BatchModifyWellJob> batchModifyWellWorker;
-        private readonly IImportLogDataWorker importLogDataWorker;
+        private readonly IWorker<ImportLogDataJob> importLogDataWorker;
 
         public JobService(
             IHubContext<NotificationsHub> hubContext,
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Services
             IWorker<CreateLogJob> createLogWorker,
             IWorker<CreateWellJob> createWellWorker,
             IWorker<CreateWellboreJob> createWellboreWorker,
-            IWorker<ImportLogDataJob> importLogDataWorker),
+            IWorker<ImportLogDataJob> importLogDataWorker,
             IWorker<BatchModifyWellJob> batchModifyWellWorker,
             ICreateMessageObjectWorker createMessageObjectWorker)
         {
