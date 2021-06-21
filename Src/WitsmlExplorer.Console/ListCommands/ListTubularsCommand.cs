@@ -43,7 +43,8 @@ namespace WitsmlExplorer.Console.ListCommands
                         table.AddRow(
                             tubular.Uid,
                             tubular.Name,
-                            tubular.TypeTubularAssy);
+                            tubular.TypeTubularAssy,
+                            tubular.CommonData.DTimLastChange);
                     }
                 });
 
@@ -62,6 +63,7 @@ namespace WitsmlExplorer.Console.ListCommands
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
             table.AddColumn("TypeTubularAssy".Bold());
+            table.AddColumn("LastChanged".Bold());
             return table;
         }
 
@@ -75,7 +77,11 @@ namespace WitsmlExplorer.Console.ListCommands
                     UidWellbore = wellboreUid,
                     Uid = "",
                     Name = "",
-                    TypeTubularAssy = ""
+                    TypeTubularAssy = "",
+                    CommonData = new WitsmlCommonData
+                    {
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
 
