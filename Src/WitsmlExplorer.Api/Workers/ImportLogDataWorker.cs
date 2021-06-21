@@ -13,7 +13,6 @@ using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    //Todo: Write tests for the worker
     public class ImportLogDataWorker : IWorker<ImportLogDataJob>
     {
         private readonly IWitsmlClient witsmlClient;
@@ -27,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             var query = LogQueries.QueryById(wellUid, wellboreUid, logUid);
             var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
-            return result.Logs.FirstOrDefault();
+            return result?.Logs.FirstOrDefault();
         }
 
         private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
@@ -57,11 +56,11 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
+            int chunkSize = 1000;
             var wellUid = job.TargetLog.WellUid;
             var wellboreUid = job.TargetLog.WellboreUid;
             var logUid = job.TargetLog.LogUid;
             var witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
-            var logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
 
             if (witsmlLog == null)
             {
@@ -69,7 +68,11 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
             }
 
-            var queries = CreateImportQueries(job, 1000).ToArray();
+            var logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
+
+            //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
+            var queries = CreateImportQueries(job, chunkSize).ToArray();
+
             //Todo: update import progress for the user using websockets
             for (int i = 0; i < queries.Length; i++)
             {
@@ -80,13 +83,16 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    Log.Error("Failed to add mnemonics for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}",
+                    Log.Error("Failed to import curve data for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
                         wellUid,
                         wellboreUid,
                         logUid,
-                        string.Join(", ", job.Mnemonics));
+                        string.Join(", ", job.Mnemonics),
+                        i,
+                        chunkSize,
+                        queries.Length);
 
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to add logdata", result.Reason, witsmlLog.GetDescription()), null);
+                    return (new WorkerResult(witsmlClient.GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
