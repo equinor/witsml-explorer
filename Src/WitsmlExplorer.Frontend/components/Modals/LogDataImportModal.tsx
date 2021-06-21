@@ -45,7 +45,7 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   useEffect(() => {
     setIsLoading(true);
     const controller = new AbortController();
-    
+
     const getLogCurveInfo = async () => {
       const logCurveInfos = await LogObjectService.getLogCurveInfo(targetLog.wellUid, targetLog.wellboreUid, targetLog.uid, controller.signal);
       setTargetLogCurveInfos(logCurveInfos);
