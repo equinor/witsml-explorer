@@ -28,5 +28,8 @@ namespace Witsml.Data
 
         [XmlElement("tubularComponent")]
         public List<WitsmlTubularComponent> TubularComponents { get; set; }
+
+        [XmlElement("commonData")]
+        public WitsmlCommonData CommonData { get; set; }
     }
 }
