@@ -52,6 +52,11 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
     }
   };
 
+  const checkVisibility = (isVisibleFunction: () => boolean): boolean => {
+    if (typeof isVisibleFunction === "undefined") return true;
+    return isVisibleFunction();
+  };
+
   return (
     <Table>
       <TableHead>
@@ -66,44 +71,49 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             </TableHeaderCell>
           )}
           {columns &&
-            columns.map((column) => (
-              <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
-                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
-                  {column.label}
-                </TableSortLabel>
-              </TableHeaderCell>
-            ))}
+            columns.map(
+              (column) =>
+                column && (
+                  <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
+                    <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
+                      {column.label}
+                    </TableSortLabel>
+                  </TableHeaderCell>
+                )
+            )}
         </TableRow>
       </TableHead>
       <TableBody>
         {data.map((item, index) => {
           return (
-            <TableRow hover key={index} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
-              {checkableRows && (
-                <TableDataCell>
-                  <Checkbox
-                    onClick={(event) => toggleRow(event, item)}
-                    checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
-                  />
-                </TableDataCell>
-              )}
-              {columns &&
-                columns.map(
-                  (column) =>
-                    column && (
-                      <TableDataCell
-                        id={item[column.property] + column.property}
-                        key={item[column.property] + column.property}
-                        clickable={onSelect ? "true" : "false"}
-                        type={column.type}
-                        align={column.type === ContentType.Number ? "right" : "left"}
-                        onClick={(event) => selectRow(event, item)}
-                      >
-                        {format(column.type, item[column.property])}
-                      </TableDataCell>
-                    )
+            checkVisibility(item.isVisibleFunction) && (
+              <TableRow hover key={index} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+                {checkableRows && (
+                  <TableDataCell>
+                    <Checkbox
+                      onClick={(event) => toggleRow(event, item)}
+                      checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                    />
+                  </TableDataCell>
                 )}
-            </TableRow>
+                {columns &&
+                  columns.map(
+                    (column) =>
+                      column && (
+                        <TableDataCell
+                          id={item[column.property] + column.property}
+                          key={item[column.property] + column.property}
+                          clickable={onSelect ? "true" : "false"}
+                          type={column.type}
+                          align={column.type === ContentType.Number ? "right" : "left"}
+                          onClick={(event) => selectRow(event, item)}
+                        >
+                          {format(column.type, item[column.property])}
+                        </TableDataCell>
+                      )
+                  )}
+              </TableRow>
+            )
           );
         })}
       </TableBody>

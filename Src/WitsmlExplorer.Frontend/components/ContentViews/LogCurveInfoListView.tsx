@@ -8,6 +8,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -27,13 +28,11 @@ export interface LogCurveInfoRow extends ContentTableRow {
 
 export const LogCurveInfoListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedLog } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedLog, selectedCurveThreshold } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const depthThreshold = 50; // Meters
-  const timeThreshold = 60 * 60 * 1000; // 1 hour in milliseconds
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -62,10 +61,10 @@ export const LogCurveInfoListView = (): React.ReactElement => {
 
   const calculateIsCurveActive = (logCurveInfo: LogCurveInfo, maxDepth: number): boolean => {
     if (isDepthIndex) {
-      return maxDepth - logCurveInfo.maxDepthIndex < depthThreshold;
+      return maxDepth - logCurveInfo.maxDepthIndex < selectedCurveThreshold.depthInMeters;
     } else {
-      const dateDifference = new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
-      return dateDifference < timeThreshold;
+      const dateDifferenceInMilliseconds = new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
+      return dateDifferenceInMilliseconds < timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes);
     }
   };
 
@@ -73,6 +72,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     const maxDepth = Math.max(...logCurveInfoList.map((x) => x.maxDepthIndex));
 
     return logCurveInfoList.map((logCurveInfo) => {
+      const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
       return {
         id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
         uid: logCurveInfo.uid,
@@ -87,9 +87,17 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         wellboreUid: selectedWellbore.uid,
         wellName: selectedWell.name,
         wellboreName: selectedWellbore.name,
-        isActive: selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth)
+        isActive: isActive,
+        isVisibleFunction: isVisibleFunction(isActive)
       };
     });
+  };
+
+  const isVisibleFunction = (isActive: boolean): (() => boolean) => {
+    return () => {
+      if (isDepthIndex) return true;
+      return !(selectedCurveThreshold.hideInactiveCurves && !isActive);
+    };
   };
 
   const columns: ContentTableColumn[] = [

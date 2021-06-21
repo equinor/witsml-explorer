@@ -6,20 +6,15 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateWellboreWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job);
-    }
-
-    public class CreateWellboreWorker: ICreateWellboreWorker
+    public class CreateWellboreWorker : IWorker<CreateWellboreJob>
     {
         private readonly IWitsmlClient witsmlClient;
 

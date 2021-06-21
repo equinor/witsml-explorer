@@ -5,20 +5,15 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IModifyLogObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(ModifyLogObjectJob job);
-    }
-
-    public class ModifyLogObjectWorker : IModifyLogObjectWorker
+    public class ModifyLogObjectWorker : IWorker<ModifyLogObjectJob>
     {
         private readonly IWitsmlClient witsmlClient;
 

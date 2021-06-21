@@ -7,6 +7,7 @@ namespace WitsmlExplorer.Api.Models
         CopyTrajectory,
         TrimLogObject,
         ModifyLogObject,
+        CreateMessageObject,
         DeleteCurveValues,
         DeleteLogObjects,
         DeleteMnemonics,

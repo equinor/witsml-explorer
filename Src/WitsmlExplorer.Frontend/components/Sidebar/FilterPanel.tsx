@@ -1,23 +1,30 @@
 ﻿import Filter, { EMPTY_FILTER } from "../../contexts/filter";
 import NavigationType from "../../contexts/navigationType";
 import React, { useContext, useEffect, useState } from "react";
-import { Checkbox, FormControlLabel as MuiFormControlLabel, TextField as MuiTextField } from "@material-ui/core";
+import { Checkbox, Divider, FormControlLabel as MuiFormControlLabel, TextField as MuiTextField } from "@material-ui/core";
 import styled from "styled-components";
 import { colors } from "../../styles/Colors";
 import NavigationContext from "../../contexts/navigationContext";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "../../contexts/curveThreshold";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedFilter } = navigationState;
+  const { selectedFilter, selectedCurveThreshold } = navigationState;
 
   const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
+  const [curveThreshold, setCurveThreshold] = useState<CurveThreshold>(DEFAULT_CURVE_THRESHOLD);
+
   const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     setFilter(selectedFilter);
   }, [selectedFilter]);
+
+  useEffect(() => {
+    setCurveThreshold(selectedCurveThreshold);
+  }, [selectedCurveThreshold]);
 
   return (
     <Container expanded={expanded}>
@@ -27,20 +34,21 @@ const FilterPanel = (): React.ReactElement => {
       </FilterPanelHeader>
       {expanded && (
         <>
-          <SearchTextField
+          <TextField
             id="filter-tree"
             label="Filter on well name"
             onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellName: event.target.value } } })}
             value={filter.wellName}
             autoComplete={"off"}
           />
-          <SearchTextField
+          <TextField
             id="filter-wellLimit"
             label="Limit number of wells (0 for no limit)"
             type="number"
             InputProps={{ inputProps: { min: 0 } }}
             onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellLimit: Number(event.target.value) } } })}
             value={filter.wellLimit}
+            autoComplete={"off"}
           />
           <FormControlLabel
             control={
@@ -61,6 +69,30 @@ const FilterPanel = (): React.ReactElement => {
               />
             }
             label={"Show only growing logs"}
+          />
+          <Divider />
+          <TextField
+            id="curveThreshold-time"
+            label="Set threshold for time curve (in minutes)"
+            type="number"
+            InputProps={{ inputProps: { min: 0 } }}
+            onChange={(event) =>
+              dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, timeInMinutes: Number(event.target.value) } } })
+            }
+            value={curveThreshold.timeInMinutes}
+            autoComplete={"off"}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="curveThreshold-hideInactive"
+                onChange={(event) =>
+                  dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, hideInactiveCurves: event.target.checked } } })
+                }
+                value={curveThreshold}
+              />
+            }
+            label={"Hide inactive time curves"}
           />
         </>
       )}
@@ -83,7 +115,7 @@ const FilterPanelHeader = styled.div`
   font-family: EquinorMedium, sans-serif;
 `;
 
-const SearchTextField = styled(MuiTextField)`
+const TextField = styled(MuiTextField)`
   && {
     margin-left: 0.5rem;
     :hover {

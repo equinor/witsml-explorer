@@ -16,6 +16,7 @@ import ModificationType from "./modificationType";
 import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
 import Filter, { EMPTY_FILTER, filterWells } from "./filter";
+import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
 
 export interface NavigationState {
   selectedServer: Server;
@@ -33,6 +34,7 @@ export interface NavigationState {
   wells: Well[];
   filteredWells: Well[];
   selectedFilter: Filter;
+  selectedCurveThreshold: CurveThreshold;
   expandedTreeNodes: string[];
   currentProperties: Map<string, string>;
 }
@@ -59,6 +61,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   wells: [],
   filteredWells: [],
   selectedFilter: EMPTY_FILTER,
+  selectedCurveThreshold: DEFAULT_CURVE_THRESHOLD,
   expandedTreeNodes: [],
   currentProperties: new Map<string, string>()
 };
@@ -95,6 +98,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectTrajectory(state, action);
     case NavigationType.SetFilter:
       return setFilter(state, action);
+    case NavigationType.SetCurveThreshold:
+      return setCurveThreshold(state, action);
     case NavigationType.ShowCurveValues:
       return selectLogCurveInfo(state, action);
     default:
@@ -617,6 +622,14 @@ const setFilter = (state: NavigationState, { payload }: SetFilterAction) => {
   };
 };
 
+const setCurveThreshold = (state: NavigationState, { payload }: SetCurveThresholdAction) => {
+  const { curveThreshold } = payload;
+  return {
+    ...state,
+    selectedCurveThreshold: curveThreshold
+  };
+};
+
 const treeNodeIsExpanded = (expandedTreeNodes: string[], nodeId: string) => {
   const nodeIndex = expandedTreeNodes.findIndex((expandedNode) => expandedNode === nodeId);
   return nodeIndex !== -1;
@@ -771,6 +784,11 @@ export interface SetFilterAction extends Action {
   payload: { filter: Filter };
 }
 
+export interface SetCurveThresholdAction extends Action {
+  type: NavigationType.SetCurveThreshold;
+  payload: { curveThreshold: CurveThreshold };
+}
+
 export type NavigationAction =
   | AddServerAction
   | AddWellAction
@@ -797,4 +815,5 @@ export type NavigationAction =
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
-  | SetFilterAction;
+  | SetFilterAction
+  | SetCurveThresholdAction;

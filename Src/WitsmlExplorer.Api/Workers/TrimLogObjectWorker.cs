@@ -6,21 +6,16 @@ using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ITrimLogObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job);
-    }
-
-    public class TrimLogObjectWorker: ITrimLogObjectWorker
+    public class TrimLogObjectWorker : IWorker<TrimLogDataJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -124,7 +119,7 @@ namespace WitsmlExplorer.Api.Workers
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {witsmlLog}
+                Logs = new List<WitsmlLog> { witsmlLog }
             };
         }
     }

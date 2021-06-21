@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
+using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using Index = Witsml.Data.Curves.Index;

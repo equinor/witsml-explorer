@@ -6,22 +6,17 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICopyLogDataWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job);
-    }
-
-    public class CopyLogDataWorker : ICopyLogDataWorker
+    public class CopyLogDataWorker : IWorker<CopyLogDataJob>
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
@@ -113,11 +108,11 @@ namespace WitsmlExplorer.Api.Workers
                         job.LogCurvesReference.LogReference.WellUid, job.LogCurvesReference.LogReference.WellboreUid, job.LogCurvesReference.LogReference.LogUid,
                         job.Target.WellUid, job.Target.WellboreUid, job.Target.LogUid,
                         startIndex);
-                    return new CopyResult {Success = false, NumberOfRowsCopied = numberOfDataRowsCopied};
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied };
                 }
             }
 
-            return new CopyResult {Success = true, NumberOfRowsCopied = numberOfDataRowsCopied};
+            return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied };
         }
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLog sourceLog, WitsmlLog sourceLogWithData)
@@ -160,7 +155,7 @@ namespace WitsmlExplorer.Api.Workers
 
             var updatedWitsmlLog = new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {updatedData}
+                Logs = new List<WitsmlLog> { updatedData }
             };
             return updatedWitsmlLog;
         }

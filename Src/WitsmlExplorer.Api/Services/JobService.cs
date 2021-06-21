@@ -18,11 +18,12 @@ namespace WitsmlExplorer.Api.Services
     public class JobService : IJobService
     {
         private readonly IHubContext<NotificationsHub> hubContext;
-        private readonly ICopyLogWorker copyLogWorker;
-        private readonly ICopyLogDataWorker copyLogDataWorker;
-        private readonly ICopyTrajectoryWorker copyTrajectoryWorker;
-        private readonly ITrimLogObjectWorker trimLogObjectWorker;
-        private readonly IModifyLogObjectWorker modifyLogObjectWorker;
+        private readonly IWorker<CopyLogJob> copyLogWorker;
+        private readonly IWorker<CopyLogDataJob> copyLogDataWorker;
+        private readonly IWorker<CopyTrajectoryJob> copyTrajectoryWorker;
+        private readonly IWorker<TrimLogDataJob> trimLogObjectWorker;
+        private readonly IWorker<ModifyLogObjectJob> modifyLogObjectWorker;
+        private readonly ICreateMessageObjectWorker createMessageObjectWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
@@ -30,21 +31,21 @@ namespace WitsmlExplorer.Api.Services
         private readonly IDeleteWellboreWorker deleteWellboreWorker;
         private readonly IDeleteTrajectoryWorker deleteTrajectoryWorker;
         private readonly IRenameMnemonicWorker renameMnemonicWorker;
-        private readonly IModifyWellWorker modifyWellWorker;
-        private readonly IModifyWellboreWorker modifyWellboreWorker;
-        private readonly ICreateLogWorker createLogWorker;
-        private readonly ICreateWellWorker createWellWorker;
-        private readonly ICreateWellboreWorker createWellboreWorker;
-        private readonly IBatchModifyWellWorker batchModifyWellWorker;
+        private readonly IWorker<ModifyWellJob> modifyWellWorker;
+        private readonly IWorker<ModifyWellboreJob> modifyWellboreWorker;
+        private readonly IWorker<CreateLogJob> createLogWorker;
+        private readonly IWorker<CreateWellJob> createWellWorker;
+        private readonly IWorker<CreateWellboreJob> createWellboreWorker;
+        private readonly IWorker<BatchModifyWellJob> batchModifyWellWorker;
         private readonly IImportLogDataWorker importLogDataWorker;
 
         public JobService(
             IHubContext<NotificationsHub> hubContext,
-            ICopyLogWorker copyLogWorker,
-            ICopyLogDataWorker copyLogDataWorker,
-            ICopyTrajectoryWorker copyTrajectoryWorker,
-            ITrimLogObjectWorker trimLogObjectWorker,
-            IModifyLogObjectWorker modifyLogObjectWorker,
+            IWorker<CopyLogJob> copyLogWorker,
+            IWorker<CopyLogDataJob> copyLogDataWorker,
+            IWorker<CopyTrajectoryJob> copyTrajectoryWorker,
+            IWorker<TrimLogDataJob> trimLogObjectWorker,
+            IWorker<ModifyLogObjectJob> modifyLogObjectWorker,
             IDeleteCurveValuesWorker deleteCurveValuesWorker,
             IDeleteLogObjectsWorker deleteLogObjectsWorker,
             IDeleteMnemonicsWorker deleteMnemonicsWorker,
@@ -52,13 +53,14 @@ namespace WitsmlExplorer.Api.Services
             IDeleteWellWorker deleteWellWorker,
             IDeleteWellboreWorker deleteWellboreWorker,
             IRenameMnemonicWorker renameMnemonicWorker,
-            IModifyWellWorker modifyWellWorker,
-            IModifyWellboreWorker modifyWellboreWorker,
-            ICreateLogWorker createLogWorker,
-            ICreateWellWorker createWellWorker,
-            ICreateWellboreWorker createWellboreWorker,
-            IBatchModifyWellWorker batchModifyWellWorker,
-            IImportLogDataWorker importLogDataWorker)
+            IWorker<ModifyWellJob> modifyWellWorker,
+            IWorker<ModifyWellboreJob> modifyWellboreWorker,
+            IWorker<CreateLogJob> createLogWorker,
+            IWorker<CreateWellJob> createWellWorker,
+            IWorker<CreateWellboreJob> createWellboreWorker,
+            IWorker<ImportLogDataJob> importLogDataWorker),
+            IWorker<BatchModifyWellJob> batchModifyWellWorker,
+            ICreateMessageObjectWorker createMessageObjectWorker)
         {
             this.hubContext = hubContext;
             this.copyLogWorker = copyLogWorker;
@@ -76,6 +78,7 @@ namespace WitsmlExplorer.Api.Services
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
             this.createLogWorker = createLogWorker;
+            this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
@@ -148,6 +151,10 @@ namespace WitsmlExplorer.Api.Services
                     var createLogObject = await jobStream.Deserialize<CreateLogJob>();
                     (result, refreshAction) = await createLogWorker.Execute(createLogObject);
                     break;
+                case JobType.CreateMessageObject:
+                    var createMessageObjectJob = await jobStream.Deserialize<CreateMessageObjectJob>();
+                    (result, refreshAction) = await createMessageObjectWorker.Execute(createMessageObjectJob);
+                    break;
                 case JobType.CreateWell:
                     var createWellJob = await jobStream.Deserialize<CreateWellJob>();
                     (result, refreshAction) = await createWellWorker.Execute(createWellJob);
@@ -170,10 +177,10 @@ namespace WitsmlExplorer.Api.Services
 
             if (hubContext != null)
             {
-                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] {result});
+                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result });
 
                 if (refreshAction != null)
-                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] {refreshAction});
+                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction });
             }
         }
     }
