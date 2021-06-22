@@ -5,7 +5,6 @@ import MessageObjectService from "../../services/messageObjectService";
 import Well from "../../models/well";
 import Wellbore, { calculateLogGroupId, calculateMessageGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
 import LogTypeItem from "./LogTypeItem";
-import MessageItem from "./MessageItem";
 import RigService from "../../services/rigService";
 import TrajectoryService from "../../services/trajectoryService";
 import TrajectoryItem from "./TrajectoryItem";

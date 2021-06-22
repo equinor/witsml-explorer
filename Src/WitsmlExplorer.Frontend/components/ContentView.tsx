@@ -49,9 +49,9 @@ const ContentView = (): React.ReactElement => {
         setView(<LogCurveInfoListView />);
       } else if (currentSelected === selectedRigGroup) {
         setView(<RigsListView />);
-      } else if (currentSelected === selectedRigGroup) {
-        setView(<MessagesListView />);
       } else if (currentSelected === selectedMessageGroup) {
+        setView(<MessagesListView />);
+      } else if (currentSelected === selectedLogCurveInfo) {
         setView(<CurveValuesView />);
       } else if (currentSelected === selectedTrajectoryGroup) {
         setView(<TrajectoriesListView />);

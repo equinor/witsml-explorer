@@ -1,5 +1,3 @@
-import LogObject from "./logObject";
-
 export default interface MessageObject {
   uid: string;
   name: string;
