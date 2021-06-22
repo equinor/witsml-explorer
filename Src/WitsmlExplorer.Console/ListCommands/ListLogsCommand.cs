@@ -12,17 +12,8 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ListCommands
 {
-    public class ListLogsCommand : AsyncCommand<ListLogsCommand.ListLogsSettings>
+    public class ListLogsCommand : AsyncCommand<ListLogsSettings>
     {
-        public class ListLogsSettings : CommandSettings
-        {
-            [CommandArgument(0, "<WELL_UID>")]
-            public string WellUid { get; init; }
-
-            [CommandArgument(1, "<WELLBORE_UID>")]
-            public string WellboreUid { get; init; }
-        }
-
         private readonly IWitsmlClient witsmlClient;
 
         public ListLogsCommand(IWitsmlClientProvider witsmlClientProvider)
@@ -42,7 +33,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching logs...".WithColor(Color.Orange1), async ctx =>
                 {
-                    var logs = (await GetLogs(settings.WellUid, settings.WellboreUid)).ToList();
+                    var logs = await GetLogs(settings.WellUid, settings.WellboreUid);
 
                     wellName = logs.FirstOrDefault()?.NameWell;
                     wellboreName = logs.FirstOrDefault()?.NameWellbore;
@@ -80,7 +71,7 @@ namespace WitsmlExplorer.Console.ListCommands
             return table;
         }
 
-        private async Task<IEnumerable<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
+        private async Task<IList<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
         {
             var query = new WitsmlLogs
             {

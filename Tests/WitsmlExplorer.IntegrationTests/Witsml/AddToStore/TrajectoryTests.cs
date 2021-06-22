@@ -7,8 +7,8 @@ using Witsml;
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
+using WitsmlExplorer.Api.Query;
 using Xunit;
 using Xunit.Abstractions;
 

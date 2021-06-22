@@ -2,10 +2,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Query;
+using Witsml.Data;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -28,8 +29,8 @@ namespace WitsmlExplorer.Api.Workers
         {
             var wellUid = job.WellReference.WellUid;
 
-            var query = WellQueries.DeleteQuery(wellUid);
-            var result = await witsmlClient.DeleteFromStoreAsync(query);
+            var witsmlWell = WellQueries.DeleteWitsmlWell(wellUid);
+            var result = await witsmlClient.DeleteFromStoreAsync(witsmlWell);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful.", GetType().Name);
@@ -40,8 +41,8 @@ namespace WitsmlExplorer.Api.Workers
 
             Log.Error("Failed to delete well. WellUid: {WellUid}", wellUid);
 
-            query = WellQueries.QueryByUid(wellUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            witsmlWell = WellQueries.GetWitsmlWellByUid(wellUid);
+            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlWell, OptionsIn.IdOnly);
 
             EntityDescription description = null;
 

@@ -53,14 +53,14 @@
     "react-window": "^1.8.6",
     "ste-simple-events": "^2.1.7",
     "styled-components": "^5.3.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.4"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.8",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",
-    "@types/node": "^15.12.2",
+    "@types/node": "^15.12.4",
     "@types/react": "^17.0.11",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.3",
@@ -68,7 +68,7 @@
     "@types/uuid": "^8.3.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.6",
-    "eslint": "^7.28.0",
+    "eslint": "^7.29.0",
     "eslint-plugin-react": "^7.24.0",
     "jest": "^26.6.3",
     "lint-staged": "^11.0.0",

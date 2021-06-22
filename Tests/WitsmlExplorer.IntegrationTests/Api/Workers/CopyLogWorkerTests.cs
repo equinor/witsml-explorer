@@ -6,13 +6,13 @@ using Witsml;
 using Witsml.Extensions;
 using Witsml.Data;
 using Witsml.Data.Curves;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using Xunit;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {

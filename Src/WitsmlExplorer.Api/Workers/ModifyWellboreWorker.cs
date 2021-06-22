@@ -4,20 +4,15 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Extensions;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IModifyWellboreWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(ModifyWellboreJob job);
-    }
-
-    public class ModifyWellboreWorker: IModifyWellboreWorker
+    public class ModifyWellboreWorker : IWorker<ModifyWellboreJob>
     {
         private readonly IWitsmlClient witsmlClient;
 

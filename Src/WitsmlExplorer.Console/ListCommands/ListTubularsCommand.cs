@@ -12,17 +12,8 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ListCommands
 {
-    public class ListTubularsCommand : AsyncCommand<ListTubularsCommand.ListTubularsSettings>
+    public class ListTubularsCommand : AsyncCommand<ListTubularsSettings>
     {
-        public class ListTubularsSettings : CommandSettings
-        {
-            [CommandArgument(0, "<WELL_UID>")]
-            public string WellUid { get; init; }
-
-            [CommandArgument(1, "<WELLBORE_UID>")]
-            public string WellboreUid { get; init; }
-        }
-
         private readonly IWitsmlClient witsmlClient;
 
         public ListTubularsCommand(IWitsmlClientProvider witsmlClientProvider)
@@ -52,7 +43,8 @@ namespace WitsmlExplorer.Console.ListCommands
                         table.AddRow(
                             tubular.Uid,
                             tubular.Name,
-                            tubular.TypeTubularAssy);
+                            tubular.TypeTubularAssy,
+                            tubular.CommonData.DTimLastChange);
                     }
                 });
 
@@ -71,6 +63,7 @@ namespace WitsmlExplorer.Console.ListCommands
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
             table.AddColumn("TypeTubularAssy".Bold());
+            table.AddColumn("LastChanged".Bold());
             return table;
         }
 
@@ -84,7 +77,11 @@ namespace WitsmlExplorer.Console.ListCommands
                     UidWellbore = wellboreUid,
                     Uid = "",
                     Name = "",
-                    TypeTubularAssy = ""
+                    TypeTubularAssy = "",
+                    CommonData = new WitsmlCommonData
+                    {
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
 

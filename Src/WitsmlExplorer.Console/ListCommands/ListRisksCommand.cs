@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Spectre.Console;
+using Spectre.Console.Cli;
+using Witsml;
+using Witsml.Data;
+using Witsml.Extensions;
+using Witsml.ServiceReference;
+using WitsmlExplorer.Console.Extensions;
+using WitsmlExplorer.Console.WitsmlClient;
+
+namespace WitsmlExplorer.Console.ListCommands
+{
+    public class ListRisksCommand : AsyncCommand<ListRisksSettings>
+    {
+        private readonly IWitsmlClient witsmlClient;
+
+        public ListRisksCommand(IWitsmlClientProvider witsmlClientProvider)
+        {
+            witsmlClient = witsmlClientProvider.GetClient();
+        }
+
+        public override async Task<int> ExecuteAsync(CommandContext context, ListRisksSettings settings)
+        {
+            if (witsmlClient == null) return -1;
+
+            var table = CreateTable();
+
+            IList<WitsmlRisk> risks = new List<WitsmlRisk>();
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.Dots)
+                .StartAsync("Fetching risks...".WithColor(Color.Orange1), async ctx =>
+                {
+                    risks = await GetRisks(settings.WellUid, settings.WellboreUid, settings.Source, settings.LastChanged);
+
+                    if (risks.Count > 100)
+                    {
+                        AnsiConsole.MarkupLine($"\nToo many risks returned ({risks.Count}). Please filter your query".WithColor(Color.Red1));
+                    }
+
+                    foreach (var risk in risks)
+                    {
+                        table.AddRow(
+                            risk.Uid,
+                            risk.UidWell,
+                            risk.UidWellbore,
+                            risk.NameWellbore,
+                            risk.Summary,
+                            risk.CommonData.SourceName ?? "",
+                            risk.CommonData.DTimLastChange);
+                    }
+                });
+
+            if (risks.Any())
+                AnsiConsole.Render(table);
+            return 0;
+        }
+
+        private static Table CreateTable()
+        {
+            var table = new Table();
+            table.AddColumn("Uid".Bold());
+            table.AddColumn("UidWell".Bold());
+            table.AddColumn("UidWellbore".Bold());
+            table.AddColumn("WellboreName".Bold());
+            table.AddColumn("Summary".Bold());
+            table.AddColumn("Source".Bold());
+            table.AddColumn("Last changed".Bold());
+            return table;
+        }
+
+        private async Task<IList<WitsmlRisk>> GetRisks(string wellUid, string wellboreUid, string source, string lastChanged)
+        {
+            var query = new WitsmlRisks
+            {
+                Risks = new WitsmlRisk
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    CommonData = new WitsmlCommonData
+                    {
+                        SourceName = source,
+                        DTimLastChange = lastChanged
+                    }
+                }.AsSingletonList()
+            };
+
+            try
+            {
+                var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+                return result?.Risks
+                    .OrderBy(risk => risk.NameWellbore)
+                    .ThenBy(risk => DateTime.Parse(risk.CommonData.DTimLastChange))
+                    .ToList();
+            }
+            catch (TimeoutException)
+            {
+                AnsiConsole.MarkupLine("\nThe request timed out. You might need to filter your request to reduce the query result".WithColor(Color.Red1));
+                return new List<WitsmlRisk>();
+            }
+        }
+    }
+}

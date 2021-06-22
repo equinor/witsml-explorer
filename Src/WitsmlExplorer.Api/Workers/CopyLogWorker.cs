@@ -5,28 +5,22 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Data;
-using Witsml.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
-using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICopyLogWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job);
-    }
-
-    public class CopyLogWorker : ICopyLogWorker
+    public class CopyLogWorker : IWorker<CopyLogJob>
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
-        private readonly ICopyLogDataWorker copyLogDataWorker;
+        private readonly IWorker<CopyLogDataJob> copyLogDataWorker;
 
-        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null)
+        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, IWorker<CopyLogDataJob> copyLogDataWorker = null)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
@@ -100,7 +94,7 @@ namespace WitsmlExplorer.Api.Workers
             log.CommonData.ItemState = string.IsNullOrEmpty(log.CommonData.ItemState) ? null : log.CommonData.ItemState;
             log.CommonData.SourceName = string.IsNullOrEmpty(log.CommonData.SourceName) ? null : log.CommonData.SourceName;
             log.LogData.Data = new List<WitsmlData>();
-            var copyLogQuery = new WitsmlLogs {Logs = new List<WitsmlLog> {log}};
+            var copyLogQuery = new WitsmlLogs { Logs = new List<WitsmlLog> { log } };
             return copyLogQuery;
         }
 

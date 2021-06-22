@@ -58,6 +58,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", GetMessagesForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", GetMessage);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", GetLog);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", GetLogsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", GetLogCurveInfo);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLogData);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", GetRigsForWellbore);

@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker copyLogWorker;
-        private readonly Mock<ICopyLogDataWorker> copyLogDataWorker;
+        private readonly Mock<IWorker<CopyLogDataJob>> copyLogDataWorker;
         private readonly Mock<IWitsmlClient> witsmlClient;
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public CopyLogWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            copyLogDataWorker = new Mock<ICopyLogDataWorker>();
+            copyLogDataWorker = new Mock<IWorker<CopyLogDataJob>>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             copyLogWorker = new CopyLogWorker(witsmlClientProvider.Object, copyLogDataWorker.Object);
@@ -172,7 +172,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 UidWellbore = SourceWellboreUid,
                 Uid = LogUid,
                 IndexType = indexType,
-                IndexCurve = new WitsmlIndexCurve {Value = SourceMnemonics[indexType][0]},
+                IndexCurve = new WitsmlIndexCurve { Value = SourceMnemonics[indexType][0] },
                 StartDateTimeIndex = startDateTimeIndex,
                 EndDateTimeIndex = endDateTimeIndex,
                 CommonData = new WitsmlCommonData(),
@@ -190,7 +190,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {witsmlLog}
+                Logs = new List<WitsmlLog> { witsmlLog }
             };
         }
 
@@ -205,7 +205,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 UidWellbore = SourceWellboreUid,
                 Uid = LogUid,
                 IndexType = indexType,
-                IndexCurve = new WitsmlIndexCurve {Value = SourceMnemonics[indexType][0]},
+                IndexCurve = new WitsmlIndexCurve { Value = SourceMnemonics[indexType][0] },
                 StartIndex = minIndex,
                 EndIndex = maxIndex,
                 CommonData = new WitsmlCommonData(),
@@ -223,7 +223,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {witsmlLog}
+                Logs = new List<WitsmlLog> { witsmlLog }
             };
         }
 
@@ -238,7 +238,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 while (currentIndex <= endIndex)
                 {
-                    data.Add(new WitsmlData {Data = $"{currentIndex.Value},1,1"});
+                    data.Add(new WitsmlData { Data = $"{currentIndex.Value},1,1" });
                     currentIndex = new DepthIndex(currentIndex.Value + 1);
                 }
             }
