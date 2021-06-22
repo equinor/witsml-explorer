@@ -20,8 +20,8 @@ export default interface Wellbore {
   itemState?: string;
   logs?: LogObject[];
   rigs?: Rig[];
-  messages?: MessageObject[];
   trajectories?: Trajectory[];
+  messages?: MessageObject[];
 }
 
 export function emptyWellbore(): Wellbore {
@@ -41,8 +41,8 @@ export function emptyWellbore(): Wellbore {
     itemState: "",
     logs: [],
     rigs: [],
-    messages: [],
-    trajectories: []
+    trajectories: [],
+    messages: []
   };
 }
 

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { calculateLogGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
+import { calculateLogGroupId, calculateMessageGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -29,6 +29,12 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
         name: "Trajectories",
         action: NavigationType.SelectTrajectoryGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: calculateTrajectoryGroupId(selectedWellbore) }
+      },
+      {
+        uid: 4,
+        name: "Messages",
+        action: NavigationType.SelectMessageGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, messageGroup: calculateMessageGroupId(selectedWellbore) }
       }
     ];
   };

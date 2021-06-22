@@ -39,7 +39,7 @@ export const WellboresListView = (): React.ReactElement => {
     const logs = await LogObjectService.getLogs(wellbore.wellUid, uid, controller.signal);
     const rigs = await RigService.getRigs(wellUid, uid, controller.signal);
     const trajectories = await TrajectoryService.getTrajectories(wellUid, uid, controller.signal);
-    const messages = await MessageObjectService.getMessageObjects(wellUid, uid, controller.signal);
+    const messages = await MessageObjectService.getMessages(wellUid, uid, controller.signal);
     dispatchNavigation({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages } });
   };
 

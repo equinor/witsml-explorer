@@ -1,3 +1,5 @@
+import LogObject from "./logObject";
+
 export default interface MessageObject {
   uid: string;
   name: string;
@@ -24,6 +26,10 @@ export function emptyMessageObject(): MessageObject {
   };
 }
 
+export const calculateMessageObjectNodeId = (messageObject: MessageObject): string => {
+  return messageObject.wellUid + messageObject.wellboreUid + messageObject.uid;
+};
+
 export const getMessageObjectProperties = (messageObject: MessageObject): Map<string, string> => {
   return new Map([
     ["Well", messageObject.wellName],
@@ -31,7 +37,6 @@ export const getMessageObjectProperties = (messageObject: MessageObject): Map<st
     ["Wellbore", messageObject.wellboreName],
     ["UID Wellbore", messageObject.wellboreUid],
     ["Message", messageObject.name],
-    ["UID Message", messageObject.uid],
-    ["MessageText", messageObject.messageText]
+    ["UID Message", messageObject.uid]
   ]);
 };

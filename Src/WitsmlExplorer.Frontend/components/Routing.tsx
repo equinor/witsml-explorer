@@ -87,7 +87,7 @@ const Routing = (): React.ReactElement => {
       const getLogs = LogObjectService.getLogs(selectedWell.uid, wellboreUid, controller.signal);
       const getRigs = RigService.getRigs(selectedWell.uid, wellboreUid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
-      const getMessages = MessageObjectService.getMessageObjects(selectedWell.uid, wellboreUid, controller.signal);
+      const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
       const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
       const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
       if (wellbore) {

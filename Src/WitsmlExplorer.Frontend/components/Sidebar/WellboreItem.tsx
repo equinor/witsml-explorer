@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import TreeItem from "./TreeItem";
 import LogObjectService from "../../services/logObjectService";
+import MessageObjectService from "../../services/messageObjectService";
 import Well from "../../models/well";
-import Wellbore, { calculateLogGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
+import Wellbore, { calculateLogGroupId, calculateMessageGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
 import LogTypeItem from "./LogTypeItem";
+import MessageItem from "./MessageItem";
 import RigService from "../../services/rigService";
 import TrajectoryService from "../../services/trajectoryService";
 import TrajectoryItem from "./TrajectoryItem";
@@ -18,7 +20,6 @@ import { calculateTrajectoryId } from "../../models/trajectory";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
-import MessageObjectService from "../../services/messageObjectService";
 
 interface WellboreItemProps {
   well: Well;
@@ -59,7 +60,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getLogs = LogObjectService.getLogs(well.uid, wellbore.uid, controller.signal);
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
-      const getMessages = MessageObjectService.getMessageObjects(well.uid, wellbore.uid, controller.signal);
+      const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
       const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
       const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories, messages } };
       dispatchNavigation(selectWellbore);
@@ -75,6 +76,10 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
   const onSelectLogGroup = async (well: Well, wellbore: Wellbore, logGroup: string) => {
     dispatchNavigation({ type: NavigationType.SelectLogGroup, payload: { well, wellbore, logGroup } });
+  };
+
+  const onSelectMessageGroup = async (well: Well, wellbore: Wellbore, messageGroup: string) => {
+    dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, messageGroup } });
   };
 
   const onSelectRigGroup = async (well: Well, wellbore: Wellbore, rigGroup: string) => {
@@ -107,6 +112,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   };
 
   const logGroupId = calculateLogGroupId(wellbore);
+  const messageGroupId = calculateMessageGroupId(wellbore);
   const trajectoryGroupId = calculateTrajectoryGroupId(wellbore);
   const rigGroupId = calculateRigGroupId(wellbore);
 
@@ -130,6 +136,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       >
         <LogTypeItem well={well} wellbore={wellbore} />
       </TreeItem>
+
+      <TreeItem
+        nodeId={messageGroupId}
+        labelText={"Messages"}
+        onLabelClick={() => onSelectMessageGroup(well, wellbore, messageGroupId)}
+        onContextMenu={preventContextMenuPropagation}
+      />
       <TreeItem nodeId={rigGroupId} labelText={"Rigs"} onLabelClick={() => onSelectRigGroup(well, wellbore, rigGroupId)} onContextMenu={preventContextMenuPropagation} />
       <TreeItem
         nodeId={trajectoryGroupId}

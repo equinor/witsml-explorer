@@ -6,17 +6,17 @@ import MessageObject from "../../models/messageObject";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 
-interface MessageObjectItemProps {
+interface MessageItemProps {
   message: MessageObject;
+  messageGroup: string;
   well: Well;
   wellbore: Wellbore;
-  messageGroup: string;
   selected: boolean;
   nodeId: string;
 }
 
-const MessageItem = (props: MessageObjectItemProps): React.ReactElement => {
-  const { message, messageGroup, well, wellbore, selected, nodeId } = props;
+const MessageItem = (props: MessageItemProps): React.ReactElement => {
+  const { message, well, wellbore, selected, nodeId } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
 
   return (
@@ -25,7 +25,7 @@ const MessageItem = (props: MessageObjectItemProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={message.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, messageGroup } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMessageObject, payload: { message, well, wellbore } })}
     />
   );
 };
