@@ -14,7 +14,10 @@ export const MessagesListView = (): React.ReactElement => {
     }
   }, []);
 
-  const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
+  const columns: ContentTableColumn[] = [
+    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime },
+    { property: "messageText", label: "Message text", type: ContentType.String }
+  ];
 
   return <ContentTable columns={columns} data={messages} />;
 };
