@@ -7,7 +7,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import { DeleteIcon, NewIcon, PasteIcon, RefreshIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import { uuid } from 'uuidv4';
+import { uuid } from "uuidv4";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
