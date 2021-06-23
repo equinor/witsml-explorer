@@ -5,7 +5,7 @@ import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPro
 import { DeleteIcon, NewIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
-import { v4 as uuidv4 } from "uuid";
+import { uuid } from 'uuidv4';
 import Wellbore from "../../models/wellbore";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import JobService, { JobType } from "../../services/jobService";
@@ -30,7 +30,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickNewWell = () => {
     const newWell: Well = {
-      uid: uuidv4(),
+      uid: uuid(),
       name: "",
       field: "",
       operator: "",
@@ -43,7 +43,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
-      uid: uuidv4(),
+      uid: uuid(),
       name: "",
       wellUid: well.uid,
       wellName: well.name,
