@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Wellbore from "../../models/wellbore";
 import LogObject from "../../models/logObject";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -73,7 +73,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
-      uid: uuid(),
+      uid: uuidv4(),
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,

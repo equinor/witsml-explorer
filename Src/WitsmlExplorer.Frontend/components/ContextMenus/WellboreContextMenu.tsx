@@ -7,7 +7,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import { DeleteIcon, NewIcon, PasteIcon, RefreshIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
@@ -67,7 +67,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
-      uid: uuid(),
+      uid: uuidv4(),
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
@@ -85,7 +85,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
-      uid: uuid(),
+      uid: uuidv4(),
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
