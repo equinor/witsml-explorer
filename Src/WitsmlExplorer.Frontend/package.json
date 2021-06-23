@@ -24,6 +24,7 @@
     "out/"
   ],
   "jest": {
+    "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
       "./setupTests.ts"
     ]
