@@ -22,8 +22,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid)
         {
-            var query = TrajectoryQueries.QueryByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
+            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlTrajectory, OptionsIn.Requested);
 
             return result.Trajectories.Select(trajectory =>
                 new Trajectory
@@ -44,8 +44,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid)
         {
-            var query = TrajectoryQueries.QueryById(wellUid, wellboreUid, trajectoryUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var trajectoryToQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            var result = await WitsmlClient.GetFromStoreAsync(trajectoryToQuery, OptionsIn.All);
             var witsmlTrajectory = result.Trajectories.FirstOrDefault();
             if (witsmlTrajectory == null) return null;
             return witsmlTrajectory.TrajectoryStations.Select(tStation => new TrajectoryStation

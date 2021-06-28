@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class LogQueries
     {
-        public static WitsmlLogs QueryByWellbore(string wellUid, string wellboreUid)
+        public static WitsmlLogs GetWitsmlLogsByWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlLogs
             {
@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlLogs QueryById(string wellUid, string wellboreUid, string logUid)
+        public static WitsmlLogs GetWitsmlLogById(string wellUid, string wellboreUid, string logUid)
         {
             return new WitsmlLogs
             {
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlLogs QueryLogContent(
+        public static WitsmlLogs GetLogContent(
             string wellUid,
             string wellboreUid,
             string logUid,
@@ -124,7 +124,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlLogs DeleteMnemonicsQuery(string wellUid, string wellboreUid, string logUid, string[] mnemonics)
+        public static WitsmlLogs DeleteMnemonics(string wellUid, string wellboreUid, string logUid, string[] mnemonics)
         {
             return new WitsmlLogs
             {

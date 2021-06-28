@@ -29,8 +29,8 @@ namespace WitsmlExplorer.Api.Workers
             var wellUid = job.WellboreReference.WellUid;
             var wellboreUid = job.WellboreReference.WellboreUid;
 
-            var query = WellboreQueries.DeleteWellboreQuery(wellUid, wellboreUid);
-            var result = await witsmlClient.DeleteFromStoreAsync(query);
+            var witsmlWellbore = WellboreQueries.DeleteWitsmlWellbore(wellUid, wellboreUid);
+            var result = await witsmlClient.DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful.", GetType().Name);
@@ -43,8 +43,8 @@ namespace WitsmlExplorer.Api.Workers
                 wellUid,
                 wellboreUid);
 
-            query = WellboreQueries.QueryByUid(wellUid, wellboreUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
+            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlWellbore, OptionsIn.IdOnly);
 
             EntityDescription description = null;
             var wellbore = queryResult.Wellbores.FirstOrDefault();

@@ -31,7 +31,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
             var wellUid = "W-5232880";
             var wellboreUid = "B-5232880";
             var logUid = "GM_Measured_Depth_GMDepth";
-            var queryExisting = LogQueries.QueryById(wellUid, wellboreUid, logUid);
+            var queryExisting = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             var existingLogs = await client.GetFromStoreAsync(queryExisting, OptionsIn.All);
             var existing = existingLogs.Logs.First();
 

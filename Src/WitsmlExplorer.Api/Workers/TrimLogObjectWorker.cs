@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
         {
-            var witsmlLogQuery = LogQueries.QueryById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.LogUid);
+            var witsmlLogQuery = LogQueries.GetWitsmlLogById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.LogUid);
             var witsmlLogs = await witsmlClient.GetFromStoreAsync(witsmlLogQuery, OptionsIn.HeaderOnly);
             var witsmlLog = witsmlLogs.Logs.First();
 

@@ -110,14 +110,14 @@ namespace WitsmlExplorer.Api.Workers
 
         private static async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference)
         {
-            var logQuery = LogQueries.QueryById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
             var result = await client.GetFromStoreAsync(logQuery, OptionsIn.All);
             return !result.Logs.Any() ? null : result.Logs.First();
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
-            var query = WellboreQueries.QueryByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
+            var query = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
             var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }

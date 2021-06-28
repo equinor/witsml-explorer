@@ -33,7 +33,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
             const string wellUid = "";
             const string wellboreUid = "";
             const string trajectoryUid = "";
-            var queryExisting = TrajectoryQueries.QueryById(wellUid, wellboreUid, trajectoryUid);
+            var queryExisting = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
             var existingTrajectories = await client.GetFromStoreAsync(queryExisting, OptionsIn.All);
             var existing = existingTrajectories.Trajectories.First();
 
