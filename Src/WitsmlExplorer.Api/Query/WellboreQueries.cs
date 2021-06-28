@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlWellbores CreateWitsmlWellbore(Wellbore wellbore)
         {
-            if (wellbore.WellboreParentUid != "")
+            if (!string.IsNullOrEmpty(wellbore.WellboreParentUid))
             {
                 return new WitsmlWellbores
                 {
