@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string WellboreUid { get; set; }
         public string MessageText { get; set; }
-
+        public DateTime dTim { get; set; }
         public DateTime? DateTimeCreation { get; set; }
         public DateTime? DateTimeLastChange { get; set; }
     }

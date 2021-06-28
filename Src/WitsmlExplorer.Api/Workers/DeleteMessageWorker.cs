@@ -12,25 +12,20 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateMessageObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job);
-    }
-
-    public class CreateMessageWorker : ICreateMessageObjectWorker
+    public class DeleteMessageWorker : IWorker<DeleteMessageObjectJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
-        public CreateMessageWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteMessageWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job)
+        public async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectJob job)
         {
             var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
-            var copyMessageQuery = CreateMessageObjectQuery(job, targetWellbore);
-            var createMessageResult = await witsmlClient.AddToStoreAsync(copyMessageQuery);
+            var deleteMessageQuery = DeleteMessageObjectQuery(job, targetWellbore);
+            var createMessageResult = await witsmlClient.AddToStoreAsync(deleteMessageQuery);
             if (!createMessageResult.IsSuccessful)
             {
                 var errorMessage = "Failed to create messageobject.";
@@ -46,7 +41,7 @@ namespace WitsmlExplorer.Api.Workers
             return (workerResult, refreshAction);
         }
 
-        private static WitsmlMessages CreateMessageObjectQuery(CreateMessageObjectJob job, WitsmlWellbore targetWellbore)
+        private static WitsmlMessages DeleteMessageObjectQuery(DeleteMessageObjectJob job, WitsmlWellbore targetWellbore)
         {
             return new()
             {
@@ -58,7 +53,6 @@ namespace WitsmlExplorer.Api.Workers
                     NameWellbore = targetWellbore.Name,
                     Uid = job.MessageObject.Uid,
                     Name = job.MessageObject.Name,
-                    MessageText = job.MessageObject.MessageText
                 }.AsSingletonList()
             };
         }
