@@ -1,7 +1,7 @@
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
-import { Divider, ListItemIcon, makeStyles, MenuItem, Typography } from "@material-ui/core";
+import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
@@ -18,8 +18,6 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 import NestedMenuItem from "./NestedMenuItem";
 import { LogObjectRow } from "../ContentViews/LogsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import { ImportExport } from "@material-ui/icons";
-import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -29,12 +27,9 @@ export interface LogObjectContextMenuProps {
   selectedServer: Server;
 }
 
-const useContextMenuIconStyle = makeStyles({ iconStyle: { width: 16, height: 16, color: "#007079" } });
-
 const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElement => {
   const { checkedLogObjectRows, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
   const [logCurvesReference, setLogCurvesReference] = useState<LogCurvesReference>(null);
-  const classes = useContextMenuIconStyle();
 
   useEffect(() => {
     const tryToParseClipboardContent = async () => {
@@ -111,11 +106,9 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     const trimLogObjectProps: TrimLogObjectModalProps = { dispatchNavigation, dispatchOperation, logObject };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <TrimLogObjectModal {...trimLogObjectProps} /> });
   };
-
   const blockStyle = {
     display: "grid"
   };
-
   const onClickDelete = async () => {
     const pluralize = (count: number, noun: any, suffix = "s") => `${count > 1 ? count : ""} ${noun}${count > 1 ? suffix : ""}`;
     const confirmation = (
@@ -133,11 +126,6 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
       />
     );
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-  };
-
-  const onClickImport = async () => {
-    const logDataImportModallProps: LogDataImportModalProps = { targetLog: checkedLogObjectRows[0], dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModallProps} /> });
   };
 
   const deleteLogObjects = async () => {
@@ -211,12 +199,6 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
             <DeleteIcon />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
-        </MenuItem>,
-        <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedLogObjectRows.length === 0}>
-          <ListItemIcon>
-            <ImportExport className={classes.iconStyle} />
-          </ListItemIcon>
-          <Typography color={"primary"}>Import log data from .csv</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length !== 1}>
           {servers.map((server: Server) => (
