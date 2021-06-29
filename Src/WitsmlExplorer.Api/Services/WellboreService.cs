@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Wellbore> GetWellbore(string wellUid, string wellboreUid)
         {
-            var query = WellboreQueries.QueryByUid(wellUid, wellboreUid);
+            var query = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
             var witsmlWellbore = result.Wellbores.FirstOrDefault();
             if (witsmlWellbore == null) return null;
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null)
         {
             var start = DateTime.Now;
-            var query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.QueryAll() : WellboreQueries.QueryByWell(wellUid);
+            var query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.GetAllWitsmlWellbores() : WellboreQueries.GetWitsmlWellboreByWell(wellUid);
 
             var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
             var wellbores = result.Wellbores

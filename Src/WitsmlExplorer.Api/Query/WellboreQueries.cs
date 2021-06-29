@@ -1,11 +1,12 @@
 using Witsml.Data;
 using Witsml.Extensions;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
     public static class WellboreQueries
     {
-        public static WitsmlWellbores QueryAll()
+        public static WitsmlWellbores GetAllWitsmlWellbores()
         {
             return new WitsmlWellbores
             {
@@ -23,7 +24,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlWellbores QueryByWell(string wellUid)
+        public static WitsmlWellbores GetWitsmlWellboreByWell(string wellUid)
         {
             return new WitsmlWellbores
             {
@@ -36,7 +37,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlWellbores QueryByUid(string wellUid, string wellboreUid)
+        public static WitsmlWellbores GetWitsmlWellboreByUid(string wellUid, string wellboreUid)
         {
             return new WitsmlWellbores
             {
@@ -50,7 +51,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlWellbores UpdateWellboreQuery(string wellUid, string wellboreUid)
+        public static WitsmlWellbores UpdateWitsmlWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlWellbores
             {
@@ -63,7 +64,43 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlWellbores DeleteWellboreQuery(string wellUid, string wellboreUid)
+        public static WitsmlWellbores CreateWitsmlWellbore(Wellbore wellbore)
+        {
+            if (!string.IsNullOrEmpty(wellbore.WellboreParentUid))
+            {
+                return new WitsmlWellbores
+                {
+                    Wellbores = new WitsmlWellbore
+                    {
+                        Uid = wellbore.Uid,
+                        Name = wellbore.Name,
+                        UidWell = wellbore.WellUid,
+                        NameWell = wellbore.WellName,
+                        ParentWellbore = new WitsmlParentWellbore
+                        {
+                            UidRef = wellbore.WellboreParentUid,
+                            Value = wellbore.WellboreParentName
+                        },
+                        PurposeWellbore = wellbore.WellborePurpose
+
+                    }.AsSingletonList()
+                };
+            }
+
+            return new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    Uid = wellbore.Uid,
+                    Name = wellbore.Name,
+                    UidWell = wellbore.WellUid,
+                    NameWell = wellbore.WellName,
+                    PurposeWellbore = wellbore.WellborePurpose
+                }.AsSingletonList()
+            };
+        }
+
+        public static WitsmlWellbores DeleteWitsmlWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlWellbores
             {

@@ -5,7 +5,7 @@ import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPro
 import { DeleteIcon, NewIcon, SettingsIcon } from "../Icons";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
-import { v4 as uuid } from "uuid";
+import { uuid } from "uuidv4";
 import Wellbore from "../../models/wellbore";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import JobService, { JobType } from "../../services/jobService";
