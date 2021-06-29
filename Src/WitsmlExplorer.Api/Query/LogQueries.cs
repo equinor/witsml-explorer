@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Query
         }
         public static WitsmlLogs QueryById(string wellUid, string wellboreUid, string logUid)
         {
-            return GetWitsmlLogById(wellUid, wellboreUid, logUid)
+            return GetWitsmlLogById(wellUid, wellboreUid, logUid);
         }
 
         public static WitsmlLogs GetLogContent(
