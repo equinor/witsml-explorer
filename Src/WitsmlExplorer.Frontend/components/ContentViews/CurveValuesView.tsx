@@ -59,13 +59,17 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
-    const data = tableData.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [Order.Ascending, Order.Ascending]) //Sorted because order is important when importing data
+      .map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator))
+      .join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
-    const data = selectedRows.map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator)).join(exportOptions.newLineCharacter);
+    const data = orderBy(selectedRows, getComparatorByColumn(columns[0]), [Order.Ascending, Order.Ascending]) //Sorted because order is important when importing data
+      .map((row) => columns.map((col) => row[col.columnOf.mnemonic] as string).join(exportOptions.separator))
+      .join(exportOptions.newLineCharacter);
     exportData(`${selectedWellbore.name}-${selectedLog.name}`, exportColumns, data);
   }, [columns, selectedRows]);
 

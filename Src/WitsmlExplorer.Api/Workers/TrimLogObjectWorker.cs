@@ -7,6 +7,7 @@ using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -52,7 +53,7 @@ namespace WitsmlExplorer.Api.Workers
                 else
                 {
                     Log.Error($"Job failed. An error occurred when trimming logobject start: {job.PrintProperties()}");
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update start of log", result.Reason, GetDescription(witsmlLog)), null);
+                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update start of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
@@ -74,7 +75,7 @@ namespace WitsmlExplorer.Api.Workers
                 else
                 {
                     Log.Error($"Job failed. An error occurred when trimming logobject end: {job.PrintProperties()}");
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update end of log", result.Reason, GetDescription(witsmlLog)), null);
+                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update end of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
@@ -119,16 +120,6 @@ namespace WitsmlExplorer.Api.Workers
             return new WitsmlLogs
             {
                 Logs = new List<WitsmlLog> { witsmlLog }
-            };
-        }
-
-        private static EntityDescription GetDescription(WitsmlLog witsmlLog)
-        {
-            return new EntityDescription
-            {
-                WellName = witsmlLog.NameWell,
-                WellboreName = witsmlLog.NameWellbore,
-                ObjectName = witsmlLog.Name
             };
         }
     }
