@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Data;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -12,30 +11,29 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteMessageWorker : IWorker<DeleteMessageObjectJob>
+    public class ModifyMessageWorker : IWorker<ModifyMessageObjectJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
-        public DeleteMessageWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyMessageWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
-
-        public async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectJob job)
+        public async Task<(WorkerResult, RefreshAction)> Execute(ModifyMessageObjectJob job)
         {
             var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
-            var deleteMessageQuery = MessageQueries.GetMessageById(job.MessageObject.WellUid, job.MessageObject.WellboreUid, job.MessageObject.Uid);
-            var deleteMessageResult = await witsmlClient.DeleteFromStoreAsync(deleteMessageQuery);
+            var modifyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject, targetWellbore);
+            var modifyMessageResult = await witsmlClient.UpdateInStoreAsync(modifyMessageQuery);
 
-            if (!deleteMessageResult.IsSuccessful)
+            if (!modifyMessageResult.IsSuccessful)
             {
-                const string errorMessage = "Failed to delete messageobject.";
+                const string errorMessage = "Failed to modify messageobject.";
                 Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage, job.MessageObject.WellUid, job.MessageObject.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, deleteMessageResult.Reason), null);
+                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyMessageResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. MessageObject deleted", GetType().Name);
+            Log.Information("{JobType} - Job successful. MessageObject modified", GetType().Name);
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {targetWellbore.Name}");
 

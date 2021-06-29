@@ -24,6 +24,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWorker<TrimLogDataJob> trimLogObjectWorker;
         private readonly IWorker<ModifyLogObjectJob> modifyLogObjectWorker;
         private readonly IWorker<DeleteMessageObjectJob> deleteMessageObjectWorker;
+        private readonly IWorker<ModifyMessageObjectJob> modifyMessageObjectWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
         private readonly IDeleteMnemonicsWorker deleteMnemonicsWorker;
@@ -60,7 +61,8 @@ namespace WitsmlExplorer.Api.Services
             IWorker<CreateWellboreJob> createWellboreWorker,
             IWorker<ImportLogDataJob> importLogDataWorker,
             IWorker<BatchModifyWellJob> batchModifyWellWorker,
-            IWorker<DeleteMessageObjectJob> deleteMessageObjectWorker)
+            IWorker<DeleteMessageObjectJob> deleteMessageObjectWorker,
+            IWorker<ModifyMessageObjectJob> modifyMessageObjectWorker)
         {
             this.hubContext = hubContext;
             this.copyLogWorker = copyLogWorker;
@@ -79,6 +81,7 @@ namespace WitsmlExplorer.Api.Services
             this.modifyWellboreWorker = modifyWellboreWorker;
             this.createLogWorker = createLogWorker;
             this.deleteMessageObjectWorker = deleteMessageObjectWorker;
+            this.modifyMessageObjectWorker = modifyMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
@@ -154,6 +157,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.DeleteMessageObject:
                     var deleteMessageObjectJob = await jobStream.Deserialize<DeleteMessageObjectJob>();
                     (result, refreshAction) = await deleteMessageObjectWorker.Execute(deleteMessageObjectJob);
+                    break;
+                case JobType.ModifyMessageObject:
+                    var modifyMessageObjectJob = await jobStream.Deserialize<ModifyMessageObjectJob>();
+                    (result, refreshAction) = await modifyMessageObjectWorker.Execute(modifyMessageObjectJob);
                     break;
                 case JobType.CreateWell:
                     var createWellJob = await jobStream.Deserialize<CreateWellJob>();
