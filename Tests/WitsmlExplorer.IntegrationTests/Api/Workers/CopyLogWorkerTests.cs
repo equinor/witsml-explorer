@@ -109,14 +109,14 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         private async Task<WitsmlLog> GetLog(LogReference logReference)
         {
-            var logQuery = LogQueries.QueryById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
             var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.All);
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
 
         private async Task<Index> GetEndIndex(LogReference logReference)
         {
-            var logQuery = LogQueries.QueryById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
             var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
             return Index.End(logs.Logs.First());
         }

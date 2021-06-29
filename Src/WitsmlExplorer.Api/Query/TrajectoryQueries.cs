@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
@@ -6,7 +7,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class TrajectoryQueries
     {
-        public static WitsmlTrajectories QueryByWellbore(string wellUid, string wellboreUid)
+        public static WitsmlTrajectories GetWitsmlTrajectoryByWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlTrajectories
             {
@@ -26,7 +27,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlTrajectories QueryById(string wellUid, string wellboreUid, string trajectoryUid)
+        public static WitsmlTrajectories GetWitsmlTrajectoryById(string wellUid, string wellboreUid, string trajectoryUid)
         {
             return new WitsmlTrajectories
             {
@@ -37,6 +38,19 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid
                 }.AsSingletonList()
             };
+        }
+
+        public static WitsmlTrajectories CopyWitsmlTrajectory(WitsmlTrajectory trajectory, WitsmlWellbore targetWellbore)
+        {
+            trajectory.UidWell = targetWellbore.UidWell;
+            trajectory.NameWell = targetWellbore.NameWell;
+            trajectory.UidWellbore = targetWellbore.Uid;
+            trajectory.NameWellbore = targetWellbore.Name;
+            trajectory.CustomData ??= new WitsmlCustomData();
+            trajectory.CommonData.ItemState = string.IsNullOrEmpty(trajectory.CommonData.ItemState) ? null : trajectory.CommonData.ItemState;
+            trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
+            var copyTrajectoryQuery = new WitsmlTrajectories { Trajectories = new List<WitsmlTrajectory> { trajectory } };
+            return copyTrajectoryQuery;
         }
     }
 }

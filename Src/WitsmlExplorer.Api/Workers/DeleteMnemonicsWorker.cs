@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers
             var mnemonics = job.Mnemonics;
             var mnemonicsString = string.Join(", ", mnemonics);
 
-            var query = LogQueries.DeleteMnemonicsQuery(wellUid, wellboreUid, logUid, mnemonics);
+            var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, mnemonics);
             var result = await witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers
                 logUid,
                 mnemonics);
 
-            query = LogQueries.QueryById(wellUid, wellboreUid, logUid);
+            query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
 
             var log = queryResult.Logs.First();

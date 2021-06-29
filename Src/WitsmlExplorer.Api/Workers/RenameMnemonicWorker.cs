@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLog> GetLogData(WitsmlLog log, IEnumerable<string> mnemonics, Index startIndex, Index endIndex)
         {
-            var query = LogQueries.QueryLogContent(
+            var query = LogQueries.GetLogContent(
                 log.UidWell,
                 log.UidWellbore,
                 log.Uid,
@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WorkerResult> DeleteOldMnemonic(string wellUid, string wellboreUid, string logUid, string mnemonic)
         {
-            var query = LogQueries.DeleteMnemonicsQuery(wellUid, wellboreUid, logUid, new string[] {mnemonic});
+            var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, new string[] {mnemonic});
             var result = await witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
@@ -138,7 +138,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLog> GetLog(LogReference logReference)
         {
-            var logQuery = LogQueries.QueryById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
             var logs = await witsmlClient.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }

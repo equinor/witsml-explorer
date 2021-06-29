@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, LogObject logObject)
         {
-            var query = WellboreQueries.QueryByUid(logObject.WellUid, logObject.WellboreUid);
+            var query = WellboreQueries.GetWitsmlWellboreByUid(logObject.WellUid, logObject.WellboreUid);
             var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }

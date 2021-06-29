@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers
         public async Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job)
         {
             var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
-            var copyMessageQuery = CreateMessageObjectQuery(job, targetWellbore);
+            var copyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject, targetWellbore);
             var createMessageResult = await witsmlClient.AddToStoreAsync(copyMessageQuery);
             if (!createMessageResult.IsSuccessful)
             {
@@ -44,28 +44,11 @@ namespace WitsmlExplorer.Api.Workers
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
-        }
-
-        private static WitsmlMessages CreateMessageObjectQuery(CreateMessageObjectJob job, WitsmlWellbore targetWellbore)
-        {
-            return new()
-            {
-                Messages = new WitsmlMessage
-                {
-                    UidWell = targetWellbore.UidWell,
-                    NameWell = targetWellbore.NameWell,
-                    UidWellbore = targetWellbore.Uid,
-                    NameWellbore = targetWellbore.Name,
-                    Uid = job.MessageObject.Uid,
-                    Name = job.MessageObject.Name,
-                    MessageText = job.MessageObject.MessageText
-                }.AsSingletonList()
-            };
-        }
+        } 
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, MessageObject messageObject)
         {
-            var query = WellboreQueries.QueryByUid(messageObject.WellUid, messageObject.WellboreUid);
+            var query = WellboreQueries.GetWitsmlWellboreByUid(messageObject.WellUid, messageObject.WellboreUid);
             var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
