@@ -21,8 +21,7 @@ namespace WitsmlExplorer.Api.Workers
         }
         public async Task<(WorkerResult, RefreshAction)> Execute(ModifyMessageObjectJob job)
         {
-            var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
-            var modifyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject, targetWellbore);
+            var modifyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject);
             var modifyMessageResult = await witsmlClient.UpdateInStoreAsync(modifyMessageQuery);
 
             if (!modifyMessageResult.IsSuccessful)
@@ -35,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers
 
             Log.Information("{JobType} - Job successful. MessageObject modified", GetType().Name);
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {targetWellbore.Name}");
+            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {job.MessageObject.WellboreName}");
 
             return (workerResult, refreshAction);
         }

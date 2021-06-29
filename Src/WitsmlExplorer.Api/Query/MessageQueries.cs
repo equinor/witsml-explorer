@@ -35,16 +35,16 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlMessages CreateMessageObject(MessageObject messageObject, WitsmlWellbore targetWellbore)
+        public static WitsmlMessages CreateMessageObject(MessageObject messageObject)
         {
             return new WitsmlMessages
             {
                 Messages = new WitsmlMessage
                 {
-                    UidWell = targetWellbore.UidWell,
-                    NameWell = targetWellbore.NameWell,
-                    UidWellbore = targetWellbore.Uid,
-                    NameWellbore = targetWellbore.Name,
+                    UidWell = messageObject.WellUid,
+                    NameWell = messageObject.WellName,
+                    UidWellbore = messageObject.WellboreUid,
+                    NameWellbore = messageObject.WellboreName,
                     Uid = messageObject.Uid,
                     Name = messageObject.Name,
                     MessageText = messageObject.MessageText

@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWorker<CopyTrajectoryJob> copyTrajectoryWorker;
         private readonly IWorker<TrimLogDataJob> trimLogObjectWorker;
         private readonly IWorker<ModifyLogObjectJob> modifyLogObjectWorker;
-        private readonly IWorker<DeleteMessageObjectJob> deleteMessageObjectWorker;
+        private readonly IWorker<DeleteMessageObjectsJob> deleteMessageObjectWorker;
         private readonly IWorker<ModifyMessageObjectJob> modifyMessageObjectWorker;
         private readonly IDeleteCurveValuesWorker deleteCurveValuesWorker;
         private readonly IDeleteLogObjectsWorker deleteLogObjectsWorker;
@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Services
             IWorker<CreateWellboreJob> createWellboreWorker,
             IWorker<ImportLogDataJob> importLogDataWorker,
             IWorker<BatchModifyWellJob> batchModifyWellWorker,
-            IWorker<DeleteMessageObjectJob> deleteMessageObjectWorker,
+            IWorker<DeleteMessageObjectsJob> deleteMessageObjectWorker,
             IWorker<ModifyMessageObjectJob> modifyMessageObjectWorker)
         {
             this.hubContext = hubContext;
@@ -155,7 +155,7 @@ namespace WitsmlExplorer.Api.Services
                     (result, refreshAction) = await createLogWorker.Execute(createLogObject);
                     break;
                 case JobType.DeleteMessageObject:
-                    var deleteMessageObjectJob = await jobStream.Deserialize<DeleteMessageObjectJob>();
+                    var deleteMessageObjectJob = await jobStream.Deserialize<DeleteMessageObjectsJob>();
                     (result, refreshAction) = await deleteMessageObjectWorker.Execute(deleteMessageObjectJob);
                     break;
                 case JobType.ModifyMessageObject:
