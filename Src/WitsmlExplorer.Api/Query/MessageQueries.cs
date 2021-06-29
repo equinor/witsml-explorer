@@ -14,8 +14,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
-                    Uid = messageUid,
-                    CommonData = new WitsmlCommonData()
+                    Uid = messageUid
                 }.AsSingletonList()
             };
         }
@@ -28,6 +27,9 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
+                    Uid = "",
+                    Name = "",
+                    MessageText = "",
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
