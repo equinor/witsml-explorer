@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
-            var query = LogQueries.QueryById(wellUid, wellboreUid, logUid);
+            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
             return result?.Logs.FirstOrDefault();
         }
