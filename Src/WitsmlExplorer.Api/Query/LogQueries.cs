@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Query
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {queryLog}
+                Logs = new List<WitsmlLog> { queryLog }
             };
         }
 
@@ -120,7 +120,7 @@ namespace WitsmlExplorer.Api.Query
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {queryLog}
+                Logs = new List<WitsmlLog> { queryLog }
             };
         }
 
