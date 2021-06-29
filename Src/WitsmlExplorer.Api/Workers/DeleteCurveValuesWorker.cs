@@ -6,6 +6,7 @@ using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.ServiceReference;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -56,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers
                         logUid,
                         string.Join(", ", job.Mnemonics));
 
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, GetDescription(witsmlLog)), null);
+                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
@@ -68,7 +69,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
-            var query = LogQueries.QueryById(wellUid, wellboreUid, logUid);
+            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
             return result.Logs.FirstOrDefault();
         }
@@ -80,16 +81,6 @@ namespace WitsmlExplorer.Api.Workers
                 .Where(range => range.Item1 >= Index.Start(witsmlLog) && range.Item2 <= Index.End(witsmlLog))
                 .Select(range => LogQueries.DeleteLogCurveContent(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.LogUid, witsmlLog.IndexType,
                     logCurveInfos, range.Item1, range.Item2));
-        }
-
-        private static EntityDescription GetDescription(WitsmlLog witsmlLog)
-        {
-            return new EntityDescription
-            {
-                WellName = witsmlLog.NameWell,
-                WellboreName = witsmlLog.NameWellbore,
-                ObjectName = witsmlLog.Name
-            };
         }
     }
 }

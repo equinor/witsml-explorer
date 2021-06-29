@@ -86,7 +86,7 @@ namespace WitsmlExplorer.Api.Workers
 
             while (startIndex < endIndex)
             {
-                var query = LogQueries.QueryLogContent(job.LogCurvesReference.LogReference.WellUid, job.LogCurvesReference.LogReference.WellboreUid,
+                var query = LogQueries.GetLogContent(job.LogCurvesReference.LogReference.WellUid, job.LogCurvesReference.LogReference.WellboreUid,
                     job.LogCurvesReference.LogReference.LogUid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
                 var sourceData = await witsmlSourceClient.GetFromStoreAsync(query, OptionsIn.DataOnly);
                 if (!sourceData.Logs.Any()) break;
@@ -218,7 +218,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference)
         {
-            var logQuery = LogQueries.QueryById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
             var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }

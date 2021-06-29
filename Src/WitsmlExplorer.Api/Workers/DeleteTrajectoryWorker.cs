@@ -4,8 +4,6 @@ using Serilog;
 using Witsml;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
-using WitsmlExplorer.Api.Jobs.Common;
-using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
@@ -31,8 +29,8 @@ namespace WitsmlExplorer.Api.Workers
             var wellboreUid = job.TrajectoryReference.WellboreUid;
             var trajectoryUid = job.TrajectoryReference.TrajectoryUid;
 
-            var query = TrajectoryQueries.QueryById(wellUid, wellboreUid, trajectoryUid);
-            var result = await witsmlClient.DeleteFromStoreAsync(query);
+            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            var result = await witsmlClient.DeleteFromStoreAsync(witsmlTrajectory);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful.", GetType().Name);
@@ -44,8 +42,8 @@ namespace WitsmlExplorer.Api.Workers
                 wellboreUid,
                 trajectoryUid);
 
-            query = TrajectoryQueries.QueryById(wellUid, wellboreUid, trajectoryUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlTrajectory, OptionsIn.IdOnly);
 
             var trajectory = queryResult.Trajectories.First();
             EntityDescription description = null;
