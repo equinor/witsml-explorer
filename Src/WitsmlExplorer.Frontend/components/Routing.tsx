@@ -91,7 +91,10 @@ const Routing = (): React.ReactElement => {
       const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
       const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
       if (wellbore) {
-        const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages } };
+        const selectWellbore: SelectWellboreAction = {
+          type: NavigationType.SelectWellbore,
+          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages }
+        } as SelectWellboreAction;
         dispatchNavigation(selectWellbore);
       } else {
         setIsSyncingUrlAndState(false);

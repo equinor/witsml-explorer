@@ -778,6 +778,11 @@ export interface UpdateWellboreTrajectoryAction extends Action {
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
+export interface UpdateWellboreMessageObjectAction extends Action {
+  type: ModificationType.UpdateMessageObjects;
+  payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateServerListAction extends Action {
   type: ModificationType.UpdateServerList;
   payload: { servers: Server[] };
