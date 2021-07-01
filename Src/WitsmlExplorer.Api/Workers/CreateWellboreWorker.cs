@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
@@ -28,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
             var wellbore = job.Wellbore;
             Verify(wellbore);
 
-            var wellboreToCreate = SetupWellboreToCreate(wellbore);
+            var wellboreToCreate = WellboreQueries.CreateWitsmlWellbore(wellbore);
 
             var result = await witsmlClient.AddToStoreAsync(wellboreToCreate);
             if (result.IsSuccessful)
@@ -48,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task WaitUntilWellboreHasBeenCreated(Wellbore wellbore)
         {
             var isWellboreCreated = false;
-            var query = WellboreQueries.QueryByUid(wellbore.WellUid, wellbore.Uid);
+            var witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellbore.WellUid, wellbore.Uid);
             var maxRetries = 30;
             while (!isWellboreCreated)
             {
@@ -57,45 +56,9 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created wellbore with name {wellbore.Name} (id={wellbore.Uid})");
                 }
                 Thread.Sleep(1000);
-                var wellboreResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+                var wellboreResult = await witsmlClient.GetFromStoreAsync(witsmlWellbore, OptionsIn.IdOnly);
                 isWellboreCreated = wellboreResult.Wellbores.Any();
             }
-        }
-
-        private static WitsmlWellbores SetupWellboreToCreate(Wellbore wellbore)
-        {
-            if (wellbore.WellboreParentUid != "")
-            {
-                return new WitsmlWellbores
-                {
-                    Wellbores = new WitsmlWellbore
-                    {
-                        Uid = wellbore.Uid,
-                        Name = wellbore.Name,
-                        UidWell = wellbore.WellUid,
-                        NameWell = wellbore.WellName,
-                        ParentWellbore = new WitsmlParentWellbore
-                        {
-                            UidRef = wellbore.WellboreParentUid,
-                            Value = wellbore.WellboreParentName
-                        },
-                        PurposeWellbore = wellbore.WellborePurpose
-
-                    }.AsSingletonList()
-                };
-            }
-
-            return new WitsmlWellbores
-            {
-                Wellbores = new WitsmlWellbore
-                {
-                    Uid = wellbore.Uid,
-                    Name = wellbore.Name,
-                    UidWell = wellbore.WellUid,
-                    NameWell = wellbore.WellName,
-                    PurposeWellbore = wellbore.WellborePurpose
-                }.AsSingletonList()
-            };
         }
 
         private void Verify(Wellbore wellbore)

@@ -28,12 +28,12 @@ namespace WitsmlExplorer.Api.Workers
             var wellUid = job.Wellbore.WellUid;
             var wellboreUid = job.Wellbore.Uid;
 
-            var query = WellboreQueries.UpdateWellboreQuery(wellUid, wellboreUid);
-            var wellbore = query.Wellbores.First();
+            var witsmlWellbore = WellboreQueries.UpdateWitsmlWellbore(wellUid, wellboreUid);
+            var wellbore = witsmlWellbore.Wellbores.First();
             wellbore.Name = job.Wellbore.Name;
             wellbore.PurposeWellbore = job.Wellbore.WellborePurpose;
 
-            var result = await witsmlClient.UpdateInStoreAsync(query);
+            var result = await witsmlClient.UpdateInStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers
                 return (workerResult, refreshAction);
             }
 
-            var updatedWellbores = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            var updatedWellbores = await witsmlClient.GetFromStoreAsync(witsmlWellbore, OptionsIn.IdOnly);
             var updatedWellbore = updatedWellbores.Wellbores.First();
             var description = new EntityDescription
             {

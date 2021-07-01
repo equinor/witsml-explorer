@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             Log.Error($"Job failed. An error occurred when modifying logobject: {job.LogObject.PrintProperties()}");
-            var logQuery = LogQueries.QueryById(wellUid, wellboreUid, logUid);
+            var logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             var logs = await witsmlClient.GetFromStoreAsync(logQuery, OptionsIn.IdOnly);
             var log = logs.Logs.FirstOrDefault();
             EntityDescription description = null;

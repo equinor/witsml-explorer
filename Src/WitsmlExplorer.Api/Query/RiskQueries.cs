@@ -5,7 +5,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public class RiskQueries
     {
-        public static WitsmlRisks QueryByWellbore(string wellUid, string wellboreUid)
+        public static WitsmlRisks GetWitsmlRiskByWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlRisks
             {

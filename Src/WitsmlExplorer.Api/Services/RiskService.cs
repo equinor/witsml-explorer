@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid)
         {
-            var query = RiskQueries.QueryByWellbore(wellUid, wellboreUid);
+            var query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
 
             return result.Risks.Select(risk =>

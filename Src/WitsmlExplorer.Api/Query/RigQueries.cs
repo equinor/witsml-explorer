@@ -5,7 +5,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class RigQueries
     {
-        public static WitsmlRigs QueryByWellbore(string wellUid, string wellboreUid)
+        public static WitsmlRigs GetWitsmlRigByWellbore(string wellUid, string wellboreUid)
         {
             return new WitsmlRigs
             {
@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlRigs QueryById(string wellUid, string wellboreUid, string rigUid)
+        public static WitsmlRigs GetWitsmlRigById(string wellUid, string wellboreUid, string rigUid)
         {
             return new WitsmlRigs
             {

@@ -1,5 +1,6 @@
 import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
+import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
@@ -8,6 +9,7 @@ import Wellbore, {
   calculateLogTypeId,
   calculateRigGroupId,
   calculateTrajectoryGroupId,
+  calculateMessageGroupId,
   calculateWellboreNodeId,
   getWellboreProperties
 } from "../models/wellbore";
@@ -25,6 +27,8 @@ export interface NavigationState {
   selectedLogGroup: string;
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
+  selectedMessageGroup: string;
+  selectedMessage: MessageObject;
   selectedLogCurveInfo: LogCurveInfoRow[];
   selectedRigGroup: string;
   selectedTrajectoryGroup: string;
@@ -39,7 +43,7 @@ export interface NavigationState {
   currentProperties: Map<string, string>;
 }
 
-export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory;
+export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject;
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -52,6 +56,8 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
+  selectedMessageGroup: null,
+  selectedMessage: null,
   selectedLogCurveInfo: null,
   selectedRigGroup: null,
   selectedTrajectoryGroup: null,
@@ -90,6 +96,10 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectLogType(state, action);
     case NavigationType.SelectLogObject:
       return selectLogObject(state, action);
+    case NavigationType.SelectMessageGroup:
+      return selectMessageGroup(state, action);
+    case NavigationType.SelectMessageObject:
+      return selectMessageObject(state, action);
     case NavigationType.SelectRigGroup:
       return selectRigGroup(state, action);
     case NavigationType.SelectTrajectoryGroup:
@@ -149,6 +159,8 @@ const allDeselected: any = {
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
+  selectedMessageGroup: null,
+  selectedMessage: null,
   selectedLogCurveInfo: null,
   selectedRigGroup: null,
   selectedTrajectoryGroup: null,
@@ -468,9 +480,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, logs, rigs, trajectories } = payload;
+  const { well, wellbore, logs, rigs, trajectories, messages } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories };
+  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
@@ -568,6 +580,43 @@ const selectRigGroup = (state: NavigationState, { payload }: SelectRigGroupActio
     currentSelected: rigGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateRigGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGroupAction) => {
+  const { well, wellbore, messageGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMessageGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedMessageGroup: messageGroup,
+    currentSelected: messageGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMessageGroupId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectMessageObject = (state: NavigationState, { payload }: SelectMessageObjectAction) => {
+  const { message, well, wellbore } = payload;
+  let expandedTreeNodes = state.expandedTreeNodes;
+
+  const messageGroup = calculateMessageGroupId(wellbore);
+  const shouldExpandLogGroup = shouldExpand(expandedTreeNodes, messageGroup, calculateWellboreNodeId(wellbore));
+  expandedTreeNodes = shouldExpandLogGroup ? toggleTreeNode(expandedTreeNodes, messageGroup) : expandedTreeNodes;
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedMessageGroup: messageGroup,
+    selectedMessage: message,
+    currentSelected: message,
+    currentProperties: getMessageObjectProperties(message),
+    expandedTreeNodes
   };
 };
 
@@ -741,7 +790,7 @@ export interface SelectWellAction extends Action {
 
 export interface SelectWellboreAction extends Action {
   type: NavigationType.SelectWellbore;
-  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[] };
+  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[]; messages: MessageObject[] };
 }
 
 export interface SelectLogGroupAction extends Action {
@@ -759,6 +808,15 @@ export interface SelectLogObjectAction extends Action {
   payload: { log: LogObject; well: Well; wellbore: Wellbore };
 }
 
+export interface SelectMessageGroupAction extends Action {
+  type: NavigationType.SelectMessageGroup;
+  payload: { well: Well; wellbore: Wellbore; messageGroup: any };
+}
+
+export interface SelectMessageObjectAction extends Action {
+  type: NavigationType.SelectMessageObject;
+  payload: { message: MessageObject; well: Well; wellbore: Wellbore };
+}
 export interface SelectLogCurveInfoAction extends Action {
   type: NavigationType.ShowCurveValues;
   payload: { logCurveInfo: any };
@@ -812,6 +870,8 @@ export type NavigationAction =
   | SelectWellAction
   | SelectWellboreAction
   | SelectRigGroupAction
+  | SelectMessageGroupAction
+  | SelectMessageObjectAction
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
