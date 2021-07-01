@@ -19,7 +19,8 @@
     "dotnet-format": "dotnet tool run dotnet-format --check",
     "dotnet-format:fix": "dotnet tool run dotnet-format",
     "eslint": "eslint . --cache",
-    "eslint:fix": "eslint . --cache --fix"
+    "eslint:fix": "eslint . --cache --fix",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{cs,vb}": [
@@ -31,11 +32,11 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^17.0.11",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
+    "@types/react": "^17.0.13",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
     "eslint-config-react": "^1.1.7",
-    "husky": "^6.0.0",
+    "husky": "^7.0.0",
     "lint-staged": "^11.0.0"
   }
 }
