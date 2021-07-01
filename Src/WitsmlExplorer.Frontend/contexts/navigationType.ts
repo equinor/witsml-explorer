@@ -6,6 +6,8 @@ enum NavigationType {
   SelectLogGroup = "SelectLogGroup",
   SelectLogType = "SelectLogType",
   SelectLogObject = "SelectLogObject",
+  SelectMessageGroup = "SelectMessageGroup",
+  SelectMessageObject = "SelectMessageObject",
   SelectRigGroup = "SelectRigGroup",
   SelectRig = "SelectRig",
   SelectTrajectoryGroup = "SelectTrajectoryGroup",
