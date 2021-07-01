@@ -14,12 +14,8 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateRiskWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job);
-    }
 
-    public class CreateRiskWorker : ICreateRiskWorker
+    public class CreateRiskWorker : IWorker<CreateRiskJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -48,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers
             var description = new EntityDescription { WellboreName = risk.NameWellbore };
             Log.Error($"Job failed. An error occurred when creating Risk: {job.Risk.PrintProperties()}");
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create Risk", result.Reason, description), null);
-            
+
         }
         private async Task WaitUntilRiskHasBeenCreated(Risk risk)
         {
@@ -86,8 +82,8 @@ namespace WitsmlExplorer.Api.Workers
                     AffectedPersonnel = risk.AffectedPersonnel,
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart},
-                    MdHoleEnd = new WitsmlIndex { Uom = "m", Value =  risk.MdHoleEnd},
+                    MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },
+                    MdHoleEnd = new WitsmlIndex { Uom = "m", Value = risk.MdHoleEnd },
                     TvdHoleStart = risk.TvdHoleStart,
                     TvdHoleEnd = risk.TvdHoleEnd,
                     MdBitStart = new WitsmlIndex { Uom = "m", Value = risk.MdBitStart },
