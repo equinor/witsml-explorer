@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
+using Serilog;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -22,7 +23,6 @@ namespace WitsmlExplorer.Api.Services
         {
             var witsmlRigs = RigQueries.GetWitsmlRigByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(witsmlRigs, OptionsIn.IdOnly);
-
             return result.Rigs.Select(rig =>
                 new Rig
                 {

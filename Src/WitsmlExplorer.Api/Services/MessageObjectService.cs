@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
-using Witsml.Data;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -48,9 +46,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var start = DateTime.Now;
             var witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, OptionsIn.All);
-            var messageObject = result.Messages.FirstOrDefault();
-            if (messageObject == null) return null;
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, OptionsIn.Requested);
 
             var messageObjects = result.Messages
                 .Select(messageObject =>
@@ -67,7 +63,7 @@ namespace WitsmlExplorer.Api.Services
                     })
                 .OrderBy(messageObject => messageObject.WellboreName).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds");
+            Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds from {messageObjects.FirstOrDefault()?.WellName}");
             return messageObjects;
         }
     }
