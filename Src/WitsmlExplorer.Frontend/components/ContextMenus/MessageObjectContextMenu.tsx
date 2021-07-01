@@ -23,7 +23,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
   const deleteMessageObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job = {
-      messageReferences: checkedMessageObjectRows.map((row) => ({
+      messageObjects: checkedMessageObjectRows.map((row) => ({
         wellUid: row.wellUid,
         wellboreUid: row.wellboreUid,
         messageUid: row.uid
