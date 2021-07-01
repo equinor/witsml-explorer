@@ -1,4 +1,5 @@
 import Rig from "./rig";
+import MessageObject from "./messageObject";
 import LogObject from "./logObject";
 import Trajectory from "./trajectory";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
@@ -20,6 +21,7 @@ export default interface Wellbore {
   logs?: LogObject[];
   rigs?: Rig[];
   trajectories?: Trajectory[];
+  messages?: MessageObject[];
 }
 
 export function emptyWellbore(): Wellbore {
@@ -39,7 +41,8 @@ export function emptyWellbore(): Wellbore {
     itemState: "",
     logs: [],
     rigs: [],
-    trajectories: []
+    trajectories: [],
+    messages: []
   };
 }
 
@@ -49,6 +52,10 @@ export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
 
 export const calculateRigGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "rigs";
+};
+
+export const calculateMessageGroupId = (wellbore: Wellbore): string => {
+  return calculateWellboreNodeId(wellbore) + "messages";
 };
 
 export const calculateLogGroupId = (wellbore: Wellbore): string => {
