@@ -17,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers
         Task<(WorkerResult, RefreshAction)> Execute(DeleteRiskJob job);
     }
 
-    public class DeleteRiskWorker: IDeleteRiskWorker
+    public class DeleteRiskWorker : IDeleteRiskWorker
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers
             var wellUid = job.RiskReference.WellUid;
             var wellboreUid = job.RiskReference.WellboreUid;
             var uid = job.RiskReference.Uid;
-            var deleteRequest = RiskQueries.DeleteRiskQuery(wellUid, wellboreUid, uid); 
+            var deleteRequest = RiskQueries.DeleteRiskQuery(wellUid, wellboreUid, uid);
 
             var result = await witsmlClient.DeleteFromStoreAsync(deleteRequest);
 
@@ -58,6 +58,6 @@ namespace WitsmlExplorer.Api.Workers
             }
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete risk", result.Reason, description), null);
         }
-        
+
     }
 }

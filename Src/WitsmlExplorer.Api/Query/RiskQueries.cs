@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-      
+
         public static WitsmlRisks DeleteRiskQuery(string wellUid, string wellboreUid, string uid)
         {
             return new WitsmlRisks
