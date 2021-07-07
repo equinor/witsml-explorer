@@ -30,14 +30,17 @@ namespace WitsmlExplorer.Api.Services
         private readonly IDeleteWellWorker deleteWellWorker;
         private readonly IDeleteWellboreWorker deleteWellboreWorker;
         private readonly IDeleteRiskWorker deleteRiskWorker;
+        private readonly IDeleteMudLogWorker deleteMudLogWorker;
         private readonly IDeleteTrajectoryWorker deleteTrajectoryWorker;
         private readonly IRenameMnemonicWorker renameMnemonicWorker;
         private readonly IWorker<ModifyWellJob> modifyWellWorker;
         private readonly IWorker<ModifyWellboreJob> modifyWellboreWorker;
+        private readonly IWorker<ModifyMudLogJob> modifyMudLogWorker;
         private readonly IWorker<CreateLogJob> createLogWorker;
         private readonly IWorker<CreateWellJob> createWellWorker;
         private readonly IWorker<CreateWellboreJob> createWellboreWorker;
         private readonly IWorker<CreateRiskJob> createRiskWorker;
+        private readonly IWorker<CreateMudLogJob> createMudLogWorker;
         private readonly IWorker<BatchModifyWellJob> batchModifyWellWorker;
         private readonly IWorker<ImportLogDataJob> importLogDataWorker;
 
@@ -55,13 +58,16 @@ namespace WitsmlExplorer.Api.Services
             IDeleteWellWorker deleteWellWorker,
             IDeleteWellboreWorker deleteWellboreWorker,
             IDeleteRiskWorker deleteRiskWorker,
+            IDeleteMudLogWorker deleteMudLogWorker,
             IRenameMnemonicWorker renameMnemonicWorker,
             IWorker<ModifyWellJob> modifyWellWorker,
             IWorker<ModifyWellboreJob> modifyWellboreWorker,
+            IWorker<ModifyMudLogJob> modifyMudLogWorker,
             IWorker<CreateLogJob> createLogWorker,
             IWorker<CreateWellJob> createWellWorker,
             IWorker<CreateWellboreJob> createWellboreWorker,
             IWorker<CreateRiskJob> createRiskWorker,
+            IWorker<CreateMudLogJob> createMudLogWorker,
             IWorker<ImportLogDataJob> importLogDataWorker,
             IWorker<BatchModifyWellJob> batchModifyWellWorker,
             ICreateMessageObjectWorker createMessageObjectWorker)
@@ -79,14 +85,17 @@ namespace WitsmlExplorer.Api.Services
             this.deleteWellWorker = deleteWellWorker;
             this.deleteWellboreWorker = deleteWellboreWorker;
             this.deleteRiskWorker = deleteRiskWorker;
+            this.deleteMudLogWorker = deleteMudLogWorker;
             this.renameMnemonicWorker = renameMnemonicWorker;
             this.modifyWellWorker = modifyWellWorker;
             this.modifyWellboreWorker = modifyWellboreWorker;
+            this.modifyMudLogWorker = modifyMudLogWorker;
             this.createLogWorker = createLogWorker;
             this.createMessageObjectWorker = createMessageObjectWorker;
             this.createWellWorker = createWellWorker;
             this.createWellboreWorker = createWellboreWorker;
             this.createRiskWorker = createRiskWorker;
+            this.createMudLogWorker = createMudLogWorker;
             this.batchModifyWellWorker = batchModifyWellWorker;
             this.importLogDataWorker = importLogDataWorker;
         }
@@ -141,6 +150,10 @@ namespace WitsmlExplorer.Api.Services
                     var deleteRiskJob = await jobStream.Deserialize<DeleteRiskJob>();
                     (result, refreshAction) = await deleteRiskWorker.Execute(deleteRiskJob);
                     break;
+                case JobType.DeleteMudLog:
+                    var deleteMudLogJob = await jobStream.Deserialize<DeleteMudLogJob>();
+                    (result, refreshAction) = await deleteMudLogWorker.Execute(deleteMudLogJob);
+                    break;
                 case JobType.RenameMnemonic:
                     var modifyLogCurveInfoJob = await jobStream.Deserialize<RenameMnemonicJob>();
                     (result, refreshAction) = await renameMnemonicWorker.Execute(modifyLogCurveInfoJob);
@@ -152,6 +165,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.ModifyWellbore:
                     var modifyWellboreJob = await jobStream.Deserialize<ModifyWellboreJob>();
                     (result, refreshAction) = await modifyWellboreWorker.Execute(modifyWellboreJob);
+                    break;
+                case JobType.ModifyMudLog:
+                    var modifyMudLogJob = await jobStream.Deserialize<ModifyMudLogJob>();
+                    (result, refreshAction) = await modifyMudLogWorker.Execute(modifyMudLogJob);
                     break;
                 case JobType.DeleteTrajectory:
                     var deleteTrajectoryJob = await jobStream.Deserialize<DeleteTrajectoryJob>();
@@ -176,6 +193,10 @@ namespace WitsmlExplorer.Api.Services
                 case JobType.CreateRisk:
                     var createRiskJob = await jobStream.Deserialize<CreateRiskJob>();
                     (result, refreshAction) = await createRiskWorker.Execute(createRiskJob);
+                    break;
+                case JobType.CreateMudLog:
+                    var createMudLogJob = await jobStream.Deserialize<CreateMudLogJob>();
+                    (result, refreshAction) = await createMudLogWorker.Execute(createMudLogJob);
                     break;
                 case JobType.BatchModifyWell:
                     var batchModifyWellJob = await jobStream.Deserialize<BatchModifyWellJob>();
