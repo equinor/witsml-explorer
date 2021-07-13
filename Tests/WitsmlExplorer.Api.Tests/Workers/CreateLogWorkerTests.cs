@@ -39,8 +39,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupGetWellbore();
             var createdLogs = new List<WitsmlLogs>();
             witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlLogs, OptionsIn>((logs, optionsIn) => createdLogs.Add(logs))
+                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
+                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
             await worker.Execute(job);
@@ -66,8 +66,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupGetWellbore();
             var createdLogs = new List<WitsmlLogs>();
             witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlLogs, OptionsIn>((logs, optionsIn) => createdLogs.Add(logs))
+                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
+                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
             await worker.Execute(job);
@@ -93,8 +93,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupGetWellbore();
             var createdLogs = new List<WitsmlLogs>();
             witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlLogs, OptionsIn>((logs, optionsIn) => createdLogs.Add(logs))
+                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
+                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
             await worker.Execute(job);
@@ -122,7 +122,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), OptionsIn.Requested))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>

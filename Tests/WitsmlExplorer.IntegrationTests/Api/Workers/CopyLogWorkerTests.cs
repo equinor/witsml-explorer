@@ -71,7 +71,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 LogUid = logUid
             };
 
-            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReferences = targetReference.AsSingletonList<LogReference>().ToArray()});
+            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReferences = targetReference.AsSingletonList().ToArray()});
 
             var job = new CopyLogJob
             {
@@ -110,14 +110,14 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         private async Task<WitsmlLog> GetLog(LogReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.All);
+            var logs = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.All));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
 
         private async Task<Index> GetEndIndex(LogReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
+            var logs = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return Index.End(logs.Logs.First());
         }
     }

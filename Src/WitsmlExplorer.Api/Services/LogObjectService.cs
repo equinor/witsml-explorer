@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {
             var witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlLog, OptionsIn.HeaderOnly);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.HeaderOnly));
 
             return result.Logs.Select(log =>
                 new LogObject
@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid)
         {
-            return await GetLog(wellUid, wellboreUid, logUid, OptionsIn.All);
+            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.All));
         }
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions)
@@ -86,7 +86,7 @@ namespace WitsmlExplorer.Api.Services
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
             var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result.Logs.FirstOrDefault();
         }
 
@@ -124,7 +124,7 @@ namespace WitsmlExplorer.Api.Services
             if (!mnemonics.Contains(indexMnemonic)) mnemonics.Insert(0, indexMnemonic);
 
             var query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
-            var witsmlLogs = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var witsmlLogs = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null) return new LogData();
 
             var witsmlLog = witsmlLogs.Logs.First();

@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.IndexRanges = new IndexRange[] { };
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Mnemonics = new List<string>() { "NOT_A_MNEMONIC" };
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.LogReference.LogUid = "NOT_A_LOG";
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.False(result.workerResult.IsSuccess);
         }
@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Once());
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -112,7 +112,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Exactly(2));
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -141,7 +141,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Exactly(2));
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -162,7 +162,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -186,7 +186,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var result = await worker.Execute(job);
 
-            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.HeaderOnly), Times.Once);
+            witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly)), Times.Once);
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.True(result.workerResult.IsSuccess);
         }
@@ -195,19 +195,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupLog(string indexType, Index startIndex, Index endIndex)
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), OptionsIn.HeaderOnly))
+                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                 .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
 
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid != LogUid), OptionsIn.HeaderOnly))
+                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid != LogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                 .ReturnsAsync(new WitsmlLogs());
 
             witsmlClient.Setup(client =>
                     client.DeleteFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid)))
-                .ReturnsAsync(new QueryResult(true, null));
+                .ReturnsAsync(new QueryResult(true));
         }
 
-        private WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
+        private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
         {
             var witsmlLog = new WitsmlLog
             {

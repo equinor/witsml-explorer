@@ -87,7 +87,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return result?.Tubulars;
         }
     }

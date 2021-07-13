@@ -15,7 +15,7 @@ namespace Witsml
     public interface IWitsmlClient
     {
         Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new();
-        Task<QueryResult> AddToStoreAsync<T>(T query, OptionsIn optionsIn = OptionsIn.Requested) where T : IWitsmlQueryType;
+        Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> TestConnectionAsync();
@@ -78,7 +78,7 @@ namespace Witsml
                 var request = new WMLS_GetFromStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.GetName(),
+                    OptionsIn = optionsIn.ToString(),
                     QueryIn = XmlHelper.Serialize(query),
                     CapabilitiesIn = ""
                 };
@@ -101,14 +101,15 @@ namespace Witsml
             }
         }
 
-        public async Task<QueryResult> AddToStoreAsync<T>(T query, OptionsIn optionsIn = OptionsIn.Requested) where T : IWitsmlQueryType
+        public async Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType
         {
             try
             {
+                var optionsIn = new OptionsIn(ReturnElements.Requested);
                 var request = new WMLS_AddToStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.GetName(),
+                    OptionsIn = optionsIn.ToString(),
                     XMLin = XmlHelper.Serialize(query)
                 };
 
@@ -185,9 +186,10 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
+            var optionsIn = new OptionsIn(ReturnElements.HeaderOnly);
             var request = new WMLS_GetCapRequest
             {
-                OptionsIn = OptionsIn.HeaderOnly.GetName()
+                OptionsIn = optionsIn.ToString()
             };
 
             var response = await client.WMLS_GetCapAsync(request);

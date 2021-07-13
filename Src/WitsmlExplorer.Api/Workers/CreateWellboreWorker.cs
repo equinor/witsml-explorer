@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             var description = new EntityDescription { WellboreName = wellbore.Name };
-            Log.Error($"Job failed. An error occurred when creating wellbore: {job.Wellbore.PrintProperties()}");
+            Log.Error("Job failed. An error occurred when creating wellbore: {Wellbore}", job.Wellbore.PrintProperties());
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create wellbore", result.Reason, description), null);
         }
 
@@ -56,12 +56,12 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created wellbore with name {wellbore.Name} (id={wellbore.Uid})");
                 }
                 Thread.Sleep(1000);
-                var wellboreResult = await witsmlClient.GetFromStoreAsync(witsmlWellbore, OptionsIn.IdOnly);
+                var wellboreResult = await witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
                 isWellboreCreated = wellboreResult.Wellbores.Any();
             }
         }
 
-        private void Verify(Wellbore wellbore)
+        private static void Verify(Wellbore wellbore)
         {
             if (string.IsNullOrEmpty(wellbore.Uid)) throw new InvalidOperationException($"{nameof(wellbore.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(wellbore.Name)) throw new InvalidOperationException($"{nameof(wellbore.Name)} cannot be empty");

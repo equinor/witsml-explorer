@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             Log.Error("{ErrorMessage} " +
                         "Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceLogUid}. " +
-                        "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}.",
+                        "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                 errorMessage,
                 job.Source.WellUid, job.Source.WellboreUid, job.Source.LogUid,
                 job.Target.WellUid, job.Target.WellboreUid);
@@ -111,14 +111,14 @@ namespace WitsmlExplorer.Api.Workers
         private static async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var result = await client.GetFromStoreAsync(logQuery, OptionsIn.All);
+            var result = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.All));
             return !result.Logs.Any() ? null : result.Logs.First();
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
             var query = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
+            var wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
         public async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
         {
             var witsmlLogQuery = LogQueries.GetWitsmlLogById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.LogUid);
-            var witsmlLogs = await witsmlClient.GetFromStoreAsync(witsmlLogQuery, OptionsIn.HeaderOnly);
+            var witsmlLogs = await witsmlClient.GetFromStoreAsync(witsmlLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
             var witsmlLog = witsmlLogs.Logs.First();
 
             var currentStartIndex = Index.Start(witsmlLog);
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    Log.Error($"Job failed. An error occurred when trimming logobject start: {job.PrintProperties()}");
+                    Log.Error("Job failed. An error occurred when trimming log object start: {Job}", job.PrintProperties());
                     return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update start of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    Log.Error($"Job failed. An error occurred when trimming logobject end: {job.PrintProperties()}");
+                    Log.Error("Job failed. An error occurred when trimming log object end: {Job}", job.PrintProperties());
                     return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update end of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }

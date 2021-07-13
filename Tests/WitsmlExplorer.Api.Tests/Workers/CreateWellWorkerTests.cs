@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate("");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate(name: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate(timeZone: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var createdWells = new List<WitsmlWells>();
             witsmlClient.Setup(client =>
-                client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlWells, OptionsIn>((wells, optionsIn) => createdWells.Add(wells))
+                client.AddToStoreAsync(It.IsAny<WitsmlWells>()))
+                .Callback<WitsmlWells>(wells => createdWells.Add(wells))
                 .ReturnsAsync(new QueryResult(true));
             witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
                 .ReturnsAsync(new WitsmlWells() { Wells = new List<WitsmlWell>() { new WitsmlWell() }});

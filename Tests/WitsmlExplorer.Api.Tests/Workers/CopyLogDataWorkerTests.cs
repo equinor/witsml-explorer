@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             var updatedLogs = SetupUpdateInStoreAsync();
             WitsmlLogs query = null;
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.DataOnly))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() => GetSourceLogData(query.Logs.First().StartDateTimeIndex, query.Logs.First().EndDateTimeIndex));
 
@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             WitsmlLogs query = null;
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.DataOnly))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -121,7 +121,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
 
             WitsmlLogs query = null;
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.DataOnly))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -166,7 +166,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
 
             WitsmlLogs query = null;
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.DataOnly))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -218,12 +218,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), OptionsIn.HeaderOnly))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), OptionsIn.HeaderOnly))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
             }
@@ -235,12 +235,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), OptionsIn.HeaderOnly))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                         .ReturnsAsync(targetLogs ?? GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_MD));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), OptionsIn.HeaderOnly))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly)))
                         .ReturnsAsync(targetLogs ?? GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
                     break;
             }
@@ -257,13 +257,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void SetupGetDepthIndexed(WitsmlLogs query = null)
         {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), OptionsIn.DataOnly))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
                     var startIndex = double.Parse(query.Logs.First().StartIndex.Value);
                     var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
                     return GetSourceLogData(startIndex, endIndex);
+
                 });
         }
 

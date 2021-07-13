@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers
                 var errorMessage = "Failed to copy trajectory.";
                 Log.Error(
                     "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceTrajectoryUid}. " +
-                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}.",
+                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage,
                     job.Source.WellUid, job.Source.WellboreUid, job.Source.TrajectoryUid,
                     job.Target.WellUid, job.Target.WellboreUid);
@@ -61,14 +61,14 @@ namespace WitsmlExplorer.Api.Workers
         private static async Task<WitsmlTrajectory> GetTrajectory(IWitsmlClient client, TrajectoryReference trajectoryReference)
         {
             var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.TrajectoryUid);
-            var result = await client.GetFromStoreAsync(witsmlTrajectory, OptionsIn.All);
+            var result = await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
             return !result.Trajectories.Any() ? null : result.Trajectories.First();
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
             var witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(witsmlWellbore, OptionsIn.Requested);
+            var wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

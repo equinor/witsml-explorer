@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Moq;
 using Witsml;
 using Witsml.Data;
+using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
@@ -62,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), Witsml.ServiceReference.OptionsIn.HeaderOnly)).ReturnsAsync(returnedWitsmlLog);
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
             witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
@@ -106,7 +107,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), Witsml.ServiceReference.OptionsIn.HeaderOnly)).ReturnsAsync(returnedWitsmlLog);
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
             witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
@@ -128,9 +129,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static ImportLogDataJob CreateDepthJobTemplate()
         {
-            List<string> Mnemonics = new List<string> { "Depth", "mnemo1", "mnemo2" };
-            List<string> Units = new List<string> { "m", "unitless", "unitless" };
-            List<List<string>> DataRows = new List<List<string>> {
+            var mnemonics = new List<string> { "Depth", "mnemo1", "mnemo2" };
+            var units = new List<string> { "m", "unitless", "unitless" };
+            var dataRows = new List<List<string>> {
                 new List<string> { "1", "something", "something2" },
                 new List<string> { "2", "something", "something2" },
                 new List<string> { "3", "something", "something2" },
@@ -144,16 +145,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     WellboreUid = WellboreUid,
                     LogUid = LogUid
                 },
-                Mnemonics = Mnemonics,
-                DataRows = DataRows,
-                Units = Units
+                Mnemonics = mnemonics,
+                DataRows = dataRows,
+                Units = units
             };
         }
         private static ImportLogDataJob CreateTimeJobTemplate()
         {
-            List<string> Mnemonics = new List<string> { "Time", "mnemo1", "mnemo2" };
-            List<string> Units = new List<string> { "date time", "unitless", "unitless" };
-            List<List<string>> DataRows = new List<List<string>> {
+            var mnemonics = new List<string> { "Time", "mnemo1", "mnemo2" };
+            var units = new List<string> { "date time", "unitless", "unitless" };
+            var dataRows = new List<List<string>> {
                 new List<string> { "2018-01-21T12:24:30.000Z", "something", "something2" },
                 new List<string> { "2019-01-21T12:24:30.000Z", "something", "something2" },
                 new List<string> { "2020-01-21T12:24:30.000Z", "something", "something2" },
@@ -167,9 +168,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     WellboreUid = WellboreUid,
                     LogUid = LogUid
                 },
-                Mnemonics = Mnemonics,
-                DataRows = DataRows,
-                Units = Units
+                Mnemonics = mnemonics,
+                DataRows = dataRows,
+                Units = units
             };
         }
     }
