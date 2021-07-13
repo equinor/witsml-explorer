@@ -95,12 +95,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
             }
@@ -109,7 +109,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested)))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>

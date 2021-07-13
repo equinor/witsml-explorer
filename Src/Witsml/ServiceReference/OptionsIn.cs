@@ -6,20 +6,17 @@ using System.Text;
 
 namespace Witsml.ServiceReference
 {
-    public record OptionsIn
+    public record OptionsIn(
+        ReturnElements ReturnElements,
+        int? MaxReturnNodes = null)
     {
-        public ReturnElements ReturnElements { get; }
-
-        public OptionsIn(ReturnElements returnElements)
+        public string GetKeywords()
         {
-            ReturnElements = returnElements;
-        }
-
-        public override string ToString()
-        {
-            var optionsIn = new StringBuilder();
-            optionsIn.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
-            return optionsIn.ToString();
+            var keywords = new StringBuilder();
+            keywords.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
+            if (MaxReturnNodes is > 0)
+                keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+            return keywords.ToString();
         }
     }
 

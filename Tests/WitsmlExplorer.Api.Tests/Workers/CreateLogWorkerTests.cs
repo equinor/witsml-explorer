@@ -122,7 +122,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested)))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>

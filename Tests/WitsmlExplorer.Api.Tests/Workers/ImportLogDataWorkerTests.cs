@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null))).ReturnsAsync(returnedWitsmlLog);
             witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
@@ -107,7 +107,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null))).ReturnsAsync(returnedWitsmlLog);
             witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 

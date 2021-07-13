@@ -78,7 +78,7 @@ namespace Witsml
                 var request = new WMLS_GetFromStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.ToString(),
+                    OptionsIn = optionsIn.GetKeywords(),
                     QueryIn = XmlHelper.Serialize(query),
                     CapabilitiesIn = ""
                 };
@@ -109,7 +109,7 @@ namespace Witsml
                 var request = new WMLS_AddToStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.ToString(),
+                    OptionsIn = optionsIn.GetKeywords(),
                     XMLin = XmlHelper.Serialize(query)
                 };
 
@@ -189,7 +189,7 @@ namespace Witsml
             var optionsIn = new OptionsIn(ReturnElements.HeaderOnly);
             var request = new WMLS_GetCapRequest
             {
-                OptionsIn = optionsIn.ToString()
+                OptionsIn = optionsIn.GetKeywords()
             };
 
             var response = await client.WMLS_GetCapAsync(request);

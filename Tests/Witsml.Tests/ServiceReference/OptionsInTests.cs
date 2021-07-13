@@ -10,7 +10,7 @@ namespace Witsml.Tests.ServiceReference
         {
             var optionsIn = new OptionsIn(ReturnElements.All);
 
-            Assert.Equal("returnElements=all", optionsIn.ToString());
+            Assert.Equal("returnElements=all", optionsIn.GetKeywords());
         }
     }
 }
