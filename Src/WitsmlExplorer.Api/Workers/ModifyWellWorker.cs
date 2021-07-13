@@ -38,13 +38,13 @@ namespace WitsmlExplorer.Api.Workers
                 return (workerResult, refreshAction);
             }
 
-            var updatedWells = await witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, OptionsIn.IdOnly);
+            var updatedWells = await witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, new OptionsIn(ReturnElements.IdOnly));
             var updatedWell = updatedWells.Wells.First();
             var description = new EntityDescription
             {
                 WellName = updatedWell.Name
             };
-            Log.Error($"Job failed. An error occurred when modifying well: {job.Well.PrintProperties()}");
+            Log.Error("Job failed. An error occurred when modifying well: {Well}", job.Well.PrintProperties());
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update well", result.Reason, description), null);
         }
 

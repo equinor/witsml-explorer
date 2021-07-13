@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate("");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate(name: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate(wellUid: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("WellUid cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job = CreateJobTemplate(wellName: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("WellName cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()), Times.Never);
+            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -86,11 +86,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var createdWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlWellbores, OptionsIn>((wellbores, optionsIn) => createdWellbores.Add(wellbores))
+                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>()))
+                .Callback<WitsmlWellbores>(wellbores => createdWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
             witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
-                .ReturnsAsync(new WitsmlWellbores() { Wellbores = new List<WitsmlWellbore>() { new WitsmlWellbore() }});
+                .ReturnsAsync(new WitsmlWellbores { Wellbores = new List<WitsmlWellbore> { new WitsmlWellbore() }});
 
             await worker.Execute(job);
 

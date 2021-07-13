@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers
             if (!createMessageResult.IsSuccessful)
             {
                 var errorMessage = "Failed to create messageobject.";
-                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}.",
+                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage, job.MessageObject.WellUid, job.MessageObject.WellboreUid);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createMessageResult.Reason), null);
             }
@@ -44,12 +44,12 @@ namespace WitsmlExplorer.Api.Workers
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
-        } 
+        }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, MessageObject messageObject)
         {
             var query = WellboreQueries.GetWitsmlWellboreByUid(messageObject.WellUid, messageObject.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
+            var wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

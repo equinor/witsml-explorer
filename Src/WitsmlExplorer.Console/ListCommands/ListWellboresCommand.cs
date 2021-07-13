@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching active wellbores...".WithColor(Color.Orange1), async ctx =>
+                .StartAsync("Fetching active wellbores...".WithColor(Color.Orange1), async _ =>
                 {
                     await foreach (var wellbore in GetActiveWellbores())
                     {
@@ -68,14 +68,14 @@ namespace WitsmlExplorer.Console.ListCommands
                     ObjectGrowing = "true"
                 }.AsSingletonList()
             };
-            var result = await witsmlClient.GetFromStoreAsync(liveLogsQuery, OptionsIn.Requested);
+            var result = await witsmlClient.GetFromStoreAsync(liveLogsQuery, new OptionsIn(ReturnElements.Requested));
             var groupedResults = result.Logs
                 .OrderBy(x => x.NameWell)
                 .GroupBy(x => new{x.UidWell, x.UidWellbore})
                 .Select(x => new
                 {
-                    UidWell = x.Key.UidWell,
-                    UidWellbore = x.Key.UidWellbore,
+                    x.Key.UidWell,
+                    x.Key.UidWellbore,
                     Logs = x
                 });
 

@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>8</LangVersion>
+    <LangVersion>default</LangVersion>
     <PackageDescription>Witsml 1.4.1.1</PackageDescription>
     <RepositoryUrl>https://github.com/equinor/witsml-explorer</RepositoryUrl>    
   </PropertyGroup>

@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             var result = await witsmlClient.DeleteFromStoreAsync(witsmlWell);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful.", GetType().Name);
+                Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshWell(witsmlClient.GetServerHostname(), wellUid, RefreshType.Remove);
                 var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted well with uid ${wellUid}");
                 return (workerResult, refreshAction);
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers
             Log.Error("Failed to delete well. WellUid: {WellUid}", wellUid);
 
             witsmlWell = WellQueries.GetWitsmlWellByUid(wellUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlWell, OptionsIn.IdOnly);
+            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlWell, new OptionsIn(ReturnElements.IdOnly));
 
             EntityDescription description = null;
 

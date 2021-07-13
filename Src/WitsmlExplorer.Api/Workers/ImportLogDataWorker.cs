@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
             var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs.FirstOrDefault();
         }
 
@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
-            int chunkSize = 1000;
+            var chunkSize = 1000;
             var wellUid = job.TargetLog.WellUid;
             var wellboreUid = job.TargetLog.WellboreUid;
             var logUid = job.TargetLog.LogUid;
@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Workers
                 var result = await witsmlClient.UpdateInStoreAsync(queries[i]);
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Query {QueryCount}/{CurrentQuery} successful.", GetType().Name, queries.Length, i + 1);
+                    Log.Information("{JobType} - Query {QueryCount}/{CurrentQuery} successful", GetType().Name, queries.Length, i + 1);
                 }
                 else
                 {
@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            Log.Information("{JobType} - Job successful.", GetType().Name);
+            Log.Information("{JobType} - Job successful", GetType().Name);
 
             var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
             var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));

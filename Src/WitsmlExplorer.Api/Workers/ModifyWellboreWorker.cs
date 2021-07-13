@@ -42,14 +42,14 @@ namespace WitsmlExplorer.Api.Workers
                 return (workerResult, refreshAction);
             }
 
-            var updatedWellbores = await witsmlClient.GetFromStoreAsync(witsmlWellbore, OptionsIn.IdOnly);
+            var updatedWellbores = await witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
             var updatedWellbore = updatedWellbores.Wellbores.First();
             var description = new EntityDescription
             {
                 WellName = updatedWellbore.NameWell,
                 WellboreName = updatedWellbore.Name
             };
-            Log.Error($"Job failed. An error occurred when modifying wellbore: {job.Wellbore.PrintProperties()}");
+            Log.Error("Job failed. An error occurred when modifying wellbore: {Wellbore}", job.Wellbore.PrintProperties());
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update wellbore", result.Reason, description), null);
         }
 
