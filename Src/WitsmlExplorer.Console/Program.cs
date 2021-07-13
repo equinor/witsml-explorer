@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using WitsmlExplorer.Console.ListCommands;
 using WitsmlExplorer.Console.Injection;
+using WitsmlExplorer.Console.QueryCommands;
 using WitsmlExplorer.Console.ShowCommands;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -35,6 +36,11 @@ namespace WitsmlExplorer.Console
             config.AddBranch("show", add =>
             {
                 add.AddCommand<ShowTubularCommand>("tubular").WithDescription("Export tubular within a well/wellbore");
+            });
+
+            config.AddBranch("query", add =>
+            {
+                add.AddCommand<GetQueryCommand>("get").WithDescription("Execute GET query");
             });
             return config;
         }
