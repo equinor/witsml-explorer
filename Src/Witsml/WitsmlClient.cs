@@ -15,6 +15,7 @@ namespace Witsml
     public interface IWitsmlClient
     {
         Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new();
+        Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn);
         Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
@@ -99,6 +100,31 @@ namespace Witsml
                 Log.Error(e, "Failed to deserialize response from Witsml server");
                 return new T();
             }
+        }
+
+        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
+        {
+            var xmlQuery = new XmlDocument();
+            xmlQuery.LoadXml(query);
+            var type = xmlQuery.FirstChild?.FirstChild?.Name;
+            if (string.IsNullOrEmpty(type))
+                throw new Exception("Could not determine WITSML type based on query");
+
+            var request = new WMLS_GetFromStoreRequest
+            {
+                WMLtypeIn = type,
+                OptionsIn = optionsIn.GetKeywords(),
+                QueryIn = query,
+                CapabilitiesIn = ""
+            };
+
+            var response = await client.WMLS_GetFromStoreAsync(request);
+
+            if (response.IsSuccessful())
+                return response.XMLout;
+
+            var errorResponse = await client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
         public async Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType
