@@ -46,10 +46,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var start = DateTime.Now;
             var witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
-            var messageObject = result.Messages.FirstOrDefault();
-            if (messageObject == null) return null;
-
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
             var messageObjects = result.Messages
                 .Select(message =>
                     new MessageObject
@@ -65,7 +62,7 @@ namespace WitsmlExplorer.Api.Services
                     })
                 .OrderBy(message => message.WellboreName).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug("Fetched {Count} message objects in {Elapsed} seconds", messageObjects.Count, elapsed);
+            Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds from {messageObjects.FirstOrDefault()?.WellName}");
             return messageObjects;
         }
     }

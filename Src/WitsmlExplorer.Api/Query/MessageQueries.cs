@@ -14,8 +14,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
-                    Uid = messageUid,
-                    CommonData = new WitsmlCommonData()
+                    Uid = messageUid
                 }.AsSingletonList()
             };
         }
@@ -28,21 +27,24 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
+                    Uid = "",
+                    Name = "",
+                    MessageText = "",
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
         }
 
-        public static WitsmlMessages CreateMessageObject(MessageObject messageObject, WitsmlWellbore targetWellbore)
+        public static WitsmlMessages CreateMessageObject(MessageObject messageObject)
         {
             return new WitsmlMessages
             {
                 Messages = new WitsmlMessage
                 {
-                    UidWell = targetWellbore.UidWell,
-                    NameWell = targetWellbore.NameWell,
-                    UidWellbore = targetWellbore.Uid,
-                    NameWellbore = targetWellbore.Name,
+                    UidWell = messageObject.WellUid,
+                    NameWell = messageObject.WellName,
+                    UidWellbore = messageObject.WellboreUid,
+                    NameWellbore = messageObject.WellboreName,
                     Uid = messageObject.Uid,
                     Name = messageObject.Name,
                     MessageText = messageObject.MessageText

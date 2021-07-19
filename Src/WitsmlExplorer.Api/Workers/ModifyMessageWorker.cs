@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Data;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -12,36 +11,30 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateMessageObjectWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job);
-    }
-
-    public class CreateMessageWorker : ICreateMessageObjectWorker
+    public class ModifyMessageWorker : IWorker<ModifyMessageObjectJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
-        public CreateMessageWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyMessageWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
-
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateMessageObjectJob job)
+        public async Task<(WorkerResult, RefreshAction)> Execute(ModifyMessageObjectJob job)
         {
-            var targetWellbore = await GetWellbore(witsmlClient, job.MessageObject);
-            var copyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject, targetWellbore);
-            var createMessageResult = await witsmlClient.AddToStoreAsync(copyMessageQuery);
-            if (!createMessageResult.IsSuccessful)
+            var modifyMessageQuery = MessageQueries.CreateMessageObject(job.MessageObject);
+            var modifyMessageResult = await witsmlClient.UpdateInStoreAsync(modifyMessageQuery);
+
+            if (!modifyMessageResult.IsSuccessful)
             {
-                var errorMessage = "Failed to create messageobject.";
+                const string errorMessage = "Failed to modify messageobject.";
                 Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage, job.MessageObject.WellUid, job.MessageObject.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createMessageResult.Reason), null);
+                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyMessageResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. MessageObject created", GetType().Name);
+            Log.Information("{JobType} - Job successful. MessageObject modified", GetType().Name);
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {targetWellbore.Name}");
+            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} created for {job.MessageObject.WellboreName}");
 
             return (workerResult, refreshAction);
         }
