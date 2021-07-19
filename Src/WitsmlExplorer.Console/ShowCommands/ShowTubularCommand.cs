@@ -12,20 +12,8 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ShowCommands
 {
-    public class ShowTubularCommand : AsyncCommand<ShowTubularCommand.ExportTubularSettings>
+    public class ShowTubularCommand : AsyncCommand<ShowTubularSettings>
     {
-        public class ExportTubularSettings : CommandSettings
-        {
-            [CommandArgument(0, "<WELL_UID>")]
-            public string WellUid { get; init; }
-
-            [CommandArgument(1, "<WELLBORE_UID>")]
-            public string WellboreUid { get; init; }
-
-            [CommandArgument(2, "<TUBULAR_UID>")]
-            public string TubularUid { get; init; }
-        }
-
         private readonly IWitsmlClient witsmlClient;
 
         public ShowTubularCommand(IWitsmlClientProvider witsmlClientProvider)
@@ -33,7 +21,7 @@ namespace WitsmlExplorer.Console.ShowCommands
             witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ExportTubularSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, ShowTubularSettings settings)
         {
             if (witsmlClient == null) return -1;
 
