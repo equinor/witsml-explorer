@@ -11,7 +11,7 @@ There are two levels of issues - userstory and issue
 
 ### Userstory
 A userstory is describing a functional (high level) enhancement of the WitsmlExplorer. 
-Here is the project board of [proposed and ongoing userstories](https://github.com/equinor/witsml-explorer/projects/2), and here is an [overview of the main contributors](https://github.com/equinor/witsml-explorer/wiki/Backlow-Overview) participating on each userstory.
+Here is the project board of [proposed and ongoing userstories](https://github.com/equinor/witsml-explorer/projects/2), and here is an [overview of the main contributors](https://github.com/equinor/witsml-explorer/wiki) participating on each userstory.
 Proposals for new user stories are submitted as new issue - [use the Userstory template](https://github.com/equinor/witsml-explorer/issues/new/choose) .
 
 ### Issues
