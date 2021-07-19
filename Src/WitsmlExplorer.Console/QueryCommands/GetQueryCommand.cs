@@ -31,12 +31,13 @@ namespace WitsmlExplorer.Console.QueryCommands
             public string QueryFile { get; init; }
 
             [CommandOption("--returnElements")]
-            [Description("Indicates which elements and attributes are requested to be returned in addition to data-object selection items [requested(default)|all|id-only|header-only|data-only|station-location-only|latest-change-only")]
+            [Description("Indicates which elements and attributes are requested to be returned in addition to data-object selection items (requested(default)|all|id-only|header-only|data-only|station-location-only|latest-change-only)")]
             [DefaultValue("requested")]
             public string ReturnElements { get; init; }
 
             [CommandOption("--maxReturnNodes")]
             [Description("Max number of data nodes to return. Must be a whole number greater than zero, if provided")]
+            [DefaultValue("")]
             public int? MaxReturnNodes { get; init; }
 
             public override ValidationResult Validate()
