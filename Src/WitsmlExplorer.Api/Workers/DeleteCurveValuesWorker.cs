@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
                 var result = await witsmlClient.DeleteFromStoreAsync(query);
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Job successful.", GetType().Name);
+                    Log.Information("{JobType} - Job successful", GetType().Name);
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
             var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result.Logs.FirstOrDefault();
         }
 

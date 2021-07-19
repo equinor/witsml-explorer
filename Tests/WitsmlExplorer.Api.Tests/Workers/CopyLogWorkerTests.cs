@@ -95,12 +95,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), OptionsIn.All))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), OptionsIn.All))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
             }
@@ -109,7 +109,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), OptionsIn.Requested))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>
@@ -128,22 +128,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private List<WitsmlLogs> SetupAddInStoreAsync()
         {
             var addedLog = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlLogs, OptionsIn>((witsmlLogs, _) => addedLog.Add(witsmlLogs))
+            witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
+                .Callback<WitsmlLogs>((witsmlLogs) => addedLog.Add(witsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
             return addedLog;
-        }
-
-        private void SetupGetDepthIndexed(WitsmlLogs query = null)
-        {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
-                .ReturnsAsync(() =>
-                {
-                    var startIndex = double.Parse(query.Logs.First().StartIndex.Value);
-                    var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
-                    return GetSourceLogData(startIndex, endIndex);
-                });
         }
 
         private CopyLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
@@ -225,44 +213,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 Logs = new List<WitsmlLog> { witsmlLog }
             };
-        }
-
-        private WitsmlLogs GetSourceLogData(double startIndexValue, double endIndexValue, IEnumerable<string> mnemonics = null)
-        {
-            var startIndex = new DepthIndex(startIndexValue);
-            var endIndex = new DepthIndex(endIndexValue);
-            var currentIndex = new DepthIndex(startIndexValue);
-
-            var data = new List<WitsmlData>();
-            if (startIndex < endIndex)
-            {
-                while (currentIndex <= endIndex)
-                {
-                    data.Add(new WitsmlData { Data = $"{currentIndex.Value},1,1" });
-                    currentIndex = new DepthIndex(currentIndex.Value + 1);
-                }
-            }
-
-            if (data.Any())
-            {
-                return new WitsmlLogs
-                {
-                    Logs = new WitsmlLog
-                    {
-                        StartIndex = new WitsmlIndex(new DepthIndex(startIndex.Value)),
-                        EndIndex = new WitsmlIndex(new DepthIndex(endIndex.Value)),
-                        IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
-                        LogData = new WitsmlLogData
-                        {
-                            MnemonicList = string.Join(",", mnemonics ?? SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),
-                            UnitList = "m,m,m",
-                            Data = data
-                        }
-                    }.AsSingletonList()
-                };
-            }
-
-            return new WitsmlLogs();
         }
     }
 }

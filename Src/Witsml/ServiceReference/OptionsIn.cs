@@ -1,31 +1,37 @@
+using System.Runtime.Serialization;
+using System.Text;
+
 namespace Witsml.ServiceReference
 {
-    public enum OptionsIn
+    public record OptionsIn(
+        ReturnElements ReturnElements,
+        int? MaxReturnNodes = null)
     {
-        All,
-        IdOnly,
-        HeaderOnly,
-        DataOnly,
-        StationLocationOnly,
-        LatestChangeOnly,
-        Requested
+        public string GetKeywords()
+        {
+            var keywords = new StringBuilder();
+            keywords.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
+            if (MaxReturnNodes is > 0)
+                keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+            return keywords.ToString();
+        }
     }
 
-    public static class OptionsInToString
+    public enum ReturnElements
     {
-        public static string GetName(this OptionsIn input)
-        {
-            return input switch
-            {
-                OptionsIn.All => "returnElements=all",
-                OptionsIn.IdOnly => "returnElements=id-only",
-                OptionsIn.HeaderOnly => "returnElements=header-only",
-                OptionsIn.DataOnly => "returnElements=data-only",
-                OptionsIn.StationLocationOnly => "returnElements=station-location-only",
-                OptionsIn.LatestChangeOnly => "returnElements=latest-change-only",
-                OptionsIn.Requested => "returnElements=requested",
-                _ => "returnElements=all"
-            };
-        }
+        [EnumMember(Value = "all")]
+        All,
+        [EnumMember(Value = "id-only")]
+        IdOnly,
+        [EnumMember(Value = "header-only")]
+        HeaderOnly,
+        [EnumMember(Value = "data-only")]
+        DataOnly,
+        [EnumMember(Value = "station-location-only")]
+        StationLocationOnly,
+        [EnumMember(Value = "latest-change-only")]
+        LatestChangeOnly,
+        [EnumMember(Value = "requested")]
+        Requested
     }
 }

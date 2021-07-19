@@ -15,7 +15,8 @@ namespace Witsml
     public interface IWitsmlClient
     {
         Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new();
-        Task<QueryResult> AddToStoreAsync<T>(T query, OptionsIn optionsIn = OptionsIn.Requested) where T : IWitsmlQueryType;
+        Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn);
+        Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<QueryResult> TestConnectionAsync();
@@ -78,7 +79,7 @@ namespace Witsml
                 var request = new WMLS_GetFromStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.GetName(),
+                    OptionsIn = optionsIn.GetKeywords(),
                     QueryIn = XmlHelper.Serialize(query),
                     CapabilitiesIn = ""
                 };
@@ -101,14 +102,40 @@ namespace Witsml
             }
         }
 
-        public async Task<QueryResult> AddToStoreAsync<T>(T query, OptionsIn optionsIn = OptionsIn.Requested) where T : IWitsmlQueryType
+        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
+        {
+            var xmlQuery = new XmlDocument();
+            xmlQuery.LoadXml(query);
+            var type = xmlQuery.FirstChild?.FirstChild?.Name;
+            if (string.IsNullOrEmpty(type))
+                throw new Exception("Could not determine WITSML type based on query");
+
+            var request = new WMLS_GetFromStoreRequest
+            {
+                WMLtypeIn = type,
+                OptionsIn = optionsIn.GetKeywords(),
+                QueryIn = query,
+                CapabilitiesIn = ""
+            };
+
+            var response = await client.WMLS_GetFromStoreAsync(request);
+
+            if (response.IsSuccessful())
+                return response.XMLout;
+
+            var errorResponse = await client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+        }
+
+        public async Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType
         {
             try
             {
+                var optionsIn = new OptionsIn(ReturnElements.Requested);
                 var request = new WMLS_AddToStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.GetName(),
+                    OptionsIn = optionsIn.GetKeywords(),
                     XMLin = XmlHelper.Serialize(query)
                 };
 
@@ -185,9 +212,10 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
+            var optionsIn = new OptionsIn(ReturnElements.HeaderOnly);
             var request = new WMLS_GetCapRequest
             {
-                OptionsIn = OptionsIn.HeaderOnly.GetName()
+                OptionsIn = optionsIn.GetKeywords()
             };
 
             var response = await client.WMLS_GetCapAsync(request);

@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             worker = new CreateRiskWorker(witsmlClientProvider.Object);
         }
-      
+
         [Fact]
         public async Task ValidCreateRiskJob_Execute()
         {
@@ -38,8 +38,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var createdRisks = new List<WitsmlRisks>();
             witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlRisks, OptionsIn>((risk, optionsIn) => createdRisks.Add(risk))
+                    client.AddToStoreAsync(It.IsAny<WitsmlRisks>()))
+                .Callback<WitsmlRisks>(risk=> createdRisks.Add(risk))
                 .ReturnsAsync(new QueryResult(true));
             witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
                 .ReturnsAsync(new WitsmlRisks() { Risks = new List<WitsmlRisk>() { new WitsmlRisk() }});
@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,
             string wellUid = WellUid, string wellName = WellName)
         {
-            
+
             return new CreateRiskJob
             {
                 Risk = new Risk

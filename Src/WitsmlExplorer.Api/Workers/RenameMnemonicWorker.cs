@@ -98,20 +98,20 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonics,
                 startIndex, endIndex);
 
-            var data = await witsmlClient.GetFromStoreAsync(query, OptionsIn.DataOnly);
+            var data = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
             return data.Logs.Any() ? data.Logs.First() : null;
         }
 
         private async Task<WorkerResult> DeleteOldMnemonic(string wellUid, string wellboreUid, string logUid, string mnemonic)
         {
-            var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, new string[] {mnemonic});
+            var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, new[] {mnemonic});
             var result = await witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
                 return new WorkerResult(witsmlClient.GetServerHostname(), true, $"Successfully deleted old mnemonic");
             }
 
-            Log.Error($"Failed to delete old mnemonic. WellUid: {wellUid}, WellboreUid: {wellboreUid}, Uid: {logUid}, Mnemonic: {mnemonic}");
+            Log.Error("Failed to delete old mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}", wellUid, wellboreUid, logUid, mnemonic);
             return new WorkerResult(witsmlClient.GetServerHostname(), false, $"Failed to delete old mnemonic {mnemonic} while renaming mnemonic", result.Reason);
         }
 
@@ -139,7 +139,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<WitsmlLog> GetLog(LogReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var logs = await witsmlClient.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
+            var logs = await witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
     }

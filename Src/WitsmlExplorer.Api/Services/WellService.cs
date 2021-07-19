@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var start = DateTime.Now;
             var witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, OptionsIn.Requested);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
             var wells = result.Wells
                 .Select(well => new Well
                     {
@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Services
                     }
                 ).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug($"Fetched {wells.Count} wells in {elapsed} seconds");
+            Log.Debug("Fetched {Count} wells in {Elapsed} seconds", wells.Count, elapsed);
             return wells;
         }
 

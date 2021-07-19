@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             var description = new EntityDescription { WellName = well.Name };
-            Log.Error($"Job failed. An error occurred when creating well: {job.Well.PrintProperties()}");
+            Log.Error("Job failed. An error occurred when creating well: {Well}", job.Well.PrintProperties());
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create well", result.Reason, description), null);
         }
 
@@ -56,12 +56,12 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created well with name {well.Name} (id={well.Uid})");
                 }
                 Thread.Sleep(1000);
-                var wellResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+                var wellResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isWellCreated = wellResult.Wells.Any();
             }
         }
 
-        private void Verify(Well well)
+        private static void Verify(Well well)
         {
             if (string.IsNullOrEmpty(well.Uid)) throw new InvalidOperationException($"{nameof(well.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(well.Name)) throw new InvalidOperationException($"{nameof(well.Name)} cannot be empty");
