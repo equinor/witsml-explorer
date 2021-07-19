@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<Rig>> GetRigs(string wellUid, string wellboreUid)
         {
             var witsmlRigs = RigQueries.GetWitsmlRigByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlRigs, OptionsIn.IdOnly);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.IdOnly));
             return result.Rigs.Select(rig =>
                 new Rig
                 {
@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid)
         {
             var query = RigQueries.GetWitsmlRigById(wellUid, wellboreUid, rigUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlRig = result.Rigs.FirstOrDefault();
             if (witsmlRig == null) return null;
 

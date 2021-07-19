@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             var result = await witsmlClient.DeleteFromStoreAsync(witsmlTrajectory);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful.", GetType().Name);
+                Log.Information("{JobType} - Job successful", GetType().Name);
                 return new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted trajectory: ${trajectoryUid}");
             }
 
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers
                 trajectoryUid);
 
             witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlTrajectory, OptionsIn.IdOnly);
+            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.IdOnly));
 
             var trajectory = queryResult.Trajectories.First();
             EntityDescription description = null;

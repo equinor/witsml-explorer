@@ -12,16 +12,16 @@ using WitsmlExplorer.Console.WitsmlClient;
 
 namespace WitsmlExplorer.Console.ListCommands
 {
-    public class ListTubularsCommand : AsyncCommand<ListTubularsSettings>
+    public class ListBhaRunsCommand : AsyncCommand<ListBhaRunsSettings>
     {
         private readonly IWitsmlClient witsmlClient;
 
-        public ListTubularsCommand(IWitsmlClientProvider witsmlClientProvider)
+        public ListBhaRunsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ListTubularsSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, ListBhaRunsSettings settings)
         {
             if (witsmlClient == null) return -1;
 
@@ -31,20 +31,20 @@ namespace WitsmlExplorer.Console.ListCommands
             var wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching tubulars...".WithColor(Color.Orange1), async _ =>
+                .StartAsync("Fetching bha runs...".WithColor(Color.Orange1), async _ =>
                 {
-                    var tubulars = (await GetTubulars(settings.WellUid, settings.WellboreUid)).ToList();
+                    var bhaRuns = (await GetBhaRuns(settings.WellUid, settings.WellboreUid)).ToList();
 
-                    wellName = tubulars.FirstOrDefault()?.NameWell;
-                    wellboreName = tubulars.FirstOrDefault()?.NameWellbore;
+                    wellName = bhaRuns.FirstOrDefault()?.NameWell;
+                    wellboreName = bhaRuns.FirstOrDefault()?.NameWellbore;
 
-                    foreach (var tubular in tubulars.OrderBy(l => l.Name))
+                    foreach (var bhaRun in bhaRuns.OrderBy(r => r.CommonData.DTimLastChange))
                     {
                         table.AddRow(
-                            tubular.Uid,
-                            tubular.Name,
-                            tubular.TypeTubularAssy,
-                            tubular.CommonData.DTimLastChange);
+                            bhaRun.Uid,
+                            bhaRun.Name,
+                            bhaRun.Tubular.UidRef,
+                            bhaRun.CommonData.DTimLastChange);
                     }
                 });
 
@@ -62,16 +62,16 @@ namespace WitsmlExplorer.Console.ListCommands
             var table = new Table();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
-            table.AddColumn("TypeTubularAssy".Bold());
+            table.AddColumn("TubularUid".Bold());
             table.AddColumn("LastChanged".Bold());
             return table;
         }
 
-        private async Task<IEnumerable<WitsmlTubular>> GetTubulars(string wellUid, string wellboreUid)
+        private async Task<IEnumerable<WitsmlBhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
-            var query = new WitsmlTubulars
+            var query = new WitsmlBhaRuns
             {
-                Tubulars = new WitsmlTubular
+                BhaRuns = new WitsmlBhaRun
                 {
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
@@ -79,7 +79,10 @@ namespace WitsmlExplorer.Console.ListCommands
                     NameWell = "",
                     NameWellbore = "",
                     Name = "",
-                    TypeTubularAssy = "",
+                    Tubular = new WitsmlObjectReference
+                    {
+                        UidRef = ""
+                    },
                     CommonData = new WitsmlCommonData
                     {
                         DTimLastChange = ""
@@ -88,7 +91,7 @@ namespace WitsmlExplorer.Console.ListCommands
             };
 
             var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            return result?.Tubulars;
+            return result?.BhaRuns;
         }
     }
 }

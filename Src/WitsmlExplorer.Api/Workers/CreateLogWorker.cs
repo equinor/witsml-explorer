@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers
             if (!createLogResult.IsSuccessful)
             {
                 var errorMessage = "Failed to create log.";
-                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}.",
+                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage, job.LogObject.WellUid, job.LogObject.WellboreUid);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createLogResult.Reason), null);
             }
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Workers
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, LogObject logObject)
         {
             var query = WellboreQueries.GetWitsmlWellboreByUid(logObject.WellUid, logObject.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(query, OptionsIn.Requested);
+            var wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

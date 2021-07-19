@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<Wellbore> GetWellbore(string wellUid, string wellboreUid)
         {
             var query = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlWellbore = result.Wellbores.FirstOrDefault();
             if (witsmlWellbore == null) return null;
 
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Services
             var start = DateTime.Now;
             var query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.GetAllWitsmlWellbores() : WellboreQueries.GetWitsmlWellboreByWell(wellUid);
 
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.Requested);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             var wellbores = result.Wellbores
                 .Select(witsmlWellbore =>
                     new Wellbore
@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Services
                     })
                 .OrderBy(wellbore => wellbore.Name).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug($"Fetched {wellbores.Count} wellbores in {elapsed} seconds");
+            Log.Debug("Fetched {Count} wellbores in {Elapsed} seconds", wellbores.Count, elapsed);
             return wellbores;
         }
     }

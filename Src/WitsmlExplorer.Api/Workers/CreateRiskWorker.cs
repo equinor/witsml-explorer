@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created Risk with name {risk.Name} (id={risk.Uid})");
                 }
                 Thread.Sleep(1000);
-                var riskResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+                var riskResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isCreated = riskResult.Risks.Any();
             }
         }

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
@@ -12,7 +10,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IRiskService
     {
         Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid);
-        
+
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -23,7 +21,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid)
         {
             var query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             return result.Risks.Select(risk =>
                 new Risk

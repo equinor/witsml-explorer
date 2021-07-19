@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Console.ListCommands
             IList<WitsmlRisk> risks = new List<WitsmlRisk>();
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching risks...".WithColor(Color.Orange1), async ctx =>
+                .StartAsync("Fetching risks...".WithColor(Color.Orange1), async _ =>
                 {
                     risks = await GetRisks(settings.WellUid, settings.WellboreUid, settings.Source, settings.LastChanged);
 
@@ -89,7 +89,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
             try
             {
-                var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+                var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
                 return result?.Risks
                     .OrderBy(risk => risk.NameWellbore)
                     .ThenBy(risk => DateTime.Parse(risk.CommonData.DTimLastChange))

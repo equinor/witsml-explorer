@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers
             var result = await witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful.", GetType().Name);
+                Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
                 var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted mnemonics: {mnemonicsString} for log: {logUid}");
                 return (workerResult, refreshAction);
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonics);
 
             query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            var queryResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
 
             var log = queryResult.Logs.First();
             EntityDescription description = null;

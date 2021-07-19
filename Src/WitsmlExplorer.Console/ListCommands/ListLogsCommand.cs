@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Console.ListCommands
             var wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching logs...".WithColor(Color.Orange1), async ctx =>
+                .StartAsync("Fetching logs...".WithColor(Color.Orange1), async _ =>
                 {
                     var logs = await GetLogs(settings.WellUid, settings.WellboreUid);
 
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs;
         }
     }

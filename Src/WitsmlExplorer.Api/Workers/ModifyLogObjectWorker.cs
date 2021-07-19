@@ -46,9 +46,9 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
             }
 
-            Log.Error($"Job failed. An error occurred when modifying logobject: {job.LogObject.PrintProperties()}");
+            Log.Error("Job failed. An error occurred when modifying log object: {Log}", job.LogObject.PrintProperties());
             var logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var logs = await witsmlClient.GetFromStoreAsync(logQuery, OptionsIn.IdOnly);
+            var logs = await witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
             var log = logs.Logs.FirstOrDefault();
             EntityDescription description = null;
             if (log != null)

@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var copyTrajectoryJob = CreateJobTemplate();
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlTrajectories>(WitsmlTrajectories => WitsmlTrajectories.Trajectories.First().Uid == TrajectoryUid), OptionsIn.All))
+                    client.GetFromStoreAsync(It.Is<WitsmlTrajectories>(WitsmlTrajectories => WitsmlTrajectories.Trajectories.First().Uid == TrajectoryUid), new OptionsIn(ReturnElements.All, null)))
                 .ReturnsAsync(GetSourceTrajectories());
             SetupGetWellbore();
             var copyTrajectoryQuery = SetupAddInStoreAsync();
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), OptionsIn.Requested))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>
@@ -71,8 +71,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private List<WitsmlTrajectories> SetupAddInStoreAsync()
         {
             var addedTrajectory = new List<WitsmlTrajectories>();
-            witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlTrajectories, OptionsIn>((WitsmlTrajectories, _) => addedTrajectory.Add(WitsmlTrajectories))
+            witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()))
+                .Callback<WitsmlTrajectories>(witsmlTrajectories => addedTrajectory.Add(witsmlTrajectories))
                 .ReturnsAsync(new QueryResult(true));
             return addedTrajectory;
         }

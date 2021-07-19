@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid)
         {
             var witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, OptionsIn.All);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
             var messageObject = result.Messages.FirstOrDefault();
             if (messageObject == null) return null;
 
@@ -46,22 +46,21 @@ namespace WitsmlExplorer.Api.Services
         {
             var start = DateTime.Now;
             var witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, OptionsIn.Requested);
-
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
             var messageObjects = result.Messages
-                .Select(messageObject =>
+                .Select(message =>
                     new MessageObject
                     {
-                        Uid = messageObject.Uid,
-                        Name = messageObject.Name,
-                        WellboreUid = messageObject.UidWellbore,
-                        WellboreName = messageObject.NameWellbore,
-                        WellUid = messageObject.UidWell,
-                        WellName = messageObject.NameWell,
-                        MessageText = messageObject.MessageText,
-                        DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange)
+                        Uid = message.Uid,
+                        Name = message.Name,
+                        WellboreUid = message.UidWellbore,
+                        WellboreName = message.NameWellbore,
+                        WellUid = message.UidWell,
+                        WellName = message.NameWell,
+                        MessageText = message.MessageText,
+                        DateTimeLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange)
                     })
-                .OrderBy(messageObject => messageObject.WellboreName).ToList();
+                .OrderBy(message => message.WellboreName).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
             Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds from {messageObjects.FirstOrDefault()?.WellName}");
             return messageObjects;

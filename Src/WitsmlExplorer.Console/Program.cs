@@ -27,6 +27,7 @@ namespace WitsmlExplorer.Console
             {
                 add.AddCommand<ListWellboresCommand>("wellbores").WithDescription("List active wellbores");
                 add.AddCommand<ListLogsCommand>("logs").WithDescription("List logs within a well/wellbore");
+                add.AddCommand<ListBhaRunsCommand>("bharuns").WithDescription("List bha runs within a well/wellbore");
                 add.AddCommand<ListTubularsCommand>("tubulars").WithDescription("List tubulars within a well/wellbore");
                 add.AddCommand<ListRisksCommand>("risks").WithDescription("List risks");
             });

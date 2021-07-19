@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Console.ShowCommands
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
-                .StartAsync("Fetching tubular...".WithColor(Color.Orange1), async ctx =>
+                .StartAsync("Fetching tubular...".WithColor(Color.Orange1), async _ =>
                 {
                     var tubular = await GetTubular(settings.WellUid, settings.WellboreUid, settings.TubularUid);
                     var jsonSerializerOptions = new JsonSerializerOptions
@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Console.ShowCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             return result?.Tubulars.FirstOrDefault();
         }
     }

@@ -88,7 +88,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 var query = LogQueries.GetLogContent(job.LogCurvesReference.LogReference.WellUid, job.LogCurvesReference.LogReference.WellboreUid,
                     job.LogCurvesReference.LogReference.LogUid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
-                var sourceData = await witsmlSourceClient.GetFromStoreAsync(query, OptionsIn.DataOnly);
+                var sourceData = await witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
                 if (!sourceData.Logs.Any()) break;
                 var sourceLogWithData = sourceData.Logs.First();
                 var copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLog, sourceLogWithData);
@@ -219,7 +219,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var logs = await client.GetFromStoreAsync(logQuery, OptionsIn.HeaderOnly);
+            var logs = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
 
