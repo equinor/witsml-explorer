@@ -5714,17 +5714,17 @@ stacktrace-parser@0.1.10:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-ste-core@^2.1.7:
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.1.7.tgz#d066a6e309465110198fc11cfbf09517d42e05c7"
-  integrity sha512-WKONzH+i8NOZ2MKdjrBgz8Wi3B6609EVd7eVsk9Ow1oN/Yp7q6+ZkRvmZjbZ12kTMZpQ19+Sbd8m0ro1QR/6PA==
+ste-core@^2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.1.9.tgz#03fc2e9cd94523bdcd660e6dec3fb5e06a9ef0b0"
+  integrity sha512-szGk8VvHXEzeQaQ3EoK8Q8CGKfgNW/TEh9jTiolg3VvLKVmhYAAcSkR9GMveF1NfOl/8NvDkAOukfadQOx79xQ==
 
-ste-simple-events@^2.1.7:
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.1.7.tgz#c53f2317ef09b1e5a503027614aa8c3ccd592c45"
-  integrity sha512-EjqheM37U4xuaOVI7l1LOxOEbFIrrYYL4oB7TFIGQkTkGaZ4h3RkjRZ+ROKwkpmPWS8LauNx7tiwsFi7FN9aRw==
+ste-simple-events@^2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.1.9.tgz#282ed7ee7c73f143edf4eb0b8b0f95089c1b88e2"
+  integrity sha512-qUdJAS3mDb31WkoEX/jtlL4L1tYXxYg9SdtxIO/uL6pn7vFrh8KnbcnLYc36GmAE0RiHjlL4bYJb76UzqyRV/A==
   dependencies:
-    ste-core "^2.1.7"
+    ste-core "^2.1.9"
 
 stream-browserify@3.0.0:
   version "3.0.0"
