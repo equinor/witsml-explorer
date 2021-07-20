@@ -58,7 +58,7 @@
     "uuidv4": "^6.2.11"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.10.8",
+    "@types/enzyme": "^3.10.9",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
