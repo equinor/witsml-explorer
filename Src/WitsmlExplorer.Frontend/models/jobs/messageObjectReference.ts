@@ -1,5 +1,5 @@
 export default interface MessageObjectReference {
-  messageUid: string;
+  uid: string;
   wellUid: string;
   wellboreUid: string;
 }

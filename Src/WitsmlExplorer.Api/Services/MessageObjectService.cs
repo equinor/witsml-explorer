@@ -58,11 +58,12 @@ namespace WitsmlExplorer.Api.Services
                         WellUid = message.UidWell,
                         WellName = message.NameWell,
                         MessageText = message.MessageText,
-                        DateTimeLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange)
+                        DateTimeLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange),
+                        DateTimeCreation = StringHelpers.ToDateTime(message.CommonData.DTimCreation)
                     })
                 .OrderBy(message => message.WellboreName).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug($"Fetched {messageObjects.Count} messageobjects in {elapsed} seconds from {messageObjects.FirstOrDefault()?.WellName}");
+            Log.Debug("Fetched {Count} messageobjects from {WellboreName} in {Elapsed} seconds", messageObjects.Count, messageObjects.FirstOrDefault()?.WellboreName, elapsed);
             return messageObjects;
         }
     }

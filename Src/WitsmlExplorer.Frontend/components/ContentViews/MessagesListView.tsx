@@ -11,7 +11,7 @@ import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
 export interface MessageObjectRow extends ContentTableRow, MessageObject {}
 
 export const MessagesListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [messages, setMessages] = useState<MessageObject[]>([]);
@@ -29,13 +29,14 @@ export const MessagesListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
+    { property: "dateTimeCreation", label: "Created", type: ContentType.DateTime },
     { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime },
     { property: "name", label: "Name", type: ContentType.String },
     { property: "messageText", label: "Message text", type: ContentType.String }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedMessageObjectRows: MessageObjectRow[]) => {
-    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchOperation, selectedServer, servers };
+    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };

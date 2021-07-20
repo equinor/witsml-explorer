@@ -8,6 +8,7 @@ enum ModificationType {
   RemoveServer = "RemoveServer",
   UpdateLogObject = "UpdateLogObject",
   UpdateLogObjects = "UpdateLogObjects",
+  UpdateMessageObject = "UpdateMessageObject",
   UpdateMessageObjects = "UpdateMessageObjects",
   UpdateServer = "UpdateServer",
   UpdateServerList = "UpdateServerList",
