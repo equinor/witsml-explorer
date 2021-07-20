@@ -63,7 +63,7 @@
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
     "@types/node": "^15.12.5",
-    "@types/react": "^17.0.13",
+    "@types/react": "^17.0.14",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.3",
     "@types/styled-components": "^5.1.11",
