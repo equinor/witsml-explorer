@@ -3,9 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
-using Witsml.Extensions;
-using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -24,7 +21,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectsJob job)
         {
-            (WorkerResult workerResult, RefreshWellbore refreshAction) results;
+            (WorkerResult workerResult, RefreshMessageObjects refreshAction) results;
 
             if (!job.MessageObjects.Any()) throw new ArgumentException($"A minimum of one message is required");
             if (job.MessageObjects.Select(l => l.WellboreUid).Distinct().Count() != 1) throw new ArgumentException($"All messages should belong to the same Wellbore");
@@ -57,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers
                 results =
                 (
                     new WorkerResult(witsmlClient.GetServerHostname(), true, $"{tasks.Count()} mesages deleted for wellbore {wellboreUid}"),
-                    new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update)
+                    new RefreshMessageObjects(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update)
                 );
             }
             return results;

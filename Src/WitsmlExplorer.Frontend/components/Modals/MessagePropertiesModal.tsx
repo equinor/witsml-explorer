@@ -6,19 +6,15 @@ import ModalDialog from "./ModalDialog";
 import { TextField } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
-import MessageObjectService from "../../services/messageObjectService";
-import ModificationType from "../../contexts/modificationType";
-import { UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
 
 export interface MessagePropertiesModalProps {
   mode: PropertiesModalMode;
   messageObject: MessageObject;
   dispatchOperation: (action: HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreMessagesAction) => void;
 }
 
 const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.ReactElement => {
-  const { mode, messageObject, dispatchOperation, dispatchNavigation } = props;
+  const { mode, messageObject, dispatchOperation } = props;
   const [editableMessageObject, setEditableMessageObject] = useState<MessageObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
@@ -33,12 +29,6 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
       messageObject: updatedMessage
     };
     await JobService.orderJob(JobType.ModifyMessageObject, wellboreMessageJob);
-    const freshMessages = await MessageObjectService.getMessages(updatedMessage.wellUid, updatedMessage.wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateMessageObjects,
-      payload: { wellUid: updatedMessage.wellUid, wellboreUid: updatedMessage.wellboreUid, messages: freshMessages }
-    });
-
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

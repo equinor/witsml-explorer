@@ -8,7 +8,6 @@ import { Server } from "../../models/server";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import { DeleteIcon, FormatLineSpacingIcon } from "../Icons";
-import ModificationType from "../../contexts/modificationType";
 import MessageObjectService from "../../services/messageObjectService";
 import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
@@ -23,7 +22,7 @@ export interface MessageObjectContextMenuProps {
 }
 
 const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.ReactElement => {
-  const { checkedMessageObjectRows, dispatchOperation, dispatchNavigation } = props;
+  const { checkedMessageObjectRows, dispatchOperation } = props;
 
   const deleteMessageObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -36,11 +35,6 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
     };
 
     await JobService.orderJob(JobType.DeleteMessageObjects, job);
-    const freshMessages = await MessageObjectService.getMessages(job.messageObjects[0].wellUid, job.messageObjects[0].wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateMessageObjects,
-      payload: { wellUid: job.messageObjects[0].wellUid, wellboreUid: job.messageObjects[0].wellboreUid, messages: freshMessages }
-    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
   const blockStyle = {
@@ -68,7 +62,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
   const onClickModify = async () => {
     const messageObject = await MessageObjectService.getMessage(checkedMessageObjectRows[0].wellUid, checkedMessageObjectRows[0].wellboreUid, checkedMessageObjectRows[0].uid);
     const mode = PropertiesModalMode.Edit;
-    const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject, dispatchOperation, dispatchNavigation };
+    const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <MessagePropertiesModal {...modifyMessageObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

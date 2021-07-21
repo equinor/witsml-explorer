@@ -143,6 +143,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreLog(state, action);
     case ModificationType.UpdateMessageObjects:
       return updateWellboreMessages(state, action);
+    case ModificationType.UpdateMessageObject:
+      return updateWellboreMessage(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateServerList:
@@ -340,7 +342,19 @@ const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellb
     wells: freshWells
   };
 };
+const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellboreMessageAction) => {
+  const { wells } = state;
+  const { message } = payload;
+  const updatedWells = insertLogIntoWellsStructure(wells, message);
+  const selectedMessage = state.selectedMessage?.uid === message.uid ? message : state.selectedMessage;
 
+  return {
+    ...state,
+    wells: updatedWells,
+    filteredWells: filterWells(updatedWells, state.selectedFilter),
+    selectedMessage
+  };
+};
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -803,7 +817,7 @@ export interface UpdateWellboreMessagesAction extends Action {
 
 export interface UpdateWellboreMessageAction extends Action {
   type: ModificationType.UpdateMessageObject;
-  payload: { log: LogObject };
+  payload: { message: MessageObject };
 }
 
 export interface UpdateServerListAction extends Action {

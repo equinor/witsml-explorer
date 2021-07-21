@@ -7,6 +7,7 @@ namespace WitsmlExplorer.Api.Models
     {
         Well,
         Wellbore,
-        LogObject
+        LogObject,
+        MessageObjects
     }
 }

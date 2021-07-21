@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             Log.Information("{JobType} - Job successful. MessageObject modified", GetType().Name);
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshMessageObjects(witsmlClient.GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} updated for {job.MessageObject.WellboreName}");
 
             return (workerResult, refreshAction);
