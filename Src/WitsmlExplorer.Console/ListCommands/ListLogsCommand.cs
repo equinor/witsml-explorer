@@ -38,15 +38,34 @@ namespace WitsmlExplorer.Console.ListCommands
                     wellName = logs.FirstOrDefault()?.NameWell;
                     wellboreName = logs.FirstOrDefault()?.NameWellbore;
 
+                    var previousIndexType = "";
                     foreach (var log in logs.OrderBy(l => l.IndexType))
                     {
-                        table.AddRow(
-                            log.Uid,
-                            log.Name,
-                            log.ServiceCompany ?? "",
-                            log.GetStartIndexAsString(),
-                            log.GetEndIndexAsString(),
-                            log.ObjectGrowing == "true" ? ":check_mark:" : "");
+                        if (!string.IsNullOrEmpty(previousIndexType) && log.IndexType != previousIndexType)
+                            table.AddEmptyRow();
+
+                        if (log.ObjectGrowing == "true")
+                        {
+                            table.AddRow(
+                                log.Uid.WithColor(Color.Green),
+                                log.Name.WithColor(Color.Green),
+                                log.ServiceCompany.WithColor(Color.Green) ?? "",
+                                log.GetStartIndexAsString().WithColor(Color.Green),
+                                log.GetEndIndexAsString().WithColor(Color.Green),
+                                log.ObjectGrowing == "true" ? ":check_mark:".WithColor(Color.Green) : "");
+                        }
+                        else
+                        {
+                            table.AddRow(
+                                log.Uid,
+                                log.Name,
+                                log.ServiceCompany ?? "",
+                                log.GetStartIndexAsString(),
+                                log.GetEndIndexAsString(),
+                                log.ObjectGrowing == "true" ? ":check_mark:" : "");
+                        }
+
+                        previousIndexType = log.IndexType;
                     }
                 });
 
