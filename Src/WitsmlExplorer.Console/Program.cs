@@ -36,6 +36,7 @@ namespace WitsmlExplorer.Console
             config.AddBranch("show", add =>
             {
                 add.AddCommand<ShowTubularCommand>("tubular").WithDescription("Export tubular within a well/wellbore");
+                add.AddCommand<ShowLogHeaderCommand>("log").WithDescription("Show a log header");
             });
 
             config.AddBranch("query", add =>
