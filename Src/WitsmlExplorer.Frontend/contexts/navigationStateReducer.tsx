@@ -141,6 +141,10 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
       return updateWellboreLog(state, action);
+    case ModificationType.UpdateMessageObjects:
+      return updateWellboreMessages(state, action);
+    case ModificationType.UpdateMessageObject:
+      return updateWellboreMessage(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateServerList:
@@ -328,6 +332,29 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
+const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellboreMessagesAction) => {
+  const { wells } = state;
+  const { messages, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { messages });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellboreMessageAction) => {
+  const { wells } = state;
+  const { message } = payload;
+  const updatedWells = insertLogIntoWellsStructure(wells, message);
+  const selectedMessage = state.selectedMessage?.uid === message.uid ? message : state.selectedMessage;
+
+  return {
+    ...state,
+    wells: updatedWells,
+    filteredWells: filterWells(updatedWells, state.selectedFilter),
+    selectedMessage
+  };
+};
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -400,7 +427,12 @@ const updateSelectedWellAndWellboreIfNeeded = (state: NavigationState, freshWell
   };
 };
 
-const replacePropertiesInWellbore = (wellUid: string, wells: Well[], wellboreUid: string, wellboreProperties: Record<string, LogObject[] | Trajectory[]>): Well[] => {
+const replacePropertiesInWellbore = (
+  wellUid: string,
+  wells: Well[],
+  wellboreUid: string,
+  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[]>
+): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
   const well = wells[wellIndex];
@@ -778,6 +810,16 @@ export interface UpdateWellboreTrajectoryAction extends Action {
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
+export interface UpdateWellboreMessagesAction extends Action {
+  type: ModificationType.UpdateMessageObjects;
+  payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreMessageAction extends Action {
+  type: ModificationType.UpdateMessageObject;
+  payload: { message: MessageObject };
+}
+
 export interface UpdateServerListAction extends Action {
   type: ModificationType.UpdateServerList;
   payload: { servers: Server[] };
@@ -861,6 +903,8 @@ export type NavigationAction =
   | UpdateWellboreAction
   | UpdateWellboreLogAction
   | UpdateWellboreLogsAction
+  | UpdateWellboreMessagesAction
+  | UpdateWellboreMessageAction
   | UpdateWellboreTrajectoryAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction

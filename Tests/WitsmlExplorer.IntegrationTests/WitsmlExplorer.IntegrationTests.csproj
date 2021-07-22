@@ -3,7 +3,6 @@
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace>WitsmlExplorer.IntegrationTests</RootNamespace>
-    <LangVersion>8</LangVersion>
     <UserSecretsId>c42859c1-b470-4722-8cdd-20f319c00246</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>

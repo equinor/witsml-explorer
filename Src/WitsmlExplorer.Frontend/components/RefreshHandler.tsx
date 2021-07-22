@@ -8,6 +8,7 @@ import LogObjectService from "../services/logObjectService";
 import EntityType from "../models/entityType";
 import ModificationType from "../contexts/modificationType";
 import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
+import MessageObjectService from "../services/messageObjectService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -31,6 +32,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
+            break;
+          case EntityType.MessageObjects:
+            await refreshMessageObjects(refreshAction, modificationType);
             break;
         }
       } catch (error) {
@@ -86,7 +90,16 @@ const RefreshHandler = (): React.ReactElement => {
       }
     }
   }
-
+  async function refreshMessageObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateMessageObjects) {
+      const messages = await MessageObjectService.getMessages(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (messages) {
+        dispatchNavigation({ type: modificationType, payload: { messages, wellUid, wellboreUid } });
+      }
+    }
+  }
   return <></>;
 };
 

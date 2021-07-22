@@ -24,6 +24,7 @@ export interface RefreshAction {
   wellUid: string;
   wellboreUid?: string;
   logObjectUid?: string;
+  messageObjectUid?: string;
 }
 
 export enum RefreshType {
