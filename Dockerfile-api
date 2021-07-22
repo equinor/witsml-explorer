@@ -5,6 +5,7 @@ COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
 COPY Src/WitsmlExplorer.Console/WitsmlExplorer.Console.csproj Src/WitsmlExplorer.Console/WitsmlExplorer.Console.csproj
 COPY Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj
+COPY Tests/Witsml.Tests/Witsml.Tests.csproj Tests/Witsml.Tests/Witsml.Tests.csproj
 COPY Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj
 COPY Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj
 
