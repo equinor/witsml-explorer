@@ -4,6 +4,7 @@ using System.Reflection.Metadata;
 using Microsoft.Extensions.Configuration;
 using Spectre.Console;
 using Witsml;
+using Witsml.Data;
 using WitsmlExplorer.Console.Extensions;
 
 namespace WitsmlExplorer.Console.WitsmlClient
@@ -17,12 +18,18 @@ namespace WitsmlExplorer.Console.WitsmlClient
     {
         private readonly IWitsmlClient witsmlClient;
 
+        private readonly WitsmlClientCapabilities clientCapabilities = new()
+        {
+            Name = "Witsml Explorer CLI",
+            Description = "CLI interface for Witsml servers"
+        };
+
         public WitsmlClientProvider()
         {
             try
             {
                 var (serverUrl, username, password) = GetCredentialsFromConfiguration();
-                witsmlClient = new Witsml.WitsmlClient(serverUrl, username, password);
+                witsmlClient = new Witsml.WitsmlClient(serverUrl, username, password, clientCapabilities);
             }
             catch (Exception e)
             {

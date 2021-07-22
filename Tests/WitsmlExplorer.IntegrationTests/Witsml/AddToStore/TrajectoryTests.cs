@@ -19,12 +19,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
     {
         private readonly ITestOutputHelper output;
         private readonly WitsmlClient client;
+        private readonly WitsmlClientCapabilities clientCapabilities = new();
 
         public TrajectoryTests(ITestOutputHelper output)
         {
             this.output = output;
             var config = ConfigurationReader.GetWitsmlConfiguration();
-            client = new WitsmlClient(config.Hostname, config.Username, config.Password);
+            client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
         }
 
         [Fact(Skip="Should only be run manually")]

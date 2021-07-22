@@ -15,8 +15,11 @@ namespace Witsml.Xml
             using var textWriter = new StringWriter();
             using var writer = XmlWriter.Create(textWriter, settings);
 
+            var namespaces = new XmlSerializerNamespaces();
+            namespaces.Add("", "http://www.witsml.org/schemas/1series");
+
             var serializer = new XmlSerializer(typeof(T));
-            serializer.Serialize(writer, item);
+            serializer.Serialize(writer, item, namespaces);
 
             return textWriter.ToString();
         }

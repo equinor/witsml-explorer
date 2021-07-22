@@ -25,15 +25,18 @@ namespace Witsml
 
     public class WitsmlClient : IWitsmlClient
     {
+        private readonly string clientCapabilities;
         private readonly StoreSoapPortClient client;
         private readonly Uri serverUrl;
         private Logger queryLogger;
 
-        public WitsmlClient(string hostname, string username, string password, bool logQueries = false)
+        public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, bool logQueries = false)
         {
             if (string.IsNullOrEmpty(hostname)) throw new ArgumentNullException(nameof(hostname), "Hostname is required");
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username), "Username is required");
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password), "Password is required");
+
+            this.clientCapabilities = clientCapabilities.ToXml();
 
             var serviceBinding = CreateBinding();
             var endpointAddress = new EndpointAddress(hostname);
@@ -81,7 +84,7 @@ namespace Witsml
                     WMLtypeIn = query.TypeName,
                     OptionsIn = optionsIn.GetKeywords(),
                     QueryIn = XmlHelper.Serialize(query),
-                    CapabilitiesIn = ""
+                    CapabilitiesIn = clientCapabilities
                 };
 
                 var response = await client.WMLS_GetFromStoreAsync(request);
@@ -115,7 +118,7 @@ namespace Witsml
                 WMLtypeIn = type,
                 OptionsIn = optionsIn.GetKeywords(),
                 QueryIn = query,
-                CapabilitiesIn = ""
+                CapabilitiesIn = clientCapabilities
             };
 
             var response = await client.WMLS_GetFromStoreAsync(request);
@@ -136,7 +139,8 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     OptionsIn = optionsIn.GetKeywords(),
-                    XMLin = XmlHelper.Serialize(query)
+                    XMLin = XmlHelper.Serialize(query),
+                    CapabilitiesIn = clientCapabilities
                 };
 
                 var response = await client.WMLS_AddToStoreAsync(request);
@@ -163,7 +167,8 @@ namespace Witsml
                 var request = new WMLS_UpdateInStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    XMLin = XmlHelper.Serialize(query)
+                    XMLin = XmlHelper.Serialize(query),
+                    CapabilitiesIn = clientCapabilities
                 };
 
                 var response = await client.WMLS_UpdateInStoreAsync(request);
@@ -190,7 +195,8 @@ namespace Witsml
                 var request = new WMLS_DeleteFromStoreRequest
                 {
                     WMLtypeIn = query.TypeName,
-                    QueryIn = XmlHelper.Serialize(query)
+                    QueryIn = XmlHelper.Serialize(query),
+                    CapabilitiesIn = clientCapabilities
                 };
 
                 var response = await client.WMLS_DeleteFromStoreAsync(request);
