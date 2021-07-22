@@ -1,22 +1,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as base
 WORKDIR /app
-COPY witsml-explorer.sln .
 COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
-COPY Src/WitsmlExplorer.Console/WitsmlExplorer.Console.csproj Src/WitsmlExplorer.Console/WitsmlExplorer.Console.csproj
-COPY Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj Src/WitsmlExplorer.Frontend/WitsmlExplorer.Frontend.csproj
 COPY Tests/Witsml.Tests/Witsml.Tests.csproj Tests/Witsml.Tests/Witsml.Tests.csproj
 COPY Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj
-COPY Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj Tests/WitsmlExplorer.IntegrationTests/WitsmlExplorer.IntegrationTests.csproj
 
-RUN dotnet restore
+RUN dotnet restore Src/Witsml && \
+    dotnet restore Src/WitsmlExplorer.Api
 
 FROM base as backend
 WORKDIR /app
 COPY Src/ Src/
+COPY Tests/Witsml.Tests Tests/Witsml.Tests
 COPY Tests/WitsmlExplorer.Api.Tests Tests/WitsmlExplorer.Api.Tests
-WORKDIR /app/Tests/WitsmlExplorer.Api.Tests 
-RUN dotnet test -c Release
+WORKDIR /app/Tests/
+RUN dotnet test -c Release Witsml.Tests && \
+    dotnet test -c Release WitsmlExplorer.Api.Tests
 
 FROM backend as publish
 WORKDIR /app/Src/WitsmlExplorer.Api
