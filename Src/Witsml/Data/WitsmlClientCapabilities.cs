@@ -20,7 +20,7 @@ namespace Witsml.Data
         public string ApiVersion = "1.4.1";
 
         [XmlElement("contact")]
-        public string Contact { get; init; }
+        public ClientContactInformation Contact { get; init; }
 
         [XmlElement("description")]
         public string Description { get; init; }
