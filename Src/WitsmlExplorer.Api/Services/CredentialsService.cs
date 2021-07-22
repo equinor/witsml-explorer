@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Witsml;
+using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -21,17 +23,25 @@ namespace WitsmlExplorer.Api.Services
         private readonly ITimeLimitedDataProtector dataProtector;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IConfiguration configuration;
+        private readonly WitsmlClientCapabilities clientCapabilities;
         private const string AuthorizationHeader = "Authorization";
 
-        public CredentialsService(IDataProtectionProvider dataProtectionProvider, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public CredentialsService(
+            IDataProtectionProvider dataProtectionProvider,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            IOptions<WitsmlClientCapabilities> clientCapabilities)
         {
             dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
             this.httpContextAccessor = httpContextAccessor;
             this.configuration = configuration;
+            this.clientCapabilities = clientCapabilities.Value;
         }
 
         public async Task<string> Authorize(Uri serverUrl)
         {
+            if (httpContextAccessor.HttpContext == null) return "";
+
             var headers = httpContextAccessor.HttpContext.Request.Headers;
             var base64EncodedCredentials = headers[AuthorizationHeader].ToString().Substring("Basic ".Length).Trim();
             var credentials = new Credentials(base64EncodedCredentials);
@@ -63,7 +73,7 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task VerifyCredentials(Uri serverUrl, Credentials credentials)
         {
-            var witsmlClient = new WitsmlClient(serverUrl.ToString(), credentials.Username, credentials.Password,
+            var witsmlClient = new WitsmlClient(serverUrl.ToString(), credentials.Username, credentials.Password, clientCapabilities,
                 StringHelpers.ToBoolean(configuration["LogQueries"]));
             await witsmlClient.TestConnectionAsync();
         }

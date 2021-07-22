@@ -2,8 +2,10 @@ using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Witsml.Data;
 
 namespace WitsmlExplorer.Api
 {
@@ -13,9 +15,15 @@ namespace WitsmlExplorer.Api
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration(ConfigConfiguration)
+                .ConfigureServices(ConfigureServices)
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
                 .UseKestrel()
                 .Build();
+
+        private static void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
+        {
+            services.Configure<WitsmlClientCapabilities>(context.Configuration.GetSection("Witsml:ClientCapabilities"));
+        }
 
         private static void ConfigConfiguration(WebHostBuilderContext context, IConfigurationBuilder configurationBuilder)
         {
