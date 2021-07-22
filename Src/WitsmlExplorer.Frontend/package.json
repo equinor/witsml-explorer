@@ -74,6 +74,6 @@
     "eslint-plugin-react": "^7.24.0",
     "jest": "^27.0.6",
     "lint-staged": "^11.0.1",
-    "ts-jest": "^27.0.3"
+    "ts-jest": "^27.0.4"
   }
 }
