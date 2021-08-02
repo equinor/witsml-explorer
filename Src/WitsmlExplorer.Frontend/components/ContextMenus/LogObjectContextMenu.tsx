@@ -116,11 +116,12 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     display: "grid"
   };
 
+  const pluralize = (noun: string, suffix = "s") => `${checkedLogObjectRows.length > 1 ? checkedLogObjectRows.length : ""} ${noun}${checkedLogObjectRows.length > 1 ? suffix : ""}`;
+
   const onClickDelete = async () => {
-    const pluralize = (count: number, noun: any, suffix = "s") => `${count > 1 ? count : ""} ${noun}${count > 1 ? suffix : ""}`;
     const confirmation = (
       <ConfirmModal
-        heading={`Delete ${pluralize(checkedLogObjectRows.length, "selected log")}`}
+        heading={`Delete ${pluralize("selected log")}`}
         content={
           <span style={blockStyle}>
             This will permanently delete: <strong>{checkedLogObjectRows.map((item) => item.name).join("\n")}</strong>
@@ -128,7 +129,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
         }
         onConfirm={deleteLogObjects}
         confirmColor={"secondary"}
-        confirmText={`Delete ${pluralize(checkedLogObjectRows.length, "log")}?`}
+        confirmText={`Delete ${pluralize("log")}?`}
         switchButtonPlaces={true}
       />
     );
@@ -136,8 +137,8 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const onClickImport = async () => {
-    const logDataImportModallProps: LogDataImportModalProps = { targetLog: checkedLogObjectRows[0], dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModallProps} /> });
+    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedLogObjectRows[0], dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
   };
 
   const deleteLogObjects = async () => {
@@ -164,7 +165,8 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
       serverUrl: selectedServer.url,
       wellUid: checkedLogObjectRows[0].wellUid,
       wellboreUid: checkedLogObjectRows[0].wellboreUid,
-      logUid: checkedLogObjectRows[0].uid
+      logUid: checkedLogObjectRows[0].uid,
+      checkedLogUids: checkedLogObjectRows.map((logReference) => logReference.uid)
     };
     await navigator.clipboard.writeText(JSON.stringify(logReference));
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -188,11 +190,11 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
-        <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length !== 1}>
+        <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <CopyIcon />
           </ListItemIcon>
-          <Typography color={"primary"}>Copy log</Typography>
+          <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
         </MenuItem>,
         <MenuItem key={"pastelogcurves"} onClick={onClickPasteLogCurves} disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}>
           <ListItemIcon>

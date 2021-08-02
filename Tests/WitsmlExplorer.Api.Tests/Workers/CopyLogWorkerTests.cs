@@ -142,7 +142,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
-                    LogUid = LogUid
+                    LogUid = LogUid,
+                    CheckedLogUids = new List<string> { LogUid }
+
                 },
                 Target = new WellboreReference
                 {
