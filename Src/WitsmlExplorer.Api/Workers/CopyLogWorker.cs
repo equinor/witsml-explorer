@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -76,20 +77,24 @@ namespace WitsmlExplorer.Api.Workers
 
         private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog log)
         {
-            var referenceForNewLog = new LogReference
+            var sourceLogReference = job.Source;
+            sourceLogReference.LogUid = log.Uid;
+
+            var targetLogReference = new LogReference
             {
                 WellUid = job.Target.WellUid,
                 WellboreUid = job.Target.WellboreUid,
                 LogUid = log.Uid
             };
+
             var copyLogDataJob = new CopyLogDataJob
             {
                 LogCurvesReference = new LogCurvesReference
                 {
-                    LogReference = job.Source,
+                    LogReference = sourceLogReference,
                     Mnemonics = log.LogData.MnemonicList.Split(",")
                 },
-                Target = referenceForNewLog
+                Target = targetLogReference
             };
             return copyLogDataJob;
         }
@@ -121,7 +126,6 @@ namespace WitsmlExplorer.Api.Workers
 
         private static async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference, string checkedLog)
         {
-
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, checkedLog);
             var result = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.All));
             return !result.Logs.Any() ? null : result.Logs.First();
