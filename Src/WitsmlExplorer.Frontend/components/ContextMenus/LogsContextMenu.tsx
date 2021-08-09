@@ -11,11 +11,11 @@ import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
 import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
-import LogReference from "../../models/jobs/logReference";
 import { Server } from "../../models/server";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { PropertiesModalMode } from "../Modals/ModalParts";
+import LogReferences from "../../models/jobs/logReferences";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -26,14 +26,14 @@ export interface LogsContextMenuProps {
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const { dispatchOperation, wellbore, servers, indexCurve } = props;
-  const [logReference, setLogReference] = useState<LogReference>(null);
+  const [logReferences, setLogReferences] = useState<LogReferences>(null);
 
   useEffect(() => {
     const tryToParseClipboardContent = async () => {
       try {
         const clipboardText = await navigator.clipboard.readText();
-        const logReference = parseStringToLogReference(clipboardText);
-        setLogReference(logReference);
+        const logReferences = parseStringToLogReference(clipboardText);
+        setLogReferences(logReferences);
       } catch (e) {
         //Not a valid object on the clipboard? That is fine, we won't use it.
       }
@@ -42,12 +42,12 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   }, []);
 
   const orderCopyJob = (jobType: JobType) => {
-    const wellboreReference: WellboreReference = {
+    const targetWellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
       wellboreUid: wellbore.uid
     };
 
-    const copyJob = { source: logReference, target: wellboreReference };
+    const copyJob = { source: logReferences, target: targetWellboreReference };
     JobService.orderJob(jobType, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -87,7 +87,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   };
 
   const onClickPaste = async (jobType: JobType) => {
-    const sourceServerUrl = logReference.serverUrl;
+    const sourceServerUrl = logReferences.serverUrl;
     const sourceServer = servers.find((server) => server.url === sourceServerUrl);
     if (sourceServer !== null) {
       CredentialsService.setSourceServer(sourceServer);
@@ -113,7 +113,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
-        <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReference === null}>
+        <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
             <PasteIcon />
           </ListItemIcon>

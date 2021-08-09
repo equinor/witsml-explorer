@@ -39,11 +39,17 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new CopyLogJob
             {
-                Source = new LogReference
+                Source = new LogReferences
                 {
-                    WellUid = "",
-                    WellboreUid = "",
-                    LogUid = ""
+                    LogReferenceList = new[]
+                    {
+                        new LogReference
+                        {
+                            WellUid = "",
+                            WellboreUid = "",
+                            LogUid = "",
+                        }
+                    }
                 },
                 Target = new WellboreReference
                 {
@@ -58,11 +64,17 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         public async Task CopyLog_VerifyLogDataIsCopied()
         {
             const string logUid = "";
-            var sourceReference = new LogReference
+            var sourceReference = new LogReferences
             {
-                WellUid = "",
-                WellboreUid = "",
-                LogUid = logUid
+                LogReferenceList = new[]
+                {
+                    new LogReference
+                    {
+                        WellUid = "",
+                        WellboreUid = "",
+                        LogUid = "",
+                    }
+                }
             };
             var targetReference = new LogReference
             {
@@ -71,7 +83,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 LogUid = logUid
             };
 
-            await deleteLogsWorker.Execute(new DeleteLogObjectsJob {LogReferences = targetReference.AsSingletonList().ToArray()});
+            await deleteLogsWorker.Execute(new DeleteLogObjectsJob { LogReferences = targetReference.AsSingletonList().ToArray() });
 
             var job = new CopyLogJob
             {
@@ -85,14 +97,15 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
             await worker.Execute(job);
 
-            var sourceLog = await GetLog(sourceReference);
+            var sourceLog = await GetLog(sourceReference.LogReferenceList.First());
             var targetLog = await GetLog(targetReference);
 
             var currentIndex = Index.Start(sourceLog);
             var endIndex = await GetEndIndex(targetReference);
             while (currentIndex != endIndex)
             {
-                var sourceLogData = await logObjectService.ReadLogData(sourceReference.WellUid, sourceReference.WellboreUid, logUid,
+                var sourceLogData = await logObjectService.ReadLogData(sourceReference.LogReferenceList.FirstOrDefault()?.WellUid,
+                    sourceReference.LogReferenceList.FirstOrDefault()?.WellboreUid, logUid,
                     new List<string>(sourceLog.LogData.MnemonicList.Split(",")), currentIndex.Equals(Index.Start(sourceLog)),
                     currentIndex.GetValueAsString(), endIndex.ToString());
                 var targetLogData = await logObjectService.ReadLogData(targetReference.WellUid, targetReference.WellboreUid, logUid,

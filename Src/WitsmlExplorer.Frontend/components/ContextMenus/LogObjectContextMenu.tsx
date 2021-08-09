@@ -20,6 +20,8 @@ import { LogObjectRow } from "../ContentViews/LogsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { ImportExport } from "@material-ui/icons";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
+import LogReference from "../../models/jobs/logReference";
+import LogReferences from "../../models/jobs/logReferences";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -65,7 +67,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const onClickPasteLogCurves = async () => {
-    const sourceServerUrl = logCurvesReference.logReference.serverUrl;
+    const sourceServerUrl = logCurvesReference.serverUrl;
     const sourceServer = servers.find((server) => server.url === sourceServerUrl);
     if (sourceServer !== null) {
       CredentialsService.setSourceServer(sourceServer);
@@ -161,14 +163,17 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const onClickCopyLog = async () => {
-    const logReference = {
+    const logReferences: LogReferences = {
       serverUrl: selectedServer.url,
-      wellUid: checkedLogObjectRows[0].wellUid,
-      wellboreUid: checkedLogObjectRows[0].wellboreUid,
-      logUid: checkedLogObjectRows[0].uid,
-      checkedLogUids: checkedLogObjectRows.map((logReference) => logReference.uid)
+      logReferenceList: checkedLogObjectRows.map((row): LogReference => {
+        return {
+          wellUid: row.wellUid,
+          wellboreUid: row.wellboreUid,
+          logUid: row.uid
+        };
+      })
     };
-    await navigator.clipboard.writeText(JSON.stringify(logReference));
+    await navigator.clipboard.writeText(JSON.stringify(logReferences));
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
