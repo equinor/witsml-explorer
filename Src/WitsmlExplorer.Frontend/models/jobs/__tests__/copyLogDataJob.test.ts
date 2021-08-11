@@ -10,6 +10,7 @@ it("Should give error when provided a valid json object, but with missing requir
 
 it("Should not throw an error when valid input", () => {
   const objectString = `{
+    "serverUrl": "testUrl",
     "logReference": {
       "wellUid":"1",
       "wellboreUid":"2",
