@@ -43,5 +43,8 @@ namespace Witsml.Data
 
         [XmlElement("vendor")]
         public string Vendor { get; set; }
+
+        [XmlElement("bitRecord")]
+        public WitsmlBitRecord BitRecord { get; set; }
     }
 }
