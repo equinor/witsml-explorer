@@ -90,20 +90,20 @@ namespace WitsmlExplorer.Api.Workers
             return copyLogQuery;
         }
 
-        private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog sourceLog)
+        private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
         {
             var sourceLogReference = new LogReference
             {
-                WellUid = sourceLog.UidWell,
-                WellboreUid = sourceLog.UidWellbore,
-                LogUid = sourceLog.Uid
+                WellUid = job.Source.LogReferenceList.FirstOrDefault()?.WellUid,
+                WellboreUid = job.Source.LogReferenceList.FirstOrDefault()?.WellboreUid,
+                LogUid = targetLog.Uid
             };
 
             var targetLogReference = new LogReference
             {
                 WellUid = job.Target.WellUid,
                 WellboreUid = job.Target.WellboreUid,
-                LogUid = sourceLog.Uid
+                LogUid = targetLog.Uid
             };
 
             var copyLogDataJob = new CopyLogDataJob
@@ -111,7 +111,7 @@ namespace WitsmlExplorer.Api.Workers
                 SourceLogCurvesReference = new LogCurvesReference
                 {
                     LogReference = sourceLogReference,
-                    Mnemonics = sourceLog.LogData.MnemonicList.Split(",")
+                    Mnemonics = targetLog.LogData.MnemonicList.Split(",")
                 },
                 TargetLogReference = targetLogReference
             };
