@@ -138,11 +138,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyLogJob
             {
-                Source = new LogReference
+                Source = new LogReferences()
                 {
-                    WellUid = WellUid,
-                    WellboreUid = SourceWellboreUid,
-                    LogUid = LogUid
+                    LogReferenceList = new[]
+                    {
+                        new LogReference
+                        {
+                            WellUid = WellUid,
+                            WellboreUid = SourceWellboreUid,
+                            LogUid = LogUid,
+                        }
+                    }
                 },
                 Target = new WellboreReference
                 {

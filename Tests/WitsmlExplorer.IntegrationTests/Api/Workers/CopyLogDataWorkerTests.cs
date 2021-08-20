@@ -28,7 +28,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var wellboreUid = "B-5232880";
             var job = new CopyLogDataJob
             {
-                LogCurvesReference = new LogCurvesReference
+                SourceLogCurvesReference = new LogCurvesReference
                 {
                     LogReference = new LogReference
                     {
@@ -37,7 +37,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                         LogUid = "GM_Date_Time_GMTime"
                     }
                 },
-                Target = new LogReference
+                TargetLogReference = new LogReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
@@ -55,7 +55,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var wellboreUid = "B-5232880";
             var job = new CopyLogDataJob
             {
-                LogCurvesReference = new LogCurvesReference
+                SourceLogCurvesReference = new LogCurvesReference
                 {
                     LogReference = new LogReference
                     {
@@ -64,7 +64,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                         LogUid = "GM_Measured_Depth_GMDepth"
                     }
                 },
-                Target = new LogReference
+                TargetLogReference = new LogReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var wellboreUid = "B-5232880";
             var job = new CopyLogDataJob
             {
-                LogCurvesReference = new LogCurvesReference
+                SourceLogCurvesReference = new LogCurvesReference
                 {
                     LogReference = new LogReference
                     {
@@ -98,7 +98,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                         "DEPTH_HOLE"
                     }
                 },
-                Target = new LogReference
+                TargetLogReference = new LogReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,

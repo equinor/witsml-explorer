@@ -8,6 +8,7 @@ export interface CopyLogDataJob {
 }
 
 export interface LogCurvesReference {
+  serverUrl: string;
   logReference: LogReference;
   mnemonics: string[];
 }
@@ -22,13 +23,14 @@ export function parseStringToLogCurvesReference(input: string): LogCurvesReferen
   verifyRequiredProperties(jsonObject);
 
   return {
+    serverUrl: jsonObject.serverUrl,
     logReference: jsonObject.logReference,
     mnemonics: jsonObject.mnemonics
   };
 }
 
 function verifyRequiredProperties(jsonObject: LogCurvesReference) {
-  const requiredProps = ["logReference", "mnemonics"];
+  const requiredProps = ["serverUrl", "logReference", "mnemonics"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
     throw new Error("Missing required fields.");
@@ -37,8 +39,8 @@ function verifyRequiredProperties(jsonObject: LogCurvesReference) {
 
 export function createLogCurvesReference(logCurveInfoRows: LogCurveInfoRow[], source: LogObject, serverUrl: string): LogCurvesReference {
   return {
+    serverUrl: serverUrl,
     logReference: {
-      serverUrl,
       wellUid: source.wellUid,
       wellboreUid: source.wellboreUid,
       logUid: source.uid
