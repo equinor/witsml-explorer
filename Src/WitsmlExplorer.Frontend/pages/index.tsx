@@ -84,7 +84,7 @@ const SidebarLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 93vh;
-  width: 15vw;
+  width: 20rem;
 `;
 
 const ContentViewLayout = styled.div`
@@ -92,7 +92,7 @@ const ContentViewLayout = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   height: 93vh;
-  width: 85vw;
+  width: 100vw;
 `;
 
 export default Home;
