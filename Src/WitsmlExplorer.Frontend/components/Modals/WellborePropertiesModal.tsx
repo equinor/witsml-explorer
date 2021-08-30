@@ -8,9 +8,8 @@ import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import { PropertiesModalMode, validText } from "./ModalParts";
 import styled from "styled-components";
-import Measure from '../../models/measure';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 export interface WellborePropertiesModalProps {
   mode: PropertiesModalMode;
