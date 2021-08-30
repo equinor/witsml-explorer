@@ -65,7 +65,7 @@ export function emptyWellbore(): Wellbore {
 }
 
 export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore: WellboreProperties): boolean {
-    return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
+  return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
 export const calculateWellboreNodeId = (wellbore: Wellbore): string => {

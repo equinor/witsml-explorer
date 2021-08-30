@@ -8,7 +8,7 @@ import OperationType from "../../contexts/operationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import { PropertiesModalMode, validText } from "./ModalParts";
 import styled from "styled-components";
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from "@material-ui/core/InputAdornment";
 import moment from "moment";
 
 export interface WellborePropertiesModalProps {
@@ -77,7 +77,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableWellbore.wellUid} fullWidth />
               <TextField disabled id="wellName" label="well name" defaultValue={editableWellbore.wellName} fullWidth />
               <TextField disabled id={"wellboreParent"} label={"wellbore parent"} defaultValue={editableWellbore.wellboreParentName} fullWidth />
-              <TextField id={"wellborePurpose"} select label={"wellbore purpose"} value={editableWellbore.wellborePurpose || ''} fullWidth onChange={(e) => onChangePurpose(e)}>
+              <TextField id={"wellborePurpose"} select label={"wellbore purpose"} value={editableWellbore.wellborePurpose || ""} fullWidth onChange={(e) => onChangePurpose(e)}>
                 {purposeValues &&
                   purposeValues.map((purposeValue) => (
                     <MenuItem key={purposeValue} value={purposeValue}>
@@ -117,10 +117,10 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       fullWidth
                       type="datetime-local"
                       InputLabelProps={{
-                        shrink: true,
+                        shrink: true
                       }}
                       disabled={!editableWellbore.dTimeKickoff}
-                      value={ editableWellbore.dTimeKickoff? moment(editableWellbore.dTimeKickoff).format('YYYY-MM-DDTHH:MM') : undefined }
+                      value={editableWellbore.dTimeKickoff ? moment(editableWellbore.dTimeKickoff).format("YYYY-MM-DDTHH:MM") : undefined}
                       onChange={(e) => setEditableWellbore({ ...editableWellbore, dTimeKickoff: new Date(e.target.value) })}
                     />
                   </Container>
@@ -131,12 +131,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.md ? editableWellbore.md.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.md ? editableWellbore.md.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.md}
                       value={editableWellbore.md?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        md: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.md.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          md: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.md.uom }
+                        })
+                      }
                     />
                     <TextField
                       id={"tvd"}
@@ -144,12 +148,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.tvd ? editableWellbore.tvd.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.tvd ? editableWellbore.tvd.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.tvd}
                       value={editableWellbore.tvd?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        tvd: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.tvd.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          tvd: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.tvd.uom }
+                        })
+                      }
                     />
                   </Container>
                   <Container>
@@ -159,12 +167,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.mdKickoff ? editableWellbore.mdKickoff.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.mdKickoff ? editableWellbore.mdKickoff.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.mdKickoff}
                       value={editableWellbore.mdKickoff?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        mdKickoff: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.mdKickoff.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          mdKickoff: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.mdKickoff.uom }
+                        })
+                      }
                     />
                     <TextField
                       id={"tvdKickoff"}
@@ -172,12 +184,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdKickoff ? editableWellbore.tvdKickoff.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdKickoff ? editableWellbore.tvdKickoff.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.tvdKickoff}
                       value={editableWellbore.tvdKickoff?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        tvdKickoff: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.tvdKickoff.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          tvdKickoff: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.tvdKickoff.uom }
+                        })
+                      }
                     />
                   </Container>
                   <Container>
@@ -187,12 +203,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.mdPlanned ? editableWellbore.mdPlanned.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.mdPlanned ? editableWellbore.mdPlanned.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.mdPlanned}
                       value={editableWellbore.mdPlanned?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        mdPlanned: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.mdPlanned.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          mdPlanned: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.mdPlanned.uom }
+                        })
+                      }
                     />
                     <TextField
                       id={"tvdPlanned"}
@@ -200,12 +220,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdPlanned ? editableWellbore.tvdPlanned.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdPlanned ? editableWellbore.tvdPlanned.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.tvdPlanned}
                       value={editableWellbore.tvdPlanned?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        tvdPlanned: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.tvdPlanned.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          tvdPlanned: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.tvdPlanned.uom }
+                        })
+                      }
                     />
                   </Container>
                   <Container>
@@ -215,12 +239,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.mdSubSeaPlanned ? editableWellbore.mdSubSeaPlanned.uom : ''}</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{editableWellbore.mdSubSeaPlanned ? editableWellbore.mdSubSeaPlanned.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.mdSubSeaPlanned}
                       value={editableWellbore.mdSubSeaPlanned?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        mdSubSeaPlanned: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.mdSubSeaPlanned.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          mdSubSeaPlanned: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.mdSubSeaPlanned.uom }
+                        })
+                      }
                     />
                     <TextField
                       id={"tvdSubSeaPlanned"}
@@ -228,26 +256,34 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       type="number"
                       fullWidth
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdSubSeaPlanned ? editableWellbore.tvdSubSeaPlanned.uom : ''}</InputAdornment>
+                        startAdornment: <InputAdornment position="start">{editableWellbore.tvdSubSeaPlanned ? editableWellbore.tvdSubSeaPlanned.uom : ""}</InputAdornment>
                       }}
                       disabled={!editableWellbore.tvdSubSeaPlanned}
                       value={editableWellbore.tvdSubSeaPlanned?.value}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                        tvdSubSeaPlanned: {value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom:  editableWellbore.tvdSubSeaPlanned.uom} })}
+                      onChange={(e) =>
+                        setEditableWellbore({
+                          ...editableWellbore,
+                          tvdSubSeaPlanned: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableWellbore.tvdSubSeaPlanned.uom }
+                        })
+                      }
                     />
                   </Container>
                   <TextField
-                  id={"dayTarget"}
-                  label={"day target"}
-                  type="number"
-                  fullWidth
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">{editableWellbore.dayTarget ? editableWellbore.dayTarget.uom : ''}</InputAdornment>
-                  }}
-                  disabled={!editableWellbore.dayTarget}
-                  value={editableWellbore.dayTarget?.value}
-                  onChange={(e) => setEditableWellbore({ ...editableWellbore,
-                    dayTarget: {value: isNaN(parseInt(e.target.value)) ? undefined : parseInt(e.target.value), uom:  editableWellbore.dayTarget.uom} })}
+                    id={"dayTarget"}
+                    label={"day target"}
+                    type="number"
+                    fullWidth
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">{editableWellbore.dayTarget ? editableWellbore.dayTarget.uom : ""}</InputAdornment>
+                    }}
+                    disabled={!editableWellbore.dayTarget}
+                    value={editableWellbore.dayTarget?.value}
+                    onChange={(e) =>
+                      setEditableWellbore({
+                        ...editableWellbore,
+                        dayTarget: { value: isNaN(parseInt(e.target.value)) ? undefined : parseInt(e.target.value), uom: editableWellbore.dayTarget.uom }
+                      })
+                    }
                   />
                 </>
               )}

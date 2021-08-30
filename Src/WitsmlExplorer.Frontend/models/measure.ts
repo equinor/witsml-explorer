@@ -1,4 +1,4 @@
 export default interface Measure {
-    value: number;
-    uom: string;
+  value: number;
+  uom: string;
 }
