@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_Md()
         {
-            var expectedValue = 10;
+            const int expectedValue = 10;
             var job = CreateJobTemplate();
             job.Wellbore.Md = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft"};
 
@@ -93,7 +93,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_Tvd()
         {
-            var expectedValue = 20;
+            const int expectedValue = 20;
             var job = CreateJobTemplate();
             job.Wellbore.Tvd = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -125,7 +125,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_MdKickoff()
         {
-            var expectedValue = 10;
+            const int expectedValue = 10;
             var job = CreateJobTemplate();
             job.Wellbore.MdKickoff = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -157,7 +157,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_TvdKickoff()
         {
-            var expectedValue = 20;
+            const int expectedValue = 20;
             var job = CreateJobTemplate();
             job.Wellbore.TvdKickoff = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -189,7 +189,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_MdPlanned()
         {
-            var expectedValue = 10;
+            const int expectedValue = 10;
             var job = CreateJobTemplate();
             job.Wellbore.MdPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -221,7 +221,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_TvdPlanned()
         {
-            var expectedValue = 20;
+            const int expectedValue = 20;
             var job = CreateJobTemplate();
             job.Wellbore.TvdPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -253,7 +253,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_MdSubSeaPlanned()
         {
-            var expectedValue = 10;
+            const int expectedValue = 10;
             var job = CreateJobTemplate();
             job.Wellbore.MdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -285,7 +285,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_TvdSubSeaPlanned()
         {
-            var expectedValue = 20;
+            const int expectedValue = 20;
             var job = CreateJobTemplate();
             job.Wellbore.TvdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
@@ -317,7 +317,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_DayTarget()
         {
-            var expectedValue = 10;
+            const int expectedValue = 10;
             var job = CreateJobTemplate();
             job.Wellbore.DayTarget = new Models.Measure.DayMeasure { Value = expectedValue, Uom = "d" };
 

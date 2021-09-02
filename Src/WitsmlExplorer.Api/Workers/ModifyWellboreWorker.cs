@@ -47,17 +47,17 @@ namespace WitsmlExplorer.Api.Workers
 
         private void Verify(Wellbore wellbore)
         {
-            if (string.IsNullOrEmpty(wellbore.Uid) || string.IsNullOrEmpty(wellbore.WellUid)) throw new InvalidOperationException($"uid/wellUid cannot be empty");
+            if (string.IsNullOrEmpty(wellbore.Uid) || string.IsNullOrEmpty(wellbore.WellUid)) throw new InvalidOperationException($"{nameof(wellbore.Uid)}/{nameof(wellbore.WellUid)} cannot be empty");
             if (wellbore.Name == string.Empty) throw new InvalidOperationException($"{nameof(wellbore.Name)} cannot be empty");
-            if (wellbore.Md != null && string.IsNullOrEmpty(wellbore.Md.Uom)) throw new InvalidOperationException($"unit of measure for Md cannot be empty");
-            if (wellbore.Tvd != null && string.IsNullOrEmpty(wellbore.Tvd.Uom)) throw new InvalidOperationException($"unit of measure for Tvd cannot be empty");
-            if (wellbore.MdKickoff != null && string.IsNullOrEmpty(wellbore.MdKickoff.Uom)) throw new InvalidOperationException($"unit of measure for MdKickoff cannot be empty");
-            if (wellbore.TvdKickoff != null && string.IsNullOrEmpty(wellbore.TvdKickoff.Uom)) throw new InvalidOperationException($"unit of measure for TvdKickoff cannot be empty");
-            if (wellbore.MdPlanned != null && string.IsNullOrEmpty(wellbore.MdPlanned.Uom)) throw new InvalidOperationException($"unit of measure for MdPlanned cannot be empty");
-            if (wellbore.TvdPlanned != null && string.IsNullOrEmpty(wellbore.TvdPlanned.Uom)) throw new InvalidOperationException($"unit of measure for TvdPlanned cannot be empty");
-            if (wellbore.MdSubSeaPlanned != null && string.IsNullOrEmpty(wellbore.MdSubSeaPlanned.Uom)) throw new InvalidOperationException($"unit of measure for MdSubSeaPlanned cannot be empty");
-            if (wellbore.TvdSubSeaPlanned != null && string.IsNullOrEmpty(wellbore.TvdSubSeaPlanned.Uom)) throw new InvalidOperationException($"unit of measure for TvdSubSeaPlanned cannot be empty");
-            if (wellbore.DayTarget != null && string.IsNullOrEmpty(wellbore.DayTarget.Uom)) throw new InvalidOperationException($"unit of measure for DayTarget cannot be empty");
+            if (wellbore.Md != null && string.IsNullOrEmpty(wellbore.Md.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.Md)} cannot be empty");
+            if (wellbore.Tvd != null && string.IsNullOrEmpty(wellbore.Tvd.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.Tvd)} cannot be empty");
+            if (wellbore.MdKickoff != null && string.IsNullOrEmpty(wellbore.MdKickoff.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.MdKickoff)} cannot be empty");
+            if (wellbore.TvdKickoff != null && string.IsNullOrEmpty(wellbore.TvdKickoff.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.TvdKickoff)} cannot be empty");
+            if (wellbore.MdPlanned != null && string.IsNullOrEmpty(wellbore.MdPlanned.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.MdPlanned)} cannot be empty");
+            if (wellbore.TvdPlanned != null && string.IsNullOrEmpty(wellbore.TvdPlanned.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.TvdPlanned)} cannot be empty");
+            if (wellbore.MdSubSeaPlanned != null && string.IsNullOrEmpty(wellbore.MdSubSeaPlanned.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.MdSubSeaPlanned)} cannot be empty");
+            if (wellbore.TvdSubSeaPlanned != null && string.IsNullOrEmpty(wellbore.TvdSubSeaPlanned.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.TvdSubSeaPlanned)} cannot be empty");
+            if (wellbore.DayTarget != null && string.IsNullOrEmpty(wellbore.DayTarget.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(wellbore.DayTarget)} cannot be empty");
         }
     }
 }
