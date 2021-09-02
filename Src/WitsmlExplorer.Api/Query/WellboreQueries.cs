@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
@@ -77,31 +78,31 @@ namespace WitsmlExplorer.Api.Query
                 witsmlWellbore.DTimKickoff = ((DateTime) wellbore.DTimeKickoff).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
             if (wellbore.Md != null)
-                witsmlWellbore.Md = new WitsmlMeasuredDepthCoord { Uom = wellbore.Md.Uom, Value = wellbore.Md.Value.ToString() };
+                witsmlWellbore.Md = new WitsmlMeasuredDepthCoord { Uom = wellbore.Md.Uom, Value = wellbore.Md.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.Tvd != null)
-                witsmlWellbore.Tvd = new WitsmlWellVerticalDepthCoord { Uom = wellbore.Tvd.Uom, Value = wellbore.Tvd.Value.ToString() };
+                witsmlWellbore.Tvd = new WitsmlWellVerticalDepthCoord { Uom = wellbore.Tvd.Uom, Value = wellbore.Tvd.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.MdKickoff != null)
-                witsmlWellbore.MdKickoff = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdKickoff.Uom, Value = wellbore.MdKickoff.Value.ToString() };
+                witsmlWellbore.MdKickoff = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdKickoff.Uom, Value = wellbore.MdKickoff.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.TvdKickoff != null)
-                witsmlWellbore.TvdKickoff = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdKickoff.Uom, Value = wellbore.TvdKickoff.Value.ToString() };
+                witsmlWellbore.TvdKickoff = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdKickoff.Uom, Value = wellbore.TvdKickoff.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.MdPlanned != null)
-                witsmlWellbore.MdPlanned = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdPlanned.Uom, Value = wellbore.MdPlanned.Value.ToString() };
+                witsmlWellbore.MdPlanned = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdPlanned.Uom, Value = wellbore.MdPlanned.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.TvdPlanned != null)
-                witsmlWellbore.TvdPlanned = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdPlanned.Uom, Value = wellbore.TvdPlanned.Value.ToString() };
+                witsmlWellbore.TvdPlanned = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdPlanned.Uom, Value = wellbore.TvdPlanned.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.MdSubSeaPlanned != null)
-                witsmlWellbore.MdSubSeaPlanned = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdSubSeaPlanned.Uom, Value = wellbore.MdSubSeaPlanned.Value.ToString() };
+                witsmlWellbore.MdSubSeaPlanned = new WitsmlMeasuredDepthCoord { Uom = wellbore.MdSubSeaPlanned.Uom, Value = wellbore.MdSubSeaPlanned.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.TvdSubSeaPlanned != null)
-                witsmlWellbore.TvdSubSeaPlanned = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdSubSeaPlanned.Uom, Value = wellbore.TvdSubSeaPlanned.Value.ToString() };
+                witsmlWellbore.TvdSubSeaPlanned = new WitsmlWellVerticalDepthCoord { Uom = wellbore.TvdSubSeaPlanned.Uom, Value = wellbore.TvdSubSeaPlanned.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (wellbore.DayTarget != null)
-                witsmlWellbore.DayTarget = new WitsmlDayMeasure { Uom = wellbore.DayTarget.Uom, Value = wellbore.DayTarget.Value.ToString() };
+                witsmlWellbore.DayTarget = new WitsmlDayMeasure { Uom = wellbore.DayTarget.Uom, Value = wellbore.DayTarget.Value.ToString(CultureInfo.InvariantCulture) };
 
             return new WitsmlWellbores
             {
