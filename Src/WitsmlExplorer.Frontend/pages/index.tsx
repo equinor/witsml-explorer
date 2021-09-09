@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import Head from "next/head";
 import Nav from "../components/Nav";
 import Sidebar from "../components/Sidebar/Sidebar";
@@ -45,10 +45,7 @@ const Home = (): React.ReactElement => {
       if (isResizing) {
         mouseMoveEvent.stopPropagation();
         mouseMoveEvent.preventDefault();
-        setSidebarWidth(
-          mouseMoveEvent.clientX -
-          sidebarRef.current.getBoundingClientRect().left
-        );
+        setSidebarWidth(mouseMoveEvent.clientX - sidebarRef.current.getBoundingClientRect().left);
       }
     },
     [isResizing]
@@ -82,7 +79,7 @@ const Home = (): React.ReactElement => {
               <NavLayout>
                 <Nav />
               </NavLayout>
-              <SidebarLayout ref={sidebarRef} style={{width: sidebarWidth}}>
+              <SidebarLayout ref={sidebarRef} style={{ width: sidebarWidth }}>
                 <Sidebar />
               </SidebarLayout>
               <Divider onMouseDown={startResizing} />
@@ -128,17 +125,17 @@ const Divider = styled.div`
   cursor: col-resize;
   resize: horizontal;
   height: 93vh;
-  width: .2rem;
-  margin-right: .6rem;
+  width: 0.2rem;
+  margin-right: 0.6rem;
   background: ${colors.interactive.primaryResting};
   border-radius: 0px 5px 5px 0px;
 
-  &:hover{
+  &:hover {
     background: ${colors.interactive.primaryHover};
-    width: .6rem;
-    margin-right: .2rem;
+    width: 0.6rem;
+    margin-right: 0.2rem;
   }
-`
+`;
 
 const ContentViewLayout = styled.div`
   grid-area: content;
