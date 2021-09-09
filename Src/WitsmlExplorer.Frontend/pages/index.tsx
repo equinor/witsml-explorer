@@ -32,7 +32,7 @@ const Home = (): React.ReactElement => {
   const [isResizing, setIsResizing] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(268);
 
-  const startResizing = React.useCallback((mouseDownEvent) => {
+  const startResizing = React.useCallback(() => {
     setIsResizing(true);
   }, []);
 
