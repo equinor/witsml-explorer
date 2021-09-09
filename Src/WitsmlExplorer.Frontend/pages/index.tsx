@@ -127,13 +127,14 @@ const Divider = styled.div`
   resize: horizontal;
   height: 93vh;
   width: .2rem;
-  margin: 0rem .6rem;
+  margin-right: .6rem;
   background: ${colors.interactive.primaryResting};
+  border-radius: 0px 5px 5px 0px;
 
   &:hover{
     background: ${colors.interactive.primaryHover};
     width: .6rem;
-    margin: 0rem .35rem;
+    margin-right: .2rem;
   }
 `
 
