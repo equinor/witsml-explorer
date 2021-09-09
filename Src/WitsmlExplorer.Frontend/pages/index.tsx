@@ -43,6 +43,8 @@ const Home = (): React.ReactElement => {
   const resize = React.useCallback(
     (mouseMoveEvent) => {
       if (isResizing) {
+        mouseMoveEvent.stopPropagation();
+        mouseMoveEvent.preventDefault();
         setSidebarWidth(
           mouseMoveEvent.clientX -
           sidebarRef.current.getBoundingClientRect().left
