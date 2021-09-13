@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellName { get; set; }
         public string WellboreName { get; set; }
         public string Name { get; set; }
-        public string ObjectGrowing { get; set; }
+        public bool ObjectGrowing { get; set; }
         public string MudLogCompany { get; set; }
         public string MudLogEngineers { get; set; }
         public string StartMd { get; set; }
