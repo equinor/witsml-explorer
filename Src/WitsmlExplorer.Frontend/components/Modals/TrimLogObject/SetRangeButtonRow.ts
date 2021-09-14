@@ -5,4 +5,4 @@ export const SetRangeButtonRow = styled.div`
   flex-direction: row;
   justify-content: start;
   gap: 1rem;
-`
+`;

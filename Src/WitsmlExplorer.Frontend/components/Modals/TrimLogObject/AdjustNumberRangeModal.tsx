@@ -49,24 +49,27 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
     <>
       <SetRangeButtonRow>
         {setRangeButtonValues.map((buttonValue) => {
-          return (totalDepthSpan > buttonValue) && (
-            <Button
-              key={"last" + buttonValue}
-              onClick={() => {
-                setStartIndex(maxValue - buttonValue);
-                setEndIndex(maxValue);
-              }}
-            >
-              {"Last " + buttonValue}
-            </Button>
-          )
+          return (
+            totalDepthSpan > buttonValue && (
+              <Button
+                key={"last" + buttonValue}
+                onClick={() => {
+                  setStartIndex(maxValue - buttonValue);
+                  setEndIndex(maxValue);
+                }}
+              >
+                {"Last " + buttonValue}
+              </Button>
+            )
+          );
         })}
         <Button
           key={"resetRangeValues"}
           onClick={() => {
             setStartIndex(minValue);
             setEndIndex(maxValue);
-          }}>
+          }}
+        >
           Reset
         </Button>
       </SetRangeButtonRow>
