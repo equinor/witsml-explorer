@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, TextField } from "@material-ui/core";
-import styled from "styled-components";
+import { SetRangeButtonRow } from "./SetRangeButtonRow";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;
@@ -16,13 +16,13 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   const [endValue, setEndIndex] = useState<number>(maxValue);
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
   const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>();
-  const buttonValues = [20, 50, 200, 1000];
-  const totalValueRange = maxValue - minValue;
+  const setRangeButtonValues = [20, 50, 200, 1000];
+  const totalDepthSpan = maxValue - minValue;
 
   useEffect(() => {
     onStartValueChanged(startValue);
     onEndValueChanged(endValue);
-  }, []);
+  }, [startValue, endValue]);
 
   useEffect(() => {
     setStartIndexIsValid(startValue < endValue);
@@ -36,27 +36,25 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   const handleStartIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value) {
       setStartIndex(Number(event.target.value));
-      onStartValueChanged(Number(event.target.value));
     }
   };
 
   const handleEndIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value) {
       setEndIndex(Number(event.target.value));
-      onEndValueChanged(Number(event.target.value));
     }
   };
 
   return (
     <>
-      <ButtonRow>
-        {buttonValues.map((buttonValue) => {
-          return (totalValueRange > buttonValue) && (
+      <SetRangeButtonRow>
+        {setRangeButtonValues.map((buttonValue) => {
+          return (totalDepthSpan > buttonValue) && (
             <Button
               key={"last" + buttonValue}
               onClick={() => {
-                setStartIndex(endValue - buttonValue);
-                onStartValueChanged(endValue - buttonValue);
+                setStartIndex(maxValue - buttonValue);
+                setEndIndex(maxValue);
               }}
             >
               {"Last " + buttonValue}
@@ -67,14 +65,11 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
           key={"resetRangeValues"}
           onClick={() => {
             setStartIndex(minValue);
-            onStartValueChanged(minValue);
             setEndIndex(maxValue);
-            onEndValueChanged(maxValue)
           }}>
           Reset
         </Button>
-      </ButtonRow>
-
+      </SetRangeButtonRow>
       <TextField
         fullWidth
         label={"Start index"}
@@ -96,12 +91,5 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
     </>
   );
 };
-
-const ButtonRow = styled("div")`
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  gap: 1rem;
-`
 
 export default AdjustNumberRangeModal;
