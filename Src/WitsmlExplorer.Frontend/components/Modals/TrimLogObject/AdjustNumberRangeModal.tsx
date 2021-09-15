@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@material-ui/core";
+import { Button, ButtonGroup, TextField } from "@material-ui/core";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;
@@ -15,11 +15,13 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   const [endValue, setEndIndex] = useState<number>(maxValue);
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
   const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>();
+  const setRangeButtonValues = [20, 50, 200, 1000];
+  const totalDepthSpan = maxValue - minValue;
 
   useEffect(() => {
     onStartValueChanged(startValue);
     onEndValueChanged(endValue);
-  }, []);
+  }, [startValue, endValue]);
 
   useEffect(() => {
     setStartIndexIsValid(startValue < endValue);
@@ -33,19 +35,43 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   const handleStartIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value) {
       setStartIndex(Number(event.target.value));
-      onStartValueChanged(Number(event.target.value));
     }
   };
 
   const handleEndIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value) {
       setEndIndex(Number(event.target.value));
-      onEndValueChanged(Number(event.target.value));
     }
   };
 
   return (
     <>
+      <ButtonGroup aria-label="set depth range button group" color="primary" style={{ margin: ".5rem" }}>
+        {setRangeButtonValues.map((buttonValue) => {
+          return (
+            totalDepthSpan > buttonValue && (
+              <Button
+                key={"last" + buttonValue}
+                onClick={() => {
+                  setStartIndex(maxValue - buttonValue);
+                  setEndIndex(maxValue);
+                }}
+              >
+                {"Last " + buttonValue}
+              </Button>
+            )
+          );
+        })}
+        <Button
+          key={"resetRangeValues"}
+          onClick={() => {
+            setStartIndex(minValue);
+            setEndIndex(maxValue);
+          }}
+        >
+          Reset
+        </Button>
+      </ButtonGroup>
       <TextField
         fullWidth
         label={"Start index"}
