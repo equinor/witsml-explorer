@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import moment, { Moment } from "moment";
 import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import { DateFormat } from "../../Constants";
-import { SetRangeButtonRow } from "./SetRangeButtonRow";
-import { Button } from "@material-ui/core";
+import { Button, ButtonGroup } from "@material-ui/core";
 
 export interface AdjustDateTimeModelProps {
   minDate: Moment;
@@ -58,7 +57,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
 
   return (
     <>
-      <SetRangeButtonRow>
+      <ButtonGroup aria-label="set time range button group" color="primary" style={{ margin: ".5rem" }}>
         {setRangeButtons.map((buttonValue) => {
           return (
             totalTimeSpan > buttonValue.timeInMilliseconds && (
@@ -83,7 +82,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
         >
           Reset
         </Button>
-      </SetRangeButtonRow>
+      </ButtonGroup>
 
       <KeyboardDateTimePicker
         fullWidth

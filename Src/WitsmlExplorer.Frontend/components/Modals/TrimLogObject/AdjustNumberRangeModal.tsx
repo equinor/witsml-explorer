@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@material-ui/core";
-import { SetRangeButtonRow } from "./SetRangeButtonRow";
+import { Button, ButtonGroup, TextField } from "@material-ui/core";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;
@@ -47,7 +46,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
 
   return (
     <>
-      <SetRangeButtonRow>
+      <ButtonGroup aria-label="set depth range button group" color="primary" style={{ margin: ".5rem" }}>
         {setRangeButtonValues.map((buttonValue) => {
           return (
             totalDepthSpan > buttonValue && (
@@ -72,7 +71,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         >
           Reset
         </Button>
-      </SetRangeButtonRow>
+      </ButtonGroup>
       <TextField
         fullWidth
         label={"Start index"}
