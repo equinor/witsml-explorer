@@ -44,7 +44,7 @@
     "moment": "^2.29.1",
     "next": "10.2.3",
     "notistack": "^1.0.10",
-    "prettier": "^2.4.0",
+    "prettier": "^2.4.1",
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
