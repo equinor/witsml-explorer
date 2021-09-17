@@ -6,6 +6,7 @@ const wePath = weURL && weURL.length > 0 ? new URL(weURL).pathname : "";
 module.exports = {
   distDir: "build",
   basePath: wePath,
+  webpack5: false,
   webpack: (config) => {
     config.node = {
       fs: "empty"
