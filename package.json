@@ -24,7 +24,7 @@
   },
   "lint-staged": {
     "*.{cs,vb}": [
-      "dotnet tool run dotnet-format --check --include"
+      "dotnet tool run dotnet-format --include"
     ],
     "*.{ts,tsx}": [
       "eslint",
