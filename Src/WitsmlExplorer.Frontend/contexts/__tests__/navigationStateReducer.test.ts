@@ -187,6 +187,7 @@ it("Should filter wells", () => {
   expect(actual).toStrictEqual({
     ...EMPTY_NAVIGATION_STATE,
     selectedServer: SERVER_1,
+    currentSelected: SERVER_1,
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: [WELL_2],

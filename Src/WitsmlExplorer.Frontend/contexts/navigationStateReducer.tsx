@@ -698,6 +698,7 @@ const setFilter = (state: NavigationState, { payload }: SetFilterAction) => {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
+    currentSelected: state.selectedServer,
     selectedFilter: filter,
     filteredWells
   };
