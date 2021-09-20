@@ -1,20 +1,21 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "plugins": [
-    "react",
-    "@typescript-eslint"
-  ],
   "env": {
     "browser": true,
-    "node": true,
-    "jasmine": true,
+    "es2021": true,
     "jest": true,
     "es6": true
   },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "next/core-web-vitals"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "react",
+    "jest"
+  ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/explicit-member-accessibility": 0,
@@ -23,15 +24,8 @@
     "@typescript-eslint/no-use-before-define": 0,
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-console": 1,
-    "no-empty-pattern": 0,
+    "react/prop-types": 1,
     "no-unused-vars": "off",
-    "react/prop-types": 1
-  },
-  "settings": {
-    "react": {
-      "pragma": "React",
-      "version": "detect"
-    }
-  },
-  "parser": "@typescript-eslint/parser"
+    "no-empty-pattern": "off"
+  }
 }
