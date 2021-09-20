@@ -32,7 +32,7 @@ jobs:
         run: yarn
         working-directory: ./Src/WitsmlExplorer.Frontend
       - name: Linting
-        run: yarn eslint .
+        run: yarn lint
         working-directory: ./Src/WitsmlExplorer.Frontend
       - name: Prettier
         run: npx prettier --check .
