@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers
             Log.Error("Failed to delete Mudlog. : {uid}", uid);
 
             var query = MudLogQueries.QueryById(wellUid, wellboreUid, uid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+            var queryResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
             EntityDescription description = null;
             var mudlog = queryResult.MudLogs.FirstOrDefault();
             if (mudlog != null)

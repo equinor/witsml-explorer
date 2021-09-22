@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created MudLog with name {mudLog.Name} (id={mudLog.Uid})");
                 }
                 Thread.Sleep(1000);
-                var mudLogResult = await witsmlClient.GetFromStoreAsync(query, OptionsIn.IdOnly);
+                var mudLogResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isMudLogCreated = mudLogResult.MudLogs.Any();
             }
         }

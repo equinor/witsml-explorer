@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<MudLog>> GetMudLogs(string wellUid, string wellboreUid)
         {
             var query = MudLogQueries.QueryByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.HeaderOnly);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
 
             return result.MudLogs.Select(mudLog =>
                 new MudLog
@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<MudLog> GetMudLog(string wellUid, string wellboreUid, string mudlogUid)
         {
             var query = MudLogQueries.QueryById(wellUid, wellboreUid, mudlogUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, OptionsIn.All);
+            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             var witsmlMudLog = result.MudLogs.FirstOrDefault();
             if (witsmlMudLog == null) return null;
