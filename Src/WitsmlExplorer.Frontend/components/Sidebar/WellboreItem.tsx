@@ -125,6 +125,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       onLabelClick={onLabelClick}
       onIconClick={onIconClick}
       isActive={wellbore.isActive}
+      isLoading={isFetchingData}
     >
       <TreeItem
         nodeId={logGroupId}

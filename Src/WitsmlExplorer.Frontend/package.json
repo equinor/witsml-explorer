@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@date-io/moment": "^2.11.0",
+    "@equinor/eds-core-react": "^0.13.1",
     "@equinor/eds-tokens": "^0.6.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
