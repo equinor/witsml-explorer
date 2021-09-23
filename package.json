@@ -28,7 +28,7 @@
     ],
     "*.{ts,tsx}": [
       "eslint",
-      "npx prettier --check ."
+      "npx prettier -w ."
     ]
   },
   "devDependencies": {
