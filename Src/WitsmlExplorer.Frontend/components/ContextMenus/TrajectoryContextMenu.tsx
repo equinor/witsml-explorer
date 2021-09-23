@@ -6,12 +6,14 @@ import Trajectory from "../../models/trajectory";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
 import TrajectoryService from "../../services/trajectoryService";
-import { CopyIcon, DeleteIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { Server } from "../../models/server";
+import styled from "styled-components";
 
 export interface TrajectoryContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTrajectoryAction) => void;
@@ -78,19 +80,23 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
       menuItems={[
         <MenuItem key={"copy"} onClick={onClickCopy}>
           <ListItemIcon>
-            <CopyIcon />
+            <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Copy</Typography>
+          <MenuTypography color={"primary"}>Copy</MenuTypography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete}>
           <ListItemIcon>
-            <DeleteIcon />
+            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Delete</Typography>
+          <MenuTypography color={"primary"}>Delete</MenuTypography>
         </MenuItem>
       ]}
     />
   );
 };
+
+const MenuTypography = styled(Typography)`
+  padding-left: 0.25rem;
+`;
 
 export default TrajectoryContextMenu;

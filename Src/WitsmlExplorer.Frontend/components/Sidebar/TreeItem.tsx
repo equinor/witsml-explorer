@@ -7,7 +7,7 @@ import { useTheme } from "@material-ui/core/styles";
 import NavigationContext from "../../contexts/navigationContext";
 import { ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
-import { IsActiveIcon } from "../Icons/IsActiveIcon";
+import Icon from "../../styles/Icons";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
@@ -30,7 +30,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
-          {isActive && <IsActiveIcon />}
+          {isActive && <Icon name="isActive" color={colors.interactive.primaryResting} />}
           <NavigationDrawer selected={selected} compactMode={isCompactMode}>
             {labelText}
           </NavigationDrawer>

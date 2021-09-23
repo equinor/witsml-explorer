@@ -7,7 +7,8 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
 import ServerService from "../../services/serverService";
-import { EditIcon, NewIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import NavigationType from "../../contexts/navigationType";
 import CredentialsService from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
@@ -133,10 +134,10 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers.map((server: Server) => (
             <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-              <Typography color={"initial"}>{server.name}</Typography>
+              <MenuTypography color={"initial"}>{server.name}</MenuTypography>
               {isOpen && (
                 <ListItemSecondaryAction onClick={() => onEditItem(server)}>
-                  <EditIcon />
+                  <Icon name="edit" color={colors.interactive.primaryResting} />
                 </ListItemSecondaryAction>
               )}
             </MenuItem>
@@ -144,9 +145,9 @@ const ServerManager = (): React.ReactElement => {
           <Divider />
           <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID}>
             <ListItemIcon>
-              <NewIcon />
+              <Icon name="add" color={colors.interactive.primaryResting} />
             </ListItemIcon>
-            <Typography color={"initial"}>Add server</Typography>
+            <MenuTypography color={"initial"}>Add server</MenuTypography>
           </MenuItem>
         </Select>
         <AuthenticationState />
@@ -165,6 +166,10 @@ const LinkButton = styled(Link)`
   & {
     cursor: pointer;
   }
+`;
+
+const MenuTypography = styled(Typography)`
+  padding-left: 0.25rem;
 `;
 
 export default ServerManager;

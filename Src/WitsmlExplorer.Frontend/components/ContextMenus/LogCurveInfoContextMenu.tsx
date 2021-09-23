@@ -2,7 +2,8 @@ import React from "react";
 import ContextMenu from "./ContextMenu";
 import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
-import { CopyIcon, DeleteIcon, FolderOpenIcon, SettingsIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
 import DeleteMnemonicsJob from "../../models/jobs/deleteMnemonicsJob";
@@ -14,6 +15,7 @@ import { SelectLogCurveInfoAction } from "../../contexts/navigationStateReducer"
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { Server } from "../../models/server";
+import styled from "styled-components";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -83,31 +85,35 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
       menuItems={[
         <MenuItem key={"open"} onClick={onClickOpen} disabled={checkedLogCurveInfoRows.length === 0}>
           <ListItemIcon>
-            <FolderOpenIcon />
+            <Icon name="folderOpen" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Open</Typography>
+          <MenuTypography color={"primary"}>Open</MenuTypography>
         </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedLogCurveInfoRows.length === 0}>
           <ListItemIcon>
-            <CopyIcon />
+            <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Copy</Typography>
+          <MenuTypography color={"primary"}>Copy</MenuTypography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
           <ListItemIcon>
-            <DeleteIcon />
+            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Delete</Typography>
+          <MenuTypography color={"primary"}>Delete</MenuTypography>
         </MenuItem>,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <ListItemIcon>
-            <SettingsIcon />
+            <Icon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Properties</Typography>
+          <MenuTypography color={"primary"}>Properties</MenuTypography>
         </MenuItem>
       ]}
     />
   );
 };
+
+const MenuTypography = styled(Typography)`
+  padding-left: 0.25rem;
+`;
 
 export default LogCurveInfoContextMenu;

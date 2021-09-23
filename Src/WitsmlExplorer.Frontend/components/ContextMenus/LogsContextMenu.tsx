@@ -6,7 +6,8 @@ import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import { NewIcon, PasteIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
@@ -16,6 +17,7 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import LogReferences from "../../models/jobs/logReferences";
+import styled from "styled-components";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -109,19 +111,23 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       menuItems={[
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>New log</Typography>
+          <MenuTypography color={"primary"}>New log</MenuTypography>
         </MenuItem>,
         <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
-            <PasteIcon />
+            <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Paste log</Typography>
+          <MenuTypography color={"primary"}>Paste log</MenuTypography>
         </MenuItem>
       ]}
     />
   );
 };
+
+const MenuTypography = styled(Typography)`
+  padding-left: 0.25rem;
+`;
 
 export default LogsContextMenu;

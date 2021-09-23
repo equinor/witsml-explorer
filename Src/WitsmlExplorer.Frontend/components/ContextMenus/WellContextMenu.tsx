@@ -2,7 +2,8 @@ import React from "react";
 import ContextMenu from "./ContextMenu";
 import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
 import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
-import { DeleteIcon, NewIcon, SettingsIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import { uuid } from "uuidv4";
@@ -17,6 +18,7 @@ import NestedMenuItem from "./NestedMenuItem";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { WellRow } from "../ContentViews/WellsListView";
 import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
+import styled from "styled-components";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -109,47 +111,51 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       menuItems={[
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>New Well</Typography>
+          <MenuTypography color={"primary"}>New Well</MenuTypography>
         </MenuItem>,
         <MenuItem key={"newWellbore"} onClick={onClickNewWellbore}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>New Wellbore</Typography>
+          <MenuTypography color={"primary"}>New Wellbore</MenuTypography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
           <ListItemIcon>
-            <DeleteIcon />
+            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Delete</Typography>
+          <MenuTypography color={"primary"}>Delete</MenuTypography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
-              <Typography color={"primary"}>{server.name}</Typography>
+              <MenuTypography color={"primary"}>{server.name}</MenuTypography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
           <ListItemIcon>
-            <SettingsIcon />
+            <Icon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Properties</Typography>
+          <MenuTypography color={"primary"}>Properties</MenuTypography>
         </MenuItem>,
         checkedWellRows && (
           <MenuItem key={"batchUpdate"} onClick={onClickBatchUpdate} disabled={checkedWellRows.length == 0}>
             <ListItemIcon>
-              <SettingsIcon />
+              <Icon name="settings" color={colors.interactive.primaryResting} />
             </ListItemIcon>
-            <Typography color={"primary"}>Batch Update</Typography>
+            <MenuTypography color={"primary"}>Batch Update</MenuTypography>
           </MenuItem>
         )
       ]}
     />
   );
 };
+
+const MenuTypography = styled(Typography)`
+  padding-left: 0.25rem;
+`;
 
 export default WellContextMenu;
