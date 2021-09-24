@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select, Typography } from "@material-ui/core";
+import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import NavigationContext from "../../contexts/navigationContext";
 import { emptyServer, Server } from "../../models/server";
 import OperationContext from "../../contexts/operationContext";
@@ -16,6 +16,7 @@ import IdleTimer from "react-idle-timer";
 import WellService from "../../services/wellService";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction, UpdateServerListAction } from "../../contexts/navigationStateReducer";
+import { Typography } from "@equinor/eds-core-react";
 
 const NEW_SERVER_ID = "1";
 const IDLE_TIMEOUT = 1000 * 60 * 10;
@@ -134,7 +135,7 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers.map((server: Server) => (
             <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-              <MenuTypography color={"initial"}>{server.name}</MenuTypography>
+              <Typography color={"initial"}>{server.name}</Typography>
               {isOpen && (
                 <ListItemSecondaryAction onClick={() => onEditItem(server)}>
                   <Icon name="edit" color={colors.interactive.primaryResting} />
@@ -147,7 +148,7 @@ const ServerManager = (): React.ReactElement => {
             <ListItemIcon>
               <Icon name="add" color={colors.interactive.primaryResting} />
             </ListItemIcon>
-            <MenuTypography color={"initial"}>Add server</MenuTypography>
+            <Typography color={"initial"}>Add server</Typography>
           </MenuItem>
         </Select>
         <AuthenticationState />
@@ -166,10 +167,6 @@ const LinkButton = styled(Link)`
   & {
     cursor: pointer;
   }
-`;
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
 `;
 
 export default ServerManager;
