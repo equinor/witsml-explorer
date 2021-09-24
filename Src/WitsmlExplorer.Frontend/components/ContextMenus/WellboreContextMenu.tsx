@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
-import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import Icon from "../../styles/Icons";
@@ -26,7 +26,7 @@ import { UpdateWellboreAction } from "../../contexts/navigationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajectoryJob";
 import LogReferences from "../../models/jobs/logReferences";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface WellboreContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreAction) => void;
@@ -208,42 +208,42 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           <ListItemIcon>
             <Icon name="refresh" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Refresh wellbore</MenuTypography>
+          <Typography color={"primary"}>Refresh wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
           <ListItemIcon>
             <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>New wellbore</MenuTypography>
+          <Typography color={"primary"}>New wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newlog"} onClick={onClickNewLog}>
           <ListItemIcon>
             <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>New log</MenuTypography>
+          <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Paste log</MenuTypography>
+          <Typography color={"primary"}>Paste log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteTrajectory"} onClick={() => onClickPaste(JobType.CopyTrajectory)} disabled={trajectoryReference === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Paste trajectory</MenuTypography>
+          <Typography color={"primary"}>Paste trajectory</Typography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Delete</MenuTypography>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
-              <MenuTypography color={"primary"}>{server.name}</MenuTypography>
+              <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
@@ -252,15 +252,11 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           <ListItemIcon>
             <Icon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Properties</MenuTypography>
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default WellboreContextMenu;

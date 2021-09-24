@@ -1,7 +1,7 @@
 import React from "react";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
 import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import { Server } from "../../models/server";
@@ -13,7 +13,7 @@ import MessageObjectService from "../../services/messageObjectService";
 import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
@@ -76,21 +76,17 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           <ListItemIcon>
             <Icon name="formatLine" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Modify</MenuTypography>
+          <Typography color={"primary"}>Modify</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedMessageObjectRows.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Delete</MenuTypography>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default MessageObjectContextMenu;

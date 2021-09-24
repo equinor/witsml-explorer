@@ -4,8 +4,8 @@ import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
 import ArrowRight from "@material-ui/icons/ArrowRight";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
-import { ListItemIcon, Typography } from "@material-ui/core";
-import styled from "styled-components";
+import { ListItemIcon } from "@material-ui/core";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
@@ -92,7 +92,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
         <ListItemIcon>
           <Icon name="launch" color={colors.interactive.primaryResting} />
         </ListItemIcon>
-        <MenuTypography color={"primary"}>{label}</MenuTypography>
+        <Typography color={"primary"}>{label}</Typography>
         <ListItemIcon>
           <ArrowRight />
         </ListItemIcon>
@@ -125,9 +125,5 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     </div>
   );
 });
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default NestedMenuItem;

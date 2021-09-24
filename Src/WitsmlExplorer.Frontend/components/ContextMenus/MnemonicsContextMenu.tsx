@@ -1,6 +1,6 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
@@ -8,7 +8,7 @@ import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJ
 import ConfirmModal from "../Modals/ConfirmModal";
 import OperationType from "../../contexts/operationType";
 import JobService, { JobType } from "../../services/jobService";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface MnemonicsContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -43,7 +43,7 @@ const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Delete</MenuTypography>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
     />
@@ -68,9 +68,5 @@ const getContentMessage = (deleteLogCurveValuesJob: DeleteLogCurveValuesJob) => 
     </>
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default MnemonicsContextMenu;

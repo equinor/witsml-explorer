@@ -1,6 +1,6 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
 import Trajectory from "../../models/trajectory";
 import ConfirmModal from "../Modals/ConfirmModal";
@@ -13,7 +13,7 @@ import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateRe
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { Server } from "../../models/server";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface TrajectoryContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTrajectoryAction) => void;
@@ -82,21 +82,17 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
           <ListItemIcon>
             <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Copy</MenuTypography>
+          <Typography color={"primary"}>Copy</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Delete</MenuTypography>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default TrajectoryContextMenu;

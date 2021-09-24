@@ -5,7 +5,7 @@ import { uuid } from "uuidv4";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
@@ -17,7 +17,7 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import LogReferences from "../../models/jobs/logReferences";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -113,21 +113,17 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           <ListItemIcon>
             <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>New log</MenuTypography>
+          <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Paste log</MenuTypography>
+          <Typography color={"primary"}>Paste log</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default LogsContextMenu;

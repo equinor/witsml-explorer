@@ -1,7 +1,7 @@
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
-import { Divider, ListItemIcon, makeStyles, MenuItem, Typography } from "@material-ui/core";
+import { Divider, ListItemIcon, makeStyles, MenuItem } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
@@ -23,7 +23,7 @@ import { ImportExport } from "@material-ui/icons";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogReference from "../../models/jobs/logReference";
 import LogReferences from "../../models/jobs/logReferences";
-import styled from "styled-components";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -195,42 +195,42 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="refresh" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Refresh log</MenuTypography>
+          <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
         <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Copy {pluralize("log")}</MenuTypography>
+          <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
         </MenuItem>,
         <MenuItem key={"pastelogcurves"} onClick={onClickPasteLogCurves} disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Paste log curves</MenuTypography>
+          <Typography color={"primary"}>Paste log curves</Typography>
         </MenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <Icon name="formatLine" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Adjust range</MenuTypography>
+          <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Delete</MenuTypography>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>
             <ImportExport className={classes.iconStyle} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Import log data from .csv</MenuTypography>
+          <Typography color={"primary"}>Import log data from .csv</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedLogObjectRows.length !== 1}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)} disabled={checkedLogObjectRows.length !== 1}>
-              <MenuTypography color={"primary"}>{server.name}</MenuTypography>
+              <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
@@ -239,15 +239,11 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <MenuTypography color={"primary"}>Properties</MenuTypography>
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const MenuTypography = styled(Typography)`
-  padding-left: 0.25rem;
-`;
 
 export default LogObjectContextMenu;
