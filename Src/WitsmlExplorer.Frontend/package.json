@@ -54,7 +54,7 @@
     "react-scripts": "^4.0.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
-    "ste-simple-events": "^2.1.10",
+    "ste-simple-events": "^2.1.11",
     "styled-components": "^5.3.1",
     "typescript": "^4.4.3",
     "uuidv4": "^6.2.12"
