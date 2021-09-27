@@ -63,7 +63,7 @@
     "@types/enzyme": "^3.10.9",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.174",
-    "@types/node": "^16.9.6",
+    "@types/node": "^16.10.1",
     "@types/react": "^17.0.24",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
