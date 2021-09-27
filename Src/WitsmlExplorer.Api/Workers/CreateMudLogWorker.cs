@@ -14,12 +14,9 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface ICreateMudLogWorker
-    {
-        Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job);
-    }
 
-    public class CreateMudLogWorker : ICreateMudLogWorker
+
+    public class CreateMudLogWorker : IWorker<CreateMudLogJob>
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -47,7 +44,8 @@ namespace WitsmlExplorer.Api.Workers
 
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
             Log.Error($"Job failed. An error occurred when creating MudLog: {job.MudLog.PrintProperties()}");
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create MudLog", result.Reason, description), null);        }
+            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create MudLog", result.Reason, description), null);
+        }
 
         private async Task WaitUntilMudLogHasBeenCreated(MudLog mudLog)
         {
@@ -68,8 +66,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlMudLogs SetupMudLogToCreate(MudLog mudLog)
         {
-            var geologyIntervals = mudLog.GeologyInterval.Select( geologyInterval => new WitsmlMudLogGeologyInterval()
-           {
+            var geologyIntervals = mudLog.GeologyInterval.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
+            {
                 Uid = geologyInterval.Uid,
                 TypeLithology = geologyInterval.TypeLithology,
                 MdTop = new WitsmlIndex { Uom = "m", Value = geologyInterval.MdTop },
@@ -81,11 +79,12 @@ namespace WitsmlExplorer.Api.Workers
                     CodeLith = geologyInterval.Lithology.CodeLith,
                     LithPc = new WitsmlIndex { Uom = "%", Value = geologyInterval.Lithology.LithPc }
                 },
-                CommonTime = new WitsmlCommonTime {
+                CommonTime = new WitsmlCommonTime
+                {
                     DTimCreation = geologyInterval.CommonTime.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimLastChange = geologyInterval.CommonTime.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ")
                 },
-           }).ToList();
+            }).ToList();
 
             return new WitsmlMudLogs
             {
@@ -107,7 +106,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         DTimCreation = mudLog.CommonData.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                         DTimLastChange = mudLog.CommonData.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                        ItemState =  mudLog.CommonData.ItemState,
+                        ItemState = mudLog.CommonData.ItemState,
                         SourceName = mudLog.CommonData.SourceName
                     }
                 }.AsSingletonList()
