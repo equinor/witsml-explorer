@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/react": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.31.2",
+    "@typescript-eslint/parser": "^4.32.0",
     "eslint-config-react": "^1.1.7",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2"
