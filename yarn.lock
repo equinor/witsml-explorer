@@ -12116,17 +12116,17 @@ static-extend@^0.1.1:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-ste-core@^2.1.11:
-  version "2.1.11"
-  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.1.11.tgz#d183c541e5c154c0792e61fe5b3f17b0d8343ffb"
-  integrity sha512-MTuK1wie3mj2mhCJrVboEHQTyZ1V5DFU7JVeJOLiZndLfLV7MvaFxYP36oNGbGFqi49KlXPb/u5IutsL3UJYdA==
+ste-core@^2.1.12:
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-2.1.12.tgz#bacfb3ee813253d64fc0644477b40ef853754b58"
+  integrity sha512-Y9YPXGPauHT67Izkm/clmwf9ijw4wk1q04R6JPybLaIwVm7GIxpOfif9IQCimfcEkhPb/NxeFYT3kk0Z2W9bUQ==
 
-ste-simple-events@^2.1.11:
-  version "2.1.11"
-  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.1.11.tgz#eb0a5a1534cda6b7f6ef4952d21358f1d76d6ffe"
-  integrity sha512-Ky2ZR2TZc0e2O+2QDjK7WA/50gfO30SVUR3OA9MV7otQakUESh5dGWZcJUxuCasiMcGl/2FM+rDtDH1u8cHCAg==
+ste-simple-events@^2.1.12:
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-2.1.12.tgz#e36cda595adb41c39f1fe39e86960020ce6ae75f"
+  integrity sha512-1uKuk92solNYYIDQFB8oxWVRXc/wQZaDhTMfnxtHenZM3oB8YvE/EPsORTz9NGmuk6r9bDZWLp3EWvkptYEETw==
   dependencies:
-    ste-core "^2.1.11"
+    ste-core "^2.1.12"
 
 stream-browserify@3.0.0:
   version "3.0.0"
