@@ -35,7 +35,5 @@ namespace Witsml.Data
         [XmlElement("extensionAny")]
         public string ExtensionAny { get; set; }
 
-        [XmlElement("extensionNameValue")]
-        public string ExtensionNameValue { get; set; }
     }
 }
