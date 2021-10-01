@@ -32,7 +32,7 @@
   "dependencies": {
     "@date-io/moment": "^2.11.0",
     "@equinor/eds-core-react": "^0.14.0",
-    "@equinor/eds-tokens": "^0.6.0",
+    "@equinor/eds-tokens": "^0.7.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",

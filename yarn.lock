@@ -1295,15 +1295,10 @@
   resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.7.0.tgz#1141eaa7c664adb0a288fc5dcb2f170353ffcb4b"
   integrity sha512-DjbZjsKKxvsXoZV+hRO/Gg5tXH9tbq/ekrymL8YJR9tE73Wt8TbsDnjLZPWocs/Oj61xJUcY+yCoDmidSJVZ6w==
 
-"@equinor/eds-tokens@0.7.0":
+"@equinor/eds-tokens@0.7.0", "@equinor/eds-tokens@^0.7.0":
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.7.0.tgz#e6fe587e414c7470183b8778bf826aaf909766ba"
   integrity sha512-QdlX1Ndz6CmgdLMVHAZi+4GBEfU5OOnNGtXX1m7aTQbzWDTdxB6e7c5XxT/UnJHue1i5vT3RKMBDAhE2YjiXYA==
-
-"@equinor/eds-tokens@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.6.0.tgz#daeac90b4cfdcad99242bb8892ad43b2db6610a8"
-  integrity sha512-Er9Bn5VRlgdyYwgGtubwTb8ejJx6msB8RTbQ1lZ4dWTAjN1XvBQKTSIZMo6NwqJ5N4+5n3YmEbpeGhOetqLyWg==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
