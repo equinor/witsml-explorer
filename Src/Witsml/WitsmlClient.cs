@@ -168,6 +168,7 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     XMLin = XmlHelper.Serialize(query),
+                    OptionsIn = string.Empty,
                     CapabilitiesIn = clientCapabilities
                 };
 
@@ -196,6 +197,7 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     QueryIn = XmlHelper.Serialize(query),
+                    OptionsIn = string.Empty,
                     CapabilitiesIn = clientCapabilities
                 };
 
