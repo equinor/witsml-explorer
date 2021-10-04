@@ -28,7 +28,5 @@ namespace Witsml.Data
         [XmlElement("stringValues")]
         public string StringValues { get; set; }
 
-        [XmlElement("extensionNameValue")]
-        public WitsmlExtensionNameValue ExtensionNameValue { get; set; }
     }
 }
