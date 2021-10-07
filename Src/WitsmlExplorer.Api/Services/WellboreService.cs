@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Services
                 WellType = witsmlWellbore.TypeWellbore,
                 Shape = witsmlWellbore.Shape,
                 DTimeKickoff = string.IsNullOrEmpty(witsmlWellbore.DTimKickoff) ? null : StringHelpers.ToDateTime(witsmlWellbore.DTimKickoff),
-                Md = (witsmlWellbore.Md == null) ? null : new LengthMeasure { Uom = witsmlWellbore.Md.Uom, Value = decimal.Parse(witsmlWellbore.Md.Value)},
+                Md = (witsmlWellbore.Md == null) ? null : new LengthMeasure { Uom = witsmlWellbore.Md.Uom, Value = decimal.Parse(witsmlWellbore.Md.Value) },
                 Tvd = (witsmlWellbore.Tvd == null) ? null : new LengthMeasure { Uom = witsmlWellbore.Tvd.Uom, Value = decimal.Parse(witsmlWellbore.Tvd.Value) },
                 MdKickoff = (witsmlWellbore.MdKickoff == null) ? null : new LengthMeasure { Uom = witsmlWellbore.MdKickoff.Uom, Value = decimal.Parse(witsmlWellbore.MdKickoff.Value) },
                 TvdKickoff = (witsmlWellbore.TvdKickoff == null) ? null : new LengthMeasure { Uom = witsmlWellbore.TvdKickoff.Uom, Value = decimal.Parse(witsmlWellbore.TvdKickoff.Value) },
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Services
                 TvdPlanned = (witsmlWellbore.TvdPlanned == null) ? null : new LengthMeasure { Uom = witsmlWellbore.TvdPlanned.Uom, Value = decimal.Parse(witsmlWellbore.TvdPlanned.Value) },
                 MdSubSeaPlanned = (witsmlWellbore.MdSubSeaPlanned == null) ? null : new LengthMeasure { Uom = witsmlWellbore.MdSubSeaPlanned.Uom, Value = decimal.Parse(witsmlWellbore.MdSubSeaPlanned.Value) },
                 TvdSubSeaPlanned = (witsmlWellbore.TvdSubSeaPlanned == null) ? null : new LengthMeasure { Uom = witsmlWellbore.TvdSubSeaPlanned.Uom, Value = decimal.Parse(witsmlWellbore.TvdSubSeaPlanned.Value) },
-                DayTarget = (witsmlWellbore.Md == null) ? null : new DayMeasure { Uom = witsmlWellbore.DayTarget.Uom, Value = int.Parse(witsmlWellbore.DayTarget.Value) },
+                DayTarget = (witsmlWellbore.DayTarget == null) ? null : new DayMeasure { Uom = witsmlWellbore.DayTarget.Uom, Value = int.Parse(witsmlWellbore.DayTarget.Value) },
                 DateTimeCreation = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimCreation),
                 DateTimeLastChange = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimLastChange),
                 ItemState = witsmlWellbore.CommonData.ItemState
