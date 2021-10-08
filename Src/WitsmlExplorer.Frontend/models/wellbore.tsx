@@ -2,9 +2,10 @@ import Rig from "./rig";
 import MessageObject from "./messageObject";
 import LogObject from "./logObject";
 import Trajectory from "./trajectory";
+import Measure from "./measure";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
 
-export default interface Wellbore {
+export interface WellboreProperties {
   uid: string;
   name: string;
   wellUid: string;
@@ -12,12 +13,29 @@ export default interface Wellbore {
   wellStatus: string;
   wellType: string;
   isActive: boolean;
+  number?: string;
+  suffixAPI?: string;
+  numGovt?: string;
+  shape?: string;
+  dTimeKickoff?: Date;
+  md?: Measure;
+  tvd?: Measure;
+  mdKickoff?: Measure;
+  tvdKickoff?: Measure;
+  mdPlanned?: Measure;
+  tvdPlanned?: Measure;
+  mdSubSeaPlanned?: Measure;
+  tvdSubSeaPlanned?: Measure;
+  dayTarget?: Measure;
   wellboreParentUid?: string;
   wellboreParentName?: string;
   wellborePurpose?: string;
   dateTimeCreation?: Date;
   dateTimeLastChange?: Date;
   itemState?: string;
+}
+
+export default interface Wellbore extends WellboreProperties {
   logs?: LogObject[];
   rigs?: Rig[];
   trajectories?: Trajectory[];
@@ -44,6 +62,10 @@ export function emptyWellbore(): Wellbore {
     trajectories: [],
     messages: []
   };
+}
+
+export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore: WellboreProperties): boolean {
+  return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
 export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
