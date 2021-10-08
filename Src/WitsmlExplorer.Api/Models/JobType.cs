@@ -16,13 +16,16 @@ namespace WitsmlExplorer.Api.Models
         DeleteWell,
         DeleteWellbore,
         DeleteRisk,
+        DeleteMudLog,
         RenameMnemonic,
         ModifyWell,
         ModifyWellbore,
+        ModifyMudLog,
         CreateLogObject,
         CreateWell,
         CreateWellbore,
         CreateRisk,
+        CreateMudLog,
         BatchModifyWell,
         ImportLogData
     }

@@ -24,19 +24,19 @@
   },
   "lint-staged": {
     "*.{cs,vb}": [
-      "dotnet tool run dotnet-format --check --include"
+      "dotnet tool run dotnet-format --include"
     ],
     "*.{ts,tsx}": [
       "eslint",
-      "npx prettier --check ."
+      "npx prettier -w ."
     ]
   },
   "devDependencies": {
-    "@types/react": "^17.0.19",
-    "@typescript-eslint/eslint-plugin": "^4.29.3",
-    "@typescript-eslint/parser": "^4.29.3",
+    "@types/react": "^17.0.27",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "eslint-config-react": "^1.1.7",
-    "husky": "^7.0.1",
-    "lint-staged": "^11.1.2"
+    "husky": "^7.0.2",
+    "lint-staged": "^11.2.0"
   }
 }

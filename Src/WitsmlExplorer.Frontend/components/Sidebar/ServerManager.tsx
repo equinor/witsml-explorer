@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select, Typography } from "@material-ui/core";
+import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import NavigationContext from "../../contexts/navigationContext";
 import { emptyServer, Server } from "../../models/server";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
 import ServerService from "../../services/serverService";
-import { EditIcon, NewIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import NavigationType from "../../contexts/navigationType";
 import CredentialsService from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
@@ -15,6 +16,7 @@ import IdleTimer from "react-idle-timer";
 import WellService from "../../services/wellService";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction, UpdateServerListAction } from "../../contexts/navigationStateReducer";
+import { Typography } from "@equinor/eds-core-react";
 
 const NEW_SERVER_ID = "1";
 const IDLE_TIMEOUT = 1000 * 60 * 10;
@@ -136,7 +138,7 @@ const ServerManager = (): React.ReactElement => {
               <Typography color={"initial"}>{server.name}</Typography>
               {isOpen && (
                 <ListItemSecondaryAction onClick={() => onEditItem(server)}>
-                  <EditIcon />
+                  <Icon name="edit" color={colors.interactive.primaryResting} />
                 </ListItemSecondaryAction>
               )}
             </MenuItem>
@@ -144,7 +146,7 @@ const ServerManager = (): React.ReactElement => {
           <Divider />
           <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID}>
             <ListItemIcon>
-              <NewIcon />
+              <Icon name="add" color={colors.interactive.primaryResting} />
             </ListItemIcon>
             <Typography color={"initial"}>Add server</Typography>
           </MenuItem>

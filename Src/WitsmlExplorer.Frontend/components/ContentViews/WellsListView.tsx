@@ -12,9 +12,8 @@ export interface WellRow extends ContentTableRow, Well {}
 
 export const WellsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers } = navigationState;
+  const { servers, filteredWells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const { filteredWells } = navigationState;
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },

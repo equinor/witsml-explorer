@@ -25,6 +25,7 @@ namespace WitsmlExplorer.Api
         private readonly IWellboreService wellboreService;
         private readonly IWellService wellService;
         private readonly IRiskService riskService;
+        private readonly IMudLogService mudLogService;
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
@@ -37,6 +38,7 @@ namespace WitsmlExplorer.Api
             ITrajectoryService trajectoryService,
             IJobService jobService,
             IRiskService riskService,
+            IMudLogService mudLogService,
             IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
             this.credentialsService = credentialsService;
@@ -48,6 +50,7 @@ namespace WitsmlExplorer.Api
             this.trajectoryService = trajectoryService;
             this.jobService = jobService;
             this.riskService = riskService;
+            this.mudLogService = mudLogService;
             this.witsmlServerRepository = witsmlServerRepository;
 
             Get("/api/witsml-servers", GetWitsmlServers);
@@ -69,6 +72,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
 
             //Get Requests exceeding the URL limit
             Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
@@ -261,6 +266,22 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var risks = await riskService.GetRisks(wellUid, wellboreUid);
             await httpResponse.AsJson(risks);
+        }
+
+        private async Task GetMudLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var mudLogs = await mudLogService.GetMudLogs(wellUid, wellboreUid);
+            await httpResponse.AsJson(mudLogs);
+        }
+        private async Task GetMudLog(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var mudlogUid = httpRequest.RouteValues.As<string>("mudlogUid");
+            var mudLog = await mudLogService.GetMudLog(wellUid, wellboreUid, mudlogUid);
+            await httpResponse.AsJson(mudLog);
         }
 
         private async Task CreateJob(HttpRequest httpRequest, HttpResponse httpResponse)

@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Console.ShowCommands
             AnsiConsole.MarkupLine($"{"Well name:".Bold()} {wellName}");
             AnsiConsole.MarkupLine($"{"Wellbore name:".Bold()} {wellboreName}");
             AnsiConsole.MarkupLine($"{"Log name:".Bold()} {logName}");
-            AnsiConsole.Render(table);
+            AnsiConsole.Write(table);
 
             return 0;
         }

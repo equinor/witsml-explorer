@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Head from "next/head";
 import Nav from "../components/Nav";
 import Sidebar from "../components/Sidebar/Sidebar";
@@ -28,6 +28,38 @@ const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
+  const sidebarRef = useRef(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(268);
+
+  const startResizing = React.useCallback(() => {
+    setIsResizing(true);
+  }, []);
+
+  const stopResizing = React.useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  const resize = React.useCallback(
+    (mouseMoveEvent) => {
+      if (isResizing) {
+        mouseMoveEvent.stopPropagation();
+        mouseMoveEvent.preventDefault();
+        setSidebarWidth(mouseMoveEvent.clientX - sidebarRef.current.getBoundingClientRect().left);
+      }
+    },
+    [isResizing]
+  );
+
+  React.useEffect(() => {
+    window.addEventListener("mousemove", resize);
+    window.addEventListener("mouseup", stopResizing);
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [resize, stopResizing]);
+
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <OperationContext.Provider value={{ operationState, dispatchOperation }}>
@@ -47,9 +79,10 @@ const Home = (): React.ReactElement => {
               <NavLayout>
                 <Nav />
               </NavLayout>
-              <SidebarLayout>
+              <SidebarLayout ref={sidebarRef} style={{ width: sidebarWidth }}>
                 <Sidebar />
               </SidebarLayout>
+              <Divider onMouseDown={startResizing} />
               <ContentViewLayout>
                 <Alerts />
                 <ContentView />
@@ -67,8 +100,8 @@ const Home = (): React.ReactElement => {
 const Layout = styled.div`
   display: grid;
   grid-template-areas:
-    "header header"
-    "sidebar content";
+    "header header header"
+    "sidebar divider content";
   height: 100vh;
 `;
 
@@ -84,7 +117,24 @@ const SidebarLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 93vh;
-  width: 20rem;
+  min-width: 174px;
+`;
+
+const Divider = styled.div`
+  justify-self: flex-end;
+  cursor: col-resize;
+  resize: horizontal;
+  height: 93vh;
+  width: 0.2rem;
+  margin-right: 0.6rem;
+  background: ${colors.interactive.primaryResting};
+  border-radius: 0px 5px 5px 0px;
+
+  &:hover {
+    background: ${colors.interactive.primaryHover};
+    width: 0.6rem;
+    margin-right: 0.2rem;
+  }
 `;
 
 const ContentViewLayout = styled.div`

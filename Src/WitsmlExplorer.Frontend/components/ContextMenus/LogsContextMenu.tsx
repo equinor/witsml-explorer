@@ -5,8 +5,9 @@ import { uuid } from "uuidv4";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
-import { NewIcon, PasteIcon } from "../Icons";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
@@ -16,6 +17,7 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import LogReferences from "../../models/jobs/logReferences";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -109,13 +111,13 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       menuItems={[
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
-            <PasteIcon />
+            <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Paste log</Typography>
         </MenuItem>

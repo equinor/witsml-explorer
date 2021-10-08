@@ -7,16 +7,18 @@ import { useTheme } from "@material-ui/core/styles";
 import NavigationContext from "../../contexts/navigationContext";
 import { ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
-import { IsActiveIcon } from "../Icons/IsActiveIcon";
+import Icon from "../../styles/Icons";
+import { DotProgress } from "@equinor/eds-core-react";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
   selected?: boolean;
   isActive?: boolean;
+  isLoading?: boolean;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, ...other } = props; // eslint-disable-line
+  const { labelText, selected, isActive, isLoading, ...other } = props; // eslint-disable-line
   const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
@@ -30,9 +32,9 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
-          {isActive && <IsActiveIcon />}
+          {isActive && <Icon name="isActive" color={colors.interactive.primaryResting} />}
           <NavigationDrawer selected={selected} compactMode={isCompactMode}>
-            {labelText}
+            {labelText} {isLoading && <DotProgress color={"primary"} size={32} />}
           </NavigationDrawer>
         </Label>
       }
