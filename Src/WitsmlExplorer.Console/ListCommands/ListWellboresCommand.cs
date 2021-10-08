@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 });
 
             AnsiConsole.WriteLine();
-            AnsiConsole.Render(table);
+            AnsiConsole.Write(table);
             return 0;
         }
 
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Console.ListCommands
             var result = await witsmlClient.GetFromStoreAsync(liveLogsQuery, new OptionsIn(ReturnElements.Requested));
             var groupedResults = result.Logs
                 .OrderBy(x => x.NameWell)
-                .GroupBy(x => new{x.UidWell, x.UidWellbore})
+                .GroupBy(x => new { x.UidWell, x.UidWellbore })
                 .Select(x => new
                 {
                     x.Key.UidWell,

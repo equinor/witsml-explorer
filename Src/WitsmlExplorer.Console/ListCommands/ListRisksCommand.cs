@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 });
 
             if (risks.Any())
-                AnsiConsole.Render(table);
+                AnsiConsole.Write(table);
             return 0;
         }
 
