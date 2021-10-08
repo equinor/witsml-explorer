@@ -1,9 +1,10 @@
 import React, { MouseEvent, useContext, useEffect, useState } from "react";
+import Icon from "../styles/Icons";
+import { colors } from "../styles/Colors";
 import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
-import { IconButton, Menu, MenuItem as MuiMenuItem, Typography as MuiTypography } from "@material-ui/core";
-import { AccessibleIcon, CheckIcon } from "./Icons";
+import { Menu, MenuItem as MuiMenuItem, Typography as MuiTypography } from "@material-ui/core";
 import styled from "styled-components";
 
 const ThemeMenu = (): React.ReactElement => {
@@ -22,7 +23,7 @@ const ThemeMenu = (): React.ReactElement => {
     }
   }, []);
 
-  const onToggleMenu = (event: MouseEvent<HTMLElement>) => {
+  const onToggleMenu = (event: MouseEvent<SVGSVGElement>) => {
     anchorEl != null ? setAnchorEl(null) : setAnchorEl(event.currentTarget);
   };
 
@@ -34,18 +35,18 @@ const ThemeMenu = (): React.ReactElement => {
 
   return (
     <>
-      <IconButton onClick={(event) => onToggleMenu(event)}>
-        <AccessibleIcon />
-      </IconButton>
+      <Pointer>
+        <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleMenu(event)} size={24} color={colors.interactive.primaryResting} />
+      </Pointer>
       <Menu id="ThemeMenu" anchorEl={anchorEl} keepMounted open={open} onClose={onToggleMenu}>
         <ThemeLabel key={"text"}>Display density:</ThemeLabel>
         <MenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
           <Typography selected={theme === UserTheme.Comfortable}>Comfortable </Typography>
-          {theme === UserTheme.Comfortable && <CheckIcon />}
+          {theme === UserTheme.Comfortable && <Icon name="check" />}
         </MenuItem>
         <MenuItem key={"compact"} onClick={() => onSelectTheme(UserTheme.Compact)}>
           <Typography selected={theme === UserTheme.Compact}>Compact</Typography>
-          {theme === UserTheme.Compact && <CheckIcon />}
+          {theme === UserTheme.Compact && <Icon name="check" />}
         </MenuItem>
       </Menu>
     </>
@@ -71,6 +72,10 @@ const ThemeLabel = styled.p`
   font-family: inherit;
   font-size: 0.75rem;
   margin: 0.5rem 1.5rem 0.5rem 1.5rem;
+`;
+
+const Pointer = styled.div`
+  cursor: pointer;
 `;
 
 export default ThemeMenu;

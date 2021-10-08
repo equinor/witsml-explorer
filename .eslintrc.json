@@ -18,6 +18,7 @@
     "jest"
   ],
   "rules": {
+    "react-hooks/exhaustive-deps": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/explicit-member-accessibility": 0,
     "@typescript-eslint/explicit-function-return-type": 0,

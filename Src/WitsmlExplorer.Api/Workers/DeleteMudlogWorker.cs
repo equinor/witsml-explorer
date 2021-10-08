@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Workers
         Task<(WorkerResult, RefreshAction)> Execute(DeleteMudLogJob job);
     }
 
-    public class DeleteMudlogWorker: IDeleteMudLogWorker
+    public class DeleteMudlogWorker : IDeleteMudLogWorker
     {
         private readonly IWitsmlClient witsmlClient;
 
@@ -32,8 +32,8 @@ namespace WitsmlExplorer.Api.Workers
             var wellUid = job.MudLogReference.WellUid;
             var wellboreUid = job.MudLogReference.WellboreUid;
             var uid = job.MudLogReference.Uid;
-           
-           var deleteRequest = DeleteRequest(wellUid, wellboreUid, uid); 
+
+            var deleteRequest = DeleteRequest(wellUid, wellboreUid, uid);
 
             var result = await witsmlClient.DeleteFromStoreAsync(deleteRequest);
 
@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete mudlog", result.Reason, description), null);
-      
+
         }
 
         private static WitsmlMudLogs DeleteRequest(string wellUid, string wellboreUid, string uid)

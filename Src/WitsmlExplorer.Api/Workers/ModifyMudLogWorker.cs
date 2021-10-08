@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
                 Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, RefreshType.Update);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"MudLog updated ({mudLog.Name} [{mudLog.Uid}])"), refreshAction);
-                
+
             }
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
             Log.Error($"Job failed. An error occurred when modifying mudlog: {job.MudLog.PrintProperties()}");

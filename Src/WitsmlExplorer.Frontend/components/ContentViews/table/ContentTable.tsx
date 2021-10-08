@@ -5,8 +5,8 @@ import orderBy from "lodash/orderBy";
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
 import { DateFormat } from "../../Constants";
 import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows, ContentTableColumn, getComparatorByColumn } from "./";
+import Icon from "../../../styles/Icons";
 import { colors } from "../../../styles/Colors";
-import { IsActiveIcon } from "../../Icons/IsActiveIcon";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows } = props;
@@ -128,7 +128,7 @@ const format = (type: ContentType, data: string | Date | boolean) => {
     case ContentType.Date:
       return formatDate(data as Date, DateFormat.DATE);
     case ContentType.Icon:
-      return data && <IsActiveIcon />;
+      return data && <Icon name="isActive" />;
     default:
       return data;
   }
@@ -156,6 +156,7 @@ const TableHeaderCell = styled(MuiTableCell)`
     background-color: ${colors.interactive.tableHeaderFillResting};
     z-index: 1;
     color: ${colors.text.staticIconsDefault};
+  }
 `;
 
 const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`

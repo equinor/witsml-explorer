@@ -1,17 +1,19 @@
 import React from "react";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
 import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import { Server } from "../../models/server";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
-import { DeleteIcon, FormatLineSpacingIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import MessageObjectService from "../../services/messageObjectService";
 import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
@@ -72,13 +74,13 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
       menuItems={[
         <MenuItem key={"modify"} onClick={onClickModify} disabled={checkedMessageObjectRows.length !== 1}>
           <ListItemIcon>
-            <FormatLineSpacingIcon />
+            <Icon name="formatLine" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Modify</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedMessageObjectRows.length === 0}>
           <ListItemIcon>
-            <DeleteIcon />
+            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>

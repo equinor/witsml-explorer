@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
-import { Divider, ListItemIcon, MenuItem, Typography } from "@material-ui/core";
+import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-
-import { DeleteIcon, NewIcon, PasteIcon, RefreshIcon, SettingsIcon } from "../Icons";
+import Icon from "../../styles/Icons";
+import { colors } from "../../styles/Colors";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
 import { uuid } from "uuidv4";
@@ -26,6 +26,7 @@ import { UpdateWellboreAction } from "../../contexts/navigationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajectoryJob";
 import LogReferences from "../../models/jobs/logReferences";
+import { Typography } from "@equinor/eds-core-react";
 
 export interface WellboreContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreAction) => void;
@@ -205,37 +206,37 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
       menuItems={[
         <MenuItem key={"refreshwellbore"} onClick={onClickRefresh}>
           <ListItemIcon>
-            <RefreshIcon />
+            <Icon name="refresh" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Refresh wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>New wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newlog"} onClick={onClickNewLog}>
           <ListItemIcon>
-            <NewIcon />
+            <Icon name="add" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
-            <PasteIcon />
+            <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Paste log</Typography>
         </MenuItem>,
         <MenuItem key={"pasteTrajectory"} onClick={() => onClickPaste(JobType.CopyTrajectory)} disabled={trajectoryReference === null}>
           <ListItemIcon>
-            <PasteIcon />
+            <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Paste trajectory</Typography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
           <ListItemIcon>
-            <DeleteIcon />
+            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
@@ -249,7 +250,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
           <ListItemIcon>
-            <SettingsIcon />
+            <Icon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>

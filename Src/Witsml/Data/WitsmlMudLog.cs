@@ -32,7 +32,7 @@ namespace Witsml.Data
 
         [XmlElement("mudLogEngineers")]
         public string MudLogEngineers { get; set; }
-      
+
         [XmlElement("startMd")]
         public WitsmlIndex StartMd { get; set; }
 
