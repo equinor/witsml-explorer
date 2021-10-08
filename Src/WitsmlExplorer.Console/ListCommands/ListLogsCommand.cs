@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Console.ListCommands
             AnsiConsole.MarkupLine($"{"Wellbore UID:".Bold()} {settings.WellboreUid}");
             AnsiConsole.MarkupLine($"{"Well name:".Bold()} {wellName}");
             AnsiConsole.MarkupLine($"{"Wellbore name:".Bold()} {wellboreName}");
-            AnsiConsole.Render(table);
+            AnsiConsole.Write(table);
             return 0;
         }
 
