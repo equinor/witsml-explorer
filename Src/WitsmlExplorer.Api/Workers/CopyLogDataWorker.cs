@@ -8,7 +8,6 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
-using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
@@ -148,7 +147,6 @@ namespace WitsmlExplorer.Api.Workers
                         TraceOrigin = lci.TraceOrigin.NullIfEmpty(),
                         TypeLogData = lci.TypeLogData.NullIfEmpty(),
                         AxisDefinition = lci.AxisDefinition,
-                        ExtensionNameValue = lci.ExtensionNameValue.NullIfEmpty()
                     }).ToList(),
                 LogData = sourceLogWithData.LogData
             };

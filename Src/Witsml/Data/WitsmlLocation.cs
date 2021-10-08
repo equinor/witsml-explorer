@@ -27,6 +27,6 @@ namespace Witsml.Data
             set { Original = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?); }
         }
         [XmlElement("description")] public string Description { get; set; }
-        [XmlElement("extensionNameValue")] public string ExtensionNameValue { get; set; }
+
     }
 }

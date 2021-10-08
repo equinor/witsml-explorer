@@ -70,14 +70,11 @@ namespace Witsml.Data
         [XmlElement("axisDefinition")]
         public WitsmlAxisDefinition AxisDefinition { get; set; }
 
-        [XmlElement("extensionNameValue")]
-        public string ExtensionNameValue { get; set; }
-
         public string TypeName => "logCurveInfo";
 
         public static WitsmlLogCurveInfo Query(string mnemonic)
         {
-            return new WitsmlLogCurveInfo {Mnemonic = mnemonic};
+            return new WitsmlLogCurveInfo { Mnemonic = mnemonic };
         }
     }
 }
