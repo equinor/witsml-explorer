@@ -133,7 +133,9 @@ const ServerManager = (): React.ReactElement => {
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
-          {servers.map((server: Server) => (
+          {servers
+            .sort((a,b) => a.name.localeCompare(b.name))
+            .map((server: Server) => (
             <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
               <Typography color={"initial"}>{server.name}</Typography>
               {isOpen && (
