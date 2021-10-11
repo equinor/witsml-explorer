@@ -133,16 +133,18 @@ const ServerManager = (): React.ReactElement => {
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
-          {servers.map((server: Server) => (
-            <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-              <Typography color={"initial"}>{server.name}</Typography>
-              {isOpen && (
-                <ListItemSecondaryAction onClick={() => onEditItem(server)}>
-                  <Icon name="edit" color={colors.interactive.primaryResting} />
-                </ListItemSecondaryAction>
-              )}
-            </MenuItem>
-          ))}
+          {servers
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((server: Server) => (
+              <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
+                <Typography color={"initial"}>{server.name}</Typography>
+                {isOpen && (
+                  <ListItemSecondaryAction onClick={() => onEditItem(server)}>
+                    <Icon name="edit" color={colors.interactive.primaryResting} />
+                  </ListItemSecondaryAction>
+                )}
+              </MenuItem>
+            ))}
           <Divider />
           <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID}>
             <ListItemIcon>
