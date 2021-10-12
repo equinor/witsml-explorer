@@ -5,8 +5,18 @@ import LogObjectService from "../../services/logObjectService";
 import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import { ContentType, VirtualizedContentTable, ContentTableRow, ExportableContentTableColumn, Order, getIndexRanges, ContentTableColumn, getComparatorByColumn } from "./table";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import {
+  VirtualizedContentTable,
+  ContentTableRow,
+  ExportableContentTableColumn,
+  Order,
+  getIndexRanges,
+  ContentTableColumn,
+  getComparatorByColumn,
+  getProgressRange,
+  updateProgress,
+  getColumnType
+} from "./table";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
 import useExport from "../../hooks/useExport";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
@@ -18,22 +28,6 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
-
-const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
-  const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
-  const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
-
-  const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-    logReference: {
-      wellUid: selectedLog.wellUid,
-      wellboreUid: selectedLog.wellboreUid,
-      logUid: selectedLog.uid
-    },
-    mnemonics: mnemonics,
-    indexRanges: indexRanges
-  };
-  return deleteLogCurveValuesJob;
-};
 
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -52,6 +46,22 @@ export const CurveValuesView = (): React.ReactElement => {
     omitSpecialCharactersFromFilename: true,
     appendDateTime: true
   });
+
+  const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
+    const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
+    const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
+
+    const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
+      logReference: {
+        wellUid: selectedLog.wellUid,
+        wellboreUid: selectedLog.wellboreUid,
+        logUid: selectedLog.uid
+      },
+      mnemonics: mnemonics,
+      indexRanges: indexRanges
+    };
+    return deleteLogCurveValuesJob;
+  };
 
   const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => {
     setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
@@ -80,71 +90,33 @@ export const CurveValuesView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
   };
 
+  const updateColumns = (curveSpecifications: CurveSpecification[]) => {
+    const isNewMnemonic = (mnemonic: string) => {
+      return columns.map((column) => column.property).indexOf(mnemonic) < 0;
+    };
+    const newColumns = curveSpecifications
+      .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
+      .map((curveSpecification) => {
+        return {
+          columnOf: curveSpecification,
+          property: curveSpecification.mnemonic,
+          label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
+          type: getColumnType(curveSpecification)
+        };
+      });
+    setColumns([...columns, ...newColumns]);
+  };
+
   useEffect(() => {
     setTableData([]);
     setIsLoading(true);
     const controller = new AbortController();
 
-    function isNewMnemonic(mnemonic: string) {
-      return columns.map((column) => column.property).indexOf(mnemonic) < 0;
-    }
-
-    function getColumnType(curveSpecification: CurveSpecification) {
-      const isTimeMnemonic = (mnemonic: string) => ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
-      if (isTimeMnemonic(curveSpecification.mnemonic)) {
-        return ContentType.DateTime;
-      }
-      switch (curveSpecification.unit.toLowerCase()) {
-        case "time":
-        case "datetime":
-          return ContentType.DateTime;
-        case "unitless":
-          return ContentType.String;
-        default:
-          return ContentType.Number;
-      }
-    }
-
-    function updateColumns(curveSpecifications: CurveSpecification[]) {
-      const newColumns = curveSpecifications
-        .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
-        .map((curveSpecification) => {
-          return {
-            columnOf: curveSpecification,
-            property: curveSpecification.mnemonic,
-            label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-            type: getColumnType(curveSpecification)
-          };
-        });
-      setColumns([...columns, ...newColumns]);
-    }
-
-    function getProgressRange(startIndex: string, endIndex: string) {
-      return selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
-        ? {
-            minIndex: new Date(startIndex).getTime(),
-            maxIndex: new Date(endIndex).getTime()
-          }
-        : {
-            minIndex: Number(startIndex),
-            maxIndex: Number(endIndex)
-          };
-    }
-
-    function updateProgress(index: string, minIndex: number, maxIndex: number) {
-      const normalize = (value: number) => ((value - minIndex) * 100) / (maxIndex - minIndex);
-      if (selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME) {
-        setProgress(normalize(new Date(index).getTime()));
-      } else {
-        setProgress(normalize(Number(index)));
-      }
-    }
-
     async function getLogData() {
       const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
       let startIndex = String(selectedLogCurveInfo[0].minIndex);
       const endIndex = String(selectedLogCurveInfo[0].maxIndex);
-      const { minIndex, maxIndex } = getProgressRange(startIndex, endIndex);
+      const { minIndex, maxIndex } = getProgressRange(startIndex, endIndex, selectedLog.indexType);
 
       let completeData: CurveValueRow[] = [];
       let fetchData = true;
@@ -160,7 +132,7 @@ export const CurveValuesView = (): React.ReactElement => {
           controller.signal
         );
         if (logData && logData.data) {
-          updateProgress(logData.endIndex, minIndex, maxIndex);
+          setProgress(updateProgress(logData.endIndex, minIndex, maxIndex, selectedLog.indexType));
           updateColumns(logData.curveSpecifications);
 
           const logDataRows = logData.data.map((data, index) => {
