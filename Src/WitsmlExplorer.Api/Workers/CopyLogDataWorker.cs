@@ -117,9 +117,9 @@ namespace WitsmlExplorer.Api.Workers
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
         {
             var newLogCurveInfos = new List<WitsmlLogCurveInfo>();
-            foreach (var mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(mnemonic, targetLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase)))
+            foreach (var mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
             {
-                if (targetLog.LogCurveInfo.All(lci => lci.Mnemonic != mnemonic))
+                if (targetLog.LogCurveInfo.All(lci => !string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase)))
                     newLogCurveInfos.Add(sourceLog.LogCurveInfo.Find(lci => lci.Mnemonic == mnemonic));
             }
 
@@ -181,7 +181,7 @@ namespace WitsmlExplorer.Api.Workers
             throw new Exception($"Source and Target has different index mnemonics. Source: {sourceIndexMnemonic}, Target: {targetIndexMnemonic}");
         }
 
-        private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, List<string> newMnemonics, List<string> existingMnemonics)
+        private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, IList<string> newMnemonics, IList<string> existingMnemonics)
         {
             var indexMnemonic = log.IndexCurve.Value;
             if (!newMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
