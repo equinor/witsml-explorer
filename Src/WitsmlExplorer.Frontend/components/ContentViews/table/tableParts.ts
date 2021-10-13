@@ -98,7 +98,7 @@ export const getProgressRange = (startIndex: string, endIndex: string, indexType
       };
 };
 
-export const updateProgress = (index: string, minIndex: number, maxIndex: number, indexType: string) => {
+export const calculateProgress = (index: string, minIndex: number, maxIndex: number, indexType: string) => {
   const normalize = (value: number) => ((value - minIndex) * 100) / (maxIndex - minIndex);
   if (indexType === WITSML_INDEX_TYPE_DATE_TIME) {
     return normalize(new Date(index).getTime());

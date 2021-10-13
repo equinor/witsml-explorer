@@ -14,7 +14,7 @@ import {
   ContentTableColumn,
   getComparatorByColumn,
   getProgressRange,
-  updateProgress,
+  calculateProgress,
   getColumnType
 } from "./table";
 import { Button, Grid, LinearProgress } from "@material-ui/core";
@@ -132,7 +132,7 @@ export const CurveValuesView = (): React.ReactElement => {
           controller.signal
         );
         if (logData && logData.data) {
-          setProgress(updateProgress(logData.endIndex, minIndex, maxIndex, selectedLog.indexType));
+          setProgress(calculateProgress(logData.endIndex, minIndex, maxIndex, selectedLog.indexType));
           updateColumns(logData.curveSpecifications);
 
           const logDataRows = logData.data.map((data, index) => {
