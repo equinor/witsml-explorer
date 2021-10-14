@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
@@ -9,25 +12,25 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CopyLogWorker : IWorker<CopyLogJob>
+    public class CopyLogWorker : BaseWorker<CopyLogJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
-        private readonly IWorker<CopyLogDataJob> copyLogDataWorker;
+        private readonly IWorker copyLogDataWorker;
+        public JobType JobType => JobType.CopyLog;
 
-        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, IWorker<CopyLogDataJob> copyLogDataWorker = null)
+        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, IWorker copyLogDataWorker = null)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
             this.copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
         {
             var (sourceLogs, targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             var copyLogsQuery = sourceLogs.Select(log => CreateCopyLogQuery(log, targetWellbore));
@@ -90,7 +93,7 @@ namespace WitsmlExplorer.Api.Workers
             return copyLogQuery;
         }
 
-        private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
+        private static Stream CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
         {
             var sourceLogReference = new LogReference
             {
@@ -115,7 +118,8 @@ namespace WitsmlExplorer.Api.Workers
                 },
                 TargetLogReference = targetLogReference
             };
-            return copyLogDataJob;
+            var json = JsonSerializer.Serialize(copyLogDataJob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            return new MemoryStream(Encoding.UTF8.GetBytes(json));
         }
 
         private static void LogError(CopyLogJob job, string errorMessage)

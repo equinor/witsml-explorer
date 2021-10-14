@@ -2,8 +2,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteTrajectoryJob
+    public record DeleteTrajectoryJob
     {
-        public TrajectoryReference TrajectoryReference { get; set; }
+        public TrajectoryReference TrajectoryReference { get; init; }
     }
 }

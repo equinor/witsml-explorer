@@ -3,8 +3,8 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class BatchModifyWellJob
+    public record BatchModifyWellJob
     {
-        public IEnumerable<Well> Wells { get; set; }
+        public IEnumerable<Well> Wells { get; init; }
     }
 }

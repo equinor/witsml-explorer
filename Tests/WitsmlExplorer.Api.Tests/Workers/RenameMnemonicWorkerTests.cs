@@ -12,7 +12,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class RenameMnemonicWorkerTests
     {
-        private Mock<IWitsmlClient> witsmlClient;
         private readonly RenameMnemonicWorker worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
@@ -20,8 +19,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public RenameMnemonicWorkerTests()
         {
-            witsmlClient = new Mock<IWitsmlClient>();
-
+            var witsmlClient = new Mock<IWitsmlClient>();
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             worker = new RenameMnemonicWorker(witsmlClientProvider.Object);
@@ -30,9 +28,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async void MnemonicEmpty_RenameMnemonic_ShouldThrowException()
         {
-            var job = CreateJobTemplate();
-            job.Mnemonic = "";
-            job.NewMnemonic = "Felgen";
+            var job = CreateJobTemplate() with
+            {
+                Mnemonic = "",
+                NewMnemonic = "Felgen"
+            };
 
             Task ExecuteWorker() => worker.Execute(job);
 
@@ -42,16 +42,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async void NewMnemonicNull_RenameMnemonic_ShouldThrowException()
         {
-            var job = CreateJobTemplate();
-            job.Mnemonic = "Reodor";
-            job.NewMnemonic = null;
+            var job = CreateJobTemplate() with
+            {
+                Mnemonic = "Reodor",
+                NewMnemonic = null
+            };
 
             Task ExecuteWorker() => worker.Execute(job);
 
             await Assert.ThrowsAsync<InvalidOperationException>(ExecuteWorker);
         }
 
-        private RenameMnemonicJob CreateJobTemplate()
+        private static RenameMnemonicJob CreateJobTemplate()
         {
             return new RenameMnemonicJob
             {

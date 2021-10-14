@@ -12,20 +12,21 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class ModifyWellboreWorker : IWorker<ModifyWellboreJob>
+    public class ModifyWellboreWorker : BaseWorker<ModifyWellboreJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.ModifyWellbore;
 
         public ModifyWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellboreJob job)
         {
             Verify(job.Wellbore);
 
-            var witsmlWellbore = WellboreQueries.UpdateWitsmlWellbore(job.Wellbore);            
+            var witsmlWellbore = WellboreQueries.UpdateWitsmlWellbore(job.Wellbore);
             var result = await witsmlClient.UpdateInStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
@@ -45,7 +46,7 @@ namespace WitsmlExplorer.Api.Workers
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update wellbore", result.Reason, description), null);
         }
 
-        private void Verify(Wellbore wellbore)
+        private static void Verify(Wellbore wellbore)
         {
             if (string.IsNullOrEmpty(wellbore.Uid) || string.IsNullOrEmpty(wellbore.WellUid)) throw new InvalidOperationException($"{nameof(wellbore.Uid)}/{nameof(wellbore.WellUid)} cannot be empty");
             if (wellbore.Name == string.Empty) throw new InvalidOperationException($"{nameof(wellbore.Name)} cannot be empty");

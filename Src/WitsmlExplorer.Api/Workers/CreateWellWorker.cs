@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
@@ -14,16 +13,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CreateWellWorker : IWorker<CreateWellJob>
+    public class CreateWellWorker : BaseWorker<CreateWellJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.CreateWell;
 
         public CreateWellWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateWellJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellJob job)
         {
             var well = job.Well;
             Verify(well);

@@ -206,7 +206,7 @@ namespace WitsmlExplorer.Api
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var logUid = httpRequest.RouteValues.As<string>("logUid");
-            var mnemonics = await httpRequest.ReadFromJsonAsync<IEnumerable<string>>();
+            var mnemonics = (await httpRequest.ReadFromJsonAsync<IEnumerable<string>>() ?? Array.Empty<string>()).ToList();
             if (mnemonics.Any())
             {
                 string startIndex = null;
@@ -284,10 +284,11 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(mudLog);
         }
 
-        private async Task CreateJob(HttpRequest httpRequest, HttpResponse httpResponse)
+        private Task CreateJob(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var jobType = httpRequest.RouteValues.As<JobType>("jobType");
-            await jobService.CreateJob(jobType, httpRequest.Body);
+            jobService.CreateJob(jobType, httpRequest.Body);
+            return Task.CompletedTask;
         }
 
         private async Task Authorize(HttpRequest httpRequest, HttpResponse httpResponse)

@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Witsml;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
@@ -12,7 +11,6 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     public class RenameMnemonicWorkerTests
     {
         private readonly RenameMnemonicWorker worker;
-        private readonly IWitsmlClient client;
         private const string WellUid = "";
         private const string WellboreUid = "";
         private const string LogUid = "";
@@ -22,22 +20,23 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             worker = new RenameMnemonicWorker(witsmlClientProvider);
-            client = witsmlClientProvider.GetClient();
         }
 
         [Fact(Skip="Should only be run manually")]
         public async void ValidInput_RenameMnemonic_ShouldReturnSuccess()
         {
-            var job = CreateJobTemplate();
-            job.Mnemonic = "";
-            job.NewMnemonic = "";
+            var job = CreateJobTemplate() with
+            {
+                Mnemonic = "",
+                NewMnemonic = ""
+            };
 
             var (result, _) = await worker.Execute(job);
 
             Assert.True(result.IsSuccess, result.Reason);
         }
 
-        private RenameMnemonicJob CreateJobTemplate()
+        private static RenameMnemonicJob CreateJobTemplate()
         {
             return new RenameMnemonicJob
             {

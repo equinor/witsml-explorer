@@ -2,12 +2,12 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class TrimLogDataJob
+    public record TrimLogDataJob
     {
-        public LogReference LogObject { get; set; }
+        public LogReference LogObject { get; init; }
 
-        public string StartIndex { get; set; }
+        public string StartIndex { get; init; }
 
-        public string EndIndex { get; set; }
+        public string EndIndex { get; init; }
     }
 }

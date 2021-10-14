@@ -2,8 +2,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteRiskJob
+    public record DeleteRiskJob
     {
-        public RiskReference RiskReference { get; set; }
+        public RiskReference RiskReference { get; init; }
     }
 }

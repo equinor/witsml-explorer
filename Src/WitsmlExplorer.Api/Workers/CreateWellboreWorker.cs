@@ -13,16 +13,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CreateWellboreWorker : IWorker<CreateWellboreJob>
+    public class CreateWellboreWorker : BaseWorker<CreateWellboreJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.CreateWellbore;
 
         public CreateWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job)
         {
             var wellbore = job.Wellbore;
             Verify(wellbore);

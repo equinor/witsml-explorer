@@ -2,10 +2,10 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class RenameMnemonicJob
+    public record RenameMnemonicJob
     {
-        public LogReference LogReference { get; set; }
-        public string Mnemonic { get; set; }
-        public string NewMnemonic { get; set; }
+        public LogReference LogReference { get; init; }
+        public string Mnemonic { get; init; }
+        public string NewMnemonic { get; init; }
     }
 }

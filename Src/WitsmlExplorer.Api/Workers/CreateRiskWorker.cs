@@ -15,16 +15,17 @@ using WitsmlExplorer.Api.Services;
 namespace WitsmlExplorer.Api.Workers
 {
 
-    public class CreateRiskWorker : IWorker<CreateRiskJob>
+    public class CreateRiskWorker : BaseWorker<CreateRiskJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.CreateRisk;
 
         public CreateRiskWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)
         {
             var risk = job.Risk;
             Verify(risk);

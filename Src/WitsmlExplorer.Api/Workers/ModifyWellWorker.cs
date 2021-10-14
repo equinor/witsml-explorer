@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
@@ -13,18 +12,20 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class ModifyWellWorker : IWorker<ModifyWellJob>
+    public class ModifyWellWorker : BaseWorker<ModifyWellJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.ModifyWell;
 
         public ModifyWellWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellJob job)
         {
             Verify(job.Well);
+
             var wellUid = job.Well.Uid;
             var wellName = job.Well.Name;
             var witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);

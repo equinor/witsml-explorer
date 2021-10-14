@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteLogObjectsJob
+    public record DeleteLogObjectsJob
     {
-        public IEnumerable<LogReference> LogReferences { get; set; }
+        public IEnumerable<LogReference> LogReferences { get; init; }
     }
 }

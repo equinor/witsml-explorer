@@ -15,10 +15,11 @@ using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CopyLogDataWorker : IWorker<CopyLogDataJob>
+    public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
+        public JobType JobType => JobType.CopyLogData;
 
         public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider)
         {
@@ -26,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
         {
             var (sourceLog, targetLog) = await GetLogs(job);
             var mnemonicsToCopy = job.SourceLogCurvesReference.Mnemonics.Any()

@@ -3,16 +3,16 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteCurveValuesJob
+    public record DeleteCurveValuesJob
     {
-        public LogReference LogReference { get; set; }
-        public List<string> Mnemonics { get; set; }
-        public IEnumerable<IndexRange> IndexRanges { get; set; }
+        public LogReference LogReference { get; init; }
+        public IEnumerable<string> Mnemonics { get; init; }
+        public IEnumerable<IndexRange> IndexRanges { get; init; }
     }
 
-    public class IndexRange {
+    public record IndexRange {
 
-        public string StartIndex { get; set; }
-        public string EndIndex { get; set; }
+        public string StartIndex { get; init; }
+        public string EndIndex { get; init; }
     }
 }

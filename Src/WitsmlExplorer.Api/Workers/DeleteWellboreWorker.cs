@@ -10,21 +10,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IDeleteWellboreWorker
-    {
-        Task<(WorkerResult, RefreshWellbore)> Execute(DeleteWellboreJob job);
-    }
-
-    public class DeleteWellboreWorker : IDeleteWellboreWorker
+    public class DeleteWellboreWorker : BaseWorker<DeleteWellboreJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.DeleteWellbore;
 
         public DeleteWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshWellbore)> Execute(DeleteWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job)
         {
             var wellUid = job.WellboreReference.WellUid;
             var wellboreUid = job.WellboreReference.WellboreUid;

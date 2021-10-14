@@ -15,21 +15,17 @@ using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IRenameMnemonicWorker
-    {
-        Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(RenameMnemonicJob job);
-    }
-
-    public class RenameMnemonicWorker: IRenameMnemonicWorker
+    public class RenameMnemonicWorker: BaseWorker<RenameMnemonicJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.RenameMnemonic;
 
         public RenameMnemonicWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(RenameMnemonicJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(RenameMnemonicJob job)
         {
             Verify(job);
 
@@ -76,10 +72,10 @@ namespace WitsmlExplorer.Api.Workers
                 UidWell = logHeader.UidWell,
                 UidWellbore = logHeader.UidWellbore,
                 Uid = logHeader.Uid,
-                LogCurveInfo = logHeader.LogCurveInfo.Where(lci => mnemonics.Contains(lci.Mnemonic)).ToList(),
+                LogCurveInfo = logHeader.LogCurveInfo.Where(lci => mnemonics.Contains(lci.Mnemonic, StringComparer.OrdinalIgnoreCase)).ToList(),
                 LogData = logData.LogData
             };
-            updatedData.LogCurveInfo.Find(c => c.Mnemonic == job.Mnemonic).Mnemonic = job.NewMnemonic;
+            updatedData.LogCurveInfo.Find(c => c.Mnemonic == job.Mnemonic)!.Mnemonic = job.NewMnemonic;
             updatedData.LogData.MnemonicList = string.Join(",", GetMnemonics(logHeader, job.NewMnemonic));
 
             return new WitsmlLogs
@@ -127,7 +123,7 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        private static IEnumerable<string> GetMnemonics(WitsmlLog log, string mnemonic)
+        private static IReadOnlyCollection<string> GetMnemonics(WitsmlLog log, string mnemonic)
         {
             return new List<string>
             {
