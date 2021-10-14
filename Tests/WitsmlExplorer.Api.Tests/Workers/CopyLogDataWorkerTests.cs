@@ -105,7 +105,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.NotNull(query);
             var queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            var copiedMnemonics = updatedLogs.First().Logs.First().LogData.MnemonicList.Split(",");
+            var copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
             Assert.Equal(job.SourceLogCurvesReference.Mnemonics, queriedMnemonics);
             Assert.Equal(job.SourceLogCurvesReference.Mnemonics, copiedMnemonics);
         }
@@ -135,7 +135,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.NotNull(query);
             var queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            var copiedMnemonics = updatedLogs.First().Logs.First().LogData.MnemonicList.Split(",");
+            var copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
             Assert.Contains(indexMnemonic, queriedMnemonics);
             Assert.Contains(indexMnemonic, copiedMnemonics);
         }
@@ -180,36 +180,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.True(result.IsSuccess);
             Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
             Assert.Equal(targetIndexCurve, updatedLogs.First().Logs.First().LogCurveInfo.First().Mnemonic);
-        }
-
-        [Fact]
-        public async Task CopyLogData_DepthIndexed_ShouldUseTargetLogUidIfSourceHasDifferent()
-        {
-            var job = CreateJobTemplate();
-            job.SourceLogCurvesReference.Mnemonics = new[] { "Depth", "DepthBit" };
-
-            var sourceLogs = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd - 1);
-            var targetLogs = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthEnd, DepthEnd + 2);
-            targetLogs.Logs[0].LogCurveInfo[1].Uid = "SomethingElse";
-
-            SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
-            SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, targetLogs);
-            SetupGetDepthIndexed();
-
-            var expectedQuery = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd - 1);
-            expectedQuery.Logs[0].LogData = GetSourceLogData(double.Parse(expectedQuery.Logs[0].StartIndex.Value),
-                double.Parse(expectedQuery.Logs[0].EndIndex.Value), job.SourceLogCurvesReference.Mnemonics).Logs[0].LogData;
-
-            WitsmlLogs actual = null;
-            witsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(witsmlLogs => actual = witsmlLogs)
-                .ReturnsAsync(new QueryResult(true));
-
-            await worker.Execute(job);
-
-            Assert.NotNull(actual);
-            Assert.Equal("SomethingElse", actual.Logs[0].LogCurveInfo[1].Uid);
         }
 
         private void SetupSourceLog(string indexType, WitsmlLogs sourceLogs = null)
