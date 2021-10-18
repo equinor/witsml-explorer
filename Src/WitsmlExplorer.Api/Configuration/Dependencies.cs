@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.AutoRegisterDi;
 using Serilog;
+using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -18,21 +20,23 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             AddRepository<Server, Guid>(services, configuration);
-            services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program))).AsPublicImplementedInterfaces();
+            services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
+                .IgnoreThisInterface<ICopyLogDataWorker>()
+                .AsPublicImplementedInterfaces();
             services.AddSingleton<IJobQueue, JobQueue>();
         }
 
-        private static void AddRepository<TDocument, I>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<I>
+        private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>
         {
             if (!string.IsNullOrEmpty(configuration["MongoDb:Name"]))
             {
                 Log.Information("Detected database config for MongoDB");
-                services.AddSingleton<IDocumentRepository<TDocument, I>, MongoRepository<TDocument, I>>();
+                services.AddSingleton<IDocumentRepository<TDocument, T>, MongoRepository<TDocument, T>>();
             }
             else if (!string.IsNullOrEmpty(configuration["CosmosDb:Name"]))
             {
                 Log.Information("Detected database config for CosmosDB");
-                services.AddSingleton<IDocumentRepository<TDocument, I>, CosmosRepository<TDocument, I>>();
+                services.AddSingleton<IDocumentRepository<TDocument, T>, CosmosRepository<TDocument, T>>();
             }
             else
             {
@@ -41,7 +45,7 @@ namespace WitsmlExplorer.Api.Configuration
             }
 
             var serviceProvider = services.BuildServiceProvider();
-            var repository = serviceProvider.GetService<IDocumentRepository<TDocument, I>>();
+            var repository = serviceProvider.GetService<IDocumentRepository<TDocument, T>>();
             repository?.InitClient();
         }
     }

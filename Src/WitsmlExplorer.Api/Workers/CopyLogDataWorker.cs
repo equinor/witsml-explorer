@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -15,7 +16,12 @@ using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker
+    public interface ICopyLogDataWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(Stream jobStream);
+    }
+
+    public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;

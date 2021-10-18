@@ -29,7 +29,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             client = witsmlClientProvider.GetClient();
-            worker = new CopyLogWorker(witsmlClientProvider);
+            var copyLogDataWorker = new CopyLogDataWorker(witsmlClientProvider);
+            worker = new CopyLogWorker(witsmlClientProvider, copyLogDataWorker);
             deleteLogsWorker = new DeleteLogObjectsWorker(witsmlClientProvider);
             logObjectService = new LogObjectService(witsmlClientProvider);
         }

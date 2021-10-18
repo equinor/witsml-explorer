@@ -20,10 +20,10 @@ namespace WitsmlExplorer.Api.Workers
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
-        private readonly IWorker copyLogDataWorker;
+        private readonly ICopyLogDataWorker copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
 
-        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, IWorker copyLogDataWorker = null)
+        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;

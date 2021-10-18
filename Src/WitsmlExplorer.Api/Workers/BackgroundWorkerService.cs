@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             for (var i = 0; i < NumberOfThreadsToUse; i++)
                 backgroundWorkers.Add(BackgroundProcessing(cancellationToken));
 
-            await Task.WhenAll(backgroundWorkers);
+            await Task.WhenAny(backgroundWorkers);
         }
 
         private async Task BackgroundProcessing(CancellationToken cancellationToken)

@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker copyLogWorker;
-        private readonly Mock<IWorker> copyLogDataWorker;
+        private readonly Mock<ICopyLogDataWorker> copyLogDataWorker;
         private readonly Mock<IWitsmlClient> witsmlClient;
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public CopyLogWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            copyLogDataWorker = new Mock<IWorker>();
+            copyLogDataWorker = new Mock<ICopyLogDataWorker>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             copyLogWorker = new CopyLogWorker(witsmlClientProvider.Object, copyLogDataWorker.Object);
