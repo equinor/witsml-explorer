@@ -31,4 +31,4 @@ jobs:
       - name: Package
         run: dotnet pack --configuration Release Src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
       - name: Publish
-        run: dotnet nuget push Src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
+        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
