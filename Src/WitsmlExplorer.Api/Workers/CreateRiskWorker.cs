@@ -108,7 +108,7 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        private void Verify(Risk risk)
+        private static void Verify(Risk risk)
         {
             if (string.IsNullOrEmpty(risk.Uid)) throw new InvalidOperationException($"{nameof(risk.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(risk.Name)) throw new InvalidOperationException($"{nameof(risk.Name)} cannot be empty");

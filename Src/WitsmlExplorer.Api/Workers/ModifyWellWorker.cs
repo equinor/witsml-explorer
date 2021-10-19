@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update well", result.Reason, description), null);
         }
 
-        private void Verify(Well well)
+        private static void Verify(Well well)
         {
             if (string.IsNullOrEmpty(well.Name)) throw new InvalidOperationException($"{nameof(well.Name)} cannot be empty");
         }
