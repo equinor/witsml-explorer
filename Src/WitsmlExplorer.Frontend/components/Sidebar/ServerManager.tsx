@@ -75,13 +75,9 @@ const ServerManager = (): React.ReactElement => {
   }, []);
 
   const onSelectItem = async (server: Server) => {
-    if (server.id === NEW_SERVER_ID) {
-      onEditItem(emptyServer());
-    } else {
-      const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
-      dispatchNavigation(action);
-      CredentialsService.setSelectedServer(server);
-    }
+    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
+    dispatchNavigation(action);
+    CredentialsService.setSelectedServer(server);
   };
 
   const onEditItem = (server: Server) => {
@@ -146,7 +142,7 @@ const ServerManager = (): React.ReactElement => {
               </MenuItem>
             ))}
           <Divider />
-          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID}>
+          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
             <ListItemIcon>
               <Icon name="add" color={colors.interactive.primaryResting} />
             </ListItemIcon>
