@@ -3,9 +3,19 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>default</LangVersion>
-    <PackageDescription>Witsml 1.4.1.1</PackageDescription>
-    <RepositoryUrl>https://github.com/equinor/witsml-explorer</RepositoryUrl>    
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>WitsmlClient</PackageId>
+    <Authors>WitsmlExplorer contributors</Authors>
+    <Description>This client library enables working with WITSML servers. The library supports a growing subset of the WITSML 1.4 standard and have CRUD operations for supported data objects</Description>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/equinor/witsml-explorer</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/equinor/witsml-explorer/</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>witsml;sitecom</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
