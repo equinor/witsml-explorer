@@ -31,4 +31,4 @@ jobs:
       - name: Package
         run: dotnet pack --configuration Release Src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
       - name: Publish
-        run: dotnet nuget push Src/Witsml/bin/Release/Witsml.1.0.${GITHUB_RUN_NUMBER}.nupkg
+        run: dotnet nuget push Src/Witsml/bin/Release/WitsmlClient.1.0.${GITHUB_RUN_NUMBER}.nupkg
