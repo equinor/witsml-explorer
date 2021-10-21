@@ -49,17 +49,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
 
-            var job = CreateJobTemplate();
-            job.StartIndex = "8";
+            var job = CreateJobTemplate() with { StartIndex = "8" };
             await worker.Execute(job);
 
-            job = CreateJobTemplate();
-            job.EndIndex = "110";
+            job = CreateJobTemplate() with { EndIndex = "110" };
             await worker.Execute(job);
 
-            job = CreateJobTemplate();
-            job.StartIndex = "101";
-            job.EndIndex = "102";
+            job = CreateJobTemplate() with
+            {
+                StartIndex = "101",
+                EndIndex = "102"
+            };
             await worker.Execute(job);
 
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -72,17 +72,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var logEnd = new DateTime(2000, 1, 10);
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
 
-            var job = CreateJobTemplate();
-            job.StartIndex = logStart.AddDays(-1).ToISODateTimeString();
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = logStart.AddDays(-1).ToISODateTimeString()
+            };
             await worker.Execute(job);
 
-            job = CreateJobTemplate();
-            job.EndIndex = logEnd.AddDays(1).ToISODateTimeString();
+            job = CreateJobTemplate() with { EndIndex = logEnd.AddDays(1).ToISODateTimeString() };
             await worker.Execute(job);
 
-            job = CreateJobTemplate();
-            job.StartIndex = logEnd.AddDays(1).ToISODateTimeString();
-            job.EndIndex = logEnd.AddDays(2).ToISODateTimeString();
+            job = CreateJobTemplate() with
+            {
+                StartIndex = logEnd.AddDays(1).ToISODateTimeString(),
+                EndIndex = logEnd.AddDays(2).ToISODateTimeString()
+            };
             await worker.Execute(job);
 
             witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -94,9 +97,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newStartIndex = "50";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate();
-            job.StartIndex = newStartIndex;
-            job.EndIndex = "100";
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = newStartIndex,
+                EndIndex = "100"
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -119,9 +124,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newLogStart = new DateTime(2000, 1, 5).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate();
-            job.StartIndex = newLogStart;
-            job.EndIndex = logEnd.ToISODateTimeString();
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = newLogStart,
+                EndIndex = logEnd.ToISODateTimeString()
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -142,9 +149,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newEndIndex = "90";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate();
-            job.StartIndex = "10";
-            job.EndIndex = newEndIndex;
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = "10",
+                EndIndex = newEndIndex
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -167,9 +176,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newLogEnd = new DateTime(2000, 1, 5).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate();
-            job.StartIndex = logStart.ToISODateTimeString();
-            job.EndIndex = newLogEnd;
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = logStart.ToISODateTimeString(),
+                EndIndex = newLogEnd
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -191,9 +202,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newLogEnd = "90";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate();
-            job.StartIndex = newLogStart;
-            job.EndIndex = newLogEnd;
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = newLogStart,
+                EndIndex = newLogEnd
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -222,9 +235,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var newLogEnd = logEnd.AddDays(-1).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate();
-            job.StartIndex = newLogStart;
-            job.EndIndex = newLogEnd;
+            var job = CreateJobTemplate() with
+            {
+                StartIndex = newLogStart,
+                EndIndex = newLogEnd
+            };
 
             var deleteQueries = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))

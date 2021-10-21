@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
@@ -20,14 +20,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker copyLogWorker;
-        private readonly Mock<IWorker<CopyLogDataJob>> copyLogDataWorker;
+        private readonly Mock<ICopyLogDataWorker> copyLogDataWorker;
         private readonly Mock<IWitsmlClient> witsmlClient;
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
         private const string TargetWellboreUid = "targetWellboreUid";
         private const string LogUid = "sourceLogUid";
 
-        private static readonly Dictionary<string, string[]> SourceMnemonics = new Dictionary<string, string[]>
+        private static readonly Dictionary<string, string[]> SourceMnemonics = new()
         {
             {WitsmlLog.WITSML_INDEX_TYPE_MD, new[] {"Depth", "DepthBit", "DepthHole"}},
             {WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new[] {"Time", "DepthBit", "DepthHole"}}
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public CopyLogWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            copyLogDataWorker = new Mock<IWorker<CopyLogDataJob>>();
+            copyLogDataWorker = new Mock<ICopyLogDataWorker>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             copyLogWorker = new CopyLogWorker(witsmlClientProvider.Object, copyLogDataWorker.Object);
@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
             var copyLogQuery = SetupAddInStoreAsync();
-            copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<Stream>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             var result = await copyLogWorker.Execute(copyLogJob);
@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             var copyLogQuery = SetupAddInStoreAsync();
-            copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<Stream>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             var result = await copyLogWorker.Execute(copyLogJob);
@@ -125,7 +125,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 });
         }
 
-        private List<WitsmlLogs> SetupAddInStoreAsync()
+        private IEnumerable<WitsmlLogs> SetupAddInStoreAsync()
         {
             var addedLog = new List<WitsmlLogs>();
             witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
@@ -134,11 +134,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return addedLog;
         }
 
-        private CopyLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
+        private static CopyLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
         {
             return new CopyLogJob
             {
-                Source = new LogReferences()
+                Source = new LogReferences
                 {
                     LogReferenceList = new[]
                     {
@@ -158,7 +158,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private WitsmlLogs GetSourceLogs(string indexType, string startDateTimeIndex, string endDateTimeIndex)
+        private static WitsmlLogs GetSourceLogs(string indexType, string startDateTimeIndex, string endDateTimeIndex)
         {
             var witsmlLog = new WitsmlLog
             {
@@ -188,7 +188,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private WitsmlLogs GetSourceLogs(string indexType, double startIndex, double endIndex)
+        private static WitsmlLogs GetSourceLogs(string indexType, double startIndex, double endIndex)
         {
             var minIndex = new WitsmlIndex(new DepthIndex(startIndex));
             var maxIndex = new WitsmlIndex(new DepthIndex(endIndex));

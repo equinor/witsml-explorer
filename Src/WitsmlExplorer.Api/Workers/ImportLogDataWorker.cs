@@ -13,48 +13,17 @@ using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class ImportLogDataWorker : IWorker<ImportLogDataJob>
+    public class ImportLogDataWorker : BaseWorker<ImportLogDataJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.ImportLogData;
 
         public ImportLogDataWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
-        {
-            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
-            return result?.Logs.FirstOrDefault();
-        }
-
-        private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
-        {
-            return job.DataRows
-                .Select(row => new WitsmlData { Data = string.Join(',', row) })
-                .Chunk(chunkSize)
-                .Select(logData => new WitsmlLogs
-                {
-                    Logs = new List<WitsmlLog>
-                            {
-                                new WitsmlLog
-                                {
-                                    Uid = job.TargetLog.LogUid,
-                                    UidWellbore = job.TargetLog.WellboreUid,
-                                    UidWell = job.TargetLog.WellUid,
-                                    LogData = new WitsmlLogData
-                                    {
-                                        Data = logData.ToList(),
-                                        MnemonicList = string.Join(',', job.Mnemonics),
-                                        UnitList = string.Join(',', job.Units)
-                                    }
-                                }
-                            },
-                });
-        }
-
-        public async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
             var chunkSize = 1000;
             var wellUid = job.TargetLog.WellUid;
@@ -74,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers
             var queries = CreateImportQueries(job, chunkSize).ToArray();
 
             //Todo: update import progress for the user using websockets
-            for (int i = 0; i < queries.Length; i++)
+            for (var i = 0; i < queries.Length; i++)
             {
                 var result = await witsmlClient.UpdateInStoreAsync(queries[i]);
                 if (result.IsSuccessful)
@@ -102,6 +71,38 @@ namespace WitsmlExplorer.Api.Workers
             var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);
+        }
+
+        private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
+        {
+            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            return result?.Logs.FirstOrDefault();
+        }
+
+        private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
+        {
+            return job.DataRows
+                .Select(row => new WitsmlData { Data = string.Join(',', row) })
+                .Chunk(chunkSize)
+                .Select(logData => new WitsmlLogs
+                {
+                    Logs = new List<WitsmlLog>
+                    {
+                        new WitsmlLog
+                        {
+                            Uid = job.TargetLog.LogUid,
+                            UidWellbore = job.TargetLog.WellboreUid,
+                            UidWell = job.TargetLog.WellUid,
+                            LogData = new WitsmlLogData
+                            {
+                                Data = logData.ToList(),
+                                MnemonicList = string.Join(',', job.Mnemonics),
+                                UnitList = string.Join(',', job.Units)
+                            }
+                        }
+                    },
+                });
         }
     }
 }

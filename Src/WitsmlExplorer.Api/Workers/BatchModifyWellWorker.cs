@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml;
-using Witsml.Data;
-using Witsml.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -13,20 +11,21 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class BatchModifyWellWorker : IWorker<BatchModifyWellJob>
+    public class BatchModifyWellWorker : BaseWorker<BatchModifyWellJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.BatchModifyWell;
 
         public BatchModifyWellWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)
         {
             Verify(job.Wells);
 
-            var wellsToUpdate = job.Wells.Select(well => WellQueries.UpdateWitsmlWell(well));
+            var wellsToUpdate = job.Wells.Select(WellQueries.UpdateWitsmlWell);
             var updateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));
 
             Task resultTask = Task.WhenAll(updateWellTasks);
@@ -45,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers
             return (workerResult, refreshAction);
         }
 
-        private void Verify(IEnumerable<Well> wells)
+        private static void Verify(IEnumerable<Well> wells)
         {
             if (!wells.Any()) throw new InvalidOperationException("payload cannot be empty");
         }

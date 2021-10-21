@@ -2,8 +2,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteWellJob
+    public record DeleteWellJob
     {
-        public WellReference WellReference { get; set; }
+        public WellReference WellReference { get; init; }
     }
 }

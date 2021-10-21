@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -10,26 +11,22 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IDeleteMnemonicsWorker
-    {
-        Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(DeleteMnemonicsJob job);
-    }
-
-    public class DeleteMnemonicsWorker : IDeleteMnemonicsWorker
+    public class DeleteMnemonicsWorker : BaseWorker<DeleteMnemonicsJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.DeleteMnemonics;
 
         public DeleteMnemonicsWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(DeleteMnemonicsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMnemonicsJob job)
         {
             var wellUid = job.LogObject.WellUid;
             var wellboreUid = job.LogObject.WellboreUid;
             var logUid = job.LogObject.LogUid;
-            var mnemonics = job.Mnemonics;
+            var mnemonics = new ReadOnlyCollection<string>(job.Mnemonics.ToList());
             var mnemonicsString = string.Join(", ", mnemonics);
 
             var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, mnemonics);

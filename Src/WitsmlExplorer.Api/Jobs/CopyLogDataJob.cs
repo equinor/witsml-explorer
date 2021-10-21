@@ -2,9 +2,9 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class CopyLogDataJob
+    public record CopyLogDataJob
     {
-        public LogCurvesReference SourceLogCurvesReference { get; set; }
-        public LogReference TargetLogReference { get; set; }
+        public LogCurvesReference SourceLogCurvesReference { get; init; }
+        public LogReference TargetLogReference { get; init; }
     }
 }

@@ -2,8 +2,8 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class ModifyWellboreJob
+    public record ModifyWellboreJob
     {
-        public Wellbore Wellbore { get; set; }
+        public Wellbore Wellbore { get; init; }
     }
 }

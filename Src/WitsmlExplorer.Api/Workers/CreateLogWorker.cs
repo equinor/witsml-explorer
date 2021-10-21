@@ -14,16 +14,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CreateLogWorker : IWorker<CreateLogJob>
+    public class CreateLogWorker : BaseWorker<CreateLogJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.CreateLogObject;
 
         public CreateLogWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job)
         {
             var targetWellbore = await GetWellbore(witsmlClient, job.LogObject);
             var copyLogQuery = CreateLogQuery(job, targetWellbore);

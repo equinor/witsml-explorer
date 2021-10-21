@@ -124,7 +124,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlLogs DeleteMnemonics(string wellUid, string wellboreUid, string logUid, string[] mnemonics)
+        public static WitsmlLogs DeleteMnemonics(string wellUid, string wellboreUid, string logUid, IEnumerable<string> mnemonics)
         {
             return new WitsmlLogs
             {

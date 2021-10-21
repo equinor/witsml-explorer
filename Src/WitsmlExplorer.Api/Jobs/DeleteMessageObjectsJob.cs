@@ -4,8 +4,8 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public class DeleteMessageObjectsJob
+    public record DeleteMessageObjectsJob
     {
-        public IEnumerable<MessageObjectReference> MessageObjects { get; set; }
+        public IEnumerable<MessageObjectReference> MessageObjects { get; init; }
     }
 }

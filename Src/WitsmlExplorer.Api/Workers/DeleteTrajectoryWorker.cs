@@ -4,26 +4,23 @@ using Serilog;
 using Witsml;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IDeleteTrajectoryWorker
-    {
-        Task<WorkerResult> Execute(DeleteTrajectoryJob job);
-    }
-
-    public class DeleteTrajectoryWorker: IDeleteTrajectoryWorker
+    public class DeleteTrajectoryWorker: BaseWorker<DeleteTrajectoryJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.DeleteTrajectory;
 
         public DeleteTrajectoryWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<WorkerResult> Execute(DeleteTrajectoryJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTrajectoryJob job)
         {
             var wellUid = job.TrajectoryReference.WellUid;
             var wellboreUid = job.TrajectoryReference.WellboreUid;
@@ -34,7 +31,8 @@ namespace WitsmlExplorer.Api.Workers
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
-                return new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted trajectory: ${trajectoryUid}");
+                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted trajectory: ${trajectoryUid}"), refreshAction);
             }
 
             Log.Error("Failed to delete trajectory. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}",
@@ -56,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers
                     ObjectName = trajectory.Name
                 };
             }
-            return new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete trajectory", result.Reason, description);
+            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete trajectory", result.Reason, description), null);
         }
     }
 }

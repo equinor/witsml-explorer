@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Modify_Wells_Empty_Payload_ThrowsException()
         {
-            var job = CreateJobTemplate(new string[0]);
+            var job = CreateJobTemplate(Array.Empty<string>());
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("payload cannot be empty", exception.Message);
@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const string expectedWell1Name = "well1UidName";
             const string expectedWell2Name = "well2UidName";
-            var job = CreateJobTemplate(new string[] { Well1Uid, Well2Uid });
+            var job = CreateJobTemplate(new[] { Well1Uid, Well2Uid });
 
             var updatedWells = new List<WitsmlWells>();
             witsmlClient.Setup(client =>
@@ -58,28 +58,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedWell2Name, updatedWells.Last().Wells.First().Name);
         }
 
-        private static BatchModifyWellJob CreateJobTemplate(string[] WellUids)
+        private static BatchModifyWellJob CreateJobTemplate(IEnumerable<string> wellUids)
         {
-            var wells = CreateWells(WellUids);
+            var wells = CreateWells(wellUids);
             return new BatchModifyWellJob
             {
                 Wells = wells
             };
         }
 
-        private static Well[] CreateWells(string[] WellUids)
+        private static IEnumerable<Well> CreateWells(IEnumerable<string> wellUids)
         {
-            List<Well> wells = new List<Well>();
-            foreach(string WellId in WellUids)
-            {
-                var well = new Well
-                {
-                    Uid = WellId,
-                    Name = WellId + "Name"
-                };
-                wells.Add(well);
-            }
-            return wells.ToArray();
+            return wellUids.Select(wellId => new Well { Uid = wellId, Name = wellId + "Name" }).ToArray();
         }
     }
 }

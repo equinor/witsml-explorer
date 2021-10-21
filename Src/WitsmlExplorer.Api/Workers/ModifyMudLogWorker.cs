@@ -5,24 +5,23 @@ using Serilog;
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
-using Witsml.Query;
-using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class ModifyMudLogWorker : IWorker<ModifyMudLogJob>
+    public class ModifyMudLogWorker : BaseWorker<ModifyMudLogJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.ModifyMudLog;
 
         public ModifyMudLogWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(ModifyMudLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyMudLogJob job)
         {
             var mudLog = job.MudLog;
             Verify(mudLog);
@@ -36,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers
 
             }
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
-            Log.Error($"Job failed. An error occurred when modifying mudlog: {job.MudLog.PrintProperties()}");
+            Log.Error($"Job failed. An error occurred when modifying mudLog: {job.MudLog.PrintProperties()}");
 
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update log", result.Reason, description), null);
         }
@@ -91,7 +90,7 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        private void Verify(MudLog mudLog)
+        private static void Verify(MudLog mudLog)
         {
             if (string.IsNullOrEmpty(mudLog.Name)) throw new InvalidOperationException($"{nameof(mudLog.Name)} cannot be empty");
         }

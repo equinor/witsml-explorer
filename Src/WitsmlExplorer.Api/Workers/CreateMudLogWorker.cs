@@ -14,18 +14,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-
-
-    public class CreateMudLogWorker : IWorker<CreateMudLogJob>
+    public class CreateMudLogWorker : BaseWorker<CreateMudLogJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.CreateMudLog;
 
         public CreateMudLogWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job)
         {
             var mudLog = job.MudLog;
             Verify(mudLog);
@@ -113,7 +112,7 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        private void Verify(MudLog mudLog)
+        private static void Verify(MudLog mudLog)
         {
             if (string.IsNullOrEmpty(mudLog.Uid)) throw new InvalidOperationException($"{nameof(mudLog.Uid)} cannot be empty");
             if (string.IsNullOrEmpty(mudLog.Name)) throw new InvalidOperationException($"{nameof(mudLog.Name)} cannot be empty");

@@ -4,6 +4,7 @@ using Moq;
 using Witsml;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using Xunit;
@@ -12,7 +13,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class DeleteLogObjectsWorkerTests
     {
-        private readonly Mock<IWitsmlClient> witsmlClient;
         private readonly DeleteLogObjectsWorker worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public DeleteLogObjectsWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
+            var witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             worker = new DeleteLogObjectsWorker(witsmlClientProvider.Object);
         }
@@ -33,10 +33,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 LogReferences = LogUids
                             .Select( logUid => new LogReference { WellUid = WellUid,WellboreUid = WellboreUid, LogUid = logUid } )
-                            .AsEnumerable<LogReference>()
+                            .AsEnumerable()
             };
-            var result = await worker.Execute(job);
-            Assert.True(result.workerResult.IsSuccess && result.refreshAction.WellboreUid == WellboreUid);
+            var (result, refreshAction) = await worker.Execute(job);
+            Assert.True(result.IsSuccess && ((RefreshWellbore) refreshAction).WellboreUid == WellboreUid);
         }
     }
 }

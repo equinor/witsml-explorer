@@ -13,10 +13,11 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CopyTrajectoryWorker : IWorker<CopyTrajectoryJob>
+    public class CopyTrajectoryWorker : BaseWorker<CopyTrajectoryJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
+        public JobType JobType => JobType.CopyTrajectory;
 
         public CopyTrajectoryWorker(IWitsmlClientProvider witsmlClientProvider)
         {
@@ -24,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryJob job)
         {
             var (trajectory, targetWellbore) = await FetchData(job);
             var trajectoryToCopy = TrajectoryQueries.CopyWitsmlTrajectory(trajectory, targetWellbore);

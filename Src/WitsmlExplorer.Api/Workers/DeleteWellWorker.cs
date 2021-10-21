@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Witsml;
-using Witsml.Data;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -11,21 +10,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IDeleteWellWorker
-    {
-        Task<(WorkerResult, RefreshWell)> Execute(DeleteWellJob job);
-    }
-
-    public class DeleteWellWorker : IDeleteWellWorker
+    public class DeleteWellWorker : BaseWorker<DeleteWellJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.DeleteWell;
 
         public DeleteWellWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshWell)> Execute(DeleteWellJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellJob job)
         {
             var wellUid = job.WellReference.WellUid;
 

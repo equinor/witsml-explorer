@@ -14,21 +14,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public interface IDeleteCurveValuesWorker
-    {
-        Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(DeleteCurveValuesJob job);
-    }
-
-    public class DeleteCurveValuesWorker : IDeleteCurveValuesWorker
+    public class DeleteCurveValuesWorker : BaseWorker<DeleteCurveValuesJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.DeleteCurveValues;
 
         public DeleteCurveValuesWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult workerResult, RefreshLogObject refreshAction)> Execute(DeleteCurveValuesJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteCurveValuesJob job)
         {
             var wellUid = job.LogReference.WellUid;
             var wellboreUid = job.LogReference.WellboreUid;

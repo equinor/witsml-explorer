@@ -15,16 +15,17 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class TrimLogObjectWorker : IWorker<TrimLogDataJob>
+    public class TrimLogObjectWorker : BaseWorker<TrimLogDataJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
+        public JobType JobType => JobType.TrimLogObject;
 
         public TrimLogObjectWorker(IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
         {
             var witsmlLogQuery = LogQueries.GetWitsmlLogById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.LogUid);
             var witsmlLogs = await witsmlClient.GetFromStoreAsync(witsmlLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
@@ -35,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers
             var currentEndIndex = Index.End(witsmlLog);
             var newEndIndex = Index.End(witsmlLog, job.EndIndex);
 
-            bool trimmedStartOfLog = false;
+            var trimmedStartOfLog = false;
             if (currentStartIndex < newStartIndex && newStartIndex < currentEndIndex)
             {
                 var trimLogObjectStartQuery = CreateRequest(
@@ -57,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            bool trimmedEndOfLog = false;
+            var trimmedEndOfLog = false;
             if (currentEndIndex > newEndIndex && newEndIndex > currentStartIndex)
             {
                 var trimLogObjectEndQuery = CreateRequest(
