@@ -60,7 +60,7 @@
     "uuidv4": "^6.2.12"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.10.9",
+    "@types/enzyme": "^3.10.10",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.175",
     "@types/node": "^16.11.1",
