@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
-using Witsml.Data;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
+using WellDatum = WitsmlExplorer.Api.Models.WellDatum;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var start = DateTime.Now;
             var witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.All));
             var wells = result.Wells
                 .Select(well => new Well
                     {
@@ -53,7 +53,12 @@ namespace WitsmlExplorer.Api.Services
                         TimeZone = well.TimeZone,
                         DateTimeCreation = StringHelpers.ToDateTime(well.CommonData.DTimCreation),
                         DateTimeLastChange = StringHelpers.ToDateTime(well.CommonData.DTimLastChange),
-                        ItemState = well.CommonData.ItemState
+                        ItemState = well.CommonData.ItemState,
+                        StatusWell = well.StatusWell,
+                        PurposeWell = well.PurposeWell,
+                        WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
+                        WaterDepth = well.WaterDepth,
+                        WellLocation = WellLocation.FromWitsmlLocation(well.WellLocation)
                     }
                 ).ToList();
             var elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;

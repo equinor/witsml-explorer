@@ -7,6 +7,10 @@ namespace Witsml.Data
     {
         [XmlElement("name")]
         public string Name { get; set; }
+        [XmlElement("code")]
+        public string Code { get; set; }
+        [XmlElement("elevation")]
+        public string Elevation { get; set; }
     }
 
     public class WitsmlWell
@@ -35,10 +39,19 @@ namespace Witsml.Data
         [XmlElement("purposeWell")]
         public string PurposeWell { get; set; }
 
+        [XmlElement("statusWell")]
+        public string StatusWell { get; set; }
+
         [XmlElement("wellDatum")]
         public List<WellDatum> WellDatum { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("waterDepth")]
+        public string WaterDepth { get; set; }
+
+        [XmlElement("wellLocation")]
+        public WitsmlLocation WellLocation { get; set; }
     }
 }

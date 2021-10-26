@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using Witsml.Data;
 using Witsml.Extensions;
 using WitsmlExplorer.Api.Models;
+using WellDatum = Witsml.Data.WellDatum;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -74,8 +76,14 @@ namespace WitsmlExplorer.Api.Query
                     Uid = wellUid,
                     Name = "",
                     Field = "",
+                    Country = "",
                     Operator = "",
                     TimeZone = "",
+                    StatusWell = "",
+                    PurposeWell = "",
+                    WellDatum = new List<WellDatum>(),
+                    WaterDepth = "",
+                    WellLocation = new WitsmlLocation(),
                     CommonData = new WitsmlCommonData
                     {
                         DTimCreation = "",
