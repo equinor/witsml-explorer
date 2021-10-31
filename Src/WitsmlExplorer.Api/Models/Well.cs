@@ -14,6 +14,11 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DateTimeLastChange { get; set; }
         public string ItemState { get; set; }
         public IEnumerable<Wellbore> Wellbores { get; set; }
-        public string Country { get; set;  }
+        public string Country { get; set; }
+        public string StatusWell { get; set; }
+        public string PurposeWell { get; set; }
+        public WellDatum WellDatum { get; set; }
+        public string WaterDepth { get; set; }
+        public WellLocation WellLocation { get; set; }
     }
 }
