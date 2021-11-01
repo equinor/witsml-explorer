@@ -72,7 +72,7 @@
     "@typescript-eslint/parser": "^5.1.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-17-updated": "^1.0.2",
-    "eslint": "^8.0.1",
+    "eslint": "^8.1.0",
     "eslint-config-next": "^11.1.2",
     "eslint-plugin-jest": "^25.2.2",
     "eslint-plugin-react": "^7.26.1",
