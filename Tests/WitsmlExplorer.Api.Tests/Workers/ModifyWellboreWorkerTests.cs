@@ -9,6 +9,7 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using Measure = WitsmlExplorer.Api.Models.Measure;
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
@@ -63,7 +64,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.Md = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft"};
+            job.Wellbore.Md = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft"};
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -82,7 +83,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Md_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.Md = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.Md = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for Md cannot be empty", exception.Message);
@@ -95,7 +96,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 20;
             var job = CreateJobTemplate();
-            job.Wellbore.Tvd = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.Tvd = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -114,7 +115,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Tvd_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.Tvd = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.Tvd = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for Tvd cannot be empty", exception.Message);
@@ -127,7 +128,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.MdKickoff = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.MdKickoff = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -146,7 +147,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_MdKickoff_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.MdKickoff = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.MdKickoff = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for MdKickoff cannot be empty", exception.Message);
@@ -159,7 +160,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 20;
             var job = CreateJobTemplate();
-            job.Wellbore.TvdKickoff = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.TvdKickoff = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -178,7 +179,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_TvdKickoff_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.TvdKickoff = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.TvdKickoff = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for TvdKickoff cannot be empty", exception.Message);
@@ -191,7 +192,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.MdPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.MdPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -210,7 +211,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_MdPlanned_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.MdPlanned = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.MdPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for MdPlanned cannot be empty", exception.Message);
@@ -223,7 +224,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 20;
             var job = CreateJobTemplate();
-            job.Wellbore.TvdPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.TvdPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -242,7 +243,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_TvdPlanned_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.TvdPlanned = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.TvdPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for TvdPlanned cannot be empty", exception.Message);
@@ -255,7 +256,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.MdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.MdSubSeaPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -274,7 +275,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_MdSubSeaPlanned_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.MdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.MdSubSeaPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for MdSubSeaPlanned cannot be empty", exception.Message);
@@ -287,7 +288,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 20;
             var job = CreateJobTemplate();
-            job.Wellbore.TvdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.Wellbore.TvdSubSeaPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -306,7 +307,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_TvdSubSeaPlanned_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.TvdSubSeaPlanned = new Models.Measure.LengthMeasure { Value = 10, Uom = "" };
+            job.Wellbore.TvdSubSeaPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for TvdSubSeaPlanned cannot be empty", exception.Message);
@@ -319,7 +320,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.DayTarget = new Models.Measure.DayMeasure { Value = expectedValue, Uom = "d" };
+            job.Wellbore.DayTarget = new Measure.DayMeasure { Value = expectedValue, Uom = "d" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
             witsmlClient.Setup(client =>
@@ -338,7 +339,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_DayTarget_ThrowsException()
         {
             var job = CreateJobTemplate();
-            job.Wellbore.DayTarget = new Models.Measure.DayMeasure { Value = 10, Uom = "" };
+            job.Wellbore.DayTarget = new Measure.DayMeasure { Value = 10, Uom = "" };
 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
             Assert.Equal("unit of measure for DayTarget cannot be empty", exception.Message);
