@@ -25,7 +25,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetGrowingDataObjectFromStoreAsync_ShortTimeSpan_Returns_ResultCode_1()
         {
             var endIndex = new DateTime(2021, 11, 3, 12, 0, 0);
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             Assert.NotNull(result);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetGrowingDataObjectFromStoreAsync_LongTimeSpan_Returns_ResultCode_2()
         {
             var endIndex = new DateTime(2021, 11, 3, 12, 0, 0);
