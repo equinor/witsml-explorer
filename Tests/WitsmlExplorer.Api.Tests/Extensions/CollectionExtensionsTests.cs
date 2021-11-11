@@ -8,16 +8,16 @@ namespace WitsmlExplorer.Api.Tests.Extensions
     public class CollectionExtensionsTests
     {
         [Theory]
-        [InlineData(1,10)]
-        [InlineData(2,5)]
-        [InlineData(3,4)]
-        [InlineData(10,1)]
-        [InlineData(11,1)]
+        [InlineData(1, 10)]
+        [InlineData(2, 5)]
+        [InlineData(3, 4)]
+        [InlineData(10, 1)]
+        [InlineData(11, 1)]
         public void ChunkingWorks(int chunkSize, int expectedCount)
         {
-            var array = Enumerable.Range(1,10);
+            var array = Enumerable.Range(1, 10);
 
-            var chunkedArray = array.Chunk(chunkSize);
+            var chunkedArray = array.Chunked(chunkSize);
 
             Assert.Equal(chunkedArray.Count(), expectedCount);
         }
@@ -29,8 +29,9 @@ namespace WitsmlExplorer.Api.Tests.Extensions
         {
             var array = Enumerable.Range(1, 10);
 
-            Assert.Throws<ArgumentException>(()=> {
-                array.Chunk(chunkSize);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                array.Chunked(chunkSize);
             });
         }
     }

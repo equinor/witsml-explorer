@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Extensions
 {
     public static class CollectionExtensions
     {
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> data, int chunkSize)
+        public static IEnumerable<IEnumerable<T>> Chunked<T>(this IEnumerable<T> data, int chunkSize)
         {
             if (chunkSize < 1)
                 throw new ArgumentException($"{nameof(chunkSize)} cannot be less than 1");
