@@ -1,14 +1,25 @@
 FROM mhart/alpine-node:16.1 AS builder
 WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
 COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
-RUN yarn
-COPY Src/WitsmlExplorer.Frontend ./
-RUN yarn test
-RUN yarn build
+RUN yarn install --frozen-lockfile
+COPY Src/WitsmlExplorer.Frontend  ./
+RUN yarn test && yarn build && npm prune --production
+
+FROM mhart/alpine-node:16.1 AS deployment
+WORKDIR /app
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/next.config.js ./next.config.js
+
+RUN addgroup -S -g 1001 non-root-group
+RUN adduser -S -u 1001 -G non-root-group non-root-user
+
+ENV NEXT_TELEMETRY_DISABLED=1
 
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
-CMD [ "node_modules/.bin/next", "start" ]
+USER 1001
+CMD [ "yarn", "start" ]

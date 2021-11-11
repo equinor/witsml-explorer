@@ -4,4 +4,6 @@ namespace Witsml.Data
     {
         string TypeName { get; }
     }
+
+    public interface IWitsmlGrowingDataQueryType : IWitsmlQueryType { }
 }
