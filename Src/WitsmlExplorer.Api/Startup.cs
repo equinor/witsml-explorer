@@ -3,19 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Reflection;
 using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NetCore.AutoRegisterDi;
 using Serilog;
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Middleware;
-using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 
@@ -65,6 +61,7 @@ namespace WitsmlExplorer.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.InitializeRepository();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Repositories
             collection = db.GetCollection<TDocument>(collectionName);
         }
 
-        public Task InitClient()
+        public Task InitClientAsync()
         {
             return Task.CompletedTask;
         }

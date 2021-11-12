@@ -1,11 +1,10 @@
 using System;
-using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.AutoRegisterDi;
 using Serilog;
-using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -44,9 +43,12 @@ namespace WitsmlExplorer.Api.Configuration
                 return;
             }
 
-            var serviceProvider = services.BuildServiceProvider();
-            var repository = serviceProvider.GetService<IDocumentRepository<TDocument, T>>();
-            repository?.InitClient();
+        }
+
+        public static void InitializeRepository(this IApplicationBuilder app)
+        {
+            var repository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
+            repository?.InitClientAsync().GetAwaiter().GetResult();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace WitsmlExplorer.Api.Repositories
         Task<TDocument> CreateDocumentAsync(TDocument document);
         Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document);
         Task DeleteDocumentAsync(TDocumentId id);
-        Task InitClient();
+        Task InitClientAsync();
     }
 
     public abstract class DbDocument<TDocumentId>
