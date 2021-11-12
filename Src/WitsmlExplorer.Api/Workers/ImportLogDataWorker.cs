@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             return job.DataRows
                 .Select(row => new WitsmlData { Data = string.Join(',', row) })
-                .Chunked(chunkSize)
+                .Chunk(chunkSize)
                 .Select(logData => new WitsmlLogs
                 {
                     Logs = new List<WitsmlLog>
