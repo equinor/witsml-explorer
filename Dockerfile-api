@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as base
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as base
 WORKDIR /app
 COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
@@ -21,7 +21,7 @@ FROM backend as publish
 WORKDIR /app/Src/WitsmlExplorer.Api
 RUN dotnet publish -c Release -o out --no-restore --no-build --no-dependencies
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=publish /app/Src/WitsmlExplorer.Api/out .
 ENV ASPNETCORE_URLS=http://+:80

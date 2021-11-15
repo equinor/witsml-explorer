@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET 5
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.200
+          dotnet-version: 6.0.100
           source-url: https://nuget.pkg.github.com/equinor/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -29,6 +29,6 @@ jobs:
       - name: Test with dotnet
         run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release --no-restore
       - name: Package
-        run: dotnet pack --configuration Release Src/Witsml -p:Version=1.0.${GITHUB_RUN_NUMBER}
+        run: dotnet pack --configuration Release Src/Witsml -p:Version=2.0.${GITHUB_RUN_NUMBER}
       - name: Publish
-        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.1.0.${GITHUB_RUN_NUMBER}.nupkg
+        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.2.0.${GITHUB_RUN_NUMBER}.nupkg

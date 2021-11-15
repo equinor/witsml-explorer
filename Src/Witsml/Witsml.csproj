@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>default</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latestMajor</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
