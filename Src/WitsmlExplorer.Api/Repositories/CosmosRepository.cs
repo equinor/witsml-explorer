@@ -24,10 +24,10 @@ namespace WitsmlExplorer.Api.Repositories
                 // SerializerOptions = new CosmosSerializationOptions{ PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase }
             });
         }
-        public async Task InitClient()
+        public async Task InitClientAsync()
         {
             await cosmosClient.CreateDatabaseIfNotExistsAsync(dbName);
-            await cosmosClient.GetDatabase(dbName).CreateContainerIfNotExistsAsync(new ContainerProperties{ Id = containerId, PartitionKeyPath = "/id"});
+            await cosmosClient.GetDatabase(dbName).CreateContainerIfNotExistsAsync(new ContainerProperties { Id = containerId, PartitionKeyPath = "/id" });
         }
 
         public async Task<TDocument> GetDocumentAsync(TDocumentId id)
