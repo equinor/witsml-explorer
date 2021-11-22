@@ -21,7 +21,7 @@ FROM backend as publish
 WORKDIR /app/Src/WitsmlExplorer.Api
 RUN dotnet publish -c Release -o out --no-restore --no-build --no-dependencies
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 WORKDIR /app
 COPY --from=publish /app/Src/WitsmlExplorer.Api/out .
 ENV ASPNETCORE_URLS=http://+:80
