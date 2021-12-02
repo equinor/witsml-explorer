@@ -390,10 +390,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@equinor/eds-core-react@^0.14.3":
-  version "0.14.3"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.14.3.tgz#ddced0884d56a782852c3d25dec11a418d362eee"
-  integrity sha512-NEk9h4yRJA41TtD6EZ0U7fDXFxXRMCWOUQl+ytf3kzimhYivW31vxyLSncREO4x9zKafa1d5vdqnIWyVf7PwXw==
+"@equinor/eds-core-react@^0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.15.0.tgz#3062551dc22420741dea45f6b7efa6c9a37b7c3d"
+  integrity sha512-WbxW8I2Yt+4p9frI6QgLK1G57C17FnYpdLwy6c63YeI02FHv9hrHp6qd9qbN6CCIzHuxAsnT/+fW6tphaCzDBg==
   dependencies:
     "@equinor/eds-icons" "0.8.0"
     "@equinor/eds-tokens" "0.7.0"
