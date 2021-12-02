@@ -133,7 +133,9 @@ const ServerManager = (): React.ReactElement => {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
               <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-                <Typography color={"initial"}>{server.name}</Typography>
+                <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
+                  {server.name}
+                </Typography>
                 {isOpen && (
                   <ListItemSecondaryAction onClick={() => onEditItem(server)}>
                     <Icon name="edit" color={colors.interactive.primaryResting} />
