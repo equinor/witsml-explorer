@@ -23,7 +23,7 @@ const PropertiesPanel = (props: PropertiesPanelProps): React.ReactElement => {
         )}
       </div>
       <PropertiesTable>
-        <TableHead>
+        <TableHead onClick={() => setExpanded(!expanded)}>
           <tr>
             <td colSpan={2}>Properties</td>
           </tr>
@@ -58,14 +58,18 @@ const PropertiesTable = styled.table`
 `;
 
 const TableHead = styled.thead`
-  font-size: 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
   line-height: 1.25rem;
   font-family: EquinorMedium, sans-serif;
   color: ${colors.text.staticIconsDefault};
+  :hover {
+    background-color: ${colors.ui.backgroundDefault};
+  }
 `;
 
 const TableBody = styled.tbody`
-  font-size: 0.625rem;
+  font-size: 1rem;
 `;
 
 const PropertyValue = styled.td`
