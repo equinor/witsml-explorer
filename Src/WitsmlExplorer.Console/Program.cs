@@ -50,7 +50,6 @@ namespace WitsmlExplorer.Console
         {
             var services = new ServiceCollection();
             services.AddSingleton<IWitsmlClientProvider, WitsmlClientProvider>();
-
             return new TypeRegistrar(services);
         }
     }

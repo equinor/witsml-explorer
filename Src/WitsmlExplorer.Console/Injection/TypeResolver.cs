@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Console.Injection
 
         public object Resolve(Type type)
         {
-            return provider.GetRequiredService(type);
+            return type == null ? null : provider.GetService(type);
         }
 
         public void Dispose()
