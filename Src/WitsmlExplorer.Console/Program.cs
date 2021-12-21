@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Console
         private static IConfigurator ConfigureCommands(IConfigurator config)
         {
             config.CaseSensitivity(CaseSensitivity.None);
-            config.SetApplicationName("dotnet run --");
+            config.SetApplicationName("witsml-cli");
 
             config.AddBranch("list", add =>
             {
