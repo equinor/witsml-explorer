@@ -68,7 +68,7 @@
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.18",
     "@types/uuid": "^8.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.7.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-17-updated": "^1.0.2",
