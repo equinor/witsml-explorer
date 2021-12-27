@@ -267,10 +267,9 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
-            var optionsIn = new OptionsIn(ReturnElements.HeaderOnly);
             var request = new WMLS_GetCapRequest
             {
-                OptionsIn = optionsIn.GetKeywords()
+                OptionsIn = "dataVersion=1.4.1.1"
             };
 
             var response = await client.WMLS_GetCapAsync(request);
