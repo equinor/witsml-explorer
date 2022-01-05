@@ -52,8 +52,8 @@ namespace WitsmlExplorer.Console.ShowCommands
 
                         table.AddRow(
                             logCurveInfo.Mnemonic,
-                            logCurveInfo.MinDateTimeIndex,
-                            logCurveInfo.MaxDateTimeIndex
+                            logCurveInfo.MinDateTimeIndex ?? $"{logCurveInfo.MinIndex.Value}{logCurveInfo.MinIndex.Uom}",
+                            logCurveInfo.MaxDateTimeIndex ?? $"{logCurveInfo.MaxIndex.Value}{logCurveInfo.MaxIndex.Uom}"
                         );
                     }
                 });
