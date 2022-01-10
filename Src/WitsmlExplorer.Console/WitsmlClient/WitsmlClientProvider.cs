@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Reflection.Metadata;
 using Microsoft.Extensions.Configuration;
 using Spectre.Console;
@@ -39,8 +40,9 @@ namespace WitsmlExplorer.Console.WitsmlClient
 
         private (string, string, string) GetCredentialsFromConfiguration()
         {
+            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var builder = new ConfigurationBuilder();
-            builder.SetBasePath(Directory.GetCurrentDirectory())
+            builder.SetBasePath(assemblyFolder)
                 .AddJsonFile("appsettings.witsml.json", false, true);
             var configuration = builder.Build();
 
