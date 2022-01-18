@@ -83,6 +83,7 @@ namespace WitsmlExplorer.Api.Workers
         private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
         {
             return job.DataRows
+                .Where(d => d.Count() == 2)
                 .Select(row => new WitsmlData { Data = string.Join(',', row) })
                 .Chunk(chunkSize)
                 .Select(logData => new WitsmlLogs
