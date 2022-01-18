@@ -147,7 +147,15 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var logUid = httpRequest.RouteValues.As<string>("logUid");
             var log = await logObjectService.GetLog(wellUid, wellboreUid, logUid);
-            await httpResponse.AsJson(log);
+            if (log == null)
+            {
+                httpResponse.StatusCode = 404;
+            }
+            else
+            {
+                await httpResponse.AsJson(log);
+            }
+
         }
 
         private async Task GetMessagesForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)

@@ -1,5 +1,5 @@
 import ApiClient from "./apiClient";
-import LogObject, { emptyLogObject } from "../models/logObject";
+import LogObject, { emptyLogObject, thinLogObject } from "../models/logObject";
 import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 
@@ -19,6 +19,8 @@ export default class LogObjectService {
     const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal);
     if (response.ok) {
       return response.json();
+    } else if (response.status == 404) {
+      return thinLogObject(wellUid, wellboreUid, logUid);
     } else {
       return emptyLogObject();
     }

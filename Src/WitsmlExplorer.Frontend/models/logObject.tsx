@@ -31,6 +31,23 @@ export function emptyLogObject(): LogObject {
   };
 }
 
+export function thinLogObject(wellUid: string, wellboreUid: string, uid: string): LogObject {
+  return {
+    uid: uid,
+    name: "",
+    wellUid: wellUid,
+    wellName: "",
+    wellboreUid: wellboreUid,
+    wellboreName: "",
+    indexType: "",
+    startIndex: "",
+    endIndex: "",
+    indexCurve: "",
+    objectGrowing: false,
+    serviceCompany: ""
+  };
+}
+
 export const calculateLogObjectNodeId = (logObject: LogObject): string => {
   return logObject.wellUid + logObject.wellboreUid + logObject.uid;
 };
