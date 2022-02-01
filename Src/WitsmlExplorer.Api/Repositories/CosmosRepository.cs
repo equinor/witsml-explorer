@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure.Cosmos;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 
 namespace WitsmlExplorer.Api.Repositories
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Repositories
             var container = cosmosClient.GetContainer(dbName, containerId);
             var itemResponse = await container.ReadItemAsync<TDocument>(id.ToString(), new PartitionKey(id.ToString()));
 
-            return itemResponse.Value;
+            return itemResponse;
         }
 
         public async Task<IEnumerable<TDocument>> GetDocumentsAsync()
@@ -44,9 +44,11 @@ namespace WitsmlExplorer.Api.Repositories
             var queryDefinition = new QueryDefinition("select * from T");
 
             var results = new List<TDocument>();
-            await foreach (var document in container.GetItemQueryIterator<TDocument>(queryDefinition))
+            var iterator = container.GetItemQueryIterator<TDocument>(queryDefinition);
+            while (iterator.HasMoreResults)
             {
-                results.Add(document);
+                var response = await iterator.ReadNextAsync();
+                results.AddRange(response);
             }
 
             return results;
@@ -56,7 +58,7 @@ namespace WitsmlExplorer.Api.Repositories
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
             var itemResponse = await container.ReplaceItemAsync(document, document.Id.ToString());
-            return itemResponse.Value;
+            return itemResponse;
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
@@ -64,7 +66,7 @@ namespace WitsmlExplorer.Api.Repositories
             var container = cosmosClient.GetContainer(dbName, containerId);
             var createResponse = await container.CreateItemAsync(document);
 
-            return createResponse.Value;
+            return createResponse;
         }
 
         public async Task DeleteDocumentAsync(TDocumentId id)
@@ -72,9 +74,9 @@ namespace WitsmlExplorer.Api.Repositories
             var container = cosmosClient.GetContainer(dbName, containerId);
 
             var deleteResponse = await container.DeleteItemStreamAsync(id.ToString(), new PartitionKey(id.ToString()));
-            if (deleteResponse.Status != 204)
+            if (((uint) deleteResponse.StatusCode) != 204)
             {
-                throw new RepositoryException($"Unable to delete document with id: {id}", deleteResponse.Status);
+                throw new RepositoryException($"Unable to delete document with id: {id}", (int) deleteResponse.StatusCode);
             }
         }
     }
