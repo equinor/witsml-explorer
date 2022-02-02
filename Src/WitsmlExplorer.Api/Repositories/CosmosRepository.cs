@@ -57,14 +57,14 @@ namespace WitsmlExplorer.Api.Repositories
         public async Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var itemResponse = await container.ReplaceItemAsync(document, document.Id.ToString());
+            var itemResponse = await container.ReplaceItemAsync<TDocument>(document, document.Id.ToString());
             return itemResponse;
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var createResponse = await container.CreateItemAsync(document);
+            var createResponse = await container.CreateItemAsync<TDocument>(document, new PartitionKey(document.Id.ToString()));
 
             return createResponse;
         }
