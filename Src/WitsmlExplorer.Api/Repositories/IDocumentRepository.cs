@@ -18,10 +18,10 @@ namespace WitsmlExplorer.Api.Repositories
     {
         protected DbDocument(TDocumentId id)
         {
-            this.id = id;
+            Id = id;
         }
 
-        public TDocumentId id { get; set; }
+        public TDocumentId Id { get; set; }
     }
 
     public class RepositoryException : Exception

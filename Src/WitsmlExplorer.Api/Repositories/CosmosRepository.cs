@@ -19,9 +19,8 @@ namespace WitsmlExplorer.Api.Repositories
             containerId = $"{typeof(TDocument).Name}s";
             cosmosClient = new CosmosClient(uri, password, new CosmosClientOptions
             {
-                ConnectionMode = ConnectionMode.Gateway
-                // TODO Add the following line when https://github.com/Azure/azure-cosmos-dotnet-v3/issues/1193 is fixed. Also remove JsonPropertyName attributes from models.
-                // SerializerOptions = new CosmosSerializationOptions{ PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase }
+                ConnectionMode = ConnectionMode.Gateway,
+                SerializerOptions = new CosmosSerializationOptions { PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase }
             });
         }
         public async Task InitClientAsync()
@@ -57,14 +56,14 @@ namespace WitsmlExplorer.Api.Repositories
         public async Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var itemResponse = await container.ReplaceItemAsync<TDocument>(document, document.id.ToString());
+            var itemResponse = await container.ReplaceItemAsync<TDocument>(document, document.Id.ToString());
             return itemResponse;
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var createResponse = await container.CreateItemAsync<TDocument>(document, new PartitionKey(document.id.ToString()));
+            var createResponse = await container.CreateItemAsync<TDocument>(document, new PartitionKey(document.Id.ToString()));
 
             return createResponse;
         }
