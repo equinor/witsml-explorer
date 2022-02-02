@@ -42,13 +42,13 @@ namespace WitsmlExplorer.Api.Repositories
         {
             var filter = Builders<TDocument>.Filter.Eq("_id", id);
             await collection.FindOneAndReplaceAsync(filter, document);
-            return await GetDocumentAsync(document.Id);
+            return await GetDocumentAsync(document.id);
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
         {
             await collection.InsertOneAsync(document);
-            return await GetDocumentAsync(document.Id);
+            return await GetDocumentAsync(document.id);
         }
 
         public async Task DeleteDocumentAsync(TDocumentId id)

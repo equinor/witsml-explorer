@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WitsmlExplorer.Api.Repositories
@@ -19,10 +18,10 @@ namespace WitsmlExplorer.Api.Repositories
     {
         protected DbDocument(TDocumentId id)
         {
-            Id = id;
+            this.id = id;
         }
 
-        [JsonPropertyName("id")] public TDocumentId Id { get; set; }
+        public TDocumentId id { get; set; }
     }
 
     public class RepositoryException : Exception
