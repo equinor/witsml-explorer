@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Net;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 
@@ -32,9 +33,7 @@ namespace WitsmlExplorer.Api.Repositories
         public async Task<TDocument> GetDocumentAsync(TDocumentId id)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var itemResponse = await container.ReadItemAsync<TDocument>(id.ToString(), new PartitionKey(id.ToString()));
-
-            return itemResponse;
+            return await container.ReadItemAsync<TDocument>(id.ToString(), new PartitionKey(id.ToString()));
         }
 
         public async Task<IEnumerable<TDocument>> GetDocumentsAsync()
@@ -56,16 +55,13 @@ namespace WitsmlExplorer.Api.Repositories
         public async Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var itemResponse = await container.ReplaceItemAsync<TDocument>(document, document.Id.ToString());
-            return itemResponse;
+            return await container.ReplaceItemAsync<TDocument>(document, document.Id.ToString());
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
         {
             var container = cosmosClient.GetContainer(dbName, containerId);
-            var createResponse = await container.CreateItemAsync<TDocument>(document, new PartitionKey(document.Id.ToString()));
-
-            return createResponse;
+            return await container.CreateItemAsync<TDocument>(document, new PartitionKey(document.Id.ToString()));
         }
 
         public async Task DeleteDocumentAsync(TDocumentId id)
@@ -73,7 +69,7 @@ namespace WitsmlExplorer.Api.Repositories
             var container = cosmosClient.GetContainer(dbName, containerId);
 
             var deleteResponse = await container.DeleteItemStreamAsync(id.ToString(), new PartitionKey(id.ToString()));
-            if (((uint) deleteResponse.StatusCode) != 204)
+            if (deleteResponse.StatusCode != HttpStatusCode.NoContent)
             {
                 throw new RepositoryException($"Unable to delete document with id: {id}", (int) deleteResponse.StatusCode);
             }
