@@ -38,7 +38,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
     "@microsoft/signalr": "^6.0.2",
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "isomorphic-unfetch": "^3.1.0",
     "lodash.orderby": "^4.6.0",
     "memoize-one": "^6.0.0",
