@@ -73,7 +73,7 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-17-updated": "^1.0.2",
     "eslint": "<9.0.0",
-    "eslint-plugin-jest": "^26.1.0",
+    "eslint-plugin-jest": "^26.1.1",
     "eslint-plugin-react": "^7.28.0",
     "jest": "^27.5.1",
     "lint-staged": "^12.3.4",
