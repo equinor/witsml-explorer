@@ -14,6 +14,7 @@ using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using Witsml.Data;
 
 namespace WitsmlExplorer.Api
 {
@@ -31,6 +32,7 @@ namespace WitsmlExplorer.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
             var host = Configuration["Host"];
             if (string.IsNullOrEmpty(host) || !host.StartsWith("http"))
             {

@@ -1,31 +1,26 @@
 using System.IO;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
-using Witsml.Data;
 
 namespace WitsmlExplorer.Api
 {
     public class Program
     {
-        private static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(ConfigConfiguration)
-                .ConfigureServices(ConfigureServices)
+                .ConfigureLogging((_, logging) => logging.ClearProviders())
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
-                .UseKestrel()
-                .Build();
+                .ConfigureWebHost(webBuilder =>
+                {
+                    webBuilder.UseKestrel();
+                    webBuilder.UseStartup<Startup>();
+                });
 
-        private static void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
-        {
-            services.Configure<WitsmlClientCapabilities>(context.Configuration.GetSection("Witsml:ClientCapabilities"));
-        }
-
-        private static void ConfigConfiguration(WebHostBuilderContext context, IConfigurationBuilder configurationBuilder)
+        private static void ConfigConfiguration(HostBuilderContext context, IConfigurationBuilder configurationBuilder)
         {
             configurationBuilder
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -41,9 +36,6 @@ namespace WitsmlExplorer.Api
             }
         }
 
-        public static void Main(string[] args)
-        {
-            BuildWebHost(args).Run();
-        }
+        public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
     }
 }
