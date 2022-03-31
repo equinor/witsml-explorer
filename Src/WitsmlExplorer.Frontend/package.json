@@ -43,7 +43,7 @@
     "lodash.orderby": "^4.6.0",
     "memoize-one": "^6.0.0",
     "moment": "^2.29.1",
-    "next": "^12.1.2",
+    "next": "^12.1.4",
     "notistack": "1.0.10",
     "prettier": "^2.6.1",
     "prop-types": "15.8.1",
