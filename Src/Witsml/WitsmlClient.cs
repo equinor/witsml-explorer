@@ -31,7 +31,7 @@ namespace Witsml
         private readonly Uri serverUrl;
         private Logger queryLogger;
 
-        public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, bool logQueries = false)
+        public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null, bool logQueries = false)
         {
             if (string.IsNullOrEmpty(hostname)) throw new ArgumentNullException(nameof(hostname), "Hostname is required");
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username), "Username is required");
@@ -39,7 +39,7 @@ namespace Witsml
 
             this.clientCapabilities = clientCapabilities.ToXml();
 
-            var serviceBinding = CreateBinding();
+            var serviceBinding = CreateBinding(requestTimeout ?? TimeSpan.FromMinutes(1));
             var endpointAddress = new EndpointAddress(hostname);
 
             client = new StoreSoapPortClient(serviceBinding, endpointAddress);
@@ -59,7 +59,7 @@ namespace Witsml
                 .CreateLogger();
         }
 
-        private static BasicHttpsBinding CreateBinding()
+        private static BasicHttpsBinding CreateBinding(TimeSpan requestTimeout)
         {
             var binding = new BasicHttpsBinding
             {
@@ -71,7 +71,8 @@ namespace Witsml
                         ClientCredentialType = HttpClientCredentialType.Basic
                     }
                 },
-                MaxReceivedMessageSize = int.MaxValue
+                MaxReceivedMessageSize = int.MaxValue,
+                SendTimeout = requestTimeout
             };
             return binding;
         }
