@@ -37,7 +37,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
-    "@microsoft/signalr": "^6.0.3",
+    "@microsoft/signalr": "^6.0.4",
     "axios": "^0.26.1",
     "isomorphic-unfetch": "^3.1.0",
     "lodash.orderby": "^4.6.0",
