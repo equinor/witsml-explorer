@@ -840,15 +840,15 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
-"@microsoft/signalr@^6.0.3":
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-6.0.3.tgz#9904efd48cd488e3c1c80930ff9fbb3c9f55895d"
-  integrity sha512-wWGVC2xi8OxNjyir8iQWuyxWHy3Dkakk2Q3VreCE7pDzFAgZ4pId6abJlRPMVIQxkUvUGc8knMW5l3sv2bJ/yw==
+"@microsoft/signalr@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-6.0.4.tgz#ae9fc0b35ae6a125913a056a640589a661900174"
+  integrity sha512-YeWRh4LxfYnq4I5CKw17/HOq8rY+ouTv6Bq+s55122StE3pK29j8j2OpP+1PA3D1ksHPfy7dFIgC33yr/E+01A==
   dependencies:
     abort-controller "^3.0.0"
     eventsource "^1.0.7"
     fetch-cookie "^0.11.0"
-    node-fetch "^2.6.1"
+    node-fetch "^2.6.7"
     ws "^7.4.5"
 
 "@next/env@12.1.5":
@@ -3824,7 +3824,7 @@ next@^12.1.5:
     "@next/swc-win32-ia32-msvc" "12.1.5"
     "@next/swc-win32-x64-msvc" "12.1.5"
 
-node-fetch@^2.6.1:
+node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
