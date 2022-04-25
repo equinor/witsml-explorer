@@ -12,7 +12,7 @@ import { colors } from "../../styles/Colors";
 import NavigationType from "../../contexts/navigationType";
 import CredentialsService from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import { useIdleTimer } from 'react-idle-timer'
+import { useIdleTimer } from "react-idle-timer";
 import WellService from "../../services/wellService";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction, UpdateServerListAction } from "../../contexts/navigationStateReducer";
@@ -123,7 +123,7 @@ const ServerManager = (): React.ReactElement => {
     }
   };
 
-  useIdleTimer({ "onIdle": onIdle, "timeout": IDLE_TIMEOUT });
+  useIdleTimer({ onIdle: onIdle, timeout: IDLE_TIMEOUT });
 
   return (
     <>
