@@ -12,7 +12,7 @@ import { colors } from "../../styles/Colors";
 import NavigationType from "../../contexts/navigationType";
 import CredentialsService from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import IdleTimer from "react-idle-timer";
+import { useIdleTimer } from 'react-idle-timer'
 import WellService from "../../services/wellService";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction, UpdateServerListAction } from "../../contexts/navigationStateReducer";
@@ -123,9 +123,10 @@ const ServerManager = (): React.ReactElement => {
     }
   };
 
+  useIdleTimer({ "onIdle": onIdle, "timeout": IDLE_TIMEOUT });
+
   return (
     <>
-      <IdleTimer onIdle={onIdle} timeout={IDLE_TIMEOUT} />
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
