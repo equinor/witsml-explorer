@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import WellboresListView from "../WellboresListView";
 import NavigationContext from "../../../contexts/navigationContext";
 import { initNavigationStateReducer } from "../../../contexts/navigationStateReducer";
@@ -14,6 +14,6 @@ test("Should render when selected well is not set", () => {
     );
   };
 
-  const component = mount(<TestComponent />);
-  expect(component).toMatchSnapshot();
+  const component = render(<TestComponent />);
+  expect(component.baseElement).toMatchSnapshot();
 });

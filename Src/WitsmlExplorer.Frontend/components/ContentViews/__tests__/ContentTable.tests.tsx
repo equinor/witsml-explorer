@@ -1,5 +1,6 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { ContentTable, ContentTableRow, ContentType } from "../table";
 
 describe("<ContentTable />", () => {
@@ -14,43 +15,27 @@ describe("<ContentTable />", () => {
   ];
 
   it("Should render a plain table", () => {
-    const table = mount(<ContentTable columns={columns} data={data} />);
-    const headerRow = table.find("thead").find("tr");
-    expect(headerRow.find("th")).toHaveLength(columns.length);
-    const headerCells = headerRow.find("th").children();
-    expect(headerCells).toHaveLength(columns.length);
-
-    const bodyRows = table.find("tbody").find("tr");
-    expect(bodyRows).toHaveLength(data.length);
-
-    const firstRow = bodyRows.at(0);
-    expect(firstRow.children()).toHaveLength(columns.length);
-
-    expect(firstRow.childAt(0).text()).toBe(data[0].name);
-    expect(firstRow.childAt(1).text()).toBe(data[0].field);
-    const secondRow = bodyRows.at(1);
-    expect(secondRow.children()).toHaveLength(columns.length);
-    expect(secondRow.childAt(0).text()).toBe(data[1].name);
-    expect(secondRow.childAt(1).text()).toBe(data[1].field);
+    const { container } = render(<ContentTable columns={columns} data={data} />);
+    expect(container.querySelectorAll("table")).toHaveLength(1);
+    expect(container.querySelectorAll("th")).toHaveLength(columns.length);
+    data.forEach((element) => {
+      expect(container.querySelector("tbody")).toHaveTextContent(element.name);
+      expect(container.querySelector("tbody")).toHaveTextContent(element.field);
+    });
   });
 
   it("Should have sortable columns", () => {
-    const table = mount(<ContentTable columns={columns} data={data} />);
-    let firstRow = table.find("tbody").find("tr").first();
-    expect(firstRow.find("td").first().text()).toBe(data[0].name);
+    const { container } = render(<ContentTable columns={columns} data={data} />);
+    let firstRow = container.querySelector("tbody").querySelector("tr");
+    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
 
-    sortByName();
-    firstRow = table.find("tbody").find("tr").first();
-    expect(firstRow.find("td").first().text()).toBe(data[1].name);
+    fireEvent.click(screen.queryAllByRole("button")[0]);
+    firstRow = container.querySelector("tbody").querySelector("tr");
+    expect(firstRow.querySelector("td")).toHaveTextContent(data[1].name);
 
-    sortByName();
-    firstRow = table.find("tbody").find("tr").first();
-    expect(firstRow.find("td").first().text()).toBe(data[0].name);
-
-    function sortByName() {
-      const nameHeaderCell = table.find("thead").find("tr").find("th").find("span").at(0);
-      nameHeaderCell.simulate("click");
-    }
+    fireEvent.click(screen.queryAllByRole("button")[0]);
+    firstRow = container.querySelector("tbody").querySelector("tr");
+    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
   });
 
   it("Should be possible to select single rows", () => {
@@ -60,32 +45,21 @@ describe("<ContentTable />", () => {
       selectedRow = row;
       selections++;
     };
-    const table = mount(<ContentTable columns={columns} data={data} onSelect={onSelect} />);
+    const { container } = render(<ContentTable columns={columns} data={data} onSelect={onSelect} />);
     const rowToSelect = 1;
-    const firstRow = table.find("tbody").find("tr").at(rowToSelect).childAt(0);
-    firstRow.simulate("click");
+    const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[rowToSelect].children[0];
+    fireEvent.click(cellToClick);
     expect(selections).toBe(1);
     expect(selectedRow).toBe(data[rowToSelect]);
   });
 
   it("Should render a table with checkable rows", () => {
-    const table = mount(<ContentTable columns={columns} data={data} checkableRows />);
-    const headerRow = table.find("thead").find("tr");
+    const { container } = render(<ContentTable columns={columns} data={data} checkableRows />);
 
-    expect(headerRow.find("th")).toHaveLength(columns.length + 1);
-    const headerCells = headerRow.find("th").children();
-    expect(headerCells).toHaveLength(columns.length + 1);
-    const bodyRows = table.find("tbody").find("tr");
+    const bodyRows = container.querySelector("tbody").querySelectorAll("tr");
     expect(bodyRows).toHaveLength(data.length);
-    const firstRow = bodyRows.at(0);
-    expect(firstRow.children()).toHaveLength(columns.length + 1);
-    expect(firstRow.childAt(0).find("input").length).toBe(1);
-    expect(firstRow.childAt(1).text()).toBe(data[0].name);
-    expect(firstRow.childAt(2).text()).toBe(data[0].field);
-    const secondRow = bodyRows.at(1);
-    expect(secondRow.children()).toHaveLength(columns.length + 1);
-    expect(secondRow.childAt(0).find("input").length).toBe(1);
-    expect(secondRow.childAt(1).text()).toBe(data[1].name);
-    expect(secondRow.childAt(2).text()).toBe(data[1].field);
+    bodyRows.forEach((row) => {
+      expect(row.querySelectorAll("input")).toHaveLength(1);
+    });
   });
 });
