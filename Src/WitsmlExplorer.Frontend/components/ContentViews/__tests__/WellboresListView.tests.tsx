@@ -1,5 +1,5 @@
 import React from "react";
-import {render} from '@testing-library/react'
+import { render } from "@testing-library/react";
 import WellboresListView from "../WellboresListView";
 import NavigationContext from "../../../contexts/navigationContext";
 import { initNavigationStateReducer } from "../../../contexts/navigationStateReducer";
