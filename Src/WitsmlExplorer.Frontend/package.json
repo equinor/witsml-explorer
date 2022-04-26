@@ -59,6 +59,8 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.1.1",
     "@types/enzyme": "^3.10.12",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
@@ -70,8 +72,6 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-17-updated": "^1.0.2",
     "eslint": "<9.0.0",
     "eslint-plugin-jest": "^26.1.5",
     "eslint-plugin-react": "^7.29.4",
