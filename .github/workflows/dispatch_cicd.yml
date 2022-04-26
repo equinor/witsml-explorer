@@ -8,6 +8,7 @@ on:
 
 jobs:
   notify:
+    if: github.repository_owner == 'equinor'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
