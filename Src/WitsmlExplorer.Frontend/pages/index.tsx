@@ -41,7 +41,7 @@ const Home = (): React.ReactElement => {
   }, []);
 
   const resize = React.useCallback(
-    (mouseMoveEvent: { stopPropagation: () => void; preventDefault: () => void; clientX: number; }) => {
+    (mouseMoveEvent: { stopPropagation: () => void; preventDefault: () => void; clientX: number }) => {
       if (isResizing) {
         mouseMoveEvent.stopPropagation();
         mouseMoveEvent.preventDefault();
