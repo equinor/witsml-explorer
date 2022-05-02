@@ -76,7 +76,7 @@
     "eslint": "<9.0.0",
     "eslint-plugin-jest": "^26.1.5",
     "eslint-plugin-react": "^7.29.4",
-    "jest": "^28.0.2",
+    "jest": "^28.0.3",
     "jest-environment-jsdom": "^28.0.2",
     "lint-staged": "^12.4.1",
     "ts-jest": "^27.1.4"
