@@ -45,7 +45,7 @@
     "memoize-one": "^6.0.0",
     "moment": "^2.29.3",
     "next": "^12.1.5",
-    "notistack": "1.0.10",
+    "notistack": "2.0.4",
     "prettier": "^2.6.2",
     "prop-types": "15.8.1",
     "react": "^18.1.0",
