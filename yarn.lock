@@ -4426,17 +4426,17 @@ stack-utils@^2.0.3:
     escape-string-regexp "^2.0.0"
     source-map-support "^0.5.20"
 
-ste-core@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-3.0.1.tgz#3fcc35ace35c4fd2b35d453a65492e1266d10fb9"
-  integrity sha512-xrfkfjVB2e6dFx8/yu1oYQQj/xwBJHBqLtg1wXVNYVa/6T8zdVw2iV82gcbQUlVNn7gxpKBk5guqP4Bhm4QRrQ==
+ste-core@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/ste-core/-/ste-core-3.0.2.tgz#e15a166341d21710c5733ef4c8e84afdb2156a8a"
+  integrity sha512-jX6MwOP78lt5AJsDouGrXEAd4ivYF/xLgzUDa5bpVfScIVhs2K5yG+ZxGJzpyEZFFseYJYhyLvsLDCLETW4W/w==
 
-ste-simple-events@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-3.0.1.tgz#2489fe24773d8bef87b225180a13b0c0d3d070f3"
-  integrity sha512-5DgUXYF2eHKa5s2XxZsQeOesfuealapbJVEilTmcvnz5tw3wagL9lwGVkPGq8Eg/kCnuRYajn0p4YT7tpTQO2w==
+ste-simple-events@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/ste-simple-events/-/ste-simple-events-3.0.2.tgz#2f0dc060938ffcaddff43f9b8e23efcc6f1e5437"
+  integrity sha512-NvHH+JX6SjpMtgmcAwqMAsJ6nyGdGp1/oaGTdK/RVQGIAL0bLKRnHAyiH+ygMJ3P2SPPUPApIjqoq1VGK2uH8A==
   dependencies:
-    ste-core "^3.0.1"
+    ste-core "^3.0.2"
 
 string-argv@^0.3.1:
   version "0.3.1"
