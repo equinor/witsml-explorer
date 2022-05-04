@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import styled from "styled-components";
-import { Collapse, IconButton } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Card, Typography } from "@equinor/eds-core-react";
 import NotificationService from "../services/notificationService";
-import { Close } from "@material-ui/icons";
-import { colors } from "../styles/Colors";
+//import Icon from "../styles/Icons"
+//import { colors } from "../styles/Colors";
 import NavigationContext from "../contexts/navigationContext";
 
 const Alerts = (): React.ReactElement => {
@@ -59,43 +57,16 @@ const Alerts = (): React.ReactElement => {
   }, [navigationState.selectedServer]);
 
   return (
-    <Collapse in={!!alert}>
-      <AlertContainer>
-        <Alert
-          severity={"error"}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setAlert(null);
-              }}
-            >
-              <Close fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          <AlertTitle>Error</AlertTitle>
-          {alert}
-        </Alert>
-      </AlertContainer>
-    </Collapse>
+    <>
+      {alert && (
+        <Card variant="danger">
+          <Card.Header>
+            <Typography variant="h5">{alert}</Typography>
+          </Card.Header>
+        </Card>
+      )}
+    </>
   );
 };
-
-const AlertContainer = styled.div`
-  & .MuiAlert-root {
-    background-color: ${colors.ui.backgroundDefault};
-  }
-
-  & .MuiAlert-action {
-    align-items: start;
-  }
-
-  & .MuiIconButton-root {
-    margin-top: 8px;
-  }
-`;
 
 export default Alerts;

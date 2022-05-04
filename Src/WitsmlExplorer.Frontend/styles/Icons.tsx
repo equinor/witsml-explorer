@@ -1,5 +1,6 @@
 import { Icon } from "@equinor/eds-core-react";
 import {
+  chevron_right as chevronRight,
   trending_up as isActive,
   launch,
   format_line_spacing as formatLine,
@@ -12,9 +13,11 @@ import {
   copy,
   edit,
   delete_to_trash as deleteToTrash,
-  folder_open as folderOpen
+  folder_open as folderOpen,
+  thumbs_down as thumbsDown
 } from "@equinor/eds-icons";
 const icons = {
+  chevronRight,
   isActive,
   launch,
   formatLine,
@@ -27,7 +30,8 @@ const icons = {
   copy,
   edit,
   folderOpen,
-  deleteToTrash
+  deleteToTrash,
+  thumbsDown
 };
 
 Icon.add(icons);
