@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import Icon from "../../styles/Icons"
 import { colors } from "../../styles/Colors";
 
 interface PropertiesPanelProps {
@@ -17,9 +16,9 @@ const PropertiesPanel = (props: PropertiesPanelProps): React.ReactElement => {
     <Container expanded={expanded}>
       <div>
         {expanded ? (
-          <ExpandMoreIcon color={"disabled"} style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
+          <Icon name="chevronDown" color={"disabled"}  style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
         ) : (
-          <ChevronRightIcon color={"disabled"} style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
+          <Icon name="chevronRight" color={"disabled"}  style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
         )}
       </div>
       <PropertiesTable>
