@@ -85,11 +85,11 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     <ContextMenu
       menuItems={[
         <MenuItem key={"open"} onClick={onClickOpen} disabled={checkedLogCurveInfoRows.length === 0}>
-            <StyledIcon name="folderOpen" size="20" color={colors.interactive.primaryResting} />
+          <StyledIcon name="folderOpen" size="20" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Open</Typography>
         </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedLogCurveInfoRows.length === 0}>
-            <StyledIcon size="20" name="copy" color={colors.interactive.primaryResting} />
+          <StyledIcon size="20" name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
