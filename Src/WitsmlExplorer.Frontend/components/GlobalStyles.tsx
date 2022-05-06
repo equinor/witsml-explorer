@@ -3,6 +3,12 @@ import { AssetsLoader } from "./AssetsLoader";
 
 const GlobalStyles = createGlobalStyle`
   @font-face {
+    font-family: "Equinor";
+    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
     font-family: "EquinorRegular";
     src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
     font-weight: normal;
