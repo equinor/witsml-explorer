@@ -13,7 +13,7 @@ namespace Witsml.Data.Curves
 
         public DoubleValue(string value)
         {
-            this.value = double.Parse(value);
+            this.value = double.Parse(value, CultureInfo.InvariantCulture);
         }
 
         public double Get() => value;
