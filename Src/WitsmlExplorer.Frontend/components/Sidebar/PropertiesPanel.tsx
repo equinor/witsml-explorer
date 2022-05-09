@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Icon from "../../styles/Icons"
+import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 
 interface PropertiesPanelProps {
@@ -16,9 +16,9 @@ const PropertiesPanel = (props: PropertiesPanelProps): React.ReactElement => {
     <Container expanded={expanded}>
       <div>
         {expanded ? (
-          <Icon name="chevronDown" color={"disabled"}  style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
+          <Icon name="chevronDown" color={"disabled"} style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
         ) : (
-          <Icon name="chevronRight" color={"disabled"}  style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
+          <Icon name="chevronRight" color={"disabled"} style={{ width: 18 }} onClick={() => setExpanded(!expanded)} />
         )}
       </div>
       <PropertiesTable>
