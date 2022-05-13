@@ -97,12 +97,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             var result = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlLog = result.Logs.FirstOrDefault();
-            var indexMnemonic = witsmlLog.IndexCurve.Value;
             var data = witsmlLog.LogData.Data;
-            var row = data.FirstOrDefault().GetRow();
-
-            Assert.Equal("DEPTH".ToLower(), indexMnemonic.ToLower());
-            Assert.NotEmpty(data);
+            data.First().GetRow(); // Test fails if parsing error on GetRow() due to incompatible culture setting.
         }
     }
 }
