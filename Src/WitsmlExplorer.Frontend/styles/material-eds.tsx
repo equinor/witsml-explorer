@@ -1,4 +1,4 @@
-import { createMuiTheme, Theme } from "@material-ui/core";
+import { createTheme, Theme } from "@material-ui/core";
 import { colors } from "./Colors";
 import { UserTheme } from "../contexts/operationStateReducer";
 
@@ -6,7 +6,7 @@ const EquinorRegular = {
   fontFamily: "EquinorRegular"
 };
 
-const edsTheme = createMuiTheme({
+const edsTheme = createTheme({
   typography: {
     fontFamily: "EquinorRegular, Arial, sans-serif",
     fontSize: 14,
@@ -145,7 +145,7 @@ const edsTheme = createMuiTheme({
 
 const getTheme = (theme: UserTheme): Theme => {
   if (theme === UserTheme.Compact) {
-    return createMuiTheme({
+    return createTheme({
       ...edsTheme,
       props: {
         ...edsTheme.props,
@@ -164,7 +164,7 @@ const getTheme = (theme: UserTheme): Theme => {
       }
     });
   } else {
-    return createMuiTheme({
+    return createTheme({
       ...edsTheme
     });
   }
