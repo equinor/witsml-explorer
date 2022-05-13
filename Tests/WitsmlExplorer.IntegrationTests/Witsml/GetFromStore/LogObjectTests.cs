@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 using Xunit;
 
@@ -18,6 +20,10 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         private const string UidWell = "bbd34996-a1f6-4767-8b02-5e3b46a990e8";
         private const string UidWellbore = "064fc089-fb1d-4302-b85f-a1cd21455314";
         private const string UidLog = "064fc089-fb1d-4302-b85f-a1cd21455314";
+
+        private const string UidWellDepth = "64457931-c280-4eee-8d58-8f2f27d02807";
+        private const string UidWellboreDepth = "d171f23a-750d-4415-b8e5-b8d57bb48d6d";
+        private const string UidLogDepth = "GM_Measured_Depth_GMDepth";
 
         public LogObjectTests()
         {
@@ -72,6 +78,27 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             Assert.Equal(2, resultCode);
             Assert.Equal(10000, result.Logs.First().LogData.Data.Count);
             Assert.NotNull(result);
+        }
+
+        [Fact(Skip="Should only be run manually")]
+        public async Task GetDepthDataObjectFromStoreAsync_ParseInvariant()
+        {
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("nb-NO");
+            var query = new WitsmlLogs
+            {
+                Logs = new WitsmlLog
+                {
+                    Uid = UidLogDepth,
+                    UidWell = UidWellDepth,
+                    UidWellbore = UidWellboreDepth
+
+                }.AsSingletonList()
+            };
+
+            var result = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            var witsmlLog = result.Logs.FirstOrDefault();
+            var data = witsmlLog.LogData.Data;
+            data.First().GetRow(); // Test fails if parsing error on GetRow() due to incompatible culture setting.
         }
     }
 }
