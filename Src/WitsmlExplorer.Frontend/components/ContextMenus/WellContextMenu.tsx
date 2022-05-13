@@ -6,7 +6,7 @@ import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 import Wellbore from "../../models/wellbore";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import JobService, { JobType } from "../../services/jobService";

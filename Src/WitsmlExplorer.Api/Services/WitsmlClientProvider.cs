@@ -46,12 +46,12 @@ namespace WitsmlExplorer.Api.Services
             if (!isEncrypted) return;
 
             var logQueries = StringHelpers.ToBoolean(configuration["LogQueries"]);
-            witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), clientCapabilities, logQueries);
+            witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), clientCapabilities, null, logQueries);
 
             var sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
 
             if (string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 1) return;
-            witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), clientCapabilities, logQueries);
+            witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), clientCapabilities, null, logQueries);
         }
 
         private static List<Credentials> ExtractCredentialsFromHeader(IHeaderDictionary headers)
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Services
         internal WitsmlClientProvider(IConfiguration configuration)
         {
             var (serverUrl, username, password) = GetCredentialsFromConfiguration(configuration);
-            witsmlClient = new WitsmlClient(serverUrl, username, password, clientCapabilities, true);
+            witsmlClient = new WitsmlClient(serverUrl, username, password, clientCapabilities, null, true);
         }
 
         private (string, string, string) GetCredentialsFromConfiguration(IConfiguration configuration)
