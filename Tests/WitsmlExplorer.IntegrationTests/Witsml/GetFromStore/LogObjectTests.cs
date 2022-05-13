@@ -101,9 +101,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             var data = witsmlLog.LogData.Data;
             var row = data.FirstOrDefault().GetRow();
 
-            Assert.Equal("DEPTH", indexMnemonic);
+            Assert.Equal("DEPTH".ToLower(), indexMnemonic.ToLower());
             Assert.NotEmpty(data);
-            Assert.Equal(12, row.Values.Count());
         }
     }
 }
