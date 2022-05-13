@@ -121,12 +121,12 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   );
 };
 
-const format = (type: ContentType, data: string | Date | boolean) => {
+const format = (type: ContentType, data: string | boolean) => {
   switch (type) {
     case ContentType.DateTime:
-      return formatDate(data as Date, DateFormat.DATETIME_S);
+      return formatDate(data as unknown as Date, DateFormat.DATETIME_S);
     case ContentType.Date:
-      return formatDate(data as Date, DateFormat.DATE);
+      return formatDate(data as unknown as Date, DateFormat.DATE);
     case ContentType.Icon:
       return data && <Icon name="isActive" />;
     default:

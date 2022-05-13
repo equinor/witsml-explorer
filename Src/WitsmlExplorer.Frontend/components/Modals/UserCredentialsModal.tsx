@@ -89,8 +89,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             required
             fullWidth
             error={!validText(username)}
-            helperText={username?.length === 0 ? "Username must be 1-64 characters" : ""}
-            inputProps={{ minLength: 1, maxLength: 64 }}
+            helperText={username?.length === 0 ? "Username must be 1-7936 characters" : ""}
+            inputProps={{ minLength: 1, maxLength: 7936 }}
             onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
@@ -99,11 +99,11 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             label={"Password"}
             defaultValue={password}
             error={!validText(password)}
-            helperText={password?.length === 0 ? "Password must be 1-64 characters" : ""}
+            helperText={password?.length === 0 ? "Password must be 1-7936 characters" : ""}
             fullWidth
             type="password"
             autoComplete="current-password"
-            inputProps={{ minLength: 1, maxLength: 64 }}
+            inputProps={{ minLength: 1, maxLength: 7936 }}
             onChange={(e) => setPassword(e.target.value)}
           />
         </>

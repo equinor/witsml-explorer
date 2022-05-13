@@ -7,7 +7,7 @@ import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import { uuid } from "uuidv4";
+import { v4 as uuid } from "uuid";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
