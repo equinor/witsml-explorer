@@ -74,7 +74,7 @@
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "<9.0.0",
-    "eslint-plugin-jest": "^26.1.5",
+    "eslint-plugin-jest": "^26.2.2",
     "eslint-plugin-react": "^7.29.4",
     "jest": "^28.1.0",
     "jest-environment-jsdom": "^28.1.0",
