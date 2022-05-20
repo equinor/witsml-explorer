@@ -61,7 +61,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
       const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
-      const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal)
+      const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal);
       const [logs, rigs, trajectories, messages, tubulars] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages, getTubulars]);
       const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories, messages, tubulars } };
       dispatchNavigation(selectWellbore);

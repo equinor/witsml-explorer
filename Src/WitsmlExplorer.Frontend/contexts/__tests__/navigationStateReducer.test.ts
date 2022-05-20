@@ -760,7 +760,7 @@ const TUBULAR_1 = {
   wellboreUid: "",
   name: "tubby",
   typeTubularAssy: "drilling"
-}
+};
 const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
 const TRAJECTORY_GROUP_1 = "TrajectoryGroup";
 

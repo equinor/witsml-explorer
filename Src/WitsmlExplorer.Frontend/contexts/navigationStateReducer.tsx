@@ -111,7 +111,7 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
     case NavigationType.SelectTrajectoryGroup:
       return selectTrajectoriesGroup(state, action);
     case NavigationType.SelectTrajectory:
-      return selectTrajectory(state, action); 
+      return selectTrajectory(state, action);
     case NavigationType.SelectTubularGroup:
       return selectTubularGroup(state, action);
     case NavigationType.SetFilter:

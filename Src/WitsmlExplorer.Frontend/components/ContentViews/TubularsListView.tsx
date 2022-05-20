@@ -5,7 +5,7 @@ import NavigationContext from "../../contexts/navigationContext";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const {  selectedWellbore} = navigationState;
+  const { selectedWellbore } = navigationState;
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
   useEffect(() => {
