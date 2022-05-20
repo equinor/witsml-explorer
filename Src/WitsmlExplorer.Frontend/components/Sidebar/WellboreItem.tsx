@@ -3,7 +3,7 @@ import TreeItem from "./TreeItem";
 import LogObjectService from "../../services/logObjectService";
 import MessageObjectService from "../../services/messageObjectService";
 import Well from "../../models/well";
-import Wellbore, { calculateLogGroupId, calculateMessageGroupId, calculateRigGroupId, calculateTrajectoryGroupId } from "../../models/wellbore";
+import Wellbore, { calculateLogGroupId, calculateMessageGroupId, calculateRigGroupId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../../models/wellbore";
 import LogTypeItem from "./LogTypeItem";
 import RigService from "../../services/rigService";
 import TrajectoryService from "../../services/trajectoryService";
@@ -19,6 +19,7 @@ import { calculateTrajectoryId } from "../../models/trajectory";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
+import TubularService from "../../services/tubularService";
 
 interface WellboreItemProps {
   well: Well;
@@ -60,8 +61,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
       const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
-      const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
-      const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories, messages } };
+      const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal)
+      const [logs, rigs, trajectories, messages, tubulars] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages, getTubulars]);
+      const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore, logs, rigs, trajectories, messages, tubulars } };
       dispatchNavigation(selectWellbore);
       setIsFetchingData(false);
     }
@@ -89,10 +91,14 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectTrajectoryGroup, payload: { well, wellbore, trajectoryGroup } });
   };
 
+  const onSelectTubularGroup = async (well: Well, wellbore: Wellbore, tubularGroup: string) => {
+    dispatchNavigation({ type: NavigationType.SelectTubularGroup, payload: { well, wellbore, tubularGroup } });
+  };
+
   const onLabelClick = () => {
     const wellboreHasData = wellbore.logs?.length > 0;
     if (wellboreHasData) {
-      const payload = { well, wellbore, logs: wellbore.logs, rigs: wellbore.rigs, trajectories: wellbore.trajectories, messages: wellbore.messages };
+      const payload = { well, wellbore, logs: wellbore.logs, rigs: wellbore.rigs, trajectories: wellbore.trajectories, messages: wellbore.messages, tubulars: wellbore.tubulars };
       const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload };
       dispatchNavigation(selectWellbore);
     } else {
@@ -114,6 +120,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const messageGroupId = calculateMessageGroupId(wellbore);
   const trajectoryGroupId = calculateTrajectoryGroupId(wellbore);
   const rigGroupId = calculateRigGroupId(wellbore);
+  const tubularsGroupId = calculateTubularGroupId(wellbore);
 
   return (
     <TreeItem
@@ -164,6 +171,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             />
           ))}
       </TreeItem>
+      <TreeItem
+        nodeId={tubularsGroupId}
+        labelText={"Tubulars"}
+        onLabelClick={() => onSelectTubularGroup(well, wellbore, tubularsGroupId)}
+        onContextMenu={preventContextMenuPropagation}
+      />
     </TreeItem>
   );
 };

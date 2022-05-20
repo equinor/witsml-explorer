@@ -13,6 +13,7 @@ import Wellbore from "../models/wellbore";
 import LogObject from "../models/logObject";
 import { NavigationState, SelectLogObjectAction, SelectServerAction, SelectWellAction, SelectWellboreAction, SetFilterAction } from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
+import TubularService from "../services/tubularService";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -87,13 +88,14 @@ const Routing = (): React.ReactElement => {
       const getLogs = LogObjectService.getLogs(selectedWell.uid, wellboreUid, controller.signal);
       const getRigs = RigService.getRigs(selectedWell.uid, wellboreUid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
+      const getTubulars = TubularService.getTubulars(selectedWell.uid, wellboreUid, controller.signal);
       const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
-      const [logs, rigs, trajectories, messages] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages]);
+      const [logs, rigs, trajectories, messages, tubulars] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages, getTubulars]);
       const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
       if (wellbore) {
         const selectWellbore: SelectWellboreAction = {
           type: NavigationType.SelectWellbore,
-          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages }
+          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, tubulars }
         } as SelectWellboreAction;
         dispatchNavigation(selectWellbore);
       } else {

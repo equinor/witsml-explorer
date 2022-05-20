@@ -22,6 +22,7 @@ namespace WitsmlExplorer.Api
         private readonly IMessageObjectService messageObjectService;
         private readonly IRigService rigService;
         private readonly ITrajectoryService trajectoryService;
+        private readonly ITubularService tubularService;
         private readonly IWellboreService wellboreService;
         private readonly IWellService wellService;
         private readonly IRiskService riskService;
@@ -36,6 +37,7 @@ namespace WitsmlExplorer.Api
             IMessageObjectService messageObjectService,
             IRigService rigService,
             ITrajectoryService trajectoryService,
+            ITubularService tubularService,
             IJobService jobService,
             IRiskService riskService,
             IMudLogService mudLogService,
@@ -48,6 +50,7 @@ namespace WitsmlExplorer.Api
             this.messageObjectService = messageObjectService;
             this.rigService = rigService;
             this.trajectoryService = trajectoryService;
+            this.tubularService = tubularService;
             this.jobService = jobService;
             this.riskService = riskService;
             this.mudLogService = mudLogService;
@@ -71,6 +74,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", GetTubulars);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
@@ -260,6 +264,15 @@ namespace WitsmlExplorer.Api
             var trajectory = await trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid);
             await httpResponse.AsJson(trajectory);
         }
+
+        private async Task GetTubulars(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var tubulars = await tubularService.GetTubulars(wellUid, wellboreUid);
+            await httpResponse.AsJson(tubulars);
+        }
+
         private async Task GetRisksForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
