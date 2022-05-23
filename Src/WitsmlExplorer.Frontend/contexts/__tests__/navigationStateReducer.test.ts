@@ -27,6 +27,7 @@ import ModificationType from "../modificationType";
 import Rig from "../../models/rig";
 import Filter, { EMPTY_FILTER } from "../filter";
 import MessageObject from "../../models/messageObject";
+import Tubular from "../../models/tubular";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -114,10 +115,11 @@ it("Should also update selected well when a wellbore is selected", () => {
   const logs: LogObject[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
+  const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, logs, rigs, trajectories, messages }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, logs, rigs, trajectories, messages, tubulars }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -134,13 +136,13 @@ it("Should also update selected well when a wellbore is selected", () => {
   });
 });
 
-it("Should add rigs, logs, messages and trajectories to a wellbore if it is selected for the first time", () => {
+it("Should add rigs, logs, messages, trajectories, and tubulars to a wellbore if it is selected for the first time", () => {
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_3, wellbore: WELLBORE_3, logs: [LOG_1], rigs: [RIG_1], trajectories: [TRAJECTORY_1], messages: [MESSAGE_1] }
+    payload: { well: WELL_3, wellbore: WELLBORE_3, logs: [LOG_1], rigs: [RIG_1], trajectories: [TRAJECTORY_1], messages: [MESSAGE_1], tubulars: [TUBULAR_1] }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_3.uid] }, selectWellboreAction);
-  const expectedWellbore = { ...WELLBORE_3, logs: [LOG_1], rigs: [RIG_1], trajectories: [TRAJECTORY_1], messages: [MESSAGE_1] };
+  const expectedWellbore = { ...WELLBORE_3, logs: [LOG_1], rigs: [RIG_1], trajectories: [TRAJECTORY_1], messages: [MESSAGE_1], tubulars: [TUBULAR_1] };
   const expectedWell = { ...WELL_3, wellbores: [expectedWellbore] };
   expect(actual).toStrictEqual({
     ...EMPTY_NAVIGATION_STATE,
@@ -336,10 +338,11 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const logs: LogObject[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
+  const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, logs, rigs, trajectories, messages }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, logs, rigs, trajectories, messages, tubulars }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
@@ -692,6 +695,7 @@ const WELLBORE_1: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  tubulars: [],
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -704,6 +708,7 @@ const WELLBORE_2: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  tubulars: [],
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -716,6 +721,7 @@ const WELLBORE_3: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  tubulars: [],
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -747,6 +753,13 @@ const MESSAGE_1 = {
   wellUid: "",
   wellboreName: "",
   wellboreUid: ""
+};
+const TUBULAR_1 = {
+  uid: "TUB1",
+  wellUid: "",
+  wellboreUid: "",
+  name: "tubby",
+  typeTubularAssy: "drilling"
 };
 const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
 const TRAJECTORY_GROUP_1 = "TrajectoryGroup";

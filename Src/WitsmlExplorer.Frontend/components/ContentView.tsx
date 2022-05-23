@@ -8,6 +8,7 @@ import { RigsListView } from "./ContentViews/RigsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
+import TubularsListView from "./ContentViews/TubularsListView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import TrajectoryView from "./ContentViews/TrajectoryView";
 import NavigationContext from "../contexts/navigationContext";
@@ -26,6 +27,7 @@ const ContentView = (): React.ReactElement => {
     selectedMessageGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
+    selectedTubularGroup,
     selectedServer,
     currentSelected
   } = navigationState;
@@ -57,6 +59,8 @@ const ContentView = (): React.ReactElement => {
         setView(<TrajectoriesListView />);
       } else if (currentSelected === selectedTrajectory) {
         setView(<TrajectoryView />);
+      } else if (currentSelected === selectedTubularGroup) {
+        setView(<TubularsListView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
