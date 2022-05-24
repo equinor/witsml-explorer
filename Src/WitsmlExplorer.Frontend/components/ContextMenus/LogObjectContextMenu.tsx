@@ -156,6 +156,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     };
 
     await JobService.orderJob(JobType.DeleteLogObjects, job);
+    checkedLogObjectRows.length = 0;
     const freshLogs = await LogObjectService.getLogs(job.logReferences[0].wellUid, job.logReferences[0].wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateLogObjects,

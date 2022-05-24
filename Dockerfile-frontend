@@ -7,7 +7,7 @@ COPY Src/WitsmlExplorer.Frontend  ./
 RUN yarn test && yarn build && npm prune --production
 RUN yarn export
 
-FROM nginx:1.21-alpine AS final
+FROM nginx:1-alpine AS final
 EXPOSE 3000
 
 COPY --from=builder /app/nginx/nginx.conf /etc/nginx/nginx.conf

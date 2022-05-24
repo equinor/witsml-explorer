@@ -15,6 +15,7 @@ import {
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
+  SelectTubularGroupAction,
   SelectWellAction,
   SelectWellboreAction
 } from "../contexts/navigationStateReducer";
@@ -38,6 +39,7 @@ const Nav = (): React.ReactElement => {
     selectedRigGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
+    selectedTubularGroup,
     currentSelected
   } = navigationState;
 
@@ -54,7 +56,8 @@ const Nav = (): React.ReactElement => {
       getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
-      getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation)
+      getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
+      getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation)
     ].filter((item) => item.name);
   };
 
@@ -110,7 +113,8 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               logs: selectedWellbore.logs,
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
-              messages: selectedWellbore.messages
+              messages: selectedWellbore.messages,
+              tubulars: selectedWellbore.tubulars
             }
           })
       }
@@ -227,6 +231,23 @@ const getTrajectoryCrumb = (selectedTrajectory: Trajectory, selectedWell: Well, 
       }
     : {};
 };
+
+const getTubularGroupCrumb = (selectedTubularGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectTubularGroupAction) => void) => {
+  return selectedTubularGroup
+    ? {
+        name: "Tubulars",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectTubularGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: selectedTubularGroup }
+          })
+      }
+    : {};
+};
+
+const Link = styled(MuiLink)`
+  cursor: pointer;
+`;
 
 const Layout = styled.div`
   display: flex;
