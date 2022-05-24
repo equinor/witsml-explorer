@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink } from "@material-ui/core";
+import { Breadcrumbs } from "@equinor/eds-core-react";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId } from "../models/wellbore";
@@ -69,13 +69,13 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <Title>WITSML Explorer</Title>
-        <Breadcrumbs separator={"/"} aria-label="breadcrumb">
+        <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
           {breadcrumbContent.map((breadCrumb, index) => (
-            <Link key={index} color="inherit" onClick={breadCrumb.onClick}>
+            <Breadcrumbs.Breadcrumb key={index} href="#" onClick={breadCrumb.onClick}>
               {breadCrumb.name}
-            </Link>
+            </Breadcrumbs.Breadcrumb>
           ))}
-        </Breadcrumbs>
+        </StyledBreadcrumbs>
         <ThemeMenu />
       </Layout>
     </nav>
@@ -245,10 +245,6 @@ const getTubularGroupCrumb = (selectedTubularGroup: string, selectedWell: Well, 
     : {};
 };
 
-const Link = styled(MuiLink)`
-  cursor: pointer;
-`;
-
 const Layout = styled.div`
   display: flex;
   flex-direction: row;
@@ -261,7 +257,7 @@ const Title = styled.p`
   width: 15vw;
 `;
 
-const Breadcrumbs = styled(MuiBreadcrumbs)`
+const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-left: 10rem;
   width: 80vw;
 `;

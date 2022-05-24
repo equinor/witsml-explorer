@@ -88,11 +88,9 @@ const AlertContainer = styled.div`
   & .MuiAlert-root {
     background-color: ${colors.ui.backgroundDefault};
   }
-
   & .MuiAlert-action {
     align-items: start;
   }
-
   & .MuiIconButton-root {
     margin-top: 8px;
   }

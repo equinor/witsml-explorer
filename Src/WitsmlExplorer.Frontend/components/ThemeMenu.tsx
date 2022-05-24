@@ -4,7 +4,7 @@ import { colors } from "../styles/Colors";
 import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
-import { Menu, MenuItem as MuiMenuItem, Typography as MuiTypography } from "@material-ui/core";
+import { Menu, Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
 
 const ThemeMenu = (): React.ReactElement => {
@@ -38,33 +38,36 @@ const ThemeMenu = (): React.ReactElement => {
       <Pointer>
         <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
-      <Menu id="ThemeMenu" anchorEl={anchorEl} keepMounted open={open} onClose={onToggleMenu}>
+      <Menu id="ThemeMenu" anchorEl={anchorEl} open={open}>
         <ThemeLabel key={"text"}>Display density:</ThemeLabel>
-        <MenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
-          <Typography selected={theme === UserTheme.Comfortable}>Comfortable </Typography>
+        <StyledMenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
+          <SelectTypography selected={theme === UserTheme.Comfortable}>Comfortable </SelectTypography>
           {theme === UserTheme.Comfortable && <Icon name="check" />}
-        </MenuItem>
-        <MenuItem key={"compact"} onClick={() => onSelectTheme(UserTheme.Compact)}>
-          <Typography selected={theme === UserTheme.Compact}>Compact</Typography>
+        </StyledMenuItem>
+        <StyledMenuItem key={"compact"} onClick={() => onSelectTheme(UserTheme.Compact)}>
+          <SelectTypography selected={theme === UserTheme.Compact}>Compact</SelectTypography>
           {theme === UserTheme.Compact && <Icon name="check" />}
-        </MenuItem>
+        </StyledMenuItem>
       </Menu>
     </>
   );
 };
 
-const Typography = styled(MuiTypography)<{ selected: boolean }>`
+const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
     font-family: ${(props) => (props.selected ? "EquinorBold" : "EquinorRegular")};
   }
 `;
 
-const MenuItem = styled(MuiMenuItem)`
+const StyledMenuItem = styled(Menu.Item)`
   && {
     width: 13rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    &&:focus {
+      outline: 0;
+    }
   }
 `;
 
