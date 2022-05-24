@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Breadcrumbs } from "@equinor/eds-core-react";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId } from "../models/wellbore";
+import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
 import { Server } from "../models/server";
 import {
   SelectLogGroupAction,
@@ -15,6 +15,7 @@ import {
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
+  SelectTubularAction,
   SelectTubularGroupAction,
   SelectWellAction,
   SelectWellboreAction
@@ -24,6 +25,7 @@ import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import Trajectory from "../models/trajectory";
 import ThemeMenu from "./ThemeMenu";
+import Tubular from "../models/tubular";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -40,6 +42,7 @@ const Nav = (): React.ReactElement => {
     selectedTrajectoryGroup,
     selectedTrajectory,
     selectedTubularGroup,
+    selectedTubular,
     currentSelected
   } = navigationState;
 
@@ -57,7 +60,8 @@ const Nav = (): React.ReactElement => {
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
-      getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation)
+      getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getTubularCrumb(selectedTubular, selectedWell, selectedWellbore, dispatchNavigation)
     ].filter((item) => item.name);
   };
 
@@ -240,6 +244,19 @@ const getTubularGroupCrumb = (selectedTubularGroup: string, selectedWell: Well, 
           dispatch({
             type: NavigationType.SelectTubularGroup,
             payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: selectedTubularGroup }
+          })
+      }
+    : {};
+};
+
+const getTubularCrumb = (selectedTubular: Tubular, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectTubularAction) => void) => {
+  return selectedTubular?.name
+    ? {
+        name: selectedTubular.name,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectTubular,
+            payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular: selectedTubular }
           })
       }
     : {};

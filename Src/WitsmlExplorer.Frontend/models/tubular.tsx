@@ -1,4 +1,3 @@
-import TubularComponent from "./tubularComponent";
 import Wellbore from "./wellbore";
 
 export default interface Tubular {
@@ -7,7 +6,6 @@ export default interface Tubular {
   wellboreUid: string;
   name: string;
   typeTubularAssy: string;
-  tubularComponents: TubularComponent[];
 }
 
 export const calculateTubularId = (tubular: Tubular): string => {
