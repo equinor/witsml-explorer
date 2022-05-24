@@ -7,14 +7,13 @@
     "build": "next build",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "pre-commit": "lint-staged",
     "start": "next start",
     "test": "jest",
     "export": "next export"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
-      "next lint --fix",
+      "eslint --fix",
       "prettier -w"
     ]
   },
