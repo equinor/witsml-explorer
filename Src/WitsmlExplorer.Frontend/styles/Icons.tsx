@@ -14,8 +14,7 @@ import {
   copy,
   edit,
   delete_to_trash as deleteToTrash,
-  folder_open as folderOpen,
-  thumbs_down as thumbsDown
+  folder_open as folderOpen
 } from "@equinor/eds-icons";
 const icons = {
   chevronRight,
@@ -32,8 +31,7 @@ const icons = {
   copy,
   edit,
   folderOpen,
-  deleteToTrash,
-  thumbsDown
+  deleteToTrash
 };
 
 Icon.add(icons);
