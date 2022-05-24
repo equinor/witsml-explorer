@@ -245,10 +245,6 @@ const getTubularGroupCrumb = (selectedTubularGroup: string, selectedWell: Well, 
     : {};
 };
 
-const Link = styled(MuiLink)`
-  cursor: pointer;
-`;
-
 const Layout = styled.div`
   display: flex;
   flex-direction: row;
