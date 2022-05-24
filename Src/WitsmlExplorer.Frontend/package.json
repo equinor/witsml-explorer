@@ -78,6 +78,6 @@
     "jest": "^28.1.0",
     "jest-environment-jsdom": "^28.1.0",
     "lint-staged": "^12.4.1",
-    "ts-jest": "^28.0.2"
+    "ts-jest": "^28.0.3"
   }
 }
