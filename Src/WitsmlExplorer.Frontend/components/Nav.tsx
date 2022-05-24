@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink } from "@material-ui/core";
+import { Breadcrumbs } from "@equinor/eds-core-react";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId } from "../models/wellbore";
@@ -15,6 +15,7 @@ import {
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
+  SelectTubularGroupAction,
   SelectWellAction,
   SelectWellboreAction
 } from "../contexts/navigationStateReducer";
@@ -38,6 +39,7 @@ const Nav = (): React.ReactElement => {
     selectedRigGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
+    selectedTubularGroup,
     currentSelected
   } = navigationState;
 
@@ -54,7 +56,8 @@ const Nav = (): React.ReactElement => {
       getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
-      getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation)
+      getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
+      getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation)
     ].filter((item) => item.name);
   };
 
@@ -66,13 +69,13 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <Title>WITSML Explorer</Title>
-        <Breadcrumbs separator={"/"} aria-label="breadcrumb">
+        <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
           {breadcrumbContent.map((breadCrumb, index) => (
-            <Link key={index} color="inherit" onClick={breadCrumb.onClick}>
+            <Breadcrumbs.Breadcrumb key={index} href="#" onClick={breadCrumb.onClick}>
               {breadCrumb.name}
-            </Link>
+            </Breadcrumbs.Breadcrumb>
           ))}
-        </Breadcrumbs>
+        </StyledBreadcrumbs>
         <ThemeMenu />
       </Layout>
     </nav>
@@ -110,7 +113,8 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               logs: selectedWellbore.logs,
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
-              messages: selectedWellbore.messages
+              messages: selectedWellbore.messages,
+              tubulars: selectedWellbore.tubulars
             }
           })
       }
@@ -228,9 +232,18 @@ const getTrajectoryCrumb = (selectedTrajectory: Trajectory, selectedWell: Well, 
     : {};
 };
 
-const Link = styled(MuiLink)`
-  cursor: pointer;
-`;
+const getTubularGroupCrumb = (selectedTubularGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectTubularGroupAction) => void) => {
+  return selectedTubularGroup
+    ? {
+        name: "Tubulars",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectTubularGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: selectedTubularGroup }
+          })
+      }
+    : {};
+};
 
 const Layout = styled.div`
   display: flex;
@@ -244,7 +257,7 @@ const Title = styled.p`
   width: 15vw;
 `;
 
-const Breadcrumbs = styled(MuiBreadcrumbs)`
+const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-left: 10rem;
   width: 80vw;
 `;

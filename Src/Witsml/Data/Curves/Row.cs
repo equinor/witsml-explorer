@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Witsml.Data.Curves
@@ -17,7 +18,7 @@ namespace Witsml.Data.Curves
             }
             else
             {
-                Index = new DepthIndex(double.Parse(row.First()));
+                Index = new DepthIndex(double.Parse(row.First(), CultureInfo.InvariantCulture));
             }
 
             Values = row[1..].Select(CurveValue.From);

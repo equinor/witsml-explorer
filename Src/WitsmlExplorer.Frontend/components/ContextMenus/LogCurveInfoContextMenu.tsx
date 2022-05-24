@@ -16,6 +16,7 @@ import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
+import styled from "styled-components";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -84,26 +85,22 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     <ContextMenu
       menuItems={[
         <MenuItem key={"open"} onClick={onClickOpen} disabled={checkedLogCurveInfoRows.length === 0}>
-          <ListItemIcon>
-            <Icon name="folderOpen" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="folderOpen" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Open</Typography>
         </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedLogCurveInfoRows.length === 0}>
-          <ListItemIcon>
-            <Icon name="copy" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
           <ListItemIcon>
-            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
+            <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <ListItemIcon>
-            <Icon name="settings" color={colors.interactive.primaryResting} />
+            <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
@@ -111,5 +108,11 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     />
   );
 };
+
+const StyledIcon = styled(Icon)`
+  && {
+    margin-right: 5px;
+  }
+`;
 
 export default LogCurveInfoContextMenu;

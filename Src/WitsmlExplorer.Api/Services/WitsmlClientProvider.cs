@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Services
             var base64EncodedCredentials = headers["Authorization"].ToString().Substring("Basic ".Length).Trim();
             var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedCredentials));
             var usernamesAndPasswords = credentialString.Split(':');
-            var credentials = new List<Credentials> {new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1])};
+            var credentials = new List<Credentials> { new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1]) };
             if (usernamesAndPasswords.Length == 4)
             {
                 credentials.Add(new Credentials(usernamesAndPasswords[2], usernamesAndPasswords[3]));
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Services
         internal WitsmlClientProvider(IConfiguration configuration)
         {
             var (serverUrl, username, password) = GetCredentialsFromConfiguration(configuration);
-            witsmlClient = new WitsmlClient(serverUrl, username, password, clientCapabilities, null, true);
+            witsmlClient = new WitsmlClient(serverUrl, username, password, new WitsmlClientCapabilities(), null, true);
         }
 
         private (string, string, string) GetCredentialsFromConfiguration(IConfiguration configuration)

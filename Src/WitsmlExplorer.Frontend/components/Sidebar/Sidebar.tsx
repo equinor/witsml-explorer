@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { TreeView } from "@material-ui/lab";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Icon from "../../styles/Icons";
 import WellItem from "./WellItem";
 import PropertiesPanel from "./PropertiesPanel";
 import NavigationContext from "../../contexts/navigationContext";
@@ -21,8 +20,8 @@ const Sidebar = (): React.ReactElement => {
       <SidebarTreeView>
         {filteredWells && filteredWells.length > 0 && (
           <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon color="disabled" />}
-            defaultExpandIcon={<ChevronRightIcon color="disabled" />}
+            defaultCollapseIcon={<Icon name="chevronDown" color={"disabled"} />}
+            defaultExpandIcon={<Icon name="chevronRight" color={"disabled"} />}
             defaultEndIcon={<div style={{ width: 24 }} />}
             expanded={expandedTreeNodes}
           >
