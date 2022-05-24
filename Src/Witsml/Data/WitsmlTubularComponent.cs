@@ -5,6 +5,9 @@ namespace Witsml.Data
 {
     public class WitsmlTubularComponent
     {
+        [XmlAttribute("uid")]
+        public string Uid { get; set; }
+
         [XmlElement("typeTubularComp")]
         public string TypeTubularComp { get; set; }
 

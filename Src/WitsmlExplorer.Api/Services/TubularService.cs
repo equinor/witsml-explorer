@@ -10,9 +10,9 @@ namespace WitsmlExplorer.Api.Services
     public interface ITubularService
     {
         Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid);
+        Task<List<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid);
     }
 
-    // ReSharper disable once UnusedMember.Global
     public class TubularService : WitsmlService, ITubularService
     {
         public TubularService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider)
@@ -33,6 +33,25 @@ namespace WitsmlExplorer.Api.Services
                     Name = tubular.Name,
                     TypeTubularAssy = tubular.TypeTubularAssy
                 }).OrderBy(tubular => tubular.Name);
+        }
+
+        public async Task<List<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
+        {
+            var tubularToQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            var result = await WitsmlClient.GetFromStoreAsync(tubularToQuery, new OptionsIn(ReturnElements.All));
+            var witsmlTubular = result.Tubulars.FirstOrDefault();
+            if (witsmlTubular == null) return null;
+            return witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
+            {
+                Uid = tComponent.Uid,
+                Sequence = tComponent.Sequence,
+                Id = StringHelpers.ToDecimal(tComponent.Id?.Value),
+                Od = StringHelpers.ToDecimal(tComponent.Od?.Value),
+                Len = StringHelpers.ToDecimal(tComponent.Len?.Value),
+                TypeTubularComponent = tComponent.TypeTubularComp,
+            })
+                .OrderBy(tComponent => tComponent.Sequence)
+                .ToList();
         }
 
     }
