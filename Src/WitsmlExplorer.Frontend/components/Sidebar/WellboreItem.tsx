@@ -20,6 +20,8 @@ import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navig
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import TubularService from "../../services/tubularService";
+import { calculateTubularId } from "../../models/tubular";
+import TubularItem from "./TubularItem";
 
 interface WellboreItemProps {
   well: Well;
@@ -31,7 +33,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedTrajectory, servers } = navigationState;
+  const { selectedTrajectory, selectedTubular, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -120,7 +122,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const messageGroupId = calculateMessageGroupId(wellbore);
   const trajectoryGroupId = calculateTrajectoryGroupId(wellbore);
   const rigGroupId = calculateRigGroupId(wellbore);
-  const tubularsGroupId = calculateTubularGroupId(wellbore);
+  const tubularGroupId = calculateTubularGroupId(wellbore);
 
   return (
     <TreeItem
@@ -172,11 +174,25 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           ))}
       </TreeItem>
       <TreeItem
-        nodeId={tubularsGroupId}
+        nodeId={tubularGroupId}
         labelText={"Tubulars"}
-        onLabelClick={() => onSelectTubularGroup(well, wellbore, tubularsGroupId)}
+        onLabelClick={() => onSelectTubularGroup(well, wellbore, tubularGroupId)}
         onContextMenu={preventContextMenuPropagation}
-      />
+      >
+        {wellbore &&
+          wellbore.tubulars &&
+          wellbore.tubulars.map((tubular) => (
+            <TubularItem
+              key={calculateTubularId(tubular)}
+              tubularGroup={tubularGroupId}
+              tubular={tubular}
+              well={well}
+              wellbore={wellbore}
+              nodeId={calculateTubularId(tubular)}
+              selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
+            />
+          ))}
+      </TreeItem>
     </TreeItem>
   );
 };
