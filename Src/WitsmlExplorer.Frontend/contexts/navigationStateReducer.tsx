@@ -182,6 +182,7 @@ const allDeselected: any = {
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
+  selectedTubular: null,
   currentSelected: null,
   currentProperties: new Map()
 };
