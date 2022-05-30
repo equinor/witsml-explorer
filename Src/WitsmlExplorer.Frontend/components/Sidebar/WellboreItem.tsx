@@ -22,6 +22,7 @@ import { IndexCurve } from "../Modals/LogPropertiesModal";
 import TubularService from "../../services/tubularService";
 import { calculateTubularId } from "../../models/tubular";
 import TubularItem from "./TubularItem";
+import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
 
 interface WellboreItemProps {
   well: Well;
@@ -50,6 +51,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const onTubularsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: TubularsContextMenuProps = { dispatchOperation, wellbore, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularsContextMenu {...contextMenuProps} />, position } });
   };
 
   useEffect(() => {
@@ -177,7 +185,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={tubularGroupId}
         labelText={"Tubulars"}
         onLabelClick={() => onSelectTubularGroup(well, wellbore, tubularGroupId)}
-        onContextMenu={preventContextMenuPropagation}
+        onContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
       >
         {wellbore &&
           wellbore.tubulars &&

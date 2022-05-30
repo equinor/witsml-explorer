@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Witsml.Data;
 using Witsml.Extensions;
 
@@ -32,6 +33,18 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid
                 }.AsSingletonList()
             };
+        }
+
+        public static WitsmlTubulars CopyWitsmlTubular(WitsmlTubular tubular, WitsmlWellbore targetWellbore)
+        {
+            tubular.UidWell = targetWellbore.UidWell;
+            tubular.NameWell = targetWellbore.NameWell;
+            tubular.UidWellbore = targetWellbore.Uid;
+            tubular.NameWellbore = targetWellbore.Name;
+            tubular.CommonData.ItemState = string.IsNullOrEmpty(tubular.CommonData.ItemState) ? null : tubular.CommonData.ItemState;
+            tubular.CommonData.SourceName = string.IsNullOrEmpty(tubular.CommonData.SourceName) ? null : tubular.CommonData.SourceName;
+            var copyTubularQuery = new WitsmlTubulars { Tubulars = new List<WitsmlTubular> { tubular } };
+            return copyTubularQuery;
         }
     }
 }

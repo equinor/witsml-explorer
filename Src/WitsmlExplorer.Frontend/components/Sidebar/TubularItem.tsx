@@ -5,6 +5,10 @@ import Wellbore from "../../models/wellbore";
 import Tubular from "../../models/tubular";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
+import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 
 interface TubularProps {
   nodeId: string;
@@ -17,7 +21,19 @@ interface TubularProps {
 
 const TubularItem = (props: TubularProps): React.ReactElement => {
   const { tubular, tubularGroup, selected, well, wellbore, nodeId } = props;
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const {
+    dispatchNavigation,
+    navigationState: { selectedServer, servers }
+  } = useContext(NavigationContext);
+
+  const { dispatchOperation } = useContext(OperationContext);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, tubular: Tubular) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: TubularObjectContextMenuProps = { dispatchNavigation, tubular, wellbore, selectedServer, servers, dispatchOperation };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularObjectContextMenu {...contextMenuProps} />, position } });
+  };
 
   return (
     <TreeItem
@@ -26,6 +42,7 @@ const TubularItem = (props: TubularProps): React.ReactElement => {
       labelText={tubular.name}
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTubular, payload: { tubular, wellbore, well, tubularGroup } })}
+      onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, tubular)}
     />
   );
 };
