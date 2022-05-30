@@ -1,4 +1,4 @@
-import TubularReference from "./TubularReference";
+import TubularReference from "./tubularReference";
 import WellboreReference from "./wellboreReference";
 
 export default interface CopyTubularJob {
