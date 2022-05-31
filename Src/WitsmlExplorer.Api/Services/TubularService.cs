@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Services
     public interface ITubularService
     {
         Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid);
-        Task<List<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid);
+        Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid);
     }
 
     public class TubularService : WitsmlService, ITubularService
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Services
                 }).OrderBy(tubular => tubular.Name);
         }
 
-        public async Task<List<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
+        public async Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
         {
             var tubularToQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
             var result = await WitsmlClient.GetFromStoreAsync(tubularToQuery, new OptionsIn(ReturnElements.All));
@@ -50,8 +50,7 @@ namespace WitsmlExplorer.Api.Services
                 Len = StringHelpers.ToDecimal(tComponent.Len?.Value),
                 TypeTubularComponent = tComponent.TypeTubularComp,
             })
-                .OrderBy(tComponent => tComponent.Sequence)
-                .ToList();
+                .OrderBy(tComponent => tComponent.Sequence);
         }
 
     }
