@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace WitsmlExplorer.Api.Models
 {
     public class Tubular

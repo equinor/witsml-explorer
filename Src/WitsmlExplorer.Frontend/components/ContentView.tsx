@@ -13,6 +13,7 @@ import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import TrajectoryView from "./ContentViews/TrajectoryView";
 import NavigationContext from "../contexts/navigationContext";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
+import TubularView from "./ContentViews/TubularView";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -28,6 +29,7 @@ const ContentView = (): React.ReactElement => {
     selectedTrajectoryGroup,
     selectedTrajectory,
     selectedTubularGroup,
+    selectedTubular,
     selectedServer,
     currentSelected
   } = navigationState;
@@ -61,6 +63,8 @@ const ContentView = (): React.ReactElement => {
         setView(<TrajectoryView />);
       } else if (currentSelected === selectedTubularGroup) {
         setView(<TubularsListView />);
+      } else if (currentSelected === selectedTubular) {
+        setView(<TubularView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

@@ -20,7 +20,7 @@ import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
 import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
-import Tubular from "../models/tubular";
+import Tubular, { getTubularProperties } from "../models/tubular";
 
 export interface NavigationState {
   selectedServer: Server;
@@ -36,6 +36,7 @@ export interface NavigationState {
   selectedTrajectoryGroup: string;
   selectedTrajectory: Trajectory;
   selectedTubularGroup: string;
+  selectedTubular: Tubular;
   servers: Server[];
   currentSelected: Selectable;
   wells: Well[];
@@ -66,6 +67,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
+  selectedTubular: null,
   servers: [],
   currentSelected: null,
   wells: [],
@@ -114,6 +116,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectTrajectory(state, action);
     case NavigationType.SelectTubularGroup:
       return selectTubularGroup(state, action);
+    case NavigationType.SelectTubular:
+      return selectTubular(state, action);
     case NavigationType.SetFilter:
       return setFilter(state, action);
     case NavigationType.SetCurveThreshold:
@@ -178,6 +182,7 @@ const allDeselected: any = {
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
+  selectedTubular: null,
   currentSelected: null,
   currentProperties: new Map()
 };
@@ -708,6 +713,21 @@ const selectTubularGroup = (state: NavigationState, { payload }: SelectTubularGr
   };
 };
 
+const selectTubular = (state: NavigationState, { payload }: SelectTubularAction) => {
+  const { well, wellbore, tubular, tubularGroup } = payload;
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedTubularGroup: tubularGroup,
+    selectedTubular: tubular,
+    currentSelected: tubular,
+    currentProperties: getTubularProperties(tubular, wellbore)
+  };
+};
+
 const setFilter = (state: NavigationState, { payload }: SetFilterAction) => {
   const { filter } = payload;
   const filteredWells = filterWells(state.wells, filter);
@@ -910,6 +930,11 @@ export interface SelectTubularGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; tubularGroup: any };
 }
 
+export interface SelectTubularAction extends Action {
+  type: NavigationType.SelectTubular;
+  payload: { well: Well; wellbore: Wellbore; tubular: Tubular; tubularGroup: any };
+}
+
 export interface SetFilterAction extends Action {
   type: NavigationType.SetFilter;
   payload: { filter: Filter };
@@ -950,6 +975,7 @@ export type NavigationAction =
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
+  | SelectTubularAction
   | SelectTubularGroupAction
   | SetFilterAction
   | SetCurveThresholdAction;
