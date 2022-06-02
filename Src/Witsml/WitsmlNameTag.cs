@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace Witsml.Data.Tubular
+namespace Witsml.Data
 {
     public class WitsmlNameTag
     {

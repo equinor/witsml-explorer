@@ -36,7 +36,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             serverTubularXml = Regex.Replace(serverTubularXml, "<dTimCreation>.+<\\/dTimCreation>", "");
             serverTubularXml = Regex.Replace(serverTubularXml, "<dTimLastChange>.+<\\/dTimLastChange>", "");
 
-            string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Resources\\tubular.xml"));
+            string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/tubular.xml"));
             //handle whitespace
             fileTubularXml = Regex.Replace(fileTubularXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTubularXml, serverTubularXml);
