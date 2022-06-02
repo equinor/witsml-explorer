@@ -38,7 +38,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\Resources\\tubular.xml"));
             //handle whitespace
-            fileTubularXml = Regex.Replace(fileTubularXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "");
+            fileTubularXml = Regex.Replace(fileTubularXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTubularXml, serverTubularXml);
         }
 

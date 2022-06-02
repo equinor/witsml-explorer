@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
@@ -33,8 +34,14 @@ namespace Witsml.Data.Tubular
         [XmlElement("lenJointAv")]
         public Measure LenJointAv { get; set; }
 
+        [XmlIgnore]
+        public int? NumJointStand { get; set; }
         [XmlElement("numJointStand")]
-        public int NumJointStand { get; set; }
+        public string NumJointStandText
+        {
+            get { return NumJointStand.HasValue ? XmlConvert.ToString(NumJointStand.Value) : null; }
+            set { NumJointStand = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("wtPerLen")]
         public Measure WtPerLen { get; set; }

@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
@@ -35,11 +36,23 @@ namespace Witsml.Data.Tubular
         [XmlElement("codeIADC")]
         public string CodeIADC { get; set; }
 
+        [XmlIgnore]
+        public int? CondInitInner { get; set; }
         [XmlElement("condInitInner")]
-        public int CondInitInner { get; set; }
+        public string CondInitInnerText
+        {
+            get { return CondInitInner.HasValue ? XmlConvert.ToString(CondInitInner.Value) : null; }
+            set { CondInitInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
+        [XmlIgnore]
+        public int? CondInitOuter { get; set; }
         [XmlElement("condInitOuter")]
-        public int CondInitOuter { get; set; }
+        public string CondInitOuterText
+        {
+            get { return CondInitOuter.HasValue ? XmlConvert.ToString(CondInitOuter.Value) : null; }
+            set { CondInitOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("condInitDull")]
         public string CondInitDull { get; set; }
@@ -59,11 +72,23 @@ namespace Witsml.Data.Tubular
         [XmlElement("condInitReason")]
         public string CondInitReason { get; set; }
 
+        [XmlIgnore]
+        public int? CondFinalInner { get; set; }
         [XmlElement("condFinalInner")]
-        public int CondFinalInner { get; set; }
+        public string CondFinalInnerText
+        {
+            get { return CondFinalInner.HasValue ? XmlConvert.ToString(CondFinalInner.Value) : null; }
+            set { CondFinalInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
+        [XmlIgnore]
+        public int? CondFinalOuter { get; set; }
         [XmlElement("condFinalOuter")]
-        public int CondFinalOuter { get; set; }
+        public string CondFinalOuterText
+        {
+            get { return CondFinalOuter.HasValue ? XmlConvert.ToString(CondFinalOuter.Value) : null; }
+            set { CondFinalOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("condFinalDull")]
         public string CondFinalDull { get; set; }

@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
@@ -8,8 +9,14 @@ namespace Witsml.Data.Tubular
         [XmlAttribute("uid")]
         public string Uid { get; set; }
 
+        [XmlIgnore]
+        public int? Index { get; set; }
         [XmlElement("index")]
-        public int Index { get; set; }
+        public string IndexText
+        {
+            get { return Index.HasValue ? XmlConvert.ToString(Index.Value) : null; }
+            set { Index = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("diaNozzle")]
         public Measure DiaNozzle { get; set; }

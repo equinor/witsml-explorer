@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
@@ -42,11 +43,23 @@ namespace Witsml.Data.Tubular
         [XmlElement("downLinkFlowRateMx")]
         public Measure DownLinkFlowRateMx { get; set; }
 
+        [XmlIgnore]
+        public double? PressLossFact { get; set; }
         [XmlElement("pressLossFact")]
-        public double PressLossFact { get; set; }
+        public string PressLossFactText
+        {
+            get { return PressLossFact.HasValue ? XmlConvert.ToString(PressLossFact.Value) : null; }
+            set { PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value); }
+        }
 
+        [XmlIgnore]
+        public int? PadCount { get; set; }
         [XmlElement("padCount")]
-        public int PadCount { get; set; }
+        public string PadCountText
+        {
+            get { return PadCount.HasValue ? XmlConvert.ToString(PadCount.Value) : null; }
+            set { PadCount = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("padLen")]
         public Measure PadLen { get; set; }

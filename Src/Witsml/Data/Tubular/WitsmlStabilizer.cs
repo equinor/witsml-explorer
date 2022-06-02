@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
@@ -26,8 +27,14 @@ namespace Witsml.Data.Tubular
         [XmlElement("shapeBlade")]
         public string ShapeBlade { get; set; }
 
+        [XmlIgnore]
+        public double? FactFric { get; set; }
         [XmlElement("factFric")]
-        public double FactFric { get; set; }
+        public string FactFricText
+        {
+            get => FactFric.HasValue ? XmlConvert.ToString(FactFric.Value) : null;
+            set { FactFric = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value); }
+        }
 
         [XmlElement("typeBlade")]
         public string TypeBlade { get; set; }
