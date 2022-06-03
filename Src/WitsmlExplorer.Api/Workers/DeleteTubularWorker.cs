@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted tubular: ${tubularUid}"), refreshAction);
+                return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted tubular: {tubularUid}"), refreshAction);
             }
 
             Log.Error("Failed to delete tubular. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TubularUid}",
