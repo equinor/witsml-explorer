@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Witsml;
-using Witsml.Data;
+using Witsml.Data.Tubular;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Console.Extensions;

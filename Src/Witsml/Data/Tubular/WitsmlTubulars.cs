@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Witsml.Data
+namespace Witsml.Data.Tubular
 {
     [XmlRoot("tubulars", Namespace = "http://www.witsml.org/schemas/1series")]
     public class WitsmlTubulars : IWitsmlQueryType
