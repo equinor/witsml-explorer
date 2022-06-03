@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Witsml.Data;
+using Witsml.Data.Tubular;
 using Witsml.Extensions;
 
 namespace WitsmlExplorer.Api.Query

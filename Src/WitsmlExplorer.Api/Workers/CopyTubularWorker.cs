@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Serilog;
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
