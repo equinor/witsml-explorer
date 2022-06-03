@@ -42,8 +42,6 @@ namespace WitsmlExplorer.Api.Query
             tubular.NameWell = targetWellbore.NameWell;
             tubular.UidWellbore = targetWellbore.Uid;
             tubular.NameWellbore = targetWellbore.Name;
-            tubular.CommonData.ItemState = string.IsNullOrEmpty(tubular.CommonData.ItemState) ? null : tubular.CommonData.ItemState;
-            tubular.CommonData.SourceName = string.IsNullOrEmpty(tubular.CommonData.SourceName) ? null : tubular.CommonData.SourceName;
             var copyTubularQuery = new WitsmlTubulars { Tubulars = new List<WitsmlTubular> { tubular } };
             return copyTubularQuery;
         }
