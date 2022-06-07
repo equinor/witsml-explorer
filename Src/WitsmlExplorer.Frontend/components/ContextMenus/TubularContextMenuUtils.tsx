@@ -10,6 +10,11 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import TubularService from "../../services/tubularService";
+import Tubular from "../../models/tubular";
+import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
+import ModificationType from "../../contexts/modificationType";
+import ConfirmModal from "../Modals/ConfirmModal";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -73,4 +78,54 @@ export const onClickPaste = async (servers: Server[], dispatchOperation: Dispatc
       orderCopyJob(wellbore, tubularReference, dispatchOperation);
     }
   }
+};
+
+export const deleteTubular = async (tubular: Tubular, dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
+  dispatchOperation({ type: OperationType.HideModal });
+  const job = {
+    tubularReference: {
+      wellUid: tubular.wellUid,
+      wellboreUid: tubular.wellboreUid,
+      tubularUid: tubular.uid
+    }
+  };
+  await JobService.orderJob(JobType.DeleteTubular, job);
+  const freshTubulars = await TubularService.getTubulars(job.tubularReference.wellUid, job.tubularReference.wellboreUid);
+  dispatchNavigation({
+    type: ModificationType.UpdateTubularOnWellbore,
+    payload: {
+      wellUid: job.tubularReference.wellUid,
+      wellboreUid: job.tubularReference.wellboreUid,
+      tubulars: freshTubulars
+    }
+  });
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
+export const onClickCopy = async (selectedServer: Server, tubular: Tubular, dispatchOperation: DispatchOperation) => {
+  const tubularReference: TubularReference = {
+    serverUrl: selectedServer.url,
+    tubularUid: tubular.uid,
+    wellUid: tubular.wellUid,
+    wellboreUid: tubular.wellboreUid
+  };
+  await navigator.clipboard.writeText(JSON.stringify(tubularReference));
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
+export const onClickDelete = async (tubular: Tubular, dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
+  const confirmation = (
+    <ConfirmModal
+      heading={"Delete tubular?"}
+      content={
+        <span>
+          This will permanently delete <strong>{tubular.name}</strong>
+        </span>
+      }
+      onConfirm={() => deleteTubular(tubular, dispatchOperation, dispatchNavigation)}
+      confirmColor={"secondary"}
+      switchButtonPlaces={true}
+    />
+  );
+  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 };

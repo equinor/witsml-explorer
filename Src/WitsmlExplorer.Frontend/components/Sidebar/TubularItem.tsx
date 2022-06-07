@@ -6,7 +6,7 @@ import Tubular from "../../models/tubular";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
+import TubularSidebarContextMenu, { TubularSidebarContextMenuProps } from "../ContextMenus/TubularSidebarContextMenu";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 
@@ -30,9 +30,9 @@ const TubularItem = (props: TubularProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, tubular: Tubular) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TubularObjectContextMenuProps = { dispatchNavigation, tubular, wellbore, selectedServer, servers, dispatchOperation };
+    const contextMenuProps: TubularSidebarContextMenuProps = { dispatchNavigation, tubular, wellbore, selectedServer, servers, dispatchOperation };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularObjectContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularSidebarContextMenu {...contextMenuProps} />, position } });
   };
 
   return (
