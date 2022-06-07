@@ -43,8 +43,8 @@ export const TubularView = (): React.ReactElement => {
       id: tubularComponent.id,
       od: tubularComponent.od,
       len: tubularComponent.len,
-      tubularName: selectedTubular.name,
-      typeTubularAssy: selectedTubular.typeTubularAssy,
+      tubularName: selectedTubular?.name,
+      typeTubularAssy: selectedTubular?.typeTubularAssy,
       uid: tubularComponent.uid
     };
   });

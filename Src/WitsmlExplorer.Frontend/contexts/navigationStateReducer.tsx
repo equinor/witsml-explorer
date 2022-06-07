@@ -159,6 +159,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessage(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
+    case ModificationType.UpdateTubularOnWellbore:
+      return updateWellboreTubulars(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
     case ModificationType.UpdateWells:
@@ -414,6 +416,20 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedTrajectory,
     currentSelected: state.selectedTrajectoryGroup,
+    wells: freshWells
+  };
+};
+
+const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularAction) => {
+  const { wells } = state;
+  const { tubulars, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
+  const selectedTubular: Tubular = null;
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    selectedTubular,
+    currentSelected: state.selectedTubularGroup,
     wells: freshWells
   };
 };
@@ -856,6 +872,11 @@ export interface UpdateWellboreTrajectoryAction extends Action {
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
+export interface UpdateWellboreTubularAction extends Action {
+  type: ModificationType.UpdateTubularOnWellbore;
+  payload: { tubulars: Tubular[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreMessagesAction extends Action {
   type: ModificationType.UpdateMessageObjects;
   payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
@@ -962,6 +983,7 @@ export type NavigationAction =
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
   | UpdateWellboreTrajectoryAction
+  | UpdateWellboreTubularAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction
   | SelectLogGroupAction

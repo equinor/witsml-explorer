@@ -3,10 +3,15 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import Tubular from "../../models/tubular";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
+import OperationContext from "../../contexts/operationContext";
+import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedTubularGroup } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedTubularGroup, servers } = navigationState;
+  const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
   useEffect(() => {
@@ -14,6 +19,12 @@ export const TubularsListView = (): React.ReactElement => {
       setTubulars(selectedWellbore.tubulars);
     }
   }, [selectedWellbore?.tubulars]);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, tubular: Tubular) => {
+    const contextProps: TubularObjectContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, tubular, wellbore: selectedWellbore, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularObjectContextMenu {...contextProps} />, position } });
+  };
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Tubular name", type: ContentType.String },
@@ -28,7 +39,7 @@ export const TubularsListView = (): React.ReactElement => {
     });
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={tubulars} onSelect={onSelect} /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={tubulars} onSelect={onSelect} onContextMenu={onContextMenu} /> : <></>;
 };
 
 export default TubularsListView;
