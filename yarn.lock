@@ -4176,10 +4176,10 @@ react-fast-compare@3.2.0, react-fast-compare@^3.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
   integrity sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==
 
-react-idle-timer@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.2.0.tgz#04874499cc7a07a4d3e27c9ed31dcfb4c6e7ba50"
-  integrity sha512-Q8UQ9n8jGhgtB3xN6U212nmkaqZP6FToWsUT1g1HIl/TqJQP1AnW44+tblu4BEhTukI3fGhrhXjtexz9I6pSpg==
+react-idle-timer@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.3.0.tgz#567763114e8a68c71a902cb9a16424cf921d237d"
+  integrity sha512-3MT4gHkWcz82O+CjWDb9Q0XtB/uraDHWaXs5BvSiqe1HvIGJTnLplZdkxwptziDupNMkgHdX4pXtldzrr/Qdxg==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
