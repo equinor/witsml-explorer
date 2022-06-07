@@ -16,7 +16,6 @@ import Wellbore from "../../models/wellbore";
 import TubularService from "../../services/tubularService";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 import ModificationType from "../../contexts/modificationType";
-import { onClickPaste, useClipboardTubularReference } from "./TubularContextMenuUtils";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
@@ -28,8 +27,7 @@ export interface TubularObjectContextMenuProps {
 }
 
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, tubular, selectedServer, wellbore, servers } = props;
-  const [tubularReference, setTubularReference] = useClipboardTubularReference();
+  const { dispatchNavigation, dispatchOperation, tubular, selectedServer } = props;
 
   const deleteTubular = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -61,7 +59,6 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
       wellboreUid: tubular.wellboreUid
     };
     await navigator.clipboard.writeText(JSON.stringify(tubularReference));
-    setTubularReference(tubularReference);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -88,10 +85,6 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
         <MenuItem key={"copy"} onClick={onClickCopy}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular</Typography>
-        </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReference)} disabled={tubularReference === null}>
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
