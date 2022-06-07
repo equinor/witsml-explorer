@@ -159,7 +159,7 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessage(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
-    case ModificationType.UpdateTubularOnWellbore:
+    case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
@@ -873,7 +873,7 @@ export interface UpdateWellboreTrajectoryAction extends Action {
 }
 
 export interface UpdateWellboreTubularAction extends Action {
-  type: ModificationType.UpdateTubularOnWellbore;
+  type: ModificationType.UpdateTubularsOnWellbore;
   payload: { tubulars: Tubular[]; wellUid: string; wellboreUid: string };
 }
 
