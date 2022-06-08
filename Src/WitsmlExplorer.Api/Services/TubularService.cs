@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Services
             return witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
             {
                 Uid = tComponent.Uid,
-                Sequence = tComponent.Sequence,
+                Sequence = tComponent.Sequence ?? 0,
                 Id = StringHelpers.ToDecimal(tComponent.Id?.Value),
                 Od = StringHelpers.ToDecimal(tComponent.Od?.Value),
                 Len = StringHelpers.ToDecimal(tComponent.Len?.Value),

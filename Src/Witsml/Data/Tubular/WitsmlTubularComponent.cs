@@ -13,8 +13,14 @@ namespace Witsml.Data.Tubular
         [XmlElement("typeTubularComp")]
         public string TypeTubularComp { get; set; }
 
+        [XmlIgnore]
+        public int? Sequence { get; set; }
         [XmlElement("sequence")]
-        public int Sequence { get; set; }
+        public string SequenceText
+        {
+            get { return Sequence.HasValue ? XmlConvert.ToString(Sequence.Value) : null; }
+            set { Sequence = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+        }
 
         [XmlElement("description")]
         public string Description { get; set; }
