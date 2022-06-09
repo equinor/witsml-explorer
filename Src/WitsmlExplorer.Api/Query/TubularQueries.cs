@@ -47,6 +47,13 @@ namespace WitsmlExplorer.Api.Query
             return copyTubularQuery;
         }
 
+        public static WitsmlTubulars CopyTubularComponents(WitsmlTubular tubular, IEnumerable<WitsmlTubularComponent> tubularComponents)
+        {
+            tubular.TubularComponents.AddRange(tubularComponents);
+            var copyTubularQuery = new WitsmlTubulars { Tubulars = new List<WitsmlTubular> { tubular } };
+            return copyTubularQuery;
+        }
+
         public static WitsmlTubulars DeleteTubularComponents(string wellUid, string wellboreUid, string tubularUid, IEnumerable<string> tubularComponentUids)
         {
             return new WitsmlTubulars

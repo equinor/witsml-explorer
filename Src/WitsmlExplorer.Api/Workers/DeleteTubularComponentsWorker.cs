@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
             var wellboreUid = job.Tubular.WellboreUid;
             var tubularUid = job.Tubular.TubularUid;
             var tubularcomponents = new ReadOnlyCollection<string>(job.Uids.ToList());
-            var tubularcomponentsString = string.Join(", ", tubularcomponents);
+            var tubularComponentsString = string.Join(", ", tubularcomponents);
 
             var query = TubularQueries.DeleteTubularComponents(wellUid, wellboreUid, tubularUid, tubularcomponents);
             var result = await witsmlClient.DeleteFromStoreAsync(query);
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), wellUid, wellboreUid, tubularUid, RefreshType.Update);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted tubularcomponents: {tubularcomponentsString} for tubular: {tubularUid}");
+                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted tubularcomponents: {tubularComponentsString} for tubular: {tubularUid}");
                 return (workerResult, refreshAction);
             }
 

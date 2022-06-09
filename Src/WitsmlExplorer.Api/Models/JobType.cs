@@ -6,6 +6,7 @@ namespace WitsmlExplorer.Api.Models
         CopyLogData,
         CopyTrajectory,
         CopyTubular,
+        CopyTubularComponents,
         TrimLogObject,
         ModifyLogObject,
         DeleteMessageObjects,

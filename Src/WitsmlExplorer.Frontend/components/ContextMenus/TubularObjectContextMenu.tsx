@@ -21,7 +21,7 @@ export interface TubularObjectContextMenuProps {
   tubular: Tubular;
   selectedServer: Server;
   wellbore: Wellbore;
-  servers?: Server[];
+  servers: Server[];
 }
 
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {

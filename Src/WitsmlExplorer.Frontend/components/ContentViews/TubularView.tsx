@@ -10,7 +10,7 @@ import OperationType from "../../contexts/operationType";
 
 export const TubularView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedServer, selectedTubular } = navigationState;
+  const { selectedServer, selectedTubular, servers } = navigationState;
   const [tubularComponents, setTubularComponents] = useState<TubularComponent[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
@@ -34,7 +34,13 @@ export const TubularView = (): React.ReactElement => {
   }, [selectedTubular]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTubularComponents: TubularComponent[]) => {
-    const contextMenuProps: TubularComponentContextMenuProps = { checkedTubularComponents, dispatchOperation, selectedTubular, selectedServer };
+    const contextMenuProps: TubularComponentContextMenuProps = {
+      checkedTubularComponents,
+      dispatchOperation,
+      tubular: selectedTubular,
+      selectedServer,
+      servers
+    };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularComponentContextMenu {...contextMenuProps} />, position } });
   };
