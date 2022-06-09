@@ -1,6 +1,7 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
+import OperationType from "../../contexts/operationType";
 import Tubular from "../../models/tubular";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
@@ -11,6 +12,8 @@ import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete, onClickPaste, useClipboardTubularReference } from "./TubularContextMenuUtils";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
@@ -24,6 +27,12 @@ export interface TubularObjectContextMenuProps {
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, tubular, selectedServer, wellbore, servers } = props;
   const [tubularReference] = useClipboardTubularReference();
+
+  const onClickProperties = async () => {
+    const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular, dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularPropertiesModal {...tubularPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
 
   return (
     <ContextMenu
@@ -39,6 +48,11 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
         <MenuItem key={"delete"} onClick={() => onClickDelete(tubular, dispatchOperation, dispatchNavigation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickProperties}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

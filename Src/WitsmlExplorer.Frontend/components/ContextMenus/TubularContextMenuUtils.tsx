@@ -92,7 +92,7 @@ export const deleteTubular = async (tubular: Tubular, dispatchOperation: Dispatc
   await JobService.orderJob(JobType.DeleteTubular, job);
   const freshTubulars = await TubularService.getTubulars(job.tubularReference.wellUid, job.tubularReference.wellboreUid);
   dispatchNavigation({
-    type: ModificationType.UpdateTubularOnWellbore,
+    type: ModificationType.UpdateTubularsOnWellbore,
     payload: {
       wellUid: job.tubularReference.wellUid,
       wellboreUid: job.tubularReference.wellboreUid,

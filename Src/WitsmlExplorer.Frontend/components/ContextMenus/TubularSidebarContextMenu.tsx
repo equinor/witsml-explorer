@@ -1,6 +1,6 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
 import Tubular from "../../models/tubular";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
@@ -11,6 +11,9 @@ import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete } from "./TubularContextMenuUtils";
+import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import OperationType from "../../contexts/operationType";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
@@ -24,6 +27,12 @@ export interface TubularSidebarContextMenuProps {
 const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, tubular, selectedServer } = props;
 
+  const onClickProperties = async () => {
+    const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular, dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularPropertiesModal {...tubularPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -34,6 +43,11 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         <MenuItem key={"delete"} onClick={() => onClickDelete(tubular, dispatchOperation, dispatchNavigation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickProperties}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

@@ -20,6 +20,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteRisk,
         DeleteMudLog,
         RenameMnemonic,
+        ModifyTubular,
         ModifyWell,
         ModifyWellbore,
         ModifyMudLog,

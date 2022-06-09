@@ -2,10 +2,10 @@ namespace WitsmlExplorer.Api.Models
 {
     public class Tubular
     {
-        public string Uid { get; internal set; }
-        public string Name { get; internal set; }
-        public string WellUid { get; internal set; }
-        public string WellboreUid { get; internal set; }
-        public string TypeTubularAssy { get; internal set; }
+        public string Uid { get; set; }
+        public string Name { get; set; }
+        public string WellUid { get; set; }
+        public string WellboreUid { get; set; }
+        public string TypeTubularAssy { get; set; }
     }
 }
