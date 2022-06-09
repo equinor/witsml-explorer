@@ -58,8 +58,8 @@ namespace WitsmlExplorer.Api.Workers
             var tubularComponentsQuery = GetTubularComponents(witsmlClient, job.Source.TubularReference, job.Source.TubularComponentUids);
             await Task.WhenAll(tubularQuery, tubularComponentsQuery);
             var tubular = await tubularQuery;
-            var targetWellbore = await tubularComponentsQuery;
-            return Tuple.Create(tubular, targetWellbore);
+            var tubularComponents = await tubularComponentsQuery;
+            return Tuple.Create(tubular, tubularComponents);
         }
 
         private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, TubularReference tubularReference)
