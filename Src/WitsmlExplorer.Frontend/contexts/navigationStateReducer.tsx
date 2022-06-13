@@ -424,12 +424,11 @@ const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellb
   const { wells } = state;
   const { tubulars, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
-  const selectedTubular: Tubular = null;
+  const selectedTubular = tubulars.find((value) => value.uid === state.selectedTubular?.uid) ?? null;
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedTubular,
-    currentSelected: state.selectedTubularGroup,
     wells: freshWells
   };
 };

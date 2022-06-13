@@ -31,7 +31,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task RenameTubular()
         {
             const string expectedNewName = "NewName";
-            var job = CreateJobTemplate(TubularUid, expectedNewName);
+            const string expectedNewType = "drilling";
+            var job = CreateJobTemplate(TubularUid, expectedNewName, expectedNewType);
 
             var updatedTubulars = new List<WitsmlTubulars>();
             witsmlClient.Setup(client =>
@@ -42,6 +43,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedNewName, updatedTubulars.First().Tubulars.First().Name);
+            Assert.Equal(expectedNewType, updatedTubulars.First().Tubulars.First().TypeTubularAssy);
         }
 
         [Fact]
@@ -55,14 +57,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>()), Times.Never);
         }
 
-        private static ModifyTubularJob CreateJobTemplate(string uid, string name = null)
+        private static ModifyTubularJob CreateJobTemplate(string uid, string name, string type = null)
         {
             return new ModifyTubularJob
             {
                 Tubular = new Tubular
                 {
                     Uid = uid,
-                    Name = name
+                    Name = name,
+                    TypeTubularAssy = type
                 }
             };
         }

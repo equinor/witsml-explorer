@@ -8,24 +8,24 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete } from "./TubularContextMenuUtils";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import OperationType from "../../contexts/operationType";
+import { onClickPaste, useClipboardTubularComponentsReference } from "./TubularComponentContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   tubular: Tubular;
   selectedServer: Server;
-  wellbore: Wellbore;
-  servers?: Server[];
+  servers: Server[];
 }
 
 const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, tubular, selectedServer } = props;
+  const { dispatchNavigation, dispatchOperation, tubular, selectedServer, servers } = props;
+  const [tubularComponentsReference] = useClipboardTubularComponentsReference();
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular, dispatchOperation };
@@ -39,6 +39,10 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, tubular, dispatchOperation)}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular</Typography>
+        </MenuItem>,
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, tubular, tubularComponentsReference)} disabled={tubularComponentsReference === null}>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Paste tubular component{tubularComponentsReference?.tubularComponentUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete(tubular, dispatchOperation, dispatchNavigation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

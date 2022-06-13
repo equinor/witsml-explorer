@@ -30,7 +30,7 @@ const TubularItem = (props: TubularProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, tubular: Tubular) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TubularSidebarContextMenuProps = { dispatchNavigation, tubular, wellbore, selectedServer, servers, dispatchOperation };
+    const contextMenuProps: TubularSidebarContextMenuProps = { dispatchNavigation, tubular, selectedServer, servers, dispatchOperation };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularSidebarContextMenu {...contextMenuProps} />, position } });
   };
