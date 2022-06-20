@@ -33,6 +33,7 @@ export enum JobType {
   ModifyMessageObject = "ModifyMessageObject",
   RenameMnemonic = "RenameMnemonic",
   ModifyTubular = "ModifyTubular",
+  ModifyTubularComponent = "ModifyTubularComponent",
   ModifyWell = "ModifyWell",
   ModifyWellbore = "ModifyWellbore",
   TrimLogObject = "TrimLogObject",

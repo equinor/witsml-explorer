@@ -11,13 +11,14 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import TubularComponent from "../../models/tubularComponent";
 import { createTubularComponentsReference } from "../../models/jobs/copyTubularComponentJob";
 import Tubular from "../../models/tubular";
 import { onClickPaste, useClipboardTubularComponentsReference } from "./TubularComponentContextMenuUtils";
+import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
+import { TubularComponentRow } from "../ContentViews/TubularView";
 
 export interface TubularComponentContextMenuProps {
-  checkedTubularComponents: TubularComponent[];
+  checkedTubularComponents: TubularComponentRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   tubular: Tubular;
   selectedServer: Server;
@@ -66,6 +67,12 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const onClickProperties = async () => {
+    const tubularComponentPropertiesModalProps = { tubularComponent: checkedTubularComponents[0].tubularComponent, tubular, dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularComponentPropertiesModal {...tubularComponentPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -82,6 +89,10 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTubularComponents.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
