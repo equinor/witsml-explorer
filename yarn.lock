@@ -510,31 +510,31 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@equinor/eds-core-react@^0.20.1":
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.20.1.tgz#1917d5b6ee5c006071395a340cbba868e85b71f2"
-  integrity sha512-1ET1JtrO9x4Z5ePGw8ateqkCLvqqe1VyMdprrKBFRfUhuujYgiWLaX3dd0w9S5KXHE39z8YyTSKmv+uWc0luzw==
+"@equinor/eds-core-react@^0.20.3":
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.20.3.tgz#3891645bcbad4072c9ed497df7e4df166419420a"
+  integrity sha512-pM1gP7bwxf69WQ4Nvab3CBx7KR7EsXeb6cmSrLfeJohN7039kIzKrhrqeMsKZwEyi3IvglTlPCNPkU2kpuoJAg==
   dependencies:
     "@babel/runtime" "^7.17.9"
-    "@equinor/eds-icons" "0.10.0-dev.202205096"
-    "@equinor/eds-tokens" "0.7.0-dev.202205096"
+    "@equinor/eds-icons" "0.11.0"
+    "@equinor/eds-tokens" "0.7.1"
     "@equinor/eds-utils" "0.2.2"
     "@popperjs/core" "2.9.2"
     downshift "^6.1.7"
     react-fast-compare "3.2.0"
     react-popper "2.2.5"
 
-"@equinor/eds-icons@0.10.0-dev.202205096":
-  version "0.10.0-dev.202205096"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.10.0-dev.202205096.tgz#f5a5468626601eca10192bf3a327d5ff648e8977"
-  integrity sha512-+ntVx8ka2mxIpTO2vAEkxxsTDjRLJDgp+oxFAGRhyB2zCaDAidxeuftx84ZUCB/L+fke1wekAFg9dJ0DJpRYPQ==
+"@equinor/eds-icons@0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.11.0.tgz#0490314faef96479553d2c481e9f3030ae20d104"
+  integrity sha512-KNyq/2HN88oDTRUpBUJpq5FFYroS8YthpKaQP75ncGBC3iAsuN7VkpmfTorlMDGYTDZa62FLHTCTqBRXuPd32A==
 
 "@equinor/eds-tokens@0.7.0-dev.202205096":
   version "0.7.0-dev.202205096"
   resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.7.0-dev.202205096.tgz#1168a6bea5cbea5f241489eda025bbb3f98f54dd"
   integrity sha512-dnxgDVaE0xh/bFdtHVBVfBCl43Qs+gKhSWgHIvNagTZsre/nSpdL+cRWwffAmYmOOFdQ8NpPRb4g/Ftsqf9GUg==
 
-"@equinor/eds-tokens@^0.7.1":
+"@equinor/eds-tokens@0.7.1", "@equinor/eds-tokens@^0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@equinor/eds-tokens/-/eds-tokens-0.7.1.tgz#332ce42ad8b2cae0926dc5840b90c01ba650c936"
   integrity sha512-1IRJzf0Vf9t7MeG/NI9AmSi9YddyQc8ev5fax5IYSNLggE88X8EuYej52BMpJ6IJc7oEVvCQPC7JYD2XeyYJ1Q==
