@@ -1,6 +1,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
+using System.Globalization;
 
 namespace Witsml.Data.Tubular
 {
@@ -15,7 +16,7 @@ namespace Witsml.Data.Tubular
         public string PresLossFactText
         {
             get { return PresLossFact.HasValue ? XmlConvert.ToString(PresLossFact.Value) : null; }
-            set { PresLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value); }
+            set { PresLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture); }
         }
 
         [XmlElement("flowrateMn")]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
+using System.Globalization;
 
 namespace Witsml.Data.Tubular
 {
@@ -49,7 +50,7 @@ namespace Witsml.Data.Tubular
         public string PressLossFactText
         {
             get { return PressLossFact.HasValue ? XmlConvert.ToString(PressLossFact.Value) : null; }
-            set { PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value); }
+            set { PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture); }
         }
 
         [XmlIgnore]
