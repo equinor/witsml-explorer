@@ -29,8 +29,8 @@ namespace WitsmlExplorer.Api.Workers
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)
         {
             var (targetTubular, componentsToCopy) = await FetchData(job);
-            var tubularcomponentToCopy = TubularQueries.CopyTubularComponents(targetTubular, componentsToCopy);
-            var copyResult = await witsmlClient.UpdateInStoreAsync(tubularcomponentToCopy);
+            var updatedTubularQuery = TubularQueries.CopyTubularComponents(targetTubular, componentsToCopy);
+            var copyResult = await witsmlClient.UpdateInStoreAsync(updatedTubularQuery);
             var tubularComponentsString = string.Join(", ", job.Source.TubularComponentUids);
             if (!copyResult.IsSuccessful)
             {
@@ -54,12 +54,12 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<Tuple<WitsmlTubular, IEnumerable<WitsmlTubularComponent>>> FetchData(CopyTubularComponentsJob job)
         {
-            var tubularQuery = GetTubular(witsmlSourceClient, job.Target);
-            var tubularComponentsQuery = GetTubularComponents(witsmlClient, job.Source.TubularReference, job.Source.TubularComponentUids);
-            await Task.WhenAll(tubularQuery, tubularComponentsQuery);
-            var tubular = await tubularQuery;
-            var tubularComponents = await tubularComponentsQuery;
-            return Tuple.Create(tubular, tubularComponents);
+            var targetTubularQuery = GetTubular(witsmlClient, job.Target);
+            var sourceTubularComponentsQuery = GetTubularComponents(witsmlSourceClient, job.Source.TubularReference, job.Source.TubularComponentUids);
+            await Task.WhenAll(targetTubularQuery, sourceTubularComponentsQuery);
+            var targetTubular = targetTubularQuery.Result;
+            var sourceTubularComponents = sourceTubularComponentsQuery.Result;
+            return Tuple.Create(targetTubular, sourceTubularComponents);
         }
 
         private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, TubularReference tubularReference)

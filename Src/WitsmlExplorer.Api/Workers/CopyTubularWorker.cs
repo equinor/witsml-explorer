@@ -52,12 +52,12 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<Tuple<WitsmlTubular, WitsmlWellbore>> FetchData(CopyTubularJob job)
         {
-            var tubularQuery = GetTubular(witsmlSourceClient, job.Source);
-            var wellboreQuery = GetWellbore(witsmlClient, job.Target);
-            await Task.WhenAll(tubularQuery, wellboreQuery);
-            var tubular = await tubularQuery;
-            var targetWellbore = await wellboreQuery;
-            return Tuple.Create(tubular, targetWellbore);
+            var sourceTubularQuery = GetTubular(witsmlSourceClient, job.Source);
+            var targetWellboreQuery = GetWellbore(witsmlClient, job.Target);
+            await Task.WhenAll(sourceTubularQuery, targetWellboreQuery);
+            var sourceTubular = sourceTubularQuery.Result;
+            var targetWellbore = targetWellboreQuery.Result;
+            return Tuple.Create(sourceTubular, targetWellbore);
         }
 
         private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, TubularReference tubularReference)
