@@ -1,9 +1,11 @@
+import Measure from "./measure";
+
 export default interface TubularComponent {
-  sequence: string;
+  sequence: number;
   typeTubularComponent: string;
-  id: number;
-  od: number;
-  len: number;
+  id: Measure;
+  od: Measure;
+  len: Measure;
   tubularName: string;
   typeTubularAssy: string;
   uid: string;

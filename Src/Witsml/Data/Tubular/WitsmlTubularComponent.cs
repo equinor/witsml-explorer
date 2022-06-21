@@ -26,16 +26,16 @@ namespace Witsml.Data.Tubular
         public string Description { get; set; }
 
         [XmlElement("id")]
-        public Measure Id { get; set; }
+        public WitsmlLengthMeasure Id { get; set; }
 
         [XmlElement("od")]
-        public Measure Od { get; set; }
+        public WitsmlLengthMeasure Od { get; set; }
 
         [XmlElement("odMx")]
         public Measure OdMx { get; set; }
 
         [XmlElement("len")]
-        public Measure Len { get; set; }
+        public WitsmlLengthMeasure Len { get; set; }
 
         [XmlElement("lenJointAv")]
         public Measure LenJointAv { get; set; }

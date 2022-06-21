@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -44,10 +46,10 @@ namespace WitsmlExplorer.Api.Services
             return witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
             {
                 Uid = tComponent.Uid,
-                Sequence = tComponent.Sequence ?? 0,
-                Id = StringHelpers.ToDecimal(tComponent.Id?.Value),
-                Od = StringHelpers.ToDecimal(tComponent.Od?.Value),
-                Len = StringHelpers.ToDecimal(tComponent.Len?.Value),
+                Sequence = tComponent.Sequence,
+                Id = tComponent.Id == null ? null : new LengthMeasure { Uom = tComponent.Id.Uom, Value = decimal.Parse(tComponent.Id.Value, CultureInfo.InvariantCulture) },
+                Od = tComponent.Od == null ? null : new LengthMeasure { Uom = tComponent.Od.Uom, Value = decimal.Parse(tComponent.Od.Value, CultureInfo.InvariantCulture) },
+                Len = tComponent.Len == null ? null : new LengthMeasure { Uom = tComponent.Len.Uom, Value = decimal.Parse(tComponent.Len.Value, CultureInfo.InvariantCulture) },
                 TypeTubularComponent = tComponent.TypeTubularComp,
             })
                 .OrderBy(tComponent => tComponent.Sequence);

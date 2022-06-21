@@ -1,5 +1,5 @@
+import { TubularComponentRow } from "../../components/ContentViews/TubularView";
 import Tubular from "../tubular";
-import TubularComponent from "../tubularComponent";
 import TubularReference from "./tubularReference";
 
 export interface CopyTubularComponentJob {
@@ -37,7 +37,7 @@ function verifyRequiredProperties(jsonObject: TubularComponentsReference) {
   }
 }
 
-export function createTubularComponentsReference(tubularComponents: TubularComponent[], source: Tubular, serverUrl: string): TubularComponentsReference {
+export function createTubularComponentsReference(tubularComponents: TubularComponentRow[], source: Tubular, serverUrl: string): TubularComponentsReference {
   return {
     serverUrl: serverUrl,
     tubularReference: {

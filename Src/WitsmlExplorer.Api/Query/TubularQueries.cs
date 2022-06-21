@@ -3,6 +3,10 @@ using Witsml.Data;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
 using System.Linq;
+using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Jobs.Common;
+using Witsml.Data.Measures;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -67,6 +71,36 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Uid = uid
                     }).ToList()
+                }.AsSingletonList()
+            };
+        }
+
+        public static WitsmlTubulars UpdateTubularComponent(TubularComponent tubularComponent, TubularReference tubularReference)
+        {
+            var tc = new WitsmlTubularComponent
+            {
+                Uid = tubularComponent.Uid,
+                Sequence = tubularComponent.Sequence,
+                TypeTubularComp = tubularComponent.TypeTubularComponent
+            };
+
+            if (tubularComponent.Id != null)
+                tc.Id = new WitsmlLengthMeasure { Uom = tubularComponent.Id.Uom, Value = tubularComponent.Id.Value.ToString(CultureInfo.InvariantCulture) };
+
+            if (tubularComponent.Od != null)
+                tc.Od = new WitsmlLengthMeasure { Uom = tubularComponent.Od.Uom, Value = tubularComponent.Od.Value.ToString(CultureInfo.InvariantCulture) };
+
+            if (tubularComponent.Len != null)
+                tc.Len = new WitsmlLengthMeasure { Uom = tubularComponent.Len.Uom, Value = tubularComponent.Len.Value.ToString(CultureInfo.InvariantCulture) };
+
+            return new WitsmlTubulars
+            {
+                Tubulars = new WitsmlTubular
+                {
+                    UidWell = tubularReference.WellUid,
+                    UidWellbore = tubularReference.WellboreUid,
+                    Uid = tubularReference.TubularUid,
+                    TubularComponents = tc.AsSingletonList()
                 }.AsSingletonList()
             };
         }
