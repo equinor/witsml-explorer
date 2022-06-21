@@ -65,6 +65,7 @@ namespace WitsmlExplorer.Api.Workers
             if (string.IsNullOrEmpty(tubularReference.TubularUid)) throw new InvalidOperationException($"{nameof(tubularReference.TubularUid)} cannot be empty");
 
             if (string.IsNullOrEmpty(tubularComponent.Uid)) throw new InvalidOperationException($"{nameof(tubularComponent.Uid)} cannot be empty");
+            if (tubularComponent.Sequence != null && tubularComponent.Sequence < 1) throw new InvalidOperationException($"{nameof(tubularComponent.Sequence)} must be a positive non-zero integer");
             if (tubularComponent.Id != null && string.IsNullOrEmpty(tubularComponent.Id.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.Id)} cannot be empty");
             if (tubularComponent.Od != null && string.IsNullOrEmpty(tubularComponent.Od.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.Od)} cannot be empty");
             if (tubularComponent.Len != null && string.IsNullOrEmpty(tubularComponent.Len.Uom)) throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.Len)} cannot be empty");
