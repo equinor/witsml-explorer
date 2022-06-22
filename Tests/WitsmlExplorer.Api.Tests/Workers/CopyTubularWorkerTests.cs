@@ -77,11 +77,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyTubularJob
             {
-                Source = new TubularReference
+                Source = new TubularsReference
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
-                    TubularUid = TubularUid
+                    TubularUids = new string[] { TubularUid }
                 },
                 Target = new WellboreReference
                 {

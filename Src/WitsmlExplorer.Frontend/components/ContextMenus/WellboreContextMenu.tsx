@@ -27,7 +27,7 @@ import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajectoryJob";
 import LogReferences from "../../models/jobs/logReferences";
 import { Typography } from "@equinor/eds-core-react";
-import { useClipboardTubularReference } from "./TubularContextMenuUtils";
+import { useClipboardTubularsReference } from "./TubularContextMenuUtils";
 
 export interface WellboreContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreAction) => void;
@@ -40,7 +40,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   const { dispatchNavigation, dispatchOperation, wellbore, servers } = props;
   const [logReferences, setLogReferences] = useState<LogReferences>(null);
   const [trajectoryReference, setTrajectoryReference] = useState<TrajectoryReference>(null);
-  const [tubularReference] = useClipboardTubularReference();
+  const [tubularsReference] = useClipboardTubularsReference();
 
   useEffect(() => {
     const tryToParseClipboardContent = async () => {
@@ -125,7 +125,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     const sourceServerUrl =
       (jobType === JobType.CopyLog && logReferences.serverUrl) ||
       (jobType === JobType.CopyTrajectory && trajectoryReference.serverUrl) ||
-      (jobType === JobType.CopyTubular && tubularReference.serverUrl);
+      (jobType === JobType.CopyTubular && tubularsReference.serverUrl);
     const sourceServer = servers.find((server) => server.url === sourceServerUrl);
     if (sourceServer !== null) {
       CredentialsService.setSourceServer(sourceServer);
@@ -151,7 +151,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     const copyJob =
       (jobType === JobType.CopyLog && { source: logReferences, target: wellboreReference }) ||
       (jobType === JobType.CopyTrajectory && { source: trajectoryReference, target: wellboreReference }) ||
-      (jobType === JobType.CopyTubular && { source: tubularReference, target: wellboreReference });
+      (jobType === JobType.CopyTubular && { source: tubularsReference, target: wellboreReference });
     JobService.orderJob(jobType, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -242,11 +242,11 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           </ListItemIcon>
           <Typography color={"primary"}>Paste trajectory</Typography>
         </MenuItem>,
-        <MenuItem key={"pasteTubular"} onClick={() => onClickPaste(JobType.CopyTubular)} disabled={tubularReference === null}>
+        <MenuItem key={"pasteTubular"} onClick={() => onClickPaste(JobType.CopyTubular)} disabled={tubularsReference === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Paste tubular</Typography>
+          <Typography color={"primary"}>Paste tubular{tubularsReference?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
           <ListItemIcon>

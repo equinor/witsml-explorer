@@ -1,21 +1,21 @@
-import TubularReference from "./tubularReference";
+import TubularsReference from "./tubularsReference";
 import WellboreReference from "./wellboreReference";
 
 export default interface CopyTubularJob {
-  source: TubularReference;
+  source: TubularsReference;
   target: WellboreReference;
 }
 
-function verifyRequiredProperties(jsonObject: TubularReference) {
-  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "tubularUid"];
+function verifyRequiredProperties(jsonObject: TubularsReference) {
+  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "tubularUids"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
     throw new Error("Missing required fields.");
   }
 }
 
-export function parseStringToTubularReference(input: string): TubularReference {
-  let jsonObject: TubularReference;
+export function parseStringToTubularsReference(input: string): TubularsReference {
+  let jsonObject: TubularsReference;
   try {
     jsonObject = JSON.parse(input);
   } catch (error) {
