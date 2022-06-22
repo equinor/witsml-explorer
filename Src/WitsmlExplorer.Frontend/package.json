@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@date-io/moment": "^1.3.13",
-    "@equinor/eds-core-react": "^0.20.1",
+    "@equinor/eds-core-react": "^0.20.3",
     "@equinor/eds-tokens": "^0.7.1",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
@@ -55,14 +55,14 @@
     "react-window": "^1.8.7",
     "ste-simple-events": "^3.0.3",
     "styled-components": "^5.3.5",
-    "typescript": "^4.7.3",
+    "typescript": "^4.7.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@types/enzyme": "^3.10.12",
-    "@types/jest": "^28.1.1",
+    "@types/jest": "^28.1.2",
     "@types/lodash": "^4.14.182",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
@@ -77,7 +77,7 @@
     "eslint-plugin-react": "^7.30.0",
     "jest": "^28.1.1",
     "jest-environment-jsdom": "^28.1.1",
-    "lint-staged": "^13.0.1",
+    "lint-staged": "^13.0.2",
     "ts-jest": "^28.0.5"
   }
 }
