@@ -24,9 +24,9 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTubularJob job)
         {
-            var wellUid = job.TubularsReference.WellUid;
-            var wellboreUid = job.TubularsReference.WellboreUid;
-            var tubularUids = job.TubularsReference.TubularUids;
+            var wellUid = job.TubularReferences.WellUid;
+            var wellboreUid = job.TubularReferences.WellboreUid;
+            var tubularUids = job.TubularReferences.TubularUids;
 
             var queries = TubularQueries.DeleteWitsmlTubulars(wellUid, wellboreUid, tubularUids);
             bool error = false;

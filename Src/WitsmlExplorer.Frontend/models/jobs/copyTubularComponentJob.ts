@@ -3,18 +3,18 @@ import Tubular from "../tubular";
 import TubularReference from "./tubularReference";
 
 export interface CopyTubularComponentJob {
-  sourceTubularComponentsReference: TubularComponentsReference;
+  sourceTubularComponentReferences: TubularComponentReferences;
   targetTubularReference: TubularReference;
 }
 
-export interface TubularComponentsReference {
+export interface TubularComponentReferences {
   serverUrl: string;
   tubularReference: TubularReference;
   tubularComponentUids: string[];
 }
 
-export function parseStringToTubularComponentsReference(input: string): TubularComponentsReference {
-  let jsonObject: TubularComponentsReference;
+export function parseStringToTubularComponentReferences(input: string): TubularComponentReferences {
+  let jsonObject: TubularComponentReferences;
   try {
     jsonObject = JSON.parse(input);
   } catch (error) {
@@ -29,7 +29,7 @@ export function parseStringToTubularComponentsReference(input: string): TubularC
   };
 }
 
-function verifyRequiredProperties(jsonObject: TubularComponentsReference) {
+function verifyRequiredProperties(jsonObject: TubularComponentReferences) {
   const requiredProps = ["serverUrl", "tubularReference", "tubularComponentUids"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
@@ -37,7 +37,7 @@ function verifyRequiredProperties(jsonObject: TubularComponentsReference) {
   }
 }
 
-export function createTubularComponentsReference(tubularComponents: TubularComponentRow[], source: Tubular, serverUrl: string): TubularComponentsReference {
+export function createTubularComponentReferences(tubularComponents: TubularComponentRow[], source: Tubular, serverUrl: string): TubularComponentReferences {
   return {
     serverUrl: serverUrl,
     tubularReference: {
@@ -49,9 +49,9 @@ export function createTubularComponentsReference(tubularComponents: TubularCompo
   };
 }
 
-export function createCopyTubularComponentJob(sourceTubularComponentsReference: TubularComponentsReference, target: Tubular): CopyTubularComponentJob {
+export function createCopyTubularComponentJob(sourceTubularComponentReferences: TubularComponentReferences, target: Tubular): CopyTubularComponentJob {
   return {
-    sourceTubularComponentsReference,
+    sourceTubularComponentReferences,
     targetTubularReference: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,

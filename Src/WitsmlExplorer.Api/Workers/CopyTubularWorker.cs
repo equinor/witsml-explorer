@@ -86,9 +86,9 @@ namespace WitsmlExplorer.Api.Workers
             return Tuple.Create(tubulars, targetWellbore);
         }
 
-        private static async Task<WitsmlTubulars> GetTubulars(IWitsmlClient client, TubularsReference tubularsReference)
+        private static async Task<WitsmlTubulars> GetTubulars(IWitsmlClient client, TubularReferences tubularReferences)
         {
-            var witsmlTubular = TubularQueries.GetWitsmlTubularsById(tubularsReference.WellUid, tubularsReference.WellboreUid, tubularsReference.TubularUids);
+            var witsmlTubular = TubularQueries.GetWitsmlTubularsById(tubularReferences.WellUid, tubularReferences.WellboreUid, tubularReferences.TubularUids);
             return await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
         }
 

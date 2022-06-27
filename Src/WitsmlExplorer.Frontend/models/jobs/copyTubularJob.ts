@@ -1,12 +1,12 @@
-import TubularsReference from "./tubularsReference";
+import TubularReferences from "./tubularReferences";
 import WellboreReference from "./wellboreReference";
 
 export default interface CopyTubularJob {
-  source: TubularsReference;
+  source: TubularReferences;
   target: WellboreReference;
 }
 
-function verifyRequiredProperties(jsonObject: TubularsReference) {
+function verifyRequiredProperties(jsonObject: TubularReferences) {
   const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "tubularUids"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
@@ -14,8 +14,8 @@ function verifyRequiredProperties(jsonObject: TubularsReference) {
   }
 }
 
-export function parseStringToTubularsReference(input: string): TubularsReference {
-  let jsonObject: TubularsReference;
+export function parseStringToTubularReferences(input: string): TubularReferences {
+  let jsonObject: TubularReferences;
   try {
     jsonObject = JSON.parse(input);
   } catch (error) {

@@ -23,7 +23,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new DeleteTubularJob
             {
-                TubularsReference = new TubularsReference
+                TubularReferences = new TubularReferences
                 {
                     WellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394",
                     WellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110",

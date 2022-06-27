@@ -11,7 +11,7 @@ import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete, onClickPaste, useClipboardTubularsReference } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickPaste, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 
@@ -26,7 +26,7 @@ export interface TubularObjectContextMenuProps {
 
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, tubulars, selectedServer, wellbore, servers } = props;
-  const [tubularsReference] = useClipboardTubularsReference();
+  const [tubularReferences] = useClipboardTubularReferences();
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular: tubulars[0], dispatchOperation };
@@ -41,9 +41,9 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularsReference)} disabled={tubularsReference === null}>
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReferences)} disabled={tubularReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular{tubularsReference?.tubularUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation, dispatchNavigation)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

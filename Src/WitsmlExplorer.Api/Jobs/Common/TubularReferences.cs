@@ -1,6 +1,6 @@
 namespace WitsmlExplorer.Api.Jobs.Common
 {
-    public class TubularsReference
+    public class TubularReferences
     {
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }

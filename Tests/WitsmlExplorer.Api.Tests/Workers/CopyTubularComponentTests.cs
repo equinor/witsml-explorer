@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyTubularComponentsJob
             {
-                Source = new TubularComponentsReference
+                Source = new TubularComponentReferences
                 {
                     TubularReference = new TubularReference
                     {

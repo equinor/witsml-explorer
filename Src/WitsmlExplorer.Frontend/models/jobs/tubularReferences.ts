@@ -1,4 +1,4 @@
-export default interface TubularsReference {
+export default interface TubularReferences {
   serverUrl?: string;
   tubularUids: string[];
   wellUid: string;
