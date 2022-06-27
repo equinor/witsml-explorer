@@ -23,11 +23,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new CopyTubularJob
             {
-                Source = new TubularReference
+                Source = new TubularReferences
                 {
                     WellUid = "f661ed9c-b3ec-46ef-a37b-8ab78f04c142",
                     WellboreUid = "51d8256d-55c6-4eac-9e8f-a801026de278",
-                    TubularUid = "2YA2M49"
+                    TubularUids = new string[] { "2YA2M49" }
                 },
                 Target = new WellboreReference
                 {

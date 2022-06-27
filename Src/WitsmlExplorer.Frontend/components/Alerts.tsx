@@ -29,9 +29,9 @@ const Alerts = (): React.ReactElement => {
         const content = (
           <>
             <h4>{notification.message}</h4>
-            {notification.description.wellName && <span>Well: {notification.description.wellName}</span>}
-            {notification.description.wellboreName && <span>Wellbore: {notification.description.wellboreName}</span>}
-            {notification.description.objectName && <span>Name: {notification.description.objectName}</span>}
+            {notification.description.wellName && <span>Well: {notification.description.wellName},</span>}
+            {notification.description.wellboreName && <span> Wellbore: {notification.description.wellboreName},</span>}
+            {notification.description.objectName && <span> Name: {notification.description.objectName}</span>}
             {notification.reason && (
               <>
                 <br />

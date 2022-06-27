@@ -11,25 +11,25 @@ import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete, onClickPaste, useClipboardTubularReference } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickPaste, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
-  tubular: Tubular;
+  tubulars: Tubular[];
   selectedServer: Server;
   wellbore: Wellbore;
   servers: Server[];
 }
 
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, tubular, selectedServer, wellbore, servers } = props;
-  const [tubularReference] = useClipboardTubularReference();
+  const { dispatchNavigation, dispatchOperation, tubulars, selectedServer, wellbore, servers } = props;
+  const [tubularReferences] = useClipboardTubularReferences();
 
   const onClickProperties = async () => {
-    const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular, dispatchOperation };
+    const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular: tubulars[0], dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularPropertiesModal {...tubularPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -37,20 +37,20 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, tubular, dispatchOperation)}>
+        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, tubulars, dispatchOperation)} disabled={tubulars.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy tubular</Typography>
+          <Typography color={"primary"}>Copy tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReference)} disabled={tubularReference === null}>
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReferences)} disabled={tubularReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular</Typography>
+          <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(tubular, dispatchOperation, dispatchNavigation)}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation, dispatchNavigation)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete tubular</Typography>
+          <Typography color={"primary"}>Delete tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties}>
+        <MenuItem key={"properties"} onClick={onClickProperties} disabled={tubulars.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>

@@ -20,8 +20,8 @@ export const TubularsListView = (): React.ReactElement => {
     }
   }, [selectedWellbore?.tubulars]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, tubular: Tubular) => {
-    const contextProps: TubularObjectContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, tubular, wellbore: selectedWellbore, servers };
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, tubulars: Tubular[]) => {
+    const contextProps: TubularObjectContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, tubulars, wellbore: selectedWellbore, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularObjectContextMenu {...contextProps} />, position } });
   };
@@ -39,7 +39,18 @@ export const TubularsListView = (): React.ReactElement => {
     });
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={tubulars} onSelect={onSelect} onContextMenu={onContextMenu} /> : <></>;
+  const tubularRows = tubulars.map((tubular) => {
+    return {
+      ...tubular,
+      id: tubular.uid
+    };
+  });
+
+  return selectedWellbore && tubulars == selectedWellbore.tubulars ? (
+    <ContentTable columns={columns} data={tubularRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default TubularsListView;

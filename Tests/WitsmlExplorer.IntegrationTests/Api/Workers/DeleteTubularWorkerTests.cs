@@ -23,11 +23,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new DeleteTubularJob
             {
-                TubularReference = new TubularReference
+                TubularReferences = new TubularReferences
                 {
                     WellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394",
                     WellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110",
-                    TubularUid = "2YA2M49"
+                    TubularUids = new string[] { "2YA2M49" }
                 }
             };
             await worker.Execute(job);

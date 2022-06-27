@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import OperationType from "../../contexts/operationType";
-import { parseStringToTubularComponentsReference, TubularComponentsReference } from "../../models/jobs/copyTubularComponentJob";
+import { parseStringToTubularComponentReferences, TubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import { DispatchOperation } from "./TubularContextMenuUtils";
@@ -10,15 +10,15 @@ import React from "react";
 import TubularReference from "../../models/jobs/tubularReference";
 import Tubular from "../../models/tubular";
 
-export const useClipboardTubularComponentsReference: () => [TubularComponentsReference | null, Dispatch<SetStateAction<TubularComponentsReference>>] = () => {
-  const [tubularComponentsReference, setTubularComponentsReference] = useState<TubularComponentsReference>(null);
+export const useClipboardTubularComponentReferences: () => [TubularComponentReferences | null, Dispatch<SetStateAction<TubularComponentReferences>>] = () => {
+  const [tubularComponentReferences, setTubularComponentReferences] = useState<TubularComponentReferences>(null);
 
   useEffect(() => {
     const tryToParseClipboardContent = async () => {
       try {
         const clipboardText = await navigator.clipboard.readText();
-        const tubularComponentsReference = parseStringToTubularComponentsReference(clipboardText);
-        setTubularComponentsReference(tubularComponentsReference);
+        const tubularComponentReferences = parseStringToTubularComponentReferences(clipboardText);
+        setTubularComponentReferences(tubularComponentReferences);
       } catch (e) {
         //Not a valid object on the clipboard? That is fine, we won't use it.
       }
@@ -26,13 +26,13 @@ export const useClipboardTubularComponentsReference: () => [TubularComponentsRef
     tryToParseClipboardContent();
   }, []);
 
-  return [tubularComponentsReference, setTubularComponentsReference];
+  return [tubularComponentReferences, setTubularComponentReferences];
 };
 
-export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentsReference: TubularComponentsReference) => {
+export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentReferences: TubularComponentReferences) => {
   const onConnectionVerified = async (credentials: ServerCredentials) => {
     await CredentialsService.saveCredentials(credentials);
-    orderCopyJob(tubular, tubularComponentsReference, dispatchOperation);
+    orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
     dispatchOperation({ type: OperationType.HideModal });
   };
 
@@ -48,27 +48,27 @@ export const showCredentialsModal = (server: Server, dispatchOperation: Dispatch
   dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };
 
-export const orderCopyJob = (tubular: Tubular, tubularComponentsReference: TubularComponentsReference, dispatchOperation: DispatchOperation) => {
+export const orderCopyJob = (tubular: Tubular, tubularComponentReferences: TubularComponentReferences, dispatchOperation: DispatchOperation) => {
   const tubularReference: TubularReference = {
     wellUid: tubular.wellUid,
     wellboreUid: tubular.wellboreUid,
     tubularUid: tubular.uid
   };
 
-  const copyJob = { source: tubularComponentsReference, target: tubularReference };
+  const copyJob = { source: tubularComponentReferences, target: tubularReference };
   JobService.orderJob(JobType.CopyTubularComponents, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickPaste = async (servers: Server[], dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentsReference: TubularComponentsReference) => {
-  const sourceServer = servers.find((server) => server.url === tubularComponentsReference.serverUrl);
+export const onClickPaste = async (servers: Server[], dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentReferences: TubularComponentReferences) => {
+  const sourceServer = servers.find((server) => server.url === tubularComponentReferences.serverUrl);
   if (sourceServer !== null) {
     CredentialsService.setSourceServer(sourceServer);
     const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
     if (!hasPassword) {
-      showCredentialsModal(sourceServer, dispatchOperation, tubular, tubularComponentsReference);
+      showCredentialsModal(sourceServer, dispatchOperation, tubular, tubularComponentReferences);
     } else {
-      orderCopyJob(tubular, tubularComponentsReference, dispatchOperation);
+      orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
     }
   }
 };
