@@ -11,9 +11,9 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import { createTubularComponentsReference } from "../../models/jobs/copyTubularComponentJob";
+import { createTubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
 import Tubular from "../../models/tubular";
-import { onClickPaste, useClipboardTubularComponentsReference } from "./TubularComponentContextMenuUtils";
+import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import { TubularComponentRow } from "../ContentViews/TubularView";
 
@@ -27,11 +27,11 @@ export interface TubularComponentContextMenuProps {
 
 const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): React.ReactElement => {
   const { checkedTubularComponents, dispatchOperation, tubular, selectedServer, servers } = props;
-  const [tubularComponentsReference] = useClipboardTubularComponentsReference();
+  const [tubularComponentReferences] = useClipboardTubularComponentReferences();
 
   const onClickCopy = async () => {
-    const tubularComponentsReference = createTubularComponentsReference(checkedTubularComponents, tubular, selectedServer.url);
-    await navigator.clipboard.writeText(JSON.stringify(tubularComponentsReference));
+    const tubularComponentReferences = createTubularComponentReferences(checkedTubularComponents, tubular, selectedServer.url);
+    await navigator.clipboard.writeText(JSON.stringify(tubularComponentReferences));
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -80,9 +80,9 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular component{checkedTubularComponents?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, tubular, tubularComponentsReference)} disabled={tubularComponentsReference === null}>
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, tubular, tubularComponentReferences)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular component{tubularComponentsReference?.tubularComponentUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste tubular component{tubularComponentReferences?.tubularComponentUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedTubularComponents.length === 0}>
           <ListItemIcon>

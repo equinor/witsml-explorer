@@ -4,7 +4,7 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record CopyTubularJob
     {
-        public TubularReference Source { get; init; }
+        public TubularReferences Source { get; init; }
         public WellboreReference Target { get; init; }
     }
 }
