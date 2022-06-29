@@ -11,6 +11,8 @@ import {
   SelectLogTypeAction,
   SelectMessageGroupAction,
   SelectMessageObjectAction,
+  SelectRiskGroupAction,
+  SelectRiskObjectAction,
   SelectRigGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
@@ -23,6 +25,7 @@ import {
 import Well from "../models/well";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
+import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import ThemeMenu from "./ThemeMenu";
 import Tubular from "../models/tubular";
@@ -38,6 +41,8 @@ const Nav = (): React.ReactElement => {
     selectedLog,
     selectedMessage,
     selectedMessageGroup,
+    selectedRisk,
+    selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -57,6 +62,8 @@ const Nav = (): React.ReactElement => {
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
+      getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getRiskCrumbs(selectedRisk, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
@@ -118,6 +125,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
               messages: selectedWellbore.messages,
+              risks: selectedWellbore.risks,
               tubulars: selectedWellbore.tubulars
             }
           })
@@ -149,6 +157,35 @@ const getMessageCrumbs = (selectedMessage: MessageObject, selectedWell: Well, se
               well: selectedWell,
               wellbore: selectedWellbore,
               message: selectedMessage
+            }
+          })
+      }
+    : {};
+};
+const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectRiskGroupAction) => void) => {
+  return selectedRiskGroup
+    ? {
+        name: "Risks",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectRiskGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: selectedRiskGroup }
+          })
+      }
+    : {};
+};
+
+const getRiskCrumbs = (selectedRisk: RiskObject, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectRiskObjectAction) => void) => {
+  return selectedRisk?.name
+    ? {
+        name: selectedRisk.name,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectRiskObject,
+            payload: {
+              well: selectedWell,
+              wellbore: selectedWellbore,
+              risk: selectedRisk
             }
           })
       }
