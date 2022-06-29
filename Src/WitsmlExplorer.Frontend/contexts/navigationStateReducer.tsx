@@ -983,7 +983,7 @@ export interface SelectWellAction extends Action {
 
 export interface SelectWellboreAction extends Action {
   type: NavigationType.SelectWellbore;
-  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[]; messages: MessageObject[]; tubulars: Tubular[] };
+  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[]; messages: MessageObject[]; risks: RiskObject[]; tubulars: Tubular[] };
 }
 
 export interface SelectLogGroupAction extends Action {

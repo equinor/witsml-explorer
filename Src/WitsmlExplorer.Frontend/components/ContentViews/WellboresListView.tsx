@@ -11,6 +11,7 @@ import OperationContext from "../../contexts/operationContext";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MessageObjectService from "../../services/messageObjectService";
+import RiskObjectService from "../../services/riskObjectService";
 import TubularService from "../../services/tubularService";
 
 export const WellboresListView = (): React.ReactElement => {
@@ -42,7 +43,8 @@ export const WellboresListView = (): React.ReactElement => {
     const trajectories = await TrajectoryService.getTrajectories(wellUid, uid, controller.signal);
     const tubulars = await TubularService.getTubulars(wellUid, uid, controller.signal);
     const messages = await MessageObjectService.getMessages(wellUid, uid, controller.signal);
-    dispatchNavigation({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, tubulars } });
+    const risks = await RiskObjectService.getRisks(wellUid, uid, controller.signal);
+    dispatchNavigation({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, risks, tubulars } });
   };
 
   return selectedWell && <ContentTable columns={columns} data={[...selectedWell.wellbores]} onSelect={onSelect} onContextMenu={onContextMenu} />;
