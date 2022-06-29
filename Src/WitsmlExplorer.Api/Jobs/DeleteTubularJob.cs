@@ -4,6 +4,6 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record DeleteTubularJob
     {
-        public TubularReference TubularReference { get; init; }
+        public TubularReferences TubularReferences { get; init; }
     }
 }

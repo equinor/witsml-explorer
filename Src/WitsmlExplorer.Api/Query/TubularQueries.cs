@@ -41,14 +41,47 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlTubulars CopyWitsmlTubular(WitsmlTubular tubular, WitsmlWellbore targetWellbore)
+        public static WitsmlTubulars GetWitsmlTubularsById(string wellUid, string wellboreUid, string[] tubularUids)
         {
-            tubular.UidWell = targetWellbore.UidWell;
-            tubular.NameWell = targetWellbore.NameWell;
-            tubular.UidWellbore = targetWellbore.Uid;
-            tubular.NameWellbore = targetWellbore.Name;
-            var copyTubularQuery = new WitsmlTubulars { Tubulars = new List<WitsmlTubular> { tubular } };
-            return copyTubularQuery;
+            return new WitsmlTubulars
+            {
+                Tubulars = tubularUids.Select((tubularUid) => new WitsmlTubular
+                {
+                    Uid = tubularUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }).ToList()
+            };
+        }
+
+        public static IEnumerable<WitsmlTubulars> DeleteWitsmlTubulars(string wellUid, string wellboreUid, string[] tubularUids)
+        {
+            return tubularUids.Select((tubularUid) =>
+                new WitsmlTubulars
+                {
+                    Tubulars = new WitsmlTubular
+                    {
+                        Uid = tubularUid,
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
+        }
+
+        public static IEnumerable<WitsmlTubulars> CopyWitsmlTubulars(WitsmlTubulars tubulars, WitsmlWellbore targetWellbore)
+        {
+            return tubulars.Tubulars.Select((tubular) =>
+            {
+                tubular.UidWell = targetWellbore.UidWell;
+                tubular.NameWell = targetWellbore.NameWell;
+                tubular.UidWellbore = targetWellbore.Uid;
+                tubular.NameWellbore = targetWellbore.Name;
+                return new WitsmlTubulars
+                {
+                    Tubulars = tubular.AsSingletonList()
+                };
+            });
         }
 
         public static WitsmlTubulars CopyTubularComponents(WitsmlTubular tubular, IEnumerable<WitsmlTubularComponent> tubularComponents)

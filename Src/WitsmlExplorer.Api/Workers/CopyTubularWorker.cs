@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -28,43 +29,67 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularJob job)
         {
-            var (tubular, targetWellbore) = await FetchData(job);
-            var tubularToCopy = TubularQueries.CopyWitsmlTubular(tubular, targetWellbore);
-            var copyLogResult = await witsmlClient.AddToStoreAsync(tubularToCopy);
-            if (!copyLogResult.IsSuccessful)
+            var (tubulars, targetWellbore) = await FetchData(job);
+            var queries = TubularQueries.CopyWitsmlTubulars(tubulars, targetWellbore);
+
+            bool error = false;
+            var successUids = new List<string>();
+            var errorReasons = new List<string>();
+            var errorEnitities = new List<EntityDescription>();
+            var results = await Task.WhenAll(queries.Select(async (query) =>
             {
-                var errorMessage = "Failed to copy tubular.";
-                Log.Error(
-                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceTubularUid}. " +
+                var result = await witsmlClient.AddToStoreAsync(query);
+                var tubular = query.Tubulars.First();
+                if (result.IsSuccessful)
+                {
+                    Log.Information("{JobType} - Job successful", GetType().Name);
+                    successUids.Add(tubular.Uid);
+                }
+                else
+                {
+                    var errorMessage = "Failed to copy tubular.";
+                    Log.Error(
+                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
                     "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     errorMessage,
-                    job.Source.WellUid, job.Source.WellboreUid, job.Source.TubularUid,
+                    job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
                     job.Target.WellUid, job.Target.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, copyLogResult.Reason), null);
+                    error = true;
+                    errorReasons.Add(result.Reason);
+                    errorEnitities.Add(new EntityDescription
+                    {
+                        WellName = tubular.NameWell,
+                        WellboreName = tubular.NameWellbore,
+                        ObjectName = tubular.Name
+                    });
+                }
+                return result;
+            }));
+
+            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), targetWellbore.UidWell, targetWellbore.Uid, RefreshType.Update);
+            var successString = successUids.Count > 0 ? $"Copied tubulars: {string.Join(", ", successUids)}." : "";
+            if (!error)
+            {
+                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
             }
 
-            Log.Information("{JobType} - Job successful. Tubular copied", GetType().Name);
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Tubular {tubular.Name} copied to: {targetWellbore.Name}");
-
-            return (workerResult, refreshAction);
+            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some tubulars", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
-        private async Task<Tuple<WitsmlTubular, WitsmlWellbore>> FetchData(CopyTubularJob job)
+        private async Task<Tuple<WitsmlTubulars, WitsmlWellbore>> FetchData(CopyTubularJob job)
         {
-            var sourceTubularQuery = GetTubular(witsmlSourceClient, job.Source);
-            var targetWellboreQuery = GetWellbore(witsmlClient, job.Target);
-            await Task.WhenAll(sourceTubularQuery, targetWellboreQuery);
-            var sourceTubular = sourceTubularQuery.Result;
-            var targetWellbore = targetWellboreQuery.Result;
-            return Tuple.Create(sourceTubular, targetWellbore);
+            var tubularsQuery = GetTubulars(witsmlSourceClient, job.Source);
+            var wellboreQuery = GetWellbore(witsmlClient, job.Target);
+            await Task.WhenAll(tubularsQuery, wellboreQuery);
+            var tubulars = tubularsQuery.Result;
+            var targetWellbore = wellboreQuery.Result;
+            return Tuple.Create(tubulars, targetWellbore);
         }
 
-        private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, TubularReference tubularReference)
+        private static async Task<WitsmlTubulars> GetTubulars(IWitsmlClient client, TubularReferences tubularReferences)
         {
-            var witsmlTubular = TubularQueries.GetWitsmlTubularById(tubularReference.WellUid, tubularReference.WellboreUid, tubularReference.TubularUid);
-            var result = await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
-            return !result.Tubulars.Any() ? null : result.Tubulars.First();
+            var witsmlTubular = TubularQueries.GetWitsmlTubularsById(tubularReferences.WellUid, tubularReferences.WellboreUid, tubularReferences.TubularUids);
+            return await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
