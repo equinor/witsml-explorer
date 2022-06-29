@@ -215,11 +215,11 @@ Most IDEs have plugins that support Prettier. This will make the result of forma
 ### ESLint
 For linting our frontend code we use [ESLint](https://github.com/typescript-eslint/typescript-eslint).
 
-### ECLint
-For our non frontend code, we use [ECLint](https://github.com/jedmao/eclint) for validating and fixing code that does not follow the project rules. They can be found in `.editorconfig` at the project root.
+### dotnet-format
+For our non frontend code, we use [dotnet-format](https://github.com/dotnet/format) for validating and fixing code that does not follow the project rules. They can be found in `.editorconfig` at the project root.
 
 ### Run checks as a pre-commit hook
-We use [Husky](https://github.com/typicode/husky) to run `ESLint` and `ECLint` as pre commit hooks. This will give errors when creating commits that causes checks to fail.
+We use [Husky](https://github.com/typicode/husky) to run `ESLint` and `dotnet-format` as pre commit hooks. This will give errors when creating commits that causes checks to fail.
 
 ## Project overview
 Here you will get a brief overview of the system flow and project structure.
