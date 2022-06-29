@@ -1075,6 +1075,8 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRisksAction
+  | UpdateWellboreRiskAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | ToggleTreeNodeAction
@@ -1087,6 +1089,8 @@ export type NavigationAction =
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
+  | SelectRiskGroupAction
+  | SelectRiskObjectAction
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
