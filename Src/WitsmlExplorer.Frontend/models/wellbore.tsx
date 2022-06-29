@@ -5,6 +5,7 @@ import Trajectory from "./trajectory";
 import Measure from "./measure";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
 import Tubular from "./tubular";
+import RiskObject from "./riskObject";
 
 export interface WellboreProperties {
   uid: string;
@@ -42,6 +43,7 @@ export default interface Wellbore extends WellboreProperties {
   trajectories?: Trajectory[];
   messages?: MessageObject[];
   tubulars?: Tubular[];
+  risks?: RiskObject[];
 }
 
 export function emptyWellbore(): Wellbore {
@@ -63,7 +65,8 @@ export function emptyWellbore(): Wellbore {
     rigs: [],
     trajectories: [],
     tubulars: [],
-    messages: []
+    messages: [],
+    risks: []
   };
 }
 
@@ -81,6 +84,9 @@ export const calculateRigGroupId = (wellbore: Wellbore): string => {
 
 export const calculateMessageGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "messages";
+};
+export const calculateRiskGroupId = (wellbore: Wellbore): string => {
+  return calculateWellboreNodeId(wellbore) + "risks";
 };
 
 export const calculateLogGroupId = (wellbore: Wellbore): string => {

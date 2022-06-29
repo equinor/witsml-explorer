@@ -27,8 +27,6 @@ export default interface RiskObject {
   contigency: string;
   mitigation: string;
   sourceName: string;
-  // skal denne være med?
-  //commonData: CommonData;
 }
 
 export function emptyRiskObject(): RiskObject {
