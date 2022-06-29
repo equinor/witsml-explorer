@@ -9,11 +9,12 @@ import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickShowOnServer } from "./TubularContextMenuUtils";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import OperationType from "../../contexts/operationType";
 import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
+import NestedMenuItem from "./NestedMenuItem";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
@@ -48,6 +49,13 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid)}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

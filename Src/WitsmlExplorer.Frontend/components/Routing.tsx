@@ -9,15 +9,24 @@ import LogObjectService from "../services/logObjectService";
 import RigService from "../services/rigService";
 import TrajectoryService from "../services/trajectoryService";
 import { truncateAbortHandler } from "../services/apiClient";
-import Wellbore from "../models/wellbore";
+import Wellbore, { calculateTubularGroupId } from "../models/wellbore";
 import LogObject from "../models/logObject";
-import { NavigationState, SelectLogObjectAction, SelectServerAction, SelectWellAction, SelectWellboreAction, SetFilterAction } from "../contexts/navigationStateReducer";
+import {
+  NavigationState,
+  SelectLogObjectAction,
+  SelectServerAction,
+  SelectTubularAction,
+  SelectWellAction,
+  SelectWellboreAction,
+  SetFilterAction
+} from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
+import Tubular from "../models/tubular";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedLog } = navigationState;
+  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedLog, selectedTubular } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
   const [queryParamsFromUrl, setQueryParamsFromUrl] = useState<QueryParams>(null);
@@ -35,7 +44,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [selectedServer, selectedWell, selectedWellbore, selectedLog]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedLog, selectedTubular]);
 
   useEffect(() => {
     if (!isSyncingUrlAndState) {
@@ -56,7 +65,7 @@ const Routing = (): React.ReactElement => {
         CredentialsService.setSelectedServer(server);
       }
     }
-  }, [servers]);
+  }, [servers, queryParamsFromUrl]);
 
   useEffect(() => {
     if (isSyncingUrlAndState) {
@@ -124,6 +133,19 @@ const Routing = (): React.ReactElement => {
           setIsSyncingUrlAndState(false);
         }
       }
+      const tubularUid = router.query.tubularUid?.toString();
+      if (selectedWellbore && tubularUid && !selectedTubular) {
+        const tubular = selectedWellbore.tubulars.find((t: Tubular) => t.uid === tubularUid);
+        if (tubular) {
+          const selectTubularAction: SelectTubularAction = {
+            type: NavigationType.SelectTubular,
+            payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular }
+          };
+          dispatchNavigation(selectTubularAction);
+        } else {
+          setIsSyncingUrlAndState(false);
+        }
+      }
     }
   }, [selectedWellbore]);
 
@@ -134,7 +156,8 @@ const isQueryParamsEqual = (urlQp: QueryParams, stateQp: QueryParams): boolean =
   const wellIdSynced = urlQp?.wellUid === stateQp.wellUid;
   const wellboreIdSynced = urlQp?.wellboreUid === stateQp.wellboreUid;
   const logObjectIdSynced = urlQp?.logObjectUid === stateQp.logObjectUid;
-  return serverIsSynced && wellIdSynced && wellboreIdSynced && logObjectIdSynced;
+  const tubularIdSynced = urlQp?.tubularUid === stateQp.tubularUid;
+  return serverIsSynced && wellIdSynced && wellboreIdSynced && logObjectIdSynced && tubularIdSynced;
 };
 
 const getQueryParamsFromState = (state: NavigationState): QueryParams => {
@@ -142,7 +165,8 @@ const getQueryParamsFromState = (state: NavigationState): QueryParams => {
     ...(state.selectedServer && { serverUrl: state.selectedServer.url }),
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
-    ...(state.selectedLog && { logObjectUid: state.selectedLog.uid })
+    ...(state.selectedLog && { logObjectUid: state.selectedLog.uid }),
+    ...(state.selectedTubular && { tubularUid: state.selectedTubular.uid })
   };
 };
 
@@ -151,7 +175,8 @@ const getQueryParamsFromUrl = (router: NextRouter): QueryParams => {
     ...(router.query.serverUrl && { serverUrl: router.query.serverUrl.toString() }),
     ...(router.query.wellUid && { wellUid: router.query.wellUid.toString() }),
     ...(router.query.wellboreUid && { wellboreUid: router.query.wellboreUid.toString() }),
-    ...(router.query.logObjectUid && { logObjectUid: router.query.logObjectUid.toString() })
+    ...(router.query.logObjectUid && { logObjectUid: router.query.logObjectUid.toString() }),
+    ...(router.query.tubularUid && { tubularUid: router.query.tubularUid.toString() })
   };
 };
 
@@ -160,6 +185,7 @@ interface QueryParams {
   wellUid?: string;
   wellboreUid?: string;
   logObjectUid?: string;
+  tubularUid?: string;
 }
 
 export default Routing;
