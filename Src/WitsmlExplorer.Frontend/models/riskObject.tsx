@@ -27,6 +27,9 @@ export default interface RiskObject {
   contigency: string;
   mitigation: string;
   sourceName: string;
+  dTimCreation?: Date;
+  dTimLastChange?: Date;
+  itemState?: string;
 }
 
 export function emptyRiskObject(): RiskObject {
