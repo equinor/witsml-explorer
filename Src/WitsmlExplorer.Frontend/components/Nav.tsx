@@ -24,7 +24,6 @@ import {
 import Well from "../models/well";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
-import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import ThemeMenu from "./ThemeMenu";
 import Tubular from "../models/tubular";
@@ -40,7 +39,6 @@ const Nav = (): React.ReactElement => {
     selectedLog,
     selectedMessage,
     selectedMessageGroup,
-    selectedRisk,
     selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
@@ -62,7 +60,6 @@ const Nav = (): React.ReactElement => {
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
       getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
-      getRiskCrumbs(selectedRisk, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
@@ -174,22 +171,6 @@ const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, select
     : {};
 };
 
-const getRiskCrumbs = (selectedRisk: RiskObject, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectRiskObjectAction) => void) => {
-  return selectedRisk?.name
-    ? {
-        name: selectedRisk.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectRiskObject,
-            payload: {
-              well: selectedWell,
-              wellbore: selectedWellbore,
-              risk: selectedRisk
-            }
-          })
-      }
-    : {};
-};
 const getLogGroupCrumb = (selectedLogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectLogGroupAction) => void) => {
   return selectedLogGroup
     ? {

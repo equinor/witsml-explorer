@@ -102,7 +102,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, messageGroup } });
   };
   const onSelectRiskGroup = async (well: Well, wellbore: Wellbore, riskGroup: string) => {
-    dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, riskGroup } });
+    dispatchNavigation({ type: NavigationType.SelectRiskGroup, payload: { well, wellbore, riskGroup } });
   };
 
   const onSelectRigGroup = async (well: Well, wellbore: Wellbore, rigGroup: string) => {
