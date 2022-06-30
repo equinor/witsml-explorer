@@ -41,7 +41,11 @@ namespace WitsmlExplorer.Api.Services
                     MdBitEnd = risk.MdBitEnd?.Value,
                     SourceName = risk.CommonData.SourceName,
                     SeverityLevel = risk.SeverityLevel,
-                    ProbabilityLevel = risk.ProbabilityLevel
+                    ProbabilityLevel = risk.ProbabilityLevel,
+                    DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
+                    DTimLastChange = StringHelpers.ToDateTime(risk.CommonData.DTimLastChange),
+                    DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
+                    DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
                 }).OrderBy(risk => risk.Name);
         }
     }
