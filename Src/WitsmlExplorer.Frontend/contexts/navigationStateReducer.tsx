@@ -1,7 +1,7 @@
 import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
-import RiskObject, { getRiskObjectProperties } from "../models/riskObject";
+import RiskObject from "../models/riskObject";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
@@ -116,8 +116,6 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectMessageObject(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
-    case NavigationType.SelectRiskObject:
-      return selectRiskObject(state, action);
     case NavigationType.SelectRigGroup:
       return selectRigGroup(state, action);
     case NavigationType.SelectTrajectoryGroup:
@@ -735,27 +733,6 @@ const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAct
   };
 };
 
-const selectRiskObject = (state: NavigationState, { payload }: SelectRiskObjectAction) => {
-  const { risk, well, wellbore } = payload;
-  let expandedTreeNodes = state.expandedTreeNodes;
-
-  const riskGroup = calculateRiskGroupId(wellbore);
-  const shouldExpandLogGroup = shouldExpand(expandedTreeNodes, riskGroup, calculateWellboreNodeId(wellbore));
-  expandedTreeNodes = shouldExpandLogGroup ? toggleTreeNode(expandedTreeNodes, riskGroup) : expandedTreeNodes;
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
-    selectedRiskGroup: riskGroup,
-    selectedRisk: risk,
-    currentSelected: risk,
-    currentProperties: getRiskObjectProperties(risk),
-    expandedTreeNodes
-  };
-};
-
 const selectTrajectoriesGroup = (state: NavigationState, { payload }: SelectTrajectoryGroupAction) => {
   const { well, wellbore, trajectoryGroup } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateTrajectoryGroupId(wellbore), calculateWellboreNodeId(wellbore));
@@ -1015,10 +992,6 @@ export interface SelectRiskGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; riskGroup: any };
 }
 
-export interface SelectRiskObjectAction extends Action {
-  type: NavigationType.SelectRiskObject;
-  payload: { risk: RiskObject; well: Well; wellbore: Wellbore };
-}
 export interface SelectLogCurveInfoAction extends Action {
   type: NavigationType.ShowCurveValues;
   payload: { logCurveInfo: any };
@@ -1090,7 +1063,6 @@ export type NavigationAction =
   | SelectMessageGroupAction
   | SelectMessageObjectAction
   | SelectRiskGroupAction
-  | SelectRiskObjectAction
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
