@@ -12,7 +12,6 @@ import {
   SelectMessageGroupAction,
   SelectMessageObjectAction,
   SelectRiskGroupAction,
-  SelectRiskObjectAction,
   SelectRigGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
