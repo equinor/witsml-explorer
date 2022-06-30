@@ -165,10 +165,6 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
-    case ModificationType.UpdateRiskObjects:
-      return updateWellboreRisks(state, action);
-    case ModificationType.UpdateRiskObject:
-      return updateWellboreRisk(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
@@ -372,6 +368,7 @@ const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellb
     wells: freshWells
   };
 };
+
 const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellboreMessageAction) => {
   const { wells } = state;
   const { message } = payload;
@@ -385,29 +382,7 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
     selectedMessage
   };
 };
-const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
-  const { wells } = state;
-  const { risks, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-const updateWellboreRisk = (state: NavigationState, { payload }: UpdateWellboreRiskAction) => {
-  const { wells } = state;
-  const { risk } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, risk);
-  const selectedRisk = state.selectedRisk?.uid === risk.uid ? risk : state.selectedRisk;
 
-  return {
-    ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedRisk
-  };
-};
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -717,6 +692,7 @@ const selectMessageObject = (state: NavigationState, { payload }: SelectMessageO
     expandedTreeNodes
   };
 };
+
 const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAction) => {
   const { well, wellbore, riskGroup } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateRiskGroupId(wellbore), calculateWellboreNodeId(wellbore));
@@ -938,16 +914,6 @@ export interface UpdateWellboreMessageAction extends Action {
   payload: { message: MessageObject };
 }
 
-export interface UpdateWellboreRisksAction extends Action {
-  type: ModificationType.UpdateRiskObjects;
-  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
-}
-
-export interface UpdateWellboreRiskAction extends Action {
-  type: ModificationType.UpdateRiskObject;
-  payload: { risk: RiskObject };
-}
-
 export interface UpdateServerListAction extends Action {
   type: ModificationType.UpdateServerList;
   payload: { servers: Server[] };
@@ -1048,8 +1014,6 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
-  | UpdateWellboreRisksAction
-  | UpdateWellboreRiskAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | ToggleTreeNodeAction

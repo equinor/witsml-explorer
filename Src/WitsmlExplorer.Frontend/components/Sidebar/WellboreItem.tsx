@@ -182,8 +182,8 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onLabelClick={() => onSelectMessageGroup(well, wellbore, messageGroupId)}
         onContextMenu={preventContextMenuPropagation}
       />
-      <TreeItem nodeId={riskGroupId} labelText={"Risks"} onLabelClick={() => onSelectRiskGroup(well, wellbore, riskGroupId)} onContextMenu={preventContextMenuPropagation} />
       <TreeItem nodeId={rigGroupId} labelText={"Rigs"} onLabelClick={() => onSelectRigGroup(well, wellbore, rigGroupId)} onContextMenu={preventContextMenuPropagation} />
+      <TreeItem nodeId={riskGroupId} labelText={"Risks"} onLabelClick={() => onSelectRiskGroup(well, wellbore, riskGroupId)} onContextMenu={preventContextMenuPropagation} />
       <TreeItem
         nodeId={trajectoryGroupId}
         labelText={"Trajectories"}

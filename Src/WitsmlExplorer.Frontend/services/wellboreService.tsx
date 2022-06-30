@@ -21,7 +21,6 @@ export default class WellboreService {
     const getLogs = LogObjectService.getLogs(wellUid, wellboreUid);
     const getRigs = RigService.getRigs(wellUid, wellboreUid);
     const getRisks = RiskObjectService.getRisks(wellUid, wellboreUid);
-    //TODO find out whether "getMessages" should be called here
     const getTrajectories = TrajectoryService.getTrajectories(wellUid, wellboreUid);
     const getTubulars = TubularService.getTubulars(wellUid, wellboreUid);
     const [wellbore, logs, rigs, risks, trajectories, tubulars] = await Promise.all([getWellbore, getLogs, getRigs, getRisks, getTrajectories, getTubulars]);
