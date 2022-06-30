@@ -37,12 +37,9 @@ namespace WitsmlExplorer.Api.Services
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
                     AffectedPersonnel = risk.AffectedPersonnel,
-                    MdHoleStart = risk.MdHoleStart?.Value,
-                    MdHoleEnd = risk.MdHoleEnd?.Value,
                     MdBitStart = risk.MdBitStart?.Value,
                     MdBitEnd = risk.MdBitEnd?.Value,
                     SourceName = risk.CommonData.SourceName,
-                    DiaHole = risk.DiaHole,
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel
                 }).OrderBy(risk => risk.Name);

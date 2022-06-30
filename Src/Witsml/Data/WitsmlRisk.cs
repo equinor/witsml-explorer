@@ -30,7 +30,6 @@ namespace Witsml.Data
         public string DTimStart { get; set; }
         [XmlElement("dTimEnd")]
         public string DTimEnd { get; set; }
-        [XmlElement("mdHoleStart")]
         public WitsmlIndex MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
         public WitsmlIndex MdBitEnd { get; set; }
@@ -42,6 +41,8 @@ namespace Witsml.Data
         [XmlElement("summary")]
         public string Summary { get; set; }
         [XmlElement("details")]
+        public string Details { get; set; }
+
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
 

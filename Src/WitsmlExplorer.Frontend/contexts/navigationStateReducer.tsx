@@ -580,9 +580,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, logs, rigs, trajectories, messages, tubulars } = payload;
+  const { well, wellbore, logs, rigs, trajectories, messages, risks, tubulars } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages, tubulars };
+  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages, risks, tubulars };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
@@ -721,7 +721,7 @@ const selectMessageObject = (state: NavigationState, { payload }: SelectMessageO
 };
 const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAction) => {
   const { well, wellbore, riskGroup } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMessageGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateRiskGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
