@@ -1,5 +1,8 @@
 using Witsml.Data;
 using Witsml.Extensions;
+using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Services;
+
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -73,6 +76,43 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Uid = uid
+                }.AsSingletonList()
+            };
+        }
+
+        public static WitsmlRisks CreateRisk(Risk risk)
+        {
+            return new WitsmlRisks
+            {
+                Risks = new WitsmlRisk
+                {
+                    UidWell = risk.UidWell,
+                    NameWell = risk.NameWell,
+                    UidWellbore = risk.UidWellbore,
+                    NameWellbore = risk.NameWellbore,
+                    Uid = risk.Uid,
+                    Name = risk.Name,
+                    Type = risk.Type,
+                    Category = risk.Category,
+                    SubCategory = risk.SubCategory,
+                    ExtendCategory = risk.ExtendCategory,
+                    AffectedPersonnel = risk.AffectedPersonnel,
+                    DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
+                    DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
+                    MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },
+                    MdHoleEnd = new WitsmlIndex { Uom = "m", Value = risk.MdHoleEnd },
+                    MdBitStart = new WitsmlIndex { Uom = "m", Value = risk.MdBitStart },
+                    MdBitEnd = new WitsmlIndex { Uom = "m", Value = risk.MdBitEnd },
+                    TvdHoleStart = risk.TvdHoleStart,
+                    TvdHoleEnd = risk.TvdHoleEnd,
+                    DiaHole = risk.DiaHole,
+                    SeverityLevel = risk.SeverityLevel,
+                    ProbabilityLevel = risk.ProbabilityLevel,
+                    Summary = risk.Summary,
+                    Details = risk.Details,
+                    Identification = risk.Identification,
+                    Contingency = risk.Contigency,
+                    Mitigation = risk.Mitigation
                 }.AsSingletonList()
             };
         }

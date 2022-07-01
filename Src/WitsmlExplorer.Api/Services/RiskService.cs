@@ -22,8 +22,8 @@ namespace WitsmlExplorer.Api.Services
         {
             var query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-
             return result.Risks.Select(risk =>
+
                 new Risk
                 {
                     Name = risk.Name,

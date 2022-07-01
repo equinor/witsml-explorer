@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Api.Models
         public string Category { get; set; }
         public string SubCategory { get; set; }
         public string ExtendCategory { get; set; }
-        public string AffectedPersonnel { get; set; }
+        public string[] AffectedPersonnel { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimEnd { get; set; }
         public string MdHoleStart { get; set; }
