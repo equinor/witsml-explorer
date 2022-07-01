@@ -80,7 +80,7 @@ namespace WitsmlExplorer.Api.Workers
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel.Split(", "),
+                    AffectedPersonnel = (risk.AffectedPersonnel != null) ? risk.AffectedPersonnel.Split(", ") : null,
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },
