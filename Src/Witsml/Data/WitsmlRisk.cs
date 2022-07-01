@@ -25,7 +25,7 @@ namespace Witsml.Data
         [XmlElement("extendCategory")]
         public string ExtendCategory { get; set; }
         [XmlElement("affectedPersonnel")]
-        public string AffectedPersonnel { get; set; }
+        public string[] AffectedPersonnel { get; set; }
         [XmlElement("dTimStart")]
         public string DTimStart { get; set; }
         [XmlElement("dTimEnd")]

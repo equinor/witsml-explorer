@@ -36,7 +36,5 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DTimCreation { get; set; }
         public DateTime? DTimLastChange { get; set; }
         public CommonData CommonData { get; set; }
-        public DateTime? DTimCreation { get; set; }
-        public DateTime? DTimLastChange { get; set; }
     }
 }
