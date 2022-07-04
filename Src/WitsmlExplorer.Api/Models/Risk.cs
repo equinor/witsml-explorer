@@ -33,6 +33,9 @@ namespace WitsmlExplorer.Api.Models
         public string Contigency { get; set; }
         public string Mitigation { get; set; }
         public string SourceName { get; set; }
+        public string ItemState { get; set; }
+        public DateTime? DTimCreation { get; set; }
+        public DateTime? DTimLastChange { get; set; }
         public CommonData CommonData { get; set; }
     }
 }

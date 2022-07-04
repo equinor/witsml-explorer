@@ -114,3 +114,5 @@ coverage*[.json, .xml, .info]
 # Thumbnails
 ._*
 /Tests/WitsmlExplorer.IntegrationTests/Properties/launchSettings.json
+
+.fake
