@@ -47,6 +47,9 @@ namespace WitsmlExplorer.Api.Services
                     SourceName = risk.CommonData.SourceName,
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
+                    Summary = risk.Summary,
+                    ItemState = risk.CommonData.ItemState,
+                    Details = risk.Details,
                 }).OrderBy(risk => risk.Name);
         }
     }
