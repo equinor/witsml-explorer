@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api.Query
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel,
+                    AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },

@@ -25,7 +25,6 @@ namespace Witsml.Data
         [XmlElement("extendCategory")]
         public string ExtendCategory { get; set; }
         [XmlElement("affectedPersonnel")]
-        //TODO:
         public string[] AffectedPersonnel { get; set; }
         [XmlElement("dTimStart")]
         public string DTimStart { get; set; }

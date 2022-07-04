@@ -22,6 +22,8 @@ namespace WitsmlExplorer.Api.Services
         {
             var query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+
+
             return result.Risks.Select(risk =>
 
                 new Risk
@@ -36,7 +38,7 @@ namespace WitsmlExplorer.Api.Services
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel,
+                    AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
                     DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
                     DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
                     DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
@@ -45,7 +47,10 @@ namespace WitsmlExplorer.Api.Services
                     MdBitEnd = risk.MdBitEnd?.Value,
                     SourceName = risk.CommonData.SourceName,
                     SeverityLevel = risk.SeverityLevel,
-                    ProbabilityLevel = risk.ProbabilityLevel
+                    ProbabilityLevel = risk.ProbabilityLevel,
+                    Summary = risk.Summary,
+                    ItemState = risk.CommonData.ItemState,
+                    Details = risk.Details,
                 }).OrderBy(risk => risk.Name);
         }
     }
