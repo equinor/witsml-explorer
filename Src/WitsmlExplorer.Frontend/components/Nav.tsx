@@ -11,6 +11,7 @@ import {
   SelectLogTypeAction,
   SelectMessageGroupAction,
   SelectMessageObjectAction,
+  SelectRiskGroupAction,
   SelectRigGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
@@ -38,6 +39,7 @@ const Nav = (): React.ReactElement => {
     selectedLog,
     selectedMessage,
     selectedMessageGroup,
+    selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -57,6 +59,7 @@ const Nav = (): React.ReactElement => {
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
+      getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
@@ -118,6 +121,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
               messages: selectedWellbore.messages,
+              risks: selectedWellbore.risks,
               tubulars: selectedWellbore.tubulars
             }
           })
@@ -154,6 +158,19 @@ const getMessageCrumbs = (selectedMessage: MessageObject, selectedWell: Well, se
       }
     : {};
 };
+const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectRiskGroupAction) => void) => {
+  return selectedRiskGroup
+    ? {
+        name: "Risks",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectRiskGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: selectedRiskGroup }
+          })
+      }
+    : {};
+};
+
 const getLogGroupCrumb = (selectedLogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectLogGroupAction) => void) => {
   return selectedLogGroup
     ? {

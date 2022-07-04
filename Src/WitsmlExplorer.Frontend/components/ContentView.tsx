@@ -6,6 +6,7 @@ import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { LogsListView } from "./ContentViews/LogsListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
+import { RisksListView } from "./ContentViews/RisksListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
 import TubularsListView from "./ContentViews/TubularsListView";
@@ -26,6 +27,7 @@ const ContentView = (): React.ReactElement => {
     selectedLogCurveInfo,
     selectedRigGroup,
     selectedMessageGroup,
+    selectedRiskGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
     selectedTubularGroup,
@@ -55,6 +57,8 @@ const ContentView = (): React.ReactElement => {
         setView(<RigsListView />);
       } else if (currentSelected === selectedMessageGroup) {
         setView(<MessagesListView />);
+      } else if (currentSelected === selectedRiskGroup) {
+        setView(<RisksListView />);
       } else if (currentSelected === selectedLogCurveInfo) {
         setView(<CurveValuesView />);
       } else if (currentSelected === selectedTrajectoryGroup) {

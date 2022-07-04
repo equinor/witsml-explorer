@@ -8,27 +8,20 @@ export default interface RiskObject {
   type: string;
   category: string;
   subCategory: string;
-  mdHoleStart: string;
-  mdHoleEnd: string;
   extendCategory: string;
   affectedPersonnel: string;
   dTimEnd: Date;
   dTimStart: Date;
-  tvdHoleStart: string;
-  vdHoleEnd: string;
   mdBitStart: string;
   mdBitEnd: string;
-  diaHole: string;
   severityLevel: string;
   probabilityLevel: string;
   summary: string;
   details: string;
-  identification: string;
-  contigency: string;
-  mitigation: string;
   sourceName: string;
-  // skal denne være med?
-  //commonData: CommonData;
+  dTimCreation?: Date;
+  dTimLastChange?: Date;
+  itemState?: string;
 }
 
 export function emptyRiskObject(): RiskObject {
@@ -42,25 +35,20 @@ export function emptyRiskObject(): RiskObject {
     type: "",
     category: "",
     subCategory: "",
-    mdHoleStart: "",
-    mdHoleEnd: "",
     extendCategory: "",
     affectedPersonnel: "",
     dTimEnd: null,
     dTimStart: null,
-    tvdHoleStart: "",
-    vdHoleEnd: "",
     mdBitStart: "",
     mdBitEnd: "",
-    diaHole: "",
     severityLevel: "",
     probabilityLevel: "",
     summary: "",
     details: "",
-    identification: "",
-    contigency: "",
-    mitigation: "",
-    sourceName: ""
+    sourceName: "",
+    dTimCreation: null,
+    dTimLastChange: null,
+    itemState: ""
   };
 }
 
