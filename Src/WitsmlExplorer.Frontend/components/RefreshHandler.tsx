@@ -105,7 +105,25 @@ const RefreshHandler = (): React.ReactElement => {
       }
     }
   }
-
+  /*TODO:
+  async function refreshRisk(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.RemoveRisk) {
+      const action: RemoveRiskAction = { type: ModificationType.RemoveWellbore, payload: { wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } };
+      dispatchNavigation(action);
+    } else if (modificationType === ModificationType.AddWellbore) {
+      const wellbore = await WellboreService.getWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
+      if (wellbore) {
+        dispatchNavigation({ type: modificationType, payload: { wellbore } });
+      }
+    } else if (modificationType === ModificationType.UpdateWellbore) {
+      const wellbore = await WellboreService.getCompleteWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
+      dispatchNavigation({
+        type: ModificationType.UpdateWellbore,
+        payload: { wellbore }
+      });
+    }
+  }
+  */
   async function refreshTubular(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateTubularsOnWellbore) {
       const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);

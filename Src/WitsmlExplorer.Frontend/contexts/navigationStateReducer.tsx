@@ -383,6 +383,33 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
+/*TODO:
+const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
+  const { wells } = state;
+  const { risks, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
+const updateWellboreRisk = (state: NavigationState, { payload }: UpdateWellboreRiskAction) => {
+  const { wells } = state;
+  const { risk } = payload;
+  const updatedWells = insertLogIntoWellsStructure(wells, risk);
+  const selectedRisk = state.selectedRisk?.uid === risk.uid ? risk : state.selectedRisk;
+
+  return {
+    ...state,
+    wells: updatedWells,
+    filteredWells: filterWells(updatedWells, state.selectedFilter),
+    selectedRisk
+  };
+};
+*/
+
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -892,6 +919,16 @@ export interface UpdateWellboreLogsAction extends Action {
 export interface UpdateWellboreLogAction extends Action {
   type: ModificationType.UpdateLogObject;
   payload: { log: LogObject };
+}
+
+export interface UpdateWellboreRisksAction extends Action {
+  type: ModificationType.UpdateRiskObjects;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreRiskAction extends Action {
+  type: ModificationType.UpdateRiskObject;
+  payload: { risk: RiskObject };
 }
 
 export interface UpdateWellboreTrajectoryAction extends Action {

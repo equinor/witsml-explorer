@@ -9,7 +9,7 @@ export default interface RiskObject {
   category: string;
   subCategory: string;
   extendCategory: string;
-  affectedPersonnel: string[];
+  affectedPersonnel: string;
   dTimEnd: Date;
   dTimStart: Date;
   mdBitStart: string;
@@ -36,7 +36,7 @@ export function emptyRiskObject(): RiskObject {
     category: "",
     subCategory: "",
     extendCategory: "",
-    affectedPersonnel: [],
+    affectedPersonnel: "",
     dTimEnd: null,
     dTimStart: null,
     mdBitStart: "",
