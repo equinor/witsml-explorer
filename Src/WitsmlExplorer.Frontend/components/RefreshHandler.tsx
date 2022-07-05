@@ -10,6 +10,7 @@ import ModificationType from "../contexts/modificationType";
 import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
+import RiskObjectService from "../services/riskObjectService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -39,6 +40,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.Tubular:
             await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
+            break;
+          case EntityType.RiskObjects:
+            await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
         }
       } catch (error) {
@@ -105,25 +109,18 @@ const RefreshHandler = (): React.ReactElement => {
       }
     }
   }
-  /*TODO:
+
   async function refreshRisk(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.RemoveRisk) {
-      const action: RemoveRiskAction = { type: ModificationType.RemoveWellbore, payload: { wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } };
-      dispatchNavigation(action);
-    } else if (modificationType === ModificationType.AddWellbore) {
-      const wellbore = await WellboreService.getWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
-      if (wellbore) {
-        dispatchNavigation({ type: modificationType, payload: { wellbore } });
+    if (modificationType === ModificationType.UpdateRiskObjects) {
+      const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (risks) {
+        dispatchNavigation({ type: modificationType, payload: { risks, wellUid, wellboreUid } });
       }
-    } else if (modificationType === ModificationType.UpdateWellbore) {
-      const wellbore = await WellboreService.getCompleteWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
-      dispatchNavigation({
-        type: ModificationType.UpdateWellbore,
-        payload: { wellbore }
-      });
     }
   }
-  */
+
   async function refreshTubular(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateTubularsOnWellbore) {
       const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);

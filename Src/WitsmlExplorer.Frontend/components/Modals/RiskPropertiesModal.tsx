@@ -43,7 +43,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
             <>
               <TextField disabled id="dateTimeCreation" label="created" defaultValue={editableRiskObject.dTimCreation} fullWidth />
               <TextField disabled id="dateTimeLastChange" label="last changed" defaultValue={editableRiskObject.dTimLastChange} fullWidth />
-              <TextField disabled id="uid" label="message uid" defaultValue={editableRiskObject.uid} fullWidth />
+              <TextField disabled id="uid" label="risk uid" defaultValue={editableRiskObject.uid} fullWidth />
               <TextField
                 id="name"
                 label="name"

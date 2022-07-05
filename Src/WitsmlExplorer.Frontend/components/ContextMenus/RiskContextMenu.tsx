@@ -13,7 +13,7 @@ import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPro
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
 
-export interface RiskContextMenuProps {
+export interface RiskObjectContextMenuProps {
   checkedRiskObjectRows: RiskObjectRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   dispatchNavigation: (action: UpdateWellboreRisksAction | UpdateWellboreRiskAction) => void;
@@ -21,14 +21,14 @@ export interface RiskContextMenuProps {
   selectedServer: Server;
 }
 
-const RiskContextMenu = (props: RiskContextMenuProps): React.ReactElement => {
+const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactElement => {
   const { checkedRiskObjectRows, dispatchOperation } = props;
 
   const onClickModify = async () => {
     const riskObject = await RiskObjectService.getRisk(checkedRiskObjectRows[0].wellUid, checkedRiskObjectRows[0].wellboreUid, checkedRiskObjectRows[0].uid);
     const mode = PropertiesModalMode.Edit;
-    const modifyRiskProps: RiskPropertiesModalProps = { mode, riskObject, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <RiskPropertiesModal {...modifyRiskProps} /> });
+    const modifyRiskObjectProps: RiskPropertiesModalProps = { mode, riskObject, dispatchOperation };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <RiskPropertiesModal {...modifyRiskObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -46,4 +46,4 @@ const RiskContextMenu = (props: RiskContextMenuProps): React.ReactElement => {
   );
 };
 
-export default RiskContextMenu;
+export default RiskObjectContextMenu;

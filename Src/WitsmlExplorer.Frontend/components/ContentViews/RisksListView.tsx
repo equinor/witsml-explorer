@@ -2,12 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import RiskObject from "../../models/riskObject";
+import { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
+import OperationContext from "../../contexts/operationContext";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
+import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {}
 
 export const RisksListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedWellbore } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { dispatchOperation } = useContext(OperationContext);
   const [risks, setRisks] = useState<RiskObject[]>([]);
 
   useEffect(() => {
@@ -42,8 +48,13 @@ export const RisksListView = (): React.ReactElement => {
     { property: "itemState", label: "Item State", type: ContentType.String },
     { property: "sourceName", label: "Source Name", type: ContentType.String }
   ];
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {
+    const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
+  };
 
-  return <ContentTable columns={columns} data={getTableData()} checkableRows />;
+  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RisksListView;

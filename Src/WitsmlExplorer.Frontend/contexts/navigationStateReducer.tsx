@@ -1,7 +1,7 @@
 import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
-import RiskObject from "../models/riskObject";
+import RiskObject, { getRiskObjectProperties } from "../models/riskObject";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
@@ -116,6 +116,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectMessageObject(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
+    case NavigationType.SelectRiskObject:
+      return selectRiskObject(state, action);
     case NavigationType.SelectRigGroup:
       return selectRigGroup(state, action);
     case NavigationType.SelectTrajectoryGroup:
@@ -165,6 +167,10 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateRiskObjects:
+      return updateWellboreRisks(state, action);
+    case ModificationType.UpdateRiskObject:
+      return updateWellboreRisk(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
@@ -383,7 +389,6 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
-/*TODO:
 const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
   const { wells } = state;
   const { risks, wellUid, wellboreUid } = payload;
@@ -408,7 +413,6 @@ const updateWellboreRisk = (state: NavigationState, { payload }: UpdateWellboreR
     selectedRisk
   };
 };
-*/
 
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
@@ -499,7 +503,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[]>
+  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -733,6 +737,27 @@ const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAct
     currentSelected: riskGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateRiskGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectRiskObject = (state: NavigationState, { payload }: SelectRiskObjectAction) => {
+  const { risk, well, wellbore } = payload;
+  let expandedTreeNodes = state.expandedTreeNodes;
+
+  const riskGroup = calculateRiskGroupId(wellbore);
+  const shouldExpandLogGroup = shouldExpand(expandedTreeNodes, riskGroup, calculateWellboreNodeId(wellbore));
+  expandedTreeNodes = shouldExpandLogGroup ? toggleTreeNode(expandedTreeNodes, riskGroup) : expandedTreeNodes;
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedRiskGroup: riskGroup,
+    selectedRisk: risk,
+    currentSelected: risk,
+    currentProperties: getRiskObjectProperties(risk),
+    expandedTreeNodes
   };
 };
 
@@ -995,6 +1020,11 @@ export interface SelectRiskGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; riskGroup: any };
 }
 
+export interface SelectRiskObjectAction extends Action {
+  type: NavigationType.SelectRiskObject;
+  payload: { risk: RiskObject; well: Well; wellbore: Wellbore };
+}
+
 export interface SelectLogCurveInfoAction extends Action {
   type: NavigationType.ShowCurveValues;
   payload: { logCurveInfo: any };
@@ -1051,6 +1081,8 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRisksAction
+  | UpdateWellboreRiskAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | ToggleTreeNodeAction
@@ -1063,6 +1095,8 @@ export type NavigationAction =
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
+  | SelectRiskGroupAction
+  | SelectRiskObjectAction
   | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction

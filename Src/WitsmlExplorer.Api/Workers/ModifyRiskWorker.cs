@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             Log.Information("{JobType} - Job successful. Risk modified", GetType().Name);
-            var refreshAction = new RefreshRisk(witsmlClient.GetServerHostname(), job.Risk.UidWell, job.Risk.UidWellbore, RefreshType.Update);
+            var refreshAction = new RefreshRisks(witsmlClient.GetServerHostname(), job.Risk.UidWell, job.Risk.UidWellbore, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Risk {job.Risk.Name} updated for {job.Risk.NameWellbore}");
 
             return (workerResult, refreshAction);

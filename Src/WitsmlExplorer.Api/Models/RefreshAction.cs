@@ -96,15 +96,15 @@ namespace WitsmlExplorer.Api.Models
             RefreshType = refreshType;
         }
     }
-    public class RefreshRisk : RefreshAction
+    public class RefreshRisks : RefreshAction
     {
-        public override EntityType EntityType => EntityType.Risk;
+        public override EntityType EntityType => EntityType.Risks;
         public string WellUid { get; }
         public string WellboreUid { get; }
 
         public RefreshType RefreshType { get; }
 
-        public RefreshRisk(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        public RefreshRisks(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
         {
             WellUid = wellUid;
             WellboreUid = wellboreUid;
