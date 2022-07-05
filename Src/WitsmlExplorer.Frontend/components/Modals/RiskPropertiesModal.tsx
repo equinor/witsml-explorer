@@ -27,9 +27,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
   const onSubmit = async (updatedRisk: RiskObject) => {
     setIsLoading(true);
     const wellboreRiskJob = {
-      riskObject: updatedRisk
+      risk: updatedRisk
     };
-    await JobService.orderJob(JobType.ModifyRiskObject, wellboreRiskJob);
+    await JobService.orderJob(JobType.ModifyRisk, wellboreRiskJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

@@ -4,17 +4,16 @@ import OperationType from "../../contexts/operationType";
 import { ListItemIcon, MenuItem } from "@material-ui/core";
 import ContextMenu from "./ContextMenu";
 import { Server } from "../../models/server";
-import { RiskObjectRow } from "../ContentViews/RisksListView";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
-import RiskObjectService from "../../services/riskObjectService";
 import { UpdateWellboreRiskAction, UpdateWellboreRisksAction } from "../../contexts/navigationStateReducer";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
+import RiskObject from "../../models/riskObject";
 
 export interface RiskObjectContextMenuProps {
-  checkedRiskObjectRows: RiskObjectRow[];
+  checkedRiskObjectRows: RiskObject[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   dispatchNavigation: (action: UpdateWellboreRisksAction | UpdateWellboreRiskAction) => void;
   servers: Server[];
@@ -25,9 +24,9 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
   const { checkedRiskObjectRows, dispatchOperation } = props;
 
   const onClickModify = async () => {
-    const riskObject = await RiskObjectService.getRisk(checkedRiskObjectRows[0].wellUid, checkedRiskObjectRows[0].wellboreUid, checkedRiskObjectRows[0].uid);
+    const riskObject = checkedRiskObjectRows;
     const mode = PropertiesModalMode.Edit;
-    const modifyRiskObjectProps: RiskPropertiesModalProps = { mode, riskObject, dispatchOperation };
+    const modifyRiskObjectProps: RiskPropertiesModalProps = { mode, riskObject: riskObject[0], dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <RiskPropertiesModal {...modifyRiskObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
