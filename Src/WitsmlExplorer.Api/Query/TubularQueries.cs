@@ -36,7 +36,9 @@ namespace WitsmlExplorer.Api.Query
                 {
                     Uid = tubularUid,
                     UidWell = wellUid,
-                    UidWellbore = wellboreUid
+                    UidWellbore = wellboreUid,
+                    Name = "",
+                    TypeTubularAssy = "",
                 }.AsSingletonList()
             };
         }

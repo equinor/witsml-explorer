@@ -6,12 +6,14 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using System.Globalization;
+using Witsml.Data.Tubular;
 
 namespace WitsmlExplorer.Api.Services
 {
     public interface ITubularService
     {
         Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid);
+        Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid);
         Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid);
     }
 
@@ -26,15 +28,20 @@ namespace WitsmlExplorer.Api.Services
             var witsmlTubular = TubularQueries.GetWitsmlTubularByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
-            return result.Tubulars.Select(tubular =>
-                new Tubular
-                {
-                    Uid = tubular.Uid,
-                    WellUid = tubular.UidWell,
-                    WellboreUid = tubular.UidWellbore,
-                    Name = tubular.Name,
-                    TypeTubularAssy = tubular.TypeTubularAssy
-                }).OrderBy(tubular => tubular.Name);
+            return result.Tubulars.Select(tubular => WitsmlToTubular(tubular)).OrderBy(tubular => tubular.Name);
+        }
+
+        public async Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid)
+        {
+            var witsmlTubular = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
+
+            if (result.Tubulars.Any())
+            {
+                return WitsmlToTubular(result.Tubulars.First());
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
@@ -53,6 +60,18 @@ namespace WitsmlExplorer.Api.Services
                 TypeTubularComponent = tComponent.TypeTubularComp,
             })
                 .OrderBy(tComponent => tComponent.Sequence);
+        }
+
+        private Tubular WitsmlToTubular(WitsmlTubular tubular)
+        {
+            return new Tubular
+            {
+                Uid = tubular.Uid,
+                WellUid = tubular.UidWell,
+                WellboreUid = tubular.UidWellbore,
+                Name = tubular.Name,
+                TypeTubularAssy = tubular.TypeTubularAssy
+            };
         }
 
     }

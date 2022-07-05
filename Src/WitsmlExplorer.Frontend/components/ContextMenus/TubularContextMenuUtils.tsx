@@ -11,7 +11,7 @@ import JobService, { JobType } from "../../services/jobService";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import TubularService from "../../services/tubularService";
 import Tubular from "../../models/tubular";
-import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import ModificationType from "../../contexts/modificationType";
 import ConfirmModal from "../Modals/ConfirmModal";
 import TubularReferences from "../../models/jobs/tubularReferences";
@@ -80,7 +80,7 @@ export const onClickPaste = async (servers: Server[], dispatchOperation: Dispatc
   }
 };
 
-export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
+export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularsAction) => void) => {
   dispatchOperation({ type: OperationType.HideModal });
   const job = {
     tubularReferences: {
@@ -113,7 +113,7 @@ export const onClickCopy = async (selectedServer: Server, tubulars: Tubular[], d
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickDelete = async (tubulars: Tubular[], dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
+export const onClickDelete = async (tubulars: Tubular[], dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularsAction) => void) => {
   const confirmation = (
     <ConfirmModal
       heading={"Delete tubular?"}
@@ -134,5 +134,18 @@ export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, 
   const host = `${window.location.protocol}//${window.location.host}`;
   const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellUid}&wellboreUid=${wellboreUid}&tubularUid=${tubularUid}`;
   window.open(logUrl);
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
+export const onClickRefresh = async (tubular: Tubular, dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
+  let freshTubular = await TubularService.getTubular(tubular.wellUid, tubular.wellboreUid, tubular.uid);
+  const exists = !!freshTubular;
+  if (!exists) {
+    freshTubular = tubular;
+  }
+  dispatchNavigation({
+    type: ModificationType.UpdateTubularOnWellbore,
+    payload: { tubular: freshTubular, exists: exists }
+  });
   dispatchOperation({ type: OperationType.HideContextMenu });
 };

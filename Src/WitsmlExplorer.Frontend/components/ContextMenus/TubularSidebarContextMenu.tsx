@@ -8,7 +8,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete, onClickShowOnServer } from "./TubularContextMenuUtils";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
@@ -17,7 +17,7 @@ import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularC
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface TubularSidebarContextMenuProps {
-  dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
+  dispatchNavigation: (action: UpdateWellboreTubularsAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   tubular: Tubular;
   selectedServer: Server;
