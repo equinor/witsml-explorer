@@ -758,6 +758,7 @@ const selectTubularGroup = (state: NavigationState, { payload }: SelectTubularGr
 
 const selectTubular = (state: NavigationState, { payload }: SelectTubularAction) => {
   const { well, wellbore, tubular, tubularGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateTubularGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
@@ -767,6 +768,7 @@ const selectTubular = (state: NavigationState, { payload }: SelectTubularAction)
     selectedTubularGroup: tubularGroup,
     selectedTubular: tubular,
     currentSelected: tubular,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateTubularGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getTubularProperties(tubular, wellbore)
   };
 };

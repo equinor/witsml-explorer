@@ -129,3 +129,10 @@ export const onClickDelete = async (tubulars: Tubular[], dispatchOperation: Disp
   );
   dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 };
+
+export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellUid: string, wellboreUid: string, tubularUid: string) => {
+  const host = `${window.location.protocol}//${window.location.host}`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellUid}&wellboreUid=${wellboreUid}&tubularUid=${tubularUid}`;
+  window.open(logUrl);
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
