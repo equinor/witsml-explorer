@@ -44,9 +44,9 @@ namespace WitsmlExplorer.Console.ListCommands
                     {
                         table.AddRow(
                             risk.Uid,
-                            risk.UidWell,
-                            risk.UidWellbore,
-                            risk.NameWellbore,
+                            risk.WellUid,
+                            risk.WellboreUid,
+                            risk.WellboreName,
                             risk.Summary,
                             risk.CommonData.SourceName ?? "",
                             risk.CommonData.DTimLastChange);
@@ -77,8 +77,8 @@ namespace WitsmlExplorer.Console.ListCommands
             {
                 Risks = new WitsmlRisk
                 {
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
+                    WellUid = wellUid,
+                    WellboreUid = wellboreUid,
                     CommonData = new WitsmlCommonData
                     {
                         SourceName = source,
@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Console.ListCommands
             {
                 var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
                 return result?.Risks
-                    .OrderBy(risk => risk.NameWellbore)
+                    .OrderBy(risk => risk.WellboreName)
                     .ThenBy(risk => DateTime.Parse(risk.CommonData.DTimLastChange))
                     .ToList();
             }

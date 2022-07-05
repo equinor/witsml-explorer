@@ -29,10 +29,10 @@ namespace WitsmlExplorer.Api.Services
                 new Risk
                 {
                     Name = risk.Name,
-                    NameWellbore = risk.NameWellbore,
-                    UidWellbore = risk.UidWellbore,
-                    NameWell = risk.NameWell,
-                    UidWell = risk.UidWell,
+                    WellboreName = risk.WellboreName,
+                    WellboreUid = risk.WellboreUid,
+                    WellName = risk.WellName,
+                    WellUid = risk.WellUid,
                     Uid = risk.Uid,
                     Type = risk.Type,
                     Category = risk.Category,

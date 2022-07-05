@@ -38,11 +38,11 @@ namespace WitsmlExplorer.Api.Workers
                 await WaitUntilRiskHasBeenCreated(risk);
                 Log.Information("{JobType} - Job successful", GetType().Name);
                 var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Risk created ({risk.Name} [{risk.Uid}])");
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), risk.UidWell, risk.Uid, RefreshType.Add);
+                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), risk.WellUid, risk.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
-            var description = new EntityDescription { WellboreName = risk.NameWellbore };
+            var description = new EntityDescription { WellboreName = risk.WellboreName };
             Log.Error($"Job failed. An error occurred when creating Risk: {job.Risk.PrintProperties()}");
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create Risk", result.Reason, description), null);
 
@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task WaitUntilRiskHasBeenCreated(Risk risk)
         {
             var isCreated = false;
-            var query = RiskQueries.QueryById(risk.UidWell, risk.UidWellbore, risk.Uid);
+            var query = RiskQueries.QueryById(risk.WellUid, risk.WellboreUid, risk.Uid);
             var maxRetries = 30;
             while (!isCreated)
             {
@@ -71,11 +71,11 @@ namespace WitsmlExplorer.Api.Workers
                 Risks = new WitsmlRisk
                 {
                     Uid = risk.Uid,
-                    UidWellbore = risk.UidWellbore,
-                    UidWell = risk.UidWell,
+                    WellboreUid = risk.WellboreUid,
+                    WellUid = risk.WellUid,
                     Name = risk.Name,
-                    NameWellbore = risk.NameWellbore,
-                    NameWell = risk.NameWell,
+                    WellboreName = risk.WellboreName,
+                    WellName = risk.WellName,
                     Type = risk.Type,
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,

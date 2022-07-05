@@ -25,14 +25,14 @@ namespace WitsmlExplorer.Api.Workers
             if (!modifyRiskResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify risk object";
-                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
-                    errorMessage, job.Risk.UidWell, job.Risk.UidWellbore);
+                Log.Error("{ErrorMessage}. Target: WellUid: {TargetWellUid}, WellboreUid: {TargetWellboreUid}",
+                    errorMessage, job.Risk.WellUid, job.Risk.WellboreUid);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyRiskResult.Reason), null);
             }
 
             Log.Information("{JobType} - Job successful. Risk modified", GetType().Name);
-            var refreshAction = new RefreshRisks(witsmlClient.GetServerHostname(), job.Risk.UidWell, job.Risk.UidWellbore, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Risk {job.Risk.Name} updated for {job.Risk.NameWellbore}");
+            var refreshAction = new RefreshRisks(witsmlClient.GetServerHostname(), job.Risk.WellUid, job.Risk.WellboreUid, RefreshType.Update);
+            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Risk {job.Risk.Name} updated for {job.Risk.WellboreName}");
 
             return (workerResult, refreshAction);
         }
