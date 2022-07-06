@@ -24,10 +24,31 @@ export const RisksListView = (): React.ReactElement => {
 
   const getTableData = () => {
     return risks.map((risk) => {
-      return { id: risk.uid, ...risk };
+      return {
+        id: risk.uid,
+        dTimCreation: risk.dTimCreation,
+        dTimLastChange: risk.dTimLastChange,
+        name: risk.name,
+        type: risk.type,
+        category: risk.category,
+        subCategory: risk.subCategory,
+        extendCategory: risk.extendCategory,
+        affectedPersonnel: risk.affectedPersonnel,
+        dTimStart: risk.dTimStart,
+        dTimEnd: risk.dTimEnd,
+        mdBitStart: `${risk.mdBitStart?.value?.toFixed(4)} ${risk.mdBitStart?.uom}`,
+        mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4)} ${risk.mdBitEnd?.uom}`,
+        severityLevel: risk.severityLevel,
+        probabilityLevel: risk.probabilityLevel,
+        summary: risk.summary,
+        details: risk.details,
+        itemState: risk.itemState,
+        sourceName: risk.sourceName
+      };
     });
   };
 
+  //TODO: contenttype på mdbitstart og mdbitend
   const columns: ContentTableColumn[] = [
     { property: "dTimCreation", label: "Created", type: ContentType.DateTime },
     { property: "dTimLastChange", label: "Last changed", type: ContentType.DateTime },

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -43,8 +45,8 @@ namespace WitsmlExplorer.Api.Services
                     DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
                     DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
                     DTimLastChange = StringHelpers.ToDateTime(risk.CommonData.DTimLastChange),
-                    MdBitStart = risk.MdBitStart?.Value,
-                    MdBitEnd = risk.MdBitEnd?.Value,
+                    MdBitStart = risk.MdBitStart == null ? null : new DepthMeasure { Uom = risk.MdBitStart.Uom, Value = double.Parse(risk.MdBitStart.Value, CultureInfo.InvariantCulture) },
+                    MdBitEnd = risk.MdBitEnd == null ? null : new DepthMeasure { Uom = risk.MdBitEnd.Uom, Value = double.Parse(risk.MdBitEnd.Value, CultureInfo.InvariantCulture) },
                     SourceName = risk.CommonData.SourceName,
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,

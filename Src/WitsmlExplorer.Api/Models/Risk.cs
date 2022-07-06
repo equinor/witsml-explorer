@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -18,12 +19,12 @@ namespace WitsmlExplorer.Api.Models
         public string AffectedPersonnel { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimEnd { get; set; }
-        public string MdHoleStart { get; set; }
-        public string MdHoleEnd { get; set; }
+        public DepthMeasure MdHoleStart { get; set; }
+        public DepthMeasure MdHoleEnd { get; set; }
         public string TvdHoleStart { get; set; }
         public string TvdHoleEnd { get; set; }
-        public string MdBitStart { get; set; }
-        public string MdBitEnd { get; set; }
+        public DepthMeasure MdBitStart { get; set; }
+        public DepthMeasure MdBitEnd { get; set; }
         public string DiaHole { get; set; }
         public string SeverityLevel { get; set; }
         public string ProbabilityLevel { get; set; }

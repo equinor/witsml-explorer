@@ -1,4 +1,6 @@
 using System.Xml.Serialization;
+using Witsml.Data.Measures;
+
 
 namespace Witsml.Data
 {
@@ -31,17 +33,17 @@ namespace Witsml.Data
         [XmlElement("dTimEnd")]
         public string DTimEnd { get; set; }
         [XmlElement("mdHoleStart")]
-        public WitsmlIndex MdHoleStart { get; set; }
+        public Measure MdHoleStart { get; set; }
         [XmlElement("mdHoleEnd")]
-        public WitsmlIndex MdHoleEnd { get; set; }
+        public Measure MdHoleEnd { get; set; }
         [XmlElement("tvdHoleStart")]
         public string TvdHoleStart { get; set; }
         [XmlElement("tvdHoleEnd")]
         public string TvdHoleEnd { get; set; }
         [XmlElement("mdBitStart")]
-        public WitsmlIndex MdBitStart { get; set; }
+        public Measure MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
-        public WitsmlIndex MdBitEnd { get; set; }
+        public Measure MdBitEnd { get; set; }
         [XmlElement("diaHole")]
         public string DiaHole { get; set; }
         [XmlElement("severityLevel")]

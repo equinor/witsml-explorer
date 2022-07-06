@@ -1,3 +1,5 @@
+import Measure from "./measure";
+
 export default interface RiskObject {
   uid: string;
   name: string;
@@ -12,8 +14,8 @@ export default interface RiskObject {
   affectedPersonnel: string;
   dTimEnd: Date;
   dTimStart: Date;
-  mdBitStart: string;
-  mdBitEnd: string;
+  mdBitStart: Measure;
+  mdBitEnd: Measure;
   severityLevel: string;
   probabilityLevel: string;
   summary: string;
@@ -39,8 +41,8 @@ export function emptyRiskObject(): RiskObject {
     affectedPersonnel: "",
     dTimEnd: null,
     dTimStart: null,
-    mdBitStart: "",
-    mdBitEnd: "",
+    mdBitStart: null,
+    mdBitEnd: null,
     severityLevel: "",
     probabilityLevel: "",
     summary: "",

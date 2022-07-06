@@ -2,6 +2,8 @@ using Witsml.Data;
 using Witsml.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
+using Witsml.Data.Measures;
+using System.Globalization;
 
 
 namespace WitsmlExplorer.Api.Query
@@ -35,7 +37,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-        public static WitsmlRisks QueryByNameAndDepth(string wellUid, string wellboreUid, string name, string mdBitStart, string mdBitEnd)
+        public static WitsmlRisks QueryByNameAndDepth(string wellUid, string wellboreUid, string name, Measure mdBitStart, Measure mdBitEnd)
         {
             return new WitsmlRisks
             {
@@ -44,8 +46,8 @@ namespace WitsmlExplorer.Api.Query
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
                     Name = name,
-                    MdBitStart = new WitsmlIndex { Uom = "m", Value = mdBitStart },
-                    MdBitEnd = new WitsmlIndex { Uom = "m", Value = mdBitEnd }
+                    MdBitStart = mdBitStart != null ? new WitsmlDepthMeasure { Uom = mdBitStart.Uom, Value = mdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdBitEnd = mdBitEnd != null ? new WitsmlDepthMeasure { Uom = mdBitEnd.Uom, Value = mdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null
                 }.AsSingletonList()
             };
         }
@@ -99,10 +101,10 @@ namespace WitsmlExplorer.Api.Query
                     AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },
-                    MdHoleEnd = new WitsmlIndex { Uom = "m", Value = risk.MdHoleEnd },
-                    MdBitStart = new WitsmlIndex { Uom = "m", Value = risk.MdBitStart },
-                    MdBitEnd = new WitsmlIndex { Uom = "m", Value = risk.MdBitEnd },
+                    MdHoleStart = risk.MdHoleStart != null ? new WitsmlDepthMeasure { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlDepthMeasure { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdBitStart = risk.MdBitStart != null ? new WitsmlDepthMeasure { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdBitEnd = risk.MdBitEnd != null ? new WitsmlDepthMeasure { Uom = risk.MdBitEnd.Uom, Value = risk.MdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     TvdHoleStart = risk.TvdHoleStart,
                     TvdHoleEnd = risk.TvdHoleEnd,
                     DiaHole = risk.DiaHole,
