@@ -3,6 +3,16 @@ using Witsml.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
+using System.Collections.Generic;
+
+
+
+using System.Linq;
+
+using WitsmlExplorer.Api.Jobs.Common;
+using Witsml.Data.Measures;
+using System.Globalization;
+
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -78,6 +88,21 @@ namespace WitsmlExplorer.Api.Query
                     Uid = uid
                 }.AsSingletonList()
             };
+        }
+
+        public static IEnumerable<WitsmlRisks> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
+        {
+            return riskUids.Select((riskUid) =>
+                new WitsmlRisks
+                {
+                    Risks = new WitsmlRisk
+                    {
+                        Uid = riskUid,
+                        WellUid = wellUid,
+                        WellboreUid = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
         }
 
         public static WitsmlRisks CreateRisk(Risk risk)

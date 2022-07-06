@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteTubularComponents,
         DeleteWell,
         DeleteWellbore,
-        DeleteRisk,
+        DeleteRisks,
         DeleteMudLog,
         RenameMnemonic,
         ModifyTubular,

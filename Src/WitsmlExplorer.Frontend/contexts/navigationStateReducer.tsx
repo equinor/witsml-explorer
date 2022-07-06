@@ -169,8 +169,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessage(state, action);
     case ModificationType.UpdateRiskObjects:
       return updateWellboreRisks(state, action);
-    case ModificationType.UpdateRiskObject:
-      return updateWellboreRisk(state, action);
+    //case ModificationType.UpdateRiskObject:
+    //  return updateWellboreRisk(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
@@ -400,19 +400,18 @@ const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellbore
   };
 };
 
-const updateWellboreRisk = (state: NavigationState, { payload }: UpdateWellboreRiskAction) => {
-  const { wells } = state;
-  const { risk } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, risk);
-  const selectedRisk = state.selectedRisk?.uid === risk.uid ? risk : state.selectedRisk;
-
-  return {
-    ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedRisk
-  };
-};
+// const updateWellboreRisk = (state: NavigationState, { payload }: UpdateWellboreRiskAction) => {
+//   const { wells } = state;
+//   const { risks, wellUid, wellboreUid } = payload;
+//   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
+//   const selectedTubular = risks.find((value) => value.uid === state.selectedTubular?.uid) ?? null;
+//   return {
+//     ...state,
+//     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+//     selectedTubular,
+//     wells: freshWells
+//   };
+// };
 
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
@@ -952,8 +951,8 @@ export interface UpdateWellboreRisksAction extends Action {
 }
 
 export interface UpdateWellboreRiskAction extends Action {
-  type: ModificationType.UpdateRiskObject;
-  payload: { risk: RiskObject };
+  type: ModificationType.UpdateRisksOnWellbore;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
 }
 
 export interface UpdateWellboreTrajectoryAction extends Action {
