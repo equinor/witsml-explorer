@@ -43,7 +43,12 @@ export const RisksListView = (): React.ReactElement => {
         summary: risk.summary,
         details: risk.details,
         itemState: risk.itemState,
-        sourceName: risk.sourceName
+        sourceName: risk.sourceName,
+        uid: risk.uid,
+        wellUid: risk.wellUid,
+        wellName: risk.wellName,
+        wellboreUid: risk.wellboreUid,
+        wellboreName: risk.wellboreName
       };
     });
   };
