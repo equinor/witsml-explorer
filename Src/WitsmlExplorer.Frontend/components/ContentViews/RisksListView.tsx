@@ -8,7 +8,9 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
 
-export interface RiskObjectRow extends ContentTableRow, RiskObject {}
+export interface RiskObjectRow extends ContentTableRow, RiskObject {
+  risk: RiskObject;
+}
 
 export const RisksListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -48,7 +50,8 @@ export const RisksListView = (): React.ReactElement => {
         wellUid: risk.wellUid,
         wellName: risk.wellName,
         wellboreUid: risk.wellboreUid,
-        wellboreName: risk.wellboreName
+        wellboreName: risk.wellboreName,
+        risk: risk
       };
     });
   };

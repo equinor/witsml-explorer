@@ -33,17 +33,17 @@ namespace Witsml.Data
         [XmlElement("dTimEnd")]
         public string DTimEnd { get; set; }
         [XmlElement("mdHoleStart")]
-        public Measure MdHoleStart { get; set; }
+        public WitsmlMeasuredDepthCoord MdHoleStart { get; set; }
         [XmlElement("mdHoleEnd")]
-        public Measure MdHoleEnd { get; set; }
+        public WitsmlMeasuredDepthCoord MdHoleEnd { get; set; }
         [XmlElement("tvdHoleStart")]
         public string TvdHoleStart { get; set; }
         [XmlElement("tvdHoleEnd")]
         public string TvdHoleEnd { get; set; }
         [XmlElement("mdBitStart")]
-        public Measure MdBitStart { get; set; }
+        public WitsmlMeasuredDepthCoord MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
-        public Measure MdBitEnd { get; set; }
+        public WitsmlMeasuredDepthCoord MdBitEnd { get; set; }
         [XmlElement("diaHole")]
         public string DiaHole { get; set; }
         [XmlElement("severityLevel")]

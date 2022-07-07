@@ -9,6 +9,9 @@ import OperationType from "../../contexts/operationType";
 import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
 import { riskAffectedPersonnel } from "../../models/riskAffectedPersonnel";
+import { riskCategory } from "../../models/riskCategory";
+import { riskSubCategory } from "../../models/riskSubCategory";
+import { riskType } from "../../models/riskType";
 
 export interface RiskPropertiesModalProps {
   mode: PropertiesModalMode;
@@ -35,7 +38,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
-  //TODO: affected personnel
+
   return (
     <>
       {editableRiskObject && (
@@ -57,27 +60,23 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, name: e.target.value })}
               />
-              <TextField
+              <Autocomplete
                 id="type"
-                label="type"
-                required
-                defaultValue={editableRiskObject.type}
-                error={editableRiskObject.type.length === 0}
-                helperText={editableRiskObject.type.length === 0 ? "The risk extendCategory must be at least 1 character" : ""}
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, type: e.target.value })}
+                label="Select a type"
+                options={riskType}
+                selectedOptions={[editableRiskObject.type]}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableRiskObject({ ...editableRiskObject, affectedPersonnel: selectedItems[0] });
+                }}
               />
-              <TextField
+              <Autocomplete
                 id="category"
-                label="category"
-                required
-                defaultValue={editableRiskObject.category}
-                error={editableRiskObject.category.length === 0}
-                helperText={editableRiskObject.category.length === 0 ? "The risk extendCategory must be at least 1 character" : ""}
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, category: e.target.value })}
+                label="Select a category"
+                options={riskCategory}
+                selectedOptions={[editableRiskObject.category]}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableRiskObject({ ...editableRiskObject, category: selectedItems[0] });
+                }}
               />
               <TextField
                 id="subCategory"
@@ -89,6 +88,15 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 fullWidth
                 inputProps={{ minLength: 1 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, subCategory: e.target.value })}
+              />
+              <Autocomplete
+                id="subCategory"
+                label="Select a sub category"
+                options={riskSubCategory}
+                selectedOptions={[editableRiskObject.subCategory]}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableRiskObject({ ...editableRiskObject, subCategory: selectedItems[0] });
+                }}
               />
               <TextField
                 id="extendCategory"
@@ -102,22 +110,14 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, extendCategory: e.target.value })}
               />
               <Autocomplete
+                id="affectedPersonnel"
                 label="Select multiple affected personnel"
-                initialSelectedOptions={editableRiskObject.affectedPersonnel.split(", ")}
+                selectedOptions={editableRiskObject.affectedPersonnel.split(", ")}
                 options={riskAffectedPersonnel}
                 multiple
-                autoWidth
-              />
-              <TextField
-                id="affectedPersonnel"
-                label="affectedPersonnel"
-                required
-                defaultValue={editableRiskObject.affectedPersonnel}
-                error={editableRiskObject.affectedPersonnel.length === 0}
-                helperText={editableRiskObject.affectedPersonnel.length === 0 ? "The risk extendCategory must be at least 1 character" : ""}
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, extendCategory: e.target.value })}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableRiskObject({ ...editableRiskObject, affectedPersonnel: selectedItems.join(", ") });
+                }}
               />
               <TextField
                 id="dTimStart"
@@ -137,23 +137,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 value={editableRiskObject.dTimEnd ? moment(editableRiskObject.dTimEnd).format("YYYY-MM-DDTHH:MM") : undefined}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimEnd: new Date(e.target.value) })}
               />
-              <TextField
-                id="mdBitStart"
-                label="mdBitStart"
-                type="number"
-                defaultValue={editableRiskObject.mdBitStart.value}
-                fullWidth
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, mdBitStart: { value: Number(e.target.value), uom: editableRiskObject.mdBitStart.uom } })}
-              />
-              <TextField
-                id="mdBitEnd"
-                label="mdBitEnd"
-                required
-                defaultValue={editableRiskObject.mdBitEnd}
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, mdBitEnd: { value: Number(e.target.value), uom: editableRiskObject.mdBitEnd.uom } })}
-              />
+              <TextField disabled id="mdBitStart" label="mdBitStart" defaultValue={editableRiskObject.mdBitStart.value + " " + editableRiskObject.mdBitStart.uom} fullWidth />
+
+              <TextField disabled id="mdBitEnd" label="mdBitEnd" defaultValue={editableRiskObject.mdBitEnd.value + " " + editableRiskObject.mdBitEnd.uom} fullWidth />
               <TextField
                 id="severityLevel"
                 label="severityLevel"

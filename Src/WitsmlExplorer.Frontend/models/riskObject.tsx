@@ -12,8 +12,8 @@ export default interface RiskObject {
   subCategory: string;
   extendCategory: string;
   affectedPersonnel: string;
-  dTimEnd: Date;
-  dTimStart: Date;
+  dTimEnd?: Date;
+  dTimStart?: Date;
   mdBitStart: Measure;
   mdBitEnd: Measure;
   severityLevel: string;
