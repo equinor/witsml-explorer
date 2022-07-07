@@ -27,13 +27,13 @@ namespace Witsml.Data.WellboreGeometry
         public string DTimReport { get; set; }
 
         [XmlElement("mdBottom")]
-        public WitsmlIndex MdBottom { get; set; }
+        public WitsmlMeasuredDepthCoord MdBottom { get; set; }
 
         [XmlElement("gapAir")]
-        public Measure GapAir { get; set; }
+        public WitsmlLengthMeasure GapAir { get; set; }
 
         [XmlElement("depthWaterMean")]
-        public Measure DepthWaterMean { get; set; }
+        public WitsmlLengthMeasure DepthWaterMean { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
