@@ -2,8 +2,6 @@ using System.Xml;
 using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
-//Hvor kommer betydning av minOccurs inn?
-
 namespace Witsml.Data.WellboreGeometry
 {
     public class WitsmlWellboreGeometry
