@@ -34,18 +34,12 @@ namespace WitsmlExplorer.Api.Workers
             var tubularComponentsString = string.Join(", ", job.Source.TubularComponentUids);
             if (!copyResult.IsSuccessful)
             {
+                WorkerTools.LogError(GetType().Name, job.Source.TubularReference.WellUid, job.Source.TubularReference.WellboreUid, "tubular", job.Source.TubularReference.TubularUid, "tubularComponent", job.Source.TubularComponentUids, job.Target.WellUid, job.Target.WellboreUid);
                 var errorMessage = "Failed to copy tubular components.";
-                Log.Error(
-                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceTubularUid}. " +
-                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetTubularUid} " +
-                    "Tubular Component Uids: {tubularComponentsString}",
-                    errorMessage,
-                    job.Source.TubularReference.WellUid, job.Source.TubularReference.WellboreUid, job.Source.TubularReference.TubularUid,
-                    job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, tubularComponentsString);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, copyResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. TubularComponents copied", GetType().Name);
+            WorkerTools.LogSuccess(GetType().Name, job.Source.TubularReference.WellUid, job.Source.TubularReference.WellboreUid, "tubular", job.Source.TubularReference.TubularUid, "tubularComponent", job.Source.TubularComponentUids, job.Target.WellUid, job.Target.WellboreUid);
             var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"TubularComponents {tubularComponentsString} copied to: {targetTubular.Name}");
 

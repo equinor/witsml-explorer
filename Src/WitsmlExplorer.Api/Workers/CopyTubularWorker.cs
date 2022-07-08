@@ -42,18 +42,12 @@ namespace WitsmlExplorer.Api.Workers
                 var tubular = query.Tubulars.First();
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Job successful", GetType().Name);
+                    WorkerTools.LogSuccess(GetType().Name, job.Source.WellUid, job.Source.WellboreUid, "tubular", tubular.Uid, job.Target.WellUid, job.Target.WellboreUid);
                     successUids.Add(tubular.Uid);
                 }
                 else
                 {
-                    var errorMessage = "Failed to copy tubular.";
-                    Log.Error(
-                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
-                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
-                    errorMessage,
-                    job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
-                    job.Target.WellUid, job.Target.WellboreUid);
+                    WorkerTools.LogError(GetType().Name, job.Source.WellUid, job.Source.WellboreUid, "tubular", tubular.Uid, job.Target.WellUid, job.Target.WellboreUid);
                     error = true;
                     errorReasons.Add(result.Reason);
                     errorEnitities.Add(new EntityDescription
