@@ -31,11 +31,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task RenameLogObject()
+        public async Task UpdateMessageInStore()
         {
-            const string expectedNewText = "NewMsgTXT";
             var job = CreateJobTemplate();
-            job.MessageObject.MessageText = expectedNewText;
 
             var updatedMessages = new List<WitsmlMessages>();
             witsmlClient.Setup(client =>
@@ -45,10 +43,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await worker.Execute(job);
 
             Assert.Single(updatedMessages);
-            Assert.Equal(expectedNewText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);
+            Assert.Equal(MsgText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);
         }
 
-        private ModifyMessageObjectJob CreateJobTemplate()
+        private static ModifyMessageObjectJob CreateJobTemplate()
         {
             return new ModifyMessageObjectJob
             {
