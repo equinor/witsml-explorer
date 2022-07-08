@@ -28,8 +28,8 @@ export const RisksListView = (): React.ReactElement => {
     return risks.map((risk) => {
       return {
         id: risk.uid,
-        dTimCreation: risk.dTimCreation,
-        dTimLastChange: risk.dTimLastChange,
+        dTimCreation: risk.commonData.dTimCreation,
+        dTimLastChange: risk.commonData.dTimLastChange,
         name: risk.name,
         type: risk.type,
         category: risk.category,
@@ -44,8 +44,8 @@ export const RisksListView = (): React.ReactElement => {
         probabilityLevel: risk.probabilityLevel,
         summary: risk.summary,
         details: risk.details,
-        itemState: risk.itemState,
-        sourceName: risk.sourceName,
+        itemState: risk.commonData.itemState,
+        sourceName: risk.commonData.sourceName,
         uid: risk.uid,
         wellUid: risk.wellUid,
         wellName: risk.wellName,

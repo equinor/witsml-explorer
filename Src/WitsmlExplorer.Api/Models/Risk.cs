@@ -19,10 +19,10 @@ namespace WitsmlExplorer.Api.Models
         public string SubCategory { get; set; }
         public string ExtendCategory { get; set; }
         public string AffectedPersonnel { get; set; }
-        public DateTime? DTimStart { get; internal set; }
-        public DateTime? DTimEnd { get; internal set; }
-        public MeasuredDepthCoord MdHoleStart { get; internal set; }
-        public MeasuredDepthCoord MdHoleEnd { get; internal set; }
+        public DateTime? DTimStart { get; set; }
+        public DateTime? DTimEnd { get; set; }
+        public MeasuredDepthCoord MdHoleStart { get; set; }
+        public MeasuredDepthCoord MdHoleEnd { get; set; }
         public string TvdHoleStart { get; set; }
         public string TvdHoleEnd { get; set; }
         public MeasuredDepthCoord MdBitStart { get; set; }
@@ -35,10 +35,10 @@ namespace WitsmlExplorer.Api.Models
         public string Identification { get; set; }
         public string Contigency { get; set; }
         public string Mitigation { get; set; }
-        public string SourceName { get; set; }
-        public string ItemState { get; set; }
-        public DateTime? DTimCreation { get; set; }
-        public DateTime? DTimLastChange { get; set; }
+        // public string SourceName { get; set; }
+        // public string ItemState { get; set; }
+        // public DateTime? DTimCreation { get; set; }
+        // public DateTime? DTimLastChange { get; set; }
         public CommonData CommonData { get; set; }
     }
 }

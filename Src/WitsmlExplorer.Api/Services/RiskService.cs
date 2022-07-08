@@ -43,16 +43,20 @@ namespace WitsmlExplorer.Api.Services
                     AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
                     DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
                     DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
-                    DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
-                    DTimLastChange = StringHelpers.ToDateTime(risk.CommonData.DTimLastChange),
                     MdBitStart = risk.MdBitStart == null ? null : new MeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = double.Parse(risk.MdBitStart.Value, CultureInfo.InvariantCulture) },
                     MdBitEnd = risk.MdBitEnd == null ? null : new MeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = double.Parse(risk.MdBitEnd.Value, CultureInfo.InvariantCulture) },
-                    SourceName = risk.CommonData.SourceName,
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,
-                    ItemState = risk.CommonData.ItemState,
+
                     Details = risk.Details,
+                    CommonData = new CommonData()
+                    {
+                        ItemState = risk.CommonData.ItemState,
+                        SourceName = risk.CommonData.SourceName,
+                        DTimLastChange = StringHelpers.ToDateTime(risk.CommonData.DTimLastChange),
+                        DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
+                    }
                 }).OrderBy(risk => risk.Name);
         }
     }

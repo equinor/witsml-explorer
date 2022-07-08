@@ -99,8 +99,10 @@ namespace WitsmlExplorer.Api.Query
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
                     AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
-                    DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
+                    DTimStart = risk.DTimStart?.ToUniversalTime
+                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimEnd = risk.DTimEnd?.ToUniversalTime
+                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     MdHoleStart = risk.MdHoleStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     MdBitStart = risk.MdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
@@ -114,7 +116,14 @@ namespace WitsmlExplorer.Api.Query
                     Details = risk.Details,
                     Identification = risk.Identification,
                     Contingency = risk.Contigency,
-                    Mitigation = risk.Mitigation
+                    Mitigation = risk.Mitigation,
+                    CommonData = new WitsmlCommonData()
+                    {
+                        ItemState = risk.CommonData.ItemState,
+                        SourceName = risk.CommonData.SourceName,
+                        DTimCreation = null,
+                        DTimLastChange = null
+                    }
                 }.AsSingletonList()
             };
         }

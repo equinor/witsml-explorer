@@ -1,3 +1,4 @@
+import CommonData from "./commonData";
 import Measure from "./measure";
 
 export default interface RiskObject {
@@ -20,10 +21,11 @@ export default interface RiskObject {
   probabilityLevel: string;
   summary: string;
   details: string;
-  sourceName: string;
-  dTimCreation?: Date;
-  dTimLastChange?: Date;
-  itemState?: string;
+  // sourceName: string;
+  // dTimCreation?: Date;
+  // dTimLastChange?: Date;
+  // itemState?: string;
+  commonData: CommonData;
 }
 
 export function emptyRiskObject(): RiskObject {
@@ -47,10 +49,12 @@ export function emptyRiskObject(): RiskObject {
     probabilityLevel: "",
     summary: "",
     details: "",
-    sourceName: "",
-    dTimCreation: null,
-    dTimLastChange: null,
-    itemState: ""
+    commonData: {
+      sourceName: "",
+      dTimCreation: null,
+      dTimLastChange: null,
+      itemState: ""
+    }
   };
 }
 
