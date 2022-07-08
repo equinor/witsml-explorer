@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Services
                 .OrderBy(tComponent => tComponent.Sequence);
         }
 
-        private Tubular WitsmlToTubular(WitsmlTubular tubular)
+        private static Tubular WitsmlToTubular(WitsmlTubular tubular)
         {
             return new Tubular
             {

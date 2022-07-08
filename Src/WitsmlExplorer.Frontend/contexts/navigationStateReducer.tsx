@@ -453,14 +453,16 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   const freshWells = [...wells];
   const wellIndex = getWellIndex(freshWells, tubular.wellUid);
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, tubular.wellboreUid);
-  const tubularIndex = wells[wellIndex].wellbores[wellboreIndex].tubulars.findIndex((t) => t.uid === tubular.uid);
+  const freshTubulars = [...wells[wellIndex].wellbores[wellboreIndex].tubulars];
+  const tubularIndex = freshTubulars.findIndex((t) => t.uid === tubular.uid);
   let selectedTubular = null;
   if (exists) {
-    freshWells[wellIndex].wellbores[wellboreIndex].tubulars[tubularIndex] = tubular;
+    freshTubulars[tubularIndex] = tubular;
     selectedTubular = state.selectedTubular?.uid === tubular.uid ? tubular : state.selectedTubular;
   } else {
-    freshWells[wellIndex].wellbores[wellboreIndex].tubulars.splice(tubularIndex, 1);
+    freshTubulars.splice(tubularIndex, 1);
   }
+  wells[wellIndex].wellbores[wellboreIndex].tubulars = freshTubulars;
 
   return {
     ...state,

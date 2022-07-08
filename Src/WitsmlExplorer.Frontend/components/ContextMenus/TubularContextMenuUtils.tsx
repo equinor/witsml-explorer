@@ -149,3 +149,14 @@ export const onClickRefresh = async (tubular: Tubular, dispatchOperation: Dispat
   });
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
+
+export const onClickRefreshAll = async (
+  wellUid: string,
+  wellboreUid: string,
+  dispatchOperation: DispatchOperation,
+  dispatchNavigation: (action: UpdateWellboreTubularsAction) => void
+) => {
+  const tubulars = await TubularService.getTubulars(wellUid, wellboreUid);
+  dispatchNavigation({ type: ModificationType.UpdateTubularsOnWellbore, payload: { tubulars, wellUid, wellboreUid } });
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
