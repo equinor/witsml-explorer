@@ -10,7 +10,6 @@ enum ModificationType {
   UpdateLogObjects = "UpdateLogObjects",
   UpdateMessageObject = "UpdateMessageObject",
   UpdateMessageObjects = "UpdateMessageObjects",
-  UpdateRiskObject = "UpdateRiskObject",
   UpdateRiskObjects = "UpdateRiskObjects",
   UpdateRisksOnWellbore = "UpdateRisksOnWellbore",
   UpdateServer = "UpdateServer",

@@ -47,6 +47,10 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
           heading={editMode ? `Edit properties for ${editableRiskObject.name}` : `New Log`}
           content={
             <>
+              <TextField disabled id="wellUid" label="well uid" defaultValue={editableRiskObject.wellUid} fullWidth />
+              <TextField disabled id="wellName" label="well name" defaultValue={editableRiskObject.wellName} fullWidth />
+              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableRiskObject.wellboreUid} fullWidth />
+              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableRiskObject.wellboreName} fullWidth />
               <TextField disabled id="dateTimeCreation" label="created" defaultValue={editableRiskObject.commonData.dTimCreation} fullWidth />
               <TextField disabled id="dateTimeLastChange" label="last changed" defaultValue={editableRiskObject.commonData.dTimLastChange} fullWidth />
               <TextField disabled id={"uid"} label={"risk uid"} required defaultValue={editableRiskObject.uid} fullWidth />
@@ -65,7 +69,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 id="type"
                 label="Select a type"
                 options={riskType}
-                selectedOptions={[editableRiskObject.type]}
+                initialSelectedOptions={[editableRiskObject.type]}
                 onOptionsChange={({ selectedItems }) => {
                   setEditableRiskObject({ ...editableRiskObject, type: selectedItems[0] });
                 }}
@@ -74,7 +78,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 id="category"
                 label="Select a category"
                 options={riskCategory}
-                selectedOptions={[editableRiskObject.category]}
+                initialSelectedOptions={[editableRiskObject.category]}
                 onOptionsChange={({ selectedItems }) => {
                   setEditableRiskObject({ ...editableRiskObject, category: selectedItems[0] });
                 }}
@@ -84,7 +88,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 id="subCategory"
                 label="Select a sub category"
                 options={riskSubCategory}
-                selectedOptions={[editableRiskObject.subCategory]}
+                initialSelectedOptions={[editableRiskObject.subCategory]}
                 onOptionsChange={({ selectedItems }) => {
                   setEditableRiskObject({ ...editableRiskObject, subCategory: selectedItems[0] });
                 }}
@@ -181,7 +185,6 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 fullWidth
                 onChange={(e) => {
                   const commonData = { ...editableRiskObject.commonData, sourceName: e.target.value };
-
                   setEditableRiskObject({ ...editableRiskObject, commonData });
                 }}
               />
@@ -189,18 +192,12 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 id="itemState"
                 label="Select an item state"
                 options={itemStateTypes}
-                selectedOptions={[editableRiskObject.commonData.itemState ? editableRiskObject.commonData.itemState : ""]}
+                initialSelectedOptions={[editableRiskObject.commonData.itemState ? editableRiskObject.commonData.itemState : ""]}
                 onOptionsChange={({ selectedItems }) => {
-                  const commonData = { ...editableRiskObject.commonData, itemState: selectedItems[0] };
-
+                  const commonData = { ...editableRiskObject.commonData, itemState: selectedItems[0] ?? null };
                   setEditableRiskObject({ ...editableRiskObject, commonData });
                 }}
               />
-
-              <TextField disabled id="wellUid" label="well uid" defaultValue={editableRiskObject.wellUid} fullWidth />
-              <TextField disabled id="wellName" label="well name" defaultValue={editableRiskObject.wellName} fullWidth />
-              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableRiskObject.wellboreUid} fullWidth />
-              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableRiskObject.wellboreName} fullWidth />
             </>
           }
           confirmDisabled={!validText(editableRiskObject.name)}

@@ -4,7 +4,7 @@ enum EntityType {
   LogObject = "LogObject",
   MessageObjects = "MessageObjects",
   Tubular = "Tubular",
-  RiskObjects = "RiskObjects"
+  Risks = "Risks"
 }
 
 export default EntityType;

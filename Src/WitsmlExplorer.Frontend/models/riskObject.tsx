@@ -21,10 +21,6 @@ export default interface RiskObject {
   probabilityLevel: string;
   summary: string;
   details: string;
-  // sourceName: string;
-  // dTimCreation?: Date;
-  // dTimLastChange?: Date;
-  // itemState?: string;
   commonData: CommonData;
 }
 
