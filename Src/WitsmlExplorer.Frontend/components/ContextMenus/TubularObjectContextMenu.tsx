@@ -10,14 +10,14 @@ import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
-import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete, onClickPaste, onClickShowOnServer, useClipboardTubularReferences } from "./TubularContextMenuUtils";
+import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { onClickCopy, onClickDelete, onClickPaste, onClickRefresh, onClickShowOnServer, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface TubularObjectContextMenuProps {
-  dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
+  dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   tubulars: Tubular[];
   selectedServer: Server;
@@ -38,6 +38,10 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"refresh"} onClick={() => onClickRefresh(tubulars[0], dispatchOperation, dispatchNavigation)} disabled={tubulars.length !== 1}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh tubular</Typography>
+        </MenuItem>,
         <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, tubulars, dispatchOperation)} disabled={tubulars.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular{tubulars?.length > 1 && "s"}</Typography>

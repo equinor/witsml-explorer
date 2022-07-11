@@ -78,6 +78,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", GetTubulars);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", GetTubular);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}/tubularcomponents", GetTubularComponents);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
@@ -275,6 +276,15 @@ namespace WitsmlExplorer.Api
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var tubulars = await tubularService.GetTubulars(wellUid, wellboreUid);
+            await httpResponse.AsJson(tubulars);
+        }
+
+        private async Task GetTubular(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var tubularUid = httpRequest.RouteValues.As<string>("tubularUid");
+            var tubulars = await tubularService.GetTubular(wellUid, wellboreUid, tubularUid);
             await httpResponse.AsJson(tubulars);
         }
 

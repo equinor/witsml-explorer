@@ -10,7 +10,7 @@ import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../Cont
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTubularGroup, servers } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedTubularGroup, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
@@ -18,7 +18,7 @@ export const TubularsListView = (): React.ReactElement => {
     if (selectedWellbore?.tubulars) {
       setTubulars(selectedWellbore.tubulars);
     }
-  }, [selectedWellbore?.tubulars]);
+  }, [selectedWellbore?.tubulars, wells]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, tubulars: Tubular[]) => {
     const contextProps: TubularObjectContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, tubulars, wellbore: selectedWellbore, servers };

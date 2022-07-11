@@ -1,3 +1,6 @@
+import CommonData from "./commonData";
+import Measure from "./measure";
+
 export default interface RiskObject {
   uid: string;
   name: string;
@@ -10,18 +13,15 @@ export default interface RiskObject {
   subCategory: string;
   extendCategory: string;
   affectedPersonnel: string;
-  dTimEnd: Date;
-  dTimStart: Date;
-  mdBitStart: string;
-  mdBitEnd: string;
+  dTimEnd?: Date;
+  dTimStart?: Date;
+  mdBitStart: Measure;
+  mdBitEnd: Measure;
   severityLevel: string;
   probabilityLevel: string;
   summary: string;
   details: string;
-  sourceName: string;
-  dTimCreation?: Date;
-  dTimLastChange?: Date;
-  itemState?: string;
+  commonData: CommonData;
 }
 
 export function emptyRiskObject(): RiskObject {
@@ -39,16 +39,18 @@ export function emptyRiskObject(): RiskObject {
     affectedPersonnel: "",
     dTimEnd: null,
     dTimStart: null,
-    mdBitStart: "",
-    mdBitEnd: "",
+    mdBitStart: null,
+    mdBitEnd: null,
     severityLevel: "",
     probabilityLevel: "",
     summary: "",
     details: "",
-    sourceName: "",
-    dTimCreation: null,
-    dTimLastChange: null,
-    itemState: ""
+    commonData: {
+      sourceName: "",
+      dTimCreation: null,
+      dTimLastChange: null,
+      itemState: ""
+    }
   };
 }
 
