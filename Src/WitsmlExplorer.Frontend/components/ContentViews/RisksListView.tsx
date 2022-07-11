@@ -27,36 +27,16 @@ export const RisksListView = (): React.ReactElement => {
   const getTableData = () => {
     return risks.map((risk) => {
       return {
+        ...risk,
+        ...risk.commonData,
         id: risk.uid,
-        dTimCreation: risk.commonData.dTimCreation,
-        dTimLastChange: risk.commonData.dTimLastChange,
-        name: risk.name,
-        type: risk.type,
-        category: risk.category,
-        subCategory: risk.subCategory,
-        extendCategory: risk.extendCategory,
-        affectedPersonnel: risk.affectedPersonnel,
-        dTimStart: risk.dTimStart,
-        dTimEnd: risk.dTimEnd,
-        mdBitStart: `${risk.mdBitStart?.value?.toFixed(4)} ${risk.mdBitStart?.uom}`,
-        mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4)} ${risk.mdBitEnd?.uom}`,
-        severityLevel: risk.severityLevel,
-        probabilityLevel: risk.probabilityLevel,
-        summary: risk.summary,
-        details: risk.details,
-        itemState: risk.commonData.itemState,
-        sourceName: risk.commonData.sourceName,
-        uid: risk.uid,
-        wellUid: risk.wellUid,
-        wellName: risk.wellName,
-        wellboreUid: risk.wellboreUid,
-        wellboreName: risk.wellboreName,
+        mdBitStart: `${risk.mdBitStart?.value?.toFixed(4) ?? ""} ${risk.mdBitStart?.uom ?? ""}`,
+        mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
         risk: risk
       };
     });
   };
 
-  //TODO: contenttype på mdbitstart og mdbitend
   const columns: ContentTableColumn[] = [
     { property: "dTimCreation", label: "Created", type: ContentType.DateTime },
     { property: "dTimLastChange", label: "Last changed", type: ContentType.DateTime },
@@ -83,7 +63,7 @@ export const RisksListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore.risks, risks) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RisksListView;

@@ -1,10 +1,8 @@
 using Witsml.Data;
 using Witsml.Extensions;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Services;
 using Witsml.Data.Measures;
 using System.Globalization;
-
 
 namespace WitsmlExplorer.Api.Query
 {

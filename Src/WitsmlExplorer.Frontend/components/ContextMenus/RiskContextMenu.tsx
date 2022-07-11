@@ -6,7 +6,7 @@ import ContextMenu from "./ContextMenu";
 import { Server } from "../../models/server";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
-import { UpdateWellboreRiskAction, UpdateWellboreRisksAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreRisksAction } from "../../contexts/navigationStateReducer";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
@@ -16,7 +16,7 @@ import styled from "styled-components";
 export interface RiskObjectContextMenuProps {
   checkedRiskObjectRows: RiskObjectRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreRisksAction | UpdateWellboreRiskAction) => void;
+  dispatchNavigation: (action: UpdateWellboreRisksAction) => void;
   servers: Server[];
   selectedServer: Server;
 }
