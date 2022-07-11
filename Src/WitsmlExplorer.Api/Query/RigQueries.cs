@@ -11,11 +11,29 @@ namespace WitsmlExplorer.Api.Query
             {
                 Rigs = new WitsmlRig
                 {
+                    AirGap = null,
+                    Approvals = "",
+                    ClassRig = "",
+                    DTimStartOp = null,
+                    DTimEndOp = null,
+                    DTimCreation = null,
+                    DTimLastChange = null,
+                    EmailAddress = "",
+                    FaxNumber = "",
+                    IsOffshoreText = "",
+                    IsOffshore = null,
+                    Manufacturer = "",
+                    Name = "",
+                    NameContact = "",
                     Owner = "",
+                    Registration = "",
+                    RatingDrillDepth = null,
+                    RatingWaterDepth = null,
+                    TelNumber = "",
+                    TypeRig = "",
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
-                    AirGap = "",
-                    TypeRig = ""
+                    YearEntService = "",
                 }.AsSingletonList()
             };
         }
@@ -29,7 +47,28 @@ namespace WitsmlExplorer.Api.Query
                     Owner = "",
                     Uid = rigUid,
                     UidWell = wellUid,
-                    UidWellbore = wellboreUid
+                    UidWellbore = wellboreUid,
+                    AirGap = null,
+                    Approvals = "",
+                    ClassRig = "",
+                    DTimStartOp = null,
+                    DTimEndOp = null,
+                    DTimCreation = null,
+                    DTimLastChange = null,
+                    EmailAddress = "",
+                    FaxNumber = "",
+                    IsOffshoreText = "",
+                    IsOffshore = null,
+                    Manufacturer = "",
+                    Name = "",
+                    NameContact = "",
+                    Registration = "",
+                    RatingDrillDepth = null,
+                    RatingWaterDepth = null,
+                    TelNumber = "",
+                    TypeRig = "",
+                    YearEntService = "",
+
                 }.AsSingletonList()
             };
         }
