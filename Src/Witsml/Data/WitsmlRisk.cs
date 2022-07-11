@@ -1,19 +1,21 @@
 using System.Xml.Serialization;
+using Witsml.Data.Measures;
+
 
 namespace Witsml.Data
 {
     public class WitsmlRisk
     {
         [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
+        public string WellUid { get; set; }
         [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
+        public string WellboreUid { get; set; }
         [XmlAttribute("uid")]
         public string Uid { get; set; }
         [XmlElement("nameWell")]
-        public string NameWell { get; set; }
+        public string WellName { get; set; }
         [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
+        public string WellboreName { get; set; }
         [XmlElement("name")]
         public string Name { get; set; }
         [XmlElement("type")]
@@ -31,17 +33,17 @@ namespace Witsml.Data
         [XmlElement("dTimEnd")]
         public string DTimEnd { get; set; }
         [XmlElement("mdHoleStart")]
-        public WitsmlIndex MdHoleStart { get; set; }
+        public WitsmlMeasuredDepthCoord MdHoleStart { get; set; }
         [XmlElement("mdHoleEnd")]
-        public WitsmlIndex MdHoleEnd { get; set; }
+        public WitsmlMeasuredDepthCoord MdHoleEnd { get; set; }
         [XmlElement("tvdHoleStart")]
         public string TvdHoleStart { get; set; }
         [XmlElement("tvdHoleEnd")]
         public string TvdHoleEnd { get; set; }
         [XmlElement("mdBitStart")]
-        public WitsmlIndex MdBitStart { get; set; }
+        public WitsmlMeasuredDepthCoord MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
-        public WitsmlIndex MdBitEnd { get; set; }
+        public WitsmlMeasuredDepthCoord MdBitEnd { get; set; }
         [XmlElement("diaHole")]
         public string DiaHole { get; set; }
         [XmlElement("severityLevel")]
