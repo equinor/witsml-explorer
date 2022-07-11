@@ -5,6 +5,7 @@ using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -24,7 +25,6 @@ namespace WitsmlExplorer.Api.Services
             var query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
-
             return result.WbGeometrys.Select(wbGeometry =>
                 new WbGeometry
                 {
@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Services
                     NameWell = wbGeometry.NameWell,
                     NameWellbore = wbGeometry.NameWellbore,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
-                    MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = decimal.Parse(wbGeometry.MdBottom.Value) },
+                    MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
                     GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = decimal.Parse(wbGeometry.GapAir.Value) },
                     DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = decimal.Parse(wbGeometry.DepthWaterMean.Value) },
                     SourceName = wbGeometry.CommonData.SourceName,
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Services
                     DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
                     DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
 
-                }).OrderBy(risk => risk.DTimReport);
+                }).OrderBy(WbGeometry => WbGeometry.DTimReport);
         }
     }
 }
