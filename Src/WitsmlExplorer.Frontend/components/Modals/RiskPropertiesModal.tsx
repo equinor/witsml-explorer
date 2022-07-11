@@ -117,6 +117,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 label="dTimStart"
                 type="datetime-local"
                 fullWidth
+                InputLabelProps={{
+                  shrink: true
+                }}
                 disabled={!editableRiskObject.dTimEnd}
                 value={editableRiskObject.dTimStart ? moment(editableRiskObject.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimStart: new Date(e.target.value) })}
