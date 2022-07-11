@@ -1,15 +1,28 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { ContentTable, ContentTableColumn, ContentType, ContentTableRow } from "./table";
 import TrajectoryService from "../../services/trajectoryService";
 import TrajectoryStation from "../../models/trajectoryStation";
 import NavigationContext from "../../contexts/navigationContext";
+
+export interface TrajectoryStationRow extends ContentTableRow {
+  uid: string;
+  md: number;
+  tvd: number;
+  incl: number;
+  azi: number;
+  dTimStn: Date;
+  typeTrajStation: string;
+  TrajectoryStation: TrajectoryStation;
+}
 
 export const TrajectoryView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedTrajectory } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
+  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
 
   useEffect(() => {
+    setIsFetchingData(true);
     if (selectedTrajectory) {
       const abortController = new AbortController();
 
@@ -17,6 +30,7 @@ export const TrajectoryView = (): React.ReactElement => {
         setTrajectoryStations(
           await TrajectoryService.getTrajectoryStations(selectedTrajectory.wellUid, selectedTrajectory.wellboreUid, selectedTrajectory.uid, abortController.signal)
         );
+        setIsFetchingData(false);
       };
 
       getTrajectory();
@@ -49,7 +63,7 @@ export const TrajectoryView = (): React.ReactElement => {
     };
   });
 
-  return selectedTrajectory ? <ContentTable columns={columns} data={trajectoryStationRows} /> : <></>;
+  return selectedTrajectory && !isFetchingData ? <ContentTable columns={columns} data={trajectoryStationRows} /> : <></>;
 };
 
 export default TrajectoryView;

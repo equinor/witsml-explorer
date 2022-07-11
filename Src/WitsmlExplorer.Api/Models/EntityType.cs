@@ -9,6 +9,8 @@ namespace WitsmlExplorer.Api.Models
         Wellbore,
         LogObject,
         MessageObjects,
-        Tubular
+        Tubular,
+        Trajectory,
+        TrajectoryStation
     }
 }

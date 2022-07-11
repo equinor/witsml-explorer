@@ -10,8 +10,8 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DTimStn { get; internal set; }
         public string TypeTrajStation { get; internal set; }
         public decimal Md { get; internal set; }
-        public decimal Tvd { get; internal set; }
-        public decimal Incl { get; internal set; }
-        public decimal Azi { get; internal set; }
+        public decimal? Tvd { get; internal set; }
+        public decimal? Incl { get; internal set; }
+        public decimal? Azi { get; internal set; }
     }
 }
