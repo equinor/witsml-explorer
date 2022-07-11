@@ -14,10 +14,6 @@ namespace WitsmlExplorer.Api.Models
         public MeasuredDepthCoord MdBottom { get; set; }
         public LengthMeasure GapAir { get; set; }
         public LengthMeasure DepthWaterMean { get; set; }
-        public string SourceName { get; set; }
-        public DateTime? DTimCreation { get; set; }
-        public DateTime? DTimLastChange { get; set; }
-        public string ItemState { get; set; }
-        public string Comments { get; set; }
+        public CommonData CommonData { get; set; }
     }
 }
