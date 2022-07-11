@@ -6,8 +6,6 @@ export default interface Rig {
   ClassRig: string;
   dtimEndOp: Date;
   dTimStartOp: Date;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
   EmailAddress: string;
   FaxNumber: string;
   itemState?: string;
@@ -32,8 +30,6 @@ export function emptyRig(): Rig {
     airGap: null,
     Approvals: "",
     ClassRig: "",
-    dateTimeCreation: null,
-    dateTimeLastChange: null,
     dTimStartOp: null,
     dtimEndOp: null,
     EmailAddress: "",

@@ -8,9 +8,6 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure AirGap { get; set; }
         public string Approvals { get; set; }
         public string ClassRig { get; set; }
-        public CommonData CommonData { get; set; }
-        public DateTime? DTimCreation { get; set; }
-        public DateTime? DTimLastChange { get; set; }
         public DateTime? DTimStartOp { get; set; }
         public DateTime? DTimEndOp { get; set; }
         public string EmailAddress { get; set; }

@@ -10,9 +10,6 @@ namespace Witsml.Data
         [XmlElement("approvals")]
         public string Approvals { get; set; }
 
-        [XmlElement("commonData")]
-        public WitsmlCommonData CommonData { get; set; }
-
         [XmlElement("name")]
         public string Name { get; set; } = "";
 
@@ -27,12 +24,6 @@ namespace Witsml.Data
 
         [XmlElement("typeRig")]
         public string TypeRig { get; set; }
-
-        [XmlElement("DTimCreation")]
-        public string DTimCreation { get; set; }
-
-        [XmlElement("DTimLastChange")]
-        public string DTimLastChange { get; set; }
 
         [XmlElement("dTimStartOp")]
         public string DTimStartOp { get; set; }
@@ -56,9 +47,6 @@ namespace Witsml.Data
             get { return IsOffshore.HasValue ? XmlConvert.ToString(IsOffshore.Value) : null; }
             set { IsOffshore = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
         }
-
-        [XmlElement("itemState")]
-        public string ItemState { get; set; }
 
         [XmlElement("manufacturer")]
         public string Manufacturer { get; set; }

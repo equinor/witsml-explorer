@@ -45,9 +45,7 @@ export const RigsListView = (): React.ReactElement => {
     { property: "isOffshoreText", label: "IsOffshore", type: ContentType.String },
     { property: "airGap", label: "AirGap", type: ContentType.String },
     { property: "dTimStartOp", label: "DateTimeStartOperating", type: ContentType.DateTime },
-    { property: "dTimEndOp", label: "DateTimeEndOperating", type: ContentType.DateTime },
-    { property: "dTimCreation", label: "DTimCreation", type: ContentType.String },
-    { property: "dTimLastChange", label: "DTimLastChange", type: ContentType.String }
+    { property: "dTimEndOp", label: "DateTimeEndOperating", type: ContentType.DateTime }
   ];
 
   return <ContentTable columns={columns} data={getTableData()} />;
