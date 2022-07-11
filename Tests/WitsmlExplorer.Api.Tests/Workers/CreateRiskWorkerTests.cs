@@ -39,10 +39,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var createdRisks = new List<WitsmlRisks>();
             witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlRisks>()))
-                .Callback<WitsmlRisks>(risk=> createdRisks.Add(risk))
+                .Callback<WitsmlRisks>(risk => createdRisks.Add(risk))
                 .ReturnsAsync(new QueryResult(true));
             witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
-                .ReturnsAsync(new WitsmlRisks() { Risks = new List<WitsmlRisk>() { new WitsmlRisk() }});
+                .ReturnsAsync(new WitsmlRisks() { Risks = new List<WitsmlRisk>() { new WitsmlRisk() } });
 
             await worker.Execute(job);
 
@@ -50,8 +50,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Single(createdRisks.First().Risks);
             var createdRisk = createdRisks.First().Risks.First();
             Assert.Equal(Name, createdRisk.Name);
-            Assert.Equal(WellUid, createdRisk.UidWell);
-            Assert.Equal(WellName, createdRisk.NameWell);
+            Assert.Equal(WellUid, createdRisk.WellUid);
+            Assert.Equal(WellName, createdRisk.WellName);
         }
 
         private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,
@@ -64,8 +64,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     Uid = uid,
                     Name = name,
-                    UidWell = wellUid,
-                    NameWell = wellName,
+                    WellUid = wellUid,
+                    WellName = wellName,
                     CommonData = new CommonData
                     {
                         ItemState = "model",
