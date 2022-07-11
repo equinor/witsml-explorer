@@ -21,7 +21,7 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export const TubularView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedTubular, servers } = navigationState;
   const [tubularComponents, setTubularComponents] = useState<TubularComponent[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
@@ -48,6 +48,7 @@ export const TubularView = (): React.ReactElement => {
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTubularComponents: TubularComponentRow[]) => {
     const contextMenuProps: TubularComponentContextMenuProps = {
       checkedTubularComponents,
+      dispatchNavigation,
       dispatchOperation,
       tubular: selectedTubular,
       selectedServer,

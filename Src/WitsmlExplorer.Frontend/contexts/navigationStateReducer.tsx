@@ -165,8 +165,12 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateRiskObjects:
+      return updateWellboreRisks(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
+    case ModificationType.UpdateTubularOnWellbore:
+      return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
     case ModificationType.UpdateServerList:
@@ -383,6 +387,17 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
+const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
+  const { wells } = state;
+  const { risks, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -432,7 +447,7 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
   };
 };
 
-const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularAction) => {
+const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularsAction) => {
   const { wells } = state;
   const { tubulars, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
@@ -442,6 +457,31 @@ const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellb
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedTubular,
     wells: freshWells
+  };
+};
+
+const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellboreTubularAction) => {
+  const { wells } = state;
+  const { tubular, exists } = payload;
+  const freshWells = [...wells];
+  const wellIndex = getWellIndex(freshWells, tubular.wellUid);
+  const wellboreIndex = getWellboreIndex(freshWells, wellIndex, tubular.wellboreUid);
+  const freshTubulars = [...wells[wellIndex].wellbores[wellboreIndex].tubulars];
+  const tubularIndex = freshTubulars.findIndex((t) => t.uid === tubular.uid);
+  let selectedTubular = null;
+  if (exists) {
+    freshTubulars[tubularIndex] = tubular;
+    selectedTubular = state.selectedTubular?.uid === tubular.uid ? tubular : state.selectedTubular;
+  } else {
+    freshTubulars.splice(tubularIndex, 1);
+  }
+  wells[wellIndex].wellbores[wellboreIndex].tubulars = freshTubulars;
+
+  return {
+    ...state,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter),
+    selectedTubular
   };
 };
 
@@ -472,7 +512,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[]>
+  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -758,6 +798,7 @@ const selectTubularGroup = (state: NavigationState, { payload }: SelectTubularGr
 
 const selectTubular = (state: NavigationState, { payload }: SelectTubularAction) => {
   const { well, wellbore, tubular, tubularGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateTubularGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
@@ -767,6 +808,7 @@ const selectTubular = (state: NavigationState, { payload }: SelectTubularAction)
     selectedTubularGroup: tubularGroup,
     selectedTubular: tubular,
     currentSelected: tubular,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateTubularGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getTubularProperties(tubular, wellbore)
   };
 };
@@ -894,14 +936,24 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
+export interface UpdateWellboreRisksAction extends Action {
+  type: ModificationType.UpdateRiskObjects;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreTrajectoryAction extends Action {
   type: ModificationType.UpdateTrajectoryOnWellbore;
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
-export interface UpdateWellboreTubularAction extends Action {
+export interface UpdateWellboreTubularsAction extends Action {
   type: ModificationType.UpdateTubularsOnWellbore;
   payload: { tubulars: Tubular[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreTubularAction extends Action {
+  type: ModificationType.UpdateTubularOnWellbore;
+  payload: { tubular: Tubular; exists: boolean };
 }
 
 export interface UpdateWellboreMessagesAction extends Action {
@@ -1014,8 +1066,10 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
+  | UpdateWellboreTubularsAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction
   | SelectLogGroupAction
@@ -1026,6 +1080,7 @@ export type NavigationAction =
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
+  | SelectRiskGroupAction
   | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction
