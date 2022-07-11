@@ -167,6 +167,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessage(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
+    case ModificationType.UpdateTubularOnWellbore:
+      return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
     case ModificationType.UpdateServerList:
@@ -432,7 +434,7 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
   };
 };
 
-const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularAction) => {
+const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularsAction) => {
   const { wells } = state;
   const { tubulars, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
@@ -442,6 +444,31 @@ const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellb
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedTubular,
     wells: freshWells
+  };
+};
+
+const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellboreTubularAction) => {
+  const { wells } = state;
+  const { tubular, exists } = payload;
+  const freshWells = [...wells];
+  const wellIndex = getWellIndex(freshWells, tubular.wellUid);
+  const wellboreIndex = getWellboreIndex(freshWells, wellIndex, tubular.wellboreUid);
+  const freshTubulars = [...wells[wellIndex].wellbores[wellboreIndex].tubulars];
+  const tubularIndex = freshTubulars.findIndex((t) => t.uid === tubular.uid);
+  let selectedTubular = null;
+  if (exists) {
+    freshTubulars[tubularIndex] = tubular;
+    selectedTubular = state.selectedTubular?.uid === tubular.uid ? tubular : state.selectedTubular;
+  } else {
+    freshTubulars.splice(tubularIndex, 1);
+  }
+  wells[wellIndex].wellbores[wellboreIndex].tubulars = freshTubulars;
+
+  return {
+    ...state,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter),
+    selectedTubular
   };
 };
 
@@ -901,9 +928,14 @@ export interface UpdateWellboreTrajectoryAction extends Action {
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
-export interface UpdateWellboreTubularAction extends Action {
+export interface UpdateWellboreTubularsAction extends Action {
   type: ModificationType.UpdateTubularsOnWellbore;
   payload: { tubulars: Tubular[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreTubularAction extends Action {
+  type: ModificationType.UpdateTubularOnWellbore;
+  payload: { tubular: Tubular; exists: boolean };
 }
 
 export interface UpdateWellboreMessagesAction extends Action {
@@ -1018,6 +1050,7 @@ export type NavigationAction =
   | UpdateWellboreMessageAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
+  | UpdateWellboreTubularsAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction
   | SelectLogGroupAction
