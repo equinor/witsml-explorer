@@ -165,6 +165,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateRiskObjects:
+      return updateWellboreRisks(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularOnWellbore:
@@ -385,6 +387,17 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
+const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
+  const { wells } = state;
+  const { risks, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
@@ -499,7 +512,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[]>
+  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -923,6 +936,11 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
+export interface UpdateWellboreRisksAction extends Action {
+  type: ModificationType.UpdateRiskObjects;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreTrajectoryAction extends Action {
   type: ModificationType.UpdateTrajectoryOnWellbore;
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
@@ -1048,6 +1066,7 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | UpdateWellboreTubularsAction
@@ -1061,6 +1080,7 @@ export type NavigationAction =
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
+  | SelectRiskGroupAction
   | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction

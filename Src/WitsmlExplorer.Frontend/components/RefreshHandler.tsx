@@ -10,6 +10,7 @@ import ModificationType from "../contexts/modificationType";
 import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
+import RiskObjectService from "../services/riskObjectService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -39,6 +40,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.Tubular:
             await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
+            break;
+          case EntityType.Risks:
+            await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
         }
       } catch (error) {
@@ -102,6 +106,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (messages) {
         dispatchNavigation({ type: modificationType, payload: { messages, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshRisk(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateRiskObjects) {
+      const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (risks) {
+        dispatchNavigation({ type: modificationType, payload: { risks, wellUid, wellboreUid } });
       }
     }
   }
