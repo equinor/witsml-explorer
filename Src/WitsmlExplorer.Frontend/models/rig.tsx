@@ -9,7 +9,7 @@ export default interface Rig {
   emailAddress: string;
   faxNumber: string;
   itemState?: string;
-  isOffshoreText: string;
+  isOffshore: string;
   manufacturer: string;
   name: string;
   nameContact: string;
@@ -35,7 +35,7 @@ export function emptyRig(): Rig {
     emailAddress: "",
     faxNumber: "",
     itemState: "",
-    isOffshoreText: "",
+    isOffshore: "",
     manufacturer: "",
     name: "",
     nameContact: "",

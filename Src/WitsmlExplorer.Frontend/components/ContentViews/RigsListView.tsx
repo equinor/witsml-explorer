@@ -21,6 +21,7 @@ export const RigsListView = (): React.ReactElement => {
         ratingDrillDepth: `${rig.ratingDrillDepth?.value ?? ""} ${rig.ratingDrillDepth?.uom ?? ""}`,
         ratingWaterDepth: `${rig.ratingWaterDepth?.value ?? ""} ${rig.ratingWaterDepth?.uom ?? ""}`,
         airGap: `${rig.airGap?.value ?? ""} ${rig.airGap?.uom ?? ""}`,
+        isOffshore: `${rig.isOffshore.toString()}`,
         rig: rig
       };
     });
@@ -42,7 +43,7 @@ export const RigsListView = (): React.ReactElement => {
     { property: "nameContact", label: "NameContact", type: ContentType.String },
     { property: "ratingDrillDepth", label: "RatingDrillDepth", type: ContentType.String },
     { property: "ratingWaterDepth", label: "RatingWaterDepth", type: ContentType.String },
-    { property: "isOffshoreText", label: "IsOffshore", type: ContentType.String },
+    { property: "isOffshore", label: "IsOffshore", type: ContentType.String },
     { property: "airGap", label: "AirGap", type: ContentType.String },
     { property: "dTimStartOp", label: "DateTimeStartOperating", type: ContentType.DateTime },
     { property: "dTimEndOp", label: "DateTimeEndOperating", type: ContentType.DateTime }

@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimEndOp = null,
                     EmailAddress = "",
                     FaxNumber = "",
-                    IsOffshoreText = "",
+
                     IsOffshore = null,
                     Manufacturer = "",
                     Name = "",
@@ -53,7 +53,6 @@ namespace WitsmlExplorer.Api.Query
                     DTimEndOp = null,
                     EmailAddress = "",
                     FaxNumber = "",
-                    IsOffshoreText = "",
                     IsOffshore = null,
                     Manufacturer = "",
                     Name = "",
