@@ -58,13 +58,13 @@ namespace WitsmlExplorer.Api.Workers
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update TrajectoryStation", result.Reason, description), null);
         }
 
-        private static void Verify(TrajectoryStation TrajectoryStation, TrajectoryReference trajectoryReference)
+        private static void Verify(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
         {
             if (string.IsNullOrEmpty(trajectoryReference.WellUid)) throw new InvalidOperationException($"{nameof(trajectoryReference.WellUid)} cannot be empty");
             if (string.IsNullOrEmpty(trajectoryReference.WellboreUid)) throw new InvalidOperationException($"{nameof(trajectoryReference.WellboreUid)} cannot be empty");
             if (string.IsNullOrEmpty(trajectoryReference.TrajectoryUid)) throw new InvalidOperationException($"{nameof(trajectoryReference.TrajectoryUid)} cannot be empty");
 
-            if (string.IsNullOrEmpty(TrajectoryStation.Uid)) throw new InvalidOperationException($"{nameof(TrajectoryStation.Uid)} cannot be empty");
+            if (string.IsNullOrEmpty(trajectoryStation.Uid)) throw new InvalidOperationException($"{nameof(TrajectoryStation.Uid)} cannot be empty");
         }
     }
 }

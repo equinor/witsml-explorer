@@ -24,10 +24,10 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
   const { checkedTrajectoryStations, dispatchOperation, trajectory } = props;
 
   const onClickProperties = async () => {
-    const TrajectoryStationPropertiesModalProps = { TrajectoryStation: checkedTrajectoryStations[0], trajectory, dispatchOperation };
+    const TrajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <TrajectoryStationPropertiesModal trajectoryStation={checkedTrajectoryStations[0]} {...TrajectoryStationPropertiesModalProps} />
+      payload: <TrajectoryStationPropertiesModal {...TrajectoryStationPropertiesModalProps} />
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

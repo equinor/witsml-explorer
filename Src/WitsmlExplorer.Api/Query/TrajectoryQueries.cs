@@ -61,21 +61,19 @@ namespace WitsmlExplorer.Api.Query
             var ts = new WitsmlTrajectoryStation
             {
                 Uid = trajectoryStation.Uid,
-                /*
-                Md = new WitsmlMeasuredDepthCoord { Uom = trajectoryStation.Md.Uom, Value = trajectoryStation.Md.Value.ToString(CultureInfo.InvariantCulture)},
-                */
+                Md = new WitsmlMeasuredDepthCoord { Uom = trajectoryStation.Md.Uom, Value = trajectoryStation.Md.Value.ToString(CultureInfo.InvariantCulture) },
                 TypeTrajStation = trajectoryStation.TypeTrajStation
             };
-            /*
-            if (trajectoryStation.Tvd.Equals(null))
+
+            if (!trajectoryStation.Tvd.Equals(null))
                 ts.Tvd = new WitsmlWellVerticalDepthCoord { Uom = trajectoryStation.Tvd.Uom, Value = trajectoryStation.Tvd.Value.ToString(CultureInfo.InvariantCulture) };
-            
-            if (trajectoryStation.Incl.Equals(null) )
+
+            if (!trajectoryStation.Incl.Equals(null))
                 ts.Incl = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Incl.Uom, Value = trajectoryStation.Incl.Value.ToString(CultureInfo.InvariantCulture) };
 
-            if (trajectoryStation.Azi.Equals(null) )
-                ts.Incl = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
-            */
+            if (!trajectoryStation.Azi.Equals(null))
+                ts.Azi = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
+
             if (trajectoryStation.DTimStn != null)
                 ts.DTimStn = ((DateTime) trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             return new WitsmlTrajectories

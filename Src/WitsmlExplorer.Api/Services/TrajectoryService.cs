@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -49,16 +50,16 @@ namespace WitsmlExplorer.Api.Services
             var witsmlTrajectory = result.Trajectories.FirstOrDefault();
             if (witsmlTrajectory == null) return null;
             return witsmlTrajectory.TrajectoryStations.Select(tStation => new TrajectoryStation
-                {
-                    Uid = tStation.Uid,
-                    DTimStn = StringHelpers.ToDateTime(tStation.DTimStn),
-                    TypeTrajStation = tStation.TypeTrajStation,
-                    Md = StringHelpers.ToDecimal(tStation.Md?.Value),
-                    Tvd = StringHelpers.ToDecimal(tStation.Tvd?.Value),
-                    Incl = StringHelpers.ToDecimal(tStation.Incl?.Value),
-                    Azi = StringHelpers.ToDecimal(tStation.Azi?.Value)
-                })
-                .OrderBy(tStation => tStation.Md)
+            {
+                Uid = tStation.Uid,
+                DTimStn = StringHelpers.ToDateTime(tStation.DTimStn),
+                TypeTrajStation = tStation.TypeTrajStation,
+                Md = (tStation.Md == null) ? null : new LengthMeasure { Uom = tStation.Md.Uom, Value = decimal.Parse(tStation.Md.Value) },
+                Tvd = (tStation.Tvd == null) ? null : new LengthMeasure { Uom = tStation.Tvd.Uom, Value = decimal.Parse(tStation.Tvd?.Value) },
+                Incl = (tStation.Incl == null) ? null : new LengthMeasure { Uom = tStation.Incl.Uom, Value = decimal.Parse(tStation.Incl?.Value) },
+                Azi = (tStation.Azi == null) ? null : new LengthMeasure { Uom = tStation.Azi.Uom, Value = decimal.Parse(tStation.Azi?.Value) }
+            })
+                .OrderBy(tStation => tStation.Md.Value)
                 .ToList();
         }
     }
