@@ -206,12 +206,6 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       <TreeItem nodeId={rigGroupId} labelText={"Rigs"} onLabelClick={() => onSelectRigGroup(well, wellbore, rigGroupId)} onContextMenu={preventContextMenuPropagation} />
       <TreeItem nodeId={riskGroupId} labelText={"Risks"} onLabelClick={() => onSelectRiskGroup(well, wellbore, riskGroupId)} onContextMenu={preventContextMenuPropagation} />
       <TreeItem
-        nodeId={wbGeometryGroupId}
-        labelText={"WbGeometrys"}
-        onLabelClick={() => onSelectWbGeometryGroup(well, wellbore, wbGeometryGroupId)}
-        onContextMenu={preventContextMenuPropagation}
-      />
-      <TreeItem
         nodeId={trajectoryGroupId}
         labelText={"Trajectories"}
         onLabelClick={() => onSelectTrajectoryGroup(well, wellbore, trajectoryGroupId)}
@@ -250,6 +244,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
             />
           ))}
+        <TreeItem
+          nodeId={wbGeometryGroupId}
+          labelText={"WbGeometries"}
+          onLabelClick={() => onSelectWbGeometryGroup(well, wellbore, wbGeometryGroupId)}
+          onContextMenu={preventContextMenuPropagation}
+        />
       </TreeItem>
     </TreeItem>
   );

@@ -23,10 +23,6 @@ export const WbGeometrysListView = (): React.ReactElement => {
       return {
         ...wbGeometry,
         ...wbGeometry.commonData,
-        id: wbGeometry.uid,
-        mdBottom: `${wbGeometry.mdBottom?.value?.toFixed(4) ?? ""} ${wbGeometry.mdBottom?.uom ?? ""}`,
-        gapAir: `${wbGeometry.gapAir?.value?.toFixed(4) ?? ""} ${wbGeometry.gapAir?.uom ?? ""}`,
-        depthWaterMean: `${wbGeometry.depthWaterMean?.value?.toFixed(4) ?? ""} ${wbGeometry.depthWaterMean?.uom ?? ""}`,
         wbGeometry: wbGeometry
       };
     });
