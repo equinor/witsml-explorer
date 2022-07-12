@@ -11,6 +11,8 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
+using Witsml.Data.Measures;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -83,12 +85,12 @@ namespace WitsmlExplorer.Api.Workers
                     AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = new WitsmlIndex { Uom = "m", Value = risk.MdHoleStart },
-                    MdHoleEnd = new WitsmlIndex { Uom = "m", Value = risk.MdHoleEnd },
+                    MdHoleStart = risk.MdHoleStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     TvdHoleStart = risk.TvdHoleStart,
                     TvdHoleEnd = risk.TvdHoleEnd,
-                    MdBitStart = new WitsmlIndex { Uom = "m", Value = risk.MdBitStart },
-                    MdBitEnd = new WitsmlIndex { Uom = "m", Value = risk.MdBitEnd },
+                    MdBitStart = risk.MdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdBitEnd = risk.MdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = risk.MdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     DiaHole = risk.DiaHole,
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,

@@ -1,6 +1,6 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
+import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
@@ -16,9 +16,13 @@ import Tubular from "../../models/tubular";
 import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import { TubularComponentRow } from "../ContentViews/TubularView";
+import NestedMenuItem from "./NestedMenuItem";
+import { onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
+import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
+  dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   tubular: Tubular;
   selectedServer: Server;
@@ -26,7 +30,7 @@ export interface TubularComponentContextMenuProps {
 }
 
 const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): React.ReactElement => {
-  const { checkedTubularComponents, dispatchOperation, tubular, selectedServer, servers } = props;
+  const { checkedTubularComponents, dispatchNavigation, dispatchOperation, tubular, selectedServer, servers } = props;
   const [tubularComponentReferences] = useClipboardTubularComponentReferences();
 
   const onClickCopy = async () => {
@@ -76,6 +80,10 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"refresh"} onClick={() => onClickRefresh(tubular, dispatchOperation, dispatchNavigation)}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh all tubular components</Typography>
+        </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedTubularComponents.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular component{checkedTubularComponents?.length > 1 && "s"}</Typography>
@@ -90,6 +98,14 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid)}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
+        <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTubularComponents.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>

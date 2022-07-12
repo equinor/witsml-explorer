@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import RiskObject from "../../models/riskObject";
-import { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
+import RiskObjectContextMenuProps from "../ContextMenus/RiskContextMenu";
 import OperationContext from "../../contexts/operationContext";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
 import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
 
-export interface RiskObjectRow extends ContentTableRow, RiskObject {}
+export interface RiskObjectRow extends ContentTableRow, RiskObject {
+  risk: RiskObject;
+}
 
 export const RisksListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -24,7 +26,14 @@ export const RisksListView = (): React.ReactElement => {
 
   const getTableData = () => {
     return risks.map((risk) => {
-      return { id: risk.uid, ...risk };
+      return {
+        ...risk,
+        ...risk.commonData,
+        id: risk.uid,
+        mdBitStart: `${risk.mdBitStart?.value?.toFixed(4) ?? ""} ${risk.mdBitStart?.uom ?? ""}`,
+        mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
+        risk: risk
+      };
     });
   };
 
@@ -54,7 +63,7 @@ export const RisksListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore.risks, risks) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RisksListView;

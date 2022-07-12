@@ -41,7 +41,7 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Tubular:
             await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
             break;
-          case EntityType.RiskObjects:
+          case EntityType.Risks:
             await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
         }
