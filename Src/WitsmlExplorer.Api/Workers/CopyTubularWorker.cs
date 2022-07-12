@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Tubular;
@@ -20,11 +20,13 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTubular;
+        private readonly ILogger<CopyTubularWorker> _logger;
 
-        public CopyTubularWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CopyTubularWorker(ILogger<CopyTubularWorker> logger, IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
+            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularJob job)
@@ -42,12 +44,20 @@ namespace WitsmlExplorer.Api.Workers
                 var tubular = query.Tubulars.First();
                 if (result.IsSuccessful)
                 {
-                    WorkerTools.LogSuccess(GetType().Name, job.Source.WellUid, job.Source.WellboreUid, "tubular", tubular.Uid, job.Target.WellUid, job.Target.WellboreUid);
+                    _logger.LogInformation(
+                    "Copied tubular successfully, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
+                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
+                    job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
+                    job.Target.WellUid, job.Target.WellboreUid);
                     successUids.Add(tubular.Uid);
                 }
                 else
                 {
-                    WorkerTools.LogError(GetType().Name, job.Source.WellUid, job.Source.WellboreUid, "tubular", tubular.Uid, job.Target.WellUid, job.Target.WellboreUid);
+                    _logger.LogError(
+                    "Failed to copy tubular, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
+                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
+                    job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
+                    job.Target.WellUid, job.Target.WellboreUid);
                     error = true;
                     errorReasons.Add(result.Reason);
                     errorEnitities.Add(new EntityDescription

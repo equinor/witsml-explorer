@@ -1,10 +1,9 @@
+using System.Text;
 using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CopyTubularComponentsJob
+    public record CopyTubularComponentsJob : ICopyJob<TubularComponentReferences, TubularReference>
     {
-        public TubularComponentReferences Source { get; init; }
-        public TubularReference Target { get; init; }
     }
 }
