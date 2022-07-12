@@ -2,22 +2,22 @@ import Measure from "./measure";
 
 export default interface Rig {
   airGap: Measure;
-  Approvals: string;
-  ClassRig: string;
+  approvals: string;
+  classRig: string;
   dtimEndOp: Date;
   dTimStartOp: Date;
-  EmailAddress: string;
+  emailAddress: string;
   FaxNumber: string;
   itemState?: string;
-  IsOffshoreText: string;
-  Manufacturer: string;
+  isOffshoreText: string;
+  manufacturer: string;
   name: string;
-  NameContact: string;
+  nameContact: string;
   owner: string;
   ratingDrillDepth: Measure;
   ratingWaterDepth: Measure;
-  Registration: string;
-  TelNumber: string;
+  registration: string;
+  telNumber: string;
   typeRig: string;
   uid: string;
   wellboreUid: string;
@@ -28,23 +28,23 @@ export default interface Rig {
 export function emptyRig(): Rig {
   return {
     airGap: null,
-    Approvals: "",
-    ClassRig: "",
+    approvals: "",
+    classRig: "",
     dTimStartOp: null,
     dtimEndOp: null,
-    EmailAddress: "",
+    emailAddress: "",
     FaxNumber: "",
     itemState: "",
-    IsOffshoreText: "",
-    Manufacturer: "",
+    isOffshoreText: "",
+    manufacturer: "",
     name: "",
-    NameContact: "",
+    nameContact: "",
     owner: "",
     ratingDrillDepth: null,
     ratingWaterDepth: null,
-    Registration: "",
+    registration: "",
     typeRig: "",
-    TelNumber: "",
+    telNumber: "",
     uid: "",
     wellboreUid: "",
     wellUid: "",
