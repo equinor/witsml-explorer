@@ -13,8 +13,6 @@ namespace WitsmlExplorer.Api.Models
         public string EmailAddress { get; set; }
         public string FaxNumber { get; set; }
         public string IsOffshore { get; set; }
-        public string IsOffshoreText { get; set; }
-        public string ItemState { get; set; }
         public string Manufacturer { get; set; }
         public string Name { get; set; }
         public string NameWellbore { get; set; }
