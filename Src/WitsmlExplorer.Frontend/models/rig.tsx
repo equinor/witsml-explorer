@@ -7,7 +7,7 @@ export default interface Rig {
   dtimEndOp: Date;
   dTimStartOp: Date;
   emailAddress: string;
-  FaxNumber: string;
+  faxNumber: string;
   itemState?: string;
   isOffshoreText: string;
   manufacturer: string;
@@ -33,7 +33,7 @@ export function emptyRig(): Rig {
     dTimStartOp: null,
     dtimEndOp: null,
     emailAddress: "",
-    FaxNumber: "",
+    faxNumber: "",
     itemState: "",
     isOffshoreText: "",
     manufacturer: "",
