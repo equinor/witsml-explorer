@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import RiskObject from "../../models/riskObject";
-import RiskObjectContextMenuProps from "../ContextMenus/RiskContextMenu";
+import { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
 import OperationContext from "../../contexts/operationContext";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";

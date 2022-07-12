@@ -1,23 +1,10 @@
 using Witsml.Data;
 using Witsml.Extensions;
 using WitsmlExplorer.Api.Models;
-<<<<<<< HEAD
-using WitsmlExplorer.Api.Services;
-
 using System.Collections.Generic;
-
-
-
 using System.Linq;
-
-using WitsmlExplorer.Api.Jobs.Common;
 using Witsml.Data.Measures;
 using System.Globalization;
-
-=======
-using Witsml.Data.Measures;
-using System.Globalization;
->>>>>>> 6f288b31ffb20424db29825651c1d3314643f270
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -82,19 +69,6 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlRisks DeleteRiskQuery(string wellUid, string wellboreUid, string uid)
-        {
-            return new WitsmlRisks
-            {
-                Risks = new WitsmlRisk
-                {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
-                    Uid = uid
-                }.AsSingletonList()
-            };
-        }
-
         public static IEnumerable<WitsmlRisks> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
         {
             return riskUids.Select((riskUid) =>
@@ -109,6 +83,8 @@ namespace WitsmlExplorer.Api.Query
                 }
             );
         }
+
+
 
         public static WitsmlRisks CreateRisk(Risk risk)
         {

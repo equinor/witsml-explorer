@@ -43,6 +43,7 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
+          <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
     />
