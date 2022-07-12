@@ -14,7 +14,8 @@ import Wellbore, {
   calculateRiskGroupId,
   calculateWellboreNodeId,
   getWellboreProperties,
-  calculateTubularGroupId
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
 } from "../models/wellbore";
 import { Server } from "../models/server";
 import ModificationType from "./modificationType";
@@ -42,7 +43,8 @@ export interface NavigationState {
   selectedTrajectory: Trajectory;
   selectedTubularGroup: string;
   selectedTubular: Tubular;
-  selectedWbGeometryGroup: WbGeometryObject;
+  selectedWbGeometryGroup: string;
+  selectedWbGeometry: WbGeometryObject;
   servers: Server[];
   currentSelected: Selectable;
   wells: Well[];
@@ -53,7 +55,7 @@ export interface NavigationState {
   currentProperties: Map<string, string>;
 }
 
-export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject;
+export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | WbGeometryObject;
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -77,6 +79,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedTubularGroup: null,
   selectedTubular: null,
   selectedWbGeometryGroup: null,
+  selectedWbGeometry: null,
   servers: [],
   currentSelected: null,
   wells: [],
@@ -205,6 +208,7 @@ const allDeselected: any = {
   selectedTubularGroup: null,
   selectedTubular: null,
   selectedWbGeometryGroup: null,
+  selectedWbGeometry: null,
   currentSelected: null,
   currentProperties: new Map()
 };
@@ -757,16 +761,16 @@ const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAct
 
 const selectWbGeometryGroup = (state: NavigationState, { payload }: SelectWbGeometryGroupAction) => {
   const { well, wellbore, wbGeometryGroup } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateRiskGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
     selectedWell: well,
     selectedWellbore: wellbore,
-    selectedRiskGroup: wbGeometryGroup,
+    selectedWbGeometryGroup: wbGeometryGroup,
     currentSelected: wbGeometryGroup,
-    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateRiskGroupId(wellbore)) : state.expandedTreeNodes,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };
@@ -1124,5 +1128,6 @@ export type NavigationAction =
   | SelectTrajectoryGroupAction
   | SelectTubularAction
   | SelectTubularGroupAction
+  | SelectWbGeometryGroupAction
   | SetFilterAction
   | SetCurveThresholdAction;

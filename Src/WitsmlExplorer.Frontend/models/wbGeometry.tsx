@@ -1,4 +1,6 @@
 import Measure from "./measure";
+import CommonData from "./commonData";
+
 export default interface WbGeometryObject {
   uid: string;
   wellboreUid: string;
@@ -9,14 +11,10 @@ export default interface WbGeometryObject {
   mdBottom?: Measure;
   gapAir?: Measure;
   depthWaterMean?: Measure;
-  sourceName: string;
-  dTimCreation?: Date;
-  dTimLastChange?: Date;
-  itemState?: string;
-  comments?: string;
+  commonData: CommonData;
 }
 
-export function emptyWbGeomtryObject(): WbGeometryObject {
+export function emptyWbGeometryObject(): WbGeometryObject {
   return {
     wellboreUid: "",
     wellboreName: "",
@@ -27,19 +25,21 @@ export function emptyWbGeomtryObject(): WbGeometryObject {
     mdBottom: null,
     gapAir: null,
     depthWaterMean: null,
-    sourceName: "",
-    dTimCreation: null,
-    dTimLastChange: null,
-    itemState: "",
-    comments: ""
+    commonData: {
+      sourceName: "",
+      dTimCreation: null,
+      dTimLastChange: null,
+      itemState: "",
+      comments: ""
+    }
   };
 }
 
-export const calculateRiskObjectNodeId = (wbGeometryObject: WbGeometryObject): string => {
+export const calculateWbGeometryObjectNodeId = (wbGeometryObject: WbGeometryObject): string => {
   return wbGeometryObject.wellUid + wbGeometryObject.wellboreUid + wbGeometryObject.uid;
 };
 
-export const getRiskObjectProperties = (wbGeometryObject: WbGeometryObject): Map<string, string> => {
+export const getWbGeometryObjectProperties = (wbGeometryObject: WbGeometryObject): Map<string, string> => {
   return new Map([
     ["Well", wbGeometryObject.wellName],
     ["UID Well", wbGeometryObject.wellUid],

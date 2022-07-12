@@ -18,6 +18,7 @@ import {
   SelectTrajectoryGroupAction,
   SelectTubularAction,
   SelectTubularGroupAction,
+  SelectWbGeometryGroupAction,
   SelectWellAction,
   SelectWellboreAction
 } from "../contexts/navigationStateReducer";
@@ -45,6 +46,7 @@ const Nav = (): React.ReactElement => {
     selectedTrajectory,
     selectedTubularGroup,
     selectedTubular,
+    selectedWbGeometryGroup,
     currentSelected
   } = navigationState;
 
@@ -64,7 +66,8 @@ const Nav = (): React.ReactElement => {
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
       getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation),
-      getTubularCrumb(selectedTubular, selectedWell, selectedWellbore, dispatchNavigation)
+      getTubularCrumb(selectedTubular, selectedWell, selectedWellbore, dispatchNavigation),
+      getWbGeometryGroupCrumb(selectedWbGeometryGroup, selectedWell, selectedWellbore, dispatchNavigation)
     ].filter((item) => item.name);
   };
 
@@ -122,7 +125,8 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               trajectories: selectedWellbore.trajectories,
               messages: selectedWellbore.messages,
               risks: selectedWellbore.risks,
-              tubulars: selectedWellbore.tubulars
+              tubulars: selectedWellbore.tubulars,
+              wbGeometrys: selectedWellbore.wbGeometrys
             }
           })
       }
@@ -166,6 +170,19 @@ const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, select
           dispatch({
             type: NavigationType.SelectRiskGroup,
             payload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: selectedRiskGroup }
+          })
+      }
+    : {};
+};
+
+const getWbGeometryGroupCrumb = (selectedWbGeometryGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectWbGeometryGroupAction) => void) => {
+  return selectedWbGeometryGroup
+    ? {
+        name: "WbGeometrys",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectWbGeometryGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: selectedWbGeometryGroup }
           })
       }
     : {};

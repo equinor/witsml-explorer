@@ -8,7 +8,8 @@ import {
   calculateRiskGroupId,
   calculateRigGroupId,
   calculateTrajectoryGroupId,
-  calculateTubularGroupId
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
 } from "../../models/wellbore";
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
@@ -54,6 +55,12 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
         name: "Risks",
         action: NavigationType.SelectRiskGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: calculateRiskGroupId(selectedWellbore) }
+      },
+      {
+        uid: 7,
+        name: "WbGeometrys",
+        action: NavigationType.SelectWbGeometryGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
       }
     ];
   };

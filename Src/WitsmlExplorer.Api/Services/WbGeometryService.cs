@@ -37,12 +37,14 @@ namespace WitsmlExplorer.Api.Services
                     MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
                     GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = decimal.Parse(wbGeometry.GapAir.Value) },
                     DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = decimal.Parse(wbGeometry.DepthWaterMean.Value) },
-                    SourceName = wbGeometry.CommonData.SourceName,
-                    ItemState = wbGeometry.CommonData.ItemState,
-                    Comments = wbGeometry.CommonData.Comments,
-                    DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
-                    DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
-
+                    CommonData = new CommonData()
+                    {
+                        SourceName = wbGeometry.CommonData.SourceName,
+                        ItemState = wbGeometry.CommonData.ItemState,
+                        Comments = wbGeometry.CommonData.Comments,
+                        DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
+                        DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
+                    }
                 }).OrderBy(WbGeometry => WbGeometry.DTimReport);
         }
     }

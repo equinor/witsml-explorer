@@ -8,5 +8,6 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DTimCreation { get; set; }
         public DateTime? DTimLastChange { get; set; }
         public string ItemState { get; set; }
+        public string Comments { get; set; }
     }
 }
