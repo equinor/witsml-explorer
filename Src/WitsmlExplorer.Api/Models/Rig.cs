@@ -12,7 +12,7 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DTimEndOp { get; set; }
         public string EmailAddress { get; set; }
         public string FaxNumber { get; set; }
-        public bool IsOffshore { get; set; }
+        public string IsOffshore { get; set; }
         public string IsOffshoreText { get; set; }
         public string ItemState { get; set; }
         public string Manufacturer { get; set; }

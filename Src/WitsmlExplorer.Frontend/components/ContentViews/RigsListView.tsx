@@ -21,7 +21,7 @@ export const RigsListView = (): React.ReactElement => {
         ratingDrillDepth: `${rig.ratingDrillDepth?.value ?? ""} ${rig.ratingDrillDepth?.uom ?? ""}`,
         ratingWaterDepth: `${rig.ratingWaterDepth?.value ?? ""} ${rig.ratingWaterDepth?.uom ?? ""}`,
         airGap: `${rig.airGap?.value ?? ""} ${rig.airGap?.uom ?? ""}`,
-        isOffshore: `${rig.isOffshore.toString()}`,
+
         rig: rig
       };
     });
