@@ -22,7 +22,7 @@ export default interface Rig {
   uid: string;
   wellboreUid: string;
   wellUid: string;
-  YearEntService: string;
+  yearEntService: string;
 }
 
 export function emptyRig(): Rig {
@@ -48,6 +48,6 @@ export function emptyRig(): Rig {
     uid: "",
     wellboreUid: "",
     wellUid: "",
-    YearEntService: ""
+    yearEntService: ""
   };
 }
