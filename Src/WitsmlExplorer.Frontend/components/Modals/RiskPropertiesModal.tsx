@@ -3,7 +3,7 @@ import { HideModalAction } from "../../contexts/operationStateReducer";
 import RiskObject from "../../models/riskObject";
 import React, { useEffect, useState } from "react";
 import ModalDialog from "./ModalDialog";
-import { TextField } from "@material-ui/core";
+import { InputAdornment, TextField } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import moment from "moment";
@@ -135,6 +135,40 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 disabled={!editableRiskObject.dTimEnd}
                 value={editableRiskObject.dTimEnd ? moment(editableRiskObject.dTimEnd).format("YYYY-MM-DDTHH:MM") : undefined}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimEnd: new Date(e.target.value) })}
+              />
+              <TextField
+                id={"mdBitStart"}
+                label={"mdBitStart"}
+                type="number"
+                fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">{editableRiskObject.mdBitStart ? editableRiskObject.mdBitStart.uom : ""}</InputAdornment>
+                }}
+                disabled={!editableRiskObject.mdBitStart}
+                value={editableRiskObject.mdBitStart?.value}
+                onChange={(e) =>
+                  setEditableRiskObject({
+                    ...editableRiskObject,
+                    mdBitStart: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableRiskObject.mdBitStart.uom }
+                  })
+                }
+              />
+              <TextField
+                id={"mdBitEnd"}
+                label={"mdBitEnd"}
+                type="number"
+                fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">{editableRiskObject.mdBitEnd ? editableRiskObject.mdBitEnd.uom : ""}</InputAdornment>
+                }}
+                disabled={!editableRiskObject.mdBitEnd}
+                value={editableRiskObject.mdBitEnd?.value}
+                onChange={(e) =>
+                  setEditableRiskObject({
+                    ...editableRiskObject,
+                    mdBitEnd: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableRiskObject.mdBitEnd.uom }
+                  })
+                }
               />
               <TextField
                 id="severityLevel"
