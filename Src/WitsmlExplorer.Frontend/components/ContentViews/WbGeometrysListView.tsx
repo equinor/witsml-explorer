@@ -22,7 +22,8 @@ export const WbGeometrysListView = (): React.ReactElement => {
     return wbGeometrys.map((wbGeometry) => {
       return {
         ...wbGeometry,
-        ...wbGeometry.commonData,
+        itemState: wbGeometry.commonData.itemState,
+        id: wbGeometry.uid,
         wbGeometry: wbGeometry
       };
     });
