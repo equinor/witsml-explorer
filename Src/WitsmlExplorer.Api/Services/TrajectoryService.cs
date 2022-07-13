@@ -28,22 +28,9 @@ namespace WitsmlExplorer.Api.Services
         {
             var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.Requested));
-
             return result.Trajectories.Select(trajectory =>
-                new Trajectory
-                {
-                    Uid = trajectory.Uid,
-                    WellUid = trajectory.UidWell,
-                    WellboreUid = trajectory.UidWellbore,
-                    Name = trajectory.Name,
-                    MdMin = StringHelpers.ToDecimal(trajectory.MdMin?.Value),
-                    MdMax = StringHelpers.ToDecimal(trajectory.MdMax?.Value),
-                    AziRef = trajectory.AziRef,
-                    DTimTrajStart = StringHelpers.ToDateTime(trajectory.DTimTrajStart),
-                    DTimTrajEnd = StringHelpers.ToDateTime(trajectory.DTimTrajEnd),
-                    DateTimeCreation = StringHelpers.ToDateTime(trajectory.CommonData?.DTimCreation),
-                    DateTimeLastChange = StringHelpers.ToDateTime(trajectory.CommonData?.DTimLastChange)
-                }).OrderBy(trajectory => trajectory.Name);
+                WitsmlToTrajectory(trajectory)
+                ).OrderBy(trajectory => trajectory.Name);
         }
 
         public async Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid)
