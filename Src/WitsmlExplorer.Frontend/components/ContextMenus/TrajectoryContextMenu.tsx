@@ -9,14 +9,14 @@ import TrajectoryService from "../../services/trajectoryService";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import ModificationType from "../../contexts/modificationType";
-import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreTrajectoriesAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 
 export interface TrajectoryContextMenuProps {
-  dispatchNavigation: (action: UpdateWellboreTrajectoryAction) => void;
+  dispatchNavigation: (action: UpdateWellboreTrajectoriesAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   trajectory: Trajectory;
   selectedServer: Server;
@@ -37,7 +37,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
     await JobService.orderJob(JobType.DeleteTrajectory, job);
     const freshTrajectories = await TrajectoryService.getTrajectories(job.trajectoryReference.wellUid, job.trajectoryReference.wellboreUid);
     dispatchNavigation({
-      type: ModificationType.UpdateTrajectoryOnWellbore,
+      type: ModificationType.UpdateTrajectoriesOnWellbore,
       payload: {
         wellUid: job.trajectoryReference.wellUid,
         wellboreUid: job.trajectoryReference.wellboreUid,

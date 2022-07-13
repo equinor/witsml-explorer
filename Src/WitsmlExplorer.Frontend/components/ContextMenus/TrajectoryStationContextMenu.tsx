@@ -11,9 +11,11 @@ import styled from "styled-components";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
+import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
+  dispatchNavigation: (action: UpdateWellboreTrajectoryAction) => void;
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   trajectory: Trajectory;
   selectedServer: Server;
@@ -24,10 +26,10 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
   const { checkedTrajectoryStations, dispatchOperation, trajectory } = props;
 
   const onClickProperties = async () => {
-    const TrajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
+    const trajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <TrajectoryStationPropertiesModal {...TrajectoryStationPropertiesModalProps} />
+      payload: <TrajectoryStationPropertiesModal {...trajectoryStationPropertiesModalProps} />
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

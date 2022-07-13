@@ -41,7 +41,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
     <>
       {editableTrajectoryStation && (
         <ModalDialog
-          heading={`Edit properties for Trajectory Station`}
+          heading={`Edit properties for Trajectory Station for Trajectory ${trajectoryStation.uid} - ${trajectoryStation.typeTrajStation} `}
           content={
             <>
               <TextField disabled id="uid" label="uid" defaultValue={editableTrajectoryStation.uid} fullWidth />

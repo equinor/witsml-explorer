@@ -11,6 +11,7 @@ import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
 import RiskObjectService from "../services/riskObjectService";
+import TrajectoryService from "../services/trajectoryService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -37,6 +38,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.MessageObjects:
             await refreshMessageObjects(refreshAction, modificationType);
+            break;
+          case EntityType.Trajectory:
+            await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
             break;
           case EntityType.Tubular:
             await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
@@ -128,6 +132,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (tubulars) {
         dispatchNavigation({ type: modificationType, payload: { tubulars, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshTrajectory(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateTrajectoryOnWellbore) {
+      const trajectory = await TrajectoryService.getTrajectory(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.trajectoryUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (trajectory) {
+        dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
       }
     }
   }

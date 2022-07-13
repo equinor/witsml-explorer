@@ -73,6 +73,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", GetRigsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", GetTrajectory);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", GetTubulars);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", GetTubular);
@@ -255,6 +256,15 @@ namespace WitsmlExplorer.Api
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var trajectories = await trajectoryService.GetTrajectories(wellUid, wellboreUid);
+            await httpResponse.AsJson(trajectories);
+        }
+
+        private async Task GetTrajectory(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var trajectoryUid = httpRequest.RouteValues.As<string>("trajectoryUid");
+            var trajectories = await trajectoryService.GetTrajectory(wellUid, wellboreUid, trajectoryUid);
             await httpResponse.AsJson(trajectories);
         }
 

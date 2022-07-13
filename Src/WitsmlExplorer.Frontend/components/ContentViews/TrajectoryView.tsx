@@ -20,7 +20,7 @@ export interface TrajectoryStationRow extends ContentTableRow {
 }
 
 export const TrajectoryView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedTrajectory, servers } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
@@ -49,6 +49,7 @@ export const TrajectoryView = (): React.ReactElement => {
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTrajectoryStations: TrajectoryStationRow[]) => {
     const contextMenuProps: TrajectoryStationContextMenuProps = {
       checkedTrajectoryStations,
+      dispatchNavigation,
       dispatchOperation,
       trajectory: selectedTrajectory,
       selectedServer,

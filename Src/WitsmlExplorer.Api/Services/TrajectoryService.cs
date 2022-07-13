@@ -5,12 +5,15 @@ using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
+using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Services
 {
     public interface ITrajectoryService
     {
         Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid);
+        Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid);
+
         Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid);
     }
 
@@ -43,6 +46,19 @@ namespace WitsmlExplorer.Api.Services
                 }).OrderBy(trajectory => trajectory.Name);
         }
 
+        public async Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid)
+        {
+            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            var result = await WitsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
+
+            if (result.Trajectories.Any())
+            {
+                return WitsmlToTrajectory(result.Trajectories.First());
+            }
+
+            return null;
+        }
+
         public async Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid)
         {
             var trajectoryToQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
@@ -61,6 +77,23 @@ namespace WitsmlExplorer.Api.Services
             })
                 .OrderBy(tStation => tStation.Md.Value)
                 .ToList();
+        }
+        private static Trajectory WitsmlToTrajectory(WitsmlTrajectory trajectory)
+        {
+            return new Trajectory
+            {
+                Uid = trajectory.Uid,
+                WellUid = trajectory.UidWell,
+                WellboreUid = trajectory.UidWellbore,
+                Name = trajectory.Name,
+                MdMin = StringHelpers.ToDecimal(trajectory.MdMin?.Value),
+                MdMax = StringHelpers.ToDecimal(trajectory.MdMax?.Value),
+                AziRef = trajectory.AziRef,
+                DTimTrajStart = StringHelpers.ToDateTime(trajectory.DTimTrajStart),
+                DTimTrajEnd = StringHelpers.ToDateTime(trajectory.DTimTrajEnd),
+                DateTimeCreation = StringHelpers.ToDateTime(trajectory.CommonData?.DTimCreation),
+                DateTimeLastChange = StringHelpers.ToDateTime(trajectory.CommonData?.DTimLastChange)
+            };
         }
     }
 }
