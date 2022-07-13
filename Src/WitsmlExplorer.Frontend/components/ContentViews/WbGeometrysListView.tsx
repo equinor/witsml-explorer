@@ -29,7 +29,11 @@ export const WbGeometrysListView = (): React.ReactElement => {
     });
   };
 
-  const columns: ContentTableColumn[] = [{ property: "itemState", label: "Item State", type: ContentType.String }];
+  const columns: ContentTableColumn[] = [
+    { property: "name", label: "Name", type: ContentType.String },
+    { property: "uid", label: "Uid", type: ContentType.String },
+    { property: "itemState", label: "Item State", type: ContentType.String }
+  ];
   return <ContentTable columns={columns} data={getTableData()} checkableRows />;
 };
 export default WbGeometrysListView;

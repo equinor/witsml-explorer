@@ -3,6 +3,7 @@ import CommonData from "./commonData";
 
 export default interface WbGeometryObject {
   uid: string;
+  name: string;
   wellboreUid: string;
   wellboreName: string;
   wellUid: string;
@@ -21,6 +22,7 @@ export function emptyWbGeometryObject(): WbGeometryObject {
     wellUid: "",
     wellName: "",
     uid: "",
+    name: "",
     dTimReport: null,
     mdBottom: null,
     gapAir: null,
@@ -45,6 +47,7 @@ export const getWbGeometryObjectProperties = (wbGeometryObject: WbGeometryObject
     ["UID Well", wbGeometryObject.wellUid],
     ["Wellbore", wbGeometryObject.wellboreName],
     ["UID Wellbore", wbGeometryObject.wellboreUid],
+    ["WbGeometry", wbGeometryObject.name],
     ["UID Risk", wbGeometryObject.uid]
   ]);
 };
