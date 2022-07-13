@@ -244,13 +244,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
             />
           ))}
-        <TreeItem
-          nodeId={wbGeometryGroupId}
-          labelText={"WbGeometries"}
-          onLabelClick={() => onSelectWbGeometryGroup(well, wellbore, wbGeometryGroupId)}
-          onContextMenu={preventContextMenuPropagation}
-        />
       </TreeItem>
+      <TreeItem
+        nodeId={wbGeometryGroupId}
+        labelText={"WbGeometries"}
+        onLabelClick={() => onSelectWbGeometryGroup(well, wellbore, wbGeometryGroupId)}
+        onContextMenu={preventContextMenuPropagation}
+      />
     </TreeItem>
   );
 };

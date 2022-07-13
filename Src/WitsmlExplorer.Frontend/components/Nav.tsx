@@ -178,7 +178,7 @@ const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, select
 const getWbGeometryGroupCrumb = (selectedWbGeometryGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectWbGeometryGroupAction) => void) => {
   return selectedWbGeometryGroup
     ? {
-        name: "WbGeometrys",
+        name: "WbGeometries",
         onClick: () =>
           dispatch({
             type: NavigationType.SelectWbGeometryGroup,
