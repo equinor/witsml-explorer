@@ -31,6 +31,7 @@ namespace WitsmlExplorer.Api.Services
                     UidWell = wbGeometry.UidWell,
                     Uid = wbGeometry.Uid,
                     UidWellbore = wbGeometry.UidWellbore,
+                    Name = wbGeometry.Name,
                     NameWell = wbGeometry.NameWell,
                     NameWellbore = wbGeometry.NameWellbore,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
