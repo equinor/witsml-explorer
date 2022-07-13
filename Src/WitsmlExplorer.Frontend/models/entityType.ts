@@ -3,8 +3,10 @@ enum EntityType {
   Wellbore = "Wellbore",
   LogObject = "LogObject",
   MessageObjects = "MessageObjects",
+  Risks = "Risks",
   Tubular = "Tubular",
-  Risks = "Risks"
+  Trajectory = "Trajectory",
+  TrajectoryStation = "TrajectoryStation"
 }
 
 export default EntityType;

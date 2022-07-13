@@ -1,9 +1,11 @@
+import Measure from "./measure";
+
 export default interface TrajectoryStation {
   uid: string;
-  md: number;
-  tvd: number;
-  incl: number;
-  azi: number;
-  dTimStn: Date;
+  md: Measure;
+  tvd?: Measure;
+  incl?: Measure;
+  azi?: Measure;
+  dTimStn?: Date;
   typeTrajStation: string;
 }

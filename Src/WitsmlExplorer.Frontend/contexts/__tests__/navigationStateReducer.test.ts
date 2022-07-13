@@ -278,7 +278,7 @@ it("Should update logs for selected wellbore", () => {
 
 it("Should update trajectories for selected wellbore", () => {
   const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoryOnWellbore,
+    type: ModificationType.UpdateTrajectoriesOnWellbore,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,

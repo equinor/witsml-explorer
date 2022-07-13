@@ -10,6 +10,8 @@ namespace WitsmlExplorer.Api.Models
         LogObject,
         MessageObjects,
         Risks,
-        Tubular
+        Tubular,
+        Trajectory,
+        TrajectoryStation
     }
 }

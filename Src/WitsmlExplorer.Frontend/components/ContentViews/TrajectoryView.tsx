@@ -1,15 +1,33 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { ContentTable, ContentTableColumn, ContentType, ContentTableRow } from "./table";
 import TrajectoryService from "../../services/trajectoryService";
 import TrajectoryStation from "../../models/trajectoryStation";
 import NavigationContext from "../../contexts/navigationContext";
+import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
+import OperationContext from "../../contexts/operationContext";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
+
+export interface TrajectoryStationRow extends ContentTableRow {
+  uid: string;
+  md: number;
+  tvd: number;
+  incl: number;
+  azi: number;
+  dTimStn: Date;
+  typeTrajStation: string;
+  trajectoryStation: TrajectoryStation;
+}
 
 export const TrajectoryView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedTrajectory } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedServer, selectedTrajectory, servers } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
+  const { dispatchOperation } = useContext(OperationContext);
+  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
 
   useEffect(() => {
+    setIsFetchingData(true);
     if (selectedTrajectory) {
       const abortController = new AbortController();
 
@@ -17,6 +35,7 @@ export const TrajectoryView = (): React.ReactElement => {
         setTrajectoryStations(
           await TrajectoryService.getTrajectoryStations(selectedTrajectory.wellUid, selectedTrajectory.wellboreUid, selectedTrajectory.uid, abortController.signal)
         );
+        setIsFetchingData(false);
       };
 
       getTrajectory();
@@ -26,6 +45,19 @@ export const TrajectoryView = (): React.ReactElement => {
       };
     }
   }, [selectedTrajectory]);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTrajectoryStations: TrajectoryStationRow[]) => {
+    const contextMenuProps: TrajectoryStationContextMenuProps = {
+      checkedTrajectoryStations,
+      dispatchNavigation,
+      dispatchOperation,
+      trajectory: selectedTrajectory,
+      selectedServer,
+      servers
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryStationContextMenu {...contextMenuProps} />, position } });
+  };
 
   const columns: ContentTableColumn[] = [
     { property: "uid", label: "Uid", type: ContentType.String },
@@ -39,17 +71,19 @@ export const TrajectoryView = (): React.ReactElement => {
 
   const trajectoryStationRows = trajectoryStations.map((trajectoryStation) => {
     return {
+      id: trajectoryStation.uid,
       uid: trajectoryStation.uid,
       dTimStn: trajectoryStation.dTimStn,
       typeTrajStation: trajectoryStation.typeTrajStation,
-      md: trajectoryStation.md,
-      incl: trajectoryStation.incl,
-      azi: trajectoryStation.azi,
-      tvd: trajectoryStation.tvd
+      md: `${trajectoryStation.md.value?.toFixed(4)} ${trajectoryStation.md?.uom}`,
+      incl: `${trajectoryStation.incl?.value?.toFixed(4)} ${trajectoryStation.incl?.uom}`,
+      azi: `${trajectoryStation.azi?.value?.toFixed(4)} ${trajectoryStation.azi?.uom}`,
+      tvd: `${trajectoryStation.tvd?.value?.toFixed(4)} ${trajectoryStation.tvd?.uom}`,
+      trajectoryStation: trajectoryStation
     };
   });
 
-  return selectedTrajectory ? <ContentTable columns={columns} data={trajectoryStationRows} /> : <></>;
+  return selectedTrajectory && !isFetchingData ? <ContentTable columns={columns} data={trajectoryStationRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default TrajectoryView;
