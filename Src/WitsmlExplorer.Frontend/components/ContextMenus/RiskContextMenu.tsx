@@ -1,7 +1,7 @@
 import React from "react";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
+import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import ContextMenu from "./ContextMenu";
 import { Server } from "../../models/server";
 import Icon from "../../styles/Icons";
@@ -35,15 +35,16 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRiskObjectRows.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete(checkedRiskObjectRows, dispatchOperation, dispatchNavigation)} disabled={checkedRiskObjectRows.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRiskObjectRows.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

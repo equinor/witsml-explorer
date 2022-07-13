@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }));
 
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshRisks(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             var successString = successUids.Count > 0 ? $"Deleted risks: {string.Join(", ", successUids)}." : "";
             if (!error)
             {
@@ -76,7 +76,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteRiskJob job)
         {
-            if (!job.RiskReferences.RiskUids.Any()) throw new ArgumentException("A minimum of one sisk UID is required");
+            if (!job.RiskReferences.RiskUids.Any()) throw new ArgumentException("A minimum of one risk UID is required");
             if (string.IsNullOrEmpty(job.RiskReferences.WellUid)) throw new ArgumentException("WellUid is required");
             if (string.IsNullOrEmpty(job.RiskReferences.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
