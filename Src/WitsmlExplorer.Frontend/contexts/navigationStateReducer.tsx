@@ -990,6 +990,11 @@ export interface UpdateWellboreRisksAction extends Action {
   payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
 }
 
+export interface UpdateWellboreRiskAction extends Action {
+  type: ModificationType.UpdateRisksOnWellbore;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreTrajectoryAction extends Action {
   type: ModificationType.UpdateTrajectoryOnWellbore;
   payload: { trajectory: Trajectory; wellUid: string; wellboreUid: string };
