@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
@@ -22,12 +22,14 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlSourceClient;
         private readonly ICopyLogDataWorker copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
+        private readonly ILogger<CopyLogWorker> _logger;
 
-        public CopyLogWorker(IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null)
+        public CopyLogWorker(ILogger<CopyLogWorker> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
             this.copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
+            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
@@ -42,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
             {
                 var errorMessage = "Failed to copy log.";
-                LogError(job, errorMessage);
+                _logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage), null);
             }
 
@@ -55,11 +57,11 @@ namespace WitsmlExplorer.Api.Workers
             if (copyLogDataResultTask.Status == TaskStatus.Faulted)
             {
                 var errorMessage = "Failed to copy log data.";
-                LogError(job, errorMessage);
+                _logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage), null);
             }
 
-            Log.Information("{JobType} - Job successful. Log object copied", GetType().Name);
+            _logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
             var copiedLogsMessage = sourceLogs.Length == 1 ? $"Log object {sourceLogs[0].Name}" : $"{sourceLogs.Length} logs" + $" copied to: {targetWellbore.Name}";
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, copiedLogsMessage);
@@ -111,26 +113,16 @@ namespace WitsmlExplorer.Api.Workers
 
             var copyLogDataJob = new CopyLogDataJob
             {
-                SourceLogCurvesReference = new LogCurvesReference
+                Source = new LogCurvesReference
                 {
                     LogReference = sourceLogReference,
                     Mnemonics = targetLog.LogData.MnemonicList.Split(",")
                 },
-                TargetLogReference = targetLogReference
+                Target = targetLogReference
             };
             var json = JsonSerializer.Serialize(copyLogDataJob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             return new MemoryStream(Encoding.UTF8.GetBytes(json));
         }
 
-        private static void LogError(CopyLogJob job, string errorMessage)
-        {
-
-            Log.Error("{ErrorMessage} " +
-                      "Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceLogUid}. " +
-                      "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
-                errorMessage,
-                job.Source.LogReferenceList.FirstOrDefault()?.WellUid, job.Source.LogReferenceList.FirstOrDefault()?.WellboreUid, job.Source.LogReferenceList.FirstOrDefault()?.LogUid,
-                job.Target.WellUid, job.Target.WellboreUid);
-        }
     }
 }

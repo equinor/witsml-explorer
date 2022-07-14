@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Witsml;
 using Witsml.Data.Tubular;
@@ -31,7 +32,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            copyTubularComponentWorker = new CopyTubularComponentsWorker(witsmlClientProvider.Object);
+            var logger = new Mock<ILogger<CopyTubularComponentsWorker>>();
+            copyTubularComponentWorker = new CopyTubularComponentsWorker(logger.Object, witsmlClientProvider.Object);
         }
 
         [Fact]

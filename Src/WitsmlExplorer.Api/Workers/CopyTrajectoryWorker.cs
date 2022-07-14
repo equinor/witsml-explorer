@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, result.Reason), null);
             }
 
-            _logger.LogInformation("{JobType} - Job successful. {Description}}", GetType().Name, job.Description());
+            _logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Trajectory {trajectory.Name} copied to: {targetWellbore.Name}");
 

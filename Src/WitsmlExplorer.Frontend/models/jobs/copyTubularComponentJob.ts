@@ -3,8 +3,8 @@ import Tubular from "../tubular";
 import TubularReference from "./tubularReference";
 
 export interface CopyTubularComponentJob {
-  sourceTubularComponentReferences: TubularComponentReferences;
-  targetTubularReference: TubularReference;
+  source: TubularComponentReferences;
+  target: TubularReference;
 }
 
 export interface TubularComponentReferences {
@@ -51,8 +51,8 @@ export function createTubularComponentReferences(tubularComponents: TubularCompo
 
 export function createCopyTubularComponentJob(sourceTubularComponentReferences: TubularComponentReferences, target: Tubular): CopyTubularComponentJob {
   return {
-    sourceTubularComponentReferences,
-    targetTubularReference: {
+    source: sourceTubularComponentReferences,
+    target: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,
       tubularUid: target.uid

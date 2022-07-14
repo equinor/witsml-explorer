@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Witsml;
 using Witsml.Data;
@@ -29,8 +30,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static readonly Dictionary<string, string[]> SourceMnemonics = new()
         {
-            {WitsmlLog.WITSML_INDEX_TYPE_MD, new[] {"Depth", "DepthBit", "DepthHole"}},
-            {WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new[] {"Time", "DepthBit", "DepthHole"}}
+            { WitsmlLog.WITSML_INDEX_TYPE_MD, new[] { "Depth", "DepthBit", "DepthHole" } },
+            { WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new[] { "Time", "DepthBit", "DepthHole" } }
         };
 
         private const string TimeStart = "2019-11-01T21:01:00.000Z";
@@ -45,7 +46,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             copyLogDataWorker = new Mock<ICopyLogDataWorker>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            copyLogWorker = new CopyLogWorker(witsmlClientProvider.Object, copyLogDataWorker.Object);
+            var logger = new Mock<ILogger<CopyLogWorker>>();
+            copyLogWorker = new CopyLogWorker(logger.Object, witsmlClientProvider.Object, copyLogDataWorker.Object);
         }
 
         [Fact]

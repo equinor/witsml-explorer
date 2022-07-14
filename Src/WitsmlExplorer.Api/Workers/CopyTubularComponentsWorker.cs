@@ -24,7 +24,8 @@ namespace WitsmlExplorer.Api.Workers
         public CopyTubularComponentsWorker(ILogger<CopyTubularComponentsWorker> logger, IWitsmlClientProvider witsmlClientProvider)
         {
             witsmlClient = witsmlClientProvider.GetClient();
-            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient; _logger = logger;
+            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
+            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)
@@ -40,7 +41,7 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, copyResult.Reason), null);
             }
 
-            _logger.LogInformation("{JobType} - Job successful. {Description}}", GetType().Name, job.Description());
+            _logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"TubularComponents {tubularComponentsString} copied to: {targetTubular.Name}");
 
