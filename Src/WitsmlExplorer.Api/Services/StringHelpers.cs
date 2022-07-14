@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentException($"Value is null er empty: {input}");
-            var isDecimal = decimal.TryParse(input, NumberStyles.Any, CultureInfo.CurrentCulture, out var value);
+            var isDecimal = decimal.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out var value);
 
             return isDecimal ? value : throw new ArgumentException($"Input is not compatible to be parsed to a decimal value: {input}");
         }
@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentException($"Value is null er empty: {input}");
-            var isDouble = double.TryParse(input, NumberStyles.Any, CultureInfo.CurrentCulture, out var value);
+            var isDouble = double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out var value);
 
             return isDouble ? value : throw new ArgumentException($"Input is not compatible to be parsed to a double value: {input}");
         }
