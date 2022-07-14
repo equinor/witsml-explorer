@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -18,20 +19,14 @@ namespace WitsmlExplorer.Api.Services
             if (input == "1")
                 return true;
 
-            bool.TryParse(input, out var value);
+            var isBoolean = bool.TryParse(input, out var value);
 
-            return value;
+            return isBoolean ? value : throw new ArgumentException($"Input is not compatible to be parsed to a bool value: {input}");
         }
 
         public static bool ToBoolean(string input)
         {
-            if (string.IsNullOrEmpty(input))
-                throw new ArgumentException($"Value is null er empty: {input}");
-            var isBoolean = bool.TryParse(input, out var value);
-            if (isBoolean)
-                return value;
-
-            throw new ArgumentException($"Input is not compatible to be parsed to a boolean value: {input}");
+            return ToBooleanSafe(input);
         }
 
         public static DateTime? ToDateTime(string input)
@@ -39,21 +34,26 @@ namespace WitsmlExplorer.Api.Services
             if (string.IsNullOrEmpty(input))
                 return null;
             var isDateTime = DateTime.TryParse(input, out var value);
-            if (isDateTime)
-                return value;
 
-            throw new ArgumentException($"Input is not compatible to be parsed to a DateTime value: {input}");
+            return isDateTime ? value : throw new ArgumentException($"Input is not compatible to be parsed to a DateTime value: {input}");
         }
 
         public static decimal ToDecimal(string input)
         {
             if (string.IsNullOrEmpty(input))
                 throw new ArgumentException($"Value is null er empty: {input}");
-            var isDecimal = decimal.TryParse(input, out var value);
-            if (isDecimal)
-                return value;
+            var isDecimal = decimal.TryParse(input, NumberStyles.Any, CultureInfo.CurrentCulture, out var value);
 
-            throw new ArgumentException($"Input is not compatible to be parsed to a decimal value: {input}");
+            return isDecimal ? value : throw new ArgumentException($"Input is not compatible to be parsed to a decimal value: {input}");
         }
+        public static double ToDouble(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                throw new ArgumentException($"Value is null er empty: {input}");
+            var isDouble = double.TryParse(input, NumberStyles.Any, CultureInfo.CurrentCulture, out var value);
+
+            return isDouble ? value : throw new ArgumentException($"Input is not compatible to be parsed to a double value: {input}");
+        }
+
     }
 }
