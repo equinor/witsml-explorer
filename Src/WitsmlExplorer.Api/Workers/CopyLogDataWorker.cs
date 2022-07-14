@@ -25,13 +25,11 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyLogData;
-        private readonly ILogger<CopyLogDataWorker> _logger;
 
-        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataWorker> logger = null)
+        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
-            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
@@ -56,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers
             catch (Exception e)
             {
                 var errorMessage = "Failed to copy log data.";
-                _logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
+                Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
@@ -75,7 +73,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             var totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
-            _logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
+            Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"{totalRowsCopied} rows copied");
             var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.LogUid, RefreshType.Update);
             return (workerResult, refreshAction);
@@ -83,7 +81,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
         {
-            _logger.LogError("{message} - {Description}", message, job.Description());
+            Logger.LogError("{message} - {Description}", message, job.Description());
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
@@ -109,7 +107,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    _logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), startIndex.GetValueAsString());
+                    Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), startIndex.GetValueAsString());
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied };
                 }
             }
@@ -135,7 +133,7 @@ namespace WitsmlExplorer.Api.Workers
                 if (!result.IsSuccessful)
                 {
                     var newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
-                    _logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
+                    Logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
                               "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetLogUid}. ",
                         newMnemonics, targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
                 }

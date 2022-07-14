@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTubularWorker>>();
+            var logger = new Mock<ILogger<CopyTubularJob>>();
             copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object);
         }
 

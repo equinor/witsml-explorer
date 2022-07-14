@@ -9,10 +9,10 @@ namespace WitsmlExplorer.Api.Workers
 {
     public abstract class BaseWorker<T>
     {
-        protected readonly ILogger<BaseWorker<T>> _logger;
-        public BaseWorker(ILogger<BaseWorker<T>> logger = null)
+        protected readonly ILogger<T> Logger;
+        public BaseWorker(ILogger<T> logger = null)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<(WorkerResult, RefreshAction)> Execute(Stream jobStream)
@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers
             }
             catch (Exception ex)
             {
-                _logger.LogError("An unexpected exception has occured: {ex}", ex);
+                Logger.LogError("An unexpected exception has occured: {ex}", ex);
                 throw;
             }
         }

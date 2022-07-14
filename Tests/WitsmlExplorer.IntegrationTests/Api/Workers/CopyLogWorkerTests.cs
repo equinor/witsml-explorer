@@ -31,10 +31,10 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             client = witsmlClientProvider.GetClient();
             var loggerFactory = (ILoggerFactory) new LoggerFactory();
-            var logger = loggerFactory.CreateLogger<CopyLogDataWorker>();
+            var logger = loggerFactory.CreateLogger<CopyLogDataJob>();
             var copyLogDataWorker = new CopyLogDataWorker(witsmlClientProvider, logger);
             var loggerFactory2 = (ILoggerFactory) new LoggerFactory();
-            var logger2 = loggerFactory2.CreateLogger<CopyLogWorker>();
+            var logger2 = loggerFactory2.CreateLogger<CopyLogJob>();
             worker = new CopyLogWorker(logger2, witsmlClientProvider, copyLogDataWorker);
             deleteLogsWorker = new DeleteLogObjectsWorker(witsmlClientProvider);
             logObjectService = new LogObjectService(witsmlClientProvider);

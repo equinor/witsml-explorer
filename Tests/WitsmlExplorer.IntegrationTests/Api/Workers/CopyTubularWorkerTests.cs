@@ -19,7 +19,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             var loggerFactory = (ILoggerFactory) new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CopyTubularWorker>();
+            var logger = loggerFactory.CreateLogger<CopyTubularJob>();
             worker = new CopyTubularWorker(logger, witsmlClientProvider);
         }
 

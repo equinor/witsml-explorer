@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTubularComponentsWorker>>();
+            var logger = new Mock<ILogger<CopyTubularComponentsJob>>();
             copyTubularComponentWorker = new CopyTubularComponentsWorker(logger.Object, witsmlClientProvider.Object);
         }
 
@@ -68,7 +68,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return updatedTubulars;
         }
 
-        private CopyTubularComponentsJob CreateJobTemplate()
+        private static CopyTubularComponentsJob CreateJobTemplate()
         {
             return new CopyTubularComponentsJob
             {

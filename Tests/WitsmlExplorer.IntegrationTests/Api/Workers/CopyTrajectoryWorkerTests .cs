@@ -25,7 +25,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             client = witsmlClientProvider.GetClient();
             var loggerFactory = (ILoggerFactory) new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CopyTrajectoryWorker>();
+            var logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
 
             worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
             deleteLogWorker = new DeleteTrajectoryWorker(witsmlClientProvider);

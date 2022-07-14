@@ -20,13 +20,11 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTubular;
-        private readonly ILogger<CopyTubularWorker> _logger;
 
-        public CopyTubularWorker(ILogger<CopyTubularWorker> logger, IWitsmlClientProvider witsmlClientProvider)
+        public CopyTubularWorker(ILogger<CopyTubularJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
-            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularJob job)
@@ -44,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers
                 var tubular = query.Tubulars.First();
                 if (result.IsSuccessful)
                 {
-                    _logger.LogInformation(
+                    Logger.LogInformation(
                     "Copied tubular successfully, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
                     "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
@@ -53,7 +51,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    _logger.LogError(
+                    Logger.LogError(
                     "Failed to copy tubular, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
                     "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
                     job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,

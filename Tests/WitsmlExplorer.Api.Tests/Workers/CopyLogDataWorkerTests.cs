@@ -28,10 +28,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string SourceLogUid = "sourceLogUid";
         private const string TargetLogUid = "targetLogUid";
 
-        private static readonly Dictionary<string, string[]> SourceMnemonics = new Dictionary<string, string[]>
+        private static readonly Dictionary<string, string[]> SourceMnemonics = new()
         {
-            {WitsmlLog.WITSML_INDEX_TYPE_MD, new[] {"Depth", "DepthBit", "DepthHole"}},
-            {WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new[] {"Time", "DepthBit", "DepthHole"}}
+            { WitsmlLog.WITSML_INDEX_TYPE_MD, new[] { "Depth", "DepthBit", "DepthHole" } },
+            { WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new[] { "Time", "DepthBit", "DepthHole" } }
         };
 
         private const string TimeStart = "2019-11-01T21:01:00.000Z";
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyLogDataWorker>>();
+            var logger = new Mock<ILogger<CopyLogDataJob>>();
             worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object);
         }
 

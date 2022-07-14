@@ -18,13 +18,11 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTrajectory;
-        private readonly ILogger<CopyTrajectoryWorker> _logger;
 
-        public CopyTrajectoryWorker(ILogger<CopyTrajectoryWorker> logger, IWitsmlClientProvider witsmlClientProvider)
+        public CopyTrajectoryWorker(ILogger<CopyTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
-            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryJob job)
@@ -35,11 +33,11 @@ namespace WitsmlExplorer.Api.Workers
             if (!result.IsSuccessful)
             {
                 var errorMessage = "Failed to copy trajectory.";
-                _logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
+                Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, result.Reason), null);
             }
 
-            _logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
+            Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Trajectory {trajectory.Name} copied to: {targetWellbore.Name}");
 

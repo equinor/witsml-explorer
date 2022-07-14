@@ -19,13 +19,11 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlClient;
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTubularComponents;
-        private readonly ILogger<CopyTubularComponentsWorker> _logger;
 
-        public CopyTubularComponentsWorker(ILogger<CopyTubularComponentsWorker> logger, IWitsmlClientProvider witsmlClientProvider)
+        public CopyTubularComponentsWorker(ILogger<CopyTubularComponentsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
-            _logger = logger;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)
@@ -37,11 +35,11 @@ namespace WitsmlExplorer.Api.Workers
             if (!copyResult.IsSuccessful)
             {
                 var errorMessage = "Failed to copy tubular components.";
-                _logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
+                Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, copyResult.Reason), null);
             }
 
-            _logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
+            Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"TubularComponents {tubularComponentsString} copied to: {targetTubular.Name}");
 

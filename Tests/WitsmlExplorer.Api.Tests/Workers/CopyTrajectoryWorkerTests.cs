@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTrajectoryWorker>>();
+            var logger = new Mock<ILogger<CopyTrajectoryJob>>();
             copyTrajectoryWorker = new CopyTrajectoryWorker(logger.Object, witsmlClientProvider.Object);
         }
 
@@ -97,7 +97,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private WitsmlTrajectories GetSourceTrajectories()
+        private static WitsmlTrajectories GetSourceTrajectories()
         {
             var witsmlTrajectory = new WitsmlTrajectory
             {
