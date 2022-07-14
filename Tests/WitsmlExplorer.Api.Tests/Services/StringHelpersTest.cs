@@ -47,37 +47,11 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void Parse_Decimal_CurrentCulture()
-        {
-            CultureInfo.CurrentCulture = new CultureInfo("nb-NO");
-            var valid = new List<string> { "1", "1,1" };
-            var parsed = new List<decimal> { new decimal(1.0), new decimal(1.1) };
-
-            foreach (var (v, p) in valid.Zip(parsed))
-            {
-                Assert.Equal(StringHelpers.ToDecimal(v), p);
-            }
-        }
-
-        [Fact]
         public void Parse_Double_InvariantCulture()
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             var valid = new List<string> { "1", "1.1" };
             var parsed = new List<double> { 1.0, 1.1 };
-
-            foreach (var (v, p) in valid.Zip(parsed))
-            {
-                Assert.Equal(StringHelpers.ToDouble(v), p);
-            }
-        }
-
-        [Fact]
-        public void Parse_Double_CurrentCulture()
-        {
-            CultureInfo.CurrentCulture = new CultureInfo("nb-NO");
-            var valid = new List<string> { "1", "1,1" };
-            var parsed = new List<double> { 1, 1.1 };
 
             foreach (var (v, p) in valid.Zip(parsed))
             {
