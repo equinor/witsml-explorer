@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-
 using WitsmlExplorer.Api.Services;
-
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Services
