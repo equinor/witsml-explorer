@@ -5,19 +5,19 @@ namespace Witsml.Data
     public class WitsmlBhaRun
     {
         [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
+        public string WellUid { get; set; }
 
         [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
+        public string WellboreUid { get; set; }
 
         [XmlAttribute("uid")]
         public string Uid { get; set; }
 
         [XmlElement("nameWell")]
-        public string NameWell { get; set; }
+        public string WellName { get; set; }
 
         [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
+        public string WellboreName { get; set; }
 
         [XmlElement("name")]
         public string Name { get; set; }
