@@ -140,7 +140,7 @@ const Divider = styled.div`
 const ContentViewLayout = styled.div`
   grid-area: content;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   height: 93vh;
   width: 100vw;
 `;

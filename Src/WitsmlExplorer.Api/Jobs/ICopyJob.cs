@@ -11,8 +11,8 @@ namespace WitsmlExplorer.Api.Jobs
         public string Description()
         {
             var jobDesc = new StringBuilder();
-            jobDesc.Append($"\nSource: {Source.Description()}");
-            jobDesc.Append($"\nTarget: {Target.Description()}");
+            jobDesc.Append($"\t\nSource: {Source.Description()}");
+            jobDesc.Append($"\t\nTarget: {Target.Description()}");
             return jobDesc.ToString();
         }
 

@@ -1,31 +1,53 @@
+import Measure from "./measure";
+
 export default interface Rig {
-  airGap: string;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
+  airGap: Measure;
+  approvals: string;
+  classRig: string;
+  dtimEndOp: Date;
+  dTimStartOp: Date;
+  emailAddress: string;
+  faxNumber: string;
   itemState?: string;
+  isOffshore?: boolean;
+  manufacturer: string;
   name: string;
+  nameContact: string;
   owner: string;
+  ratingDrillDepth: Measure;
+  ratingWaterDepth: Measure;
+  registration: string;
+  telNumber: string;
   typeRig: string;
   uid: string;
-  wellboreName?: string;
   wellboreUid: string;
-  wellName?: string;
   wellUid: string;
+  yearEntService: string;
 }
 
 export function emptyRig(): Rig {
   return {
-    airGap: "",
-    dateTimeCreation: null,
-    dateTimeLastChange: null,
+    airGap: null,
+    approvals: "",
+    classRig: "",
+    dTimStartOp: null,
+    dtimEndOp: null,
+    emailAddress: "",
+    faxNumber: "",
     itemState: "",
+    isOffshore: null,
+    manufacturer: "",
     name: "",
+    nameContact: "",
     owner: "",
+    ratingDrillDepth: null,
+    ratingWaterDepth: null,
+    registration: "",
     typeRig: "",
+    telNumber: "",
     uid: "",
-    wellboreName: "",
     wellboreUid: "",
-    wellName: "",
-    wellUid: ""
+    wellUid: "",
+    yearEntService: ""
   };
 }

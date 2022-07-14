@@ -23,6 +23,7 @@ namespace WitsmlExplorer.Api
         private readonly IRigService rigService;
         private readonly ITrajectoryService trajectoryService;
         private readonly ITubularService tubularService;
+        private readonly IWbGeometryService wbGeometryService;
         private readonly IWellboreService wellboreService;
         private readonly IWellService wellService;
         private readonly IRiskService riskService;
@@ -41,7 +42,8 @@ namespace WitsmlExplorer.Api
             IJobService jobService,
             IRiskService riskService,
             IMudLogService mudLogService,
-            IDocumentRepository<Server, Guid> witsmlServerRepository)
+            IDocumentRepository<Server, Guid> witsmlServerRepository,
+            IWbGeometryService wbGeometryService)
         {
             this.credentialsService = credentialsService;
             this.wellService = wellService;
@@ -55,6 +57,7 @@ namespace WitsmlExplorer.Api
             this.riskService = riskService;
             this.mudLogService = mudLogService;
             this.witsmlServerRepository = witsmlServerRepository;
+            this.wbGeometryService = wbGeometryService;
 
             Get("/api/witsml-servers", GetWitsmlServers);
             Post("/api/witsml-servers", CreateWitsmlServer);
@@ -73,6 +76,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", GetRigsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", GetTrajectory);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", GetTubulars);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", GetTubular);
@@ -80,6 +84,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", GetWbGeometrysForWellbore);
 
             //Get Requests exceeding the URL limit
             Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
@@ -258,6 +263,15 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(trajectories);
         }
 
+        private async Task GetTrajectory(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var trajectoryUid = httpRequest.RouteValues.As<string>("trajectoryUid");
+            var trajectories = await trajectoryService.GetTrajectory(wellUid, wellboreUid, trajectoryUid);
+            await httpResponse.AsJson(trajectories);
+        }
+
         private async Task GetTrajectoryStations(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
@@ -299,6 +313,14 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var risks = await riskService.GetRisks(wellUid, wellboreUid);
             await httpResponse.AsJson(risks);
+        }
+
+        private async Task GetWbGeometrysForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var wbGeometrys = await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid);
+            await httpResponse.AsJson(wbGeometrys);
         }
 
         private async Task GetMudLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
