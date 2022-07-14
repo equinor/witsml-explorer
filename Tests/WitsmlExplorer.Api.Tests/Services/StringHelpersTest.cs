@@ -19,7 +19,6 @@ namespace WitsmlExplorer.Api.Tests.Services
             {
                 Assert.False(StringHelpers.ToBoolean(ele));
             }
-
         }
 
         [Fact]
@@ -30,7 +29,6 @@ namespace WitsmlExplorer.Api.Tests.Services
             {
                 Assert.True(StringHelpers.ToBoolean(ele));
             }
-
         }
 
         [Fact]
