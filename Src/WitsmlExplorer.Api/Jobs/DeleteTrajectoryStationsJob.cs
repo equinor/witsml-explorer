@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record DeleteTrajectoryStationJob
+    public record DeleteTrajectoryStationsJob
     {
         public TrajectoryReference Trajectory { get; init; }
         public IEnumerable<string> Uids { get; init; }
