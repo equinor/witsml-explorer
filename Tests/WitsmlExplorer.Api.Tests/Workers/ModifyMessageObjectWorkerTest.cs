@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyMessageObjectWorkerTest
     {
-        private ModifyMessageWorker worker;
+        private readonly ModifyMessageWorker worker;
         private readonly Mock<IWitsmlClient> witsmlClient;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
