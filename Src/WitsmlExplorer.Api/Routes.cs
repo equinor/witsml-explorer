@@ -32,6 +32,7 @@ namespace WitsmlExplorer.Api
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
+            IBhaRunService bhaRunService,
             ICredentialsService credentialsService,
             IWellService wellService,
             IWellboreService wellboreService,
@@ -46,6 +47,7 @@ namespace WitsmlExplorer.Api
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             IWbGeometryService wbGeometryService)
         {
+            this.bhaRunService = bhaRunService;
             this.credentialsService = credentialsService;
             this.wellService = wellService;
             this.wellboreService = wellboreService;
