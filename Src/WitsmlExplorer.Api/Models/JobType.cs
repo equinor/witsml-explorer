@@ -16,7 +16,6 @@ namespace WitsmlExplorer.Api.Models
         DeleteMnemonics,
         DeleteTrajectory,
         DeleteTrajectoryStations,
-
         DeleteTubular,
         DeleteTubularComponents,
         DeleteWell,

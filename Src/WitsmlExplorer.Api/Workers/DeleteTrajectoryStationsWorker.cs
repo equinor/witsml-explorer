@@ -26,24 +26,24 @@ namespace WitsmlExplorer.Api.Workers
             var wellUid = job.Trajectory.WellUid;
             var wellboreUid = job.Trajectory.WellboreUid;
             var trajectoryUid = job.Trajectory.TrajectoryUid;
-            var trajectoryStation = new ReadOnlyCollection<string>(job.Uids.ToList());
-            var trajectoryStationString = string.Join(", ", trajectoryStation);
+            var trajectoryStations = new ReadOnlyCollection<string>(job.Uids.ToList());
+            var trajectoryStationsString = string.Join(", ", trajectoryStations);
 
-            var query = TrajectoryQueries.DeleteTrajectoryStations(wellUid, wellboreUid, trajectoryUid, trajectoryStation);
+            var query = TrajectoryQueries.DeleteTrajectoryStations(wellUid, wellboreUid, trajectoryUid, trajectoryStations);
             var result = await witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
                 var refreshAction = new RefreshTrajectory(witsmlClient.GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted trajectoryStation: {trajectoryStationString} for trajectory: {trajectoryUid}");
+                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted trajectoryStations: {trajectoryStationsString} for trajectory: {trajectoryUid}");
                 return (workerResult, refreshAction);
             }
 
-            Log.Error("Failed to delete trajectoryStation for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStation: {TrajectoryStationString}",
+            Log.Error("Failed to delete trajectoryStations for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStations: {TrajectoryStationsString}",
                 wellUid,
                 wellboreUid,
                 trajectoryUid,
-                trajectoryStation);
+                trajectoryStations);
 
             query = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
             var queryResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
@@ -54,7 +54,6 @@ namespace WitsmlExplorer.Api.Workers
             {
                 description = new EntityDescription
                 {
-                    //TODO: this might be wrong names
                     WellName = trajectory.NameWell,
                     WellboreName = trajectory.NameWellbore,
                     ObjectName = trajectory.Name
