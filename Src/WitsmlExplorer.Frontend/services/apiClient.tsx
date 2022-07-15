@@ -3,17 +3,24 @@ import CredentialsService, { ServerCredentials } from "./credentialsService";
 
 export default class ApiClient {
   static getCommonHeaders(credentials: ServerCredentials[]): HeadersInit {
-    const hasCredentials = credentials[0] !== undefined && credentials[0].password !== undefined;
+    const hasCredentials =
+      credentials[0] !== undefined && credentials[0].password !== undefined;
     return {
       "Content-Type": "application/json",
-      ...(hasCredentials ? { Authorization: this.createAuthorizationString(credentials) } : {}),
+      ...(hasCredentials
+        ? { Authorization: this.createAuthorizationString(credentials) }
+        : {}),
       "Witsml-ServerUrl": credentials[0]?.server?.url.toString() ?? "",
       "Witsml-Source-ServerUrl": credentials[1]?.server?.url.toString() ?? ""
     };
   }
 
-  private static createAuthorizationString(credentials: ServerCredentials[]): string {
-    const credentialsStrings = credentials.map(({ username, password }) => `${username}:${password}`);
+  private static createAuthorizationString(
+    credentials: ServerCredentials[]
+  ): string {
+    const credentialsStrings = credentials.map(
+      ({ username, password }) => `${username}:${password}`
+    );
     return "Basic " + btoa(credentialsStrings.join(":"));
   }
 
@@ -25,7 +32,7 @@ export default class ApiClient {
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
@@ -42,41 +49,60 @@ export default class ApiClient {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
   }
 
-  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+  public static async patch(
+    pathName: string,
+    body: string,
+    abortSignal: AbortSignal | null = null,
+    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
+  ): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
     const requestInit = {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
   }
 
-  public static async delete(pathName: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+  public static async delete(
+    pathName: string,
+    abortSignal: AbortSignal | null = null,
+    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
+  ): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
     const requestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig) {
+  private static runHttpRequest(
+    pathName: string,
+    requestInit: RequestInit,
+    authConfig: AuthConfig
+  ) {
     return new Promise<Response>((resolve, reject) => {
-      if (authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED && !("Authorization" in requestInit.headers)) {
+      if (
+        authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED &&
+        !("Authorization" in requestInit.headers)
+      ) {
         reject("Not authorized");
       }
 
-      const url = new URL(ApiClient.getBasePathName() + pathName, ApiClient.getBaseUrl());
+      const url = new URL(
+        ApiClient.getBasePathName() + pathName,
+        ApiClient.getBaseUrl()
+      );
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
