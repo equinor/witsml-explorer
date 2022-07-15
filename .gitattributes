@@ -11,6 +11,8 @@
 *.css text diff=css eol=lf
 *.scss text eol=lf
 *.js text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
 
 # Make sure npm package files use LF
 package.json text eol=lf
@@ -25,12 +27,16 @@ package.json text eol=lf
 # Treat as text files
 .gitattributes text eol=lf
 .gitignore text eol=lf
+.dockerignore text eol=lf
+.prettierignore text eol=lf
+.editorconfig text eol=lf
 *.txt text eol=lf
 *.md text eol=lf
 *.config text eol=lf
 *.xml text eol=lf
 VERSION text eol=lf
 LICENSE text eol=lf
+Dockerfile* text eol=lf
 
 # Special Swagger related files
 ApiClient.cs binary
