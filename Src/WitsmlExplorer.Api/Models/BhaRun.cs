@@ -25,6 +25,5 @@ namespace WitsmlExplorer.Api.Models
         public string ReasonTrip { get; set; }
         public string ObjectiveBha { get; set; }
         public CommonData CommonData { get; set; }
-
     }
 }

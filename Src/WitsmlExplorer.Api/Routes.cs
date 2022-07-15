@@ -151,7 +151,6 @@ namespace WitsmlExplorer.Api
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var bhaRunUid = httpRequest.RouteValues.As<string>("bhaRunUid");
-
             var bhaRun = await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid);
             await httpResponse.AsJson(bhaRun);
         }
