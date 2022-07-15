@@ -23,5 +23,6 @@ namespace WitsmlExplorer.Api.Workers
             var result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
             return !result.Logs.Any() ? null : result.Logs.First();
         }
+
     }
 }

@@ -3,8 +3,8 @@ import LogObject from "../logObject";
 import { LogCurveInfoRow } from "../../components/ContentViews/LogCurveInfoListView";
 
 export interface CopyLogDataJob {
-  sourceLogCurvesReference: LogCurvesReference;
-  targetLogReference: LogReference;
+  source: LogCurvesReference;
+  target: LogReference;
 }
 
 export interface LogCurvesReference {
@@ -51,8 +51,8 @@ export function createLogCurvesReference(logCurveInfoRows: LogCurveInfoRow[], so
 
 export function createCopyLogDataJob(sourceLogCurvesReference: LogCurvesReference, target: LogObject): CopyLogDataJob {
   return {
-    sourceLogCurvesReference,
-    targetLogReference: {
+    source: sourceLogCurvesReference,
+    target: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,
       logUid: target.uid

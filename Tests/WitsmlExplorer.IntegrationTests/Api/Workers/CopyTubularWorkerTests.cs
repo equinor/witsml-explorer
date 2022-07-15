@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
@@ -15,7 +17,10 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            worker = new CopyTubularWorker(witsmlClientProvider);
+            var loggerFactory = (ILoggerFactory) new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<CopyTubularJob>();
+            worker = new CopyTubularWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]

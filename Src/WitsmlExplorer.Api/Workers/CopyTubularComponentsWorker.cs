@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Witsml;
 using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTubularComponents;
 
-        public CopyTubularComponentsWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CopyTubularComponentsWorker(ILogger<CopyTubularComponentsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
@@ -35,17 +35,11 @@ namespace WitsmlExplorer.Api.Workers
             if (!copyResult.IsSuccessful)
             {
                 var errorMessage = "Failed to copy tubular components.";
-                Log.Error(
-                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, Uid: {SourceTubularUid}. " +
-                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetTubularUid} " +
-                    "Tubular Component Uids: {tubularComponentsString}",
-                    errorMessage,
-                    job.Source.TubularReference.WellUid, job.Source.TubularReference.WellboreUid, job.Source.TubularReference.TubularUid,
-                    job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, tubularComponentsString);
+                Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, copyResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. TubularComponents copied", GetType().Name);
+            Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.TubularUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"TubularComponents {tubularComponentsString} copied to: {targetTubular.Name}");
 
