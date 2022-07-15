@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
+using System.Linq;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Jobs.Common;
 using System.Globalization;
@@ -55,6 +56,23 @@ namespace WitsmlExplorer.Api.Query
             trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
             var copyTrajectoryQuery = new WitsmlTrajectories { Trajectories = new List<WitsmlTrajectory> { trajectory } };
             return copyTrajectoryQuery;
+        }
+
+        public static WitsmlTrajectories DeleteTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid, IEnumerable<string> trajectoryStationUids)
+        {
+            return new WitsmlTrajectories
+            {
+                Trajectories = new WitsmlTrajectory
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = trajectoryUid,
+                    TrajectoryStations = trajectoryStationUids.Select(uid => new WitsmlTrajectoryStation
+                    {
+                        Uid = uid
+                    }).ToList()
+                }.AsSingletonList()
+            };
         }
         public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
         {
