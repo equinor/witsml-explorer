@@ -2,12 +2,13 @@ root = true
 
 # All files
 [*]
-indent_style = space
 charset = UTF-8
 end_of_line = LF
 indent_size = 2
+indent_style = space
 trim_trailing_whitespace = true
 insert_final_newline = true
+max_line_length = 180
 
 [*.md]
 trim_trailing_whitespace = false
