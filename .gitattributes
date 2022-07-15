@@ -1,19 +1,18 @@
-# Autodetect text files
-* text=auto
-
 # Do not change these
 *.jpg binary
 *.png binary
 *.gif binary
 
 # Normalize these files
-*.cs text diff=csharp
-*.json text
-*.yaml text
-*.html text diff=html
-*.css text diff=css
-*.scss text
-*.js text
+*.cs text diff=csharp eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.html text diff=html eol=lf
+*.css text diff=css eol=lf
+*.scss text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
 
 # Make sure npm package files use LF
 package.json text eol=lf
@@ -26,14 +25,18 @@ package.json text eol=lf
 *.sln text eol=crlf merge=union
 
 # Treat as text files
-.gitattributes text
-.gitignore text
-*.txt text
-*.md text
-*.config text
-*.xml text
-VERSION text
-LICENSE text
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.dockerignore text eol=lf
+.prettierignore text eol=lf
+.editorconfig text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.config text eol=lf
+*.xml text eol=lf
+VERSION text eol=lf
+LICENSE text eol=lf
+Dockerfile* text eol=lf
 
 # Special Swagger related files
 ApiClient.cs binary
