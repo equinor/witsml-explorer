@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Models
         public string ItemState { get; set; }
         public string ServiceCategory { get; set; }
         public string Comments { get; set; }
-        public string AcquisitionTimeZone { get; set; }
+        public DateTime? AcquisitionTimeZone { get; set; }
         public string DefaultDatum { get; set; }
     }
 }

@@ -12,15 +12,15 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string WellboreUid { get; set; }
         public string NumStringRun { get; set; }
-        public string TrajectoryUidRef { get; set; }
+        public string TubularUidRef { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimStop { get; set; }
         public DateTime? DTimStartDrilling { get; set; }
         public DateTime? DTimStopDrilling { get; set; }
         public LengthMeasure PlanDogLeg { get; set; }
-        public LengthMeasure actDogleg { get; set; }
-        public LengthMeasure actDoglegMx { get; set; }
-        public string statusBha { get; set; }
+        public LengthMeasure ActDogleg { get; set; }
+        public LengthMeasure ActDoglegMx { get; set; }
+        public string StatusBha { get; set; }
         public string NumBitRun { get; set; }
         public string ReasonTrip { get; set; }
         public string ObjectiveBha { get; set; }

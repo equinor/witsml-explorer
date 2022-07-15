@@ -35,14 +35,28 @@ namespace WitsmlExplorer.Api.Services
                 WellboreName = witsmlBhaRun.WellboreName,
                 WellboreUid = witsmlBhaRun.WellboreUid,
                 NumStringRun = witsmlBhaRun.NumStringRun,
+                StatusBha = witsmlBhaRun.NumStringRun,
+                NumBitRun = witsmlBhaRun.NumBitRun,
+                ReasonTrip = witsmlBhaRun.ReasonTrip,
+                ObjectiveBha = witsmlBhaRun.ObjectiveBha,
+                TubularUidRef = witsmlBhaRun.Tubular.UidRef,
+                PlanDogLeg = (witsmlBhaRun.PlanDogLeg == null) ? null : new LengthMeasure { Uom = witsmlBhaRun.PlanDogLeg.Uom, Value = decimal.Parse(witsmlBhaRun.PlanDogLeg.Value) },
+                ActDogleg = (witsmlBhaRun.ActDogLeg == null) ? null : new LengthMeasure { Uom = witsmlBhaRun.ActDogLeg.Uom, Value = decimal.Parse(witsmlBhaRun.ActDogLeg.Value) },
+                ActDoglegMx = (witsmlBhaRun.ActDogLegMx == null) ? null : new LengthMeasure { Uom = witsmlBhaRun.ActDogLegMx.Uom, Value = decimal.Parse(witsmlBhaRun.ActDogLegMx.Value) },
                 DTimStart = string.IsNullOrEmpty(witsmlBhaRun.DTimStart) ? null : StringHelpers.ToDateTime(witsmlBhaRun.DTimStart),
                 DTimStop = string.IsNullOrEmpty(witsmlBhaRun.DTimStop) ? null : StringHelpers.ToDateTime(witsmlBhaRun.DTimStop),
+                DTimStartDrilling = string.IsNullOrEmpty(witsmlBhaRun.DTimStartDrilling) ? null : StringHelpers.ToDateTime(witsmlBhaRun.DTimStartDrilling),
+                DTimStopDrilling = string.IsNullOrEmpty(witsmlBhaRun.DTimStopDrilling) ? null : StringHelpers.ToDateTime(witsmlBhaRun.DTimStop),
                 CommonData = new CommonData()
                 {
                     ItemState = witsmlBhaRun.CommonData.ItemState,
                     SourceName = witsmlBhaRun.CommonData.SourceName,
                     DTimLastChange = StringHelpers.ToDateTime(witsmlBhaRun.CommonData.DTimLastChange),
                     DTimCreation = StringHelpers.ToDateTime(witsmlBhaRun.CommonData.DTimCreation),
+                    ServiceCategory = witsmlBhaRun.CommonData.ServiceCategory,
+                    Comments = witsmlBhaRun.CommonData.Comments,
+                    DefaultDatum = witsmlBhaRun.CommonData.DefaultDatum,
+                    AcquisitionTimeZone = StringHelpers.ToDateTime(witsmlBhaRun.CommonData.AcquisitionTimeZone)
                 }
             };
         }
