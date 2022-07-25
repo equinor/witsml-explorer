@@ -21,5 +21,19 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+
+        public static WitsmlBhaRuns GetWitsmlBhaRunByWellbore(string wellUid, string wellboreUid)
+        {
+            return new WitsmlBhaRuns
+            {
+                BhaRuns = new WitsmlBhaRun
+                {
+                    WellboreUid = wellboreUid,
+                    WellUid = wellUid,
+                    Uid = "",
+                    CommonData = new WitsmlCommonData()
+                }.AsSingletonList()
+            };
+        }
     }
 }

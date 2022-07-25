@@ -70,7 +70,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells", GetAllWells);
             Get("/api/wells/{wellUid}", GetWell);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}", GetWellbore);
-            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", GetBhaRun);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", GetBhaRun);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", GetBhaRunsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", GetMessagesForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", GetMessage);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", GetLog);
@@ -155,6 +156,14 @@ namespace WitsmlExplorer.Api
             var bhaRunUid = httpRequest.RouteValues.As<string>("bhaRunUid");
             var bhaRun = await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid);
             await httpResponse.AsJson(bhaRun);
+        }
+
+        private async Task GetBhaRunsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var bhaRuns = await bhaRunService.GetBhaRuns(wellUid, wellboreUid);
+            await httpResponse.AsJson(bhaRuns);
         }
 
         private async Task GetLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
