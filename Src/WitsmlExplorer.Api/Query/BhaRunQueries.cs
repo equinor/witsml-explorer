@@ -20,9 +20,14 @@ namespace WitsmlExplorer.Api.Query
                     Uid = bhaRunUid,
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
+                    WellName = "",
                     WellboreName = "",
                     Name = "",
                     NumStringRun = "",
+                    Tubular = new WitsmlObjectReference
+                    {
+                        UidRef = ""
+                    },
                     DTimStart = "",
                     DTimStop = "",
                     DTimStartDrilling = "",
@@ -35,6 +40,16 @@ namespace WitsmlExplorer.Api.Query
                     ReasonTrip = "",
                     ObjectiveBha = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        ItemState = "",
+                        SourceName = "",
+                        DTimLastChange = "",
+                        DTimCreation = "",
+                        ServiceCategory = "",
+                        Comments = "",
+                        DefaultDatum = "",
+                        AcquisitionTimeZone = ""
+                    }
                 }.AsSingletonList()
             };
         }
@@ -48,9 +63,14 @@ namespace WitsmlExplorer.Api.Query
                     Uid = "",
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
+                    WellName = "",
                     WellboreName = "",
                     Name = "",
                     NumStringRun = "",
+                    Tubular = new WitsmlObjectReference
+                    {
+                        UidRef = ""
+                    },
                     DTimStart = "",
                     DTimStop = "",
                     DTimStartDrilling = "",
@@ -63,6 +83,16 @@ namespace WitsmlExplorer.Api.Query
                     ReasonTrip = "",
                     ObjectiveBha = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        ItemState = "",
+                        SourceName = "",
+                        DTimLastChange = "",
+                        DTimCreation = "",
+                        ServiceCategory = "",
+                        Comments = "",
+                        DefaultDatum = "",
+                        AcquisitionTimeZone = ""
+                    }
                 }.AsSingletonList()
             };
         }

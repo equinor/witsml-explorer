@@ -28,9 +28,6 @@ export const BhaRunsListView = (): React.ReactElement => {
         dTimStop: bhaRun.dTimStop,
         dTimStartDrilling: bhaRun.dTimStartDrilling,
         dTimStopDrilling: bhaRun.dTimStopDrilling,
-        planDogLeg: `${bhaRun.planDogLeg?.value?.toFixed(4) ?? ""} ${bhaRun.planDogLeg?.uom ?? ""}`,
-        actDogLeg: `${bhaRun.actDogLeg?.value?.toFixed(4) ?? ""} ${bhaRun.actDogLeg?.uom ?? ""}`,
-        actDogLegMx: `${bhaRun.actDogLegMx?.value?.toFixed(4) ?? ""} ${bhaRun.actDogLegMx?.uom ?? ""}`,
         bhaRun: bhaRun
       };
     });

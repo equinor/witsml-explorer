@@ -632,9 +632,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
+  const { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
+  const wellboreWithProperties = { ...wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
