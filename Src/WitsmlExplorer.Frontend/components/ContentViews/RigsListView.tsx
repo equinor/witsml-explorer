@@ -1,11 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import Rig from "../../models/rig";
 import NavigationContext from "../../contexts/navigationContext";
 
+import { RigContextMenuProps } from "../ContextMenus/RigContextMenu";
+import OperationContext from "../../contexts/operationContext";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import OperationType from "../../contexts/operationType";
+import RigContextMenu from "../ContextMenus/RigContextMenu";
+
+export interface RigRow extends ContentTableRow, Rig {
+  rig: Rig;
+}
+
 export const RigsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedWellbore } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { dispatchOperation } = useContext(OperationContext);
   const [rigs, setRigs] = useState<Rig[]>([]);
 
   useEffect(() => {
@@ -49,7 +60,13 @@ export const RigsListView = (): React.ReactElement => {
     { property: "dTimEndOp", label: "DateTimeEndOperating", type: ContentType.DateTime }
   ];
 
-  return <ContentTable columns={columns} data={getTableData()} />;
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRigRows: RigRow[]) => {
+    const contextProps: RigContextMenuProps = { checkedRigRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigContextMenu {...contextProps} />, position } });
+  };
+
+  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RigsListView;

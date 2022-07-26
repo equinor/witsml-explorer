@@ -4,6 +4,7 @@ enum EntityType {
   LogObject = "LogObject",
   MessageObjects = "MessageObjects",
   Tubular = "Tubular",
+  Rig = "Rig",
   Risks = "Risks"
 }
 

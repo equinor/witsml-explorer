@@ -1,5 +1,8 @@
 using Witsml.Data;
 using Witsml.Extensions;
+using WitsmlExplorer.Api.Models;
+using Witsml.Data.Measures;
+using System.Globalization;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -66,5 +69,26 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+        public static WitsmlRigs CreateRig(Rig rig)
+        {
+            return new WitsmlRigs
+            {
+                Rigs = new WitsmlRig
+                {
+                    UidWell = rig.UidWell,
+                    NameWell = rig.NameWell,
+                    NameWellbore = rig.NameWellbore,
+                    Uid = rig.Uid,
+                    Name = rig.Name,
+                    TypeRig = rig.TypeRig,
+                    /* TODO: 
+                    * add more attributes
+                    */
+                }.AsSingletonList()
+            };
+        }
+
+
+
     }
 }

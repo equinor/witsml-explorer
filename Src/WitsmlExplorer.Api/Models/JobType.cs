@@ -27,6 +27,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyWell,
         ModifyWellbore,
         ModifyMudLog,
+        ModifyRig,
         ModifyRisk,
         CreateLogObject,
         CreateWell,
