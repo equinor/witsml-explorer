@@ -7,6 +7,7 @@ import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components
 import Tubular from "./tubular";
 import RiskObject from "./riskObject";
 import WbGeometryObject from "./wbGeometry";
+import BhaRun from "./bhaRun";
 
 export interface WellboreProperties {
   uid: string;
@@ -39,6 +40,7 @@ export interface WellboreProperties {
 }
 
 export default interface Wellbore extends WellboreProperties {
+  bhaRuns?: BhaRun[];
   logs?: LogObject[];
   rigs?: Rig[];
   trajectories?: Trajectory[];
@@ -63,6 +65,7 @@ export function emptyWellbore(): Wellbore {
     dateTimeCreation: null,
     dateTimeLastChange: null,
     itemState: "",
+    bhaRuns: [],
     logs: [],
     rigs: [],
     trajectories: [],
@@ -79,6 +82,10 @@ export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore
 
 export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
   return wellbore.wellUid + wellbore.uid;
+};
+
+export const calculateBhaRunGroupId = (wellbore: Wellbore): string => {
+  return calculateWellboreNodeId(wellbore) + "bhaRuns";
 };
 
 export const calculateRigGroupId = (wellbore: Wellbore): string => {

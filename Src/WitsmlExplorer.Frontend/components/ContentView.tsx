@@ -6,6 +6,7 @@ import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { LogsListView } from "./ContentViews/LogsListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
+import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
 import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
@@ -22,6 +23,7 @@ const ContentView = (): React.ReactElement => {
   const {
     selectedWell,
     selectedWellbore,
+    selectedBhaRunGroup,
     selectedLogGroup,
     selectedLogTypeGroup,
     selectedLog,
@@ -49,6 +51,8 @@ const ContentView = (): React.ReactElement => {
         setView(<WellboresListView />);
       } else if (currentSelected === selectedWellbore) {
         setView(<WellboreObjectTypesListView />);
+      } else if (currentSelected === selectedBhaRunGroup) {
+        setView(<BhaRunsListView />);
       } else if (currentSelected === selectedLogGroup) {
         setView(<LogTypeListView />);
       } else if (currentSelected === selectedLogTypeGroup) {
