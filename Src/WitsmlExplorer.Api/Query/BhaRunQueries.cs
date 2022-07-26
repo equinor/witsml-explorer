@@ -45,9 +45,23 @@ namespace WitsmlExplorer.Api.Query
             {
                 BhaRuns = new WitsmlBhaRun
                 {
-                    WellboreUid = wellboreUid,
-                    WellUid = wellUid,
                     Uid = "",
+                    WellUid = wellUid,
+                    WellboreUid = wellboreUid,
+                    WellboreName = "",
+                    Name = "",
+                    NumStringRun = "",
+                    DTimStart = "",
+                    DTimStop = "",
+                    DTimStartDrilling = "",
+                    DTimStopDrilling = "",
+                    PlanDogLeg = new WitsmlAnglePerLengthMeasure(),
+                    ActDogLeg = new WitsmlAnglePerLengthMeasure(),
+                    ActDogLegMx = new WitsmlAnglePerLengthMeasure(),
+                    StatusBha = "",
+                    NumBitRun = "",
+                    ReasonTrip = "",
+                    ObjectiveBha = "",
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
