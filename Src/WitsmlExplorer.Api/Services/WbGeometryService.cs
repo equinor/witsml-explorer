@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -31,6 +33,7 @@ namespace WitsmlExplorer.Api.Services
                     UidWell = wbGeometry.UidWell,
                     Uid = wbGeometry.Uid,
                     UidWellbore = wbGeometry.UidWellbore,
+                    Name = wbGeometry.Name,
                     NameWell = wbGeometry.NameWell,
                     NameWellbore = wbGeometry.NameWellbore,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),

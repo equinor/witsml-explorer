@@ -1,4 +1,5 @@
 using System;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 
@@ -23,8 +24,8 @@ namespace WitsmlExplorer.Api.Models
         public MeasuredDepthCoord MdHoleEnd { get; set; }
         public string TvdHoleStart { get; set; }
         public string TvdHoleEnd { get; set; }
-        public MeasuredDepthCoord MdBitStart { get; set; }
-        public MeasuredDepthCoord MdBitEnd { get; set; }
+        public LengthMeasure MdBitStart { get; set; }
+        public LengthMeasure MdBitEnd { get; set; }
         public string DiaHole { get; set; }
         public string SeverityLevel { get; set; }
         public string ProbabilityLevel { get; set; }

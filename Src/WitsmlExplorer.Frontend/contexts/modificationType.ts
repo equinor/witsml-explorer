@@ -17,8 +17,10 @@ enum ModificationType {
   UpdateServer = "UpdateServer",
   UpdateServerList = "UpdateServerList",
   UpdateTrajectoryOnWellbore = "UpdateTrajectoryOnWellbore",
+  UpdateTrajectoriesOnWellbore = "UpdateTrajectoriesOnWellbore",
   UpdateTubularOnWellbore = "UpdateTubularOnWellbore",
   UpdateTubularsOnWellbore = "UpdateTubularsOnWellbore",
+  UpdateWbGeometrysOnWellbore = "UpdateWbGeometrysOnWellbore",
   UpdateWell = "UpdateWell",
   UpdateWellbore = "UpdateWellbore",
   UpdateWells = "UpdateWells"

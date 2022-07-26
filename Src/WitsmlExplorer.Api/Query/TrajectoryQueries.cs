@@ -1,7 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
+
+using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -51,6 +58,54 @@ namespace WitsmlExplorer.Api.Query
             trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
             var copyTrajectoryQuery = new WitsmlTrajectories { Trajectories = new List<WitsmlTrajectory> { trajectory } };
             return copyTrajectoryQuery;
+        }
+
+        public static WitsmlTrajectories DeleteTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid, IEnumerable<string> trajectoryStationUids)
+        {
+            return new WitsmlTrajectories
+            {
+                Trajectories = new WitsmlTrajectory
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = trajectoryUid,
+                    TrajectoryStations = trajectoryStationUids.Select(uid => new WitsmlTrajectoryStation
+                    {
+                        Uid = uid
+                    }).ToList()
+                }.AsSingletonList()
+            };
+        }
+        public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
+        {
+            var ts = new WitsmlTrajectoryStation
+            {
+                Uid = trajectoryStation.Uid,
+                Md = new WitsmlMeasuredDepthCoord { Uom = trajectoryStation.Md.Uom, Value = trajectoryStation.Md.Value.ToString(CultureInfo.InvariantCulture) },
+                TypeTrajStation = trajectoryStation.TypeTrajStation
+            };
+
+            if (!trajectoryStation.Tvd.Equals(null))
+                ts.Tvd = new WitsmlWellVerticalDepthCoord { Uom = trajectoryStation.Tvd.Uom, Value = trajectoryStation.Tvd.Value.ToString(CultureInfo.InvariantCulture) };
+
+            if (!trajectoryStation.Incl.Equals(null))
+                ts.Incl = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Incl.Uom, Value = trajectoryStation.Incl.Value.ToString(CultureInfo.InvariantCulture) };
+
+            if (!trajectoryStation.Azi.Equals(null))
+                ts.Azi = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
+
+            if (trajectoryStation.DTimStn != null)
+                ts.DTimStn = ((DateTime)trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            return new WitsmlTrajectories
+            {
+                Trajectories = new WitsmlTrajectory
+                {
+                    UidWell = trajectoryReference.WellUid,
+                    UidWellbore = trajectoryReference.WellboreUid,
+                    Uid = trajectoryReference.TrajectoryUid,
+                    TrajectoryStations = ts.AsSingletonList()
+                }.AsSingletonList()
+            };
         }
     }
 }

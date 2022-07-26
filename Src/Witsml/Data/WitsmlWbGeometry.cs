@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data
@@ -14,6 +15,9 @@ namespace Witsml.Data
 
         [XmlAttribute("uid")]
         public string Uid { get; set; }
+
+        [XmlElement("name")]
+        public string Name { get; set; }
 
         [XmlElement("nameWell")]
         public string NameWell { get; set; }

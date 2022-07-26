@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
@@ -21,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient witsmlSourceClient;
         public JobType JobType => JobType.CopyTubular;
 
-        public CopyTubularWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CopyTubularWorker(ILogger<CopyTubularJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             witsmlClient = witsmlClientProvider.GetClient();
             witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
@@ -42,16 +45,18 @@ namespace WitsmlExplorer.Api.Workers
                 var tubular = query.Tubulars.First();
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Job successful", GetType().Name);
+                    Logger.LogInformation(
+                    "Copied tubular successfully, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
+                    "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
+                    job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
+                    job.Target.WellUid, job.Target.WellboreUid);
                     successUids.Add(tubular.Uid);
                 }
                 else
                 {
-                    var errorMessage = "Failed to copy tubular.";
-                    Log.Error(
-                    "{ErrorMessage} Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
+                    Logger.LogError(
+                    "Failed to copy tubular, Source: UidWell: {SourceWellUid}, UidWellbore: {SourceWellboreUid}, TubularUid: {SourceTubularUid}. " +
                     "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
-                    errorMessage,
                     job.Source.WellUid, job.Source.WellboreUid, tubular.Uid,
                     job.Target.WellUid, job.Target.WellboreUid);
                     error = true;

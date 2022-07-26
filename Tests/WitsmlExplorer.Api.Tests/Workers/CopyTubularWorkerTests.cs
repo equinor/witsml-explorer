@@ -1,15 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
@@ -28,7 +34,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            copyTubularWorker = new CopyTubularWorker(witsmlClientProvider.Object);
+            var logger = new Mock<ILogger<CopyTubularJob>>();
+            copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object);
         }
 
         [Fact]

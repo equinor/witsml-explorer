@@ -24,6 +24,7 @@ import MessageObjectService from "../services/messageObjectService";
 import RiskObjectService from "../services/riskObjectService";
 import TubularService from "../services/tubularService";
 import Tubular from "../models/tubular";
+import WbGeometryObjectService from "../services/wbGeometryService";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -101,12 +102,21 @@ const Routing = (): React.ReactElement => {
       const getTubulars = TubularService.getTubulars(selectedWell.uid, wellboreUid, controller.signal);
       const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
       const getRisks = RiskObjectService.getRisks(selectedWell.uid, wellboreUid, controller.signal);
-      const [logs, rigs, trajectories, messages, risks, tubulars] = await Promise.all([getLogs, getRigs, getTrajectories, getMessages, getRisks, getTubulars]);
+      const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(selectedWell.uid, wellboreUid, controller.signal);
+      const [logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+        getLogs,
+        getRigs,
+        getTrajectories,
+        getMessages,
+        getRisks,
+        getTubulars,
+        getWbGeometrys
+      ]);
       const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
       if (wellbore) {
         const selectWellbore: SelectWellboreAction = {
           type: NavigationType.SelectWellbore,
-          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, risks, tubulars }
+          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
         } as SelectWellboreAction;
         dispatchNavigation(selectWellbore);
       } else {

@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -35,8 +38,8 @@ namespace WitsmlExplorer.Console.ListCommands
                 {
                     var bhaRuns = (await GetBhaRuns(settings.WellUid, settings.WellboreUid)).ToList();
 
-                    wellName = bhaRuns.FirstOrDefault()?.NameWell;
-                    wellboreName = bhaRuns.FirstOrDefault()?.NameWellbore;
+                    wellName = bhaRuns.FirstOrDefault()?.WellName;
+                    wellboreName = bhaRuns.FirstOrDefault()?.WellboreName;
 
                     foreach (var bhaRun in bhaRuns.OrderBy(r => r.CommonData.DTimLastChange))
                     {
@@ -73,11 +76,11 @@ namespace WitsmlExplorer.Console.ListCommands
             {
                 BhaRuns = new WitsmlBhaRun
                 {
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
+                    WellUid = wellUid,
+                    WellboreUid = wellboreUid,
                     Uid = "",
-                    NameWell = "",
-                    NameWellbore = "",
+                    WellName = "",
+                    WellboreName = "",
                     Name = "",
                     Tubular = new WitsmlObjectReference
                     {

@@ -4,6 +4,6 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record DeleteRiskJob
     {
-        public RiskReference RiskReference { get; init; }
+        public RiskReferences RiskReferences { get; init; }
     }
 }
