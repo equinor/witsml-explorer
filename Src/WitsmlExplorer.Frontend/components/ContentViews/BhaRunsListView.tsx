@@ -35,7 +35,7 @@ export const BhaRunsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },
-    { property: "tubularUidRef", label: "Tubular", type: ContentType.String },
+    { property: "tubular", label: "Tubular", type: ContentType.String },
     { property: "dTimStart", label: "Date Time start", type: ContentType.DateTime },
     { property: "dTimStop", label: "Date Time stop", type: ContentType.DateTime },
     { property: "dTimStartDrilling", label: "Date Time start drilling", type: ContentType.DateTime },

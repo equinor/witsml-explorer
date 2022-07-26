@@ -9,7 +9,7 @@ export default interface BhaRun {
   wellboreName: string;
   name: string;
   numStringRun: string;
-  tubularUidRef: string;
+  tubular: string;
   dTimStart: Date;
   dTimStop: Date;
   dTimStartDrilling: Date;
