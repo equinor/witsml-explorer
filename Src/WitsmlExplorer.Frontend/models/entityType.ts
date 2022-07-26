@@ -6,7 +6,8 @@ enum EntityType {
   Risks = "Risks",
   Tubular = "Tubular",
   Trajectory = "Trajectory",
-  TrajectoryStation = "TrajectoryStation"
+  TrajectoryStation = "TrajectoryStation",
+  WbGeometryObject = "WbGeometryObject"
 }
 
 export default EntityType;

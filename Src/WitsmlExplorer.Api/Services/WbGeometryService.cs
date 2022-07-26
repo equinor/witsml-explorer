@@ -28,12 +28,12 @@ namespace WitsmlExplorer.Api.Services
             return result.WbGeometrys.Select(wbGeometry =>
                 new WbGeometry
                 {
-                    UidWell = wbGeometry.UidWell,
+                    WellUid = wbGeometry.WellUid,
                     Uid = wbGeometry.Uid,
-                    UidWellbore = wbGeometry.UidWellbore,
+                    WellboreUid = wbGeometry.WellboreUid,
                     Name = wbGeometry.Name,
-                    NameWell = wbGeometry.NameWell,
-                    NameWellbore = wbGeometry.NameWellbore,
+                    WellName = wbGeometry.WellName,
+                    WellboreName = wbGeometry.WellboreName,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
                     MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
                     GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = decimal.Parse(wbGeometry.GapAir.Value) },

@@ -18,7 +18,7 @@ enum ModificationType {
   UpdateTrajectoriesOnWellbore = "UpdateTrajectoriesOnWellbore",
   UpdateTubularOnWellbore = "UpdateTubularOnWellbore",
   UpdateTubularsOnWellbore = "UpdateTubularsOnWellbore",
-  UpdateWbGeometrysOnWellbore = "UpdateWbGeometrysOnWellbore",
+  UpdateWbGeometryObject = "UpdateWbGeometryObject",
   UpdateWell = "UpdateWell",
   UpdateWellbore = "UpdateWellbore",
   UpdateWells = "UpdateWells"

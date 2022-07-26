@@ -183,6 +183,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
+    case ModificationType.UpdateWbGeometryObject:
+      return updateWellboreWbGeometry(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
     case ModificationType.UpdateWells:
@@ -518,6 +520,20 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
+const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWellboreWbGeometryAction) => {
+  const { wells } = state;
+  const { wbGeometry } = payload;
+  const updatedWells = insertLogIntoWellsStructure(wells, wbGeometry);
+  const selectedWbGeometry = state.selectedMessage?.uid === wbGeometry.uid ? wbGeometry : state.selectedWbGeometry;
+
+  return {
+    ...state,
+    wells: updatedWells,
+    filteredWells: filterWells(updatedWells, state.selectedFilter),
+    selectedWbGeometry
+  };
+};
+
 const getWellIndex = (wells: Well[], wellUid: string) => {
   return wells.findIndex((well) => well.uid === wellUid);
 };
@@ -545,7 +561,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
+  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | WbGeometryObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -1025,6 +1041,11 @@ export interface UpdateWellboreMessageAction extends Action {
   payload: { message: MessageObject };
 }
 
+export interface UpdateWellboreWbGeometryAction extends Action {
+  type: ModificationType.UpdateWbGeometryObject;
+  payload: { wbGeometry: WbGeometryObject; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateServerListAction extends Action {
   type: ModificationType.UpdateServerList;
   payload: { servers: Server[] };
@@ -1145,6 +1166,7 @@ export type NavigationAction =
   | UpdateWellboreTrajectoriesAction
   | UpdateWellboreTubularAction
   | UpdateWellboreTubularsAction
+  | UpdateWellboreWbGeometryAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction
   | SelectLogGroupAction

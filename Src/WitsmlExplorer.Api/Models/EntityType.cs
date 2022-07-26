@@ -12,6 +12,7 @@ namespace WitsmlExplorer.Api.Models
         Risks,
         Tubular,
         Trajectory,
-        TrajectoryStation
+        TrajectoryStation,
+        WbGeometry
     }
 }

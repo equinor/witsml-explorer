@@ -84,7 +84,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
-            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", GetWbGeometrysForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", GetWbGeometrys);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys/{wbGeometryUid}", GetWbGeometryForWellbore);
 
             //Get Requests exceeding the URL limit
             Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
@@ -315,7 +316,15 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(risks);
         }
 
-        private async Task GetWbGeometrysForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task GetWbGeometrys(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var wbGeometrys = await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid);
+            await httpResponse.AsJson(wbGeometrys);
+        }
+
+        private async Task GetWbGeometryForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
