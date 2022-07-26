@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Query
                     NumStringRun = "",
                     Tubular = new WitsmlObjectReference
                     {
-                        UidRef = ""
+                        Value = ""
                     },
                     DTimStart = "",
                     DTimStop = "",
@@ -69,7 +69,7 @@ namespace WitsmlExplorer.Api.Query
                     NumStringRun = "",
                     Tubular = new WitsmlObjectReference
                     {
-                        UidRef = ""
+                        Value = ""
                     },
                     DTimStart = "",
                     DTimStop = "",

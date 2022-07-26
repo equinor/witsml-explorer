@@ -1,4 +1,5 @@
 using System;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -12,7 +13,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string WellboreUid { get; set; }
         public string NumStringRun { get; set; }
-        public string TubularUidRef { get; set; }
+        public string Tubular { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimStop { get; set; }
         public DateTime? DTimStartDrilling { get; set; }
