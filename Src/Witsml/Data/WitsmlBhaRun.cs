@@ -40,13 +40,13 @@ namespace Witsml.Data
         public string DTimStopDrilling { get; set; }
 
         [XmlElement("planDogleg")]
-        public WitsmlAnglePerLengthMeasure PlanDogLeg { get; set; }
+        public WitsmlAnglePerLengthMeasure PlanDogleg { get; set; }
 
         [XmlElement("actDogleg")]
-        public WitsmlAnglePerLengthMeasure ActDogLeg { get; set; }
+        public WitsmlAnglePerLengthMeasure ActDogleg { get; set; }
 
         [XmlElement("actDoglegMx")]
-        public WitsmlAnglePerLengthMeasure ActDogLegMx { get; set; }
+        public WitsmlAnglePerLengthMeasure ActDoglegMx { get; set; }
 
         [XmlElement("statusBha")]
         public string StatusBha { get; set; }

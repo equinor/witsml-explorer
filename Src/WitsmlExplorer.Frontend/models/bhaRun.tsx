@@ -14,9 +14,9 @@ export default interface BhaRun {
   dTimStop: Date;
   dTimStartDrilling: Date;
   dTimStopDrilling: Date;
-  planDogLeg: Measure;
-  actDogLeg: Measure;
-  actDogLegMx: Measure;
+  planDogleg: Measure;
+  actDogleg: Measure;
+  actDoglegMx: Measure;
   statusBha: string;
   numBitRun: string;
   reasonTrip: string;

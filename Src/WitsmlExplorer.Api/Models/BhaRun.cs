@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Models
         public DateTime? DTimStop { get; set; }
         public DateTime? DTimStartDrilling { get; set; }
         public DateTime? DTimStopDrilling { get; set; }
-        public LengthMeasure PlanDogLeg { get; set; }
+        public LengthMeasure PlanDogleg { get; set; }
         public LengthMeasure ActDogleg { get; set; }
         public LengthMeasure ActDoglegMx { get; set; }
         public string StatusBha { get; set; }
