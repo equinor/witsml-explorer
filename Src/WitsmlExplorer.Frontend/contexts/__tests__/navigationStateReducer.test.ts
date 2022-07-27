@@ -30,6 +30,7 @@ import MessageObject from "../../models/messageObject";
 import Tubular from "../../models/tubular";
 import RiskObject from "../../models/riskObject";
 import WbGeometryObject from "../../models/wbGeometry";
+import BhaRun from "../../models/bhaRun";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -114,6 +115,7 @@ it("Should update list of servers when adding a server", () => {
 });
 
 it("Should also update selected well when a wellbore is selected", () => {
+  const bhaRuns: BhaRun[] = [];
   const logs: LogObject[] = [];
   const rigs: Rig[] = [];
   const risks: RiskObject[] = [];
@@ -123,7 +125,7 @@ it("Should also update selected well when a wellbore is selected", () => {
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, logs, rigs, trajectories, risks, messages, tubulars, wbGeometrys }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, logs, rigs, trajectories, risks, messages, tubulars, wbGeometrys }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -140,12 +142,13 @@ it("Should also update selected well when a wellbore is selected", () => {
   });
 });
 
-it("Should add rigs, logs, messages, trajectories, and tubulars to a wellbore if it is selected for the first time", () => {
+it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a wellbore if it is selected for the first time", () => {
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
     payload: {
       well: WELL_3,
       wellbore: WELLBORE_3,
+      bhaRuns: [BHARUN_1],
       logs: [LOG_1],
       rigs: [RIG_1],
       trajectories: [TRAJECTORY_1],
@@ -158,6 +161,7 @@ it("Should add rigs, logs, messages, trajectories, and tubulars to a wellbore if
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_3.uid] }, selectWellboreAction);
   const expectedWellbore = {
     ...WELLBORE_3,
+    bhaRuns: [BHARUN_1],
     logs: [LOG_1],
     rigs: [RIG_1],
     trajectories: [TRAJECTORY_1],
@@ -359,6 +363,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
     currentProperties: getWellProperties(WELL_1)
   };
   const logs: LogObject[] = [];
+  const bhaRuns: BhaRun[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
   const risks: RiskObject[] = [];
@@ -367,7 +372,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
@@ -716,6 +721,7 @@ const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
   name: "Wellbore 1",
+  bhaRuns: [],
   logs: [],
   rigs: [],
   trajectories: [],
@@ -731,6 +737,7 @@ const WELLBORE_2: Wellbore = {
   uid: "wellbore2",
   wellUid: "well2",
   name: "Wellbore 2",
+  bhaRuns: [],
   logs: [],
   rigs: [],
   trajectories: [],
@@ -746,6 +753,7 @@ const WELLBORE_3: Wellbore = {
   uid: "wellbore3",
   wellUid: "well3",
   name: "Wellbore 3",
+  bhaRuns: [],
   logs: [],
   rigs: [],
   trajectories: [],
@@ -761,6 +769,27 @@ const WELL_1: Well = { uid: "well1", name: "Well 1", wellbores: [WELLBORE_1], fi
 const WELL_2: Well = { uid: "well2", name: "Well 2", wellbores: [WELLBORE_2], field: "", operator: "", country: "" };
 const WELL_3: Well = { uid: "well3", name: "Well 3", wellbores: [WELLBORE_3], field: "", operator: "", country: "" };
 const WELLS = [WELL_1, WELL_2, WELL_3];
+const BHARUN_1: BhaRun = {
+  uid: "bharun",
+  name: "bharun 1",
+  wellUid: WELL_1.uid,
+  wellboreUid: WELLBORE_1.uid,
+  wellboreName: "",
+  numStringRun: "",
+  tubular: "",
+  dTimStart: null,
+  dTimStop: null,
+  dTimStartDrilling: null,
+  dTimStopDrilling: null,
+  planDogleg: null,
+  actDogleg: null,
+  actDoglegMx: null,
+  statusBha: "",
+  numBitRun: "",
+  reasonTrip: "",
+  objectiveBha: "",
+  commonData: null
+};
 const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid };
 const RIG_1 = { uid: "rig1", name: "Rig 1" };
 const TRAJECTORY_1: Trajectory = {
