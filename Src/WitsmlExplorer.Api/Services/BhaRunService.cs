@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Serilog;
 
 using Witsml.Data;
 using Witsml.ServiceReference;
@@ -28,12 +25,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var query = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, BhaRunUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            if (result.BhaRuns.Any())
-            {
-                return WitsmlToBhaRun(result.BhaRuns.First());
-            }
-
-            return null;
+            return result.BhaRuns.Any() ? WitsmlToBhaRun(result.BhaRuns.First()) : null;
         }
         public async Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
@@ -56,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = bhaRun.WellboreUid,
                 NumStringRun = bhaRun.NumStringRun,
                 Tubular = bhaRun.Tubular?.Value,
-                StatusBha = (bhaRun.StatusBha == null) ? null : bhaRun.StatusBha,
+                StatusBha = bhaRun.StatusBha ?? null,
                 NumBitRun = bhaRun.NumBitRun,
                 ReasonTrip = bhaRun.ReasonTrip,
                 ObjectiveBha = bhaRun.ObjectiveBha,

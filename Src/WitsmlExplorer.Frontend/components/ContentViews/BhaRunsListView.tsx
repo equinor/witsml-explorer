@@ -24,10 +24,6 @@ export const BhaRunsListView = (): React.ReactElement => {
         ...bhaRun,
         ...bhaRun.commonData,
         id: bhaRun.uid,
-        dTimStart: bhaRun.dTimStart,
-        dTimStop: bhaRun.dTimStop,
-        dTimStartDrilling: bhaRun.dTimStartDrilling,
-        dTimStopDrilling: bhaRun.dTimStopDrilling,
         bhaRun: bhaRun
       };
     });
