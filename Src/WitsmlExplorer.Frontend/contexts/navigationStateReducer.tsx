@@ -183,8 +183,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
-    case ModificationType.UpdateWbGeometryObject:
-      return updateWellboreWbGeometry(state, action);
+    case ModificationType.UpdateWbGeometryObjects:
+      return updateWellboreWbGeometrys(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
     case ModificationType.UpdateWells:
@@ -520,17 +520,14 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
-const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWellboreWbGeometryAction) => {
+const updateWellboreWbGeometrys = (state: NavigationState, { payload }: UpdateWellboreWbGeometrysAction) => {
   const { wells } = state;
-  const { wbGeometry } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, wbGeometry);
-  const selectedWbGeometry = state.selectedMessage?.uid === wbGeometry.uid ? wbGeometry : state.selectedWbGeometry;
-
+  const { wbGeometrys, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { wbGeometrys });
   return {
     ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedWbGeometry
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
   };
 };
 
@@ -1041,9 +1038,9 @@ export interface UpdateWellboreMessageAction extends Action {
   payload: { message: MessageObject };
 }
 
-export interface UpdateWellboreWbGeometryAction extends Action {
-  type: ModificationType.UpdateWbGeometryObject;
-  payload: { wbGeometry: WbGeometryObject; wellUid: string; wellboreUid: string };
+export interface UpdateWellboreWbGeometrysAction extends Action {
+  type: ModificationType.UpdateWbGeometryObjects;
+  payload: { wbGeometrys: WbGeometryObject[]; wellUid: string; wellboreUid: string };
 }
 
 export interface UpdateServerListAction extends Action {
@@ -1166,7 +1163,7 @@ export type NavigationAction =
   | UpdateWellboreTrajectoriesAction
   | UpdateWellboreTubularAction
   | UpdateWellboreTubularsAction
-  | UpdateWellboreWbGeometryAction
+  | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
   | SelectLogTypeAction
   | SelectLogGroupAction

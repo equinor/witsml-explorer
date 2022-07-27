@@ -7,7 +7,7 @@ enum EntityType {
   Tubular = "Tubular",
   Trajectory = "Trajectory",
   TrajectoryStation = "TrajectoryStation",
-  WbGeometryObject = "WbGeometryObject"
+  WbGeometryObjects = "WbGeometryObjects"
 }
 
 export default EntityType;

@@ -13,6 +13,6 @@ namespace WitsmlExplorer.Api.Models
         Tubular,
         Trajectory,
         TrajectoryStation,
-        WbGeometry
+        WbGeometryObjects
     }
 }

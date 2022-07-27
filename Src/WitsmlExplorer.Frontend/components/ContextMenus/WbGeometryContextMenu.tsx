@@ -6,7 +6,7 @@ import ContextMenu from "./ContextMenu";
 import { Server } from "../../models/server";
 import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
-import { UpdateWellboreWbGeometryAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreWbGeometrysAction } from "../../contexts/navigationStateReducer";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
@@ -16,7 +16,7 @@ import { WbGeometryObjectRow } from "../ContentViews/WbGeometrysListView";
 export interface WbGeometryObjectContextMenuProps {
   checkedWbGeometryObjectRows: WbGeometryObjectRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreWbGeometryAction) => void;
+  dispatchNavigation: (action: UpdateWellboreWbGeometrysAction) => void;
   servers: Server[];
   selectedServer: Server;
 }

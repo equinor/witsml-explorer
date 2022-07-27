@@ -15,14 +15,14 @@ namespace Witsml.Data
         [XmlAttribute("uid")]
         public string Uid { get; set; }
 
-        [XmlElement("name")]
-        public string Name { get; set; }
-
         [XmlElement("nameWell")]
         public string WellName { get; set; }
 
         [XmlElement("nameWellbore")]
         public string WellboreName { get; set; }
+
+        [XmlElement("name")]
+        public string Name { get; set; }
 
         [XmlElement("dTimReport")]
         public string DTimReport { get; set; }
