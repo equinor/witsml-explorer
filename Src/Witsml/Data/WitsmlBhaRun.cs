@@ -1,4 +1,5 @@
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data
@@ -38,14 +39,14 @@ namespace Witsml.Data
         [XmlElement("dTimStopDrilling")]
         public string DTimStopDrilling { get; set; }
 
-        [XmlElement("planDogLeg")]
-        public WitsmlAnglePerLengthMeasure PlanDogLeg { get; set; }
+        [XmlElement("planDogleg")]
+        public WitsmlAnglePerLengthMeasure PlanDogleg { get; set; }
 
-        [XmlElement("actDogLeg")]
-        public WitsmlAnglePerLengthMeasure ActDogLeg { get; set; }
+        [XmlElement("actDogleg")]
+        public WitsmlAnglePerLengthMeasure ActDogleg { get; set; }
 
-        [XmlElement("actDogLegMx")]
-        public WitsmlAnglePerLengthMeasure ActDogLegMx { get; set; }
+        [XmlElement("actDoglegMx")]
+        public WitsmlAnglePerLengthMeasure ActDoglegMx { get; set; }
 
         [XmlElement("statusBha")]
         public string StatusBha { get; set; }

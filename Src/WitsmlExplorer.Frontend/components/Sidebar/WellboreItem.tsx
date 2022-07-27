@@ -5,6 +5,7 @@ import MessageObjectService from "../../services/messageObjectService";
 import RiskObjectService from "../../services/riskObjectService";
 import Well from "../../models/well";
 import Wellbore, {
+  calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
   calculateRiskGroupId,
@@ -16,6 +17,7 @@ import Wellbore, {
 import LogTypeItem from "./LogTypeItem";
 import RigService from "../../services/rigService";
 import TrajectoryService from "../../services/trajectoryService";
+import BhaRunService from "../../services/bhaRunService";
 import TrajectoryItem from "./TrajectoryItem";
 import { truncateAbortHandler } from "../../services/apiClient";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
@@ -77,6 +79,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const controller = new AbortController();
 
     async function getChildren() {
+      const getBhaRuns = BhaRunService.getBhaRuns(well.uid, wellbore.uid, controller.signal);
       const getLogs = LogObjectService.getLogs(well.uid, wellbore.uid, controller.signal);
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
@@ -84,7 +87,8 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getRisks = RiskObjectService.getRisks(well.uid, wellbore.uid, controller.signal);
       const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal);
       const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(well.uid, wellbore.uid, controller.signal);
-      const [logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+      const [bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+        getBhaRuns,
         getLogs,
         getRigs,
         getTrajectories,
@@ -95,7 +99,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       ]);
       const selectWellbore: SelectWellboreAction = {
         type: NavigationType.SelectWellbore,
-        payload: { well, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+        payload: { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
       };
       dispatchNavigation(selectWellbore);
       setIsFetchingData(false);
@@ -107,6 +111,10 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       controller.abort();
     };
   }, [isFetchingData]);
+
+  const onSelectBhaRunGroup = async (well: Well, wellbore: Wellbore, bhaRunGroup: string) => {
+    dispatchNavigation({ type: NavigationType.SelectBhaRunGroup, payload: { well, wellbore, bhaRunGroup } });
+  };
 
   const onSelectLogGroup = async (well: Well, wellbore: Wellbore, logGroup: string) => {
     dispatchNavigation({ type: NavigationType.SelectLogGroup, payload: { well, wellbore, logGroup } });
@@ -142,6 +150,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const payload = {
         well,
         wellbore,
+        bhaRuns: wellbore.bhaRuns,
         logs: wellbore.logs,
         rigs: wellbore.rigs,
         trajectories: wellbore.trajectories,
@@ -167,6 +176,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     }
   };
 
+  const bhaRunGroupId = calculateBhaRunGroupId(wellbore);
   const logGroupId = calculateLogGroupId(wellbore);
   const messageGroupId = calculateMessageGroupId(wellbore);
   const riskGroupId = calculateRiskGroupId(wellbore);
@@ -187,6 +197,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       isActive={wellbore.isActive}
       isLoading={isFetchingData}
     >
+      <TreeItem
+        nodeId={bhaRunGroupId}
+        labelText={"BhaRuns"}
+        onLabelClick={() => onSelectBhaRunGroup(well, wellbore, bhaRunGroupId)}
+        onContextMenu={preventContextMenuPropagation}
+      />
+
       <TreeItem
         nodeId={logGroupId}
         labelText={"Logs"}

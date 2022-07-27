@@ -6,6 +6,7 @@ import NavigationType from "../contexts/navigationType";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
 import { Server } from "../models/server";
 import {
+  SelectBhaRunGroupAction,
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
@@ -35,6 +36,7 @@ const Nav = (): React.ReactElement => {
     selectedServer,
     selectedWell,
     selectedWellbore,
+    selectedBhaRunGroup,
     selectedLogGroup,
     selectedLogTypeGroup,
     selectedLog,
@@ -56,6 +58,7 @@ const Nav = (): React.ReactElement => {
       getServerCrumb(selectedServer, dispatchNavigation),
       getWellCrumb(selectedWell, dispatchNavigation),
       getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
+      getBhaRunGroupCrumb(selectedBhaRunGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogGroupCrumb(selectedLogGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
@@ -120,6 +123,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
             payload: {
               well: selectedWell,
               wellbore: selectedWellbore,
+              bhaRuns: selectedWellbore.bhaRuns,
               logs: selectedWellbore.logs,
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
@@ -128,6 +132,19 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               tubulars: selectedWellbore.tubulars,
               wbGeometrys: selectedWellbore.wbGeometrys
             }
+          })
+      }
+    : {};
+};
+
+const getBhaRunGroupCrumb = (selectedBhaRunGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectBhaRunGroupAction) => void) => {
+  return selectedBhaRunGroup
+    ? {
+        name: "BhaRuns",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectBhaRunGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, bhaRunGroup: selectedBhaRunGroup }
           })
       }
     : {};

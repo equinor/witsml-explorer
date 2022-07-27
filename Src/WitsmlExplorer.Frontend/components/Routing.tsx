@@ -8,6 +8,7 @@ import Well from "../models/well";
 import LogObjectService from "../services/logObjectService";
 import RigService from "../services/rigService";
 import TrajectoryService from "../services/trajectoryService";
+import BhaRunService from "../services/bhaRunService";
 import { truncateAbortHandler } from "../services/apiClient";
 import Wellbore, { calculateTubularGroupId } from "../models/wellbore";
 import LogObject from "../models/logObject";
@@ -96,6 +97,7 @@ const Routing = (): React.ReactElement => {
     const controller = new AbortController();
 
     async function getChildren() {
+      const getBhaRuns = BhaRunService.getBhaRuns(selectedWell.uid, wellboreUid, controller.signal);
       const getLogs = LogObjectService.getLogs(selectedWell.uid, wellboreUid, controller.signal);
       const getRigs = RigService.getRigs(selectedWell.uid, wellboreUid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
@@ -103,7 +105,8 @@ const Routing = (): React.ReactElement => {
       const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
       const getRisks = RiskObjectService.getRisks(selectedWell.uid, wellboreUid, controller.signal);
       const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(selectedWell.uid, wellboreUid, controller.signal);
-      const [logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+      const [bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+        getBhaRuns,
         getLogs,
         getRigs,
         getTrajectories,
@@ -116,7 +119,7 @@ const Routing = (): React.ReactElement => {
       if (wellbore) {
         const selectWellbore: SelectWellboreAction = {
           type: NavigationType.SelectWellbore,
-          payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+          payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
         } as SelectWellboreAction;
         dispatchNavigation(selectWellbore);
       } else {
