@@ -57,6 +57,7 @@ export const RisksListView = (): React.ReactElement => {
     { property: "itemState", label: "Item State", type: ContentType.String },
     { property: "sourceName", label: "Source Name", type: ContentType.String }
   ];
+
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {
     const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);

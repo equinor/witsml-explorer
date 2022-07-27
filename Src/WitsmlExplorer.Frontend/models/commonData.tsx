@@ -4,6 +4,8 @@ export default interface CommonData {
   dTimLastChange?: Date;
   itemState?: string;
   comments?: string;
+  defaultDatum?: string;
+  serviceCategory?: string;
 }
 
 export function emptyCommonData(): CommonData {
@@ -12,6 +14,8 @@ export function emptyCommonData(): CommonData {
     dTimCreation: null,
     dTimLastChange: null,
     itemState: "",
-    comments: ""
+    comments: "",
+    defaultDatum: "",
+    serviceCategory: ""
   };
 }

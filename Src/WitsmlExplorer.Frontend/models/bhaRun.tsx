@@ -3,6 +3,19 @@ import CommonData from "./commonData";
 import Measure from "./measure";
 
 export default interface BhaRun {
+  wellName: unknown;
+  type: any;
+  category: any;
+  subCategory: any;
+  extendCategory: any;
+  affectedPersonnel: any;
+  dTimEnd: any;
+  mdBitStart: any;
+  mdBitEnd: any;
+  severityLevel: any;
+  probabilityLevel: any;
+  summary: any;
+  details: any;
   uid: string;
   wellUid: string;
   wellboreUid: string;
@@ -10,6 +23,7 @@ export default interface BhaRun {
   name: string;
   numStringRun: string;
   tubular: string;
+  tubularUidRef: string;
   dTimStart: Date;
   dTimStop: Date;
   dTimStartDrilling: Date;

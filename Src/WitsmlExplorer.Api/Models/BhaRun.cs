@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreUid { get; set; }
         public string NumStringRun { get; set; }
         public string Tubular { get; set; }
+        public string TubularUidRef { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimStop { get; set; }
         public DateTime? DTimStartDrilling { get; set; }

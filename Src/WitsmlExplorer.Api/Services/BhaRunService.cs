@@ -48,6 +48,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = bhaRun.WellboreUid,
                 NumStringRun = bhaRun.NumStringRun,
                 Tubular = bhaRun.Tubular?.Value,
+                TubularUidRef = bhaRun.Tubular?.UidRef,
                 StatusBha = bhaRun.StatusBha ?? null,
                 NumBitRun = bhaRun.NumBitRun,
                 ReasonTrip = bhaRun.ReasonTrip,
@@ -68,7 +69,6 @@ namespace WitsmlExplorer.Api.Services
                     ServiceCategory = bhaRun.CommonData.ServiceCategory,
                     Comments = bhaRun.CommonData.Comments,
                     DefaultDatum = bhaRun.CommonData.DefaultDatum,
-                    AcquisitionTimeZone = StringHelpers.ToDateTime(bhaRun.CommonData.AcquisitionTimeZone)
                 }
             };
         }
