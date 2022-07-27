@@ -4,6 +4,8 @@ using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
 
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Query
 {
     public static class BhaRunQueries
