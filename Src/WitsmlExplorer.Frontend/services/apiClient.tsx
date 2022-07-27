@@ -25,7 +25,7 @@ export default class ApiClient {
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
@@ -42,7 +42,7 @@ export default class ApiClient {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
   }
@@ -53,7 +53,7 @@ export default class ApiClient {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
@@ -64,7 +64,7 @@ export default class ApiClient {
     const requestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: this.getCommonHeaders(currentCredentials)
+      headers: ApiClient.getCommonHeaders(currentCredentials)
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit, authConfig);

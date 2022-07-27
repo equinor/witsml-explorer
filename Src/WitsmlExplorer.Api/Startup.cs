@@ -1,20 +1,21 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using System;
+
 using Carter;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Serilog;
+
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
-using Witsml.Data;
 
 namespace WitsmlExplorer.Api
 {
@@ -58,6 +59,7 @@ namespace WitsmlExplorer.Api
             services.AddDataProtection();
             services.ConfigureDependencies(Configuration);
             services.AddHostedService<BackgroundWorkerService>();
+            services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

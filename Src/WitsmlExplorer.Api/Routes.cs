@@ -16,6 +16,7 @@ namespace WitsmlExplorer.Api
     // ReSharper disable once UnusedMember.Global
     public class Routes : CarterModule
     {
+        private readonly IBhaRunService bhaRunService;
         private readonly ICredentialsService credentialsService;
         private readonly IJobService jobService;
         private readonly ILogObjectService logObjectService;
@@ -31,6 +32,7 @@ namespace WitsmlExplorer.Api
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
+            IBhaRunService bhaRunService,
             ICredentialsService credentialsService,
             IWellService wellService,
             IWellboreService wellboreService,
@@ -45,6 +47,7 @@ namespace WitsmlExplorer.Api
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             IWbGeometryService wbGeometryService)
         {
+            this.bhaRunService = bhaRunService;
             this.credentialsService = credentialsService;
             this.wellService = wellService;
             this.wellboreService = wellboreService;
@@ -67,6 +70,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells", GetAllWells);
             Get("/api/wells/{wellUid}", GetWell);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}", GetWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", GetBhaRun);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", GetBhaRunsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", GetMessagesForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", GetMessage);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", GetLog);
@@ -142,6 +147,23 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var wellbore = await wellboreService.GetWellbore(wellUid, wellboreUid);
             await httpResponse.AsJson(wellbore);
+        }
+
+        private async Task GetBhaRun(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var bhaRunUid = httpRequest.RouteValues.As<string>("bhaRunUid");
+            var bhaRun = await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid);
+            await httpResponse.AsJson(bhaRun);
+        }
+
+        private async Task GetBhaRunsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var bhaRuns = await bhaRunService.GetBhaRuns(wellUid, wellboreUid);
+            await httpResponse.AsJson(bhaRuns);
         }
 
         private async Task GetLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
