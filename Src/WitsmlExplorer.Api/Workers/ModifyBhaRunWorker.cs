@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers
 
             if (!modifyBhaRunResult.IsSuccessful)
             {
-                const string errorMessage = "Failed to modify bhaRun object";
+                const string errorMessage = "Failed to modify bhaRun";
                 Log.Error("{ErrorMessage}. Target: WellUid: {TargetWellUid}, WellboreUid: {TargetWellboreUid}",
                     errorMessage, job.BhaRun.WellUid, job.BhaRun.WellboreUid);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyBhaRunResult.Reason), null);
