@@ -20,6 +20,7 @@ export enum JobType {
   CopyTubularComponents = "CopyTubularComponents",
   CreateWellbore = "CreateWellbore",
   CreateLogObject = "CreateLogObject",
+  DeleteBhaRuns = "DeleteBhaRuns",
   DeleteCurveValues = "DeleteCurveValues",
   DeleteLogObjects = "DeleteLogObjects",
   DeleteMessageObjects = "DeleteMessageObjects",
