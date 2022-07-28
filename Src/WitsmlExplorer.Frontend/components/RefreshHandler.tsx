@@ -34,7 +34,7 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
-          case EntityType.BhaRun:
+          case EntityType.BhaRuns:
             await refreshBhaRun(refreshAction, modificationType);
             break;
           case EntityType.LogObject:

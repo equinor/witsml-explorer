@@ -9,17 +9,21 @@ import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import BhaRun from "../../models/bhaRun";
+import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
+import ModificationType from "../../contexts/modificationType";
+import BhaRunService from "../../services/bhaRunService";
 
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
 
 export interface BhaRunPropertiesModalProps {
+  dispatchNavigation: (action: UpdateWellboreBhaRunsAction) => void;
   mode: PropertiesModalMode;
   bhaRun: BhaRun;
   dispatchOperation: (action: HideModalAction) => void;
 }
 
 const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactElement => {
-  const { mode, bhaRun, dispatchOperation } = props;
+  const { mode, bhaRun, dispatchOperation, dispatchNavigation } = props;
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
@@ -34,6 +38,15 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
       bhaRun: updatedBhaRun
     };
     await JobService.orderJob(JobType.ModifyBhaRun, wellboreBhaRunJob);
+    const freshBhaRuns = await BhaRunService.getBhaRuns(bhaRun.wellUid, bhaRun.wellboreUid);
+    dispatchNavigation({
+      type: ModificationType.UpdateBhaRuns,
+      payload: {
+        wellUid: bhaRun.wellUid,
+        wellboreUid: bhaRun.wellboreUid,
+        bhaRuns: freshBhaRuns
+      }
+    });
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

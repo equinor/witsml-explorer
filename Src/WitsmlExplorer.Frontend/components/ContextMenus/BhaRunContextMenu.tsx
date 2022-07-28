@@ -22,11 +22,11 @@ export interface BhaRunContextMenuProps {
 }
 
 const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement => {
-  const { checkedBhaRunRows, dispatchOperation } = props;
+  const { checkedBhaRunRows, dispatchOperation, dispatchNavigation } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyBhaRunProps: BhaRunPropertiesModalProps = { mode, bhaRun: checkedBhaRunRows[0].bhaRun, dispatchOperation };
+    const modifyBhaRunProps: BhaRunPropertiesModalProps = { mode, bhaRun: checkedBhaRunRows[0].bhaRun, dispatchOperation, dispatchNavigation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <BhaRunPropertiesModal {...modifyBhaRunProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
