@@ -64,6 +64,22 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
+    public class RefreshBhaRuns : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.BhaRuns;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+
+        public RefreshType RefreshType { get; }
+
+        public RefreshBhaRuns(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
+
     public class RefreshLogObject : RefreshAction
     {
         public override EntityType EntityType => EntityType.LogObject;

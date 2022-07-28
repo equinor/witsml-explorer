@@ -3,6 +3,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import LogObjectService from "../../services/logObjectService";
 import RigService from "../../services/rigService";
 import TrajectoryService from "../../services/trajectoryService";
+import BhaRunService from "../../services/bhaRunService";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
@@ -42,11 +43,15 @@ export const WellboresListView = (): React.ReactElement => {
     const logs = await LogObjectService.getLogs(wellbore.wellUid, uid, controller.signal);
     const rigs = await RigService.getRigs(wellUid, uid, controller.signal);
     const trajectories = await TrajectoryService.getTrajectories(wellUid, uid, controller.signal);
+    const bhaRuns = await BhaRunService.getBhaRuns(wellUid, uid, controller.signal);
     const tubulars = await TubularService.getTubulars(wellUid, uid, controller.signal);
     const messages = await MessageObjectService.getMessages(wellUid, uid, controller.signal);
     const risks = await RiskObjectService.getRisks(wellUid, uid, controller.signal);
     const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(wellUid, uid, controller.signal);
-    dispatchNavigation({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } });
+    dispatchNavigation({
+      type: NavigationType.SelectWellbore,
+      payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+    });
   };
 
   return selectedWell && <ContentTable columns={columns} data={[...selectedWell.wellbores]} onSelect={onSelect} onContextMenu={onContextMenu} />;

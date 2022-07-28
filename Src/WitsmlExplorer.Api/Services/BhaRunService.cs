@@ -1,45 +1,38 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
-using WitsmlExplorer.Api.Query;
+
+using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using Witsml.Data;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
     public interface IBhaRunService
     {
-        Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string BhaRunUid);
+        Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid);
         Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
-
     }
 
     public class BhaRunService : WitsmlService, IBhaRunService
     {
         public BhaRunService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string BhaRunUid)
+        public async Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid)
         {
-            var query = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, BhaRunUid);
+            var query = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, bhaRunUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            if (result.BhaRuns.Any())
-            {
-                return WitsmlToBhaRun(result.BhaRuns.First());
-            }
-
-            return null;
+            return result.BhaRuns.Any() ? WitsmlToBhaRun(result.BhaRuns.First()) : null;
         }
         public async Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
-            var start = DateTime.Now;
             var witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunByWellbore(wellUid, wellboreUid);
             var result = await WitsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
             return result.BhaRuns.Select(bhaRun =>
-                WitsmlToBhaRun(bhaRun)
+                    WitsmlToBhaRun(bhaRun)
                 ).OrderBy(bhaRun => bhaRun.Name);
         }
 
@@ -54,14 +47,15 @@ namespace WitsmlExplorer.Api.Services
                 WellboreName = bhaRun.WellboreName,
                 WellboreUid = bhaRun.WellboreUid,
                 NumStringRun = bhaRun.NumStringRun,
-                StatusBha = bhaRun.StatusBha,
+                Tubular = bhaRun.Tubular?.Value,
+                TubularUidRef = bhaRun.Tubular?.UidRef,
+                StatusBha = bhaRun.StatusBha ?? null,
                 NumBitRun = bhaRun.NumBitRun,
                 ReasonTrip = bhaRun.ReasonTrip,
                 ObjectiveBha = bhaRun.ObjectiveBha,
-                TubularUidRef = bhaRun.Tubular.UidRef,
-                PlanDogLeg = (bhaRun.PlanDogLeg == null) ? null : new LengthMeasure { Uom = bhaRun.PlanDogLeg.Uom, Value = decimal.Parse(bhaRun.PlanDogLeg.Value) },
-                ActDogleg = (bhaRun.ActDogLeg == null) ? null : new LengthMeasure { Uom = bhaRun.ActDogLeg.Uom, Value = decimal.Parse(bhaRun.ActDogLeg.Value) },
-                ActDoglegMx = (bhaRun.ActDogLegMx == null) ? null : new LengthMeasure { Uom = bhaRun.ActDogLegMx.Uom, Value = decimal.Parse(bhaRun.ActDogLegMx.Value) },
+                PlanDogleg = (bhaRun.PlanDogleg == null) ? null : new LengthMeasure { Uom = bhaRun.PlanDogleg.Uom, Value = decimal.Parse(bhaRun.PlanDogleg.Value) },
+                ActDogleg = (bhaRun.ActDogleg == null) ? null : new LengthMeasure { Uom = bhaRun.ActDogleg.Uom, Value = decimal.Parse(bhaRun.ActDogleg.Value) },
+                ActDoglegMx = (bhaRun.ActDoglegMx == null) ? null : new LengthMeasure { Uom = bhaRun.ActDoglegMx.Uom, Value = decimal.Parse(bhaRun.ActDoglegMx.Value) },
                 DTimStart = string.IsNullOrEmpty(bhaRun.DTimStart) ? null : StringHelpers.ToDateTime(bhaRun.DTimStart),
                 DTimStop = string.IsNullOrEmpty(bhaRun.DTimStop) ? null : StringHelpers.ToDateTime(bhaRun.DTimStop),
                 DTimStartDrilling = string.IsNullOrEmpty(bhaRun.DTimStartDrilling) ? null : StringHelpers.ToDateTime(bhaRun.DTimStartDrilling),
@@ -75,7 +69,6 @@ namespace WitsmlExplorer.Api.Services
                     ServiceCategory = bhaRun.CommonData.ServiceCategory,
                     Comments = bhaRun.CommonData.Comments,
                     DefaultDatum = bhaRun.CommonData.DefaultDatum,
-                    AcquisitionTimeZone = StringHelpers.ToDateTime(bhaRun.CommonData.AcquisitionTimeZone)
                 }
             };
         }

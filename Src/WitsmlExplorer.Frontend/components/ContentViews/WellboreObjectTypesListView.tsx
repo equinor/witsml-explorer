@@ -3,6 +3,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import {
+  calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
   calculateRiskGroupId,
@@ -61,6 +62,12 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
         name: "WbGeometrys",
         action: NavigationType.SelectWbGeometryGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
+      },
+      {
+        uid: 8,
+        name: "BhaRuns",
+        action: NavigationType.SelectBhaRunGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, bhaRunGroup: calculateBhaRunGroupId(selectedWellbore) }
       }
     ];
   };

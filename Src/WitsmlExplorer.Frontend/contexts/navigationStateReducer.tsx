@@ -6,6 +6,7 @@ import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
 import Wellbore, {
+  calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateLogTypeId,
   calculateRigGroupId,
@@ -25,11 +26,13 @@ import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
 import Tubular, { getTubularProperties } from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
+import BhaRun from "../models/bhaRun";
 
 export interface NavigationState {
   selectedServer: Server;
   selectedWell: Well;
   selectedWellbore: Wellbore;
+  selectedBhaRunGroup: string;
   selectedLogGroup: string;
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
@@ -55,7 +58,7 @@ export interface NavigationState {
   currentProperties: Map<string, string>;
 }
 
-export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | WbGeometryObject;
+export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | WbGeometryObject;
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -65,6 +68,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
+  selectedBhaRunGroup: null,
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
@@ -110,6 +114,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectWell(state, action);
     case NavigationType.SelectWellbore:
       return selectWellbore(state, action);
+    case NavigationType.SelectBhaRunGroup:
+      return selectBhaRunGroup(state, action);
     case NavigationType.SelectLogGroup:
       return selectLogGroup(state, action);
     case NavigationType.SelectLogType:
@@ -165,6 +171,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
+    case ModificationType.UpdateBhaRuns:
+      return updateWellboreBhaRuns(state, action);
     case ModificationType.UpdateLogObjects:
       return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
@@ -198,6 +206,7 @@ const allDeselected: any = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
+  selectedBhaRunGroup: null,
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
@@ -376,6 +385,17 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
+const updateWellboreBhaRuns = (state: NavigationState, { payload }: UpdateWellboreBhaRunsAction) => {
+  const { wells } = state;
+  const { bhaRuns, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { bhaRuns });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellboreMessagesAction) => {
   const { wells } = state;
   const { messages, wellUid, wellboreUid } = payload;
@@ -459,7 +479,6 @@ const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWel
   freshTrajectories[trajectoryIndex] = trajectory;
   selectedTrajectory = state.selectedTrajectory?.uid === trajectory.uid ? trajectory : state.selectedTrajectory;
   wells[wellIndex].wellbores[wellboreIndex].trajectories = freshTrajectories;
-  console.log(trajectory);
   return {
     ...state,
     wells: freshWells,
@@ -558,7 +577,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | WbGeometryObject[]>
+  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | WbGeometryObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -639,9 +658,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
+  const { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
+  const wellboreWithProperties = { ...wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
@@ -655,6 +674,22 @@ const selectWellbore = (state: NavigationState, { payload }: SelectWellboreActio
     filteredWells: filterWells(updatedWells, state.selectedFilter),
     currentSelected: wellboreWithProperties,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWellboreNodeId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
+  const { well, wellbore, bhaRunGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateBhaRunGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedBhaRunGroup: bhaRunGroup,
+    currentSelected: bhaRunGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateBhaRunGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };
@@ -988,6 +1023,11 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
+export interface UpdateWellboreBhaRunsAction extends Action {
+  type: ModificationType.UpdateBhaRuns;
+  payload: { bhaRuns: BhaRun[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreLogsAction extends Action {
   type: ModificationType.UpdateLogObjects;
   payload: { logs: LogObject[]; wellUid: string; wellboreUid: string };
@@ -1058,6 +1098,7 @@ export interface SelectWellboreAction extends Action {
   payload: {
     well: Well;
     wellbore: Wellbore;
+    bhaRuns: BhaRun[];
     logs: LogObject[];
     rigs: Rig[];
     trajectories: Trajectory[];
@@ -1066,6 +1107,11 @@ export interface SelectWellboreAction extends Action {
     tubulars: Tubular[];
     wbGeometrys: WbGeometryObject[];
   };
+}
+
+export interface SelectBhaRunGroupAction extends Action {
+  type: NavigationType.SelectBhaRunGroup;
+  payload: { well: Well; wellbore: Wellbore; bhaRunGroup: any };
 }
 
 export interface SelectLogGroupAction extends Action {
@@ -1154,6 +1200,7 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
+  | UpdateWellboreBhaRunsAction
   | UpdateWellboreLogAction
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
@@ -1165,6 +1212,7 @@ export type NavigationAction =
   | UpdateWellboreTubularsAction
   | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
+  | SelectBhaRunGroupAction
   | SelectLogTypeAction
   | SelectLogGroupAction
   | SelectLogCurveInfoAction

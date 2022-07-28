@@ -6,6 +6,7 @@ enum ModificationType {
   RemoveWell = "RemoveWell",
   RemoveWellbore = "RemoveWellbore",
   RemoveServer = "RemoveServer",
+  UpdateBhaRuns = "UpdateBhaRuns",
   UpdateLogObject = "UpdateLogObject",
   UpdateLogObjects = "UpdateLogObjects",
   UpdateMessageObject = "UpdateMessageObject",
