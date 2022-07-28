@@ -120,7 +120,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 InputLabelProps={{
                   shrink: true
                 }}
-                disabled={!editableRiskObject.dTimEnd}
+                disabled={!editableRiskObject.dTimStart}
                 value={editableRiskObject.dTimStart ? moment(editableRiskObject.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimStart: new Date(e.target.value) })}
               />

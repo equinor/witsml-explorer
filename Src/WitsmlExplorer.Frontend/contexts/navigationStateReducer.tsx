@@ -171,6 +171,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
+    case ModificationType.UpdateBhaRuns:
+      return updateWellboreBhaRuns(state, action);
     case ModificationType.UpdateLogObjects:
       return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
@@ -381,6 +383,17 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
+const updateWellboreBhaRuns = (state: NavigationState, { payload }: UpdateWellboreBhaRunsAction) => {
+  const { wells } = state;
+  const { bhaRuns, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { bhaRuns });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellboreMessagesAction) => {
   const { wells } = state;
   const { messages, wellUid, wellboreUid } = payload;
@@ -551,7 +564,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
+  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -997,6 +1010,11 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
+export interface UpdateWellboreBhaRunsAction extends Action {
+  type: ModificationType.UpdateBhaRuns;
+  payload: { bhaRuns: BhaRun[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreLogsAction extends Action {
   type: ModificationType.UpdateLogObjects;
   payload: { logs: LogObject[]; wellUid: string; wellboreUid: string };
@@ -1164,6 +1182,7 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
+  | UpdateWellboreBhaRunsAction
   | UpdateWellboreLogAction
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction

@@ -12,6 +12,7 @@ import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
 import RiskObjectService from "../services/riskObjectService";
 import TrajectoryService from "../services/trajectoryService";
+import BhaRunService from "../services/bhaRunService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -32,6 +33,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
+            break;
+          case EntityType.BhaRuns:
+            await refreshBhaRun(refreshAction, modificationType);
             break;
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
@@ -91,6 +95,17 @@ const RefreshHandler = (): React.ReactElement => {
         type: ModificationType.UpdateWellbore,
         payload: { wellbore }
       });
+    }
+  }
+
+  async function refreshBhaRun(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateBhaRuns) {
+      const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (bhaRuns) {
+        dispatchNavigation({ type: modificationType, payload: { bhaRuns, wellUid, wellboreUid } });
+      }
     }
   }
 
