@@ -3,19 +3,7 @@ import CommonData from "./commonData";
 import Measure from "./measure";
 
 export default interface BhaRun {
-  wellName: unknown;
-  type: any;
-  category: any;
-  subCategory: any;
-  extendCategory: any;
-  affectedPersonnel: any;
-  dTimEnd: any;
-  mdBitStart: any;
-  mdBitEnd: any;
-  severityLevel: any;
-  probabilityLevel: any;
-  summary: any;
-  details: any;
+  wellName: string;
   uid: string;
   wellUid: string;
   wellboreUid: string;
