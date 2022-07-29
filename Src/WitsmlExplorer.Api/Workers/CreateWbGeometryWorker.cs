@@ -1,22 +1,24 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Extensions;
-using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
-using Witsml.Data.Measures;
-using System.Globalization;
 
 namespace WitsmlExplorer.Api.Workers
 {
-
     public class CreateWbGeometryWorker : BaseWorker<CreateWbGeometryJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
@@ -52,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task WaitUntilWbGeometryHasBeenCreated(WbGeometry wbGeometry)
         {
             var isCreated = false;
-            var query = WbGeometryQueries.QueryById(wbGeometry.WellUid, wbGeometry.WellboreUid, wbGeometry.Uid);
+            var query = WbGeometryQueries.GetWitsmlWbGeometryById(wbGeometry.WellUid, wbGeometry.WellboreUid, wbGeometry.Uid);
             var maxRetries = 30;
             while (!isCreated)
             {

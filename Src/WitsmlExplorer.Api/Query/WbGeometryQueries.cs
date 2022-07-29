@@ -1,8 +1,10 @@
-using Witsml.Data;
-using Witsml.Extensions;
-using WitsmlExplorer.Api.Models;
-using Witsml.Data.Measures;
 using System.Globalization;
+
+using Witsml.Data;
+using Witsml.Data.Measures;
+using Witsml.Extensions;
+
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -24,7 +26,7 @@ namespace WitsmlExplorer.Api.Query
 
 
 
-        public static WitsmlWbGeometrys QueryById(string wellUid, string wellboreUid, string wbGeometryUid)
+        public static WitsmlWbGeometrys GetWitsmlWbGeometryById(string wellUid, string wellboreUid, string wbGeometryUid)
         {
             return new WitsmlWbGeometrys
             {
