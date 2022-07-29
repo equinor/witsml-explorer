@@ -12,6 +12,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyLogObject,
         DeleteMessageObjects,
         ModifyMessageObject,
+        DeleteBhaRuns,
         DeleteCurveValues,
         DeleteLogObjects,
         DeleteMnemonics,

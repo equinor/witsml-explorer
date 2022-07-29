@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 using Witsml.Data;
 using Witsml.Data.Measures;
@@ -140,6 +142,21 @@ namespace WitsmlExplorer.Api.Query
                     }
                 }.AsSingletonList()
             };
+        }
+
+        public static IEnumerable<WitsmlBhaRuns> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
+        {
+            return bhaRunUids.Select((bhaRunUid) =>
+                new WitsmlBhaRuns
+                {
+                    BhaRuns = new WitsmlBhaRun
+                    {
+                        Uid = bhaRunUid,
+                        WellUid = wellUid,
+                        WellboreUid = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
         }
     }
 }
