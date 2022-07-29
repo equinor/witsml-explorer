@@ -4,20 +4,26 @@ import Rig from "../../models/rig";
 import React, { useEffect, useState } from "react";
 import ModalDialog from "./ModalDialog";
 import { TextField } from "@material-ui/core";
+// import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
 import { rigType } from "../../models/rigType";
 import { itemStateTypes } from "../../models/itemStateTypes";
+// import RigService from "../../services/rigService";
+import { UpdateWellboreRigsAction } from "../../contexts/navigationStateReducer";
+// import ModificationType from "../../contexts/modificationType";
 
 export interface RigPropertiesModalProps {
+  dispatchNavigation: (action: UpdateWellboreRigsAction) => void;
   mode: PropertiesModalMode;
   rig: Rig;
   dispatchOperation: (action: HideModalAction) => void;
 }
 
 const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement => {
+  // const { mode, rig, dispatchOperation, dispatchNavigation } = props;
   const { mode, rig, dispatchOperation } = props;
   const [editableRig, setEditableRig] = useState<Rig>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -33,17 +39,30 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
       rig: updatedRig
     };
     await JobService.orderJob(JobType.ModifyRig, wellboreRigJob);
+    // const freshRigs = await RigService.getRigs(rig.wellUid, rig.wellboreUid);
+
+    // dispatchNavigation({
+    //   type: ModificationType.UpdateRigsOnWellbore,
+    //   payload: {
+    //     rigs: freshRigs,
+    //     wellUid: rig.wellUid,
+    //     wellboreUid: rig.wellboreUid,
+    //   }
+    // });
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
+
   function IsValidNumber(telnum: string): boolean {
-    const arr: Array<string> = telnum.split("");
     let result = true;
-    arr.forEach((e) => {
-      if (isNaN(parseInt(e)) && e != " " && e != "-" && e != "+") {
-        result = false;
-      }
-    });
+    if (telnum) {
+      const arr: Array<string> = telnum.split("");
+      arr.forEach((e) => {
+        if (isNaN(parseInt(e)) && e != " " && e != "-" && e != "+") {
+          result = false;
+        }
+      });
+    }
     return result;
   }
 
@@ -64,8 +83,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 label={"name"}
                 required
                 value={editableRig.name ? editableRig.name : ""}
-                error={editableRig.name.length === 0}
-                helperText={editableRig.name.length === 0 ? "The rig name must be 1-64 characters" : ""}
+                error={editableRig.name?.length === 0}
+                helperText={editableRig.name?.length === 0 ? "The rig name must be 1-64 characters" : ""}
                 fullWidth
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) => setEditableRig({ ...editableRig, name: e.target.value })}
@@ -109,8 +128,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 label={"yearEntService"}
                 type="number"
                 value={editableRig.yearEntService ? editableRig.yearEntService : ""}
-                error={editableRig.yearEntService.length != 4}
-                helperText={editableRig.yearEntService.length < 4 ? "The rig yearEntService must be a 4 digit integer number" : ""}
+                error={editableRig.yearEntService?.length != 4}
+                helperText={editableRig.yearEntService?.length < 4 ? "The rig yearEntService must be a 4 digit integer number" : ""}
                 fullWidth
                 inputProps={{ minLength: 4, maxLength: 4 }}
                 onChange={(e) => setEditableRig({ ...editableRig, yearEntService: e.target.value })}
@@ -119,9 +138,9 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"telNumber"}
                 label={"telNumber"}
                 value={editableRig.telNumber ? editableRig.telNumber : ""}
-                error={!IsValidNumber(editableRig.telNumber) || editableRig.telNumber.length < 8}
+                error={!IsValidNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8}
                 helperText={
-                  !IsValidNumber(editableRig.telNumber) || editableRig.telNumber.length < 8
+                  !IsValidNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8
                     ? "telNumber must be an integer of min 8 characters, however whitespace, dash and plus is accepted"
                     : ""
                 }
@@ -143,8 +162,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"emailAddress"}
                 label={"emailAddress"}
                 value={editableRig.emailAddress ? editableRig.emailAddress : ""}
-                error={editableRig.emailAddress.length === 0}
-                helperText={editableRig.emailAddress.length === 0 ? "The emailAddress must be at least 1 character long" : ""}
+                error={editableRig.emailAddress?.length === 0}
+                helperText={editableRig.emailAddress?.length === 0 ? "The emailAddress must be at least 1 character long" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e) => setEditableRig({ ...editableRig, emailAddress: e.target.value })}
@@ -153,8 +172,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"nameContact"}
                 label={"nameContact"}
                 value={editableRig.nameContact ? editableRig.nameContact : ""}
-                error={editableRig.nameContact.length === 0}
-                helperText={editableRig.nameContact.length === 0 ? "The nameContact must be at least 1 character long" : ""}
+                error={editableRig.nameContact?.length === 0}
+                helperText={editableRig.nameContact?.length === 0 ? "The nameContact must be at least 1 character long" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e) => setEditableRig({ ...editableRig, nameContact: e.target.value })}
@@ -208,6 +227,23 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setEditableRig({ ...editableRig, commonData });
                 }}
               />
+
+              {/* <FormControl fullWidth>
+                <InputLabel id="itemState" >Item State</InputLabel>
+                <Select 
+                  labelId="itemState"
+                  value={editableRig.itemState}
+                  onChange={(e)=> {
+                    if (typeof e.target.value === "string") setEditableRig({...editableRig, itemState: e.target.value});
+                  }}>
+                  {itemStateTypes.map((type) => (
+                    <MenuItem value={type} key={type}>
+                      <Typography color={"initial"}>{type}</Typography>
+                    </MenuItem> 
+                  ))}
+
+                </Select>
+              </FormControl> */}
             </>
           }
           confirmDisabled={!validText(editableRig.name)}
