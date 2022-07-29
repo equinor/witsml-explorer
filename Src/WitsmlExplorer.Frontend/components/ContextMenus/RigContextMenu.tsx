@@ -22,11 +22,12 @@ export interface RigContextMenuProps {
 }
 
 const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
-  const { checkedRigRows, dispatchOperation } = props;
+  const { checkedRigRows, dispatchOperation, dispatchNavigation } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyRigObjectProps: RigPropertiesModalProps = { mode, rig: checkedRigRows[0].rig, dispatchOperation };
+    // const modifyRigObjectProps: RigPropertiesModalProps = { mode, rig: checkedRigRows[0].rig, dispatchOperation };
+    const modifyRigObjectProps: RigPropertiesModalProps = { mode, rig: checkedRigRows[0].rig, dispatchOperation, dispatchNavigation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <RigPropertiesModal {...modifyRigObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
