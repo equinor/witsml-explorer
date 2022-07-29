@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 using Witsml.Data;
 using Witsml.Data.Measures;
@@ -37,6 +39,21 @@ namespace WitsmlExplorer.Api.Query
                     WellboreUid = wellboreUid
                 }.AsSingletonList()
             };
+        }
+
+        public static IEnumerable<WitsmlWbGeometrys> DeleteWbGeometryQuery(string wellUid, string wellboreUid, string[] wbGeometryUids)
+        {
+            return wbGeometryUids.Select((wbGeometryUid) =>
+                new WitsmlWbGeometrys
+                {
+                    WbGeometrys = new WitsmlWbGeometry
+                    {
+                        Uid = wbGeometryUid,
+                        WellUid = wellUid,
+                        WellboreUid = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
         }
 
         public static WitsmlWbGeometrys CreateWbGeometry(WbGeometry wbGeometry)
