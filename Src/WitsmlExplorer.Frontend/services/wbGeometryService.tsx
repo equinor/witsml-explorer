@@ -10,4 +10,13 @@ export default class WbGeometryObjectService {
       return [];
     }
   }
+
+  public static async getWbGeometry(wellUid: string, wellboreUid: string, wbGeometryId: string, abortSignal?: AbortSignal): Promise<WbGeometryObject> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/wbGeometrys/${wbGeometryId}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
+    }
+  }
 }

@@ -26,6 +26,7 @@ export interface RefreshAction {
   logObjectUid?: string;
   messageObjectUid?: string;
   trajectoryUid?: string;
+  wbGeometryObjectUid?: string;
 }
 
 export enum RefreshType {

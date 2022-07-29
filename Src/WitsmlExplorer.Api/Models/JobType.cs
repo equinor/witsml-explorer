@@ -27,6 +27,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyTrajectoryStation,
         ModifyTubular,
         ModifyTubularComponent,
+        ModifyWbGeometry,
         ModifyWell,
         ModifyWellbore,
         ModifyMudLog,
@@ -36,6 +37,7 @@ namespace WitsmlExplorer.Api.Models
         CreateWellbore,
         CreateRisk,
         CreateMudLog,
+        CreateWbGeometry,
         BatchModifyWell,
         ImportLogData
     }

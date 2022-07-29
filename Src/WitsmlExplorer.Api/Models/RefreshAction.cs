@@ -162,4 +162,19 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
+    public class RefreshWbGeometryObjects : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.WbGeometryObjects;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+
+        public RefreshType RefreshType { get; }
+
+        public RefreshWbGeometryObjects(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
 }

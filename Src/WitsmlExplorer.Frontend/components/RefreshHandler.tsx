@@ -12,6 +12,7 @@ import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
 import RiskObjectService from "../services/riskObjectService";
 import TrajectoryService from "../services/trajectoryService";
+import WbGeometryObjectService from "../services/wbGeometryService";
 import BhaRunService from "../services/bhaRunService";
 
 const RefreshHandler = (): React.ReactElement => {
@@ -52,6 +53,8 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Risks:
             await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
+          case EntityType.WbGeometryObjects:
+            await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -158,6 +161,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (trajectory) {
         dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshWbGeometryObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateWbGeometryObjects) {
+      const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (wbGeometrys) {
+        dispatchNavigation({ type: modificationType, payload: { wbGeometrys, wellUid, wellboreUid } });
       }
     }
   }

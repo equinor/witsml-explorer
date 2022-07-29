@@ -5,7 +5,6 @@ using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -15,7 +14,6 @@ namespace WitsmlExplorer.Api.Services
 
     }
 
-    // ReSharper disable once UnusedMember.Global
     public class RiskService : WitsmlService, IRiskService
     {
         public RiskService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }

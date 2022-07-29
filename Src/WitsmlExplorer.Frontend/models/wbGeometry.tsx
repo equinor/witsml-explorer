@@ -2,12 +2,12 @@ import Measure from "./measure";
 import CommonData from "./commonData";
 
 export default interface WbGeometryObject {
-  uid: string;
-  name: string;
-  wellboreUid: string;
-  wellboreName: string;
   wellUid: string;
+  uid: string;
+  wellboreUid: string;
   wellName?: string;
+  wellboreName: string;
+  name: string;
   dTimReport?: Date;
   mdBottom?: Measure;
   gapAir?: Measure;
@@ -17,11 +17,11 @@ export default interface WbGeometryObject {
 
 export function emptyWbGeometryObject(): WbGeometryObject {
   return {
-    wellboreUid: "",
-    wellboreName: "",
     wellUid: "",
-    wellName: "",
     uid: "",
+    wellboreUid: "",
+    wellName: "",
+    wellboreName: "",
     name: "",
     dTimReport: null,
     mdBottom: null,
