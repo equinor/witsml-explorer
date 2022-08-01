@@ -35,8 +35,8 @@ namespace WitsmlExplorer.Console.ListCommands
                 {
                     var bhaRuns = (await GetBhaRuns(settings.WellUid, settings.WellboreUid)).ToList();
 
-                    wellName = bhaRuns.FirstOrDefault()?.WellName;
-                    wellboreName = bhaRuns.FirstOrDefault()?.WellboreName;
+                    wellName = bhaRuns.FirstOrDefault()?.NameWell;
+                    wellboreName = bhaRuns.FirstOrDefault()?.NameWellbore;
 
                     foreach (var bhaRun in bhaRuns.OrderBy(r => r.CommonData.DTimLastChange))
                     {
@@ -73,11 +73,11 @@ namespace WitsmlExplorer.Console.ListCommands
             {
                 BhaRuns = new WitsmlBhaRun
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     Uid = "",
-                    WellName = "",
-                    WellboreName = "",
+                    NameWell = "",
+                    NameWellbore = "",
                     Name = "",
                     Tubular = new WitsmlObjectReference
                     {
