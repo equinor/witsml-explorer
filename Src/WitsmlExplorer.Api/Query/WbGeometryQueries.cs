@@ -19,8 +19,8 @@ namespace WitsmlExplorer.Api.Query
                 WbGeometrys = new WitsmlWbGeometry
                 {
                     Uid = "",
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
@@ -35,8 +35,8 @@ namespace WitsmlExplorer.Api.Query
                 WbGeometrys = new WitsmlWbGeometry
                 {
                     Uid = wbGeometryUid,
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }.AsSingletonList()
             };
         }
@@ -49,8 +49,8 @@ namespace WitsmlExplorer.Api.Query
                     WbGeometrys = new WitsmlWbGeometry
                     {
                         Uid = wbGeometryUid,
-                        WellUid = wellUid,
-                        WellboreUid = wellboreUid
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
                     }.AsSingletonList()
                 }
             );
@@ -62,12 +62,12 @@ namespace WitsmlExplorer.Api.Query
             {
                 WbGeometrys = new WitsmlWbGeometry
                 {
-                    WellUid = wbGeometry.WellUid,
-                    WellboreUid = wbGeometry.WellboreUid,
+                    UidWell = wbGeometry.WellUid,
+                    UidWellbore = wbGeometry.WellboreUid,
                     Uid = wbGeometry.Uid,
                     Name = wbGeometry.Name,
-                    WellName = wbGeometry.WellName,
-                    WellboreName = wbGeometry.WellboreName,
+                    NameWell = wbGeometry.WellName,
+                    NameWellbore = wbGeometry.WellboreName,
                     DTimReport = wbGeometry.DTimReport?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     MdBottom = wbGeometry.MdBottom != null ? new WitsmlMeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = wbGeometry.MdBottom.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     GapAir = wbGeometry.GapAir != null ? new WitsmlLengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = wbGeometry.GapAir.Value.ToString(CultureInfo.InvariantCulture) } : null,

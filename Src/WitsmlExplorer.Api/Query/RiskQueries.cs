@@ -17,8 +17,8 @@ namespace WitsmlExplorer.Api.Query
                 Risks = new WitsmlRisk
                 {
                     Uid = "",
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     Name = "",
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
@@ -32,8 +32,8 @@ namespace WitsmlExplorer.Api.Query
                 Risks = new WitsmlRisk
                 {
                     Uid = riskUid,
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }.AsSingletonList()
             };
         }
@@ -43,8 +43,8 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     Name = name,
                     MdBitStart = mdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitStart.Uom, Value = mdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     MdBitEnd = mdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitEnd.Uom, Value = mdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null
@@ -58,8 +58,8 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     ExtendCategory = extendCategory,
                     CommonData = new WitsmlCommonData
                     {
@@ -77,8 +77,8 @@ namespace WitsmlExplorer.Api.Query
                     Risks = new WitsmlRisk
                     {
                         Uid = riskUid,
-                        WellUid = wellUid,
-                        WellboreUid = wellboreUid
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
                     }.AsSingletonList()
                 }
             );
@@ -92,10 +92,10 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = risk.WellUid,
-                    WellName = risk.WellName,
-                    WellboreUid = risk.WellboreUid,
-                    WellboreName = risk.WellboreName,
+                    UidWell = risk.WellUid,
+                    NameWell = risk.WellName,
+                    UidWellbore = risk.WellboreUid,
+                    NameWellbore = risk.WellboreName,
                     Uid = risk.Uid,
                     Name = risk.Name,
                     Type = risk.Type,

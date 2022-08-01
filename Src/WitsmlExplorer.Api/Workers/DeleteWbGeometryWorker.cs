@@ -59,8 +59,8 @@ namespace WitsmlExplorer.Api.Workers
                     errorReasons.Add(result.Reason);
                     errorEnitities.Add(new EntityDescription
                     {
-                        WellName = wbGeometry.WellName,
-                        WellboreName = wbGeometry.WellboreName,
+                        WellName = wbGeometry.NameWell,
+                        WellboreName = wbGeometry.NameWellbore,
                         ObjectName = wbGeometry.Name
                     });
                 }
