@@ -17,7 +17,6 @@ namespace WitsmlExplorer.Api.Services
 
     }
 
-    // ReSharper disable once UnusedMember.Global
     public class RiskService : WitsmlService, IRiskService
     {
         public RiskService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }

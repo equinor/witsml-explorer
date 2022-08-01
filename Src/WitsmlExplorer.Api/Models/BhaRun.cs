@@ -13,12 +13,13 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string WellboreUid { get; set; }
         public string NumStringRun { get; set; }
+        public string Tubular { get; set; }
         public string TubularUidRef { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimStop { get; set; }
         public DateTime? DTimStartDrilling { get; set; }
         public DateTime? DTimStopDrilling { get; set; }
-        public LengthMeasure PlanDogLeg { get; set; }
+        public LengthMeasure PlanDogleg { get; set; }
         public LengthMeasure ActDogleg { get; set; }
         public LengthMeasure ActDoglegMx { get; set; }
         public string StatusBha { get; set; }

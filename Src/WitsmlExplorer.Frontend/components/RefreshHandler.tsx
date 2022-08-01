@@ -13,6 +13,8 @@ import TubularService from "../services/tubularService";
 import RiskObjectService from "../services/riskObjectService";
 import RigService from "../services/rigService";
 import TrajectoryService from "../services/trajectoryService";
+import WbGeometryObjectService from "../services/wbGeometryService";
+import BhaRunService from "../services/bhaRunService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -34,6 +36,9 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
+          case EntityType.BhaRuns:
+            await refreshBhaRun(refreshAction, modificationType);
+            break;
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
             break;
@@ -52,6 +57,8 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Rig:
             await refreshRig(refreshAction, ModificationType.UpdateRigsOnWellbore);
             break;
+          case EntityType.WbGeometryObjects:
+            await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -95,6 +102,17 @@ const RefreshHandler = (): React.ReactElement => {
         type: ModificationType.UpdateWellbore,
         payload: { wellbore }
       });
+    }
+  }
+
+  async function refreshBhaRun(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateBhaRuns) {
+      const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (bhaRuns) {
+        dispatchNavigation({ type: modificationType, payload: { bhaRuns, wellUid, wellboreUid } });
+      }
     }
   }
 
@@ -158,6 +176,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (trajectory) {
         dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshWbGeometryObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateWbGeometryObjects) {
+      const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (wbGeometrys) {
+        dispatchNavigation({ type: modificationType, payload: { wbGeometrys, wellUid, wellboreUid } });
       }
     }
   }
