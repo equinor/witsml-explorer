@@ -11,5 +11,6 @@ public class WitsmlFormationMarkers : IWitsmlQueryType
     public string Version = "1.4.1.1";
 
     [XmlElement("formationMarker")] public List<WitsmlFormationMarker> FormationMarkers { get; set; } = new();
+    
     public string TypeName => "formationMarker";
 }
