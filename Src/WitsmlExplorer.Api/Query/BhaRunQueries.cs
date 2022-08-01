@@ -19,10 +19,10 @@ namespace WitsmlExplorer.Api.Query
                 BhaRuns = new WitsmlBhaRun
                 {
                     Uid = bhaRunUid,
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
-                    WellName = "",
-                    WellboreName = "",
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    NameWell = "",
+                    NameWellbore = "",
                     Name = "",
                     NumStringRun = "",
                     Tubular = new WitsmlObjectReference
@@ -62,10 +62,10 @@ namespace WitsmlExplorer.Api.Query
                 BhaRuns = new WitsmlBhaRun
                 {
                     Uid = "",
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
-                    WellName = "",
-                    WellboreName = "",
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    NameWell = "",
+                    NameWellbore = "",
                     Name = "",
                     NumStringRun = "",
                     Tubular = new WitsmlObjectReference
@@ -103,10 +103,10 @@ namespace WitsmlExplorer.Api.Query
             {
                 BhaRuns = new WitsmlBhaRun
                 {
-                    WellUid = bhaRun.WellUid,
-                    WellName = bhaRun.WellName,
-                    WellboreUid = bhaRun.WellboreUid,
-                    WellboreName = bhaRun.WellboreName,
+                    UidWell = bhaRun.WellUid,
+                    NameWell = bhaRun.WellName,
+                    UidWellbore = bhaRun.WellboreUid,
+                    NameWellbore = bhaRun.WellboreName,
                     Uid = bhaRun.Uid,
                     Name = bhaRun.Name,
                     NumStringRun = bhaRun.NumStringRun,
@@ -152,8 +152,8 @@ namespace WitsmlExplorer.Api.Query
                     BhaRuns = new WitsmlBhaRun
                     {
                         Uid = bhaRunUid,
-                        WellUid = wellUid,
-                        WellboreUid = wellboreUid
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
                     }.AsSingletonList()
                 }
             );
