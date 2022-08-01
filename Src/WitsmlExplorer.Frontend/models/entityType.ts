@@ -6,7 +6,7 @@ enum EntityType {
   MessageObjects = "MessageObjects",
   Risks = "Risks",
   Tubular = "Tubular",
-  Rig = "Rig",
+  Rigs = "Rigs",
   Trajectory = "Trajectory",
   TrajectoryStation = "TrajectoryStation",
   WbGeometryObjects = "WbGeometryObjects"

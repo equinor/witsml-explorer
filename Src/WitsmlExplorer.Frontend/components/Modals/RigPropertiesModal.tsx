@@ -4,26 +4,20 @@ import Rig from "../../models/rig";
 import React, { useEffect, useState } from "react";
 import ModalDialog from "./ModalDialog";
 import { TextField } from "@material-ui/core";
-// import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
 import JobService, { JobType } from "../../services/jobService";
 import OperationType from "../../contexts/operationType";
 import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
 import { rigType } from "../../models/rigType";
 import { itemStateTypes } from "../../models/itemStateTypes";
-// import RigService from "../../services/rigService";
-import { UpdateWellboreRigsAction } from "../../contexts/navigationStateReducer";
-// import ModificationType from "../../contexts/modificationType";
 
 export interface RigPropertiesModalProps {
-  dispatchNavigation: (action: UpdateWellboreRigsAction) => void;
   mode: PropertiesModalMode;
   rig: Rig;
   dispatchOperation: (action: HideModalAction) => void;
 }
 
 const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement => {
-  // const { mode, rig, dispatchOperation, dispatchNavigation } = props;
   const { mode, rig, dispatchOperation } = props;
   const [editableRig, setEditableRig] = useState<Rig>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,16 +33,6 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
       rig: updatedRig
     };
     await JobService.orderJob(JobType.ModifyRig, wellboreRigJob);
-    // const freshRigs = await RigService.getRigs(rig.wellUid, rig.wellboreUid);
-
-    // dispatchNavigation({
-    //   type: ModificationType.UpdateRigsOnWellbore,
-    //   payload: {
-    //     rigs: freshRigs,
-    //     wellUid: rig.wellUid,
-    //     wellboreUid: rig.wellboreUid,
-    //   }
-    // });
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -227,23 +211,6 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setEditableRig({ ...editableRig, commonData });
                 }}
               />
-
-              {/* <FormControl fullWidth>
-                <InputLabel id="itemState" >Item State</InputLabel>
-                <Select 
-                  labelId="itemState"
-                  value={editableRig.itemState}
-                  onChange={(e)=> {
-                    if (typeof e.target.value === "string") setEditableRig({...editableRig, itemState: e.target.value});
-                  }}>
-                  {itemStateTypes.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      <Typography color={"initial"}>{type}</Typography>
-                    </MenuItem> 
-                  ))}
-
-                </Select>
-              </FormControl> */}
             </>
           }
           confirmDisabled={!validText(editableRig.name)}

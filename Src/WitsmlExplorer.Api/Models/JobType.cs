@@ -23,6 +23,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteWbGeometrys,
         DeleteWell,
         DeleteWellbore,
+        DeleteRigs,
         DeleteRisks,
         DeleteMudLog,
         RenameMnemonic,

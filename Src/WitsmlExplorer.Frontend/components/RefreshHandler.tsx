@@ -54,8 +54,8 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Risks:
             await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
-          case EntityType.Rig:
-            await refreshRig(refreshAction, ModificationType.UpdateRigsOnWellbore);
+          case EntityType.Rigs:
+            await refreshRigs(refreshAction, ModificationType.UpdateRigsOnWellbore);
             break;
           case EntityType.WbGeometryObjects:
             await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
@@ -136,7 +136,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshRig(refreshAction: RefreshAction, modificationType: ModificationType) {
+  async function refreshRigs(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateRigsOnWellbore) {
       const rigs = await RigService.getRigs(refreshAction.wellUid, refreshAction.wellboreUid);
       const wellUid = refreshAction.wellUid;

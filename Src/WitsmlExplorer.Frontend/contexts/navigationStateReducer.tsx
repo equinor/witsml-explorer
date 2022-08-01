@@ -2,7 +2,7 @@ import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
 import RiskObject from "../models/riskObject";
-import Rig, { getRigProperties } from "../models/rig";
+import Rig from "../models/rig";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
@@ -130,8 +130,6 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectMessageObject(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
-    case NavigationType.SelectRig:
-      return selectRig(state, action);
     case NavigationType.SelectRigGroup:
       return selectRigGroup(state, action);
     case NavigationType.SelectTrajectoryGroup:
@@ -185,8 +183,6 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
-    case ModificationType.UpdateRigOnWellbore:
-      return updateWellboreRig(state, action);
     case ModificationType.UpdateRigsOnWellbore:
       return updateWellboreRigs(state, action);
     case ModificationType.UpdateRiskObjects:
@@ -437,19 +433,6 @@ const updateWellboreRigs = (state: NavigationState, { payload }: UpdateWellboreR
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     wells: freshWells
-  };
-};
-
-const updateWellboreRig = (state: NavigationState, { payload }: UpdateWellboreRigAction) => {
-  const { wells } = state;
-  const { rig } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, rig);
-  const selectedRig = state.selectedRig?.uid === rig.uid ? rig : state.selectedRig;
-  return {
-    ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedRig
   };
 };
 
@@ -809,27 +792,6 @@ const selectRigGroup = (state: NavigationState, { payload }: SelectRigGroupActio
   };
 };
 
-const selectRig = (state: NavigationState, { payload }: SelectRigAction) => {
-  const { rig, well, wellbore } = payload;
-  let expandedTreeNodes = state.expandedTreeNodes;
-
-  const rigGroup = calculateRigGroupId(wellbore);
-  const shouldExpandRigGroup = shouldExpand(expandedTreeNodes, rigGroup, calculateWellboreNodeId(wellbore));
-  expandedTreeNodes = shouldExpandRigGroup ? toggleTreeNode(expandedTreeNodes, rigGroup) : expandedTreeNodes;
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
-    selectedRigGroup: rigGroup,
-    selectedRig: rig,
-    currentSelected: rig,
-    currentProperties: getRigProperties(rig),
-    expandedTreeNodes
-  };
-};
-
 const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGroupAction) => {
   const { well, wellbore, messageGroup } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMessageGroupId(wellbore), calculateWellboreNodeId(wellbore));
@@ -1091,11 +1053,6 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
-export interface UpdateWellboreRigAction extends Action {
-  type: ModificationType.UpdateRigOnWellbore;
-  payload: { rig: Rig; exists: boolean };
-}
-
 export interface UpdateWellboreRigsAction extends Action {
   type: ModificationType.UpdateRigsOnWellbore;
   payload: { rigs: Rig[]; wellUid: string; wellboreUid: string };
@@ -1273,7 +1230,6 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
-  | UpdateWellboreRigAction
   | UpdateWellboreRigsAction
   | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
