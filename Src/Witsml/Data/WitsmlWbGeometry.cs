@@ -8,19 +8,19 @@ namespace Witsml.Data
     public class WitsmlWbGeometry
     {
         [XmlAttribute("uidWell")]
-        public string WellUid { get; set; }
+        public string UidWell { get; set; }
 
         [XmlAttribute("uidWellbore")]
-        public string WellboreUid { get; set; }
+        public string UidWellbore { get; set; }
 
         [XmlAttribute("uid")]
         public string Uid { get; set; }
 
         [XmlElement("nameWell")]
-        public string WellName { get; set; }
+        public string NameWell { get; set; }
 
         [XmlElement("nameWellbore")]
-        public string WellboreName { get; set; }
+        public string NameWellbore { get; set; }
 
         [XmlElement("name")]
         public string Name { get; set; }

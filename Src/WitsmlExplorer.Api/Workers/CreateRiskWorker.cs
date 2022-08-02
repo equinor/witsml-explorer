@@ -73,11 +73,11 @@ namespace WitsmlExplorer.Api.Workers
                 Risks = new WitsmlRisk
                 {
                     Uid = risk.Uid,
-                    WellboreUid = risk.WellboreUid,
-                    WellUid = risk.WellUid,
+                    UidWellbore = risk.WellboreUid,
+                    UidWell = risk.WellUid,
                     Name = risk.Name,
-                    WellboreName = risk.WellboreName,
-                    WellName = risk.WellName,
+                    NameWellbore = risk.WellboreName,
+                    NameWell = risk.WellName,
                     Type = risk.Type,
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,
