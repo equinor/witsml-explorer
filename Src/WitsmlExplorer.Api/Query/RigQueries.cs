@@ -35,6 +35,7 @@ namespace WitsmlExplorer.Api.Query
                     RatingWaterDepth = null,
                     TelNumber = "",
                     TypeRig = "",
+                    Uid = "",
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     YearEntService = "",
@@ -118,7 +119,8 @@ namespace WitsmlExplorer.Api.Query
                     YearEntService = rig.YearEntService,
                     CommonData = new WitsmlCommonData()
                     {
-
+                        DTimCreation = null,
+                        DTimLastChange = null,
                         ItemState = rig.CommonData.ItemState,
                     }
 
