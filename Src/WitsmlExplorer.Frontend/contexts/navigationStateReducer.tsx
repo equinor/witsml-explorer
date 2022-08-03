@@ -570,7 +570,7 @@ const getWellIndex = (wells: Well[], wellUid: string) => {
 };
 
 const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string) => {
-  return wells[wellIndex].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
+  return wells[0].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
 };
 
 const getLogIndex = (wells: Well[], wellIndex: number, wellboreIndex: number, logUid: string) => {
@@ -1173,10 +1173,10 @@ export interface SelectRigGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; rigGroup: any };
 }
 
-export interface SelectRigAction extends Action {
-  type: NavigationType.SelectRig;
-  payload: { well: Well; wellbore: Wellbore; rig: Rig; rigGroup: any };
-}
+// export interface SelectRigAction extends Action {
+//   type: NavigationType.SelectRig;
+//   payload: { well: Well; wellbore: Wellbore; rig: Rig; rigGroup: any };
+// }
 
 export interface SelectTrajectoryGroupAction extends Action {
   type: NavigationType.SelectTrajectoryGroup;
@@ -1245,7 +1245,7 @@ export type NavigationAction =
   | SelectLogObjectAction
   | SelectWellAction
   | SelectWellboreAction
-  | SelectRigAction
+  // | SelectRigAction
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction

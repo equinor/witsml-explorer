@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import Rig from "../../models/rig";
 import NavigationContext from "../../contexts/navigationContext";
-
 import { RigContextMenuProps } from "../ContextMenus/RigContextMenu";
 import OperationContext from "../../contexts/operationContext";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -23,7 +22,8 @@ export const RigsListView = (): React.ReactElement => {
     if (selectedWellbore && selectedWellbore.rigs) {
       setRigs(selectedWellbore.rigs);
     }
-  }, []);
+  }, [selectedWellbore]);
+
   const getTableData = () => {
     return rigs.map((rig) => {
       return {
@@ -66,7 +66,7 @@ export const RigsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigContextMenu {...contextProps} />, position } });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore.rigs, rigs) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RigsListView;

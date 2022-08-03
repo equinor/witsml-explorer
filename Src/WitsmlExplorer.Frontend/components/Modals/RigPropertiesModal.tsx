@@ -61,7 +61,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
               <TextField disabled id="wellName" label="well name" defaultValue={editableRig.wellName} fullWidth />
               <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableRig.wellboreUid} fullWidth />
               <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableRig.wellboreName} fullWidth />
-              <TextField disabled id={"uid"} label={"rig uid"} required defaultValue={editableRig.uid} fullWidth />
+              <TextField disabled id="uid" label="rig uid" required defaultValue={editableRig.uid} fullWidth />
               <TextField
                 id={"name"}
                 label={"name"}

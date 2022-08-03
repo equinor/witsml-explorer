@@ -119,6 +119,7 @@ namespace WitsmlExplorer.Api.Query
                     YearEntService = rig.YearEntService,
                     CommonData = new WitsmlCommonData()
                     {
+                        SourceName = "",
                         DTimCreation = null,
                         DTimLastChange = null,
                         ItemState = rig.CommonData.ItemState,

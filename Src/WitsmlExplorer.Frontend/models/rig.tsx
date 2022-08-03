@@ -74,6 +74,6 @@ export const getRigProperties = (rig: Rig): Map<string, string> => {
     ["Wellbore", rig.wellboreName],
     ["UID Wellbore", rig.wellboreUid],
     ["Rig", rig.name],
-    ["UID Risk", rig.uid]
+    ["UID Rig", rig.uid]
   ]);
 };
