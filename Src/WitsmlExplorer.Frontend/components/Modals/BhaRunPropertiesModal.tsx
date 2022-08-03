@@ -88,7 +88,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 label={"tubularUidRef"}
                 required
                 value={editableBhaRun.tubularUidRef ? editableBhaRun.tubularUidRef : ""}
-                error={editableBhaRun.tubularUidRef.length === 0}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubularUidRef: e.target.value })}
               />
@@ -209,6 +208,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               />
               <TextField
                 id={"numStringRun"}
+                type="number"
                 label={"numStringRun"}
                 value={editableBhaRun.numStringRun ? editableBhaRun.numStringRun : ""}
                 fullWidth
