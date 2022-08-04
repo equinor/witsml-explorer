@@ -54,6 +54,18 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+        public static WitsmlBhaRuns GetWitsmlBhaRunsById(string wellUid, string wellboreUid, string[] bhaRunUids)
+        {
+            return new WitsmlBhaRuns
+            {
+                BhaRuns = bhaRunUids.Select((bhaRunUid) => new WitsmlBhaRun
+                {
+                    Uid = bhaRunUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }).ToList()
+            };
+        }
 
         public static WitsmlBhaRuns GetWitsmlBhaRunByWellbore(string wellUid, string wellboreUid)
         {
@@ -157,6 +169,20 @@ namespace WitsmlExplorer.Api.Query
                     }.AsSingletonList()
                 }
             );
+        }
+        public static IEnumerable<WitsmlBhaRuns> CopyWitsmlBhaRuns(WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore)
+        {
+            return bhaRuns.BhaRuns.Select((bhaRun) =>
+            {
+                bhaRun.UidWell = targetWellbore.UidWell;
+                bhaRun.NameWell = targetWellbore.NameWell;
+                bhaRun.UidWellbore = targetWellbore.Uid;
+                bhaRun.NameWellbore = targetWellbore.Name;
+                return new WitsmlBhaRuns
+                {
+                    BhaRuns = bhaRun.AsSingletonList()
+                };
+            });
         }
     }
 }

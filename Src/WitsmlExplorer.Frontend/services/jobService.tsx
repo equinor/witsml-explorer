@@ -13,6 +13,7 @@ export default class JobService {
 
 export enum JobType {
   CreateWell = "CreateWell",
+  CopyBhaRun = "CopyBhaRun",
   CopyLog = "CopyLog",
   CopyLogData = "CopyLogData",
   CopyTrajectory = "CopyTrajectory",

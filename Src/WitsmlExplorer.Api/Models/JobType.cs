@@ -2,6 +2,7 @@ namespace WitsmlExplorer.Api.Models
 {
     public enum JobType
     {
+        CopyBhaRun,
         CopyLog = 1,
         CopyLogData,
         CopyTrajectory,
