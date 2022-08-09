@@ -68,8 +68,8 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 label={"name"}
                 required
                 value={editableBhaRun.name ?? ""}
-                error={editableBhaRun.name.length === 0}
-                helperText={editableBhaRun.name.length === 0 ? "The bha run name must be 1-64 characters" : ""}
+                error={!validText(editableBhaRun.name)}
+                helperText={!validText(editableBhaRun.name) ? "The bha run name must be 1-64 characters" : ""}
                 fullWidth
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, name: e.target.value })}
