@@ -45,6 +45,6 @@ export const WbGeometrysListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometryObjectContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore.wbGeometrys, wbGeometrys) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore?.wbGeometrys, wbGeometrys) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 export default WbGeometrysListView;

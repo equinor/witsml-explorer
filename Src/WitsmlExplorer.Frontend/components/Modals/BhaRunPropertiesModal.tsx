@@ -67,7 +67,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 id={"name"}
                 label={"name"}
                 required
-                value={editableBhaRun.name ? editableBhaRun.name : ""}
+                value={editableBhaRun.name ?? ""}
                 error={editableBhaRun.name.length === 0}
                 helperText={editableBhaRun.name.length === 0 ? "The bha run name must be 1-64 characters" : ""}
                 fullWidth
@@ -78,8 +78,8 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 id={"tubular"}
                 label={"tubular"}
                 required
-                value={editableBhaRun.tubular ? editableBhaRun.tubular : ""}
-                error={editableBhaRun.tubular.length === 0}
+                value={editableBhaRun.tubular ?? ""}
+                error={editableBhaRun.tubular?.length === 0}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubular: e.target.value })}
               />
@@ -87,8 +87,8 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 id={"tubularUidRef"}
                 label={"tubularUidRef"}
                 required
-                value={editableBhaRun.tubularUidRef ? editableBhaRun.tubularUidRef : ""}
-                error={editableBhaRun.tubularUidRef.length === 0}
+                value={editableBhaRun.tubularUidRef ?? ""}
+                error={editableBhaRun.tubularUidRef?.length === 0}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubularUidRef: e.target.value })}
               />
@@ -203,28 +203,29 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <TextField
                 id={"numBitRun"}
                 label={"numBitRun"}
-                value={editableBhaRun.numBitRun ? editableBhaRun.numBitRun : ""}
+                value={editableBhaRun.numBitRun ?? ""}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, numBitRun: e.target.value })}
               />
               <TextField
                 id={"numStringRun"}
                 label={"numStringRun"}
-                value={editableBhaRun.numStringRun ? editableBhaRun.numStringRun : ""}
+                type="number"
+                value={editableBhaRun.numStringRun ?? ""}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, numStringRun: e.target.value })}
               />
               <TextField
                 id={"reasonTrip"}
                 label={"reasonTrip"}
-                value={editableBhaRun.reasonTrip ? editableBhaRun.reasonTrip : ""}
+                value={editableBhaRun.reasonTrip ?? ""}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, reasonTrip: e.target.value })}
               />
               <TextField
                 id={"objectiveBha"}
                 label={"objectiveBha"}
-                value={editableBhaRun.objectiveBha ? editableBhaRun.objectiveBha : ""}
+                value={editableBhaRun.objectiveBha ?? ""}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, objectiveBha: e.target.value })}
               />
@@ -232,7 +233,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 id="itemState"
                 label="Select an item state"
                 options={itemStateTypes}
-                initialSelectedOptions={[editableBhaRun.commonData.itemState ? editableBhaRun.commonData.itemState : ""]}
+                initialSelectedOptions={[editableBhaRun.commonData.itemState ?? ""]}
                 onOptionsChange={({ selectedItems }) => {
                   const commonData = { ...editableBhaRun.commonData, itemState: selectedItems[0] ?? null };
                   setEditableBhaRun({ ...editableBhaRun, commonData });
@@ -243,7 +244,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <TextField
                 id="sourceName"
                 label="sourceName"
-                value={editableBhaRun.commonData.sourceName ? editableBhaRun.commonData.sourceName : ""}
+                value={editableBhaRun.commonData.sourceName ?? ""}
                 fullWidth
                 onChange={(e) => {
                   const commonData = { ...editableBhaRun.commonData, sourceName: e.target.value };
@@ -253,7 +254,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <TextField
                 id="serviceCategory"
                 label="serviceCategory"
-                value={editableBhaRun.commonData.serviceCategory ? editableBhaRun.commonData.serviceCategory : ""}
+                value={editableBhaRun.commonData.serviceCategory ?? ""}
                 fullWidth
                 onChange={(e) => {
                   const commonData = { ...editableBhaRun.commonData, serviceCategory: e.target.value };
@@ -263,7 +264,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <TextField
                 id="comments"
                 label="comments"
-                value={editableBhaRun.commonData.comments ? editableBhaRun.commonData.comments : ""}
+                value={editableBhaRun.commonData.comments ?? ""}
                 fullWidth
                 onChange={(e) => {
                   const commonData = { ...editableBhaRun.commonData, comments: e.target.value };
@@ -273,7 +274,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <TextField
                 id="defaultDatum"
                 label="defaultDatum"
-                value={editableBhaRun.commonData.defaultDatum ? editableBhaRun.commonData.defaultDatum : ""}
+                value={editableBhaRun.commonData.defaultDatum ?? ""}
                 fullWidth
                 onChange={(e) => {
                   const commonData = { ...editableBhaRun.commonData, defaultDatum: e.target.value };
