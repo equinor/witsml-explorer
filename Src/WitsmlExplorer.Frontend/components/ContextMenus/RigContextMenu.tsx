@@ -13,8 +13,6 @@ import { Typography } from "@equinor/eds-core-react";
 import { RigRow } from "../ContentViews/RigsListView";
 import styled from "styled-components";
 import JobService, { JobType } from "../../services/jobService";
-import RigService from "../../services/rigService";
-import ModificationType from "../../contexts/modificationType";
 import ConfirmModal from "../Modals/ConfirmModal";
 
 export interface RigContextMenuProps {
@@ -26,7 +24,7 @@ export interface RigContextMenuProps {
 }
 
 const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
-  const { checkedRigRows, dispatchOperation, dispatchNavigation } = props;
+  const { checkedRigRows, dispatchOperation } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -45,15 +43,6 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
       }
     };
     await JobService.orderJob(JobType.DeleteRigs, job);
-    const freshRigs = await RigService.getRigs(checkedRigRows[0].rig.wellUid, checkedRigRows[0].rig.wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateRigsOnWellbore,
-      payload: {
-        wellUid: job.rigReferences.wellUid,
-        wellboreUid: job.rigReferences.wellboreUid,
-        rigs: freshRigs
-      }
-    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 

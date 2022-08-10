@@ -27,7 +27,6 @@ namespace WitsmlExplorer.Api.Models
         public string TypeRig { get; set; }
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }
-
         public string Uid { get; set; }
         public string YearEntService { get; set; }
         public CommonData CommonData { get; set; }

@@ -570,7 +570,7 @@ const getWellIndex = (wells: Well[], wellUid: string) => {
 };
 
 const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string) => {
-  return wells[0].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
+  return wells[wellIndex].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
 };
 
 const getLogIndex = (wells: Well[], wellIndex: number, wellboreIndex: number, logUid: string) => {
