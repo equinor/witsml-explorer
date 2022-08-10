@@ -53,7 +53,7 @@ export const BhaRunsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <BhaRunContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore.bhaRuns, bhaRuns) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore?.bhaRuns, bhaRuns) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default BhaRunsListView;
