@@ -39,8 +39,8 @@ namespace WitsmlExplorer.Api.Services
                     Manufacturer = rig.Manufacturer,
                     Name = rig.Name,
                     NameContact = rig.NameContact,
-                    NameWell = rig.NameWell,
-                    NameWellbore = rig.NameWellbore,
+                    WellName = rig.NameWell,
+                    WellboreName = rig.NameWellbore,
                     Owner = rig.Owner,
                     Uid = rig.Uid,
                     WellUid = rig.UidWell,
@@ -51,6 +51,13 @@ namespace WitsmlExplorer.Api.Services
                     TelNumber = rig.TelNumber,
                     TypeRig = rig.TypeRig,
                     YearEntService = rig.YearEntService,
+                    CommonData = new CommonData()
+                    {
+                        ItemState = rig.CommonData.ItemState,
+                        SourceName = rig.CommonData.SourceName,
+                        DTimLastChange = StringHelpers.ToDateTime(rig.CommonData.DTimLastChange),
+                        DTimCreation = StringHelpers.ToDateTime(rig.CommonData.DTimCreation),
+                    }
 
                 }).OrderBy(rig => rig.Name);
         }
@@ -75,8 +82,8 @@ namespace WitsmlExplorer.Api.Services
                 Manufacturer = witsmlRig.Manufacturer,
                 Name = witsmlRig.Name,
                 NameContact = witsmlRig.NameContact,
-                NameWell = witsmlRig.NameWell,
-                NameWellbore = witsmlRig.NameWellbore,
+                WellName = witsmlRig.NameWell,
+                WellboreName = witsmlRig.NameWellbore,
                 Registration = witsmlRig.Registration,
                 RatingDrillDepth = witsmlRig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingDrillDepth.Value) },
                 RatingWaterDepth = witsmlRig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingWaterDepth.Value) },
@@ -86,6 +93,13 @@ namespace WitsmlExplorer.Api.Services
                 WellUid = witsmlRig.UidWell,
                 WellboreUid = witsmlRig.UidWellbore,
                 YearEntService = witsmlRig.YearEntService,
+                CommonData = new CommonData()
+                {
+                    ItemState = witsmlRig.CommonData.ItemState,
+                    SourceName = witsmlRig.CommonData.SourceName,
+                    DTimLastChange = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimLastChange),
+                    DTimCreation = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimCreation),
+                }
 
             };
         }

@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers
 
             Log.Information("{JobType} - Job successful. Rig modified", GetType().Name);
             var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.NameWellbore}");
+            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.WellboreName}");
 
             return (workerResult, refreshAction);
         }

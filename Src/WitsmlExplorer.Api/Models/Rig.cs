@@ -16,8 +16,8 @@ namespace WitsmlExplorer.Api.Models
         public bool? IsOffshore { get; set; }
         public string Manufacturer { get; set; }
         public string Name { get; set; }
-        public string NameWellbore { get; set; }
-        public string NameWell { get; set; }
+        public string WellboreName { get; set; }
+        public string WellName { get; set; }
         public string NameContact { get; set; }
         public string Owner { get; set; }
         public LengthMeasure RatingDrillDepth { get; set; }

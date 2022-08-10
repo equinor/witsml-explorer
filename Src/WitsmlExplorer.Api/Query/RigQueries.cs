@@ -39,6 +39,7 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     YearEntService = "",
+                    CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
         }
@@ -70,7 +71,7 @@ namespace WitsmlExplorer.Api.Query
                     TelNumber = "",
                     TypeRig = "",
                     YearEntService = "",
-
+                    CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
         }
@@ -95,8 +96,8 @@ namespace WitsmlExplorer.Api.Query
                 Rigs = new WitsmlRig
                 {
                     UidWell = rig.WellUid,
-                    NameWell = rig.NameWell,
-                    NameWellbore = rig.NameWellbore,
+                    NameWell = rig.WellName,
+                    NameWellbore = rig.WellboreName,
                     Uid = rig.Uid,
                     AirGap = rig.AirGap != null ? new WitsmlLengthMeasure { Uom = rig.AirGap.Uom, Value = rig.AirGap.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     Name = rig.Name,
@@ -119,15 +120,13 @@ namespace WitsmlExplorer.Api.Query
                     YearEntService = rig.YearEntService,
                     CommonData = new WitsmlCommonData()
                     {
-                        SourceName = "",
+                        SourceName = rig.CommonData.SourceName,
                         DTimCreation = null,
                         DTimLastChange = null,
                         ItemState = rig.CommonData.ItemState,
                     }
-
                 }.AsSingletonList()
             };
         }
-
     }
 }
