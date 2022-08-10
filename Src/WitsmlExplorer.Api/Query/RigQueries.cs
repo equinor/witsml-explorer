@@ -1,5 +1,12 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Extensions;
+
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -28,6 +35,7 @@ namespace WitsmlExplorer.Api.Query
                     RatingWaterDepth = null,
                     TelNumber = "",
                     TypeRig = "",
+                    Uid = "",
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     YearEntService = "",
@@ -66,5 +74,60 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+        public static IEnumerable<WitsmlRigs> DeleteRigQuery(string wellUid, string wellboreUid, string[] rigUids)
+        {
+            return rigUids.Select((rigUid) =>
+                new WitsmlRigs
+                {
+                    Rigs = new WitsmlRig
+                    {
+                        Uid = rigUid,
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
+        }
+        public static WitsmlRigs CreateRig(Rig rig)
+        {
+            return new WitsmlRigs
+            {
+                Rigs = new WitsmlRig
+                {
+                    UidWell = rig.UidWell,
+                    NameWell = rig.NameWell,
+                    NameWellbore = rig.NameWellbore,
+                    Uid = rig.Uid,
+                    AirGap = rig.AirGap != null ? new WitsmlLengthMeasure { Uom = rig.AirGap.Uom, Value = rig.AirGap.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    Name = rig.Name,
+                    TypeRig = rig.TypeRig,
+                    Owner = rig.Owner,
+                    UidWellbore = rig.UidWellbore,
+                    Approvals = rig.Approvals,
+                    ClassRig = rig.ClassRig,
+                    DTimStartOp = rig.DTimStartOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimEndOp = rig.DTimEndOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    EmailAddress = rig.EmailAddress,
+                    FaxNumber = rig.FaxNumber,
+                    IsOffshore = rig.IsOffshore,
+                    Manufacturer = rig.Manufacturer,
+                    NameContact = rig.NameContact,
+                    RatingDrillDepth = rig.RatingDrillDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = rig.RatingDrillDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    RatingWaterDepth = rig.RatingWaterDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = rig.RatingWaterDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    Registration = rig.Registration,
+                    TelNumber = rig.TelNumber,
+                    YearEntService = rig.YearEntService,
+                    CommonData = new WitsmlCommonData()
+                    {
+                        SourceName = "",
+                        DTimCreation = null,
+                        DTimLastChange = null,
+                        ItemState = rig.CommonData.ItemState,
+                    }
+
+                }.AsSingletonList()
+            };
+        }
+
     }
 }

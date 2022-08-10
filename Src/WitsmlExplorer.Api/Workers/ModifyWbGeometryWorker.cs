@@ -1,6 +1,9 @@
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;

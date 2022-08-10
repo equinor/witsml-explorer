@@ -1,4 +1,5 @@
 using System;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -28,6 +29,6 @@ namespace WitsmlExplorer.Api.Models
         public string UidWell { get; set; }
         public string Uid { get; set; }
         public string YearEntService { get; set; }
-
+        public CommonData CommonData { get; set; }
     }
 }

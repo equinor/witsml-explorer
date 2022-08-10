@@ -1,10 +1,12 @@
+import CommonData from "./commonData";
 import Measure from "./measure";
 
 export default interface Rig {
   airGap: Measure;
   approvals: string;
+  commonData: CommonData;
   classRig: string;
-  dtimEndOp: Date;
+  dTimEndOp: Date;
   dTimStartOp: Date;
   emailAddress: string;
   faxNumber: string;
@@ -21,6 +23,8 @@ export default interface Rig {
   typeRig: string;
   uid: string;
   wellboreUid: string;
+  wellboreName: string;
+  wellName?: string;
   wellUid: string;
   yearEntService: string;
 }
@@ -31,7 +35,7 @@ export function emptyRig(): Rig {
     approvals: "",
     classRig: "",
     dTimStartOp: null,
-    dtimEndOp: null,
+    dTimEndOp: null,
     emailAddress: "",
     faxNumber: "",
     itemState: "",
@@ -47,7 +51,29 @@ export function emptyRig(): Rig {
     telNumber: "",
     uid: "",
     wellboreUid: "",
+    wellboreName: "",
+    wellName: "",
     wellUid: "",
-    yearEntService: ""
+    yearEntService: "",
+    commonData: {
+      sourceName: "",
+      dTimCreation: null,
+      dTimLastChange: null,
+      itemState: ""
+    }
   };
 }
+export const calculateRigNodeId = (rig: Rig): string => {
+  return rig.wellUid + rig.wellboreUid + rig.uid;
+};
+
+export const getRigProperties = (rig: Rig): Map<string, string> => {
+  return new Map([
+    ["Well", rig.wellName],
+    ["UID Well", rig.wellUid],
+    ["Wellbore", rig.wellboreName],
+    ["UID Wellbore", rig.wellboreUid],
+    ["Rig", rig.name],
+    ["UID Rig", rig.uid]
+  ]);
+};

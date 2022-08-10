@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Query;
 

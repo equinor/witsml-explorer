@@ -2,6 +2,7 @@ import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
 import RiskObject from "../models/riskObject";
+import Rig from "../models/rig";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
@@ -20,7 +21,6 @@ import Wellbore, {
 } from "../models/wellbore";
 import { Server } from "../models/server";
 import ModificationType from "./modificationType";
-import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
 import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
@@ -38,10 +38,11 @@ export interface NavigationState {
   selectedLog: LogObject;
   selectedMessageGroup: string;
   selectedMessage: MessageObject;
-  selectedRiskGroup: string;
-  selectedRisk: RiskObject;
-  selectedLogCurveInfo: LogCurveInfoRow[];
+  selectedRig: Rig;
   selectedRigGroup: string;
+  selectedRisk: RiskObject;
+  selectedRiskGroup: string;
+  selectedLogCurveInfo: LogCurveInfoRow[];
   selectedTrajectoryGroup: string;
   selectedTrajectory: Trajectory;
   selectedTubularGroup: string;
@@ -58,7 +59,7 @@ export interface NavigationState {
   currentProperties: Map<string, string>;
 }
 
-export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | WbGeometryObject;
+export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -74,10 +75,11 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedLog: null,
   selectedMessageGroup: null,
   selectedMessage: null,
+  selectedRig: null,
+  selectedRigGroup: null,
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
-  selectedRigGroup: null,
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
@@ -181,6 +183,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateRigsOnWellbore:
+      return updateWellboreRigs(state, action);
     case ModificationType.UpdateRiskObjects:
       return updateWellboreRisks(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
@@ -215,6 +219,7 @@ const allDeselected: any = {
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
+  selectedRig: null,
   selectedRigGroup: null,
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
@@ -412,12 +417,22 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   const { message } = payload;
   const updatedWells = insertLogIntoWellsStructure(wells, message);
   const selectedMessage = state.selectedMessage?.uid === message.uid ? message : state.selectedMessage;
-
   return {
     ...state,
     wells: updatedWells,
     filteredWells: filterWells(updatedWells, state.selectedFilter),
     selectedMessage
+  };
+};
+
+const updateWellboreRigs = (state: NavigationState, { payload }: UpdateWellboreRigsAction) => {
+  const { wells } = state;
+  const { rigs, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { rigs });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
   };
 };
 
@@ -555,7 +570,7 @@ const getWellIndex = (wells: Well[], wellUid: string) => {
 };
 
 const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string) => {
-  return wells[wellIndex].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
+  return wells[0].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
 };
 
 const getLogIndex = (wells: Well[], wellIndex: number, wellboreIndex: number, logUid: string) => {
@@ -577,7 +592,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | WbGeometryObject[]>
+  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | Rig[] | WbGeometryObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -1038,6 +1053,11 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
+export interface UpdateWellboreRigsAction extends Action {
+  type: ModificationType.UpdateRigsOnWellbore;
+  payload: { rigs: Rig[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreRisksAction extends Action {
   type: ModificationType.UpdateRiskObjects;
   payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
@@ -1153,6 +1173,11 @@ export interface SelectRigGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; rigGroup: any };
 }
 
+// export interface SelectRigAction extends Action {
+//   type: NavigationType.SelectRig;
+//   payload: { well: Well; wellbore: Wellbore; rig: Rig; rigGroup: any };
+// }
+
 export interface SelectTrajectoryGroupAction extends Action {
   type: NavigationType.SelectTrajectoryGroup;
   payload: { well: Well; wellbore: Wellbore; trajectoryGroup: any };
@@ -1205,6 +1230,7 @@ export type NavigationAction =
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRigsAction
   | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTrajectoriesAction
@@ -1219,10 +1245,10 @@ export type NavigationAction =
   | SelectLogObjectAction
   | SelectWellAction
   | SelectWellboreAction
+  // | SelectRigAction
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
-  | SelectRiskGroupAction
   | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction

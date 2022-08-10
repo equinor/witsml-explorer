@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
+
 using WitsmlExplorer.Api.Services;
+
 using Xunit;
 using Xunit.Abstractions;
 
