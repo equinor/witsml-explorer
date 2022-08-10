@@ -40,12 +40,12 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
     const job = {
       rigReferences: {
         rigUids: checkedRigRows.map((rig) => rig.uid),
-        wellUid: checkedRigRows[0].uidWell,
-        wellboreUid: checkedRigRows[0].uidWellbore
+        wellUid: checkedRigRows[0].wellUid,
+        wellboreUid: checkedRigRows[0].wellboreUid
       }
     };
     await JobService.orderJob(JobType.DeleteRigs, job);
-    const freshRigs = await RigService.getRigs(checkedRigRows[0].rig.uidWell, checkedRigRows[0].rig.uidWellbore);
+    const freshRigs = await RigService.getRigs(checkedRigRows[0].rig.wellUid, checkedRigRows[0].rig.wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateRigsOnWellbore,
       payload: {

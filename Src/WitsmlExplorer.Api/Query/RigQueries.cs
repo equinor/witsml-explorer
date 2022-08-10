@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Query
             {
                 Rigs = new WitsmlRig
                 {
-                    UidWell = rig.UidWell,
+                    UidWell = rig.WellUid,
                     NameWell = rig.NameWell,
                     NameWellbore = rig.NameWellbore,
                     Uid = rig.Uid,
@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Query
                     Name = rig.Name,
                     TypeRig = rig.TypeRig,
                     Owner = rig.Owner,
-                    UidWellbore = rig.UidWellbore,
+                    UidWellbore = rig.WellboreUid,
                     Approvals = rig.Approvals,
                     ClassRig = rig.ClassRig,
                     DTimStartOp = rig.DTimStartOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),

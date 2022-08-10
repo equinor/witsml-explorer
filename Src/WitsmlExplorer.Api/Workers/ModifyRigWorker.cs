@@ -1,6 +1,9 @@
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -26,12 +29,12 @@ namespace WitsmlExplorer.Api.Workers
             {
                 const string errorMessage = "Failed to modify rig object";
                 Log.Error("{ErrorMessage}. Target: WellUid: {TargetWellUid}, WellboreUid: {TargetWellboreUid}",
-                    errorMessage, job.Rig.UidWell, job.Rig.UidWellbore);
+                    errorMessage, job.Rig.WellUid, job.Rig.WellboreUid);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyRigResult.Reason), null);
             }
 
             Log.Information("{JobType} - Job successful. Rig modified", GetType().Name);
-            var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), job.Rig.UidWell, job.Rig.UidWellbore, RefreshType.Update);
+            var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, RefreshType.Update);
             var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.NameWellbore}");
 
             return (workerResult, refreshAction);

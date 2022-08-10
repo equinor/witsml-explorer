@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
-using Witsml.ServiceReference;
-using WitsmlExplorer.Api.Models;
+
 using Serilog;
+
+using Witsml.ServiceReference;
+
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -43,8 +46,8 @@ namespace WitsmlExplorer.Api.Services
                     NameWellbore = rig.NameWellbore,
                     Owner = rig.Owner,
                     Uid = rig.Uid,
-                    UidWell = rig.UidWell,
-                    UidWellbore = rig.UidWellbore,
+                    WellUid = rig.UidWell,
+                    WellboreUid = rig.UidWellbore,
                     RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = decimal.Parse(rig.RatingDrillDepth.Value) },
                     RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = decimal.Parse(rig.RatingWaterDepth.Value) },
                     Registration = rig.Registration,
@@ -84,8 +87,8 @@ namespace WitsmlExplorer.Api.Services
                 TelNumber = witsmlRig.TelNumber,
                 TypeRig = witsmlRig.TypeRig,
                 Uid = witsmlRig.Uid,
-                UidWell = witsmlRig.UidWell,
-                UidWellbore = witsmlRig.UidWellbore,
+                WellUid = witsmlRig.UidWell,
+                WellboreUid = witsmlRig.UidWellbore,
                 YearEntService = witsmlRig.YearEntService,
 
             };
