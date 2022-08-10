@@ -2,7 +2,6 @@ using System;
 
 using WitsmlExplorer.Api.Models.Measure;
 
-
 namespace WitsmlExplorer.Api.Models
 {
     public class Risk

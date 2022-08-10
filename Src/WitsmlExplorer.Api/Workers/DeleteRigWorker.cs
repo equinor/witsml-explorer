@@ -12,8 +12,6 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
-
-
 namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteRigWorker : BaseWorker<DeleteRigJob>, IWorker
@@ -69,6 +67,7 @@ namespace WitsmlExplorer.Api.Workers
 
             var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             var successString = successUids.Count > 0 ? $"Deleted Rigs: {string.Join(", ", successUids)}." : "";
+
             if (!error)
             {
                 return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);

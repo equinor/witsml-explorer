@@ -1,4 +1,4 @@
-﻿import { PropertiesModalMode, validText } from "./ModalParts";
+﻿import { PropertiesModalMode, validText, validPhoneNumber } from "./ModalParts";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import Rig from "../../models/rig";
 import React, { useEffect, useState } from "react";
@@ -36,19 +36,6 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
-
-  function IsValidNumber(telnum: string): boolean {
-    let result = true;
-    if (telnum) {
-      const arr: Array<string> = telnum.split("");
-      arr.forEach((e) => {
-        if (isNaN(parseInt(e)) && e != " " && e != "-" && e != "+") {
-          result = false;
-        }
-      });
-    }
-    return result;
-  }
 
   return (
     <>
@@ -122,9 +109,9 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"telNumber"}
                 label={"telNumber"}
                 value={editableRig.telNumber ? editableRig.telNumber : ""}
-                error={!IsValidNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8}
+                error={!validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8}
                 helperText={
-                  !IsValidNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8
+                  !validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8
                     ? "telNumber must be an integer of min 8 characters, however whitespace, dash and plus is accepted"
                     : ""
                 }
@@ -136,8 +123,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"faxNumber"}
                 label={"faxNumber"}
                 value={editableRig.faxNumber ? editableRig.faxNumber : ""}
-                error={!IsValidNumber(editableRig.faxNumber)}
-                helperText={!IsValidNumber(editableRig.faxNumber) ? "faxNumber must be an integer, however whitespace, dash and plus is accepted" : ""}
+                error={!validPhoneNumber(editableRig.faxNumber)}
+                helperText={!validPhoneNumber(editableRig.faxNumber) ? "faxNumber must be an integer, however whitespace, dash and plus is accepted" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 16 }}
                 onChange={(e) => setEditableRig({ ...editableRig, faxNumber: e.target.value })}

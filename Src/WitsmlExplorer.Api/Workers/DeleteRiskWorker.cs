@@ -12,8 +12,6 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
-
-
 namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteRiskWorker : BaseWorker<DeleteRiskJob>, IWorker

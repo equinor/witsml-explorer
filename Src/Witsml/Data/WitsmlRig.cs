@@ -2,6 +2,7 @@ using System.Xml;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
+
 namespace Witsml.Data
 {
     public class WitsmlRig

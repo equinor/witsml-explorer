@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Serilog;
 
 using Witsml.ServiceReference;
 
@@ -31,7 +28,7 @@ namespace WitsmlExplorer.Api.Services
             return result.Rigs.Select(rig =>
                 new Rig
                 {
-                    AirGap = rig.AirGap == null ? null : new LengthMeasure { Uom = rig.AirGap.Uom, Value = decimal.Parse(rig.AirGap.Value) },
+                    AirGap = rig.AirGap == null ? null : new LengthMeasure { Uom = rig.AirGap.Uom, Value = StringHelpers.ToDecimal(rig.AirGap.Value) },
                     Approvals = rig.Approvals,
                     ClassRig = rig.ClassRig,
                     DTimStartOp = StringHelpers.ToDateTime(rig.DTimStartOp),
@@ -48,8 +45,8 @@ namespace WitsmlExplorer.Api.Services
                     Uid = rig.Uid,
                     WellUid = rig.UidWell,
                     WellboreUid = rig.UidWellbore,
-                    RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = decimal.Parse(rig.RatingDrillDepth.Value) },
-                    RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = decimal.Parse(rig.RatingWaterDepth.Value) },
+                    RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingDrillDepth.Value) },
+                    RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingWaterDepth.Value) },
                     Registration = rig.Registration,
                     TelNumber = rig.TelNumber,
                     TypeRig = rig.TypeRig,
@@ -63,11 +60,10 @@ namespace WitsmlExplorer.Api.Services
             var query = RigQueries.GetWitsmlRigById(wellUid, wellboreUid, rigUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlRig = result.Rigs.FirstOrDefault();
-            if (witsmlRig == null) return null;
 
-            return new Rig
+            return (witsmlRig == null) ? null : new Rig
             {
-                AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = decimal.Parse(witsmlRig.AirGap.Value) },
+                AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = StringHelpers.ToDecimal(witsmlRig.AirGap.Value) },
                 Approvals = witsmlRig.Approvals,
                 ClassRig = witsmlRig.ClassRig,
                 DTimStartOp = StringHelpers.ToDateTime(witsmlRig.DTimStartOp),
@@ -82,8 +78,8 @@ namespace WitsmlExplorer.Api.Services
                 NameWell = witsmlRig.NameWell,
                 NameWellbore = witsmlRig.NameWellbore,
                 Registration = witsmlRig.Registration,
-                RatingDrillDepth = witsmlRig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingDrillDepth.Uom, Value = decimal.Parse(witsmlRig.RatingDrillDepth.Value) },
-                RatingWaterDepth = witsmlRig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingWaterDepth.Uom, Value = decimal.Parse(witsmlRig.RatingWaterDepth.Value) },
+                RatingDrillDepth = witsmlRig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingDrillDepth.Value) },
+                RatingWaterDepth = witsmlRig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingWaterDepth.Value) },
                 TelNumber = witsmlRig.TelNumber,
                 TypeRig = witsmlRig.TypeRig,
                 Uid = witsmlRig.Uid,

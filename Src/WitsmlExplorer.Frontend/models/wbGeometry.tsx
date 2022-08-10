@@ -48,6 +48,6 @@ export const getWbGeometryObjectProperties = (wbGeometryObject: WbGeometryObject
     ["Wellbore", wbGeometryObject.wellboreName],
     ["UID Wellbore", wbGeometryObject.wellboreUid],
     ["WbGeometry", wbGeometryObject.name],
-    ["UID Rig", wbGeometryObject.uid]
+    ["UID WbGeometry", wbGeometryObject.uid]
   ]);
 };

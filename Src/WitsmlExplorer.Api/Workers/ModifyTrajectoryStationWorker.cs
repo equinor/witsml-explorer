@@ -44,9 +44,9 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             Log.Error("Job failed. An error occurred when modifying TrajectoryStation object: {TrajectoryStation}", job.TrajectoryStation.PrintProperties());
-            var TrajectoryStationQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            var TrajectoryStations = await witsmlClient.GetFromStoreAsync(TrajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
-            var trajectory = TrajectoryStations.Trajectories.FirstOrDefault();
+            var trajectoryStationQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            var trajectoryStations = await witsmlClient.GetFromStoreAsync(trajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
+            var trajectory = trajectoryStations.Trajectories.FirstOrDefault();
             EntityDescription description = null;
             if (trajectory != null)
             {
