@@ -1173,11 +1173,6 @@ export interface SelectRigGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; rigGroup: any };
 }
 
-// export interface SelectRigAction extends Action {
-//   type: NavigationType.SelectRig;
-//   payload: { well: Well; wellbore: Wellbore; rig: Rig; rigGroup: any };
-// }
-
 export interface SelectTrajectoryGroupAction extends Action {
   type: NavigationType.SelectTrajectoryGroup;
   payload: { well: Well; wellbore: Wellbore; trajectoryGroup: any };
@@ -1245,7 +1240,6 @@ export type NavigationAction =
   | SelectLogObjectAction
   | SelectWellAction
   | SelectWellboreAction
-  // | SelectRigAction
   | SelectRigGroupAction
   | SelectMessageGroupAction
   | SelectMessageObjectAction
