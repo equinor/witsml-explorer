@@ -22,10 +22,10 @@ export default interface Rig {
   telNumber: string;
   typeRig: string;
   uid: string;
-  wellboreUid: string;
+  uidWellbore: string;
   wellboreName: string;
   wellName?: string;
-  wellUid: string;
+  uidWell: string;
   yearEntService: string;
 }
 
@@ -50,10 +50,10 @@ export function emptyRig(): Rig {
     typeRig: "",
     telNumber: "",
     uid: "",
-    wellboreUid: "",
+    uidWellbore: "",
     wellboreName: "",
     wellName: "",
-    wellUid: "",
+    uidWell: "",
     yearEntService: "",
     commonData: {
       sourceName: "",
@@ -64,15 +64,15 @@ export function emptyRig(): Rig {
   };
 }
 export const calculateRigNodeId = (rig: Rig): string => {
-  return rig.wellUid + rig.wellboreUid + rig.uid;
+  return rig.uidWell + rig.uidWellbore + rig.uid;
 };
 
 export const getRigProperties = (rig: Rig): Map<string, string> => {
   return new Map([
     ["Well", rig.wellName],
-    ["UID Well", rig.wellUid],
+    ["UID Well", rig.uidWell],
     ["Wellbore", rig.wellboreName],
-    ["UID Wellbore", rig.wellboreUid],
+    ["UID Wellbore", rig.uidWellbore],
     ["Rig", rig.name],
     ["UID Rig", rig.uid]
   ]);
