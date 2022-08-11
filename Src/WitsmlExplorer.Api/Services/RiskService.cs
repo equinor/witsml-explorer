@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -41,8 +43,8 @@ namespace WitsmlExplorer.Api.Services
                     AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
                     DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
                     DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
-                    MdBitStart = (risk.MdBitStart == null) ? null : new LengthMeasure { Uom = risk.MdBitStart.Uom, Value = decimal.Parse(risk.MdBitStart.Value) },
-                    MdBitEnd = (risk.MdBitEnd == null) ? null : new LengthMeasure { Uom = risk.MdBitEnd.Uom, Value = decimal.Parse(risk.MdBitEnd.Value) },
+                    MdBitStart = (risk.MdBitStart == null) ? null : new LengthMeasure { Uom = risk.MdBitStart.Uom, Value = StringHelpers.ToDecimal(risk.MdBitStart.Value) },
+                    MdBitEnd = (risk.MdBitEnd == null) ? null : new LengthMeasure { Uom = risk.MdBitEnd.Uom, Value = StringHelpers.ToDecimal(risk.MdBitEnd.Value) },
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,

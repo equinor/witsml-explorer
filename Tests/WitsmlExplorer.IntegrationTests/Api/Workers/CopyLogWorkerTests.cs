@@ -2,18 +2,22 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
-using Witsml.Extensions;
 using Witsml.Data;
 using Witsml.Data.Curves;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
-using WitsmlExplorer.Api.Query;
-using Microsoft.Extensions.Logging;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
@@ -30,10 +34,10 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             client = witsmlClientProvider.GetClient();
-            var loggerFactory = (ILoggerFactory) new LoggerFactory();
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
             var logger = loggerFactory.CreateLogger<CopyLogDataJob>();
             var copyLogDataWorker = new CopyLogDataWorker(witsmlClientProvider, logger);
-            var loggerFactory2 = (ILoggerFactory) new LoggerFactory();
+            var loggerFactory2 = (ILoggerFactory)new LoggerFactory();
             var logger2 = loggerFactory2.CreateLogger<CopyLogJob>();
             worker = new CopyLogWorker(logger2, witsmlClientProvider, copyLogDataWorker);
             deleteLogsWorker = new DeleteLogObjectsWorker(witsmlClientProvider);

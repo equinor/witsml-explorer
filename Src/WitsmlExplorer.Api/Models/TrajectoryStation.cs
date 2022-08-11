@@ -1,4 +1,5 @@
 using System;
+
 using WitsmlExplorer.Api.Models.Measure;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 

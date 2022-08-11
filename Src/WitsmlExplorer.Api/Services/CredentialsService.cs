@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+
 using Witsml;
 using Witsml.Data;
 
