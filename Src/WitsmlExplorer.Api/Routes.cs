@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Carter;
 using Carter.Request;
 using Carter.Response;
+
 using Microsoft.AspNetCore.Http;
+
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
@@ -16,6 +19,7 @@ namespace WitsmlExplorer.Api
     // ReSharper disable once UnusedMember.Global
     public class Routes : CarterModule
     {
+        private readonly IBhaRunService bhaRunService;
         private readonly ICredentialsService credentialsService;
         private readonly IJobService jobService;
         private readonly ILogObjectService logObjectService;
@@ -31,6 +35,7 @@ namespace WitsmlExplorer.Api
         private readonly IDocumentRepository<Server, Guid> witsmlServerRepository;
 
         public Routes(
+            IBhaRunService bhaRunService,
             ICredentialsService credentialsService,
             IWellService wellService,
             IWellboreService wellboreService,
@@ -45,6 +50,7 @@ namespace WitsmlExplorer.Api
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             IWbGeometryService wbGeometryService)
         {
+            this.bhaRunService = bhaRunService;
             this.credentialsService = credentialsService;
             this.wellService = wellService;
             this.wellboreService = wellboreService;
@@ -67,6 +73,8 @@ namespace WitsmlExplorer.Api
             Get("/api/wells", GetAllWells);
             Get("/api/wells/{wellUid}", GetWell);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}", GetWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", GetBhaRun);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", GetBhaRunsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", GetMessagesForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", GetMessage);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", GetLog);
@@ -76,6 +84,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", GetRigsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", GetRig);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", GetTrajectories);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", GetTrajectory);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", GetTrajectoryStations);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", GetTubulars);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", GetTubular);
@@ -83,7 +92,7 @@ namespace WitsmlExplorer.Api
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", GetRisksForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", GetMudLogsForWellbore);
             Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", GetMudLog);
-            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", GetWbGeometrysForWellbore);
+            Get("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", GetWbGeometrys);
 
             //Get Requests exceeding the URL limit
             Post("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", GetLargeLogData);
@@ -141,6 +150,23 @@ namespace WitsmlExplorer.Api
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
             var wellbore = await wellboreService.GetWellbore(wellUid, wellboreUid);
             await httpResponse.AsJson(wellbore);
+        }
+
+        private async Task GetBhaRun(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var bhaRunUid = httpRequest.RouteValues.As<string>("bhaRunUid");
+            var bhaRun = await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid);
+            await httpResponse.AsJson(bhaRun);
+        }
+
+        private async Task GetBhaRunsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var bhaRuns = await bhaRunService.GetBhaRuns(wellUid, wellboreUid);
+            await httpResponse.AsJson(bhaRuns);
         }
 
         private async Task GetLogsForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
@@ -262,6 +288,15 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(trajectories);
         }
 
+        private async Task GetTrajectory(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            var wellUid = httpRequest.RouteValues.As<string>("wellUid");
+            var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");
+            var trajectoryUid = httpRequest.RouteValues.As<string>("trajectoryUid");
+            var trajectories = await trajectoryService.GetTrajectory(wellUid, wellboreUid, trajectoryUid);
+            await httpResponse.AsJson(trajectories);
+        }
+
         private async Task GetTrajectoryStations(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
@@ -305,7 +340,7 @@ namespace WitsmlExplorer.Api
             await httpResponse.AsJson(risks);
         }
 
-        private async Task GetWbGeometrysForWellbore(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task GetWbGeometrys(HttpRequest httpRequest, HttpResponse httpResponse)
         {
             var wellUid = httpRequest.RouteValues.As<string>("wellUid");
             var wellboreUid = httpRequest.RouteValues.As<string>("wellboreUid");

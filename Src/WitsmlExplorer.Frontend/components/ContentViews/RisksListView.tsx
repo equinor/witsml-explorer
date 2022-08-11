@@ -57,13 +57,14 @@ export const RisksListView = (): React.ReactElement => {
     { property: "itemState", label: "Item State", type: ContentType.String },
     { property: "sourceName", label: "Source Name", type: ContentType.String }
   ];
+
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {
     const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore.risks, risks) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore?.risks, risks) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default RisksListView;

@@ -50,8 +50,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Single(createdRisks.First().Risks);
             var createdRisk = createdRisks.First().Risks.First();
             Assert.Equal(Name, createdRisk.Name);
-            Assert.Equal(WellUid, createdRisk.WellUid);
-            Assert.Equal(WellName, createdRisk.WellName);
+            Assert.Equal(WellUid, createdRisk.UidWell);
+            Assert.Equal(WellName, createdRisk.NameWell);
         }
 
         private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,

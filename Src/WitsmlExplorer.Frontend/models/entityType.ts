@@ -1,10 +1,15 @@
 enum EntityType {
   Well = "Well",
   Wellbore = "Wellbore",
+  BhaRuns = "BhaRuns",
   LogObject = "LogObject",
   MessageObjects = "MessageObjects",
+  Risks = "Risks",
   Tubular = "Tubular",
-  Risks = "Risks"
+  Rigs = "Rigs",
+  Trajectory = "Trajectory",
+  TrajectoryStation = "TrajectoryStation",
+  WbGeometryObjects = "WbGeometryObjects"
 }
 
 export default EntityType;

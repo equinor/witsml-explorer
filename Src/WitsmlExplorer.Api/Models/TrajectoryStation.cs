@@ -1,17 +1,18 @@
 using System;
 
+using WitsmlExplorer.Api.Models.Measure;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace WitsmlExplorer.Api.Models
 {
     public class TrajectoryStation
     {
-        public string Uid { get; internal set; }
-        public DateTime? DTimStn { get; internal set; }
-        public string TypeTrajStation { get; internal set; }
-        public decimal Md { get; internal set; }
-        public decimal Tvd { get; internal set; }
-        public decimal Incl { get; internal set; }
-        public decimal Azi { get; internal set; }
+        public string Uid { get; set; }
+        public DateTime? DTimStn { get; set; }
+        public string TypeTrajStation { get; set; }
+        public LengthMeasure Md { get; set; }
+        public LengthMeasure Tvd { get; set; }
+        public LengthMeasure Incl { get; set; }
+        public LengthMeasure Azi { get; set; }
     }
 }

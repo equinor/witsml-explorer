@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+
 using Witsml;
 using Witsml.Data;
 
@@ -86,7 +88,7 @@ namespace WitsmlExplorer.Api.Services
         public Credentials(string base64EncodedString)
         {
             var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
-            var credentials = credentialString.Split(new[] {':'}, 2);
+            var credentials = credentialString.Split(new[] { ':' }, 2);
             Username = credentials[0];
             Password = credentials[1];
         }

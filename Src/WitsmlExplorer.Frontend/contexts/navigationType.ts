@@ -3,6 +3,7 @@ enum NavigationType {
   SelectServer = "SelectServer",
   SelectWell = "SelectWell",
   SelectWellbore = "SelectWellbore",
+  SelectBhaRunGroup = "SelectBhaRunGroup",
   SelectLogGroup = "SelectLogGroup",
   SelectLogType = "SelectLogType",
   SelectLogObject = "SelectLogObject",
@@ -15,6 +16,7 @@ enum NavigationType {
   SelectTrajectory = "SelectTrajectory",
   SelectTubularGroup = "SelectTubularGroup",
   SelectTubular = "SelectTubular",
+  SelectWbGeometryGroup = "SelectWbGeometryGroup",
   SetFilter = "SetFilter",
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues"

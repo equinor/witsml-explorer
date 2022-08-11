@@ -11,6 +11,10 @@ import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
 import MessageObjectService from "../services/messageObjectService";
 import TubularService from "../services/tubularService";
 import RiskObjectService from "../services/riskObjectService";
+import RigService from "../services/rigService";
+import TrajectoryService from "../services/trajectoryService";
+import WbGeometryObjectService from "../services/wbGeometryService";
+import BhaRunService from "../services/bhaRunService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -32,11 +36,17 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
+          case EntityType.BhaRuns:
+            await refreshBhaRun(refreshAction, modificationType);
+            break;
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
             break;
           case EntityType.MessageObjects:
             await refreshMessageObjects(refreshAction, modificationType);
+            break;
+          case EntityType.Trajectory:
+            await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
             break;
           case EntityType.Tubular:
             await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
@@ -44,6 +54,11 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Risks:
             await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
             break;
+          case EntityType.Rigs:
+            await refreshRigs(refreshAction, ModificationType.UpdateRigsOnWellbore);
+            break;
+          case EntityType.WbGeometryObjects:
+            await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -90,6 +105,17 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
+  async function refreshBhaRun(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateBhaRuns) {
+      const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (bhaRuns) {
+        dispatchNavigation({ type: modificationType, payload: { bhaRuns, wellUid, wellboreUid } });
+      }
+    }
+  }
+
   async function refreshLogObject(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateLogObject) {
       const log = await LogObjectService.getLog(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.logObjectUid);
@@ -106,6 +132,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (messages) {
         dispatchNavigation({ type: modificationType, payload: { messages, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshRigs(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateRigsOnWellbore) {
+      const rigs = await RigService.getRigs(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (rigs) {
+        dispatchNavigation({ type: modificationType, payload: { rigs, wellUid, wellboreUid } });
       }
     }
   }
@@ -128,6 +165,28 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (tubulars) {
         dispatchNavigation({ type: modificationType, payload: { tubulars, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshTrajectory(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateTrajectoryOnWellbore) {
+      const trajectory = await TrajectoryService.getTrajectory(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.trajectoryUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (trajectory) {
+        dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshWbGeometryObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateWbGeometryObjects) {
+      const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (wbGeometrys) {
+        dispatchNavigation({ type: modificationType, payload: { wbGeometrys, wellUid, wellboreUid } });
       }
     }
   }

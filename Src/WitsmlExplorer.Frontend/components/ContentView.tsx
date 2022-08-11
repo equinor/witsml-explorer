@@ -6,7 +6,9 @@ import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { LogsListView } from "./ContentViews/LogsListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
+import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
+import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
 import TubularsListView from "./ContentViews/TubularsListView";
@@ -21,6 +23,7 @@ const ContentView = (): React.ReactElement => {
   const {
     selectedWell,
     selectedWellbore,
+    selectedBhaRunGroup,
     selectedLogGroup,
     selectedLogTypeGroup,
     selectedLog,
@@ -32,6 +35,7 @@ const ContentView = (): React.ReactElement => {
     selectedTrajectory,
     selectedTubularGroup,
     selectedTubular,
+    selectedWbGeometryGroup,
     selectedServer,
     currentSelected
   } = navigationState;
@@ -47,6 +51,8 @@ const ContentView = (): React.ReactElement => {
         setView(<WellboresListView />);
       } else if (currentSelected === selectedWellbore) {
         setView(<WellboreObjectTypesListView />);
+      } else if (currentSelected === selectedBhaRunGroup) {
+        setView(<BhaRunsListView />);
       } else if (currentSelected === selectedLogGroup) {
         setView(<LogTypeListView />);
       } else if (currentSelected === selectedLogTypeGroup) {
@@ -69,6 +75,8 @@ const ContentView = (): React.ReactElement => {
         setView(<TubularsListView />);
       } else if (currentSelected === selectedTubular) {
         setView(<TubularView />);
+      } else if (currentSelected === selectedWbGeometryGroup) {
+        setView(<WbGeometrysListView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

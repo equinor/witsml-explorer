@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Query;
 
@@ -23,5 +25,6 @@ namespace WitsmlExplorer.Api.Workers
             var result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
             return !result.Logs.Any() ? null : result.Logs.First();
         }
+
     }
 }

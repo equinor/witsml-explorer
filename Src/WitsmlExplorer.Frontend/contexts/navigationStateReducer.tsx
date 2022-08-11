@@ -2,10 +2,12 @@ import { Dispatch, useReducer } from "react";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
 import RiskObject from "../models/riskObject";
+import Rig from "../models/rig";
 import NavigationType from "./navigationType";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
 import Well, { getWellProperties } from "../models/well";
 import Wellbore, {
+  calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateLogTypeId,
   calculateRigGroupId,
@@ -14,33 +16,39 @@ import Wellbore, {
   calculateRiskGroupId,
   calculateWellboreNodeId,
   getWellboreProperties,
-  calculateTubularGroupId
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
 } from "../models/wellbore";
 import { Server } from "../models/server";
 import ModificationType from "./modificationType";
-import Rig from "../models/rig";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
 import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
 import Tubular, { getTubularProperties } from "../models/tubular";
+import WbGeometryObject from "../models/wbGeometry";
+import BhaRun from "../models/bhaRun";
 
 export interface NavigationState {
   selectedServer: Server;
   selectedWell: Well;
   selectedWellbore: Wellbore;
+  selectedBhaRunGroup: string;
   selectedLogGroup: string;
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
   selectedMessageGroup: string;
   selectedMessage: MessageObject;
-  selectedRiskGroup: string;
-  selectedRisk: RiskObject;
-  selectedLogCurveInfo: LogCurveInfoRow[];
+  selectedRig: Rig;
   selectedRigGroup: string;
+  selectedRisk: RiskObject;
+  selectedRiskGroup: string;
+  selectedLogCurveInfo: LogCurveInfoRow[];
   selectedTrajectoryGroup: string;
   selectedTrajectory: Trajectory;
   selectedTubularGroup: string;
   selectedTubular: Tubular;
+  selectedWbGeometryGroup: string;
+  selectedWbGeometry: WbGeometryObject;
   servers: Server[];
   currentSelected: Selectable;
   wells: Well[];
@@ -51,7 +59,7 @@ export interface NavigationState {
   currentProperties: Map<string, string>;
 }
 
-export type Selectable = Server | Well | Wellbore | string | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject;
+export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -61,19 +69,23 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
+  selectedBhaRunGroup: null,
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
   selectedMessageGroup: null,
   selectedMessage: null,
+  selectedRig: null,
+  selectedRigGroup: null,
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
-  selectedRigGroup: null,
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
   selectedTubular: null,
+  selectedWbGeometryGroup: null,
+  selectedWbGeometry: null,
   servers: [],
   currentSelected: null,
   wells: [],
@@ -104,6 +116,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectWell(state, action);
     case NavigationType.SelectWellbore:
       return selectWellbore(state, action);
+    case NavigationType.SelectBhaRunGroup:
+      return selectBhaRunGroup(state, action);
     case NavigationType.SelectLogGroup:
       return selectLogGroup(state, action);
     case NavigationType.SelectLogType:
@@ -126,6 +140,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectTubularGroup(state, action);
     case NavigationType.SelectTubular:
       return selectTubular(state, action);
+    case NavigationType.SelectWbGeometryGroup:
+      return selectWbGeometryGroup(state, action);
     case NavigationType.SetFilter:
       return setFilter(state, action);
     case NavigationType.SetCurveThreshold:
@@ -157,6 +173,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
+    case ModificationType.UpdateBhaRuns:
+      return updateWellboreBhaRuns(state, action);
     case ModificationType.UpdateLogObjects:
       return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
@@ -165,14 +183,20 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateRigsOnWellbore:
+      return updateWellboreRigs(state, action);
     case ModificationType.UpdateRiskObjects:
       return updateWellboreRisks(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
+      return updateWellboreTrajectory(state, action);
+    case ModificationType.UpdateTrajectoriesOnWellbore:
       return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularOnWellbore:
       return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
+    case ModificationType.UpdateWbGeometryObjects:
+      return updateWellboreWbGeometrys(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
     case ModificationType.UpdateWells:
@@ -186,6 +210,7 @@ const allDeselected: any = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
+  selectedBhaRunGroup: null,
   selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
@@ -194,11 +219,14 @@ const allDeselected: any = {
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
+  selectedRig: null,
   selectedRigGroup: null,
   selectedTrajectoryGroup: null,
   selectedTrajectory: null,
   selectedTubularGroup: null,
   selectedTubular: null,
+  selectedWbGeometryGroup: null,
+  selectedWbGeometry: null,
   currentSelected: null,
   currentProperties: new Map()
 };
@@ -362,6 +390,17 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
+const updateWellboreBhaRuns = (state: NavigationState, { payload }: UpdateWellboreBhaRunsAction) => {
+  const { wells } = state;
+  const { bhaRuns, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { bhaRuns });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellboreMessagesAction) => {
   const { wells } = state;
   const { messages, wellUid, wellboreUid } = payload;
@@ -378,12 +417,22 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   const { message } = payload;
   const updatedWells = insertLogIntoWellsStructure(wells, message);
   const selectedMessage = state.selectedMessage?.uid === message.uid ? message : state.selectedMessage;
-
   return {
     ...state,
     wells: updatedWells,
     filteredWells: filterWells(updatedWells, state.selectedFilter),
     selectedMessage
+  };
+};
+
+const updateWellboreRigs = (state: NavigationState, { payload }: UpdateWellboreRigsAction) => {
+  const { wells } = state;
+  const { rigs, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { rigs });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
   };
 };
 
@@ -433,7 +482,27 @@ const insertLogIntoWellsStructure = (wells: Well[], log: LogObject): Well[] => {
   return freshWells;
 };
 
-const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateWellboreTrajectoryAction) => {
+const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWellboreTrajectoryAction) => {
+  const { wells } = state;
+  const { trajectory, wellUid, wellboreUid } = payload;
+  const freshWells = [...wells];
+  const wellIndex = getWellIndex(freshWells, wellUid);
+  const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
+  const freshTrajectories = [...wells[wellIndex].wellbores[wellboreIndex].trajectories];
+  const trajectoryIndex = freshTrajectories.findIndex((t) => t.uid === trajectory.uid);
+  let selectedTrajectory = null;
+  freshTrajectories[trajectoryIndex] = trajectory;
+  selectedTrajectory = state.selectedTrajectory?.uid === trajectory.uid ? trajectory : state.selectedTrajectory;
+  wells[wellIndex].wellbores[wellboreIndex].trajectories = freshTrajectories;
+  return {
+    ...state,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter),
+    selectedTrajectory
+  };
+};
+
+const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateWellboreTrajectoriesAction) => {
   const { wells } = state;
   const { trajectories, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { trajectories });
@@ -485,6 +554,17 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
+const updateWellboreWbGeometrys = (state: NavigationState, { payload }: UpdateWellboreWbGeometrysAction) => {
+  const { wells } = state;
+  const { wbGeometrys, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { wbGeometrys });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
 const getWellIndex = (wells: Well[], wellUid: string) => {
   return wells.findIndex((well) => well.uid === wellUid);
 };
@@ -512,7 +592,7 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, LogObject[] | Trajectory[] | MessageObject[] | RiskObject[]>
+  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | Rig[] | WbGeometryObject[]>
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -593,9 +673,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, logs, rigs, trajectories, messages, risks, tubulars } = payload;
+  const { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, logs, rigs, trajectories, messages, risks, tubulars };
+  const wellboreWithProperties = { ...wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
@@ -609,6 +689,22 @@ const selectWellbore = (state: NavigationState, { payload }: SelectWellboreActio
     filteredWells: filterWells(updatedWells, state.selectedFilter),
     currentSelected: wellboreWithProperties,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWellboreNodeId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
+  const { well, wellbore, bhaRunGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateBhaRunGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedBhaRunGroup: bhaRunGroup,
+    currentSelected: bhaRunGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateBhaRunGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };
@@ -745,6 +841,22 @@ const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAct
     selectedRiskGroup: riskGroup,
     currentSelected: riskGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateRiskGroupId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectWbGeometryGroup = (state: NavigationState, { payload }: SelectWbGeometryGroupAction) => {
+  const { well, wellbore, wbGeometryGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedWbGeometryGroup: wbGeometryGroup,
+    currentSelected: wbGeometryGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };
@@ -926,6 +1038,11 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
+export interface UpdateWellboreBhaRunsAction extends Action {
+  type: ModificationType.UpdateBhaRuns;
+  payload: { bhaRuns: BhaRun[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreLogsAction extends Action {
   type: ModificationType.UpdateLogObjects;
   payload: { logs: LogObject[]; wellUid: string; wellboreUid: string };
@@ -936,13 +1053,28 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
+export interface UpdateWellboreRigsAction extends Action {
+  type: ModificationType.UpdateRigsOnWellbore;
+  payload: { rigs: Rig[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreRisksAction extends Action {
   type: ModificationType.UpdateRiskObjects;
   payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
 }
 
+export interface UpdateWellboreRiskAction extends Action {
+  type: ModificationType.UpdateRisksOnWellbore;
+  payload: { risks: RiskObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateWellboreTrajectoryAction extends Action {
   type: ModificationType.UpdateTrajectoryOnWellbore;
+  payload: { trajectory: Trajectory; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreTrajectoriesAction extends Action {
+  type: ModificationType.UpdateTrajectoriesOnWellbore;
   payload: { trajectories: Trajectory[]; wellUid: string; wellboreUid: string };
 }
 
@@ -966,6 +1098,11 @@ export interface UpdateWellboreMessageAction extends Action {
   payload: { message: MessageObject };
 }
 
+export interface UpdateWellboreWbGeometrysAction extends Action {
+  type: ModificationType.UpdateWbGeometryObjects;
+  payload: { wbGeometrys: WbGeometryObject[]; wellUid: string; wellboreUid: string };
+}
+
 export interface UpdateServerListAction extends Action {
   type: ModificationType.UpdateServerList;
   payload: { servers: Server[] };
@@ -978,7 +1115,23 @@ export interface SelectWellAction extends Action {
 
 export interface SelectWellboreAction extends Action {
   type: NavigationType.SelectWellbore;
-  payload: { well: Well; wellbore: Wellbore; logs: LogObject[]; rigs: Rig[]; trajectories: Trajectory[]; messages: MessageObject[]; risks: RiskObject[]; tubulars: Tubular[] };
+  payload: {
+    well: Well;
+    wellbore: Wellbore;
+    bhaRuns: BhaRun[];
+    logs: LogObject[];
+    rigs: Rig[];
+    trajectories: Trajectory[];
+    messages: MessageObject[];
+    risks: RiskObject[];
+    tubulars: Tubular[];
+    wbGeometrys: WbGeometryObject[];
+  };
+}
+
+export interface SelectBhaRunGroupAction extends Action {
+  type: NavigationType.SelectBhaRunGroup;
+  payload: { well: Well; wellbore: Wellbore; bhaRunGroup: any };
 }
 
 export interface SelectLogGroupAction extends Action {
@@ -1040,6 +1193,11 @@ export interface SelectTubularAction extends Action {
   payload: { well: Well; wellbore: Wellbore; tubular: Tubular; tubularGroup: any };
 }
 
+export interface SelectWbGeometryGroupAction extends Action {
+  type: NavigationType.SelectWbGeometryGroup;
+  payload: { well: Well; wellbore: Wellbore; wbGeometryGroup: any };
+}
+
 export interface SetFilterAction extends Action {
   type: NavigationType.SetFilter;
   payload: { filter: Filter };
@@ -1062,15 +1220,20 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
+  | UpdateWellboreBhaRunsAction
   | UpdateWellboreLogAction
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
   | UpdateWellboreMessageAction
+  | UpdateWellboreRigsAction
   | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
+  | UpdateWellboreTrajectoriesAction
   | UpdateWellboreTubularAction
   | UpdateWellboreTubularsAction
+  | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
+  | SelectBhaRunGroupAction
   | SelectLogTypeAction
   | SelectLogGroupAction
   | SelectLogCurveInfoAction
@@ -1081,11 +1244,11 @@ export type NavigationAction =
   | SelectMessageGroupAction
   | SelectMessageObjectAction
   | SelectRiskGroupAction
-  | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction
   | SelectTrajectoryGroupAction
   | SelectTubularAction
   | SelectTubularGroupAction
+  | SelectWbGeometryGroupAction
   | SetFilterAction
   | SetCurveThresholdAction;

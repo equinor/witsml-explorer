@@ -3,12 +3,14 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import {
+  calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
   calculateRiskGroupId,
   calculateRigGroupId,
   calculateTrajectoryGroupId,
-  calculateTubularGroupId
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
 } from "../../models/wellbore";
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
@@ -54,6 +56,18 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
         name: "Risks",
         action: NavigationType.SelectRiskGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: calculateRiskGroupId(selectedWellbore) }
+      },
+      {
+        uid: 7,
+        name: "WbGeometries",
+        action: NavigationType.SelectWbGeometryGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
+      },
+      {
+        uid: 8,
+        name: "BhaRuns",
+        action: NavigationType.SelectBhaRunGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, bhaRunGroup: calculateBhaRunGroupId(selectedWellbore) }
       }
     ];
   };

@@ -25,6 +25,8 @@ export interface RefreshAction {
   wellboreUid?: string;
   logObjectUid?: string;
   messageObjectUid?: string;
+  trajectoryUid?: string;
+  wbGeometryObjectUid?: string;
 }
 
 export enum RefreshType {

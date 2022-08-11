@@ -1,10 +1,17 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+using Serilog;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
@@ -21,7 +28,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
             client = witsmlClientProvider.GetClient();
-            worker = new CopyTrajectoryWorker(witsmlClientProvider);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
+
+            worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
             deleteLogWorker = new DeleteTrajectoryWorker(witsmlClientProvider);
         }
 

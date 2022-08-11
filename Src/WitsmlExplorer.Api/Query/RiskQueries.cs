@@ -1,8 +1,12 @@
-using Witsml.Data;
-using Witsml.Extensions;
-using WitsmlExplorer.Api.Models;
-using Witsml.Data.Measures;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+
+using Witsml.Data;
+using Witsml.Data.Measures;
+using Witsml.Extensions;
+
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -15,8 +19,8 @@ namespace WitsmlExplorer.Api.Query
                 Risks = new WitsmlRisk
                 {
                     Uid = "",
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     Name = "",
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
@@ -30,8 +34,8 @@ namespace WitsmlExplorer.Api.Query
                 Risks = new WitsmlRisk
                 {
                     Uid = riskUid,
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }.AsSingletonList()
             };
         }
@@ -41,8 +45,8 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     Name = name,
                     MdBitStart = mdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitStart.Uom, Value = mdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     MdBitEnd = mdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitEnd.Uom, Value = mdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null
@@ -56,8 +60,8 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
                     ExtendCategory = extendCategory,
                     CommonData = new WitsmlCommonData
                     {
@@ -67,18 +71,22 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlRisks DeleteRiskQuery(string wellUid, string wellboreUid, string uid)
+        public static IEnumerable<WitsmlRisks> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
         {
-            return new WitsmlRisks
-            {
-                Risks = new WitsmlRisk
+            return riskUids.Select((riskUid) =>
+                new WitsmlRisks
                 {
-                    WellUid = wellUid,
-                    WellboreUid = wellboreUid,
-                    Uid = uid
-                }.AsSingletonList()
-            };
+                    Risks = new WitsmlRisk
+                    {
+                        Uid = riskUid,
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
+                    }.AsSingletonList()
+                }
+            );
         }
+
+
 
         public static WitsmlRisks CreateRisk(Risk risk)
         {
@@ -86,10 +94,10 @@ namespace WitsmlExplorer.Api.Query
             {
                 Risks = new WitsmlRisk
                 {
-                    WellUid = risk.WellUid,
-                    WellName = risk.WellName,
-                    WellboreUid = risk.WellboreUid,
-                    WellboreName = risk.WellboreName,
+                    UidWell = risk.WellUid,
+                    NameWell = risk.WellName,
+                    UidWellbore = risk.WellboreUid,
+                    NameWellbore = risk.WellboreName,
                     Uid = risk.Uid,
                     Name = risk.Name,
                     Type = risk.Type,

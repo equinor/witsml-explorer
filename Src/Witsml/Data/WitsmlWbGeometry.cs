@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data
@@ -20,6 +21,9 @@ namespace Witsml.Data
 
         [XmlElement("nameWellbore")]
         public string NameWellbore { get; set; }
+
+        [XmlElement("name")]
+        public string Name { get; set; }
 
         [XmlElement("dTimReport")]
         public string DTimReport { get; set; }

@@ -64,6 +64,22 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
+    public class RefreshBhaRuns : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.BhaRuns;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+
+        public RefreshType RefreshType { get; }
+
+        public RefreshBhaRuns(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
+
     public class RefreshLogObject : RefreshAction
     {
         public override EntityType EntityType => EntityType.LogObject;
@@ -90,6 +106,21 @@ namespace WitsmlExplorer.Api.Models
         public RefreshType RefreshType { get; }
 
         public RefreshMessageObjects(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
+    public class RefreshRigs : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.Rigs;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+
+        public RefreshType RefreshType { get; }
+
+        public RefreshRigs(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
         {
             WellUid = wellUid;
             WellboreUid = wellboreUid;
@@ -129,4 +160,36 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
+    public class RefreshTrajectory : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.Trajectory;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+        public string TrajectoryUid { get; }
+        public RefreshType RefreshType { get; }
+
+        public RefreshTrajectory(Uri serverUrl, string wellUid, string wellboreUid, string trajectoryUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            TrajectoryUid = trajectoryUid;
+            RefreshType = refreshType;
+        }
+    }
+
+    public class RefreshWbGeometryObjects : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.WbGeometryObjects;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+
+        public RefreshType RefreshType { get; }
+
+        public RefreshWbGeometryObjects(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
 }

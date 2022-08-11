@@ -6,6 +6,8 @@ import Measure from "./measure";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
 import Tubular from "./tubular";
 import RiskObject from "./riskObject";
+import WbGeometryObject from "./wbGeometry";
+import BhaRun from "./bhaRun";
 
 export interface WellboreProperties {
   uid: string;
@@ -38,12 +40,14 @@ export interface WellboreProperties {
 }
 
 export default interface Wellbore extends WellboreProperties {
+  bhaRuns?: BhaRun[];
   logs?: LogObject[];
   rigs?: Rig[];
   trajectories?: Trajectory[];
   messages?: MessageObject[];
   tubulars?: Tubular[];
   risks?: RiskObject[];
+  wbGeometrys?: WbGeometryObject[];
 }
 
 export function emptyWellbore(): Wellbore {
@@ -61,12 +65,14 @@ export function emptyWellbore(): Wellbore {
     dateTimeCreation: null,
     dateTimeLastChange: null,
     itemState: "",
+    bhaRuns: [],
     logs: [],
     rigs: [],
     trajectories: [],
     tubulars: [],
     messages: [],
-    risks: []
+    risks: [],
+    wbGeometrys: []
   };
 }
 
@@ -78,6 +84,10 @@ export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
   return wellbore.wellUid + wellbore.uid;
 };
 
+export const calculateBhaRunGroupId = (wellbore: Wellbore): string => {
+  return calculateWellboreNodeId(wellbore) + "bhaRuns";
+};
+
 export const calculateRigGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "rigs";
 };
@@ -85,8 +95,13 @@ export const calculateRigGroupId = (wellbore: Wellbore): string => {
 export const calculateMessageGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "messages";
 };
+
 export const calculateRiskGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "risks";
+};
+
+export const calculateWbGeometryGroupId = (wellbore: Wellbore): string => {
+  return calculateWellboreNodeId(wellbore) + "wbGeometrys";
 };
 
 export const calculateLogGroupId = (wellbore: Wellbore): string => {

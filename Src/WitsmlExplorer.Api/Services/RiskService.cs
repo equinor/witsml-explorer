@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -15,7 +16,6 @@ namespace WitsmlExplorer.Api.Services
 
     }
 
-    // ReSharper disable once UnusedMember.Global
     public class RiskService : WitsmlService, IRiskService
     {
         public RiskService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
@@ -31,10 +31,10 @@ namespace WitsmlExplorer.Api.Services
                 new Risk
                 {
                     Name = risk.Name,
-                    WellboreName = risk.WellboreName,
-                    WellboreUid = risk.WellboreUid,
-                    WellName = risk.WellName,
-                    WellUid = risk.WellUid,
+                    WellboreName = risk.NameWellbore,
+                    WellboreUid = risk.UidWellbore,
+                    WellName = risk.NameWell,
+                    WellUid = risk.UidWell,
                     Uid = risk.Uid,
                     Type = risk.Type,
                     Category = risk.Category,
@@ -43,8 +43,8 @@ namespace WitsmlExplorer.Api.Services
                     AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
                     DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
                     DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
-                    MdBitStart = risk.MdBitStart == null ? null : new MeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = double.Parse(risk.MdBitStart.Value, CultureInfo.InvariantCulture) },
-                    MdBitEnd = risk.MdBitEnd == null ? null : new MeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = double.Parse(risk.MdBitEnd.Value, CultureInfo.InvariantCulture) },
+                    MdBitStart = (risk.MdBitStart == null) ? null : new LengthMeasure { Uom = risk.MdBitStart.Uom, Value = StringHelpers.ToDecimal(risk.MdBitStart.Value) },
+                    MdBitEnd = (risk.MdBitEnd == null) ? null : new LengthMeasure { Uom = risk.MdBitEnd.Uom, Value = StringHelpers.ToDecimal(risk.MdBitEnd.Value) },
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,

@@ -11,7 +11,7 @@ import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import JobService, { JobType } from "../../services/jobService";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
+import CopyLogJob, { parseStringToLogReference } from "../../models/jobs/copyLogJob";
 import { Server } from "../../models/server";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import WellboreReference from "../../models/jobs/wellboreReference";
@@ -49,7 +49,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       wellboreUid: wellbore.uid
     };
 
-    const copyJob = { source: logReferences, target: targetWellboreReference };
+    const copyJob: CopyLogJob = { source: logReferences, target: targetWellboreReference };
     JobService.orderJob(jobType, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

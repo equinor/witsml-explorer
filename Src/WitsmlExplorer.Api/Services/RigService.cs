@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
-using Serilog;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Services
             return result.Rigs.Select(rig =>
                 new Rig
                 {
-                    AirGap = rig.AirGap == null ? null : new LengthMeasure { Uom = rig.AirGap.Uom, Value = decimal.Parse(rig.AirGap.Value) },
+                    AirGap = rig.AirGap == null ? null : new LengthMeasure { Uom = rig.AirGap.Uom, Value = StringHelpers.ToDecimal(rig.AirGap.Value) },
                     Approvals = rig.Approvals,
                     ClassRig = rig.ClassRig,
                     DTimStartOp = StringHelpers.ToDateTime(rig.DTimStartOp),
@@ -39,18 +39,25 @@ namespace WitsmlExplorer.Api.Services
                     Manufacturer = rig.Manufacturer,
                     Name = rig.Name,
                     NameContact = rig.NameContact,
-                    NameWell = rig.NameWell,
-                    NameWellbore = rig.NameWellbore,
+                    WellName = rig.NameWell,
+                    WellboreName = rig.NameWellbore,
                     Owner = rig.Owner,
                     Uid = rig.Uid,
-                    UidWell = rig.UidWell,
-                    UidWellbore = rig.UidWellbore,
-                    RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = decimal.Parse(rig.RatingDrillDepth.Value) },
-                    RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = decimal.Parse(rig.RatingWaterDepth.Value) },
+                    WellUid = rig.UidWell,
+                    WellboreUid = rig.UidWellbore,
+                    RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingDrillDepth.Value) },
+                    RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingWaterDepth.Value) },
                     Registration = rig.Registration,
                     TelNumber = rig.TelNumber,
                     TypeRig = rig.TypeRig,
                     YearEntService = rig.YearEntService,
+                    CommonData = new CommonData()
+                    {
+                        ItemState = rig.CommonData.ItemState,
+                        SourceName = rig.CommonData.SourceName,
+                        DTimLastChange = StringHelpers.ToDateTime(rig.CommonData.DTimLastChange),
+                        DTimCreation = StringHelpers.ToDateTime(rig.CommonData.DTimCreation),
+                    }
 
                 }).OrderBy(rig => rig.Name);
         }
@@ -60,11 +67,10 @@ namespace WitsmlExplorer.Api.Services
             var query = RigQueries.GetWitsmlRigById(wellUid, wellboreUid, rigUid);
             var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlRig = result.Rigs.FirstOrDefault();
-            if (witsmlRig == null) return null;
 
-            return new Rig
+            return (witsmlRig == null) ? null : new Rig
             {
-                AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = decimal.Parse(witsmlRig.AirGap.Value) },
+                AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = StringHelpers.ToDecimal(witsmlRig.AirGap.Value) },
                 Approvals = witsmlRig.Approvals,
                 ClassRig = witsmlRig.ClassRig,
                 DTimStartOp = StringHelpers.ToDateTime(witsmlRig.DTimStartOp),
@@ -76,17 +82,24 @@ namespace WitsmlExplorer.Api.Services
                 Manufacturer = witsmlRig.Manufacturer,
                 Name = witsmlRig.Name,
                 NameContact = witsmlRig.NameContact,
-                NameWell = witsmlRig.NameWell,
-                NameWellbore = witsmlRig.NameWellbore,
+                WellName = witsmlRig.NameWell,
+                WellboreName = witsmlRig.NameWellbore,
                 Registration = witsmlRig.Registration,
-                RatingDrillDepth = witsmlRig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingDrillDepth.Uom, Value = decimal.Parse(witsmlRig.RatingDrillDepth.Value) },
-                RatingWaterDepth = witsmlRig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingWaterDepth.Uom, Value = decimal.Parse(witsmlRig.RatingWaterDepth.Value) },
+                RatingDrillDepth = witsmlRig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingDrillDepth.Value) },
+                RatingWaterDepth = witsmlRig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = witsmlRig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(witsmlRig.RatingWaterDepth.Value) },
                 TelNumber = witsmlRig.TelNumber,
                 TypeRig = witsmlRig.TypeRig,
                 Uid = witsmlRig.Uid,
-                UidWell = witsmlRig.UidWell,
-                UidWellbore = witsmlRig.UidWellbore,
+                WellUid = witsmlRig.UidWell,
+                WellboreUid = witsmlRig.UidWellbore,
                 YearEntService = witsmlRig.YearEntService,
+                CommonData = new CommonData()
+                {
+                    ItemState = witsmlRig.CommonData.ItemState,
+                    SourceName = witsmlRig.CommonData.SourceName,
+                    DTimLastChange = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimLastChange),
+                    DTimCreation = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimCreation),
+                }
 
             };
         }
