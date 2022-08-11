@@ -893,10 +893,10 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
-"@microsoft/signalr@^6.0.6":
-  version "6.0.6"
-  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-6.0.6.tgz#6ba53623a64df64a80126694db4e37146647d3fe"
-  integrity sha512-3dTLtgwEXUeE9R/3NZQslh1B2WbppeHVXdnpvSZc7Yz+tP5Yiw3KCVUHwKUVnYmd9/2v3DaI/pvCdihrss49zA==
+"@microsoft/signalr@^6.0.8":
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/@microsoft/signalr/-/signalr-6.0.8.tgz#e55b4488b352c580c08bab381110cdfe42d4e53c"
+  integrity sha512-TgvNf8opondnX6nqN2AvWThOMl+CjPwxonhAbBpmLveECcnTuBibJQdiCUA4iwjBz26k2HIiiJ25DYgqXIJVQw==
   dependencies:
     abort-controller "^3.0.0"
     eventsource "^1.0.7"
@@ -4152,10 +4152,10 @@ react-fast-compare@3.2.0, react-fast-compare@^3.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
   integrity sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==
 
-react-idle-timer@^5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.4.0.tgz#82d3fb41c3bafe053a09b01ebac168a18f16d273"
-  integrity sha512-ijBUM+4d83Z3Bg5bvUppR6N0ZuFwwho8GnWpRRv4viHloLs/44ePc+CeVUgDiuOD604T+nwBYu/7gvEZizXeug==
+react-idle-timer@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.4.1.tgz#4f05e5d2a41656e78fb78a30a4bc232d3964b8f5"
+  integrity sha512-Pn0ede5OBeUxkIdnGevKAcVtdMnzRzFgBI6k2DC3gDbDCqRSePblxKH6Lbb0ncLzwaw9hnZfe3/Z8Bj1HA8khA==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
