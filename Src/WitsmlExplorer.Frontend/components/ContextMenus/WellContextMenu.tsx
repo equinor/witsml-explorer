@@ -63,7 +63,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const deleteWell = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
-      source: {
+      toDelete: {
         wellUid: well.uid
       }
     };

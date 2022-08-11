@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var job = new DeleteLogObjectsJob
             {
-                Source = new LogReferences()
+                ToDelete = new LogReferences()
                 {
                     LogReferenceList = LogUids
                             .Select(logUid => new LogReference { WellUid = WellUid, WellboreUid = WellboreUid, LogUid = logUid })

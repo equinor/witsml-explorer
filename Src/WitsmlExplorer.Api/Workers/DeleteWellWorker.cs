@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellJob job)
         {
-            var wellUid = job.Source.WellUid;
+            var wellUid = job.ToDelete.WellUid;
 
             var witsmlWell = WellQueries.DeleteWitsmlWell(wellUid);
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlWell);

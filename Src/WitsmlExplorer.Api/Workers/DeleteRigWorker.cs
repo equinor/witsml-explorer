@@ -28,9 +28,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var rigUids = job.Source.RigUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var rigUids = job.ToDelete.RigUids;
             var queries = RigQueries.DeleteRigQuery(wellUid, wellboreUid, rigUids);
             bool error = false;
             var successUids = new List<string>();
@@ -78,9 +78,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteRigsJob job)
         {
-            if (!job.Source.RigUids.Any()) throw new ArgumentException("A minimum of one Rig UID is required");
-            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.RigUids.Any()) throw new ArgumentException("A minimum of one Rig UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

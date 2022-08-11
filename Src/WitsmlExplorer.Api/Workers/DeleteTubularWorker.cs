@@ -28,9 +28,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var tubularUids = job.Source.TubularUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var tubularUids = job.ToDelete.TubularUids;
 
             var queries = TubularQueries.DeleteWitsmlTubulars(wellUid, wellboreUid, tubularUids);
             bool error = false;
@@ -77,9 +77,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteTubularsJob job)
         {
-            if (!job.Source.TubularUids.Any()) throw new ArgumentException("A minimum of one tubular UID is required");
-            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.TubularUids.Any()) throw new ArgumentException("A minimum of one tubular UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

@@ -37,7 +37,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
   const deleteRigs = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteRigsJob = {
-      source: {
+      toDelete: {
         rigUids: checkedRigRows.map((rig) => rig.uid),
         wellUid: checkedRigRows[0].wellUid,
         wellboreUid: checkedRigRows[0].wellboreUid

@@ -28,9 +28,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var riskUids = job.Source.RiskUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var riskUids = job.ToDelete.RiskUids;
             var queries = RiskQueries.DeleteRiskQuery(wellUid, wellboreUid, riskUids);
             bool error = false;
             var successUids = new List<string>();
@@ -77,9 +77,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteRisksJob job)
         {
-            if (!job.Source.RiskUids.Any()) throw new ArgumentException("A minimum of one risk UID is required");
-            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.RiskUids.Any()) throw new ArgumentException("A minimum of one risk UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

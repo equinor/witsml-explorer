@@ -38,7 +38,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
   const deleteWbGeometrys = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWbGeometrysJob = {
-      source: {
+      toDelete: {
         wbGeometryUids: checkedWbGeometryObjectRows.map((wbGeometry) => wbGeometry.uid),
         wellUid: checkedWbGeometryObjectRows[0].wellUid,
         wellboreUid: checkedWbGeometryObjectRows[0].wellboreUid
@@ -49,8 +49,8 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
     dispatchNavigation({
       type: ModificationType.UpdateWbGeometryObjects,
       payload: {
-        wellUid: job.source.wellUid,
-        wellboreUid: job.source.wellboreUid,
+        wellUid: job.toDelete.wellUid,
+        wellboreUid: job.toDelete.wellboreUid,
         wbGeometrys: freshWbGeometrys
       }
     });

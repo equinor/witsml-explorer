@@ -25,8 +25,8 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job)
         {
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
 
             var witsmlWellbore = WellboreQueries.DeleteWitsmlWellbore(wellUid, wellboreUid);
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlWellbore);

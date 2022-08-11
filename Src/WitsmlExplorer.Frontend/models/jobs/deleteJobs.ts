@@ -10,60 +10,60 @@ import WbGeometryObjectReferences from "./wbGeometryReferences";
 import WellboreReference from "./wellboreReference";
 
 export interface DeleteBhaRunsJob {
-  source: BhaRunReferences;
+  toDelete: BhaRunReferences;
 }
 
 export interface DeleteLogObjectsJob {
-  source: LogReferences;
+  toDelete: LogReferences;
 }
 
 export interface DeleteMnemonicsJob {
-  source: {
+  toDelete: {
     logObject: LogReference;
     mnemonics: string[];
   };
 }
 
 export interface DeleteRigsJob {
-  source: RigReferences;
+  toDelete: RigReferences;
 }
 
 export interface DeleteRisksJob {
-  source: RiskReferences;
+  toDelete: RiskReferences;
 }
 
 export interface DeleteTrajectoryJob {
-  source: TrajectoryReference;
+  toDelete: TrajectoryReference;
 }
 
 export interface DeleteTrajectoryStationsJob {
-  source: {
+  toDelete: {
     trajectoryReference: TrajectoryReference;
     trajectoryStationUids: string[];
   };
 }
 
 export interface DeleteTubularComponentsJob {
-  source: {
+  toDelete: {
     tubularReference: TubularReference;
     tubularComponentUids: string[];
   };
 }
 
 export interface DeleteTubularsJob {
-  source: TubularReferences;
+  toDelete: TubularReferences;
 }
 
 export interface DeleteWbGeometrysJob {
-  source: WbGeometryObjectReferences;
+  toDelete: WbGeometryObjectReferences;
 }
 
 export interface DeleteWellboreJob {
-  source: WellboreReference;
+  toDelete: WellboreReference;
 }
 
 export interface DeleteWellJob {
-  source: {
+  toDelete: {
     wellUid: string;
   };
 }

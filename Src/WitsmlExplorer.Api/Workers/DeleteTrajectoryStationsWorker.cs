@@ -26,10 +26,10 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTrajectoryStationsJob job)
         {
-            var wellUid = job.Source.TrajectoryReference.WellUid;
-            var wellboreUid = job.Source.TrajectoryReference.WellboreUid;
-            var trajectoryUid = job.Source.TrajectoryReference.TrajectoryUid;
-            var trajectoryStations = new ReadOnlyCollection<string>(job.Source.TrajectoryStationUids.ToList());
+            var wellUid = job.ToDelete.TrajectoryReference.WellUid;
+            var wellboreUid = job.ToDelete.TrajectoryReference.WellboreUid;
+            var trajectoryUid = job.ToDelete.TrajectoryReference.TrajectoryUid;
+            var trajectoryStations = new ReadOnlyCollection<string>(job.ToDelete.TrajectoryStationUids.ToList());
             var trajectoryStationsString = string.Join(", ", trajectoryStations);
 
             var query = TrajectoryQueries.DeleteTrajectoryStations(wellUid, wellboreUid, trajectoryUid, trajectoryStations);

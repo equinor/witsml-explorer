@@ -6,11 +6,11 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record IDeleteJob<T> : IJob where T : IReference
     {
-        public T Source { get; init; }
+        public T ToDelete { get; init; }
 
         public string Description()
         {
-            return $"\t\nSource: {Source.Description()}";
+            return $"\t\nToDelete: {ToDelete.Description()}";
         }
 
     }

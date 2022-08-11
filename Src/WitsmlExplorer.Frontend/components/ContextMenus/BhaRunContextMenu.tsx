@@ -41,7 +41,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
   const deleteBhaRuns = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteBhaRunsJob = {
-      source: {
+      toDelete: {
         bhaRunUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
         wellUid: checkedBhaRunRows[0].wellUid,
         wellboreUid: checkedBhaRunRows[0].wellboreUid

@@ -84,7 +84,7 @@ export const onClickPaste = async (servers: Server[], dispatchOperation: Dispatc
 export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
   const job: DeleteTubularsJob = {
-    source: {
+    toDelete: {
       tubularUids: tubulars.map((tubular) => tubular.uid),
       wellUid: tubulars[0].wellUid,
       wellboreUid: tubulars[0].wellboreUid

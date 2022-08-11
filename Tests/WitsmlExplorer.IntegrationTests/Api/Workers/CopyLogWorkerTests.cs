@@ -96,7 +96,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             await deleteLogsWorker.Execute(
                 new DeleteLogObjectsJob
                 {
-                    Source = new LogReferences()
+                    ToDelete = new LogReferences()
                     {
                         LogReferenceList = targetReference.AsSingletonList().ToArray()
                     }

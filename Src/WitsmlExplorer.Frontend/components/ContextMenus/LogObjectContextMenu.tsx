@@ -149,7 +149,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   const deleteLogObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteLogObjectsJob = {
-      source: {
+      toDelete: {
         logReferenceList: checkedLogObjectRows.map((row) => ({
           wellUid: row.wellUid,
           wellboreUid: row.wellboreUid,
@@ -160,10 +160,10 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
 
     await JobService.orderJob(JobType.DeleteLogObjects, job);
     checkedLogObjectRows.length = 0;
-    const freshLogs = await LogObjectService.getLogs(job.source.logReferenceList[0].wellUid, job.source.logReferenceList[0].wellboreUid);
+    const freshLogs = await LogObjectService.getLogs(job.toDelete.logReferenceList[0].wellUid, job.toDelete.logReferenceList[0].wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateLogObjects,
-      payload: { wellUid: job.source.logReferenceList[0].wellUid, wellboreUid: job.source.logReferenceList[0].wellboreUid, logs: freshLogs }
+      payload: { wellUid: job.toDelete.logReferenceList[0].wellUid, wellboreUid: job.toDelete.logReferenceList[0].wellboreUid, logs: freshLogs }
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

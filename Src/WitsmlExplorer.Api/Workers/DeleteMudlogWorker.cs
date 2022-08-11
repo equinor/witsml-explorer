@@ -27,9 +27,9 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMudLogJob job)
         {
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var uid = job.Source.Uid;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var uid = job.ToDelete.Uid;
 
             var deleteRequest = DeleteRequest(wellUid, wellboreUid, uid);
 

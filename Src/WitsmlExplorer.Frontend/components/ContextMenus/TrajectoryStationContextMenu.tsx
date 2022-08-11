@@ -57,7 +57,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, uid } = trajectory;
     const job: DeleteTrajectoryStationsJob = {
-      source: {
+      toDelete: {
         trajectoryReference: {
           wellUid,
           wellboreUid,

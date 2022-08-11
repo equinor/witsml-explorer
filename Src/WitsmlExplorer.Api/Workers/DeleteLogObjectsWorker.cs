@@ -29,13 +29,13 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.LogReferenceList.First().WellUid;
-            var wellboreUid = job.Source.LogReferenceList.First().WellboreUid;
+            var wellUid = job.ToDelete.LogReferenceList.First().WellUid;
+            var wellboreUid = job.ToDelete.LogReferenceList.First().WellboreUid;
 
-            var logsExpanded = $"[ {string.Join(", ", job.Source.LogReferenceList.Select(l => l.LogUid))} ]";
-            var jobDescription = $"Delete {job.Source.LogReferenceList.Count()} Logs under wellUid: {wellUid}, wellboreUid: {wellboreUid}. Logs: {logsExpanded}";
+            var logsExpanded = $"[ {string.Join(", ", job.ToDelete.LogReferenceList.Select(l => l.LogUid))} ]";
+            var jobDescription = $"Delete {job.ToDelete.LogReferenceList.Count()} Logs under wellUid: {wellUid}, wellboreUid: {wellboreUid}. Logs: {logsExpanded}";
 
-            var queries = job.Source.LogReferenceList.Select(CreateRequest);
+            var queries = job.ToDelete.LogReferenceList.Select(CreateRequest);
             var tasks = queries.Select(q => witsmlClient.DeleteFromStoreAsync(q)).ToList();
 
             await Task.WhenAll(tasks);
@@ -69,10 +69,10 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteLogObjectsJob job)
         {
-            if (!job.Source.LogReferenceList.Any()) throw new ArgumentException("A minimum of one job is required");
-            if (job.Source.LogReferenceList.Select(l => l.WellboreUid).Distinct().Count() != 1) throw new ArgumentException("All logs should belong to the same Wellbore");
-            if (string.IsNullOrEmpty(job.Source.LogReferenceList.First().WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.LogReferenceList.First().WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.LogReferenceList.Any()) throw new ArgumentException("A minimum of one job is required");
+            if (job.ToDelete.LogReferenceList.Select(l => l.WellboreUid).Distinct().Count() != 1) throw new ArgumentException("All logs should belong to the same Wellbore");
+            if (string.IsNullOrEmpty(job.ToDelete.LogReferenceList.First().WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.LogReferenceList.First().WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

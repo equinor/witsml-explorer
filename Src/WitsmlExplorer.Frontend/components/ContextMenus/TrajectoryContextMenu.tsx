@@ -29,19 +29,19 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
   const deleteTrajectory = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteTrajectoryJob = {
-      source: {
+      toDelete: {
         wellUid: trajectory.wellUid,
         wellboreUid: trajectory.wellboreUid,
         trajectoryUid: trajectory.uid
       }
     };
     await JobService.orderJob(JobType.DeleteTrajectory, job);
-    const freshTrajectories = await TrajectoryService.getTrajectories(job.source.wellUid, job.source.wellboreUid);
+    const freshTrajectories = await TrajectoryService.getTrajectories(job.toDelete.wellUid, job.toDelete.wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateTrajectoriesOnWellbore,
       payload: {
-        wellUid: job.source.wellUid,
-        wellboreUid: job.source.wellboreUid,
+        wellUid: job.toDelete.wellUid,
+        wellboreUid: job.toDelete.wellboreUid,
         trajectories: freshTrajectories
       }
     });

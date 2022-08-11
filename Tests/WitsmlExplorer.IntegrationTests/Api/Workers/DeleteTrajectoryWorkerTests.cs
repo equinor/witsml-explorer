@@ -27,7 +27,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new DeleteTrajectoryJob
             {
-                Source = new TrajectoryReference
+                ToDelete = new TrajectoryReference
                 {
                     WellUid = "fa53698b-0a19-4f02-bca5-001f5c31c0ca",
                     WellboreUid = "eea43bf8-e3b7-42b6-b328-21b34cb505eb",

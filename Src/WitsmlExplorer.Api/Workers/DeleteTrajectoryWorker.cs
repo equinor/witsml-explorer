@@ -25,9 +25,9 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTrajectoryJob job)
         {
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var trajectoryUid = job.Source.TrajectoryUid;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var trajectoryUid = job.ToDelete.TrajectoryUid;
 
             var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlTrajectory);

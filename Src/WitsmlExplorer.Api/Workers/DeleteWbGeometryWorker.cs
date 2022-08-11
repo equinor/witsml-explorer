@@ -30,9 +30,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var wbGeometryUids = job.Source.WbGeometryUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var wbGeometryUids = job.ToDelete.WbGeometryUids;
             var queries = WbGeometryQueries.DeleteWbGeometryQuery(wellUid, wellboreUid, wbGeometryUids);
             bool error = false;
             var successUids = new List<string>();
@@ -79,9 +79,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteWbGeometryJob job)
         {
-            if (!job.Source.WbGeometryUids.Any()) throw new ArgumentException("A minimum of one WbGeometry UID is required");
-            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.WbGeometryUids.Any()) throw new ArgumentException("A minimum of one WbGeometry UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

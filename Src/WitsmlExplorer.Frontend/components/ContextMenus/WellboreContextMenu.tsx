@@ -163,7 +163,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   const deleteWellbore = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
-      source: {
+      toDelete: {
         wellUid: wellbore.wellUid,
         wellboreUid: wellbore.uid
       }

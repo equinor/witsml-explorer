@@ -30,9 +30,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             Verify(job);
 
-            var wellUid = job.Source.WellUid;
-            var wellboreUid = job.Source.WellboreUid;
-            var bhaRunUids = job.Source.BhaRunUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var bhaRunUids = job.ToDelete.BhaRunUids;
             var queries = BhaRunQueries.DeleteBhaRunQuery(wellUid, wellboreUid, bhaRunUids);
             bool error = false;
             var successUids = new List<string>();
@@ -79,9 +79,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void Verify(DeleteBhaRunsJob job)
         {
-            if (!job.Source.BhaRunUids.Any()) throw new ArgumentException("A minimum of one BhaRun UID is required");
-            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.BhaRunUids.Any()) throw new ArgumentException("A minimum of one BhaRun UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

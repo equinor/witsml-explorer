@@ -13,7 +13,7 @@ export type DispatchOperation = (action: HideModalAction | HideContextMenuAction
 export const deleteRisk = async (risks: Risk[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
   const job: DeleteRisksJob = {
-    source: {
+    toDelete: {
       riskUids: risks.map((risk) => risk.uid),
       wellUid: risks[0].wellUid,
       wellboreUid: risks[0].wellboreUid

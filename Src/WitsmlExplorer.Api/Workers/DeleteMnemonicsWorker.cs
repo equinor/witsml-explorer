@@ -26,10 +26,10 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMnemonicsJob job)
         {
-            var wellUid = job.Source.LogReference.WellUid;
-            var wellboreUid = job.Source.LogReference.WellboreUid;
-            var logUid = job.Source.LogReference.LogUid;
-            var mnemonics = new ReadOnlyCollection<string>(job.Source.Mnemonics.ToList());
+            var wellUid = job.ToDelete.LogReference.WellUid;
+            var wellboreUid = job.ToDelete.LogReference.WellboreUid;
+            var logUid = job.ToDelete.LogReference.LogUid;
+            var mnemonics = new ReadOnlyCollection<string>(job.ToDelete.Mnemonics.ToList());
             var mnemonicsString = string.Join(", ", mnemonics);
 
             var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, mnemonics);

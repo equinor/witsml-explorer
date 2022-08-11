@@ -59,7 +59,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, uid } = tubular;
     const job: DeleteTubularComponentsJob = {
-      source: {
+      toDelete: {
         tubularReference: {
           wellUid,
           wellboreUid,
