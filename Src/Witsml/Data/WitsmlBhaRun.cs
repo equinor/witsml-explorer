@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -63,7 +64,13 @@ namespace Witsml.Data
         [XmlElement("objectiveBha")]
         public string ObjectiveBha { get; set; }
 
+        [XmlElement("drillingParams")]
+        public List<WitsmlDrillingParams> DrillingParams { get; set; }
+
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
     }
 }
