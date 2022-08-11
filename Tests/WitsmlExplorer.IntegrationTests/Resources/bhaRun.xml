@@ -1,0 +1,83 @@
+<bhaRuns version="1.4.1.1" xmlns="http://www.witsml.org/schemas/1series">
+  <bhaRun uidWell="8c77de13-4fad-4b2e-ba3d-7e6b0e35a394" uidWellbore="ae75db48-5cef-4bd1-9ddf-6035b0d2cd49" uid="run-21">
+    <nameWell>0/1-2-3 SAS</nameWell>
+    <nameWellbore>myWellbore</nameWellbore>
+    <name>21</name>
+    <tubular uidRef="45t12">TubAssy001</tubular>
+    <dTimStart>2001-05-15T13:08:00.000Z</dTimStart>
+    <dTimStop>2001-12-15T13:20:00.000Z</dTimStop>
+    <dTimStartDrilling>2001-05-20T09:20:00.000Z</dTimStartDrilling>
+    <dTimStopDrilling>2001-12-10T15:20:00.000Z</dTimStopDrilling>
+    <planDogleg uom="dega/ft">1.3</planDogleg>
+    <actDogleg uom="dega/ft">1.2</actDogleg>
+    <actDoglegMx uom="dega/ft">1.5</actDoglegMx>
+    <statusBha>final</statusBha>
+    <numBitRun>7</numBitRun>
+    <numStringRun>5</numStringRun>
+    <reasonTrip>Complete BHA run.</reasonTrip>
+    <objectiveBha>Drilling</objectiveBha>
+    <drillingParams uid="dp1">
+      <eTimOpBit uom="h">2.25</eTimOpBit>
+      <mdHoleStart uom="ft">6000</mdHoleStart>
+      <mdHoleStop uom="ft">7000</mdHoleStop>
+      <tubular uidRef="TubAssy001">Tub 001</tubular>
+      <hkldRot uom="klbf">150</hkldRot>
+      <overPull uom="klbf">220</overPull>
+      <slackOff uom="klbf">180</slackOff>
+      <hkldUp uom="klbf">200</hkldUp>
+      <hkldDn uom="klbf">200</hkldDn>
+      <tqOnBotAv uom="N.m">3000</tqOnBotAv>
+      <tqOnBotMx uom="N.m">3500</tqOnBotMx>
+      <tqOnBotMn uom="N.m">2800</tqOnBotMn>
+      <tqOffBotAv uom="N.m">2000</tqOffBotAv>
+      <tqDhAv uom="N.m">3000</tqDhAv>
+      <wtAboveJar uom="lbf">100000</wtAboveJar>
+      <wtBelowJar uom="lbf">100000</wtBelowJar>
+      <wtMud uom="lbm/ft3">0.14</wtMud>
+      <flowratePump uom="bbl/min">400</flowratePump>
+      <powBit uom="nW">500</powBit>
+      <velNozzleAv uom="ft/min">15</velNozzleAv>
+      <presDropBit uom="psi">500</presDropBit>
+      <cTimHold uom="h">0.3</cTimHold>
+      <cTimSteering uom="h">1.5</cTimSteering>
+      <cTimDrillRot uom="h">2.25</cTimDrillRot>
+      <cTimDrillSlid uom="h">0.45</cTimDrillSlid>
+      <cTimCirc uom="h">2.3</cTimCirc>
+      <cTimReam uom="h">1.25</cTimReam>
+      <distDrillRot uom="ft">300</distDrillRot>
+      <distDrillSlid uom="ft">200</distDrillSlid>
+      <distReam uom="ft">50</distReam>
+      <distHold uom="ft">100</distHold>
+      <distSteering uom="ft">200</distSteering>
+      <rpmAv uom="rpm">100</rpmAv>
+      <rpmMx uom="rpm">110</rpmMx>
+      <rpmMn uom="rpm">80</rpmMn>
+      <rpmAvDh uom="rpm">80</rpmAvDh>
+      <ropAv uom="ft/h">80</ropAv>
+      <ropMx uom="ft/h">90</ropMx>
+      <ropMn uom="ft/h">70</ropMn>
+      <wobAv uom="lbf">12.5</wobAv>
+      <wobMx uom="lbf">12.5</wobMx>
+      <wobMn uom="lbf">12.5</wobMn>
+      <wobAvDh uom="lbf">12.5</wobAvDh>
+      <reasonTrip>Drilling Params reason for trip</reasonTrip>
+      <objectiveBha>Drilling</objectiveBha>
+      <aziTop uom="dega">30</aziTop>
+      <aziBottom uom="dega">45</aziBottom>
+      <inclStart uom="dega">0</inclStart>
+      <inclMx uom="dega">20</inclMx>
+      <inclMn uom="dega">0</inclMn>
+      <inclStop uom="dega">10</inclStop>
+      <tempMudDhMx uom="degC">50</tempMudDhMx>
+      <presPumpAv uom="psi">1000</presPumpAv>
+      <flowrateBit uom="bbl/min">60</flowrateBit>
+      <mudClass>water based</mudClass>
+      <mudSubClass>freshwater</mudSubClass>
+      <comments>Drilling Params comments</comments>
+    </drillingParams>
+    <commonData>
+      <itemState>plan</itemState>
+      <comments>These are the comments associated with the BHA Run data object.</comments>
+    </commonData>
+  </bhaRun>
+</bhaRuns>
