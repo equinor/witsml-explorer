@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -36,8 +38,8 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = wbGeometry.NameWellbore,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
                     MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
-                    GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = decimal.Parse(wbGeometry.GapAir.Value) },
-                    DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = decimal.Parse(wbGeometry.DepthWaterMean.Value) },
+                    GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = StringHelpers.ToDecimal(wbGeometry.GapAir.Value) },
+                    DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = StringHelpers.ToDecimal(wbGeometry.DepthWaterMean.Value) },
                     CommonData = new CommonData()
                     {
                         SourceName = wbGeometry.CommonData.SourceName,

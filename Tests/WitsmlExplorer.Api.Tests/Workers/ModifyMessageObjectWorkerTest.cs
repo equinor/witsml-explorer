@@ -1,20 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Moq;
+
 using Witsml;
 using Witsml.Data;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyMessageObjectWorkerTest
     {
-        private ModifyMessageWorker worker;
+        private readonly ModifyMessageWorker worker;
         private readonly Mock<IWitsmlClient> witsmlClient;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
@@ -31,11 +35,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task RenameLogObject()
+        public async Task UpdateMessageInStore()
         {
-            const string expectedNewText = "NewMsgTXT";
             var job = CreateJobTemplate();
-            job.MessageObject.MessageText = expectedNewText;
 
             var updatedMessages = new List<WitsmlMessages>();
             witsmlClient.Setup(client =>
@@ -45,10 +47,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await worker.Execute(job);
 
             Assert.Single(updatedMessages);
-            Assert.Equal(expectedNewText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);
+            Assert.Equal(MsgText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);
         }
 
-        private ModifyMessageObjectJob CreateJobTemplate()
+        private static ModifyMessageObjectJob CreateJobTemplate()
         {
             return new ModifyMessageObjectJob
             {

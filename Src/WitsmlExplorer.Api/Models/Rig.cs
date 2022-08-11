@@ -1,4 +1,5 @@
 using System;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -15,8 +16,8 @@ namespace WitsmlExplorer.Api.Models
         public bool? IsOffshore { get; set; }
         public string Manufacturer { get; set; }
         public string Name { get; set; }
-        public string NameWellbore { get; set; }
-        public string NameWell { get; set; }
+        public string WellboreName { get; set; }
+        public string WellName { get; set; }
         public string NameContact { get; set; }
         public string Owner { get; set; }
         public LengthMeasure RatingDrillDepth { get; set; }
@@ -24,10 +25,10 @@ namespace WitsmlExplorer.Api.Models
         public string Registration { get; set; }
         public string TelNumber { get; set; }
         public string TypeRig { get; set; }
-        public string UidWellbore { get; set; }
-        public string UidWell { get; set; }
+        public string WellUid { get; set; }
+        public string WellboreUid { get; set; }
         public string Uid { get; set; }
         public string YearEntService { get; set; }
-
+        public CommonData CommonData { get; set; }
     }
 }

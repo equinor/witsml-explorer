@@ -10,6 +10,7 @@ namespace WitsmlExplorer.Api.Models
         BhaRuns,
         LogObject,
         MessageObjects,
+        Rigs,
         Risks,
         Tubular,
         Trajectory,

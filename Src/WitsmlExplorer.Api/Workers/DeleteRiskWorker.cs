@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
-using WitsmlExplorer.Api.Query;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
-
-
 
 namespace WitsmlExplorer.Api.Workers
 {

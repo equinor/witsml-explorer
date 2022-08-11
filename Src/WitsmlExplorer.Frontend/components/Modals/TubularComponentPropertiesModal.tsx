@@ -17,7 +17,7 @@ export interface TubularComponentPropertiesModalInterface {
 }
 
 const isInvalidSequence = (sequence: number) => {
-  return isNaN(sequence) || sequence < 1 || !isInteger(sequence);
+  return Number.isNaN(sequence) || sequence < 1 || !isInteger(sequence);
 };
 
 const TubularComponentPropertiesModal = (props: TubularComponentPropertiesModalInterface): React.ReactElement => {
@@ -139,9 +139,9 @@ const TubularComponentPropertiesModal = (props: TubularComponentPropertiesModalI
           confirmDisabled={
             !validText(editableTubularComponent.typeTubularComponent) ||
             isInvalidSequence(editableTubularComponent.sequence) ||
-            isNaN(editableTubularComponent.id.value) ||
-            isNaN(editableTubularComponent.od.value) ||
-            isNaN(editableTubularComponent.len.value)
+            Number.isNaN(editableTubularComponent.id.value) ||
+            Number.isNaN(editableTubularComponent.od.value) ||
+            Number.isNaN(editableTubularComponent.len.value)
           }
           onSubmit={() => onSubmit(editableTubularComponent)}
           isLoading={isLoading}

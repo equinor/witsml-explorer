@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
-using System.Linq;
-using WitsmlExplorer.Api.Models;
+
 using WitsmlExplorer.Api.Jobs.Common;
-using System.Globalization;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -93,7 +95,7 @@ namespace WitsmlExplorer.Api.Query
                 ts.Azi = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
 
             if (trajectoryStation.DTimStn != null)
-                ts.DTimStn = ((DateTime) trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                ts.DTimStn = ((DateTime)trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             return new WitsmlTrajectories
             {
                 Trajectories = new WitsmlTrajectory

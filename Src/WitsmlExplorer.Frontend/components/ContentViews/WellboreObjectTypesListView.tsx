@@ -59,7 +59,7 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
       },
       {
         uid: 7,
-        name: "WbGeometrys",
+        name: "WbGeometries",
         action: NavigationType.SelectWbGeometryGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
       },

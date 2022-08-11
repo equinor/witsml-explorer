@@ -1,6 +1,6 @@
 using System;
-using WitsmlExplorer.Api.Models.Measure;
 
+using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
