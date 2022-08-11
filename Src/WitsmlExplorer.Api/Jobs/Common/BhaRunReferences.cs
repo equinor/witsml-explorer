@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Jobs.Common
             var desc = new StringBuilder();
             desc.Append($"WellUid: {WellUid}; ");
             desc.Append($"WellboreUid: {WellboreUid}; ");
-            desc.Append($"TubularUids: {string.Join(", ", BhaRunUids)}; ");
+            desc.Append($"BhaRunUids: {string.Join(", ", BhaRunUids)}; ");
             return desc.ToString();
         }
     }
