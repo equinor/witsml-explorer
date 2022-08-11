@@ -1,15 +1,14 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
 import { MenuItem } from "@material-ui/core";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { onClickPaste, onClickRefreshAll, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface TubularsContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction) => void;
@@ -37,11 +36,5 @@ const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElemen
     />
   );
 };
-
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default TubularsContextMenu;

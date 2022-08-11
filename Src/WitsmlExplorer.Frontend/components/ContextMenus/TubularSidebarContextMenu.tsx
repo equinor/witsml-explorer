@@ -2,12 +2,10 @@ import React from "react";
 import ContextMenu from "./ContextMenu";
 import { Divider, MenuItem } from "@material-ui/core";
 import Tubular from "../../models/tubular";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
@@ -15,6 +13,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import OperationType from "../../contexts/operationType";
 import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -69,11 +68,5 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
     />
   );
 };
-
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default TubularSidebarContextMenu;
