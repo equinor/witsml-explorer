@@ -6,7 +6,6 @@ import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import DeleteMnemonicsJob from "../../models/jobs/deleteMnemonicsJob";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import LogObject from "../../models/logObject";
@@ -17,6 +16,7 @@ import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
+import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -63,12 +63,14 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, logUid } = checkedLogCurveInfoRows[0];
     const job: DeleteMnemonicsJob = {
-      logObject: {
-        wellUid,
-        wellboreUid,
-        logUid
-      },
-      mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
+      source: {
+        logObject: {
+          wellUid,
+          wellboreUid,
+          logUid
+        },
+        mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
+      }
     };
     await JobService.orderJob(JobType.DeleteMnemonics, job);
     dispatchOperation({ type: OperationType.HideContextMenu });

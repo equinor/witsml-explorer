@@ -16,6 +16,7 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
 import WbGeometryService from "../../services/wbGeometryService";
 import ModificationType from "../../contexts/modificationType";
+import { DeleteWbGeometrysJob } from "../../models/jobs/deleteJobs";
 
 export interface WbGeometryObjectContextMenuProps {
   checkedWbGeometryObjectRows: WbGeometryObjectRow[];
@@ -37,8 +38,8 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
 
   const deleteWbGeometrys = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      wbGeometryReferences: {
+    const job: DeleteWbGeometrysJob = {
+      source: {
         wbGeometryUids: checkedWbGeometryObjectRows.map((wbGeometry) => wbGeometry.uid),
         wellUid: checkedWbGeometryObjectRows[0].wellUid,
         wellboreUid: checkedWbGeometryObjectRows[0].wellboreUid
@@ -49,8 +50,8 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
     dispatchNavigation({
       type: ModificationType.UpdateWbGeometryObjects,
       payload: {
-        wellUid: job.wbGeometryReferences.wellUid,
-        wellboreUid: job.wbGeometryReferences.wellboreUid,
+        wellUid: job.source.wellUid,
+        wellboreUid: job.source.wellboreUid,
         wbGeometrys: freshWbGeometrys
       }
     });

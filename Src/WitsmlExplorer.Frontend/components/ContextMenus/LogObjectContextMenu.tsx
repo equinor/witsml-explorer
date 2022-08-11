@@ -24,6 +24,7 @@ import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataIm
 import LogReference from "../../models/jobs/logReference";
 import LogReferences from "../../models/jobs/logReferences";
 import { Typography } from "@equinor/eds-core-react";
+import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -147,20 +148,22 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
 
   const deleteLogObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      logReferences: checkedLogObjectRows.map((row) => ({
-        wellUid: row.wellUid,
-        wellboreUid: row.wellboreUid,
-        logUid: row.uid
-      }))
+    const job: DeleteLogObjectsJob = {
+      source: {
+        logReferenceList: checkedLogObjectRows.map((row) => ({
+          wellUid: row.wellUid,
+          wellboreUid: row.wellboreUid,
+          logUid: row.uid
+        }))
+      }
     };
 
     await JobService.orderJob(JobType.DeleteLogObjects, job);
     checkedLogObjectRows.length = 0;
-    const freshLogs = await LogObjectService.getLogs(job.logReferences[0].wellUid, job.logReferences[0].wellboreUid);
+    const freshLogs = await LogObjectService.getLogs(job.source.logReferenceList[0].wellUid, job.source.logReferenceList[0].wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateLogObjects,
-      payload: { wellUid: job.logReferences[0].wellUid, wellboreUid: job.logReferences[0].wellboreUid, logs: freshLogs }
+      payload: { wellUid: job.source.logReferenceList[0].wellUid, wellboreUid: job.source.logReferenceList[0].wellboreUid, logs: freshLogs }
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

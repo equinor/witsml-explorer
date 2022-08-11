@@ -32,7 +32,7 @@ export enum JobType {
   DeleteWellbore = "DeleteWellbore",
   DeleteTrajectory = "DeleteTrajectory",
   DeleteTrajectoryStations = "DeleteTrajectoryStations",
-  DeleteTubular = "DeleteTubular",
+  DeleteTubulars = "DeleteTubular",
   DeleteTubularComponents = "DeleteTubularComponents",
   ModifyBhaRun = "ModifyBhaRun",
   ModifyLogObject = "ModifyLogObject",

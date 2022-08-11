@@ -1,14 +1,17 @@
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
-using Witsml.Query;
 using Witsml.Data;
+using Witsml.Extensions;
+using Witsml.Query;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using Witsml.Extensions;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -24,9 +27,9 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMudLogJob job)
         {
-            var wellUid = job.MudLogReference.WellUid;
-            var wellboreUid = job.MudLogReference.WellboreUid;
-            var uid = job.MudLogReference.Uid;
+            var wellUid = job.Source.WellUid;
+            var wellboreUid = job.Source.WellboreUid;
+            var uid = job.Source.Uid;
 
             var deleteRequest = DeleteRequest(wellUid, wellboreUid, uid);
 

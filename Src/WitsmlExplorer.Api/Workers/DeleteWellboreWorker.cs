@@ -1,8 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -12,26 +15,26 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteWellboreWorker : BaseWorker<DeleteWellboreJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteWellbore;
 
         public DeleteWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job)
         {
-            var wellUid = job.WellboreReference.WellUid;
-            var wellboreUid = job.WellboreReference.WellboreUid;
+            var wellUid = job.Source.WellUid;
+            var wellboreUid = job.Source.WellboreUid;
 
             var witsmlWellbore = WellboreQueries.DeleteWitsmlWellbore(wellUid, wellboreUid);
-            var result = await witsmlClient.DeleteFromStoreAsync(witsmlWellbore);
+            var result = await _witsmlClient.DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Remove);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted wellbore: ${wellboreUid}");
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Remove);
+                var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted wellbore: ${wellboreUid}");
                 return (workerResult, refreshAction);
             }
 
@@ -40,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers
                 wellboreUid);
 
             witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
-            var queryResult = await witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
+            var queryResult = await _witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
 
             EntityDescription description = null;
             var wellbore = queryResult.Wellbores.FirstOrDefault();
@@ -53,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete wellbore", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to delete wellbore", result.Reason, description), null);
         }
     }
 }

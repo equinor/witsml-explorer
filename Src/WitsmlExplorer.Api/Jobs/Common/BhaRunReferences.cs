@@ -1,9 +1,18 @@
 namespace WitsmlExplorer.Api.Jobs.Common
 {
-    public class BhaRunReferences
+    public class BhaRunReferences : IReference
     {
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }
         public string[] BhaRunUids { get; set; }
+
+        public string Description()
+        {
+            var desc = new System.Text.StringBuilder();
+            desc.Append($"WellUid: {WellUid}; ");
+            desc.Append($"WellboreUid: {WellboreUid}; ");
+            desc.Append($"BhaRunUids: {string.Join(", ", BhaRunUids)}; ");
+            return desc.ToString();
+        }
     }
 }

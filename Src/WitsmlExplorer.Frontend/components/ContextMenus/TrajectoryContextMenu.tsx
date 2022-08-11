@@ -14,6 +14,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
+import { DeleteTrajectoryJob } from "../../models/jobs/deleteJobs";
 
 export interface TrajectoryContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTrajectoriesAction) => void;
@@ -27,20 +28,20 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
 
   const deleteTrajectory = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      trajectoryReference: {
+    const job: DeleteTrajectoryJob = {
+      source: {
         wellUid: trajectory.wellUid,
         wellboreUid: trajectory.wellboreUid,
         trajectoryUid: trajectory.uid
       }
     };
     await JobService.orderJob(JobType.DeleteTrajectory, job);
-    const freshTrajectories = await TrajectoryService.getTrajectories(job.trajectoryReference.wellUid, job.trajectoryReference.wellboreUid);
+    const freshTrajectories = await TrajectoryService.getTrajectories(job.source.wellUid, job.source.wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateTrajectoriesOnWellbore,
       payload: {
-        wellUid: job.trajectoryReference.wellUid,
-        wellboreUid: job.trajectoryReference.wellboreUid,
+        wellUid: job.source.wellUid,
+        wellboreUid: job.source.wellboreUid,
         trajectories: freshTrajectories
       }
     });

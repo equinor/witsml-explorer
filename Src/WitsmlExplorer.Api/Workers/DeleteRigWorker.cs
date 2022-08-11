@@ -14,23 +14,23 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteRigWorker : BaseWorker<DeleteRigJob>, IWorker
+    public class DeleteRigWorker : BaseWorker<DeleteRigsJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteRigs;
 
         public DeleteRigWorker(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRigJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRigsJob job)
         {
             Verify(job);
 
-            var wellUid = job.RigReferences.WellUid;
-            var wellboreUid = job.RigReferences.WellboreUid;
-            var rigUids = job.RigReferences.RigUids;
+            var wellUid = job.Source.WellUid;
+            var wellboreUid = job.Source.WellboreUid;
+            var rigUids = job.Source.RigUids;
             var queries = RigQueries.DeleteRigQuery(wellUid, wellboreUid, rigUids);
             bool error = false;
             var successUids = new List<string>();
@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers
 
             var results = await Task.WhenAll(queries.Select(async (query) =>
             {
-                var result = await witsmlClient.DeleteFromStoreAsync(query);
+                var result = await _witsmlClient.DeleteFromStoreAsync(query);
                 var rig = query.Rigs.First();
                 if (result.IsSuccessful)
                 {
@@ -65,22 +65,22 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }));
 
-            var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshRigs(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             var successString = successUids.Count > 0 ? $"Deleted Rigs: {string.Join(", ", successUids)}." : "";
 
             if (!error)
             {
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction);
             }
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some Rigs", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some Rigs", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
-        private static void Verify(DeleteRigJob job)
+        private static void Verify(DeleteRigsJob job)
         {
-            if (!job.RigReferences.RigUids.Any()) throw new ArgumentException("A minimum of one Rig UID is required");
-            if (string.IsNullOrEmpty(job.RigReferences.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.RigReferences.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.Source.RigUids.Any()) throw new ArgumentException("A minimum of one Rig UID is required");
+            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

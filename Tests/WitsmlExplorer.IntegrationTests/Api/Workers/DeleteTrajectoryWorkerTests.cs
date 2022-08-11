@@ -1,9 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
@@ -25,7 +27,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var job = new DeleteTrajectoryJob
             {
-                TrajectoryReference = new TrajectoryReference
+                Source = new TrajectoryReference
                 {
                     WellUid = "fa53698b-0a19-4f02-bca5-001f5c31c0ca",
                     WellboreUid = "eea43bf8-e3b7-42b6-b328-21b34cb505eb",

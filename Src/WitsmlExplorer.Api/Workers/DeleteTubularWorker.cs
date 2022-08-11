@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -11,23 +14,23 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteTubularWorker : BaseWorker<DeleteTubularJob>, IWorker
+    public class DeleteTubularWorker : BaseWorker<DeleteTubularsJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteTubular;
 
         public DeleteTubularWorker(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTubularJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTubularsJob job)
         {
             Verify(job);
 
-            var wellUid = job.TubularReferences.WellUid;
-            var wellboreUid = job.TubularReferences.WellboreUid;
-            var tubularUids = job.TubularReferences.TubularUids;
+            var wellUid = job.Source.WellUid;
+            var wellboreUid = job.Source.WellboreUid;
+            var tubularUids = job.Source.TubularUids;
 
             var queries = TubularQueries.DeleteWitsmlTubulars(wellUid, wellboreUid, tubularUids);
             bool error = false;
@@ -36,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers
             var errorEnitities = new List<EntityDescription>();
             var results = await Task.WhenAll(queries.Select(async (query) =>
             {
-                var result = await witsmlClient.DeleteFromStoreAsync(query);
+                var result = await _witsmlClient.DeleteFromStoreAsync(query);
                 var tubular = query.Tubulars.First();
                 if (result.IsSuccessful)
                 {
@@ -62,21 +65,21 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }));
 
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             var successString = successUids.Count > 0 ? $"Deleted tubulars: {string.Join(", ", successUids)}." : "";
             if (!error)
             {
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction);
             }
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some tubulars", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some tubulars", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
-        private static void Verify(DeleteTubularJob job)
+        private static void Verify(DeleteTubularsJob job)
         {
-            if (!job.TubularReferences.TubularUids.Any()) throw new ArgumentException("A minimum of one tubular UID is required");
-            if (string.IsNullOrEmpty(job.TubularReferences.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.TubularReferences.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.Source.TubularUids.Any()) throw new ArgumentException("A minimum of one tubular UID is required");
+            if (string.IsNullOrEmpty(job.Source.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.Source.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

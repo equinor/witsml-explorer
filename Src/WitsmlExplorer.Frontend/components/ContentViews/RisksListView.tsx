@@ -13,8 +13,8 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
 }
 
 export const RisksListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { navigationState } = useContext(NavigationContext);
+  const { selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [risks, setRisks] = useState<RiskObject[]>([]);
 
@@ -59,7 +59,7 @@ export const RisksListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {
-    const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchOperation };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
   };

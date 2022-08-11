@@ -14,8 +14,7 @@ import styled from "styled-components";
 import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import BhaRunService from "../../services/bhaRunService";
-import ModificationType from "../../contexts/modificationType";
+import { DeleteBhaRunsJob } from "../../models/jobs/deleteJobs";
 
 export interface BhaRunContextMenuProps {
   checkedBhaRunRows: BhaRunRow[];
@@ -37,23 +36,14 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
 
   const deleteBhaRuns = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      bhaRunReferences: {
+    const job: DeleteBhaRunsJob = {
+      source: {
         bhaRunUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
         wellUid: checkedBhaRunRows[0].wellUid,
         wellboreUid: checkedBhaRunRows[0].wellboreUid
       }
     };
     await JobService.orderJob(JobType.DeleteBhaRuns, job);
-    const freshBhaRuns = await BhaRunService.getBhaRuns(checkedBhaRunRows[0].bhaRun.wellUid, checkedBhaRunRows[0].bhaRun.wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateBhaRuns,
-      payload: {
-        wellUid: job.bhaRunReferences.wellUid,
-        wellboreUid: job.bhaRunReferences.wellboreUid,
-        bhaRuns: freshBhaRuns
-      }
-    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
