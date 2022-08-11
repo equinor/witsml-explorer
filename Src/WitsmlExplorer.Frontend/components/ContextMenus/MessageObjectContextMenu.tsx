@@ -14,6 +14,7 @@ import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../..
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
+import { DeleteMessageObjectsJob } from "../../models/jobs/deleteJobs";
 
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
@@ -28,12 +29,12 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
 
   const deleteMessageObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      messageObjects: checkedMessageObjectRows.map((row) => ({
-        wellUid: row.wellUid,
-        wellboreUid: row.wellboreUid,
-        uid: row.uid
-      }))
+    const job: DeleteMessageObjectsJob = {
+      toDelete: {
+        messageObjectUids: checkedMessageObjectRows.map((row) => row.uid),
+        wellUid: checkedMessageObjectRows[0].wellUid,
+        wellboreUid: checkedMessageObjectRows[0].wellboreUid
+      }
     };
 
     await JobService.orderJob(JobType.DeleteMessageObjects, job);

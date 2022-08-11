@@ -4,6 +4,7 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record DeleteBhaRunsJob : IDeleteJob<BhaRunReferences> { }
     public record DeleteLogObjectsJob : IDeleteJob<LogReferences> { }
+    public record DeleteMessageObjectsJob : IDeleteJob<MessageObjectReferences> { }
     public record DeleteMnemonicsJob : IDeleteJob<LogCurvesReference> { }
     public record DeleteRigsJob : IDeleteJob<RigReferences> { }
     public record DeleteRisksJob : IDeleteJob<RiskReferences> { }

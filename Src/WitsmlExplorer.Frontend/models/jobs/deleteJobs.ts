@@ -1,6 +1,7 @@
 import BhaRunReferences from "./bhaRunReferences";
 import LogReference from "./logReference";
 import LogReferences from "./logReferences";
+import MessageObjectReferences from "./messageObjectReferences";
 import RigReferences from "./rigReferences";
 import RiskReferences from "./riskReferences";
 import TrajectoryReference from "./trajectoryReference";
@@ -15,6 +16,10 @@ export interface DeleteBhaRunsJob {
 
 export interface DeleteLogObjectsJob {
   toDelete: LogReferences;
+}
+
+export interface DeleteMessageObjectsJob {
+  toDelete: MessageObjectReferences;
 }
 
 export interface DeleteMnemonicsJob {
