@@ -24,7 +24,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetBhaRun_SerializesCorrectly()
         {
             // if the following bhaRun does not exit, add the fileBhaRun to the server manually
