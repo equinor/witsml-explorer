@@ -7,4 +7,6 @@ namespace WitsmlExplorer.Api.Jobs
     public record CopyTrajectoryJob : ICopyJob<TrajectoryReference, WellboreReference> { }
     public record CopyTubularComponentsJob : ICopyJob<TubularComponentReferences, TubularReference> { }
     public record CopyTubularJob : ICopyJob<TubularReferences, WellboreReference> { }
+    public record CopyBhaRunJob : ICopyJob<BhaRunReferences, WellboreReference> { }
+
 }

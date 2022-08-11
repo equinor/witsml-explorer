@@ -1,13 +1,11 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
@@ -15,6 +13,7 @@ import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateRe
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
 import { DeleteTrajectoryStationsJob } from "../../models/jobs/deleteJobs";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
@@ -75,9 +74,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
     <ContextMenu
       menuItems={[
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedTrajectoryStations.length === 0}>
-          <ListItemIcon>
-            <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
@@ -89,11 +86,5 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
     />
   );
 };
-
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default TrajectoryStationContextMenu;

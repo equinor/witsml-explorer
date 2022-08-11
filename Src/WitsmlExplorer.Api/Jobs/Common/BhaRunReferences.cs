@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace WitsmlExplorer.Api.Jobs.Common
 {
     public class BhaRunReferences : IReference
@@ -8,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs.Common
 
         public string Description()
         {
-            var desc = new System.Text.StringBuilder();
+            var desc = new StringBuilder();
             desc.Append($"WellUid: {WellUid}; ");
             desc.Append($"WellboreUid: {WellboreUid}; ");
             desc.Append($"BhaRunUids: {string.Join(", ", BhaRunUids)}; ");

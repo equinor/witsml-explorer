@@ -1,21 +1,20 @@
 import React from "react";
 import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { MenuItem, ListItemIcon } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
 import ContextMenu from "./ContextMenu";
 import { Server } from "../../models/server";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { UpdateWellboreWbGeometrysAction } from "../../contexts/navigationStateReducer";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
 import { WbGeometryObjectRow } from "../ContentViews/WbGeometrysListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
 import WbGeometryService from "../../services/wbGeometryService";
 import ModificationType from "../../contexts/modificationType";
+import { StyledIcon } from "./ContextMenuUtils";
 import { DeleteWbGeometrysJob } from "../../models/jobs/deleteJobs";
 
 export interface WbGeometryObjectContextMenuProps {
@@ -83,19 +82,12 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedWbGeometryObjectRows.length === 0}>
-          <ListItemIcon>
-            <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default WbGeometryObjectContextMenu;
