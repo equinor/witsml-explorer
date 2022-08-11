@@ -19,7 +19,7 @@ export interface DeleteLogObjectsJob {
 
 export interface DeleteMnemonicsJob {
   toDelete: {
-    logObject: LogReference;
+    logReference: LogReference;
     mnemonics: string[];
   };
 }

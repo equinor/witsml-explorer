@@ -63,7 +63,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     const { wellUid, wellboreUid, logUid } = checkedLogCurveInfoRows[0];
     const job: DeleteMnemonicsJob = {
       toDelete: {
-        logObject: {
+        logReference: {
           wellUid,
           wellboreUid,
           logUid
