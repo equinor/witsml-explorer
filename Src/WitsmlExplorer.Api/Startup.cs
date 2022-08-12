@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api
 {
     public class Startup
     {
-        readonly string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -43,15 +43,15 @@ namespace WitsmlExplorer.Api
 
             Log.Information($"Host: {host}");
             services.AddCors(options =>
-            {
-                options.AddPolicy(myAllowSpecificOrigins, builder =>
-                {
-                    builder.WithOrigins($"{host}:3000");
-                    builder.AllowAnyMethod();
-                    builder.AllowAnyHeader();
-                    builder.AllowCredentials();
-                });
-            });
+                options.AddPolicy(_myAllowSpecificOrigins, builder =>
+                    {
+                        builder.WithOrigins($"{host}:3000");
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                    }
+                )
+            );
             services.AddResponseCompression();
             services.AddCarter();
             services.AddSignalR();
@@ -79,9 +79,10 @@ namespace WitsmlExplorer.Api
             }
 
             app.UseResponseCompression();
-            app.UseCors(myAllowSpecificOrigins);
+            app.UseCors(_myAllowSpecificOrigins);
 
             app.UseStaticFiles();
+
 
             app.UseRouting();
             app.UseEndpoints(builder =>
@@ -89,6 +90,7 @@ namespace WitsmlExplorer.Api
                 builder.MapCarter();
                 builder.MapHub<NotificationsHub>("notifications");
             });
+
         }
     }
 }

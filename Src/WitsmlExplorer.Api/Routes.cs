@@ -65,10 +65,10 @@ namespace WitsmlExplorer.Api
             this.witsmlServerRepository = witsmlServerRepository;
             this.wbGeometryService = wbGeometryService;
 
-            Get("/api/witsml-servers", GetWitsmlServers);
-            Post("/api/witsml-servers", CreateWitsmlServer);
-            Patch("/api/witsml-servers/{witsmlServerId}", UpdateWitsmlServer);
-            Delete("/api/witsml-servers/{witsmlServerId}", DeleteWitsmlServer);
+            //Get("/api/witsml-servers", GetWitsmlServers);
+            //Post("/api/witsml-servers", CreateWitsmlServer);
+            //Patch("/api/witsml-servers/{witsmlServerId}", UpdateWitsmlServer);
+            //Delete("/api/witsml-servers/{witsmlServerId}", DeleteWitsmlServer);
 
             Get("/api/wells", GetAllWells);
             Get("/api/wells/{wellUid}", GetWell);
