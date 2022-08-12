@@ -49,7 +49,7 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation, dispatchNavigation)} disabled={tubulars.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,

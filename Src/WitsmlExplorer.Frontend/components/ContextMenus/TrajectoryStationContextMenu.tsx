@@ -12,7 +12,7 @@ import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import DeleteTrajectoryStationJob from "../../models/jobs/deleteTrajectoryStationJob";
+import { DeleteTrajectoryStationsJob } from "../../models/jobs/deleteJobs";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface TrajectoryStationContextMenuProps {
@@ -56,13 +56,15 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
   const onConfirmDelete = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, uid } = trajectory;
-    const job: DeleteTrajectoryStationJob = {
-      trajectory: {
-        wellUid,
-        wellboreUid,
-        trajectoryUid: uid
-      },
-      uids: checkedTrajectoryStations.map((item) => item.uid)
+    const job: DeleteTrajectoryStationsJob = {
+      toDelete: {
+        trajectoryReference: {
+          wellUid,
+          wellboreUid,
+          trajectoryUid: uid
+        },
+        trajectoryStationUids: checkedTrajectoryStations.map((item) => item.uid)
+      }
     };
     await JobService.orderJob(JobType.DeleteTrajectoryStations, job);
     dispatchOperation({ type: OperationType.HideContextMenu });

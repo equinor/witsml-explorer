@@ -1,9 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
-using WitsmlExplorer.Api.Jobs.Common;
-using WitsmlExplorer.Api.Jobs;
 using System.Threading.Tasks;
+
+using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
@@ -30,7 +32,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             };
             var job = new DeleteLogObjectsJob()
             {
-                LogReferences = logs
+                ToDelete = new LogReferences() { LogReferenceList = logs }
             };
             await worker.Execute(job);
         }

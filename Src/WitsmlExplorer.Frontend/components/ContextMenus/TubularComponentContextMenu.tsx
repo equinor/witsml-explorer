@@ -5,7 +5,6 @@ import OperationType from "../../contexts/operationType";
 import { colors } from "../../styles/Colors";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import DeleteTubularComponentsJob from "../../models/jobs/deleteTubularComponentsJob";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
@@ -18,6 +17,7 @@ import NestedMenuItem from "./NestedMenuItem";
 import { onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
 import { UpdateWellboreTubularAction } from "../../contexts/navigationStateReducer";
 import { StyledIcon } from "./ContextMenuUtils";
+import { DeleteTubularComponentsJob } from "../../models/jobs/deleteJobs";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
@@ -59,12 +59,14 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, uid } = tubular;
     const job: DeleteTubularComponentsJob = {
-      tubular: {
-        wellUid,
-        wellboreUid,
-        tubularUid: uid
-      },
-      uids: checkedTubularComponents.map((item) => item.uid)
+      toDelete: {
+        tubularReference: {
+          wellUid,
+          wellboreUid,
+          tubularUid: uid
+        },
+        tubularComponentUids: checkedTubularComponents.map((item) => item.uid)
+      }
     };
     await JobService.orderJob(JobType.DeleteTubularComponents, job);
     dispatchOperation({ type: OperationType.HideContextMenu });

@@ -11,7 +11,6 @@ import Wellbore from "../../models/wellbore";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import JobService, { JobType } from "../../services/jobService";
 import ConfirmModal from "../Modals/ConfirmModal";
-import DeleteWellJob from "../../models/jobs/deleteWellJob";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import NestedMenuItem from "./NestedMenuItem";
@@ -19,6 +18,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import { WellRow } from "../ContentViews/WellsListView";
 import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
 import { Typography } from "@equinor/eds-core-react";
+import { DeleteWellJob } from "../../models/jobs/deleteJobs";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -63,7 +63,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const deleteWell = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
-      wellReference: {
+      toDelete: {
         wellUid: well.uid
       }
     };

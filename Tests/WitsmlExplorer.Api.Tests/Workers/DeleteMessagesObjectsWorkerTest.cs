@@ -1,11 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
+
 using Moq;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
@@ -29,9 +33,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var job = new DeleteMessageObjectsJob
             {
-                MessageObjects = MessageUids
-                    .Select(msgUid => new MessageObjectReference { WellUid = WellUid, WellboreUid = WellboreUid, Uid = msgUid })
-                    .AsEnumerable<MessageObjectReference>()
+                ToDelete = new MessageObjectReferences()
+                {
+                    MessageObjectUids = MessageUids,
+                    WellUid = WellUid,
+                    WellboreUid = WellboreUid
+                }
             };
             var result = await worker.Execute(job);
             Assert.True(result.Item1.IsSuccess);

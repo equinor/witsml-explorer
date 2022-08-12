@@ -14,6 +14,7 @@ import { RigRow } from "../ContentViews/RigsListView";
 import styled from "styled-components";
 import JobService, { JobType } from "../../services/jobService";
 import ConfirmModal from "../Modals/ConfirmModal";
+import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
 
 export interface RigContextMenuProps {
   checkedRigRows: RigRow[];
@@ -35,8 +36,8 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
 
   const deleteRigs = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job = {
-      rigReferences: {
+    const job: DeleteRigsJob = {
+      toDelete: {
         rigUids: checkedRigRows.map((rig) => rig.uid),
         wellUid: checkedRigRows[0].wellUid,
         wellboreUid: checkedRigRows[0].wellboreUid

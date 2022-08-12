@@ -11,7 +11,6 @@ import { v4 as uuid } from "uuid";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import DeleteWellboreJob from "../../models/jobs/deleteWellboreJob";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
 import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
@@ -28,6 +27,7 @@ import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajecto
 import LogReferences from "../../models/jobs/logReferences";
 import { Typography } from "@equinor/eds-core-react";
 import { useClipboardTubularReferences } from "./TubularContextMenuUtils";
+import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
 import { useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
 
 export interface WellboreContextMenuProps {
@@ -163,7 +163,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   const deleteWellbore = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
-      wellboreReference: {
+      toDelete: {
         wellUid: wellbore.wellUid,
         wellboreUid: wellbore.uid
       }
