@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
-namespace WitsmlExplorer.Api.Routez;
+namespace WitsmlExplorer.Api.HttpHandler;
 
-public static class WitsmlServer
+public static class WitsmlServerHandler
 {
     public static async Task<IResult> GetWitsmlServers(IDocumentRepository<Server, Guid> witsmlServerRepository)
     {
