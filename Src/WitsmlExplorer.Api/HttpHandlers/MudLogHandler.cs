@@ -20,7 +20,7 @@ public static class MudLogHandler
             return Results.Problem(ex.Message);
         }
     }
-    public static async Task<IResult> GetBhaRun(string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService)
+    public static async Task<IResult> GetMudLog(string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService)
     {
         try
         {
