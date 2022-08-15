@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 
@@ -18,63 +17,19 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteBhaRunWorker : BaseWorker<DeleteBhaRunsJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteBhaRuns;
 
-        public DeleteBhaRunWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteBhaRunWorker(ILogger<DeleteBhaRunsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteBhaRunsJob job)
         {
             Verify(job);
-
-            var wellUid = job.ToDelete.WellUid;
-            var wellboreUid = job.ToDelete.WellboreUid;
-            var bhaRunUids = job.ToDelete.BhaRunUids;
-            var queries = BhaRunQueries.DeleteBhaRunQuery(wellUid, wellboreUid, bhaRunUids);
-            bool error = false;
-            var successUids = new List<string>();
-            var errorReasons = new List<string>();
-            var errorEnitities = new List<EntityDescription>();
-
-            var results = await Task.WhenAll(queries.Select(async (query) =>
-            {
-                var result = await witsmlClient.DeleteFromStoreAsync(query);
-                var bhaRun = query.BhaRuns.First();
-                if (result.IsSuccessful)
-                {
-                    Log.Information("{JobType} - Job successful", GetType().Name);
-                    successUids.Add(bhaRun.Uid);
-                }
-                else
-                {
-                    Log.Error("Failed to delete bhaRun. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {bhaRunUid}, Reason: {Reason}",
-                    wellUid,
-                    wellboreUid,
-                    query.BhaRuns.First().Uid,
-                    result.Reason);
-                    error = true;
-                    errorReasons.Add(result.Reason);
-                    errorEnitities.Add(new EntityDescription
-                    {
-                        WellName = bhaRun.NameWell,
-                        WellboreName = bhaRun.NameWellbore,
-                        ObjectName = bhaRun.Name
-                    });
-                }
-                return result;
-            }));
-
-            var refreshAction = new RefreshBhaRuns(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-            var successString = successUids.Count > 0 ? $"Deleted BhaRuns: {string.Join(", ", successUids)}." : "";
-            if (!error)
-            {
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
-            }
-
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some BhaRuns", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
+            var queries = BhaRunQueries.DeleteBhaRunQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.BhaRunUids);
+            return await DeleteUtils.DeleteMultiple(queries, Logger, _witsmlClient);
         }
 
         private static void Verify(DeleteBhaRunsJob job)

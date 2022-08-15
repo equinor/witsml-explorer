@@ -156,18 +156,15 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlBhaRuns> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
+        public static IEnumerable<WitsmlBhaRun> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
         {
             return bhaRunUids.Select((bhaRunUid) =>
-                new WitsmlBhaRuns
-                {
-                    BhaRuns = new WitsmlBhaRun
+                    new WitsmlBhaRun
                     {
                         Uid = bhaRunUid,
                         UidWell = wellUid,
                         UidWellbore = wellboreUid
-                    }.AsSingletonList()
-                }
+                    }
             );
         }
         public static IEnumerable<WitsmlBhaRuns> CopyWitsmlBhaRuns(WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore)
