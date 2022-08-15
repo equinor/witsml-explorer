@@ -21,6 +21,7 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
 
 if (builder.Environment.IsDevelopment())
 {
+
     builder.Configuration.AddUserSecrets<Startup>();
 }
 
