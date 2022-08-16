@@ -2,10 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+using Serilog;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
@@ -18,7 +24,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            worker = new DeleteCurveValuesWorker(witsmlClientProvider);
+
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();
+            worker = new DeleteCurveValuesWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -27,7 +37,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             var wellUid = "<WellUid>";
             var wellboreUid = "<WellboreUid";
             var logUid = "<LogUid>";
-            var mnemonics = new List<string> {"BLOCKPOS", "CHOKE_PRESS", "UKNOWN", "DEPTH_HOLE"};
+            var mnemonics = new List<string> { "BLOCKPOS", "CHOKE_PRESS", "UKNOWN", "DEPTH_HOLE" };
             var indexRanges = new List<IndexRange>
             {
                 new IndexRange

@@ -19,21 +19,17 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     [SuppressMessage("ReSharper", "xUnit1004")]
     public class CopyTrajectoryWorkerTests
     {
-        private readonly CopyTrajectoryWorker worker;
-        private readonly DeleteTrajectoryWorker deleteLogWorker;
-        private readonly IWitsmlClient client;
+        private readonly CopyTrajectoryWorker _worker;
 
         public CopyTrajectoryWorkerTests()
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            client = witsmlClientProvider.GetClient();
             var loggerFactory = (ILoggerFactory)new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             var logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
 
-            worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
-            deleteLogWorker = new DeleteTrajectoryWorker(witsmlClientProvider);
+            _worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -53,7 +49,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                     WellboreUid = "70507fdf-4b01-4d62-a642-5f154c57440d"
                 }
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }
