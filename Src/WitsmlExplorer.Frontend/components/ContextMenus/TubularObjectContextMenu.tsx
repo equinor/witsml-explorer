@@ -3,18 +3,17 @@ import ContextMenu from "./ContextMenu";
 import { Divider, MenuItem } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
 import Tubular from "../../models/tubular";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
 import Wellbore from "../../models/wellbore";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { onClickCopy, onClickDelete, onClickPaste, onClickRefresh, onClickShowOnServer, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import NestedMenuItem from "./NestedMenuItem";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -50,7 +49,7 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation, dispatchNavigation)} disabled={tubulars.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,
@@ -74,11 +73,5 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
     />
   );
 };
-
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default TubularObjectContextMenu;

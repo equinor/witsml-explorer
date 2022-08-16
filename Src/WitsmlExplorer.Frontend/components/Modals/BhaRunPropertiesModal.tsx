@@ -209,8 +209,8 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               />
               <TextField
                 id={"numStringRun"}
-                label={"numStringRun"}
                 type="number"
+                label={"numStringRun"}
                 value={editableBhaRun.numStringRun ?? ""}
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, numStringRun: e.target.value })}

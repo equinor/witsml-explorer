@@ -18,21 +18,21 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteWbGeometryWorker : BaseWorker<DeleteWbGeometryJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteWbGeometrys;
 
         public DeleteWbGeometryWorker(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWbGeometryJob job)
         {
             Verify(job);
 
-            var wellUid = job.WbGeometryReferences.WellUid;
-            var wellboreUid = job.WbGeometryReferences.WellboreUid;
-            var wbGeometryUids = job.WbGeometryReferences.WbGeometryUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var wbGeometryUids = job.ToDelete.WbGeometryUids;
             var queries = WbGeometryQueries.DeleteWbGeometryQuery(wellUid, wellboreUid, wbGeometryUids);
             bool error = false;
             var successUids = new List<string>();
@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Workers
 
             var results = await Task.WhenAll(queries.Select(async (query) =>
             {
-                var result = await witsmlClient.DeleteFromStoreAsync(query);
+                var result = await _witsmlClient.DeleteFromStoreAsync(query);
                 var wbGeometry = query.WbGeometrys.First();
                 if (result.IsSuccessful)
                 {
@@ -67,21 +67,21 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }));
 
-            var refreshAction = new RefreshWbGeometryObjects(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshWbGeometryObjects(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             var successString = successUids.Count > 0 ? $"Deleted WbGeometrys: {string.Join(", ", successUids)}." : "";
             if (!error)
             {
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction);
             }
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some WbGeometrys", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some WbGeometrys", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
         private static void Verify(DeleteWbGeometryJob job)
         {
-            if (!job.WbGeometryReferences.WbGeometryUids.Any()) throw new ArgumentException("A minimum of one WbGeometry UID is required");
-            if (string.IsNullOrEmpty(job.WbGeometryReferences.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.WbGeometryReferences.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.WbGeometryUids.Any()) throw new ArgumentException("A minimum of one WbGeometry UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

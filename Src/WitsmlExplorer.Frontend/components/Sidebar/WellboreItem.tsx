@@ -35,6 +35,7 @@ import { calculateTubularId } from "../../models/tubular";
 import TubularItem from "./TubularItem";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
 import WbGeometryObjectService from "../../services/wbGeometryService";
+import BhaRunsContextMenu, { BhaRunsContextMenuProps } from "../ContextMenus/BhaRunsContextMenu";
 
 interface WellboreItemProps {
   well: Well;
@@ -55,6 +56,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: WellboreContextMenuProps = { wellbore, servers, dispatchOperation, dispatchNavigation };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const onBhaRunsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: BhaRunsContextMenuProps = { dispatchOperation, wellbore, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <BhaRunsContextMenu {...contextMenuProps} />, position } });
   };
 
   const onLogsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
@@ -201,7 +209,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={bhaRunGroupId}
         labelText={"BhaRuns"}
         onLabelClick={() => onSelectBhaRunGroup(well, wellbore, bhaRunGroupId)}
-        onContextMenu={preventContextMenuPropagation}
+        onContextMenu={(event) => onBhaRunsContextMenu(event, wellbore)}
       />
 
       <TreeItem

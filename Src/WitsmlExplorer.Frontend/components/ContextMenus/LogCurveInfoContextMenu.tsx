@@ -1,12 +1,10 @@
 import React from "react";
 import ContextMenu from "./ContextMenu";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
 import ConfirmModal from "../Modals/ConfirmModal";
 import JobService, { JobType } from "../../services/jobService";
-import DeleteMnemonicsJob from "../../models/jobs/deleteMnemonicsJob";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import LogObject from "../../models/logObject";
@@ -16,7 +14,8 @@ import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
+import { StyledIcon } from "./ContextMenuUtils";
+import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -63,12 +62,14 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     dispatchOperation({ type: OperationType.HideModal });
     const { wellUid, wellboreUid, logUid } = checkedLogCurveInfoRows[0];
     const job: DeleteMnemonicsJob = {
-      logObject: {
-        wellUid,
-        wellboreUid,
-        logUid
-      },
-      mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
+      toDelete: {
+        logReference: {
+          wellUid,
+          wellboreUid,
+          logUid
+        },
+        mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
+      }
     };
     await JobService.orderJob(JobType.DeleteMnemonics, job);
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -93,26 +94,16 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
           <Typography color={"primary"}>Copy</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
-          <ListItemIcon>
-            <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
-          <ListItemIcon>
-            <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
   );
 };
-
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default LogCurveInfoContextMenu;

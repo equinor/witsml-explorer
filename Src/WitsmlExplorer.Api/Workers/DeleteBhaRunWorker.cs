@@ -16,7 +16,7 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteBhaRunWorker : BaseWorker<DeleteBhaRunJob>, IWorker
+    public class DeleteBhaRunWorker : BaseWorker<DeleteBhaRunsJob>, IWorker
     {
         private readonly IWitsmlClient witsmlClient;
         public JobType JobType => JobType.DeleteBhaRuns;
@@ -26,13 +26,13 @@ namespace WitsmlExplorer.Api.Workers
             witsmlClient = witsmlClientProvider.GetClient();
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteBhaRunJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteBhaRunsJob job)
         {
             Verify(job);
 
-            var wellUid = job.BhaRunReferences.WellUid;
-            var wellboreUid = job.BhaRunReferences.WellboreUid;
-            var bhaRunUids = job.BhaRunReferences.BhaRunUids;
+            var wellUid = job.ToDelete.WellUid;
+            var wellboreUid = job.ToDelete.WellboreUid;
+            var bhaRunUids = job.ToDelete.BhaRunUids;
             var queries = BhaRunQueries.DeleteBhaRunQuery(wellUid, wellboreUid, bhaRunUids);
             bool error = false;
             var successUids = new List<string>();
@@ -77,11 +77,11 @@ namespace WitsmlExplorer.Api.Workers
             return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some BhaRuns", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
-        private static void Verify(DeleteBhaRunJob job)
+        private static void Verify(DeleteBhaRunsJob job)
         {
-            if (!job.BhaRunReferences.BhaRunUids.Any()) throw new ArgumentException("A minimum of one BhaRun UID is required");
-            if (string.IsNullOrEmpty(job.BhaRunReferences.WellUid)) throw new ArgumentException("WellUid is required");
-            if (string.IsNullOrEmpty(job.BhaRunReferences.WellboreUid)) throw new ArgumentException("WellboreUid is required");
+            if (!job.ToDelete.BhaRunUids.Any()) throw new ArgumentException("A minimum of one BhaRun UID is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
     }
 }

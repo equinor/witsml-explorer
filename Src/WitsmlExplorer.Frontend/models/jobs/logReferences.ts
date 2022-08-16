@@ -1,6 +1,6 @@
 ﻿import logReference from "./logReference";
 
 export default interface LogReferences {
-  serverUrl: string;
+  serverUrl?: string;
   logReferenceList: logReference[];
 }

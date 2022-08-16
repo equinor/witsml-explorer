@@ -13,6 +13,7 @@ export default class JobService {
 
 export enum JobType {
   CreateWell = "CreateWell",
+  CopyBhaRun = "CopyBhaRun",
   CopyLog = "CopyLog",
   CopyLogData = "CopyLogData",
   CopyTrajectory = "CopyTrajectory",
@@ -32,7 +33,7 @@ export enum JobType {
   DeleteWellbore = "DeleteWellbore",
   DeleteTrajectory = "DeleteTrajectory",
   DeleteTrajectoryStations = "DeleteTrajectoryStations",
-  DeleteTubular = "DeleteTubular",
+  DeleteTubulars = "DeleteTubular",
   DeleteTubularComponents = "DeleteTubularComponents",
   ModifyBhaRun = "ModifyBhaRun",
   ModifyLogObject = "ModifyLogObject",

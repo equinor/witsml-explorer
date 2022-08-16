@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -23,10 +26,10 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMnemonicsJob job)
         {
-            var wellUid = job.LogObject.WellUid;
-            var wellboreUid = job.LogObject.WellboreUid;
-            var logUid = job.LogObject.LogUid;
-            var mnemonics = new ReadOnlyCollection<string>(job.Mnemonics.ToList());
+            var wellUid = job.ToDelete.LogReference.WellUid;
+            var wellboreUid = job.ToDelete.LogReference.WellboreUid;
+            var logUid = job.ToDelete.LogReference.LogUid;
+            var mnemonics = new ReadOnlyCollection<string>(job.ToDelete.Mnemonics.ToList());
             var mnemonicsString = string.Join(", ", mnemonics);
 
             var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, mnemonics);
