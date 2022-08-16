@@ -8,8 +8,8 @@ namespace WitsmlExplorer.Api.Models
     public class Trajectory
     {
         public string Uid { get; internal set; }
-        public decimal MdMin { get; internal set; }
-        public decimal MdMax { get; internal set; }
+        public decimal? MdMin { get; internal set; }
+        public decimal? MdMax { get; internal set; }
         public string AziRef { get; internal set; }
         public DateTime? DTimTrajStart { get; internal set; }
         public DateTime? DTimTrajEnd { get; internal set; }
