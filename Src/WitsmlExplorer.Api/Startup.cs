@@ -74,6 +74,31 @@ namespace WitsmlExplorer.Api
                 {
                     {basicSecurityScheme, Array.Empty<string>()}
                 });
+                var oAuth2scheme = new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri("https://login.microsoftonline.com/<tenant>/oauth2/v2.0/authorize"),
+                            TokenUrl = new Uri("https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token")
+                        }
+                    },
+                    Type = SecuritySchemeType.OAuth2
+                };
+                options.AddSecurityDefinition("OAuth2", oAuth2scheme);
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Id = "OAuth2", Type = ReferenceType.SecurityScheme },
+                            Type = SecuritySchemeType.OAuth2,
+                        },
+                        new List<string> { }
+                    }
+                });
             });
         }
 
@@ -84,6 +109,16 @@ namespace WitsmlExplorer.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(
+                    options =>
+                    {
+                        options.OAuthAppName("<appname>");
+                        options.OAuthClientId("<clientId>");
+                        options.OAuthScopes("<clientId>/access_as_user");
+                        options.OAuthUsePkce();
+                    }
+                );
             }
             else
             {
@@ -95,8 +130,6 @@ namespace WitsmlExplorer.Api
             app.UseCors(_myAllowSpecificOrigins);
             app.UseRouting();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
-            app.UseSwagger();
-            app.UseSwaggerUI();
         }
     }
 }
