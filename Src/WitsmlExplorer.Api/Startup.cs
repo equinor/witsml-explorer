@@ -57,6 +57,8 @@ namespace WitsmlExplorer.Api
             services.ConfigureDependencies(Configuration);
             services.AddHostedService<BackgroundWorkerService>();
             services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +79,8 @@ namespace WitsmlExplorer.Api
             app.UseCors(_myAllowSpecificOrigins);
             app.UseRouting();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
     }
 }
