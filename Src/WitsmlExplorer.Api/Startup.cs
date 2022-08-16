@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 
 using Serilog;
@@ -66,7 +67,7 @@ namespace WitsmlExplorer.Api
                 var basicSecurityScheme = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
+                    Scheme = "Basic",
                     Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme }
                 };
                 options.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
@@ -82,8 +83,8 @@ namespace WitsmlExplorer.Api
                     {
                         AuthorizationCode = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri("https://login.microsoftonline.com/<tenant>/oauth2/v2.0/authorize"),
-                            TokenUrl = new Uri("https://login.microsoftonline.com/<tenant>/oauth2/v2.0/token")
+                            AuthorizationUrl = new Uri(Configuration["AzureAd:Swagger:AuthorizationUrl"]),
+                            TokenUrl = new Uri(Configuration["AzureAd:Swagger:TokenUrl"])
                         }
                     },
                     Type = SecuritySchemeType.OAuth2
@@ -100,6 +101,8 @@ namespace WitsmlExplorer.Api
                     }
                 });
             });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+            services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,9 +116,9 @@ namespace WitsmlExplorer.Api
                 app.UseSwaggerUI(
                     options =>
                     {
-                        options.OAuthAppName("<appname>");
-                        options.OAuthClientId("<clientId>");
-                        options.OAuthScopes("<clientId>/access_as_user");
+                        options.OAuthAppName(Configuration["AzureAd:AppName"]);
+                        options.OAuthClientId(Configuration["AzureAd:ClientId"]);
+                        options.OAuthScopes(Configuration["AzureAd:Scopes"]);
                         options.OAuthUsePkce();
                     }
                 );
@@ -129,6 +132,9 @@ namespace WitsmlExplorer.Api
             app.UseResponseCompression();
             app.UseCors(_myAllowSpecificOrigins);
             app.UseRouting();
+            //app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }
     }

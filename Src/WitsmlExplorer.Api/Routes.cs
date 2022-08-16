@@ -53,6 +53,11 @@ public static class Api
 
         app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob).Produces<string>();
 
-        app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize).RequireAuthorization().Produces<string>().Produces(StatusCodes.Status500InternalServerError);
+        app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize).Produces<string>().Produces(StatusCodes.Status500InternalServerError);
+
+        if (app.Environment.EnvironmentName == "Development")
+        {
+            app.MapFallback(() => Results.Redirect("/swagger"));
+        }
     }
 }
