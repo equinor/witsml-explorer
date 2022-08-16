@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.ServiceReference;
@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteTrajectory;
 
-        public DeleteTrajectoryWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteTrajectoryWorker(ILogger<DeleteTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -33,12 +33,15 @@ namespace WitsmlExplorer.Api.Workers
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlTrajectory);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
+                Logger.LogInformation("Deleted trajectory. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {Uid}",
+                        wellUid,
+                        wellboreUid,
+                        trajectoryUid);
                 var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
                 return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted trajectory: ${trajectoryUid}"), refreshAction);
             }
 
-            Log.Error("Failed to delete trajectory. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}",
+            Logger.LogError("Failed to delete trajectory. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}",
                 wellUid,
                 wellboreUid,
                 trajectoryUid);

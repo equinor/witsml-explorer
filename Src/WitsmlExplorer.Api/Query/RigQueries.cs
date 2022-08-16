@@ -75,20 +75,19 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-        public static IEnumerable<WitsmlRigs> DeleteRigQuery(string wellUid, string wellboreUid, string[] rigUids)
+
+        public static IEnumerable<WitsmlRig> DeleteRigQuery(string wellUid, string wellboreUid, string[] rigUids)
         {
             return rigUids.Select((rigUid) =>
-                new WitsmlRigs
+                new WitsmlRig
                 {
-                    Rigs = new WitsmlRig
-                    {
-                        Uid = rigUid,
-                        UidWell = wellUid,
-                        UidWellbore = wellboreUid
-                    }.AsSingletonList()
+                    Uid = rigUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }
             );
         }
+
         public static WitsmlRigs CreateRig(Rig rig)
         {
             return new WitsmlRigs

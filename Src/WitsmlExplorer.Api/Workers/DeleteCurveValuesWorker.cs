@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -16,12 +19,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteCurveValuesWorker : BaseWorker<DeleteCurveValuesJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteCurveValues;
 
-        public DeleteCurveValuesWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteCurveValuesWorker(ILogger<DeleteCurveValuesJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteCurveValuesJob job)
@@ -33,40 +36,44 @@ namespace WitsmlExplorer.Api.Workers
             if (witsmlLog == null)
             {
                 var reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
             }
 
             var logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
             var deleteQueries = CreateDeleteQueries(job, witsmlLog, logCurveInfos);
             foreach (var query in deleteQueries)
             {
-                var result = await witsmlClient.DeleteFromStoreAsync(query);
+                var result = await _witsmlClient.DeleteFromStoreAsync(query);
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Job successful", GetType().Name);
+                    Logger.LogInformation("Deleted mnemonic for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonics}",
+                        wellUid,
+                        wellboreUid,
+                        logUid,
+                        query.Logs.First().LogCurveInfo.First().Mnemonic);
                 }
                 else
                 {
-                    Log.Error("Failed to delete mnemonics for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}",
+                    Logger.LogError("Failed to delete mnemonics for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}",
                         wellUid,
                         wellboreUid,
                         logUid,
                         string.Join(", ", job.Mnemonics));
 
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, witsmlLog.GetDescription()), null);
+                    return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
-            var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+            var refreshAction = new RefreshLogObject(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
             var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Deleted curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);
         }
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
             var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            var result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result.Logs.FirstOrDefault();
         }
 

@@ -2,28 +2,19 @@ using System.Xml;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
+using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlRig
+    public class WitsmlRig : ObjectOnWellbore<WitsmlRigs>
     {
-        [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
-
-        [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
-
-        [XmlAttribute("uid")]
-        public string Uid { get; set; }
-
-        [XmlElement("nameWell")]
-        public string NameWell { get; set; }
-
-        [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
-
-        [XmlElement("name")]
-        public string Name { get; set; }
+        public override WitsmlRigs AsSingletonWitsmlList()
+        {
+            return new WitsmlRigs()
+            {
+                Rigs = this.AsSingletonList()
+            };
+        }
 
         [XmlElement("owner")]
         public string Owner { get; set; }

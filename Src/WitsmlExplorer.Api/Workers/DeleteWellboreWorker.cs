@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.ServiceReference;
@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteWellbore;
 
-        public DeleteWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteWellboreWorker(ILogger<DeleteWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -32,13 +32,15 @@ namespace WitsmlExplorer.Api.Workers
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
+                Logger.LogInformation("Deleted wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
+                wellUid,
+                wellboreUid);
                 var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Remove);
                 var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted wellbore: ${wellboreUid}");
                 return (workerResult, refreshAction);
             }
 
-            Log.Error("Failed to delete wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
+            Logger.LogError("Failed to delete wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
                 wellUid,
                 wellboreUid);
 

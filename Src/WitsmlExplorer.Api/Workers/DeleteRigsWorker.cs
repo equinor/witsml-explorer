@@ -13,29 +13,29 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteMessagesWorker : BaseWorker<DeleteMessageObjectsJob>, IWorker
+    public class DeleteRigsWorker : BaseWorker<DeleteRigsJob>, IWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
-        public JobType JobType => JobType.DeleteMessageObjects;
+        public JobType JobType => JobType.DeleteRigs;
 
-        public DeleteMessagesWorker(ILogger<DeleteMessageObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteRigsWorker(ILogger<DeleteRigsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
             _deleteUtils = deleteUtils;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRigsJob job)
         {
             Verify(job);
-            var queries = MessageQueries.DeleteMessageQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.MessageObjectUids);
-            var refreshAction = new RefreshMessageObjects(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            var queries = RigQueries.DeleteRigQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.RigUids);
+            var refreshAction = new RefreshRigs(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteMessageObjectsJob job)
+        private static void Verify(DeleteRigsJob job)
         {
-            if (!job.ToDelete.MessageObjectUids.Any()) throw new ArgumentException($"A minimum of one message is required");
+            if (!job.ToDelete.RigUids.Any()) throw new ArgumentException("A minimum of one Rig UID is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }

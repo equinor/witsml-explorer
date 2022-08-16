@@ -1,5 +1,9 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
+using Serilog;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
@@ -11,13 +15,18 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
     public class DeleteTubularWorkerTests
     {
-        private readonly DeleteTubularWorker _worker;
+        private readonly DeleteTubularsWorker _worker;
 
         public DeleteTubularWorkerTests()
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            _worker = new DeleteTubularWorker(witsmlClientProvider);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<DeleteTubularsJob>();
+            var logger2 = loggerFactory.CreateLogger<DeleteUtils>();
+            var deleteUtils = new DeleteUtils(logger2, witsmlClientProvider);
+            _worker = new DeleteTubularsWorker(logger, witsmlClientProvider, deleteUtils);
         }
 
         [Fact(Skip = "Should only be run manually")]

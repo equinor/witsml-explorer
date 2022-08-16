@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
@@ -17,12 +18,14 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class DeleteLogObjectsWorker : BaseWorker<DeleteLogObjectsJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
+        private readonly IDeleteUtils _deleteUtils;
         public JobType JobType => JobType.DeleteLogObjects;
 
-        public DeleteLogObjectsWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteLogObjectsWorker(ILogger<DeleteLogObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
+            _deleteUtils = deleteUtils;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteLogObjectsJob job)
@@ -31,39 +34,18 @@ namespace WitsmlExplorer.Api.Workers
 
             var wellUid = job.ToDelete.LogReferenceList.First().WellUid;
             var wellboreUid = job.ToDelete.LogReferenceList.First().WellboreUid;
-
-            var logsExpanded = $"[ {string.Join(", ", job.ToDelete.LogReferenceList.Select(l => l.LogUid))} ]";
-            var jobDescription = $"Delete {job.ToDelete.LogReferenceList.Count()} Logs under wellUid: {wellUid}, wellboreUid: {wellboreUid}. Logs: {logsExpanded}";
-
             var queries = job.ToDelete.LogReferenceList.Select(CreateRequest);
-            var tasks = queries.Select(q => witsmlClient.DeleteFromStoreAsync(q)).ToList();
-
-            await Task.WhenAll(tasks);
-            if (tasks.Any(t => t.IsFaulted))
-            {
-                var numFailed = tasks.Count(t => !t.Result.IsSuccessful);
-                var reasons = string.Join(",", tasks.Where(t => !t.Result.IsSuccessful).Select(t => t.Result.Reason).ToArray());
-                Log.Error($"FAILURE deleting {numFailed} of {tasks.Count} Logs due to {reasons}");
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"Job failed deleting {numFailed} log objects", reasons), null);
-            }
-
-            Log.Information($"SUCCESS - {jobDescription}");
-            return (
-                new WorkerResult(witsmlClient.GetServerHostname(), true, $"{tasks.Count} log objects deleted for wellbore {wellboreUid}"),
-                new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update)
-            );
+            var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static WitsmlLogs CreateRequest(LogReference logReference)
+        private static WitsmlLog CreateRequest(LogReference logReference)
         {
-            return new WitsmlLogs
+            return new WitsmlLog
             {
-                Logs = new WitsmlLog
-                {
-                    UidWell = logReference.WellUid,
-                    UidWellbore = logReference.WellboreUid,
-                    Uid = logReference.LogUid
-                }.AsSingletonList()
+                UidWell = logReference.WellUid,
+                UidWellbore = logReference.WellboreUid,
+                Uid = logReference.LogUid
             };
         }
 

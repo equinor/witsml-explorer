@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
-using System.Linq;
-using WitsmlExplorer.Api.Models;
+
 using WitsmlExplorer.Api.Jobs.Common;
-using Witsml.Data.Measures;
-using System.Globalization;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -56,17 +58,14 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlTubulars> DeleteWitsmlTubulars(string wellUid, string wellboreUid, string[] tubularUids)
+        public static IEnumerable<WitsmlTubular> DeleteWitsmlTubulars(string wellUid, string wellboreUid, string[] tubularUids)
         {
             return tubularUids.Select((tubularUid) =>
-                new WitsmlTubulars
+                new WitsmlTubular
                 {
-                    Tubulars = new WitsmlTubular
-                    {
-                        Uid = tubularUid,
-                        UidWell = wellUid,
-                        UidWellbore = wellboreUid
-                    }.AsSingletonList()
+                    Uid = tubularUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }
             );
         }

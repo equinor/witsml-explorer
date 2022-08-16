@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Serilog;
+
 using Witsml;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -44,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
             if (result.IsSuccessful)
             {
                 Log.Information("{JobType} - Job successful", GetType().Name);
-                var refreshAction = new RefreshTubular(witsmlClient.GetServerHostname(), wellUid, wellboreUid, tubularUid, RefreshType.Update);
+                var refreshAction = new RefreshTubulars(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
                 return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Tubular updated ({job.Tubular.Name} [{tubularUid}])"), refreshAction);
             }
 

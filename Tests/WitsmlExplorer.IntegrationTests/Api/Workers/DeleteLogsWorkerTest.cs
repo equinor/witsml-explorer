@@ -1,6 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
+using Serilog;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
@@ -14,13 +18,17 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     public class DeleteLogsWorkerTests
     {
 
-        private readonly DeleteLogObjectsWorker worker;
+        private readonly DeleteLogObjectsWorker _worker;
 
         public DeleteLogsWorkerTests()
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            worker = new DeleteLogObjectsWorker(witsmlClientProvider);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
+            var logger2 = loggerFactory.CreateLogger<DeleteUtils>();
+            _worker = new DeleteLogObjectsWorker(logger, witsmlClientProvider, new DeleteUtils(logger2, witsmlClientProvider));
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -34,7 +42,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             {
                 ToDelete = new LogReferences() { LogReferenceList = logs }
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }

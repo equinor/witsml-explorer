@@ -37,7 +37,7 @@ const RefreshHandler = (): React.ReactElement => {
             await refreshWellbore(refreshAction, modificationType);
             break;
           case EntityType.BhaRuns:
-            await refreshBhaRun(refreshAction, modificationType);
+            await refreshBhaRuns(refreshAction, modificationType);
             break;
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
@@ -49,10 +49,10 @@ const RefreshHandler = (): React.ReactElement => {
             await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
             break;
           case EntityType.Tubular:
-            await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
+            await refreshTubulars(refreshAction, ModificationType.UpdateTubularsOnWellbore);
             break;
           case EntityType.Risks:
-            await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
+            await refreshRisks(refreshAction, ModificationType.UpdateRiskObjects);
             break;
           case EntityType.Rigs:
             await refreshRigs(refreshAction, ModificationType.UpdateRigsOnWellbore);
@@ -105,7 +105,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshBhaRun(refreshAction: RefreshAction, modificationType: ModificationType) {
+  async function refreshBhaRuns(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateBhaRuns) {
       const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
       const wellUid = refreshAction.wellUid;
@@ -147,7 +147,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshRisk(refreshAction: RefreshAction, modificationType: ModificationType) {
+  async function refreshRisks(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateRiskObjects) {
       const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
       const wellUid = refreshAction.wellUid;
@@ -158,7 +158,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshTubular(refreshAction: RefreshAction, modificationType: ModificationType) {
+  async function refreshTubulars(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateTubularsOnWellbore) {
       const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);
       const wellUid = refreshAction.wellUid;
