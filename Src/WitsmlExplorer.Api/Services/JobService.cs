@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.OpenApi.Extensions;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Workers;
 
@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var worker = workers.FirstOrDefault(worker => worker.JobType == jobType);
             if (worker == null)
-                throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType.GetDisplayName()}");
+                throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType}");
 
             jobQueue.Enqueue(worker.Execute(jobStream));
         }
