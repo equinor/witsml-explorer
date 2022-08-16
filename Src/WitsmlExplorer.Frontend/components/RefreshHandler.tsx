@@ -49,7 +49,7 @@ const RefreshHandler = (): React.ReactElement => {
             await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
             break;
           case EntityType.Tubular:
-            await refreshTubular(refreshAction, ModificationType.UpdateTubularsOnWellbore);
+            await refreshTubulars(refreshAction, ModificationType.UpdateTubularsOnWellbore);
             break;
           case EntityType.Risks:
             await refreshRisk(refreshAction, ModificationType.UpdateRiskObjects);
@@ -158,7 +158,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshTubular(refreshAction: RefreshAction, modificationType: ModificationType) {
+  async function refreshTubulars(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.UpdateTubularsOnWellbore) {
       const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);
       const wellUid = refreshAction.wellUid;

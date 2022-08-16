@@ -1,18 +1,21 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
+using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlTrajectory
+    public class WitsmlTrajectory : ObjectOnWellbore<WitsmlTrajectories>
     {
-        [XmlAttribute("uidWell")] public string UidWell { get; set; }
-        [XmlAttribute("uidWellbore")] public string UidWellbore { get; set; }
-        [XmlAttribute("uid")] public string Uid { get; set; }
-        [XmlElement("nameWell")] public string NameWell { get; set; }
-        [XmlElement("nameWellbore")] public string NameWellbore { get; set; }
-        [XmlElement("name")] public string Name { get; set; }
+        public override WitsmlTrajectories AsSingletonWitsmlList()
+        {
+            return new WitsmlTrajectories()
+            {
+                Trajectories = this.AsSingletonList()
+            };
+        }
 
         [XmlIgnore]
         public bool? ObjectGrowing { get; set; }

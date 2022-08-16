@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.ServiceReference;
@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteTubularComponents;
 
-        public DeleteTubularComponentsWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteTubularComponentsWorker(ILogger<DeleteTubularComponentsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -36,13 +36,17 @@ namespace WitsmlExplorer.Api.Workers
             var result = await _witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var refreshAction = new RefreshTubular(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, tubularUid, RefreshType.Update);
+                Logger.LogInformation("Deleted tubularcomponents for tubular object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TubularUid}, TubularComponents: {TubularComponentsString}",
+                    wellUid,
+                    wellboreUid,
+                    tubularUid,
+                    tubularcomponents);
+                var refreshAction = new RefreshTubulars(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
                 var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted tubularcomponents: {tubularComponentsString} for tubular: {tubularUid}");
                 return (workerResult, refreshAction);
             }
 
-            Log.Error("Failed to delete tubularcomponents for tubular object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TubularUid}, TubularComponents: {TubularComponentsString}",
+            Logger.LogError("Failed to delete tubularcomponents for tubular object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TubularUid}, TubularComponents: {TubularComponentsString}",
                 wellUid,
                 wellboreUid,
                 tubularUid,

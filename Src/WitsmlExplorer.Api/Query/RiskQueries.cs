@@ -71,22 +71,17 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlRisks> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
+        public static IEnumerable<WitsmlRisk> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
         {
             return riskUids.Select((riskUid) =>
-                new WitsmlRisks
+                new WitsmlRisk
                 {
-                    Risks = new WitsmlRisk
-                    {
-                        Uid = riskUid,
-                        UidWell = wellUid,
-                        UidWellbore = wellboreUid
-                    }.AsSingletonList()
+                    Uid = riskUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }
             );
         }
-
-
 
         public static WitsmlRisks CreateRisk(Risk risk)
         {

@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.ServiceReference;
@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteWell;
 
-        public DeleteWellWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteWellWorker(ILogger<DeleteWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -31,13 +31,13 @@ namespace WitsmlExplorer.Api.Workers
             var result = await _witsmlClient.DeleteFromStoreAsync(witsmlWell);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
+                Logger.LogInformation("Deleted well. WellUid: {WellUid}", wellUid);
                 var refreshAction = new RefreshWell(_witsmlClient.GetServerHostname(), wellUid, RefreshType.Remove);
                 var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted well with uid ${wellUid}");
                 return (workerResult, refreshAction);
             }
 
-            Log.Error("Failed to delete well. WellUid: {WellUid}", wellUid);
+            Logger.LogError("Failed to delete well. WellUid: {WellUid}", wellUid);
 
             witsmlWell = WellQueries.GetWitsmlWellByUid(wellUid);
             var queryResult = await _witsmlClient.GetFromStoreAsync(witsmlWell, new OptionsIn(ReturnElements.IdOnly));

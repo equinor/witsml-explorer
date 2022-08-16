@@ -1,30 +1,22 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Witsml.Extensions;
+
 namespace Witsml.Data
 {
-    public class WitsmlLog
+    public class WitsmlLog : ObjectOnWellbore<WitsmlLogs>
     {
+        public override WitsmlLogs AsSingletonWitsmlList()
+        {
+            return new WitsmlLogs()
+            {
+                Logs = this.AsSingletonList()
+            };
+        }
+
         public const string WITSML_INDEX_TYPE_MD = "measured depth";
         public const string WITSML_INDEX_TYPE_DATE_TIME = "date time";
-
-        [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
-
-        [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
-
-        [XmlAttribute("uid")]
-        public string Uid { get; set; }
-
-        [XmlElement("nameWell")]
-        public string NameWell { get; set; }
-
-        [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
-
-        [XmlElement("name")]
-        public string Name { get; set; }
 
         [XmlElement("objectGrowing")]
         public string ObjectGrowing { get; set; }

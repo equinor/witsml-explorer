@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
+
 using Witsml.Data;
 using Witsml.Extensions;
+
 using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Query
@@ -35,6 +39,18 @@ namespace WitsmlExplorer.Api.Query
                     CommonData = new WitsmlCommonData()
                 }.AsSingletonList()
             };
+        }
+
+        public static IEnumerable<WitsmlMessage> DeleteMessageQuery(string wellUid, string wellboreUid, string[] messageUids)
+        {
+            return messageUids.Select((messageUid) =>
+                new WitsmlMessage
+                {
+                    Uid = messageUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }
+            );
         }
 
         public static WitsmlMessages CreateMessageObject(MessageObject messageObject)

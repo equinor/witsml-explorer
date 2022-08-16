@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.ServiceReference;
@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteTrajectoryStations;
 
-        public DeleteTrajectoryStationsWorker(IWitsmlClientProvider witsmlClientProvider)
+        public DeleteTrajectoryStationsWorker(ILogger<DeleteTrajectoryStationsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
@@ -36,13 +36,17 @@ namespace WitsmlExplorer.Api.Workers
             var result = await _witsmlClient.DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
+                Logger.LogInformation("Deleted trajectoryStations for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStations: {TrajectoryStationsString}",
+                    wellUid,
+                    wellboreUid,
+                    trajectoryUid,
+                    trajectoryStations);
                 var refreshAction = new RefreshTrajectory(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
                 var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Deleted trajectoryStations: {trajectoryStationsString} for trajectory: {trajectoryUid}");
                 return (workerResult, refreshAction);
             }
 
-            Log.Error("Failed to delete trajectoryStations for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStations: {TrajectoryStationsString}",
+            Logger.LogError("Failed to delete trajectoryStations for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStations: {TrajectoryStationsString}",
                 wellUid,
                 wellboreUid,
                 trajectoryUid,

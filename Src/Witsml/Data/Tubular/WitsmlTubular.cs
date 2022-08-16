@@ -1,29 +1,21 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
+using Witsml.Extensions;
 
 namespace Witsml.Data.Tubular
 {
-    public class WitsmlTubular
+    public class WitsmlTubular : ObjectOnWellbore<WitsmlTubulars>
     {
-        [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
-
-        [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
-
-        [XmlAttribute("uid")]
-        public string Uid { get; set; }
-
-        [XmlElement("nameWell")]
-        public string NameWell { get; set; }
-
-        [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
-
-        [XmlElement("name")]
-        public string Name { get; set; }
+        public override WitsmlTubulars AsSingletonWitsmlList()
+        {
+            return new WitsmlTubulars()
+            {
+                Tubulars = this.AsSingletonList()
+            };
+        }
 
         [XmlElement("typeTubularAssy")]
         public string TypeTubularAssy { get; set; }

@@ -13,29 +13,29 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteMessagesWorker : BaseWorker<DeleteMessageObjectsJob>, IWorker
+    public class DeleteRisksWorker : BaseWorker<DeleteRisksJob>, IWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
-        public JobType JobType => JobType.DeleteMessageObjects;
+        public JobType JobType => JobType.DeleteRisks;
 
-        public DeleteMessagesWorker(ILogger<DeleteMessageObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteRisksWorker(ILogger<DeleteRisksJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
             _deleteUtils = deleteUtils;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRisksJob job)
         {
             Verify(job);
-            var queries = MessageQueries.DeleteMessageQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.MessageObjectUids);
-            var refreshAction = new RefreshMessageObjects(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            var queries = RiskQueries.DeleteRiskQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.RiskUids);
+            var refreshAction = new RefreshRisks(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteMessageObjectsJob job)
+        private static void Verify(DeleteRisksJob job)
         {
-            if (!job.ToDelete.MessageObjectUids.Any()) throw new ArgumentException($"A minimum of one message is required");
+            if (!job.ToDelete.RiskUids.Any()) throw new ArgumentException("A minimum of one risk UID is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }

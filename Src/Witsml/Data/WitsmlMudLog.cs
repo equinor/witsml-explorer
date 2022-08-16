@@ -1,28 +1,19 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using Witsml.Data.Measures;
+
+using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlMudLog
+    public class WitsmlMudLog : ObjectOnWellbore<WitsmlMudLogs>
     {
-        [XmlAttribute("uidWell")]
-        public string UidWell { get; set; }
-
-        [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; set; }
-
-        [XmlAttribute("uid")]
-        public string Uid { get; set; }
-
-        [XmlElement("nameWell")]
-        public string NameWell { get; set; }
-
-        [XmlElement("nameWellbore")]
-        public string NameWellbore { get; set; }
-
-        [XmlElement("name")]
-        public string Name { get; set; }
+        public override WitsmlMudLogs AsSingletonWitsmlList()
+        {
+            return new WitsmlMudLogs()
+            {
+                MudLogs = this.AsSingletonList()
+            };
+        }
 
         [XmlElement("objectGrowing")]
         public string ObjectGrowing { get; set; }

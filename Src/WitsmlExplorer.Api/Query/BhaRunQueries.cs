@@ -127,7 +127,7 @@ namespace WitsmlExplorer.Api.Query
                         UidRef = bhaRun.TubularUidRef,
                         Value = bhaRun.Tubular
                     },
-                    StatusBha = (bhaRun.StatusBha == null) ? null : bhaRun.StatusBha,
+                    StatusBha = bhaRun.StatusBha ?? null,
                     NumBitRun = bhaRun.NumBitRun,
                     ReasonTrip = bhaRun.ReasonTrip,
                     ObjectiveBha = bhaRun.ObjectiveBha,
@@ -156,17 +156,14 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlBhaRuns> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
+        public static IEnumerable<WitsmlBhaRun> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
         {
             return bhaRunUids.Select((bhaRunUid) =>
-                new WitsmlBhaRuns
+                new WitsmlBhaRun
                 {
-                    BhaRuns = new WitsmlBhaRun
-                    {
-                        Uid = bhaRunUid,
-                        UidWell = wellUid,
-                        UidWellbore = wellboreUid
-                    }.AsSingletonList()
+                    Uid = bhaRunUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
                 }
             );
         }

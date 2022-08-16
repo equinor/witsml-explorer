@@ -13,29 +13,29 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class DeleteMessagesWorker : BaseWorker<DeleteMessageObjectsJob>, IWorker
+    public class DeleteBhaRunsWorker : BaseWorker<DeleteBhaRunsJob>, IWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
-        public JobType JobType => JobType.DeleteMessageObjects;
+        public JobType JobType => JobType.DeleteBhaRuns;
 
-        public DeleteMessagesWorker(ILogger<DeleteMessageObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteBhaRunsWorker(ILogger<DeleteBhaRunsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
             _deleteUtils = deleteUtils;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteBhaRunsJob job)
         {
             Verify(job);
-            var queries = MessageQueries.DeleteMessageQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.MessageObjectUids);
-            var refreshAction = new RefreshMessageObjects(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            var queries = BhaRunQueries.DeleteBhaRunQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.BhaRunUids);
+            var refreshAction = new RefreshBhaRuns(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteMessageObjectsJob job)
+        private static void Verify(DeleteBhaRunsJob job)
         {
-            if (!job.ToDelete.MessageObjectUids.Any()) throw new ArgumentException($"A minimum of one message is required");
+            if (!job.ToDelete.BhaRunUids.Any()) throw new ArgumentException("A minimum of one BhaRun UID is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellUid)) throw new ArgumentException("WellUid is required");
             if (string.IsNullOrEmpty(job.ToDelete.WellboreUid)) throw new ArgumentException("WellboreUid is required");
         }
