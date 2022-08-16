@@ -1,7 +1,5 @@
 using System;
 
-using Carter;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +19,7 @@ namespace WitsmlExplorer.Api
 {
     public class Startup
     {
-        readonly string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -43,17 +41,16 @@ namespace WitsmlExplorer.Api
 
             Log.Information($"Host: {host}");
             services.AddCors(options =>
-            {
-                options.AddPolicy(myAllowSpecificOrigins, builder =>
-                {
-                    builder.WithOrigins($"{host}:3000");
-                    builder.AllowAnyMethod();
-                    builder.AllowAnyHeader();
-                    builder.AllowCredentials();
-                });
-            });
+                options.AddPolicy(_myAllowSpecificOrigins, builder =>
+                    {
+                        builder.WithOrigins($"{host}:3000");
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyHeader();
+                        builder.AllowCredentials();
+                    }
+                )
+            );
             services.AddResponseCompression();
-            services.AddCarter();
             services.AddSignalR();
             services.AddHttpContextAccessor();
             services.AddDataProtection();
@@ -69,26 +66,17 @@ namespace WitsmlExplorer.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMiddleware<ExceptionMiddleware>();
             }
             else
             {
-                app.UseMiddleware<ExceptionMiddleware>();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseResponseCompression();
-            app.UseCors(myAllowSpecificOrigins);
-
-            app.UseStaticFiles();
-
+            app.UseCors(_myAllowSpecificOrigins);
             app.UseRouting();
-            app.UseEndpoints(builder =>
-            {
-                builder.MapCarter();
-                builder.MapHub<NotificationsHub>("notifications");
-            });
+            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }
     }
 }

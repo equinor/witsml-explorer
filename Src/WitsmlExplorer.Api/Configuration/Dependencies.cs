@@ -1,10 +1,14 @@
 using System;
 using System.Reflection;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using NetCore.AutoRegisterDi;
+
 using Serilog;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;

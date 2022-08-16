@@ -1,10 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
+
 using Serilog;
+
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
