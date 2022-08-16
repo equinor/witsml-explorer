@@ -15,7 +15,7 @@ public static class JobHandler
         try
         {
             jobService.CreateJob(jobType, httpRequest.Body);
-            return Results.Ok(Task.CompletedTask);
+            return Results.Ok(await Task.Run(() => "JobId"));
         }
         catch (Exception ex)
         {
