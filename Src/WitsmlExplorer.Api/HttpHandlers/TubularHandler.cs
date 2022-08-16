@@ -11,35 +11,14 @@ public static class TubularHandler
 {
     public static async Task<IResult> GetTubulars(string wellUid, string wellboreUid, ITubularService tubularService)
     {
-        try
-        {
-            return Results.Ok(await tubularService.GetTubulars(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await tubularService.GetTubulars(wellUid, wellboreUid));
     }
     public static async Task<IResult> GetTubular(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
     {
-        try
-        {
-            return Results.Ok(await tubularService.GetTubular(wellUid, wellboreUid, tubularUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await tubularService.GetTubular(wellUid, wellboreUid, tubularUid));
     }
     public static async Task<IResult> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
     {
-        try
-        {
-            return Results.Ok(await tubularService.GetTubularComponents(wellUid, wellboreUid, tubularUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await tubularService.GetTubularComponents(wellUid, wellboreUid, tubularUid));
     }
 }

@@ -11,25 +11,11 @@ public static class WellHandler
 {
     public static async Task<IResult> GetAllWells(IWellService wellService)
     {
-        try
-        {
-            return Results.Ok(await wellService.GetWells());
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await wellService.GetWells());
     }
 
     public static async Task<IResult> GetWell(string wellUid, IWellService wellService)
     {
-        try
-        {
-            return Results.Ok(await wellService.GetWell(wellUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await wellService.GetWell(wellUid));
     }
 }

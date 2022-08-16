@@ -11,13 +11,6 @@ public static class WbGeometryHandler
 {
     public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
     {
-        try
-        {
-            return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
     }
 }

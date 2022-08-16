@@ -9,7 +9,6 @@ public static class Api
 {
     public static void ConfigureApi(this WebApplication app)
     {
-
         app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers);
         app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer);
         app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer);
@@ -41,7 +40,7 @@ public static class Api
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData);
-        //app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLargeLogData);
+        app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLargeLogData);
 
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog);
@@ -50,10 +49,8 @@ public static class Api
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations);
 
+        app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob);
 
-
-        //app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob);
         app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize);
-
     }
 }

@@ -12,14 +12,7 @@ public static class JobHandler
 {
     public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService)
     {
-        try
-        {
-            jobService.CreateJob(jobType, httpRequest.Body);
-            return Results.Ok(await Task.Run(() => "JobId"));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        jobService.CreateJob(jobType, httpRequest.Body);
+        return Results.Ok(await Task.Run(() => "JobId"));
     }
 }

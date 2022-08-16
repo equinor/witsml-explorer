@@ -11,13 +11,6 @@ public static class RiskHandler
 {
     public static async Task<IResult> GetRisks(string wellUid, string wellboreUid, IRiskService riskService)
     {
-        try
-        {
-            return Results.Ok(await riskService.GetRisks(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await riskService.GetRisks(wellUid, wellboreUid));
     }
 }

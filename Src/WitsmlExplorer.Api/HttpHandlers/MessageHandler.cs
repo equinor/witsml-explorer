@@ -11,24 +11,10 @@ public static class MessageHandler
 {
     public static async Task<IResult> GetMessages(string wellUid, string wellboreUid, IMessageObjectService messageService)
     {
-        try
-        {
-            return Results.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
     }
     public static async Task<IResult> GetMessage(string wellUid, string wellboreUid, string messageUid, IMessageObjectService messageService)
     {
-        try
-        {
-            return Results.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
     }
 }

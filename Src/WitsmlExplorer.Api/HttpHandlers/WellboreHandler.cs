@@ -11,13 +11,6 @@ public static class WellboreHandler
 {
     public static async Task<IResult> GetWellbore(string wellUid, string wellboreUid, IWellboreService wellboreService)
     {
-        try
-        {
-            return Results.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid));
     }
 }

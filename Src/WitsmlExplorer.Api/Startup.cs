@@ -66,26 +66,21 @@ namespace WitsmlExplorer.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseMiddleware<ExceptionMiddleware>();
             }
             else
             {
-                //app.UseMiddleware<ExceptionMiddleware>();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseResponseCompression();
             app.UseCors(_myAllowSpecificOrigins);
 
             app.UseStaticFiles();
 
-
             app.UseRouting();
-            app.UseEndpoints(builder =>
-            {
-                builder.MapHub<NotificationsHub>("notifications");
-            });
+            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
 
         }
     }

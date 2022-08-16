@@ -11,24 +11,10 @@ public static class BhaRunHandler
 {
     public static async Task<IResult> GetBhaRuns(string wellUid, string wellboreUid, IBhaRunService bhaRunService)
     {
-        try
-        {
-            return Results.Ok(await bhaRunService.GetBhaRuns(wellUid, wellboreUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await bhaRunService.GetBhaRuns(wellUid, wellboreUid));
     }
     public static async Task<IResult> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid, IBhaRunService bhaRunService)
     {
-        try
-        {
-            return Results.Ok(await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid));
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem(ex.Message);
-        }
+        return Results.Ok(await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid));
     }
 }
