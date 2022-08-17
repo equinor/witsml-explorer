@@ -12,13 +12,13 @@ public static class Api
 {
     public static void ConfigureApi(this WebApplication app)
     {
-        app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers).Produces<IEnumerable<Server>>().Produces(StatusCodes.Status500InternalServerError);
-        app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer).Produces<Server>().Produces(StatusCodes.Status500InternalServerError);
-        app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer).Produces(StatusCodes.Status500InternalServerError);
-        app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer).Produces(StatusCodes.Status204NoContent).Produces(StatusCodes.Status500InternalServerError);
+        app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers);
+        app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer);
+        app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer);
+        app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer);
 
-        app.MapGet("/api/wells", WellHandler.GetAllWells).Produces<IEnumerable<Well>>().Produces(StatusCodes.Status500InternalServerError);
-        app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell).Produces<Well>().Produces(StatusCodes.Status500InternalServerError);
+        app.MapGet("/api/wells", WellHandler.GetAllWells);
+        app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell);
 
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore).Produces<Wellbore>().Produces(StatusCodes.Status500InternalServerError);
 

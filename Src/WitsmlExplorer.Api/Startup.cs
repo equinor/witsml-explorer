@@ -17,6 +17,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Swagger;
 using WitsmlExplorer.Api.Workers;
 
 namespace WitsmlExplorer.Api
@@ -62,45 +63,8 @@ namespace WitsmlExplorer.Api
             services.AddHostedService<BackgroundWorkerService>();
             services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(options =>
-            {
-                var basicSecurityScheme = new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Basic",
-                    Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme }
-                };
-                options.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {basicSecurityScheme, Array.Empty<string>()}
-                });
-                var oAuth2scheme = new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Name = "Authorization",
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        AuthorizationCode = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl = new Uri(Configuration["AzureAd:Swagger:AuthorizationUrl"]),
-                            TokenUrl = new Uri(Configuration["AzureAd:Swagger:TokenUrl"])
-                        }
-                    },
-                    Type = SecuritySchemeType.OAuth2
-                };
-                options.AddSecurityDefinition("OAuth2", oAuth2scheme);
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Id = "OAuth2", Type = ReferenceType.SecurityScheme },
-                            Type = SecuritySchemeType.OAuth2,
-                        },
-                        new List<string> { }
-                    }
-                });
-            });
+            services.ConfigureAddSwaggerGen(Configuration);
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
             services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
         }
@@ -113,15 +77,7 @@ namespace WitsmlExplorer.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(
-                    options =>
-                    {
-                        options.OAuthAppName(Configuration["AzureAd:AppName"]);
-                        options.OAuthClientId(Configuration["AzureAd:ClientId"]);
-                        options.OAuthScopes(Configuration["AzureAd:Scopes"]);
-                        options.OAuthUsePkce();
-                    }
-                );
+                app.ConfigureUseSwaggerUI(Configuration);
             }
             else
             {
@@ -132,7 +88,7 @@ namespace WitsmlExplorer.Api
             app.UseResponseCompression();
             app.UseCors(_myAllowSpecificOrigins);
             app.UseRouting();
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
