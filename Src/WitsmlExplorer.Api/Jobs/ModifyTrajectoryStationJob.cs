@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string Description()
         {
-            return $"ToModify - {TrajectoryReference.Description} TrajectoryStationUid: {TrajectoryStation.Uid};";
+            return $"ToModify - {TrajectoryReference.Description()} TrajectoryStationUid: {TrajectoryStation.Uid};";
         }
     }
 }

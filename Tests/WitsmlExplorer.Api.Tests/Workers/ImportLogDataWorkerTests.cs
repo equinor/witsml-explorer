@@ -1,21 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ImportLogDataWorkerTests
     {
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly ImportLogDataWorker worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly ImportLogDataWorker _worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
         private const string LogUid = "logUid";
@@ -23,9 +31,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public ImportLogDataWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new ImportLogDataWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<ImportLogDataJob>();
+            _worker = new ImportLogDataWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -62,12 +73,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null))).ReturnsAsync(returnedWitsmlLog);
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            var depthJobResult = await worker.Execute(depthJob);
+            var depthJobResult = await _worker.Execute(depthJob);
 
             Assert.True(depthJobResult.Item1.IsSuccess);
         }
@@ -106,12 +117,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null))).ReturnsAsync(returnedWitsmlLog);
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            var timeJobResult = await worker.Execute(timeJob);
+            var timeJobResult = await _worker.Execute(timeJob);
 
             Assert.True(timeJobResult.Item1.IsSuccess);
         }
@@ -121,9 +132,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var depthJob = CreateDepthJobTemplate();
 
-            var result = await worker.Execute(depthJob);
+            var result = await _worker.Execute(depthJob);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.Contains(result.Item1.Message, "Unable to find log", StringComparison.InvariantCultureIgnoreCase);
         }
 

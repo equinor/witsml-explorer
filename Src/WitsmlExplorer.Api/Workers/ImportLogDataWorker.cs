@@ -1,28 +1,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
     public class ImportLogDataWorker : BaseWorker<ImportLogDataJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ImportLogData;
 
-        public ImportLogDataWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ImportLogDataWorker(ILogger<ImportLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
-
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
             var chunkSize = 1000;
@@ -34,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers
             if (witsmlLog == null)
             {
                 var reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
             }
 
             var logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
@@ -45,14 +47,14 @@ namespace WitsmlExplorer.Api.Workers
             //Todo: update import progress for the user using websockets
             for (var i = 0; i < queries.Length; i++)
             {
-                var result = await witsmlClient.UpdateInStoreAsync(queries[i]);
+                var result = await _witsmlClient.UpdateInStoreAsync(queries[i]);
                 if (result.IsSuccessful)
                 {
-                    Log.Information("{JobType} - Query {QueryCount}/{CurrentQuery} successful", GetType().Name, queries.Length, i + 1);
+                    Logger.LogInformation("{JobType} - Query {QueryCount}/{CurrentQuery} successful", GetType().Name, queries.Length, i + 1);
                 }
                 else
                 {
-                    Log.Error("Failed to import curve data for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
+                    Logger.LogError("Failed to import curve data for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
                         wellUid,
                         wellboreUid,
                         logUid,
@@ -61,22 +63,22 @@ namespace WitsmlExplorer.Api.Workers
                         chunkSize,
                         queries.Length);
 
-                    return (new WorkerResult(witsmlClient.GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
+                    return (new WorkerResult(_witsmlClient.GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
-            Log.Information("{JobType} - Job successful", GetType().Name);
+            Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+            var refreshAction = new RefreshLogObject(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
             var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);
         }
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
             var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            var result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs.FirstOrDefault();
         }
 

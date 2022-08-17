@@ -2,12 +2,15 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.Query;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
@@ -16,12 +19,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CreateMudLogWorker : BaseWorker<CreateMudLogJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateMudLog;
 
-        public CreateMudLogWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CreateMudLogWorker(ILogger<CreateMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job)
@@ -31,19 +34,20 @@ namespace WitsmlExplorer.Api.Workers
 
             var mudLogToCreate = SetupMudLogToCreate(mudLog);
 
-            var result = await witsmlClient.AddToStoreAsync(mudLogToCreate);
+            var result = await _witsmlClient.AddToStoreAsync(mudLogToCreate);
             if (result.IsSuccessful)
             {
                 await WaitUntilMudLogHasBeenCreated(mudLog);
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"MudLog created ({mudLog.Name} [{mudLog.Uid}])");
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.Uid, RefreshType.Add);
+                Logger.LogInformation("MudLog created. {jobDescription}", job.Description());
+                var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"MudLog created ({mudLog.Name} [{mudLog.Uid}])");
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
-            Log.Error($"Job failed. An error occurred when creating MudLog: {job.MudLog.PrintProperties()}");
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create MudLog", result.Reason, description), null);
+            var errorMessage = "Failed to create mudLog.";
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private async Task WaitUntilMudLogHasBeenCreated(MudLog mudLog)
@@ -58,7 +62,7 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created MudLog with name {mudLog.Name} (id={mudLog.Uid})");
                 }
                 Thread.Sleep(1000);
-                var mudLogResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                var mudLogResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isMudLogCreated = mudLogResult.MudLogs.Any();
             }
         }

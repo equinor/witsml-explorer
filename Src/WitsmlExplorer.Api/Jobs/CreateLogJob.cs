@@ -2,8 +2,13 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CreateLogJob
+    public record CreateLogJob : IJob
     {
         public LogObject LogObject { get; init; }
+
+        public string Description()
+        {
+            return $"Create Log - WellUid: {LogObject.WellUid}; WellboreUid: {LogObject.WellboreUid}; LogUid: {LogObject.Uid};";
+        }
     }
 }

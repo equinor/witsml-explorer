@@ -2,14 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
@@ -22,51 +30,54 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string Field = "SomeField";
         private const string Country = "Norway";
         private const string Operator = "Equinor";
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly CreateWellWorker worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly CreateWellWorker _worker;
 
         public CreateWellWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new CreateWellWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<CreateWellJob>();
+            _worker = new CreateWellWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task MissingUid_Execute_ThrowsException()
         {
             var job = CreateJobTemplate(null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
             job = CreateJobTemplate("");
-            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
+            _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
         public async Task MissingName_Execute_ThrowsException()
         {
             var job = CreateJobTemplate(name: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
             job = CreateJobTemplate(name: "");
-            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
+            _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
         public async Task MissingTimeZone_Execute_ThrowsException()
         {
             var job = CreateJobTemplate(timeZone: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
             job = CreateJobTemplate(timeZone: "");
-            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
-            witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
+            _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
         [Fact]
@@ -75,14 +86,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
 
             var createdWells = new List<WitsmlWells>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.AddToStoreAsync(It.IsAny<WitsmlWells>()))
                 .Callback<WitsmlWells>(wells => createdWells.Add(wells))
                 .ReturnsAsync(new QueryResult(true));
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
-                .ReturnsAsync(new WitsmlWells() { Wells = new List<WitsmlWell>() { new WitsmlWell() }});
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
+                .ReturnsAsync(new WitsmlWells() { Wells = new List<WitsmlWell>() { new WitsmlWell() } });
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(createdWells);
             Assert.Single(createdWells.First().Wells);

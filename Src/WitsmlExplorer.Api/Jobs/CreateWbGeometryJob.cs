@@ -2,8 +2,13 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CreateWbGeometryJob
+    public record CreateWbGeometryJob : IJob
     {
         public WbGeometry WbGeometry { get; init; }
+
+        public string Description()
+        {
+            return $"Create WbGeometry - WellUid: {WbGeometry.WellUid}; WellboreUid: {WbGeometry.WellboreUid}; WbGeometryUid: {WbGeometry.Uid};";
+        }
     }
 }
