@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
 
 using Serilog;
 
@@ -33,7 +31,6 @@ namespace WitsmlExplorer.Api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
@@ -63,10 +60,14 @@ namespace WitsmlExplorer.Api
             services.AddHostedService<BackgroundWorkerService>();
             services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
             services.AddEndpointsApiExplorer();
-            services.ConfigureAddSwaggerGen(Configuration);
+            services.ConfigureSwaggerGen(Configuration);
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-            services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
+            if (Configuration["OAuth2Enabled"] == "True")
+            {
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+                services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
+            }
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,8 +77,7 @@ namespace WitsmlExplorer.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.ConfigureUseSwaggerUI(Configuration);
+                app.ConfigureSwagger(Configuration);
             }
             else
             {
@@ -87,10 +87,14 @@ namespace WitsmlExplorer.Api
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseResponseCompression();
             app.UseCors(_myAllowSpecificOrigins);
-            app.UseRouting();
             app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseAuthorization();
+
+            app.UseRouting();
+            if (Configuration["OAuth2Enabled"] == "True")
+            {
+                app.UseAuthentication();
+                app.UseAuthorization();
+            }
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }
     }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 using Microsoft.OpenApi.Models;
 
@@ -7,6 +6,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WitsmlExplorer.Api.Swagger;
 
+/// <summary>
+/// This class will add a Required HTTP Header `Witsml-ServerUrl` to SwaggerUI for all endpoints except where it is not needed
+/// </summary>
 public class WitsmlHeaderFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
