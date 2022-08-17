@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
@@ -13,12 +16,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyMudLogWorker : BaseWorker<ModifyMudLogJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyMudLog;
 
-        public ModifyMudLogWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyMudLogWorker(ILogger<ModifyMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyMudLogJob job)
@@ -26,18 +29,18 @@ namespace WitsmlExplorer.Api.Workers
             var mudLog = job.MudLog;
             Verify(mudLog);
             var mudLogToUpdate = SetupMudLogToUpdate(mudLog);
-            var result = await witsmlClient.UpdateInStoreAsync(mudLogToUpdate);
+            var result = await _witsmlClient.UpdateInStoreAsync(mudLogToUpdate);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, RefreshType.Update);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"MudLog updated ({mudLog.Name} [{mudLog.Uid}])"), refreshAction);
+                Logger.LogInformation("MudLog modified. {jobDescription}", job.Description());
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, RefreshType.Update);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"MudLog updated ({mudLog.Name} [{mudLog.Uid}])"), refreshAction);
 
             }
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
-            Log.Error($"Job failed. An error occurred when modifying mudLog: {job.MudLog.PrintProperties()}");
+            Logger.LogError("Job failed. An error occurred when modifying mudLog: {propreties}", job.MudLog.PrintProperties());
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update log", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update log", result.Reason, description), null);
         }
 
         private static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)

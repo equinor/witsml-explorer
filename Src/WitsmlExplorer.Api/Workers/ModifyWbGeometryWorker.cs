@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 
@@ -13,29 +13,28 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyWbGeometryWorker : BaseWorker<ModifyWbGeometryJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyWbGeometry;
 
-        public ModifyWbGeometryWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyWbGeometryWorker(ILogger<ModifyWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWbGeometryJob job)
         {
             var modifyWbGeometryQuery = WbGeometryQueries.CreateWbGeometry(job.WbGeometry);
-            var modifyWbGeometryResult = await witsmlClient.UpdateInStoreAsync(modifyWbGeometryQuery);
+            var modifyWbGeometryResult = await _witsmlClient.UpdateInStoreAsync(modifyWbGeometryQuery);
 
             if (!modifyWbGeometryResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify wbGeometry object";
-                Log.Error("{ErrorMessage}. Target: WellUid: {TargetWellUid}, WellboreUid: {TargetWellboreUid}",
-                    errorMessage, job.WbGeometry.WellUid, job.WbGeometry.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyWbGeometryResult.Reason), null);
+                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, modifyWbGeometryResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. WbGeometry modified", GetType().Name);
-            var refreshAction = new RefreshWbGeometryObjects(witsmlClient.GetServerHostname(), job.WbGeometry.WellUid, job.WbGeometry.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"WbGeometry {job.WbGeometry.Name} updated for {job.WbGeometry.WellboreName}");
+            Logger.LogInformation("WbGeometry modified. {jobDescription}", job.Description());
+            var refreshAction = new RefreshWbGeometryObjects(_witsmlClient.GetServerHostname(), job.WbGeometry.WellUid, job.WbGeometry.WellboreUid, RefreshType.Update);
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"WbGeometry {job.WbGeometry.Name} updated for {job.WbGeometry.WellboreName}");
 
             return (workerResult, refreshAction);
         }

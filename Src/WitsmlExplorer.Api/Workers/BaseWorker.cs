@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using WitsmlExplorer.Api.Extensions;
+using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Workers
 {
     public abstract class BaseWorker<T>
     {
-        protected readonly ILogger<T> Logger;
+        protected ILogger<T> Logger { get; }
         public BaseWorker(ILogger<T> logger = null)
         {
             Logger = logger;

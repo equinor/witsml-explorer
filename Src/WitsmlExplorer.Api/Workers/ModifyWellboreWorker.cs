@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -14,12 +17,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyWellboreWorker : BaseWorker<ModifyWellboreJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyWellbore;
 
-        public ModifyWellboreWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyWellboreWorker(ILogger<ModifyWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellboreJob job)
@@ -27,23 +30,23 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Wellbore);
 
             var witsmlWellbore = WellboreQueries.UpdateWitsmlWellbore(job.Wellbore);
-            var result = await witsmlClient.UpdateInStoreAsync(witsmlWellbore);
+            var result = await _witsmlClient.UpdateInStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Wellbore updated ({job.Wellbore.Name} [{job.Wellbore.Uid}])");
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Wellbore.WellUid, job.Wellbore.Uid, RefreshType.Update);
+                Logger.LogInformation("Wellbore modified. {jobDescription}", job.Description());
+                var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Wellbore updated ({job.Wellbore.Name} [{job.Wellbore.Uid}])");
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), job.Wellbore.WellUid, job.Wellbore.Uid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
-            var updatedWellbores = await witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
+            var updatedWellbores = await _witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
             var updatedWellbore = updatedWellbores.Wellbores.First();
             var description = new EntityDescription
             {
                 WellName = updatedWellbore.NameWell,
                 WellboreName = updatedWellbore.Name
             };
-            Log.Error("Job failed. An error occurred when modifying wellbore: {Wellbore}", job.Wellbore.PrintProperties());
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update wellbore", result.Reason, description), null);
+            Logger.LogError("Job failed. An error occurred when modifying wellbore: {Wellbore}", job.Wellbore.PrintProperties());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update wellbore", result.Reason, description), null);
         }
 
         private static void Verify(Wellbore wellbore)

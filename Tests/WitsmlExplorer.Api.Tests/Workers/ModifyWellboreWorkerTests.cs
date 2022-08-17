@@ -2,31 +2,43 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
-using Measure = WitsmlExplorer.Api.Models.Measure;
+
 using Xunit;
+
+using Measure = WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyWellboreWorkerTests
     {
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly ModifyWellboreWorker worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly ModifyWellboreWorker _worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
 
         public ModifyWellboreWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new ModifyWellboreWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<ModifyWellboreJob>();
+            _worker = new ModifyWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -37,11 +49,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.Name = expectedNewName;
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedNewName, updatedWellbores.First().Wellbores.First().Name);
@@ -53,10 +65,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.Name = "";
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -64,17 +76,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             var job = CreateJobTemplate();
-            job.Wellbore.Md = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft"};
+            job.Wellbore.Md = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var Md = updatedWellbores.First().Wellbores.First().Md;
-            var actual = decimal.Parse(Md.Value);
+            var md = updatedWellbores.First().Wellbores.First().Md;
+            var actual = decimal.Parse(md.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -85,10 +97,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.Md = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for Md cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -99,14 +111,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.Tvd = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var Tvd = updatedWellbores.First().Wellbores.First().Tvd;
-            var actual = decimal.Parse(Tvd.Value);
+            var tvd = updatedWellbores.First().Wellbores.First().Tvd;
+            var actual = decimal.Parse(tvd.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -117,10 +129,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.Tvd = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for Tvd cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -131,14 +143,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.MdKickoff = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var MdKickoff = updatedWellbores.First().Wellbores.First().MdKickoff;
-            var actual = decimal.Parse(MdKickoff.Value);
+            var mdKickoff = updatedWellbores.First().Wellbores.First().MdKickoff;
+            var actual = decimal.Parse(mdKickoff.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -149,10 +161,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.MdKickoff = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for MdKickoff cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -163,14 +175,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.TvdKickoff = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var TvdKickoff = updatedWellbores.First().Wellbores.First().TvdKickoff;
-            var actual = decimal.Parse(TvdKickoff.Value);
+            var tvdKickoff = updatedWellbores.First().Wellbores.First().TvdKickoff;
+            var actual = decimal.Parse(tvdKickoff.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -181,10 +193,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.TvdKickoff = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for TvdKickoff cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -195,14 +207,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.MdPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var MdPlanned = updatedWellbores.First().Wellbores.First().MdPlanned;
-            var actual = decimal.Parse(MdPlanned.Value);
+            var mdPlanned = updatedWellbores.First().Wellbores.First().MdPlanned;
+            var actual = decimal.Parse(mdPlanned.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -213,10 +225,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.MdPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for MdPlanned cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -227,14 +239,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.TvdPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var TvdPlanned = updatedWellbores.First().Wellbores.First().TvdPlanned;
-            var actual = decimal.Parse(TvdPlanned.Value);
+            var tvdPlanned = updatedWellbores.First().Wellbores.First().TvdPlanned;
+            var actual = decimal.Parse(tvdPlanned.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -245,10 +257,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.TvdPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for TvdPlanned cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -259,14 +271,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.MdSubSeaPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var MdSubSeaPlanned = updatedWellbores.First().Wellbores.First().MdSubSeaPlanned;
-            var actual = decimal.Parse(MdSubSeaPlanned.Value);
+            var mdSubSeaPlanned = updatedWellbores.First().Wellbores.First().MdSubSeaPlanned;
+            var actual = decimal.Parse(mdSubSeaPlanned.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -277,10 +289,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.MdSubSeaPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for MdSubSeaPlanned cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -291,14 +303,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.TvdSubSeaPlanned = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var TvdSubSeaPlanned = updatedWellbores.First().Wellbores.First().TvdSubSeaPlanned;
-            var actual = decimal.Parse(TvdSubSeaPlanned.Value);
+            var tvdSubSeaPlanned = updatedWellbores.First().Wellbores.First().TvdSubSeaPlanned;
+            var actual = decimal.Parse(tvdSubSeaPlanned.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -309,10 +321,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.TvdSubSeaPlanned = new Measure.LengthMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for TvdSubSeaPlanned cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -323,14 +335,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             job.Wellbore.DayTarget = new Measure.DayMeasure { Value = expectedValue, Uom = "d" };
 
             var updatedWellbores = new List<WitsmlWellbores>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            var DayTarget = updatedWellbores.First().Wellbores.First().DayTarget;
-            var actual = decimal.Parse(DayTarget.Value);
+            var dayTarget = updatedWellbores.First().Wellbores.First().DayTarget;
+            var actual = decimal.Parse(dayTarget.Value);
             Assert.Single(updatedWellbores);
             Assert.Equal(expectedValue, actual);
         }
@@ -341,13 +353,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.Wellbore.DayTarget = new Measure.DayMeasure { Value = 10, Uom = "" };
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("unit of measure for DayTarget cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
-        private ModifyWellboreJob CreateJobTemplate()
+        private static ModifyWellboreJob CreateJobTemplate()
         {
             return new ModifyWellboreJob
             {

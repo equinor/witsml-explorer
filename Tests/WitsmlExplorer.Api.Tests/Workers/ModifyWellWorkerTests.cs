@@ -2,29 +2,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyWellWorkerTests
     {
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly ModifyWellWorker worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly ModifyWellWorker _worker;
         private const string WellUid = "wellUid";
 
         public ModifyWellWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new ModifyWellWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<ModifyWellJob>();
+            _worker = new ModifyWellWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -34,11 +45,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate(WellUid, expectedNewName);
 
             var updatedWells = new List<WitsmlWells>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWells>())).Callback<WitsmlWells>(wells => updatedWells.Add(wells))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(updatedWells);
             Assert.Equal(expectedNewName, updatedWells.First().Wells.First().Name);
@@ -49,13 +60,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var job = CreateJobTemplate(WellUid, "");
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => worker.Execute(job));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
 
-            witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
         }
 
-        private static ModifyWellJob CreateJobTemplate(string uid, string name=null)
+        private static ModifyWellJob CreateJobTemplate(string uid, string name = null)
         {
             return new ModifyWellJob
             {

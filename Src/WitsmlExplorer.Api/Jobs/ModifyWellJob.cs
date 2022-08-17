@@ -5,5 +5,10 @@ namespace WitsmlExplorer.Api.Jobs
     public record ModifyWellJob
     {
         public Well Well { get; init; }
+
+        public string Description()
+        {
+            return $"ToModify - WellUid: {Well.Uid};";
+        }
     }
 }

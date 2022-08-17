@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
 
 using Witsml;
 using Witsml.Data;
@@ -18,8 +22,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyMessageObjectWorkerTest
     {
-        private readonly ModifyMessageWorker worker;
-        private readonly Mock<IWitsmlClient> witsmlClient;
+        private readonly ModifyMessageWorker _worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
         private const string MsgUid = "msgUid";
@@ -28,10 +32,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public ModifyMessageObjectWorkerTest()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
+            _witsmlClient = new Mock<IWitsmlClient>();
 
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new ModifyMessageWorker(witsmlClientProvider.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<ModifyMessageObjectJob>();
+            _worker = new ModifyMessageWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -40,11 +47,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
 
             var updatedMessages = new List<WitsmlMessages>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                     client.UpdateInStoreAsync(It.IsAny<WitsmlMessages>())).Callback<WitsmlMessages>(msgs => updatedMessages.Add(msgs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(updatedMessages);
             Assert.Equal(MsgText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);

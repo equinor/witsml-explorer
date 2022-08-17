@@ -1,31 +1,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
-using Measure = WitsmlExplorer.Api.Models.Measure;
 using Witsml.Data.Tubular;
+
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
-using WitsmlExplorer.Api.Jobs.Common;
+
+using Measure = WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyTubularComponentWorkerTests
     {
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly ModifyTubularComponentWorker worker;
-        private const string TubularComponentUid = "tubularComponentUid";
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly ModifyTubularComponentWorker _worker;
 
         public ModifyTubularComponentWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new ModifyTubularComponentWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<ModifyTubularComponentJob>();
+            _worker = new ModifyTubularComponentWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -94,11 +105,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private async Task<List<WitsmlTubulars>> MockJob(ModifyTubularComponentJob job)
         {
             var updatedTubulars = new List<WitsmlTubulars>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>())).Callback<WitsmlTubulars>(tubulars => updatedTubulars.Add(tubulars))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
             return updatedTubulars;
         }
 
