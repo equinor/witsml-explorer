@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -48,8 +47,9 @@ namespace WitsmlExplorer.Api.Workers
             {
                 WellName = updatedWell.Name
             };
-            Logger.LogError("Job failed. An error occurred when modifying well: {Well}", job.Well.PrintProperties());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update well", result.Reason, description), null);
+            const string errorMessage = "Failed to update well";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(Well well)

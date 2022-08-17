@@ -38,9 +38,10 @@ namespace WitsmlExplorer.Api.Workers
 
             }
             var description = new EntityDescription { WellboreName = mudLog.WellboreName };
-            Logger.LogError("Job failed. An error occurred when modifying mudLog: {propreties}", job.MudLog.PrintProperties());
+            const string errorMessage = "Failed to update mudLog";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update log", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)

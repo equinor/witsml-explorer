@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -43,7 +42,8 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"TrajectoryStation updated ({job.TrajectoryStation.Uid})"), refreshAction);
             }
 
-            Logger.LogError("Job failed. An error occurred when modifying TrajectoryStation object: {TrajectoryStation}", job.TrajectoryStation.PrintProperties());
+            const string errorMessage = "Failed to update TrajectoryStation";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             var trajectoryStationQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
             var trajectoryStations = await _witsmlClient.GetFromStoreAsync(trajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
             var trajectory = trajectoryStations.Trajectories.FirstOrDefault();
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update TrajectoryStation", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)

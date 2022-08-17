@@ -51,7 +51,8 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Tubular updated ({job.Tubular.Name} [{tubularUid}])"), refreshAction);
             }
 
-            Logger.LogError("Job failed. An error occurred when modifying tubular object: {Tubular}", job.Tubular.PrintProperties());
+            const string errorMessage = "Failed to update tubular";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             var tubularQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
             var tubulars = await _witsmlClient.GetFromStoreAsync(tubularQuery, new OptionsIn(ReturnElements.IdOnly));
             var tubular = tubulars.Tubulars.FirstOrDefault();
@@ -66,7 +67,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update tubular", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static WitsmlTubulars CreateRequest(string wellUid, string wellboreUid, string tubularUid, WitsmlTubular tubular)

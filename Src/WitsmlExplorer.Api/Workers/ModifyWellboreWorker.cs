@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -45,8 +44,9 @@ namespace WitsmlExplorer.Api.Workers
                 WellName = updatedWellbore.NameWell,
                 WellboreName = updatedWellbore.Name
             };
-            Logger.LogError("Job failed. An error occurred when modifying wellbore: {Wellbore}", job.Wellbore.PrintProperties());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update wellbore", result.Reason, description), null);
+            const string errorMessage = "Failed to update wellbore";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(Wellbore wellbore)

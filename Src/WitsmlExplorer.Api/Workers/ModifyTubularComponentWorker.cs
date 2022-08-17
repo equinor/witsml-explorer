@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -43,7 +42,8 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"TubularComponent updated ({job.TubularComponent.Uid})"), refreshAction);
             }
 
-            Logger.LogError("Job failed. An error occurred when modifying tubularComponent object: {TubularComponent}", job.TubularComponent.PrintProperties());
+            const string errorMessage = "Failed to update tubularComponent";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             var tubularComponentQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
             var tubularComponents = await _witsmlClient.GetFromStoreAsync(tubularComponentQuery, new OptionsIn(ReturnElements.IdOnly));
             var tubular = tubularComponents.Tubulars.FirstOrDefault();
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update tubularComponent", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(TubularComponent tubularComponent, TubularReference tubularReference)
