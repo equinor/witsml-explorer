@@ -54,11 +54,8 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else
                 {
-                    Logger.LogError("Failed to import curve data for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {MnemonicsString}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
-                        wellUid,
-                        wellboreUid,
-                        logUid,
-                        string.Join(", ", job.Mnemonics),
+                    Logger.LogError("Job failed: {jobDescription}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
+                        job.Description(),
                         i,
                         chunkSize,
                         queries.Length);
