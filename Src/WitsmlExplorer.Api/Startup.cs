@@ -87,7 +87,6 @@ namespace WitsmlExplorer.Api
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseResponseCompression();
             app.UseCors(_myAllowSpecificOrigins);
-            app.UseHttpsRedirection();
 
             app.UseRouting();
             if (Configuration["OAuth2Enabled"] == "True")
