@@ -128,7 +128,7 @@ If you want to add this to SwaggerUI, you need to add the following info for you
         "Domain": "qualified.domain.name",
         "TenantId": "b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f",
         "ClientId": "109e12e2-4ca7-48d0-af05-c834c884322c",
-        "Scopes": "User.Read 109e12e2-4ca7-48d0-af05-c834c884322c/access_as_user",
+        "Scopes": "openid profile 109e12e2-4ca7-48d0-af05-c834c884322c/access_as_user",
         "TokenValidationParameters": {
             "ValidateAudience": false
         },
