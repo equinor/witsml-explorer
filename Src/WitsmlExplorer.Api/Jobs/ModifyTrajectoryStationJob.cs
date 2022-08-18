@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
         public TrajectoryReference TrajectoryReference { get; init; }
         public TrajectoryStation TrajectoryStation { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - {TrajectoryReference.Description()} TrajectoryStationUid: {TrajectoryStation.Uid};";
         }

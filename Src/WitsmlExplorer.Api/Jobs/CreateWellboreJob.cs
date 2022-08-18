@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public Wellbore Wellbore { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Create Wellbore - WellUid: {Wellbore.WellUid}; WellboreUid: {Wellbore.Uid};";
         }

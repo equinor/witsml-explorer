@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string EndIndex { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Trim log data - {LogObject.Description()} StartIndex: {StartIndex}; EndIndex: {EndIndex};";
         }

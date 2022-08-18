@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public MessageObject MessageObject { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUid: {MessageObject.WellUid}; WellboreUid: {MessageObject.WellboreUid}; MessageUid: {MessageObject.Uid};";
         }

@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public Tubular Tubular { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUid: {Tubular.WellUid}; WellboreUid: {Tubular.WellboreUid}; TubularUid: {Tubular.Uid};";
         }

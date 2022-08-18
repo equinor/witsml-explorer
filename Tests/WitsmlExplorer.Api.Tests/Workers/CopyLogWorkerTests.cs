@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
             var copyLogQuery = SetupAddInStoreAsync();
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<Stream>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             var result = await _copyLogWorker.Execute(copyLogJob);
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             var copyLogQuery = SetupAddInStoreAsync();
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<Stream>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             var result = await _copyLogWorker.Execute(copyLogJob);

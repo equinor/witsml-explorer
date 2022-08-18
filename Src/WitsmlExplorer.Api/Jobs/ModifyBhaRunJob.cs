@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public BhaRun BhaRun { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUid: {BhaRun.WellUid}; WellboreUid: {BhaRun.WellboreUid}; BhaRunUid: {BhaRun.Uid};";
         }

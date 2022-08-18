@@ -1,7 +1,20 @@
+using System;
+
 namespace WitsmlExplorer.Api.Jobs
 {
-    public interface IJob
+    public abstract record IJob
     {
-        string Description();
+
+        public IJob()
+        {
+            Id = Guid.NewGuid().ToString();
+            StartTime = DateTime.Now;
+        }
+
+        public abstract string Description();
+
+        public string Id { get; init; }
+
+        public DateTime StartTime { get; init; }
     }
 }

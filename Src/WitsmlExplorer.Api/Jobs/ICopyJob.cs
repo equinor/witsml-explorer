@@ -9,7 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
         public T Source { get; init; }
         public U Target { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             var jobDesc = new StringBuilder();
             jobDesc.Append($"Source: {Source.Description()}");

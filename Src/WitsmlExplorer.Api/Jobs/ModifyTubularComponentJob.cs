@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
         public TubularReference TubularReference { get; init; }
         public TubularComponent TubularComponent { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - {TubularReference.Description()} TubularComponentUid: {TubularComponent.Uid};";
         }

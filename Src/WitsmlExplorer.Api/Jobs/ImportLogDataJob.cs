@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Jobs
         public IEnumerable<string> Units { get; init; }
         public IEnumerable<IEnumerable<string>> DataRows { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Import Log Data - To: {TargetLog.Description()} Mnemonics: {string.Join(", ", Mnemonics)}";
         }

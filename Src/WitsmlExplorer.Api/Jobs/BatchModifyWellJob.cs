@@ -9,7 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public IEnumerable<Well> Wells { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUids: {string.Join(", ", Wells.Select(well => well.Uid))}";
         }

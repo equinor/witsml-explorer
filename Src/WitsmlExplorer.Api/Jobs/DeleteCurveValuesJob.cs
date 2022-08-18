@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
         public IEnumerable<string> Mnemonics { get; init; }
         public IEnumerable<IndexRange> IndexRanges { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Delete curve values - {LogReference.Description()} Mnemonics: {string.Join(", ", Mnemonics)};";
         }

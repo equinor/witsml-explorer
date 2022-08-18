@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
         public string Mnemonic { get; init; }
         public string NewMnemonic { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Rename mnemonic - in Log: {LogReference.Description()} from mnemonic: {Mnemonic}; to mnemonic {NewMnemonic};";
         }

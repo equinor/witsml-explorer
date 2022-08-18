@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public WbGeometry WbGeometry { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUid: {WbGeometry.WellUid}; WellboreUid: {WbGeometry.WellboreUid}; WbGeometryUid: {WbGeometry.Uid};";
         }

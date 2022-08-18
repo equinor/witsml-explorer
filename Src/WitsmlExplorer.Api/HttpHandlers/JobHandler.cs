@@ -10,7 +10,6 @@ public static class JobHandler
 {
     public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService)
     {
-        jobService.CreateJob(jobType, httpRequest.Body);
-        return Results.Ok(await Task.Run(() => "JobId"));
+        return Results.Ok(await jobService.CreateJob(jobType, httpRequest.Body));
     }
 }

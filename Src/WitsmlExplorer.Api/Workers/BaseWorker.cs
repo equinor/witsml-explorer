@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,15 @@ namespace WitsmlExplorer.Api.Workers
             Logger = logger;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> Execute(Stream jobStream)
+        public async Task<(Task<(WorkerResult, RefreshAction)>, IJob)> SetupWorker(Stream jobStream)
         {
             var job = await jobStream.Deserialize<T>();
+            var task = ExecuteBase(job);
+            return (task, job);
+        }
+
+        private async Task<(WorkerResult, RefreshAction)> ExecuteBase(T job)
+        {
             try
             {
                 return await Execute(job);

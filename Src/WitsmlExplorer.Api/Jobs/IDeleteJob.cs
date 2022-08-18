@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public T ToDelete { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToDelete: {ToDelete.Description()}";
         }
