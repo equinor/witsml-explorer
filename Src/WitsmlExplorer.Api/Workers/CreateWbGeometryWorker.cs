@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
@@ -21,12 +21,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CreateWbGeometryWorker : BaseWorker<CreateWbGeometryJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateWbGeometry;
 
-        public CreateWbGeometryWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CreateWbGeometryWorker(ILogger<CreateWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWbGeometryJob job)
@@ -36,19 +36,20 @@ namespace WitsmlExplorer.Api.Workers
 
             var wbGeometryToCreate = SetupWbGeometryToCreate(wbGeometry);
 
-            var result = await witsmlClient.AddToStoreAsync(wbGeometryToCreate);
+            var result = await _witsmlClient.AddToStoreAsync(wbGeometryToCreate);
             if (result.IsSuccessful)
             {
                 await WaitUntilWbGeometryHasBeenCreated(wbGeometry);
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"WbGeometry created ({wbGeometry.Name} [{wbGeometry.Uid}])");
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wbGeometry.WellUid, wbGeometry.Uid, RefreshType.Add);
+                Logger.LogInformation("WbGeometry created. {jobDescription}", job.Description());
+                var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"WbGeometry created ({wbGeometry.Name} [{wbGeometry.Uid}])");
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wbGeometry.WellUid, wbGeometry.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
             var description = new EntityDescription { WellboreName = wbGeometry.WellboreName };
-            Log.Error($"Job failed. An error occurred when creating WbGeometry: {job.WbGeometry.PrintProperties()}");
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to create WbGeometry", result.Reason, description), null);
+            var errorMessage = "Failed to create WbGeometry.";
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
 
         }
         private async Task WaitUntilWbGeometryHasBeenCreated(WbGeometry wbGeometry)
@@ -63,7 +64,7 @@ namespace WitsmlExplorer.Api.Workers
                     throw new InvalidOperationException($"Not able to read newly created WbGeometry with name {wbGeometry.Name} (id={wbGeometry.Uid})");
                 }
                 Thread.Sleep(1000);
-                var wbGeometryResult = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                var wbGeometryResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isCreated = wbGeometryResult.WbGeometrys.Any(); //Or WbGeometry
             }
         }

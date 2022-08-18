@@ -2,8 +2,13 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CreateWellboreJob
+    public record CreateWellboreJob : IJob
     {
         public Wellbore Wellbore { get; init; }
+
+        public string Description()
+        {
+            return $"Create Wellbore - WellUid: {Wellbore.WellUid}; WellboreUid: {Wellbore.Uid};";
+        }
     }
 }

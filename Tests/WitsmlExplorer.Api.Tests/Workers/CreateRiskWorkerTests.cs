@@ -1,15 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
@@ -20,15 +27,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string WellName = "wellName";
         private const string WellboreUid = "wellboreUid";
         private const string Name = "riskname";
-        private readonly Mock<IWitsmlClient> witsmlClient;
-        private readonly CreateRiskWorker worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly CreateRiskWorker _worker;
 
         public CreateRiskWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new CreateRiskWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<CreateRiskJob>();
+            _worker = new CreateRiskWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -37,14 +47,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
 
             var createdRisks = new List<WitsmlRisks>();
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlRisks>()))
                 .Callback<WitsmlRisks>(risk => createdRisks.Add(risk))
                 .ReturnsAsync(new QueryResult(true));
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
                 .ReturnsAsync(new WitsmlRisks() { Risks = new List<WitsmlRisk>() { new WitsmlRisk() } });
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(createdRisks);
             Assert.Single(createdRisks.First().Risks);

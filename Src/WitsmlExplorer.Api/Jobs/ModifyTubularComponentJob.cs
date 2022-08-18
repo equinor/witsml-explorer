@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string Description()
         {
-            return $"ToModify - {TubularReference.Description} TubularComponentUid: {TubularComponent.Uid};";
+            return $"ToModify - {TubularReference.Description()} TubularComponentUid: {TubularComponent.Uid};";
         }
     }
 }

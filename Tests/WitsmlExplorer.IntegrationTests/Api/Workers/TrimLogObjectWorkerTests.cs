@@ -1,9 +1,15 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+using Serilog;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
@@ -11,16 +17,19 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     [SuppressMessage("ReSharper", "xUnit1004")]
     public class TrimLogObjectWorkerTests
     {
-        private readonly TrimLogObjectWorker worker;
+        private readonly TrimLogObjectWorker _worker;
 
         public TrimLogObjectWorkerTests()
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            worker = new TrimLogObjectWorker(witsmlClientProvider);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<TrimLogDataJob>();
+            _worker = new TrimLogObjectWorker(logger, witsmlClientProvider);
         }
 
-        [Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task TrimStartOfLogObject()
         {
             var wellUid = "W-5232880";
@@ -38,7 +47,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 EndIndex = "2000"
             };
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }

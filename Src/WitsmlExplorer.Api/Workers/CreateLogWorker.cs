@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -16,30 +19,29 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CreateLogWorker : BaseWorker<CreateLogJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateLogObject;
 
-        public CreateLogWorker(IWitsmlClientProvider witsmlClientProvider)
+        public CreateLogWorker(ILogger<CreateLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job)
         {
-            var targetWellbore = await GetWellbore(witsmlClient, job.LogObject);
+            var targetWellbore = await GetWellbore(_witsmlClient, job.LogObject);
             var copyLogQuery = CreateLogQuery(job, targetWellbore);
-            var createLogResult = await witsmlClient.AddToStoreAsync(copyLogQuery);
+            var createLogResult = await _witsmlClient.AddToStoreAsync(copyLogQuery);
             if (!createLogResult.IsSuccessful)
             {
                 var errorMessage = "Failed to create log.";
-                Log.Error("{ErrorMessage}. Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}",
-                    errorMessage, job.LogObject.WellUid, job.LogObject.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, createLogResult.Reason), null);
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, createLogResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. Log object created", GetType().Name);
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Log object {job.LogObject.Name} created for {targetWellbore.Name}");
+            Logger.LogInformation("Log object created. {jobDescription}", job.Description());
+            var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, RefreshType.Update);
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Log object {job.LogObject.Name} created for {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
         }

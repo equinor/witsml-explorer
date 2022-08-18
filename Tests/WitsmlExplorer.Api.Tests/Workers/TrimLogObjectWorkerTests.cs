@@ -2,25 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
+
 using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class TrimLogObjectWorkerTests
     {
-        private readonly TrimLogObjectWorker worker;
-        private readonly Mock<IWitsmlClient> witsmlClient;
+        private readonly TrimLogObjectWorker _worker;
+        private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "WellUid";
         private const string WellboreUid = "WellboreUid";
         private const string LogUid = "LogUid";
@@ -28,9 +37,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public TrimLogObjectWorkerTests()
         {
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new TrimLogObjectWorker(witsmlClientProvider.Object);
+            _witsmlClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<TrimLogDataJob>();
+            _worker = new TrimLogObjectWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -39,9 +51,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
             var job = CreateJobTemplate();
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
         }
 
         [Fact]
@@ -50,19 +62,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
 
             var job = CreateJobTemplate() with { StartIndex = "8" };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             job = CreateJobTemplate() with { EndIndex = "110" };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             job = CreateJobTemplate() with
             {
                 StartIndex = "101",
                 EndIndex = "102"
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
         }
 
         [Fact]
@@ -76,19 +88,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 StartIndex = logStart.AddDays(-1).ToISODateTimeString()
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             job = CreateJobTemplate() with { EndIndex = logEnd.AddDays(1).ToISODateTimeString() };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             job = CreateJobTemplate() with
             {
                 StartIndex = logEnd.AddDays(1).ToISODateTimeString(),
                 EndIndex = logEnd.AddDays(2).ToISODateTimeString()
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
-            witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
         }
 
         [Fact]
@@ -104,11 +116,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
             var query = deleteQueries.First();
@@ -131,11 +143,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
             var query = deleteQueries.First();
@@ -156,11 +168,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
             var query = deleteQueries.First();
@@ -183,11 +195,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
             var query = deleteQueries.First();
@@ -209,11 +221,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Equal(2, deleteQueries.Count);
 
@@ -242,11 +254,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             var deleteQueries = new List<WitsmlLogs>();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
 
             Assert.Equal(2, deleteQueries.Count);
 
@@ -261,7 +273,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void SetupLog(string indexType, Index startIndex, Index endIndex)
         {
-            witsmlClient.Setup(client =>
+            _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
                 .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
         }
@@ -278,8 +290,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    witsmlLog.StartIndex = new WitsmlIndex((DepthIndex) startIndex);
-                    witsmlLog.EndIndex = new WitsmlIndex((DepthIndex) endIndex);
+                    witsmlLog.StartIndex = new WitsmlIndex((DepthIndex)startIndex);
+                    witsmlLog.EndIndex = new WitsmlIndex((DepthIndex)endIndex);
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlLog.StartDateTimeIndex = startIndex.GetValueAsString();
@@ -289,7 +301,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {witsmlLog}
+                Logs = new List<WitsmlLog> { witsmlLog }
             };
         }
 

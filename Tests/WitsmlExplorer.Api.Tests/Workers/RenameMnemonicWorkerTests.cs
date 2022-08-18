@@ -1,18 +1,26 @@
 using System;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
+
+using Serilog;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class RenameMnemonicWorkerTests
     {
-        private readonly RenameMnemonicWorker worker;
+        private readonly RenameMnemonicWorker _worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
         private const string LogUid = "logUid";
@@ -22,7 +30,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witsmlClient = new Mock<IWitsmlClient>();
             var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            worker = new RenameMnemonicWorker(witsmlClientProvider.Object);
+            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            loggerFactory.AddSerilog(Log.Logger);
+            var logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
+            _worker = new RenameMnemonicWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -34,7 +45,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 NewMnemonic = "Felgen"
             };
 
-            Task ExecuteWorker() => worker.Execute(job);
+            Task ExecuteWorker() => _worker.Execute(job);
 
             await Assert.ThrowsAsync<InvalidOperationException>(ExecuteWorker);
         }
@@ -48,7 +59,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 NewMnemonic = null
             };
 
-            Task ExecuteWorker() => worker.Execute(job);
+            Task ExecuteWorker() => _worker.Execute(job);
 
             await Assert.ThrowsAsync<InvalidOperationException>(ExecuteWorker);
         }

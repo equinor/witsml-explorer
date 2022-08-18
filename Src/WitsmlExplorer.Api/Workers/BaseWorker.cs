@@ -10,7 +10,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public abstract class BaseWorker<T>
+    public abstract class BaseWorker<T> where T : IJob
     {
         protected ILogger<T> Logger { get; }
         public BaseWorker(ILogger<T> logger = null)
