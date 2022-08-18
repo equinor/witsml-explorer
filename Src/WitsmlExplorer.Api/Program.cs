@@ -1,4 +1,3 @@
-
 using System.IO;
 
 using Microsoft.AspNetCore.Builder;
@@ -34,4 +33,5 @@ var app = builder.Build();
 app.ConfigureApi();
 
 startup.Configure(app, app.Environment);
+
 app.Run();

@@ -36,8 +36,8 @@ public static class Api
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", RigHandler.GetRigs);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", RigHandler.GetRig);
 
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs);
+        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog);
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo);
         app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData);
 
@@ -51,5 +51,10 @@ public static class Api
         app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob);
 
         app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize);
+
+        if (app.Environment.EnvironmentName == "Development")
+        {
+            app.MapFallback(() => Results.Redirect("/swagger"));
+        }
     }
 }

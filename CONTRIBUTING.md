@@ -105,6 +105,43 @@ var newServer = new Server
 Then run the test from the commandline `dotnet test` or from your IDE. The server is now added to your mongoDB. Repeat this for all your servers.
 After adding your servers, reset file `MongoDbRepositoryTests.cs`.
 
+## Swashbuckle
+In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
+
+### Basic authentication
+The `/witsml-servers` endpoint can be used to get a list of witsml servers in json format.
+
+`Basic` authentication is available by default and `username`/`password` should be used to get an encrypted token from the `/authorize` endpoint along with information about the server as json in the body.
+
+After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`token`. 
+
+This will make sure to include the `Authorization` header for basic authentication in your successive calls to other endpoints that need this. The header value `Witsml-ServerUrl` for the same server you got the token also needs to be filled out.
+
+### OAuth2 authentication
+`OAuth2` authentication is turned off by default through appsettings property `OAuth2Enabled`
+If you want to add this to SwaggerUI, you need to add the following info for your Azure app in the `mysettings.json` file:
+```json
+    "OAuth2Enabled": true,
+    "AzureAd": {
+        "AppName": "miniapp",
+        "Instance": "https://login.microsoftonline.com/",
+        "Domain": "qualified.domain.name",
+        "TenantId": "b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f",
+        "ClientId": "109e12e2-4ca7-48d0-af05-c834c884322c",
+        "Scopes": "openid profile 109e12e2-4ca7-48d0-af05-c834c884322c/access_as_user",
+        "TokenValidationParameters": {
+            "ValidateAudience": false
+        },
+        "Swagger": {
+            "AuthorizationUrl": "https://login.microsoftonline.com/b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f/oauth2/v2.0/authorize",
+            "TokenUrl": "https://login.microsoftonline.com/b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f/oauth2/v2.0/token"
+        }
+    }
+``` 
+You should then find a new entry: `AuthorizationCode with PKCE` available in the UI.
+
+If successful authorization, the accesstoken will be included in successive calls as an `Authorization` header bearer token.
+
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
 

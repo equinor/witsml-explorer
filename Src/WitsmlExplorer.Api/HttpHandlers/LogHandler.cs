@@ -5,27 +5,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-
-
 
 namespace WitsmlExplorer.Api.HttpHandler;
 
 public static class LogHandler
 {
+    [Produces(typeof(IEnumerable<LogObject>))]
     public static async Task<IResult> GetLogs(string wellUid, string wellboreUid, ILogObjectService logObjectService)
     {
         return Results.Ok(await logObjectService.GetLogs(wellUid, wellboreUid));
     }
+    [Produces(typeof(LogObject))]
     public static async Task<IResult> GetLog(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
     {
         return Results.Ok(await logObjectService.GetLog(wellUid, wellboreUid, logUid));
     }
+    [Produces(typeof(IEnumerable<LogCurveInfo>))]
     public static async Task<IResult> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
     {
         return Results.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid));
     }
-
+    [Produces(typeof(LogData))]
     public static async Task<IResult> GetLogData(
         string wellUid,
         string wellboreUid,
