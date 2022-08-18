@@ -109,7 +109,9 @@ After adding your servers, reset file `MongoDbRepositoryTests.cs`.
 In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
 
 ### Basic authentication
-`Basic` authentication is available by default. `username`/`password` should be used to get an encrypted token from the `/authorize` endpoint along with information about the server as json in the body.
+The `/witsml-servers` endpoint can be used to get a list of witsml servers in json format.
+
+`Basic` authentication is available by default and `username`/`password` should be used to get an encrypted token from the `/authorize` endpoint along with information about the server as json in the body.
 
 After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`token`. 
 
