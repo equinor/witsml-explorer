@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using WitsmlExplorer.Api.Models;
-
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandler;
