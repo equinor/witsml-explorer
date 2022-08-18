@@ -2,8 +2,13 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyRiskJob
+    public record ModifyRiskJob : IJob
     {
         public Risk Risk { get; init; }
+
+        public string Description()
+        {
+            return $"ToModify - WellUid: {Risk.WellUid}; WellboreUid: {Risk.WellboreUid}; RiskUid: {Risk.Uid};";
+        }
     }
 }

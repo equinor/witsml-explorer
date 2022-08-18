@@ -1,9 +1,12 @@
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -13,12 +16,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class BatchModifyWellWorker : BaseWorker<BatchModifyWellJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.BatchModifyWell;
 
-        public BatchModifyWellWorker(IWitsmlClientProvider witsmlClientProvider)
+        public BatchModifyWellWorker(ILogger<BatchModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)
@@ -26,21 +29,22 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job.Wells);
 
             var wellsToUpdate = job.Wells.Select(WellQueries.UpdateWitsmlWell);
-            var updateWellTasks = wellsToUpdate.Select(wellToUpdate => witsmlClient.UpdateInStoreAsync(wellToUpdate));
+            var updateWellTasks = wellsToUpdate.Select(wellToUpdate => _witsmlClient.UpdateInStoreAsync(wellToUpdate));
 
             Task resultTask = Task.WhenAll(updateWellTasks);
             await resultTask;
 
             if (resultTask.Status == TaskStatus.Faulted)
             {
-                Log.Error("Job failed. An error occurred when batch updating wells");
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to batch update well properties"), null);
+                const string errorMessage = "Failed to batch update well properties";
+                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage), null);
             }
 
-            Log.Information("{JobType} - Job successful", GetType().Name);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, "Batch updated well properties");
+            Logger.LogInformation("Wells modified. {jobDescription}", job.Description());
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, "Batch updated well properties");
             var wells = job.Wells.Select(well => well.Uid).ToArray();
-            var refreshAction = new RefreshWells(witsmlClient.GetServerHostname(), wells, RefreshType.BatchUpdate);
+            var refreshAction = new RefreshWells(_witsmlClient.GetServerHostname(), wells, RefreshType.BatchUpdate);
             return (workerResult, refreshAction);
         }
 

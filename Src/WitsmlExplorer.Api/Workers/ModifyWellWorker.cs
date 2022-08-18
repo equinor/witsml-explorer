@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -14,12 +16,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyWellWorker : BaseWorker<ModifyWellJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyWell;
 
-        public ModifyWellWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyWellWorker(ILogger<ModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellJob job)
@@ -30,23 +32,24 @@ namespace WitsmlExplorer.Api.Workers
             var wellName = job.Well.Name;
             var witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);
 
-            var result = await witsmlClient.UpdateInStoreAsync(witsmlWellToUpdate);
+            var result = await _witsmlClient.UpdateInStoreAsync(witsmlWellToUpdate);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Well updated ({wellName} [{wellUid}])");
-                var refreshAction = new RefreshWell(witsmlClient.GetServerHostname(), job.Well.Uid, RefreshType.Update);
+                Logger.LogInformation("Well modified. {jobDescription}", job.Description());
+                var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Well updated ({wellName} [{wellUid}])");
+                var refreshAction = new RefreshWell(_witsmlClient.GetServerHostname(), job.Well.Uid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
 
-            var updatedWells = await witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, new OptionsIn(ReturnElements.IdOnly));
+            var updatedWells = await _witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, new OptionsIn(ReturnElements.IdOnly));
             var updatedWell = updatedWells.Wells.First();
             var description = new EntityDescription
             {
                 WellName = updatedWell.Name
             };
-            Log.Error("Job failed. An error occurred when modifying well: {Well}", job.Well.PrintProperties());
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update well", result.Reason, description), null);
+            const string errorMessage = "Failed to update well";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(Well well)

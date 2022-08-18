@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 using Witsml;
 
@@ -13,29 +13,28 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyRigWorker : BaseWorker<ModifyRigJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyRig;
 
-        public ModifyRigWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyRigWorker(ILogger<ModifyRigJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyRigJob job)
         {
             var modifyRigQuery = RigQueries.CreateRig(job.Rig);
-            var modifyRigResult = await witsmlClient.UpdateInStoreAsync(modifyRigQuery);
+            var modifyRigResult = await _witsmlClient.UpdateInStoreAsync(modifyRigQuery);
 
             if (!modifyRigResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify rig object";
-                Log.Error("{ErrorMessage}. Target: WellUid: {TargetWellUid}, WellboreUid: {TargetWellboreUid}",
-                    errorMessage, job.Rig.WellUid, job.Rig.WellboreUid);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, modifyRigResult.Reason), null);
+                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, modifyRigResult.Reason), null);
             }
 
-            Log.Information("{JobType} - Job successful. Rig modified", GetType().Name);
-            var refreshAction = new RefreshRigs(witsmlClient.GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.WellboreName}");
+            Logger.LogInformation("Rig modified. {jobDescription}", job.Description());
+            var refreshAction = new RefreshRigs(_witsmlClient.GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, RefreshType.Update);
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.WellboreName}");
 
             return (workerResult, refreshAction);
         }

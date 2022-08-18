@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string Description()
         {
-            return $"\t\nToDelete: {ToDelete.Description()}";
+            return $"ToDelete: {ToDelete.Description()}";
         }
 
     }

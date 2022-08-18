@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
+
+using Microsoft.Extensions.Logging;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
@@ -15,12 +18,12 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class ModifyLogObjectWorker : BaseWorker<ModifyLogObjectJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyLogObject;
 
-        public ModifyLogObjectWorker(IWitsmlClientProvider witsmlClientProvider)
+        public ModifyLogObjectWorker(ILogger<ModifyLogObjectJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyLogObjectJob job)
@@ -39,17 +42,18 @@ namespace WitsmlExplorer.Api.Workers
                     UidWellbore = wellboreUid,
                     Name = job.LogObject.Name
                 });
-            var result = await witsmlClient.UpdateInStoreAsync(query);
+            var result = await _witsmlClient.UpdateInStoreAsync(query);
             if (result.IsSuccessful)
             {
-                Log.Information("{JobType} - Job successful", GetType().Name);
-                var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
+                Logger.LogInformation("Log modified. {jobDescription}", job.Description());
+                var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
             }
 
-            Log.Error("Job failed. An error occurred when modifying log object: {Log}", job.LogObject.PrintProperties());
+            const string errorMessage = "Failed to update log";
+            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             var logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var logs = await witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
+            var logs = await _witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
             var log = logs.Logs.FirstOrDefault();
             EntityDescription description = null;
             if (log != null)
@@ -62,7 +66,7 @@ namespace WitsmlExplorer.Api.Workers
                 };
             }
 
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to update log", result.Reason, description), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static WitsmlLogs CreateRequest(string wellUid, string wellboreUid, string logUid, WitsmlLog logObject)
