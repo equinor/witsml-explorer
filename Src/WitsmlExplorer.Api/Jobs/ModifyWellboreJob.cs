@@ -2,11 +2,11 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyWellboreJob : IJob
+    public record ModifyWellboreJob : Job
     {
         public Wellbore Wellbore { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"ToModify - WellUid: {Wellbore.WellUid}; WellboreUid: {Wellbore.Uid};";
         }

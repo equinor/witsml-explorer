@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record TrimLogDataJob : IJob
+    public record TrimLogDataJob : Job
     {
         public LogReference LogObject { get; init; }
 
@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string EndIndex { get; init; }
 
-        public string Description()
+        public override string Description()
         {
             return $"Trim log data - {LogObject.Description()} StartIndex: {StartIndex}; EndIndex: {EndIndex};";
         }

@@ -21,23 +21,23 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CopyLogWorker : BaseWorker<CopyLogJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
-        private readonly IWitsmlClient witsmlSourceClient;
-        private readonly ICopyLogDataWorker copyLogDataWorker;
+        private readonly IWitsmlClient _witsmlClient;
+        private readonly IWitsmlClient _witsmlSourceClient;
+        private readonly ICopyLogDataWorker _copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
 
         public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
-            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
-            this.copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
+            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            this._copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
         {
             var (sourceLogs, targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             var copyLogsQuery = sourceLogs.Select(log => CreateCopyLogQuery(log, targetWellbore));
-            var copyLogTasks = copyLogsQuery.Select(logToCopy => witsmlClient.AddToStoreAsync(logToCopy));
+            var copyLogTasks = copyLogsQuery.Select(logToCopy => _witsmlClient.AddToStoreAsync(logToCopy));
 
             Task copyLogTasksResult = Task.WhenAll(copyLogTasks);
             await copyLogTasksResult;
@@ -46,11 +46,11 @@ namespace WitsmlExplorer.Api.Workers
             {
                 var errorMessage = "Failed to copy log.";
                 Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage), null);
             }
 
             var copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
-            var copyLogDataTasks = copyLogDataJobs.Select(copyLogDataJob => copyLogDataWorker.Execute(copyLogDataJob));
+            var copyLogDataTasks = copyLogDataJobs.Select(copyLogDataJob => _copyLogDataWorker.Execute(copyLogDataJob));
 
             Task copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
             await copyLogDataResultTask;
@@ -59,13 +59,13 @@ namespace WitsmlExplorer.Api.Workers
             {
                 var errorMessage = "Failed to copy log data.";
                 Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            var refreshAction = new RefreshWellbore(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
             var copiedLogsMessage = sourceLogs.Length == 1 ? $"Log object {sourceLogs[0].Name}" : $"{sourceLogs.Length} logs" + $" copied to: {targetWellbore.Name}";
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, copiedLogsMessage);
+            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, copiedLogsMessage);
 
             return (workerResult, refreshAction);
         }
@@ -73,8 +73,8 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<Tuple<WitsmlLog[], WitsmlWellbore>> FetchSourceLogsAndTargetWellbore(CopyLogJob job)
         {
             var sourceLogReferenceList = job.Source.LogReferenceList;
-            var getLogFromSourceQueries = Task.WhenAll(sourceLogReferenceList.Select(logReference => WorkerTools.GetLog(witsmlSourceClient, logReference, ReturnElements.All)));
-            var getTargetWellboreQuery = WorkerTools.GetWellbore(witsmlClient, job.Target);
+            var getLogFromSourceQueries = Task.WhenAll(sourceLogReferenceList.Select(logReference => WorkerTools.GetLog(_witsmlSourceClient, logReference, ReturnElements.All)));
+            var getTargetWellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);
 
@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api.Workers
             return copyLogQuery;
         }
 
-        private static Stream CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
+        private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
         {
             var sourceLogReference = new LogReference
             {
@@ -121,8 +121,7 @@ namespace WitsmlExplorer.Api.Workers
                 },
                 Target = targetLogReference
             };
-            var json = JsonSerializer.Serialize(copyLogDataJob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            return new MemoryStream(Encoding.UTF8.GetBytes(json));
+            return copyLogDataJob;
         }
 
     }
