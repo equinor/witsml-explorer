@@ -33,7 +33,10 @@ namespace WitsmlExplorer.Api.Services
 
             var (task, job) = await worker.SetupWorker(jobStream);
             _jobQueue.Enqueue(task);
+            JobCache.CacheJob(job.JobInfo);
+
             return job.JobInfo.Id;
         }
+
     }
 }

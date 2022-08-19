@@ -18,5 +18,7 @@ namespace WitsmlExplorer.Api.Jobs
         public string Id { get; init; }
 
         public DateTime StartTime { get; init; }
+
+        public DateTime KillTime { get; set; }
     }
 }
