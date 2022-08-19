@@ -11,7 +11,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public abstract class BaseWorker<T> where T : IJob
+    public abstract class BaseWorker<T> where T : Job
     {
         protected ILogger<T> Logger { get; }
         public BaseWorker(ILogger<T> logger = null)
@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers
             Logger = logger;
         }
 
-        public async Task<(Task<(WorkerResult, RefreshAction)>, IJob)> SetupWorker(Stream jobStream)
+        public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)
         {
             var job = await jobStream.Deserialize<T>();
             var task = ExecuteBase(job);

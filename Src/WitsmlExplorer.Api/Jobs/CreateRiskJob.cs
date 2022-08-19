@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CreateRiskJob : IJob
+    public record CreateRiskJob : Job
     {
         public Risk Risk { get; init; }
 

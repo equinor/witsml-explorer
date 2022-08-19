@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyTubularJob : IJob
+    public record ModifyTubularJob : Job
     {
         public Tubular Tubular { get; init; }
 

@@ -4,7 +4,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record IDeleteJob<T> : IJob where T : IReference
+    public record IDeleteJob<T> : Job where T : IReference
     {
         public T ToDelete { get; init; }
 

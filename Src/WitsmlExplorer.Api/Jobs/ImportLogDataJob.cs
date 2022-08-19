@@ -4,7 +4,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ImportLogDataJob : IJob
+    public record ImportLogDataJob : Job
     {
         public LogReference TargetLog { get; init; }
         public IEnumerable<string> Mnemonics { get; init; }

@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyRigJob : IJob
+    public record ModifyRigJob : Job
     {
         public Rig Rig { get; init; }
 

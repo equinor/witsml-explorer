@@ -5,7 +5,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record BatchModifyWellJob : IJob
+    public record BatchModifyWellJob : Job
     {
         public IEnumerable<Well> Wells { get; init; }
 

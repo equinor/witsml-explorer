@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyWbGeometryJob : IJob
+    public record ModifyWbGeometryJob : Job
     {
         public WbGeometry WbGeometry { get; init; }
 

@@ -9,6 +9,6 @@ namespace WitsmlExplorer.Api.Workers
     public interface IWorker
     {
         JobType JobType { get; }
-        Task<(Task<(WorkerResult, RefreshAction)>, IJob)> SetupWorker(Stream jobStream);
+        Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream);
     }
 }

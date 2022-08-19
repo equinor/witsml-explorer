@@ -4,7 +4,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record DeleteCurveValuesJob : IJob
+    public record DeleteCurveValuesJob : Job
     {
         public LogReference LogReference { get; init; }
         public IEnumerable<string> Mnemonics { get; init; }

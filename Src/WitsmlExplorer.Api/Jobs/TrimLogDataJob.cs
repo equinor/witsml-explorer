@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record TrimLogDataJob : IJob
+    public record TrimLogDataJob : Job
     {
         public LogReference LogObject { get; init; }
 

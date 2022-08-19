@@ -3,7 +3,7 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ModifyTrajectoryStationJob : IJob
+    public record ModifyTrajectoryStationJob : Job
     {
         public TrajectoryReference TrajectoryReference { get; init; }
         public TrajectoryStation TrajectoryStation { get; init; }
