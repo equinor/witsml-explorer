@@ -1,11 +1,12 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using WitsmlExplorer.Api.Repositories;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class Server: DbDocument<Guid>
+    public class Server : DbDocument<Guid>
     {
         public Server() : base(Guid.NewGuid())
         {
@@ -21,5 +22,10 @@ namespace WitsmlExplorer.Api.Models
         {
             return JsonSerializer.Serialize(this);
         }
+        [JsonPropertyName("securityscheme")]
+        public string SecurityScheme { get; set; }
+        [JsonPropertyName("role")]
+        public string Role { get; set; }
+
     }
 }
