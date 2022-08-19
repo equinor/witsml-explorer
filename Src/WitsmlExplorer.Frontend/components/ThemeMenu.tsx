@@ -1,19 +1,22 @@
+import { Menu, Typography } from "@equinor/eds-core-react";
 import React, { MouseEvent, useContext, useEffect, useState } from "react";
-import Icon from "../styles/Icons";
-import { colors } from "../styles/Colors";
+import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
-import { Menu, Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
+import { getAccountInfo, signOut } from "../msal/MsalAuthProvider";
+import { colors } from "../styles/Colors";
+import Icon from "../styles/Icons";
 
 const ThemeMenu = (): React.ReactElement => {
   const {
     operationState: { theme },
     dispatchOperation
   } = useContext(OperationContext);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorThemeEl, setAnchorThemeEl] = useState(null);
+  const [anchorAccountEl, setAnchorAccountEl] = useState(null);
+  const openTheme = Boolean(anchorThemeEl);
+  const openAccount = Boolean(anchorAccountEl);
 
   useEffect(() => {
     let localStorageTheme;
@@ -23,23 +26,29 @@ const ThemeMenu = (): React.ReactElement => {
     }
   }, []);
 
-  const onToggleMenu = (event: MouseEvent<SVGSVGElement>) => {
-    anchorEl != null ? setAnchorEl(null) : setAnchorEl(event.currentTarget);
+  const onToggleThemeMenu = (event: MouseEvent<SVGSVGElement>) => {
+    setAnchorThemeEl(openTheme ? null : event.currentTarget);
+    setAnchorAccountEl(null);
+  };
+
+  const onToggleAccountMenu = (event: MouseEvent<SVGSVGElement>) => {
+    setAnchorThemeEl(null);
+    setAnchorAccountEl(openAccount ? null : event.currentTarget);
   };
 
   const onSelectTheme = (selectedTheme: UserTheme) => {
     localStorage.setItem("selectedTheme", selectedTheme);
     dispatchOperation({ type: OperationType.SetTheme, payload: selectedTheme });
-    setAnchorEl(null);
+    setAnchorThemeEl(null);
   };
 
   return (
     <>
       <Pointer>
-        <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleMenu(event)} size={24} color={colors.interactive.primaryResting} />
+        <Icon name="moreVertical" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
-      <Menu id="ThemeMenu" anchorEl={anchorEl} open={open}>
-        <ThemeLabel key={"text"}>Display density:</ThemeLabel>
+      <Menu id="ThemeMenu" anchorEl={anchorThemeEl} open={openTheme}>
+        <ThemeLabel key={"text"}>Theme</ThemeLabel>
         <StyledMenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
           <SelectTypography selected={theme === UserTheme.Comfortable}>Comfortable </SelectTypography>
           {theme === UserTheme.Comfortable && <Icon name="check" />}
@@ -47,6 +56,16 @@ const ThemeMenu = (): React.ReactElement => {
         <StyledMenuItem key={"compact"} onClick={() => onSelectTheme(UserTheme.Compact)}>
           <SelectTypography selected={theme === UserTheme.Compact}>Compact</SelectTypography>
           {theme === UserTheme.Compact && <Icon name="check" />}
+        </StyledMenuItem>
+      </Menu>
+      <Pointer>
+        <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
+      </Pointer>
+      <Menu id="ThemeMenu" anchorEl={anchorAccountEl} open={openAccount}>
+        <ThemeLabel key={"text"}>Account</ThemeLabel>
+        <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
+        <StyledMenuItem key={"signout"} onClick={() => signOut()}>
+          Logout
         </StyledMenuItem>
       </Menu>
     </>
