@@ -1,4 +1,5 @@
-import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
+import { InteractionType } from "@azure/msal-browser";
+import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import MomentUtils from "@date-io/moment";
 import { ThemeProvider } from "@material-ui/core";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -22,20 +23,9 @@ import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import { initOperationStateReducer } from "../contexts/operationStateReducer";
-import { msalInstance } from "../msal/MsalAuthProvider";
+import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
 import { colors } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
-
-function SignInButton() {
-  const { instance } = useMsal();
-  return <button onClick={() => instance.loginRedirect()}>Sign In</button>;
-}
-
-function WelcomeUser() {
-  const { accounts } = useMsal();
-  const username = accounts[0].username;
-  return <p>Welcome, {username}</p>;
-}
 
 const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
@@ -75,6 +65,7 @@ const Home = (): React.ReactElement => {
 
   return (
     <MsalProvider instance={msalInstance}>
+      {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <OperationContext.Provider value={{ operationState, dispatchOperation }}>
           <ThemeProvider theme={getTheme(operationState.theme)}>
@@ -98,13 +89,6 @@ const Home = (): React.ReactElement => {
                 </SidebarLayout>
                 <Divider onMouseDown={startResizing} />
                 <ContentViewLayout>
-                  <AuthenticatedTemplate>
-                    <WelcomeUser />
-                  </AuthenticatedTemplate>
-                  <UnauthenticatedTemplate>
-                    <p>This will only render if a user is not signed-in.</p>
-                    <SignInButton />
-                  </UnauthenticatedTemplate>
                   <Alerts />
                   <ContentView />
                 </ContentViewLayout>
