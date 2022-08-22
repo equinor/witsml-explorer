@@ -30,10 +30,14 @@ namespace WitsmlExplorer.Api.Workers
         {
             try
             {
-                return await Execute(job);
+                job.JobInfo.Status = JobStatus.Started;
+                var task = await Execute(job);
+                job.JobInfo.Status = task.Item1.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
+                return task;
             }
             catch (Exception ex)
             {
+                job.JobInfo.Status = JobStatus.Failed;
                 Logger.LogError("An unexpected exception has occured: {ex}", ex);
                 throw;
             }
