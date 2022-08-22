@@ -1,5 +1,9 @@
 using System;
 
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Services;
 
@@ -12,10 +16,12 @@ namespace WitsmlExplorer.Api.Tests.Services
         [Fact]
         public void CacheJob_SetsKillTime()
         {
-            JobInfo job = new();
-            JobCache.CacheJob(job);
-            Assert.NotEqual(default, job.KillTime);
-            Assert.True(job.KillTime > DateTime.Now);
+            JobInfo jobInfo = new();
+            var logger = new Mock<ILogger<JobCache>>();
+            JobCache jobCache = new(logger.Object);
+            jobCache.CacheJob(jobInfo);
+            Assert.NotEqual(default, jobInfo.KillTime);
+            Assert.True(jobInfo.KillTime > DateTime.Now);
         }
     }
 }

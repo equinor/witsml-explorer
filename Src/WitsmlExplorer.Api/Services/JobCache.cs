@@ -2,47 +2,68 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using WitsmlExplorer.Api.Jobs;
 
 namespace WitsmlExplorer.Api.Services
 {
-
-    public static class JobCache
+    public interface IJobCache
     {
-        private static readonly ConcurrentDictionary<string, JobInfo> Jobs;
-        private static DateTime s_nextCleanup;
+        void CacheJob(JobInfo job);
+    }
+
+    public class JobCache : IJobCache
+    {
+        private readonly ConcurrentDictionary<string, JobInfo> _jobs;
+        private DateTime _nextCleanup;
         private static readonly int InitialCapacity = 4000;
         private static readonly int JobLifespanHours = 96;
         private static readonly int CleanupIntervalHours = 1;
+        private readonly ILogger<JobCache> _logger;
 
-        static JobCache()
+        public JobCache(ILogger<JobCache> logger)
         {
             int concurrencyLevel = Environment.ProcessorCount * 2;
-            Jobs = new ConcurrentDictionary<string, JobInfo>(concurrencyLevel, InitialCapacity);
-            s_nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
+            _jobs = new ConcurrentDictionary<string, JobInfo>(concurrencyLevel, InitialCapacity);
+            _nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
+            _logger = logger;
         }
 
-        public static void CacheJob(JobInfo job)
+        public void CacheJob(JobInfo jobInfo)
         {
-            job.KillTime = job.StartTime.AddHours(JobLifespanHours);
-            Jobs[job.Id] = job;
+            jobInfo.KillTime = jobInfo.StartTime.AddHours(JobLifespanHours);
+            _jobs[jobInfo.Id] = jobInfo;
 
-            if (DateTime.Now > s_nextCleanup)
+            if (DateTime.Now > _nextCleanup)
             {
                 Parallel.Invoke(Cleanup);
-                s_nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
+                _nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
             }
         }
 
-        private static void Cleanup()
+        private void Cleanup()
         {
-            foreach (var job in Jobs)
+            _logger.LogInformation("JobCache start cleanup, jobs: {count}", _jobs.Count);
+            int deleted = 0;
+            int failed = 0;
+            foreach (var job in _jobs)
             {
                 if (DateTime.Now > job.Value.KillTime)
                 {
-                    Jobs.TryRemove(job);
+                    bool success = _jobs.TryRemove(job);
+                    if (!success)
+                    {
+                        _logger.LogError("Failed to delete jobInfo {id}", job.Key);
+                        failed += 1;
+                    }
+                    else
+                    {
+                        deleted += 1;
+                    }
                 }
             }
+            _logger.LogInformation("JobCache cleanup finished, deleted: {deleted}, failed: {failed}, remaining: {remaining}", deleted, failed, _jobs.Count);
         }
 
     }
