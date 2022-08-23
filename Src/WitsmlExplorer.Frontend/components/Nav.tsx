@@ -1,10 +1,7 @@
+import { Breadcrumbs } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { Breadcrumbs } from "@equinor/eds-core-react";
 import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
-import { Server } from "../models/server";
 import {
   SelectBhaRunGroupAction,
   SelectLogGroupAction,
@@ -12,8 +9,8 @@ import {
   SelectLogTypeAction,
   SelectMessageGroupAction,
   SelectMessageObjectAction,
-  SelectRiskGroupAction,
   SelectRigGroupAction,
+  SelectRiskGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
@@ -23,12 +20,15 @@ import {
   SelectWellAction,
   SelectWellboreAction
 } from "../contexts/navigationStateReducer";
-import Well from "../models/well";
+import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
+import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
-import ThemeMenu from "./ThemeMenu";
 import Tubular from "../models/tubular";
+import Well from "../models/well";
+import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -89,7 +89,7 @@ const Nav = (): React.ReactElement => {
             </Breadcrumbs.Breadcrumb>
           ))}
         </StyledBreadcrumbs>
-        <ThemeMenu />
+        <TopRightCornerMenu />
       </Layout>
     </nav>
   );

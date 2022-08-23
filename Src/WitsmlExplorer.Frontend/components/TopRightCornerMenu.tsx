@@ -8,7 +8,7 @@ import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 
-const ThemeMenu = (): React.ReactElement => {
+const TopRightCornerMenu = (): React.ReactElement => {
   const {
     operationState: { theme },
     dispatchOperation
@@ -59,18 +59,18 @@ const ThemeMenu = (): React.ReactElement => {
         </StyledMenuItem>
       </Menu>
       {msalEnabled && (
-        <Pointer>
-          <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
-        </Pointer>
-      )}
-      {msalEnabled && (
-        <Menu id="ThemeMenu" anchorEl={anchorAccountEl} open={openAccount}>
-          <ThemeLabel key={"text"}>Account</ThemeLabel>
-          <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
-          <StyledMenuItem key={"signout"} onClick={() => signOut()}>
-            Logout
-          </StyledMenuItem>
-        </Menu>
+        <>
+          <Pointer>
+            <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
+          </Pointer>
+          <Menu id="ThemeMenu" anchorEl={anchorAccountEl} open={openAccount}>
+            <ThemeLabel key={"text"}>Account</ThemeLabel>
+            <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
+            <StyledMenuItem key={"signout"} onClick={() => signOut()}>
+              Logout
+            </StyledMenuItem>
+          </Menu>
+        </>
       )}
     </>
   );
@@ -104,4 +104,4 @@ const Pointer = styled.div`
   cursor: pointer;
 `;
 
-export default ThemeMenu;
+export default TopRightCornerMenu;
