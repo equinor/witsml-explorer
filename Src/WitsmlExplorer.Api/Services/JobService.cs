@@ -16,13 +16,15 @@ namespace WitsmlExplorer.Api.Services
 
     public class JobService : IJobService
     {
+        private readonly IJobCache _jobCache;
         private readonly IJobQueue _jobQueue;
         private readonly IEnumerable<IWorker> _workers;
 
-        public JobService(IJobQueue jobQueue, IEnumerable<IWorker> workers)
+        public JobService(IJobQueue jobQueue, IEnumerable<IWorker> workers, IJobCache jobCache)
         {
             _jobQueue = jobQueue;
             _workers = workers;
+            _jobCache = jobCache;
         }
 
         public async Task<string> CreateJob(JobType jobType, Stream jobStream)
@@ -33,7 +35,10 @@ namespace WitsmlExplorer.Api.Services
 
             var (task, job) = await worker.SetupWorker(jobStream);
             _jobQueue.Enqueue(task);
+            _jobCache.CacheJob(job.JobInfo);
+
             return job.JobInfo.Id;
         }
+
     }
 }

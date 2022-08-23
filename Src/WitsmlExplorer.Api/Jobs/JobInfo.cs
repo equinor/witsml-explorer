@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
+            Status = JobStatus.Ordered;
         }
 
         public string JobType { get; internal set; }
@@ -18,5 +19,33 @@ namespace WitsmlExplorer.Api.Jobs
         public string Id { get; init; }
 
         public DateTime StartTime { get; init; }
+
+        public DateTime? EndTime { get; private set; }
+
+        public DateTime KillTime { get; set; }
+
+        private JobStatus _status;
+
+        public JobStatus Status
+        {
+            get { return _status; }
+            set
+            {
+                if (value == JobStatus.Finished || value == JobStatus.Failed)
+                {
+                    EndTime = DateTime.Now;
+                }
+                _status = value;
+            }
+        }
+
+    }
+
+    public enum JobStatus
+    {
+        Ordered,
+        Started,
+        Finished,
+        Failed
     }
 }

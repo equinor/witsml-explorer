@@ -26,6 +26,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
                 .AsPublicImplementedInterfaces();
+            services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
         }
 
