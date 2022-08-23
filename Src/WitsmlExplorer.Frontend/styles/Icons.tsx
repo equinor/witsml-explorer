@@ -1,20 +1,21 @@
 import { Icon } from "@equinor/eds-core-react";
 import {
-  chevron_right as chevronRight,
-  chevron_down as chevronDown,
-  trending_up as isActive,
-  launch,
-  format_line_spacing as formatLine,
-  refresh,
-  paste,
-  add,
-  settings,
   accessible,
+  add,
   check,
+  chevron_down as chevronDown,
+  chevron_right as chevronRight,
   copy,
-  edit,
   delete_to_trash as deleteToTrash,
-  folder_open as folderOpen
+  edit,
+  folder_open as folderOpen,
+  format_line_spacing as formatLine,
+  launch,
+  more_vertical as moreVertical,
+  paste,
+  refresh,
+  settings,
+  trending_up as isActive
 } from "@equinor/eds-icons";
 const icons = {
   chevronRight,
@@ -31,7 +32,8 @@ const icons = {
   copy,
   edit,
   folderOpen,
-  deleteToTrash
+  deleteToTrash,
+  moreVertical
 };
 
 Icon.add(icons);
