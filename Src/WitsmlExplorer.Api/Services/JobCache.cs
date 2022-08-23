@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Threading;
 
 using Microsoft.Extensions.Logging;
 
@@ -37,12 +37,12 @@ namespace WitsmlExplorer.Api.Services
 
             if (DateTime.Now > _nextCleanup)
             {
-                Parallel.Invoke(Cleanup);
+                ThreadPool.QueueUserWorkItem(Cleanup);
                 _nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
             }
         }
 
-        private void Cleanup()
+        private void Cleanup(object stateInfo)
         {
             _logger.LogInformation("JobCache start cleanup, jobs: {count}", _jobs.Count);
             int deleted = 0;
