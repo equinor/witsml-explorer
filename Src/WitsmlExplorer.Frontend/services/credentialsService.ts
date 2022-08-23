@@ -25,6 +25,10 @@ class CredentialsService {
     this._onCredentialStateChanged.dispatch({ server: server, hasPassword: this.hasPasswordForServer(server) });
   }
 
+  public getSelectedServer(): Server | null {
+    return this.server;
+  }
+
   public setSourceServer(server: Server) {
     this.sourceServer = server;
   }
