@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 job.JobInfo.Status = JobStatus.Started;
                 var task = await Execute(job);
-                job.JobInfo.Status = task.Item1.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
+                job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 return task;
             }
             catch (Exception ex)
@@ -43,6 +43,6 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        public abstract Task<(WorkerResult, RefreshAction)> Execute(T job);
+        public abstract Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(T job);
     }
 }
