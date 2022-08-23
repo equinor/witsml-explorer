@@ -48,7 +48,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
         <Icon name="moreVertical" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
       <Menu id="ThemeMenu" anchorEl={anchorThemeEl} open={openTheme}>
-        <ThemeLabel key={"text"}>Theme</ThemeLabel>
+        <MenuLabel key={"text"}>Theme</MenuLabel>
         <StyledMenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
           <SelectTypography selected={theme === UserTheme.Comfortable}>Comfortable </SelectTypography>
           {theme === UserTheme.Comfortable && <Icon name="check" />}
@@ -63,8 +63,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
           <Pointer>
             <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
           </Pointer>
-          <Menu id="ThemeMenu" anchorEl={anchorAccountEl} open={openAccount}>
-            <ThemeLabel key={"text"}>Account</ThemeLabel>
+          <Menu id="AccountMenu" anchorEl={anchorAccountEl} open={openAccount}>
+            <MenuLabel key={"text"}>Account</MenuLabel>
             <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
             <StyledMenuItem key={"signout"} onClick={() => signOut()}>
               Logout
@@ -94,7 +94,7 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `;
 
-const ThemeLabel = styled.p`
+const MenuLabel = styled.p`
   font-family: inherit;
   font-size: 0.75rem;
   margin: 0.5rem 1.5rem 0.5rem 1.5rem;
