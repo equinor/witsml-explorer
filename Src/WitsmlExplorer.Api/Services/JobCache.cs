@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -11,6 +13,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IJobCache
     {
         void CacheJob(JobInfo job);
+        IEnumerable<JobInfo> GetJobInfos(IEnumerable<string> ids);
     }
 
     public class JobCache : IJobCache
@@ -40,6 +43,11 @@ namespace WitsmlExplorer.Api.Services
                 Task.Run(Cleanup);
                 _nextCleanup = DateTime.Now.AddHours(CleanupIntervalHours);
             }
+        }
+
+        public IEnumerable<JobInfo> GetJobInfos(IEnumerable<string> ids)
+        {
+            return ids.Select(id => _jobs.GetValueOrDefault(id)).Where(jobInfo => jobInfo != default);
         }
 
         private void Cleanup()
