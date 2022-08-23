@@ -9,69 +9,69 @@
 
 namespace Witsml.ServiceReference
 {
-    
-    
+
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.witsml.org/wsdl/120", ConfigurationName="Witsml.ServiceReference.StoreSoapPort")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace = "http://www.witsml.org/wsdl/120", ConfigurationName = "Witsml.ServiceReference.StoreSoapPort")]
     public interface StoreSoapPort
     {
-        
+
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_AddToStore", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_AddToStore", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_AddToStoreResponse> WMLS_AddToStoreAsync(Witsml.ServiceReference.WMLS_AddToStoreRequest request);
-        
+
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_DeleteFromStore", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_DeleteFromStore", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_DeleteFromStoreResponse> WMLS_DeleteFromStoreAsync(Witsml.ServiceReference.WMLS_DeleteFromStoreRequest request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_GetBaseMsg", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_GetBaseMsg", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetBaseMsgResponse> WMLS_GetBaseMsgAsync(Witsml.ServiceReference.WMLS_GetBaseMsgRequest request);
-        
+
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_GetCap", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_GetCap", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetCapResponse> WMLS_GetCapAsync(Witsml.ServiceReference.WMLS_GetCapRequest request);
-        
+
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_GetFromStore", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_GetFromStore", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetFromStoreResponse> WMLS_GetFromStoreAsync(Witsml.ServiceReference.WMLS_GetFromStoreRequest request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_GetVersion", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_GetVersion", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetVersionResponse> WMLS_GetVersionAsync(Witsml.ServiceReference.WMLS_GetVersionRequest request);
-        
+
         // CODEGEN: Generating message contract since the operation has multiple return values.
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.witsml.org/action/120/Store.WMLS_UpdateInStore", ReplyAction="*")]
-        [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
+        [System.ServiceModel.OperationContractAttribute(Action = "http://www.witsml.org/action/120/Store.WMLS_UpdateInStore", ReplyAction = "*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(Style = System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults = true, Use = System.ServiceModel.OperationFormatUse.Encoded)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_UpdateInStoreResponse> WMLS_UpdateInStoreAsync(Witsml.ServiceReference.WMLS_UpdateInStoreRequest request);
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_AddToStore", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_AddToStore", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_AddToStoreRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string WMLtypeIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string XMLin;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string OptionsIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=3)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 3)]
         public string CapabilitiesIn;
-        
+
         public WMLS_AddToStoreRequest()
         {
         }
-        
+
         public WMLS_AddToStoreRequest(string WMLtypeIn, string XMLin, string OptionsIn, string CapabilitiesIn)
         {
             this.WMLtypeIn = WMLtypeIn;
@@ -80,52 +80,52 @@ namespace Witsml.ServiceReference
             this.CapabilitiesIn = CapabilitiesIn;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_AddToStoreResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_AddToStoreResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_AddToStoreResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short Result;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string SuppMsgOut;
-        
+
         public WMLS_AddToStoreResponse()
         {
         }
-        
+
         public WMLS_AddToStoreResponse(short Result, string SuppMsgOut)
         {
             this.Result = Result;
             this.SuppMsgOut = SuppMsgOut;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_DeleteFromStore", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_DeleteFromStore", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_DeleteFromStoreRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string WMLtypeIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string QueryIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string OptionsIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=3)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 3)]
         public string CapabilitiesIn;
-        
+
         public WMLS_DeleteFromStoreRequest()
         {
         }
-        
+
         public WMLS_DeleteFromStoreRequest(string WMLtypeIn, string QueryIn, string OptionsIn, string CapabilitiesIn)
         {
             this.WMLtypeIn = WMLtypeIn;
@@ -134,86 +134,86 @@ namespace Witsml.ServiceReference
             this.CapabilitiesIn = CapabilitiesIn;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_DeleteFromStoreResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_DeleteFromStoreResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_DeleteFromStoreResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short Result;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string SuppMsgOut;
-        
+
         public WMLS_DeleteFromStoreResponse()
         {
         }
-        
+
         public WMLS_DeleteFromStoreResponse(short Result, string SuppMsgOut)
         {
             this.Result = Result;
             this.SuppMsgOut = SuppMsgOut;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetBaseMsg", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetBaseMsg", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetBaseMsgRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short ReturnValueIn;
-        
+
         public WMLS_GetBaseMsgRequest()
         {
         }
-        
+
         public WMLS_GetBaseMsgRequest(short ReturnValueIn)
         {
             this.ReturnValueIn = ReturnValueIn;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetBaseMsgResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetBaseMsgResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetBaseMsgResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string Result;
-        
+
         public WMLS_GetBaseMsgResponse()
         {
         }
-        
+
         public WMLS_GetBaseMsgResponse(string Result)
         {
             this.Result = Result;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetCap", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetCap", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetCapRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0, Name="OptionsIn")]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0, Name = "OptionsIn")]
         private string optionsIn;
-        
+
         public WMLS_GetCapRequest()
         {
         }
-        
-        public WMLS_GetCapRequest(string OptionsIn )
+
+        public WMLS_GetCapRequest(string OptionsIn)
         {
-            this.OptionsIn = OptionsIn ;
+            this.OptionsIn = OptionsIn;
         }
 
         /// <summary>
@@ -223,36 +223,38 @@ namespace Witsml.ServiceReference
         /// It is to be noted that the data version is fixed to 1.4.1.1 by default and might need to be passed as argument in future 
         /// if there is a requirement to support a different WITSML version by default.
         /// </summary>
-        public string OptionsIn {
-            get { return optionsIn ; }
-            set { 
-                optionsIn = value ;
-                if ( ! optionsIn.Contains ("dataVersion") ) 
-                    optionsIn += ";dataVersion=1.4.1.1" ;
-                }
+        public string OptionsIn
+        {
+            get { return optionsIn; }
+            set
+            {
+                optionsIn = value;
+                if (!optionsIn.Contains("dataVersion"))
+                    optionsIn += ";dataVersion=1.4.1.1";
+            }
         }
 
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetCapResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetCapResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetCapResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short Result;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string CapabilitiesOut;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string SuppMsgOut;
-        
+
         public WMLS_GetCapResponse()
         {
         }
-        
+
         public WMLS_GetCapResponse(short Result, string CapabilitiesOut, string SuppMsgOut)
         {
             this.Result = Result;
@@ -260,29 +262,29 @@ namespace Witsml.ServiceReference
             this.SuppMsgOut = SuppMsgOut;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetFromStore", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetFromStore", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetFromStoreRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string WMLtypeIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string QueryIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string OptionsIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=3)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 3)]
         public string CapabilitiesIn;
-        
+
         public WMLS_GetFromStoreRequest()
         {
         }
-        
+
         public WMLS_GetFromStoreRequest(string WMLtypeIn, string QueryIn, string OptionsIn, string CapabilitiesIn)
         {
             this.WMLtypeIn = WMLtypeIn;
@@ -291,26 +293,26 @@ namespace Witsml.ServiceReference
             this.CapabilitiesIn = CapabilitiesIn;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetFromStoreResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetFromStoreResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetFromStoreResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short Result;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string XMLout;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string SuppMsgOut;
-        
+
         public WMLS_GetFromStoreResponse()
         {
         }
-        
+
         public WMLS_GetFromStoreResponse(short Result, string XMLout, string SuppMsgOut)
         {
             this.Result = Result;
@@ -318,61 +320,61 @@ namespace Witsml.ServiceReference
             this.SuppMsgOut = SuppMsgOut;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetVersion", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetVersion", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetVersionRequest
     {
-        
+
         public WMLS_GetVersionRequest()
         {
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_GetVersionResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_GetVersionResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_GetVersionResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string Result;
-        
+
         public WMLS_GetVersionResponse()
         {
         }
-        
+
         public WMLS_GetVersionResponse(string Result)
         {
             this.Result = Result;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_UpdateInStore", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_UpdateInStore", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_UpdateInStoreRequest
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public string WMLtypeIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string XMLin;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=2)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 2)]
         public string OptionsIn;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=3)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 3)]
         public string CapabilitiesIn;
-        
+
         public WMLS_UpdateInStoreRequest()
         {
         }
-        
+
         public WMLS_UpdateInStoreRequest(string WMLtypeIn, string XMLin, string OptionsIn, string CapabilitiesIn)
         {
             this.WMLtypeIn = WMLtypeIn;
@@ -381,140 +383,140 @@ namespace Witsml.ServiceReference
             this.CapabilitiesIn = CapabilitiesIn;
         }
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
-    [System.ServiceModel.MessageContractAttribute(WrapperName="WMLS_UpdateInStoreResponse", WrapperNamespace="http://www.witsml.org/message/120", IsWrapped=true)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName = "WMLS_UpdateInStoreResponse", WrapperNamespace = "http://www.witsml.org/message/120", IsWrapped = true)]
     public partial class WMLS_UpdateInStoreResponse
     {
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=0)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 0)]
         public short Result;
-        
-        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="", Order=1)]
+
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace = "", Order = 1)]
         public string SuppMsgOut;
-        
+
         public WMLS_UpdateInStoreResponse()
         {
         }
-        
+
         public WMLS_UpdateInStoreResponse(short Result, string SuppMsgOut)
         {
             this.Result = Result;
             this.SuppMsgOut = SuppMsgOut;
         }
     }
-    
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     public interface StoreSoapPortChannel : Witsml.ServiceReference.StoreSoapPort, System.ServiceModel.IClientChannel
     {
     }
-    
+
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1")]
     public partial class StoreSoapPortClient : System.ServiceModel.ClientBase<Witsml.ServiceReference.StoreSoapPort>, Witsml.ServiceReference.StoreSoapPort
     {
-        
+
         /// <summary>
         /// Implement this partial method to configure the service endpoint.
         /// </summary>
         /// <param name="serviceEndpoint">The endpoint to configure</param>
         /// <param name="clientCredentials">The client credentials</param>
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
-        
-        public StoreSoapPortClient() : 
+
+        public StoreSoapPortClient() :
                 base(StoreSoapPortClient.GetDefaultBinding(), StoreSoapPortClient.GetDefaultEndpointAddress())
         {
             this.Endpoint.Name = EndpointConfiguration.StoreSoapPort.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration) : 
+
+        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration) :
                 base(StoreSoapPortClient.GetBindingForEndpoint(endpointConfiguration), StoreSoapPortClient.GetEndpointAddress(endpointConfiguration))
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration, string remoteAddress) : 
+
+        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration, string remoteAddress) :
                 base(StoreSoapPortClient.GetBindingForEndpoint(endpointConfiguration), new System.ServiceModel.EndpointAddress(remoteAddress))
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+        public StoreSoapPortClient(EndpointConfiguration endpointConfiguration, System.ServiceModel.EndpointAddress remoteAddress) :
                 base(StoreSoapPortClient.GetBindingForEndpoint(endpointConfiguration), remoteAddress)
         {
             this.Endpoint.Name = endpointConfiguration.ToString();
             ConfigureEndpoint(this.Endpoint, this.ClientCredentials);
         }
-        
-        public StoreSoapPortClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+
+        public StoreSoapPortClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) :
                 base(binding, remoteAddress)
         {
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_AddToStoreResponse> WMLS_AddToStoreAsync(Witsml.ServiceReference.WMLS_AddToStoreRequest request)
         {
             return base.Channel.WMLS_AddToStoreAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_DeleteFromStoreResponse> WMLS_DeleteFromStoreAsync(Witsml.ServiceReference.WMLS_DeleteFromStoreRequest request)
         {
             return base.Channel.WMLS_DeleteFromStoreAsync(request);
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetBaseMsgResponse> Witsml.ServiceReference.StoreSoapPort.WMLS_GetBaseMsgAsync(Witsml.ServiceReference.WMLS_GetBaseMsgRequest request)
         {
             return base.Channel.WMLS_GetBaseMsgAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetBaseMsgResponse> WMLS_GetBaseMsgAsync(short ReturnValueIn)
         {
             Witsml.ServiceReference.WMLS_GetBaseMsgRequest inValue = new Witsml.ServiceReference.WMLS_GetBaseMsgRequest();
             inValue.ReturnValueIn = ReturnValueIn;
             return ((Witsml.ServiceReference.StoreSoapPort)(this)).WMLS_GetBaseMsgAsync(inValue);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetCapResponse> WMLS_GetCapAsync(Witsml.ServiceReference.WMLS_GetCapRequest request)
         {
             return base.Channel.WMLS_GetCapAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetFromStoreResponse> WMLS_GetFromStoreAsync(Witsml.ServiceReference.WMLS_GetFromStoreRequest request)
         {
             return base.Channel.WMLS_GetFromStoreAsync(request);
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetVersionResponse> Witsml.ServiceReference.StoreSoapPort.WMLS_GetVersionAsync(Witsml.ServiceReference.WMLS_GetVersionRequest request)
         {
             return base.Channel.WMLS_GetVersionAsync(request);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_GetVersionResponse> WMLS_GetVersionAsync()
         {
             Witsml.ServiceReference.WMLS_GetVersionRequest inValue = new Witsml.ServiceReference.WMLS_GetVersionRequest();
             return ((Witsml.ServiceReference.StoreSoapPort)(this)).WMLS_GetVersionAsync(inValue);
         }
-        
+
         public System.Threading.Tasks.Task<Witsml.ServiceReference.WMLS_UpdateInStoreResponse> WMLS_UpdateInStoreAsync(Witsml.ServiceReference.WMLS_UpdateInStoreRequest request)
         {
             return base.Channel.WMLS_UpdateInStoreAsync(request);
         }
-        
+
         public virtual System.Threading.Tasks.Task OpenAsync()
         {
             return System.Threading.Tasks.Task.Factory.FromAsync(((System.ServiceModel.ICommunicationObject)(this)).BeginOpen(null, null), new System.Action<System.IAsyncResult>(((System.ServiceModel.ICommunicationObject)(this)).EndOpen));
         }
-        
-        public virtual System.Threading.Tasks.Task CloseAsync()
+
+        public virtual new System.Threading.Tasks.Task CloseAsync()
         {
             return System.Threading.Tasks.Task.Factory.FromAsync(((System.ServiceModel.ICommunicationObject)(this)).BeginClose(null, null), new System.Action<System.IAsyncResult>(((System.ServiceModel.ICommunicationObject)(this)).EndClose));
         }
-        
+
         private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(EndpointConfiguration endpointConfiguration)
         {
             if ((endpointConfiguration == EndpointConfiguration.StoreSoapPort))
@@ -528,7 +530,7 @@ namespace Witsml.ServiceReference
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }
-        
+
         private static System.ServiceModel.EndpointAddress GetEndpointAddress(EndpointConfiguration endpointConfiguration)
         {
             if ((endpointConfiguration == EndpointConfiguration.StoreSoapPort))
@@ -537,20 +539,20 @@ namespace Witsml.ServiceReference
             }
             throw new System.InvalidOperationException(string.Format("Could not find endpoint with name \'{0}\'.", endpointConfiguration));
         }
-        
+
         private static System.ServiceModel.Channels.Binding GetDefaultBinding()
         {
             return StoreSoapPortClient.GetBindingForEndpoint(EndpointConfiguration.StoreSoapPort);
         }
-        
+
         private static System.ServiceModel.EndpointAddress GetDefaultEndpointAddress()
         {
             return StoreSoapPortClient.GetEndpointAddress(EndpointConfiguration.StoreSoapPort);
         }
-        
+
         public enum EndpointConfiguration
         {
-            
+
             StoreSoapPort,
         }
     }
