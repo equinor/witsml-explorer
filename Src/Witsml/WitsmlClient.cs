@@ -26,7 +26,7 @@ namespace Witsml
         Uri GetServerHostname();
     }
 
-    public class WitsmlClient : IWitsmlClient, IDisposable
+    public class WitsmlClient : IWitsmlClient
     {
         private readonly string _clientCapabilities;
         private readonly StoreSoapPortClient _client;
@@ -335,10 +335,6 @@ namespace Witsml
             return _serverUrl;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 
     public class QueryResult

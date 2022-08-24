@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
 {
     [SuppressMessage("ReSharper", "xUnit1004")]
-    public class TrajectoryTests : IDisposable
+    public class TrajectoryTests
     {
         private readonly ITestOutputHelper _output;
         private readonly WitsmlClient _client;
@@ -105,9 +105,5 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
             return trajectories;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

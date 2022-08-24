@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
 {
     [SuppressMessage("ReSharper", "xUnit1004")]
-    public class LogObjectTests : IDisposable
+    public class LogObjectTests
     {
         private readonly ITestOutputHelper _output;
         private readonly WitsmlClient _client;
@@ -91,9 +91,5 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
             };
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

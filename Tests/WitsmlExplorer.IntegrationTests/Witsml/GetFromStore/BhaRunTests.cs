@@ -14,7 +14,7 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class BhaRunTests : IDisposable
+    public class BhaRunTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
@@ -46,9 +46,5 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             Assert.Equal(fileBhaRunXml, serverBhaRunXml);
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

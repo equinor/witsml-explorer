@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class TubularTests : IDisposable
+    public class TubularTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
@@ -46,9 +45,5 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             Assert.Equal(fileTubularXml, serverTubularXml);
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

@@ -21,8 +21,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         public RenameMnemonicWorkerTests()
         {
             Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
-            WitsmlClientProvider witsmlClientProvider = new WitsmlClientProvider(configuration);
-            ILoggerFactory loggerFactory = (ILoggerFactory)new LoggerFactory();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<RenameMnemonicJob> logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
             _worker = new RenameMnemonicWorker(logger, witsmlClientProvider);

@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Services
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
+            throw new NotImplementedException();
         }
     }
 }
