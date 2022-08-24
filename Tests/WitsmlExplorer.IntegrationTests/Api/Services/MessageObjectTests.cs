@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
+
 using WitsmlExplorer.Api.Services;
 
 using Xunit;
