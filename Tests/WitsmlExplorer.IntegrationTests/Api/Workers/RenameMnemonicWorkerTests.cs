@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 using Microsoft.Extensions.Logging;
 
 using Serilog;
@@ -13,7 +11,6 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class RenameMnemonicWorkerTests
     {
         private readonly RenameMnemonicWorker _worker;
@@ -23,24 +20,24 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         public RenameMnemonicWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new WitsmlClientProvider(configuration);
+            ILoggerFactory loggerFactory = (ILoggerFactory)new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
+            ILogger<RenameMnemonicJob> logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
             _worker = new RenameMnemonicWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
-        public async void ValidInput_RenameMnemonic_ShouldReturnSuccess()
+        public async void ValidInputRenameMnemonicShouldReturnSuccess()
         {
-            var job = CreateJobTemplate() with
+            RenameMnemonicJob job = CreateJobTemplate() with
             {
                 Mnemonic = "",
                 NewMnemonic = ""
             };
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, WitsmlExplorer.Api.Models.RefreshAction _) = await _worker.Execute(job);
 
             Assert.True(result.IsSuccess, result.Reason);
         }

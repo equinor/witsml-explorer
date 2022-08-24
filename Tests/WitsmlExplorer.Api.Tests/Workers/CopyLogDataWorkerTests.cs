@@ -1,4 +1,3 @@
-#pragma warning disable IDE0046
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -444,4 +443,3 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
     }
 }
-#pragma warning restore IDE0046

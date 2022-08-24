@@ -1,4 +1,3 @@
-#pragma warning disable IDE0046
 #pragma warning disable CS0253
 using System;
 using System.Globalization;
@@ -96,5 +95,4 @@ namespace Witsml.Data.Curves
         public override string ToString() => $"{GetValueAsString()} {Uom}";
     }
 }
-#pragma warning restore IDE0046
 #pragma warning restore CS0253

@@ -1,4 +1,3 @@
-#pragma warning disable IDE0046
 using System;
 using System.Globalization;
 
@@ -94,12 +93,7 @@ namespace Witsml.Data.Curves
                 return true;
             }
 
-            if (obj is null)
-            {
-                return false;
-            }
-
-            throw new NotImplementedException();
+            return obj is null ? false : throw new NotImplementedException();
         }
 
         public override int GetHashCode()
@@ -118,4 +112,3 @@ namespace Witsml.Data.Curves
         }
     }
 }
-#pragma warning restore IDE0046

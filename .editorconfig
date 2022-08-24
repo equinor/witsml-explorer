@@ -109,6 +109,7 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 [*.cs]
 
 # Turn the following off:
+dotnet_diagnostic.IDE0046.severity = info
 dotnet_diagnostic.IDE0058.severity = none
 dotnet_diagnostic.xUnit1004.severity = none
 

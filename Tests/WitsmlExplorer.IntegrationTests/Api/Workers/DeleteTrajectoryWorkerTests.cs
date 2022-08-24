@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,6 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class DeleteTrajectoryWorkerTests
     {
         private readonly DeleteTrajectoryWorker _worker;

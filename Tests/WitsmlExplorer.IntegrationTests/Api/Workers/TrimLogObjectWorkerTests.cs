@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -14,28 +13,27 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class TrimLogObjectWorkerTests
     {
         private readonly TrimLogObjectWorker _worker;
 
         public TrimLogObjectWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<TrimLogDataJob>();
+            ILogger<TrimLogDataJob> logger = loggerFactory.CreateLogger<TrimLogDataJob>();
             _worker = new TrimLogObjectWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task TrimStartOfLogObject()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
-            var logUid = "a58adfe9-6132-446d-bff2-631fa6885244";
-            var job = new TrimLogDataJob
+            string wellUid = "W-5232880";
+            string wellboreUid = "B-5232880";
+            string logUid = "a58adfe9-6132-446d-bff2-631fa6885244";
+            TrimLogDataJob job = new()
             {
                 LogObject = new LogReference
                 {
