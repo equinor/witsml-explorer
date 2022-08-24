@@ -77,7 +77,7 @@ namespace Witsml.Data.Curves
 
         public override bool Equals(object that)
         {
-            if (this == that) return true;
+            if (this == (Index)that) return true;
             if (that == null || GetType() != that.GetType()) return false;
 
             var depth = (DepthIndex)that;
