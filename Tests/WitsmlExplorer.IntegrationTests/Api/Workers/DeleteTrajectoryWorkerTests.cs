@@ -17,22 +17,22 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     [SuppressMessage("ReSharper", "xUnit1004")]
     public class DeleteTrajectoryWorkerTests
     {
-        private readonly DeleteTrajectoryWorker worker;
+        private readonly DeleteTrajectoryWorker _worker;
 
         public DeleteTrajectoryWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<DeleteTrajectoryJob>();
-            worker = new DeleteTrajectoryWorker(logger, witsmlClientProvider);
+            ILogger<DeleteTrajectoryJob> logger = loggerFactory.CreateLogger<DeleteTrajectoryJob>();
+            _worker = new DeleteTrajectoryWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task DeleteTrajectory()
         {
-            var job = new DeleteTrajectoryJob
+            DeleteTrajectoryJob job = new()
             {
                 ToDelete = new TrajectoryReference
                 {
@@ -41,7 +41,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                     TrajectoryUid = "1YJFL7"
                 }
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }

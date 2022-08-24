@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -11,18 +11,19 @@ namespace WitsmlExplorer.Api.Models
         public static WellDatum FromWitsmlWellDatum(List<Witsml.Data.WellDatum> witsmlWellDatumList)
         {
             if (witsmlWellDatumList == null || witsmlWellDatumList.Count == 0)
-                return null;
-
-            var witsmlWellDatum = witsmlWellDatumList[0];
-            if (witsmlWellDatum == null)
-                return null;
-
-            return new WellDatum
             {
-                Name = witsmlWellDatum.Name,
-                Code = witsmlWellDatum.Code,
-                Elevation = witsmlWellDatum.Elevation,
-            };
+                return null;
+            }
+
+            Witsml.Data.WellDatum witsmlWellDatum = witsmlWellDatumList[0];
+            return witsmlWellDatum == null
+                ? null
+                : new WellDatum
+                {
+                    Name = witsmlWellDatum.Name,
+                    Code = witsmlWellDatum.Code,
+                    Elevation = witsmlWellDatum.Elevation,
+                };
         }
     }
 }

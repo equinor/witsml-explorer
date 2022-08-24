@@ -18,27 +18,27 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
     public class DeleteCurveValuesWorkerTest
     {
-        private readonly DeleteCurveValuesWorker worker;
+        private readonly DeleteCurveValuesWorker _worker;
 
         public DeleteCurveValuesWorkerTest()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
+            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
 
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();
-            worker = new DeleteCurveValuesWorker(logger, witsmlClientProvider);
+            ILogger<DeleteCurveValuesJob> logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();
+            _worker = new DeleteCurveValuesWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task DeleteCurveValues()
         {
-            var wellUid = "<WellUid>";
-            var wellboreUid = "<WellboreUid";
-            var logUid = "<LogUid>";
-            var mnemonics = new List<string> { "BLOCKPOS", "CHOKE_PRESS", "UKNOWN", "DEPTH_HOLE" };
-            var indexRanges = new List<IndexRange>
+            string wellUid = "<WellUid>";
+            string wellboreUid = "<WellboreUid";
+            string logUid = "<LogUid>";
+            List<string> mnemonics = new() { "BLOCKPOS", "CHOKE_PRESS", "UKNOWN", "DEPTH_HOLE" };
+            List<IndexRange> indexRanges = new()
             {
                 new IndexRange
                 {
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 }
             };
 
-            var job = new DeleteCurveValuesJob
+            DeleteCurveValuesJob job = new()
             {
                 LogReference = new LogReference
                 {
@@ -59,7 +59,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 IndexRanges = indexRanges
             };
 
-            var (result, _) = await worker.Execute(job);
+            (WorkerResult result, WitsmlExplorer.Api.Models.RefreshAction _) = await _worker.Execute(job);
             Assert.True(result.IsSuccess, result.Reason);
         }
     }

@@ -4,11 +4,11 @@ namespace WitsmlExplorer.Api.Services
 {
     public class WitsmlService
     {
-        protected readonly IWitsmlClient WitsmlClient;
+        protected readonly IWitsmlClient _witsmlClient;
 
         protected WitsmlService(IWitsmlClientProvider witsmlClientProvider)
         {
-            WitsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
     }
 }

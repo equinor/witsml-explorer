@@ -1,36 +1,40 @@
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
 using Witsml.Xml;
+
 using WitsmlExplorer.Api.Query;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class TubularTests
+    public class TubularTests : IDisposable
     {
-        private readonly WitsmlClient client;
-        private readonly WitsmlClientCapabilities clientCapabilities = new();
+        private readonly WitsmlClient _client;
+        private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
         public TubularTests()
         {
-            var config = ConfigurationReader.GetWitsmlConfiguration();
-            client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
+            WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
+            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
         }
 
         [Fact(Skip = "Should only be run manually")]
-        public async Task GetTubular_SerializesCorrectly()
+        public async Task GetTubularSerializesCorrectly()
         {
             // if the following tubular does not exit, add the fileTubular to the server manually
             // this affects wellUid, wellboreUid, nameWell, and nameWellbore values during comparison so adjust them here and in the file accordingly
-            var wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
-            var wellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110";
-            var tubularUid = "integration_test";
-            var queryExisting = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
-            var serverTubular = await client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
+            string wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
+            string wellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110";
+            string tubularUid = "integration_test";
+            global::Witsml.Data.Tubular.WitsmlTubulars queryExisting = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            global::Witsml.Data.Tubular.WitsmlTubulars serverTubular = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverTubularXml = XmlHelper.Serialize(serverTubular);
             //disregard commonData times as they are handled by the Witsml Server
             serverTubularXml = Regex.Replace(serverTubularXml, "<dTimCreation>.+<\\/dTimCreation>", "");
@@ -42,5 +46,9 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             Assert.Equal(fileTubularXml, serverTubularXml);
         }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

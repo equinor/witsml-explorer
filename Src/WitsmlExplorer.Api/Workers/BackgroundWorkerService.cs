@@ -13,14 +13,14 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class BackgroundWorkerService : BackgroundService
     {
-        private readonly IJobQueue jobQueue;
-        private readonly IHubContext<NotificationsHub> hubContext;
+        private readonly IJobQueue _jobQueue;
+        private readonly IHubContext<NotificationsHub> _hubContext;
         private const int NumberOfThreadsToUse = 2;
 
         public BackgroundWorkerService(IJobQueue jobQueue, IHubContext<NotificationsHub> hubContext)
         {
-            this.jobQueue = jobQueue;
-            this.hubContext = hubContext;
+            this._jobQueue = jobQueue;
+            this._hubContext = hubContext;
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var job = jobQueue.Dequeue();
+                var job = _jobQueue.Dequeue();
                 if (job == null)
                 {
                     await Task.Delay(500, cancellationToken);
@@ -53,12 +53,12 @@ namespace WitsmlExplorer.Api.Workers
 
                 var (result, refreshAction) = await job;
 
-                if (hubContext == null) continue;
+                if (_hubContext == null) continue;
 
-                await hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
+                await _hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
 
                 if (refreshAction != null)
-                    await hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction }, cancellationToken);
+                    await _hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction }, cancellationToken);
             }
         }
     }

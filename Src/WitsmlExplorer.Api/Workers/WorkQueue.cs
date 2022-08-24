@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+
 using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Workers
@@ -13,18 +14,21 @@ namespace WitsmlExplorer.Api.Workers
 
     public class JobQueue : IJobQueue
     {
-        private readonly ConcurrentQueue<Task<(WorkerResult, RefreshAction)>> jobs = new();
+        private readonly ConcurrentQueue<Task<(WorkerResult, RefreshAction)>> _jobs = new();
 
         public void Enqueue(Task<(WorkerResult, RefreshAction)> job)
         {
-            if (job == null) throw new ArgumentNullException(nameof(job));
+            if (job == null)
+            {
+                throw new ArgumentNullException(nameof(job));
+            }
 
-            jobs.Enqueue(job);
+            _jobs.Enqueue(job);
         }
 
         public Task<(WorkerResult, RefreshAction)> Dequeue()
         {
-            var hasJob = jobs.TryDequeue(out var job);
+            bool hasJob = _jobs.TryDequeue(out Task<(WorkerResult, RefreshAction)> job);
 
             return hasJob ? job : null;
         }

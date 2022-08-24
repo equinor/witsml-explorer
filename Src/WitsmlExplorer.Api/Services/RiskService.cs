@@ -22,8 +22,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid)
         {
-            var query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            Witsml.Data.WitsmlRisks query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
+            Witsml.Data.WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
 
             return result.Risks.Select(risk =>

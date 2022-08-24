@@ -1,4 +1,4 @@
-﻿using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -13,18 +13,17 @@ namespace WitsmlExplorer.Api.Models
 
         public static WellLocation FromWitsmlLocation(Witsml.Data.WitsmlLocation witsmlLocation)
         {
-            if (witsmlLocation == null)
-                return null;
-
-            return new WellLocation
-            {
-                Latitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Latitude),
-                Longitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Longitude),
-                Easting = WellMeasure.FromWitsmlMeasure(witsmlLocation.Easting),
-                Northing = WellMeasure.FromWitsmlMeasure(witsmlLocation.Northing),
-                LocalX = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalX),
-                LocalY = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalY)
-            };
+            return witsmlLocation == null
+                ? null
+                : new WellLocation
+                {
+                    Latitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Latitude),
+                    Longitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Longitude),
+                    Easting = WellMeasure.FromWitsmlMeasure(witsmlLocation.Easting),
+                    Northing = WellMeasure.FromWitsmlMeasure(witsmlLocation.Northing),
+                    LocalX = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalX),
+                    LocalY = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalY)
+                };
         }
     }
 }

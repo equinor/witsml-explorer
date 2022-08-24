@@ -28,8 +28,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid)
         {
-            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.Requested));
+            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
+            WitsmlTrajectories result = await _witsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.Requested));
             return result.Trajectories.Select(trajectory =>
                 WitsmlToTrajectory(trajectory)
                 ).OrderBy(trajectory => trajectory.Name);
@@ -37,24 +37,18 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid)
         {
-            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
+            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            WitsmlTrajectories result = await _witsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
 
-            if (result.Trajectories.Any())
-            {
-                return WitsmlToTrajectory(result.Trajectories.First());
-            }
-
-            return null;
+            return result.Trajectories.Any() ? WitsmlToTrajectory(result.Trajectories.First()) : null;
         }
 
         public async Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid)
         {
-            var trajectoryToQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            var result = await WitsmlClient.GetFromStoreAsync(trajectoryToQuery, new OptionsIn(ReturnElements.All));
-            var witsmlTrajectory = result.Trajectories.FirstOrDefault();
-            if (witsmlTrajectory == null) return null;
-            return witsmlTrajectory.TrajectoryStations.Select(tStation => new TrajectoryStation
+            WitsmlTrajectories trajectoryToQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            WitsmlTrajectories result = await _witsmlClient.GetFromStoreAsync(trajectoryToQuery, new OptionsIn(ReturnElements.All));
+            WitsmlTrajectory witsmlTrajectory = result.Trajectories.FirstOrDefault();
+            return witsmlTrajectory?.TrajectoryStations.Select(tStation => new TrajectoryStation
             {
                 Uid = tStation.Uid,
                 DTimStn = StringHelpers.ToDateTime(tStation.DTimStn),

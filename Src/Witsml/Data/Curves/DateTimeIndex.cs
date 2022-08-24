@@ -5,24 +5,22 @@ namespace Witsml.Data.Curves
 {
     public class DateTimeIndex : Index
     {
-        private readonly DateTime dateTime;
+        private readonly DateTime _dateTime;
         public const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
         public const string NullValue = "1900-01-01T00:00:00.000Z";
 
         public DateTimeIndex(DateTime dateTime)
         {
-            this.dateTime = dateTime;
+            this._dateTime = dateTime;
         }
 
-        public DateTime Value => dateTime;
+        public DateTime Value => _dateTime;
 
         public static DateTimeIndex FromString(string dateString)
         {
-            if (DateTime.TryParseExact(dateString, IsoPattern, null, DateTimeStyles.None, out var parsedDateTime))
-            {
-                return new DateTimeIndex(parsedDateTime);
-            }
-            throw new Exception($"Date format not recognized: {dateString}");
+            return (DateTime.TryParseExact(dateString, IsoPattern, null, DateTimeStyles.None, out var parsedDateTime))
+                ? new DateTimeIndex(parsedDateTime)
+                : throw new Exception($"Date format not recognized: {dateString}");
         }
 
         public static bool TryParseISODate(string dateString, out DateTimeIndex dateTimeIndex)
@@ -37,20 +35,20 @@ namespace Witsml.Data.Curves
             return false;
         }
 
-        public override Index AddEpsilon() => new DateTimeIndex(dateTime.AddMilliseconds(1));
+        public override Index AddEpsilon() => new DateTimeIndex(_dateTime.AddMilliseconds(1));
 
         public override int CompareTo(Index that)
         {
-            var thatWitsmlDateTime = (DateTimeIndex) that;
-            return dateTime.CompareTo(thatWitsmlDateTime.dateTime);
+            var thatWitsmlDateTime = (DateTimeIndex)that;
+            return _dateTime.CompareTo(thatWitsmlDateTime._dateTime);
         }
 
-        public override string GetValueAsString() => dateTime.ToUniversalTime().ToString(IsoPattern);
+        public override string GetValueAsString() => _dateTime.ToUniversalTime().ToString(IsoPattern);
 
         public override bool IsContinuous(Index that)
         {
-            var thatWitsmlDateTime = (DateTimeIndex) that;
-            var timespan = dateTime - thatWitsmlDateTime.dateTime;
+            var thatWitsmlDateTime = (DateTimeIndex)that;
+            var timespan = _dateTime - thatWitsmlDateTime._dateTime;
             return Math.Abs(timespan.Seconds) < 10;
         }
 

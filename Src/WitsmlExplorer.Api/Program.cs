@@ -10,7 +10,7 @@ using Serilog;
 
 using WitsmlExplorer.Api;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", false, true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
@@ -26,10 +26,10 @@ if (builder.Environment.IsDevelopment())
 builder.Host.ConfigureLogging(logging => logging.ClearProviders());
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
-var startup = new Startup(builder.Configuration);
+Startup startup = new(builder.Configuration);
 startup.ConfigureServices(builder.Services);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 app.ConfigureApi();
 
 startup.Configure(app, app.Environment);

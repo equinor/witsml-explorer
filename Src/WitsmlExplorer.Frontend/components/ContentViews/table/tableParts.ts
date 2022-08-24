@@ -1,6 +1,6 @@
 import React from "react";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
 import { CurveSpecification } from "../../../models/logData";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;

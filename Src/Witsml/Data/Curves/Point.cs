@@ -11,37 +11,27 @@ namespace Witsml.Data.Curves
 
         public Point(string commaSeparated)
         {
-            var values = commaSeparated.Split(",");
-            if (DateTimeIndex.TryParseISODate(values.First(), out var witsmlDateTime))
-            {
-                Index = witsmlDateTime;
-            }
-            else
-            {
-                Index = new DepthIndex(double.Parse(values.First(), CultureInfo.InvariantCulture));
-            }
+            string[] values = commaSeparated.Split(",");
+            Index = DateTimeIndex.TryParseISODate(values.First(), out DateTimeIndex witsmlDateTime)
+                ? witsmlDateTime
+                : new DepthIndex(double.Parse(values.First(), CultureInfo.InvariantCulture));
 
             Value = CurveValue.From(values[1]);
         }
 
-        public string GetValueAsString() => Value.GetAsString();
+        public string GetValueAsString()
+        {
+            return Value.GetAsString();
+        }
 
         public int GetValueAsInt()
         {
-            if (Value is DoubleValue value)
-            {
-                return (int) value.Get();
-            }
-            throw new InvalidCastException("Unable to cast String values to integers");
+            return Value is DoubleValue value ? (int)value.Get() : throw new InvalidCastException("Unable to cast String values to integers");
         }
 
         public double GetValueAsDouble()
         {
-            if (Value is DoubleValue value)
-            {
-                return value.Get();
-            }
-            throw new InvalidCastException("Unable to cast String values to double");
+            return Value is DoubleValue value ? value.Get() : throw new InvalidCastException("Unable to cast String values to double");
         }
     }
 }

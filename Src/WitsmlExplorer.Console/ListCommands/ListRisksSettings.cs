@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -29,13 +30,11 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public override ValidationResult Validate()
         {
-            if (string.IsNullOrEmpty(WellUid) && string.IsNullOrEmpty(LastChanged))
-                return ValidationResult.Error("You need to filter on either uidWell/uidWellbore or last changed");
-
-            if (!string.IsNullOrEmpty(LastChanged) && !DateTime.TryParse(LastChanged, out _))
-                return ValidationResult.Error("Invalid format for last changed");
-
-            return ValidationResult.Success();
+            return string.IsNullOrEmpty(WellUid) && string.IsNullOrEmpty(LastChanged)
+                ? ValidationResult.Error("You need to filter on either uidWell/uidWellbore or last changed")
+                : !string.IsNullOrEmpty(LastChanged) && !DateTime.TryParse(LastChanged, out _)
+                ? ValidationResult.Error("Invalid format for last changed")
+                : ValidationResult.Success();
         }
     }
 }

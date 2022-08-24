@@ -15,22 +15,22 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
     public class CopyTubularWorkerTests
     {
-        private readonly CopyTubularWorker worker;
+        private readonly CopyTubularWorker _worker;
 
         public CopyTubularWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CopyTubularJob>();
-            worker = new CopyTubularWorker(logger, witsmlClientProvider);
+            ILogger<CopyTubularJob> logger = loggerFactory.CreateLogger<CopyTubularJob>();
+            _worker = new CopyTubularWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyTubular()
         {
-            var job = new CopyTubularJob
+            CopyTubularJob job = new()
             {
                 Source = new TubularReferences
                 {
@@ -44,7 +44,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                     WellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110"
                 }
             };
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }

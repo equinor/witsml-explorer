@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml.Data;
 using Witsml.Extensions;
-using WitsmlExplorer.Api.Query;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
+
 using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Services
@@ -26,8 +29,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {
-            var witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.HeaderOnly));
 
             return result.Logs.Select(log =>
                 new LogObject
@@ -56,12 +59,15 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions)
         {
-            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, queryOptions);
-            var witsmlLog = result.Logs.FirstOrDefault();
-            if (witsmlLog == null) return null;
+            WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, queryOptions);
+            WitsmlLog witsmlLog = result.Logs.FirstOrDefault();
+            if (witsmlLog == null)
+            {
+                return null;
+            }
 
-            var logObject = new LogObject
+            LogObject logObject = new()
             {
                 Uid = witsmlLog.Uid,
                 Name = witsmlLog.Name,
@@ -75,7 +81,10 @@ namespace WitsmlExplorer.Api.Services
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber
             };
-            if (string.IsNullOrEmpty(witsmlLog.IndexType)) return logObject;
+            if (string.IsNullOrEmpty(witsmlLog.IndexType))
+            {
+                return logObject;
+            }
 
             logObject.StartIndex = witsmlLog.GetStartIndexAsString();
             logObject.EndIndex = witsmlLog.GetEndIndexAsString();
@@ -85,14 +94,14 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
-            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result.Logs.FirstOrDefault();
         }
 
         public async Task<IEnumerable<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid)
         {
-            var witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
+            WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
 
             return witsmlLog?.LogCurveInfo.Select(logCurveInfo =>
                 new LogCurveInfo
@@ -111,26 +120,38 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end)
         {
-            var log = await GetLogHeader(wellUid, wellboreUid, logUid);
+            WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
 
-            var startIndex = Index.Start(log, start);
-            var endIndex = Index.End(log, end);
+            Index startIndex = Index.Start(log, start);
+            Index endIndex = Index.End(log, end);
 
-            if (!startIndexIsInclusive) startIndex = startIndex.AddEpsilon();
+            if (!startIndexIsInclusive)
+            {
+                startIndex = startIndex.AddEpsilon();
+            }
 
-            if (startIndex > endIndex) return new LogData();
+            if (startIndex > endIndex)
+            {
+                return new LogData();
+            }
 
-            var indexMnemonic = log.IndexCurve.Value;
-            if (!mnemonics.Contains(indexMnemonic)) mnemonics.Insert(0, indexMnemonic);
+            string indexMnemonic = log.IndexCurve.Value;
+            if (!mnemonics.Contains(indexMnemonic))
+            {
+                mnemonics.Insert(0, indexMnemonic);
+            }
 
-            var query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
-            var witsmlLogs = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null) return new LogData();
+            WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
+            WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null)
+            {
+                return new LogData();
+            }
 
-            var witsmlLog = witsmlLogs.Logs.First();
+            WitsmlLog witsmlLog = witsmlLogs.Logs.First();
 
-            var witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(",");
-            var witsmlLogUnits = witsmlLog.LogData.UnitList.Split(",");
+            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(",");
+            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(",");
 
             return new LogData
             {
@@ -144,15 +165,19 @@ namespace WitsmlExplorer.Api.Services
 
         private static IEnumerable<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
-            var result = new List<Dictionary<string, LogDataValue>>();
-            var mnemonics = logData.MnemonicList.Split(",");
-            foreach (var valueRow in logData.Data.Select(d => d.Data))
+            List<Dictionary<string, LogDataValue>> result = new();
+            string[] mnemonics = logData.MnemonicList.Split(",");
+            foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
-                var data = new Dictionary<string, LogDataValue>();
+                Dictionary<string, LogDataValue> data = new();
                 foreach (var keyValuePair in valueRow.Split(",")
                     .Select((value, index) => new { index, value }))
                 {
-                    if (string.IsNullOrEmpty(keyValuePair.value)) continue;
+                    if (string.IsNullOrEmpty(keyValuePair.value))
+                    {
+                        continue;
+                    }
+
                     data.Add(mnemonics[keyValuePair.index], new LogDataValue(keyValuePair.value));
                 }
                 result.Add(data);

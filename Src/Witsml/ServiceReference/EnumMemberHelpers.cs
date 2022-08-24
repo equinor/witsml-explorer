@@ -22,16 +22,16 @@ namespace Witsml.ServiceReference
     {
         public static T GetEnum(string enumMemberValue)
         {
-            var stringValue = typeof(T)
+            string stringValue = typeof(T)
                 .GetTypeInfo()
                 .DeclaredMembers
                 .Where(member => member.GetCustomAttribute<EnumMemberAttribute>(false)?.Value == enumMemberValue)
                 .Select(f => f.Name)
                 .FirstOrDefault();
-            if (!string.IsNullOrEmpty(stringValue))
-                return (T) Enum.Parse(typeof(T), stringValue);
 
-            throw new ArgumentException($"No members of {typeof(T).Name} has a specified EnumMember value of '{enumMemberValue}'");
+            return !string.IsNullOrEmpty(stringValue)
+                ? (T)Enum.Parse(typeof(T), stringValue)
+                : throw new ArgumentException($"No members of {typeof(T).Name} has a specified EnumMember value of '{enumMemberValue}'");
         }
     }
 }

@@ -1,7 +1,7 @@
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Linq;
 
 namespace Witsml.Data
 {
@@ -10,16 +10,16 @@ namespace Witsml.Data
     {
         [JsonIgnore]
         [XmlIgnore]
-        private XmlElement[] _AllElements;
+        private XmlElement[] _allElements;
 
         [JsonIgnore]
         [XmlAnyElement]
         public XmlElement[] AllElements
         {
-            get { return _AllElements; }
+            get => _allElements;
             set
             {
-                _AllElements = value;
+                _allElements = value;
                 // System.Text.Json does not support serializing XML documents so we serialize the contents verbatim for now
                 Verbatim = string.Join("", value.Select(element => element.OuterXml));
             }

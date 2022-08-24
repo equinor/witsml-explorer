@@ -1,4 +1,5 @@
 using System.Xml.Serialization;
+
 using Witsml.Data.Curves;
 
 namespace Witsml.Data
@@ -8,9 +9,15 @@ namespace Witsml.Data
         [XmlText]
         public string Data { get; set; } = "";
 
-        public Point GetPoint() => new Point(Data);
+        public Point GetPoint()
+        {
+            return new(Data);
+        }
 
-        public Row GetRow() => new Row(Data);
+        public Row GetRow()
+        {
+            return new(Data);
+        }
 
         public string TypeName => "data";
     }

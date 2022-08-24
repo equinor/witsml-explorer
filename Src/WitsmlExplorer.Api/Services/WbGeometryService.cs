@@ -24,8 +24,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
         {
-            var query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            Witsml.Data.WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
+            Witsml.Data.WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             return result.WbGeometrys.Select(wbGeometry =>
                 new WbGeometry
@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                         DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
                         DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
                     }
-                }).OrderBy(WbGeometry => WbGeometry.DTimReport);
+                }).OrderBy(wbGeometry => wbGeometry.DTimReport);
         }
     }
 }
