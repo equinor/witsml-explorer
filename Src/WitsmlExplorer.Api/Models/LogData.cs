@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+
 using WitsmlExplorer.Api.Converters;
 
 namespace WitsmlExplorer.Api.Models
@@ -23,10 +24,7 @@ namespace WitsmlExplorer.Api.Models
     {
         public LogDataValue(string value)
         {
-            if (double.TryParse(value, out var doubleValue))
-                Value = doubleValue;
-            else
-                Value = value;
+            Value = double.TryParse(value, out double doubleValue) ? doubleValue : value;
         }
         public object Value { get; }
     }

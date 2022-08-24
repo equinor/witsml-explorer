@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Query;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,28 +20,28 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
     [SuppressMessage("ReSharper", "xUnit1004")]
     public class TrajectoryTests
     {
-        private readonly ITestOutputHelper output;
-        private readonly WitsmlClient client;
-        private readonly WitsmlClientCapabilities clientCapabilities = new();
+        private readonly ITestOutputHelper _output;
+        private readonly WitsmlClient _client;
+        private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
         public TrajectoryTests(ITestOutputHelper output)
         {
-            this.output = output;
-            var config = ConfigurationReader.GetWitsmlConfiguration();
-            client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
+            _output = output;
+            WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
+            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
         }
 
-        [Fact(Skip="Should only be run manually")]
-        public async Task CreateTrajectory_BasedOnExisting()
+        [Fact(Skip = "Should only be run manually")]
+        public async Task CreateTrajectoryBasedOnExisting()
         {
             const string wellUid = "";
             const string wellboreUid = "";
             const string trajectoryUid = "";
-            var queryExisting = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            var existingTrajectories = await client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
-            var existing = existingTrajectories.Trajectories.First();
+            WitsmlTrajectories queryExisting = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
+            WitsmlTrajectories existingTrajectories = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
+            WitsmlTrajectory existing = existingTrajectories.Trajectories.First();
 
-            var createTrajectoryQuery = CreateTrajectoryQuery(
+            WitsmlTrajectories createTrajectoryQuery = CreateTrajectoryQuery(
                 existing.UidWell,
                 existing.NameWell,
                 existing.UidWellbore,
@@ -53,17 +56,17 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
                 existing.DTimTrajEnd
             );
 
-            var result = await client.AddToStoreAsync(createTrajectoryQuery);
+            QueryResult result = await _client.AddToStoreAsync(createTrajectoryQuery);
 
             Assert.True(result.IsSuccessful);
-            output.WriteLine("Created trajectory with uid: " + createTrajectoryQuery.Trajectories.First().Uid);
+            _output.WriteLine("Created trajectory with uid: " + createTrajectoryQuery.Trajectories.First().Uid);
         }
 
         private static WitsmlTrajectories CreateTrajectoryQuery(string wellUid, string wellName, string wellboreUid, string wellboreName, string name,
             IEnumerable<WitsmlTrajectoryStation> trajectoryStations, WitsmlCommonData commonData, string aziRef, WitsmlMeasuredDepthCoord mdMin, WitsmlMeasuredDepthCoord mdMax,
             string dTimTrajectoryStart, string dTimTrajectoryEnd)
         {
-            var tStations = trajectoryStations.Select(trajectoryStation => new WitsmlTrajectoryStation()
+            List<WitsmlTrajectoryStation> tStations = trajectoryStations.Select(trajectoryStation => new WitsmlTrajectoryStation()
             {
                 Uid = Guid.NewGuid().ToString(),
                 DTimStn = trajectoryStation.DTimStn,
@@ -79,7 +82,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
                 CommonData = trajectoryStation.CommonData
             }).ToList();
 
-            var trajectories = new WitsmlTrajectories()
+            WitsmlTrajectories trajectories = new()
             {
                 Trajectories = new WitsmlTrajectory()
                 {
@@ -101,5 +104,6 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
 
             return trajectories;
         }
+
     }
 }

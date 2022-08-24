@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
     public class LogObjectTests
     {
-        private readonly WitsmlClient client;
-        private readonly WitsmlClientCapabilities clientCapabilities = new();
+        private readonly WitsmlClient _client;
+        private readonly WitsmlClientCapabilities _clientCapabilities = new();
         private const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         private const string UidWell = "bbd34996-a1f6-4767-8b02-5e3b46a990e8";
@@ -28,7 +30,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public LogObjectTests()
         {
             var config = ConfigurationReader.GetWitsmlConfiguration();
-            client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
+            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -50,7 +52,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
                     }
                 }
             };
-            var (result, resultCode) = await client.GetGrowingDataObjectFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            var (result, resultCode) = await _client.GetGrowingDataObjectFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             Assert.Equal(1, resultCode);
             Assert.NotNull(result);
         }
@@ -74,13 +76,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
                     }
                 }
             };
-            var (result, resultCode) = await client.GetGrowingDataObjectFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            var (result, resultCode) = await _client.GetGrowingDataObjectFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             Assert.Equal(2, resultCode);
             Assert.Equal(10000, result.Logs.First().LogData.Data.Count);
             Assert.NotNull(result);
         }
 
-        [Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetDepthDataObjectFromStoreAsync_ParseInvariant()
         {
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("nb-NO");
@@ -95,7 +97,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
                 }.AsSingletonList()
             };
 
-            var result = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            var result = await _client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var witsmlLog = result.Logs.FirstOrDefault();
             var data = witsmlLog.LogData.Data;
             data.First().GetRow(); // Test fails if parsing error on GetRow() due to incompatible culture setting.

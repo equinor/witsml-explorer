@@ -2,11 +2,14 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Query;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,28 +18,28 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
     [SuppressMessage("ReSharper", "xUnit1004")]
     public class LogObjectTests
     {
-        private readonly ITestOutputHelper output;
-        private readonly WitsmlClient client;
-        private readonly WitsmlClientCapabilities clientCapabilities = new();
+        private readonly ITestOutputHelper _output;
+        private readonly WitsmlClient _client;
+        private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
         public LogObjectTests(ITestOutputHelper output)
         {
-            this.output = output;
-            var config = ConfigurationReader.GetWitsmlConfiguration();
-            client = new WitsmlClient(config.Hostname, config.Username, config.Password, clientCapabilities);
+            _output = output;
+            WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
+            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
         }
 
-        [Fact(Skip="Should only be run manually")]
-        public async Task CreateLogObject_BasedOnExisting()
+        [Fact(Skip = "Should only be run manually")]
+        public async Task CreateLogObjectBasedOnExisting()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
-            var logUid = "GM_Measured_Depth_GMDepth";
-            var queryExisting = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var existingLogs = await client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
-            var existing = existingLogs.Logs.First();
+            string wellUid = "W-5232880";
+            string wellboreUid = "B-5232880";
+            string logUid = "GM_Measured_Depth_GMDepth";
+            WitsmlLogs queryExisting = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs existingLogs = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
+            WitsmlLog existing = existingLogs.Logs.First();
 
-            var createLogQuery = CreateLogQuery(
+            WitsmlLogs createLogQuery = CreateLogQuery(
                 existing.UidWell,
                 existing.NameWell,
                 existing.UidWellbore,
@@ -46,10 +49,10 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
                 existing.IndexCurve,
                 existing.LogCurveInfo.Single(logCurveInfo => logCurveInfo.Mnemonic == existing.IndexCurve.Value));
 
-            var result = await client.AddToStoreAsync(createLogQuery);
+            QueryResult result = await _client.AddToStoreAsync(createLogQuery);
 
             Assert.True(result.IsSuccessful);
-            output.WriteLine("Created log object with uid: " + createLogQuery.Logs.First().Uid);
+            _output.WriteLine("Created log object with uid: " + createLogQuery.Logs.First().Uid);
 
         }
 

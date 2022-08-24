@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
         }
 
-        private ModifyLogObjectJob CreateJobTemplate()
+        private static ModifyLogObjectJob CreateJobTemplate()
         {
             return new ModifyLogObjectJob
             {

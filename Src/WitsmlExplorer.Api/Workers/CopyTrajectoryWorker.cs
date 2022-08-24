@@ -18,56 +18,56 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CopyTrajectoryWorker : BaseWorker<CopyTrajectoryJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
-        private readonly IWitsmlClient witsmlSourceClient;
+        private readonly IWitsmlClient _witsmlClient;
+        private readonly IWitsmlClient _witsmlSourceClient;
         public JobType JobType => JobType.CopyTrajectory;
 
         public CopyTrajectoryWorker(ILogger<CopyTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
-            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryJob job)
         {
-            var (trajectory, targetWellbore) = await FetchData(job);
-            var trajectoryToCopy = TrajectoryQueries.CopyWitsmlTrajectory(trajectory, targetWellbore);
-            var result = await witsmlClient.AddToStoreAsync(trajectoryToCopy);
+            (WitsmlTrajectory trajectory, WitsmlWellbore targetWellbore) = await FetchData(job);
+            WitsmlTrajectories trajectoryToCopy = TrajectoryQueries.CopyWitsmlTrajectory(trajectory, targetWellbore);
+            QueryResult result = await _witsmlClient.AddToStoreAsync(trajectoryToCopy);
             if (!result.IsSuccessful)
             {
-                var errorMessage = "Failed to copy trajectory.";
+                string errorMessage = "Failed to copy trajectory.";
                 Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, result.Reason), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"Trajectory {trajectory.Name} copied to: {targetWellbore.Name}");
+            RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Trajectory {trajectory.Name} copied to: {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
         }
 
         private async Task<Tuple<WitsmlTrajectory, WitsmlWellbore>> FetchData(CopyTrajectoryJob job)
         {
-            var trajectoryQuery = GetTrajectory(witsmlSourceClient, job.Source);
-            var wellboreQuery = GetWellbore(witsmlClient, job.Target);
+            Task<WitsmlTrajectory> trajectoryQuery = GetTrajectory(_witsmlSourceClient, job.Source);
+            Task<WitsmlWellbore> wellboreQuery = GetWellbore(_witsmlClient, job.Target);
             await Task.WhenAll(trajectoryQuery, wellboreQuery);
-            var trajectory = await trajectoryQuery;
-            var targetWellbore = await wellboreQuery;
+            WitsmlTrajectory trajectory = await trajectoryQuery;
+            WitsmlWellbore targetWellbore = await wellboreQuery;
             return Tuple.Create(trajectory, targetWellbore);
         }
 
         private static async Task<WitsmlTrajectory> GetTrajectory(IWitsmlClient client, TrajectoryReference trajectoryReference)
         {
-            var witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.TrajectoryUid);
-            var result = await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
+            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.TrajectoryUid);
+            WitsmlTrajectories result = await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
             return !result.Trajectories.Any() ? null : result.Trajectories.First();
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
-            var witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
+            WitsmlWellbores witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
+            WitsmlWellbores wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

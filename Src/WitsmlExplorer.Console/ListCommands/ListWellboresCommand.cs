@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -15,24 +18,27 @@ namespace WitsmlExplorer.Console.ListCommands
 {
     public class ListWellboresCommand : AsyncCommand
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ListWellboresCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider?.GetClient() ?? throw new ArgumentNullException(nameof(witsmlClientProvider));
+            _witsmlClient = witsmlClientProvider?.GetClient() ?? throw new ArgumentNullException(nameof(witsmlClientProvider));
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching active wellbores...".WithColor(Color.Orange1), async _ =>
                 {
-                    await foreach (var wellbore in GetActiveWellbores())
+                    await foreach (WitsmlWellbore wellbore in GetActiveWellbores())
                     {
                         table.AddRow(wellbore.UidWell, wellbore.Uid, wellbore.NameWell, wellbore.Name);
                     }
@@ -43,9 +49,9 @@ namespace WitsmlExplorer.Console.ListCommands
             return 0;
         }
 
-        private Table CreateTable()
+        private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("WellUid".Bold());
             table.AddColumn("WellboreUid".Bold());
             table.AddColumn("WellName".Bold());
@@ -55,7 +61,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async IAsyncEnumerable<WitsmlWellbore> GetActiveWellbores()
         {
-            var liveLogsQuery = new WitsmlLogs
+            WitsmlLogs liveLogsQuery = new()
             {
                 Logs = new WitsmlLog
                 {
@@ -68,7 +74,7 @@ namespace WitsmlExplorer.Console.ListCommands
                     ObjectGrowing = "true"
                 }.AsSingletonList()
             };
-            var result = await witsmlClient.GetFromStoreAsync(liveLogsQuery, new OptionsIn(ReturnElements.Requested));
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(liveLogsQuery, new OptionsIn(ReturnElements.Requested));
             var groupedResults = result.Logs
                 .OrderBy(x => x.NameWell)
                 .GroupBy(x => new { x.UidWell, x.UidWellbore })

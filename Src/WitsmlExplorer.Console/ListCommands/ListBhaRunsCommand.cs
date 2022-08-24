@@ -17,31 +17,34 @@ namespace WitsmlExplorer.Console.ListCommands
 {
     public class ListBhaRunsCommand : AsyncCommand<ListBhaRunsSettings>
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ListBhaRunsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListBhaRunsSettings settings)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
-            var wellName = "<?>";
-            var wellboreName = "<?>";
+            string wellName = "<?>";
+            string wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching bha runs...".WithColor(Color.Orange1), async _ =>
                 {
-                    var bhaRuns = (await GetBhaRuns(settings.WellUid, settings.WellboreUid)).ToList();
+                    List<WitsmlBhaRun> bhaRuns = (await GetBhaRuns(settings.WellUid, settings.WellboreUid)).ToList();
 
                     wellName = bhaRuns.FirstOrDefault()?.NameWell;
                     wellboreName = bhaRuns.FirstOrDefault()?.NameWellbore;
 
-                    foreach (var bhaRun in bhaRuns.OrderBy(r => r.CommonData.DTimLastChange))
+                    foreach (WitsmlBhaRun bhaRun in bhaRuns.OrderBy(r => r.CommonData.DTimLastChange))
                     {
                         table.AddRow(
                             bhaRun.Uid,
@@ -62,7 +65,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
             table.AddColumn("TubularUid".Bold());
@@ -72,7 +75,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async Task<IEnumerable<WitsmlBhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
-            var query = new WitsmlBhaRuns
+            WitsmlBhaRuns query = new()
             {
                 BhaRuns = new WitsmlBhaRun
                 {
@@ -93,7 +96,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return result?.BhaRuns;
         }
     }

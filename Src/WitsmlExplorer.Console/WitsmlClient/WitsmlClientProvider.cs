@@ -1,11 +1,14 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Metadata;
+
 using Microsoft.Extensions.Configuration;
+
 using Spectre.Console;
+
 using Witsml;
 using Witsml.Data;
+
 using WitsmlExplorer.Console.Extensions;
 
 namespace WitsmlExplorer.Console.WitsmlClient
@@ -17,9 +20,9 @@ namespace WitsmlExplorer.Console.WitsmlClient
 
     public class WitsmlClientProvider : IWitsmlClientProvider
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
-        private readonly WitsmlClientCapabilities clientCapabilities = new()
+        private readonly WitsmlClientCapabilities _clientCapabilities = new()
         {
             Name = "Witsml Explorer CLI",
             Description = "CLI interface for Witsml servers"
@@ -29,8 +32,8 @@ namespace WitsmlExplorer.Console.WitsmlClient
         {
             try
             {
-                var (serverUrl, username, password) = GetCredentialsFromConfiguration();
-                witsmlClient = new Witsml.WitsmlClient(serverUrl, username, password, clientCapabilities);
+                (string serverUrl, string username, string password) = GetCredentialsFromConfiguration();
+                _witsmlClient = new Witsml.WitsmlClient(serverUrl, username, password, _clientCapabilities);
             }
             catch (Exception e)
             {
@@ -38,31 +41,33 @@ namespace WitsmlExplorer.Console.WitsmlClient
             }
         }
 
-        private (string, string, string) GetCredentialsFromConfiguration()
+        private static (string, string, string) GetCredentialsFromConfiguration()
         {
-            var assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var builder = new ConfigurationBuilder();
+            string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            ConfigurationBuilder builder = new();
             builder.SetBasePath(assemblyFolder)
                 .AddJsonFile("appsettings.witsml.json", false, true);
-            var configuration = builder.Build();
+            IConfigurationRoot configuration = builder.Build();
 
-            var serverUrl = configuration["Witsml:Host"];
-            var username = configuration["Witsml:Username"];
-            var password = configuration["Witsml:Password"];
+            string serverUrl = configuration["Witsml:Host"];
+            string username = configuration["Witsml:Username"];
+            string password = configuration["Witsml:Password"];
 
-            if (string.IsNullOrEmpty(serverUrl))
-                throw new ApplicationException("Missing configuration value for Witsml Host");
-            if (string.IsNullOrEmpty(username))
-                throw new ApplicationException("Missing configuration value for Witsml Username");
-            if (string.IsNullOrEmpty(password))
-                throw new AggregateException("Missing configuration value for Witsml Password");
-
-            return (serverUrl, username, password);
+            return string.IsNullOrEmpty(serverUrl)
+                ? throw new ApplicationException("Missing configuration value for Witsml Host")
+                : string.IsNullOrEmpty(username)
+                ? throw new ApplicationException("Missing configuration value for Witsml Username")
+                : string.IsNullOrEmpty(password)
+                ? throw new AggregateException("Missing configuration value for Witsml Password")
+                : ((string, string, string))(serverUrl, username, password);
         }
 
-        public IWitsmlClient GetClient() => witsmlClient;
+        public IWitsmlClient GetClient()
+        {
+            return _witsmlClient;
+        }
 
-        private void WriteMissingConfigurationMessage(string exceptionMessage)
+        private static void WriteMissingConfigurationMessage(string exceptionMessage)
         {
             AnsiConsole.MarkupLine($"\nError: {exceptionMessage}\n".WithColor(Color.Red));
             AnsiConsole.MarkupLine("The configuration file should contain:");

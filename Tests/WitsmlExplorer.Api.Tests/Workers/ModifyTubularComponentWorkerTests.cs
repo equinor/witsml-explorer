@@ -46,8 +46,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.TubularComponent.Id = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
             var updatedTubulars = await MockJob(job);
-            var Id = updatedTubulars.First().Tubulars.First().TubularComponents.First().Id;
-            var actual = decimal.Parse(Id.Value);
+            var id = updatedTubulars.First().Tubulars.First().TubularComponents.First().Id;
+            var actual = decimal.Parse(id.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -59,8 +59,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.TubularComponent.Od = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
             var updatedTubulars = await MockJob(job);
-            var Od = updatedTubulars.First().Tubulars.First().TubularComponents.First().Od;
-            var actual = decimal.Parse(Od.Value);
+            var od = updatedTubulars.First().Tubulars.First().TubularComponents.First().Od;
+            var actual = decimal.Parse(od.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -72,8 +72,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var job = CreateJobTemplate();
             job.TubularComponent.Len = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
             var updatedTubulars = await MockJob(job);
-            var Len = updatedTubulars.First().Tubulars.First().TubularComponents.First().Len;
-            var actual = decimal.Parse(Len.Value);
+            var len = updatedTubulars.First().Tubulars.First().TubularComponents.First().Len;
+            var actual = decimal.Parse(len.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }

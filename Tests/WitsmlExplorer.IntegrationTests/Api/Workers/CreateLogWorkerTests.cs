@@ -15,7 +15,6 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class CreateLogWorkerTests
     {
         private readonly CreateLogWorker _worker;

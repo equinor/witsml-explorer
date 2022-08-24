@@ -11,16 +11,15 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class CopyLogDataWorkerTests
     {
-        private readonly CopyLogDataWorker worker;
+        private readonly CopyLogDataWorker _worker;
 
         public CopyLogDataWorkerTests()
         {
             var configuration = ConfigurationReader.GetConfig();
             var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            worker = new CopyLogDataWorker(witsmlClientProvider);
+            _worker = new CopyLogDataWorker(witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -47,7 +46,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 }
             };
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -74,7 +73,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 }
             };
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -108,7 +107,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 }
             };
 
-            await worker.Execute(job);
+            await _worker.Execute(job);
         }
     }
 }

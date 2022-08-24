@@ -278,7 +278,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
         }
 
-        private WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
+        private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
         {
             var witsmlLog = new WitsmlLog
             {

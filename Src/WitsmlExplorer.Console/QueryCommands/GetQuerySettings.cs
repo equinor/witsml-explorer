@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -8,7 +9,7 @@ namespace WitsmlExplorer.Console.QueryCommands
 {
     public class GetQuerySettings : CommandSettings
     {
-        private readonly string[] validReturnElements = {"requested", "all", "id-only", "header-only", "data-only", "station-location-only", "latest-change-only"};
+        private readonly string[] _validReturnElements = { "requested", "all", "id-only", "header-only", "data-only", "station-location-only", "latest-change-only" };
 
         [CommandArgument(0, "<PATH_TO_QUERY_FILE>")]
         [Description("Path to query file in XML format")]
@@ -26,17 +27,15 @@ namespace WitsmlExplorer.Console.QueryCommands
 
         public override ValidationResult Validate()
         {
-            var queryPath = Path.Combine(Directory.GetCurrentDirectory(), QueryFile);
-            if (!File.Exists(queryPath))
-                return ValidationResult.Error($"Could not find query file: {queryPath}");
+            string queryPath = Path.Combine(Directory.GetCurrentDirectory(), QueryFile);
 
-            if (!validReturnElements.Contains(ReturnElements))
-                return ValidationResult.Error($"Invalid value for returnElements ({ReturnElements})");
-
-            if (MaxReturnNodes is < 1)
-                return ValidationResult.Error("MaxReturnNodes must be a whole number greater than zero");
-
-            return ValidationResult.Success();
+            return !File.Exists(queryPath)
+                ? ValidationResult.Error($"Could not find query file: {queryPath}")
+                : !_validReturnElements.Contains(ReturnElements)
+                ? ValidationResult.Error($"Invalid value for returnElements ({ReturnElements})")
+                : MaxReturnNodes is < 1
+                ? ValidationResult.Error("MaxReturnNodes must be a whole number greater than zero")
+                : ValidationResult.Success();
         }
     }
 }

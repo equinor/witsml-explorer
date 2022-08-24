@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -14,41 +17,46 @@ namespace WitsmlExplorer.Console.ShowCommands
 {
     public class ShowLogHeaderCommand : AsyncCommand<ShowLogHeaderSettings>
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ShowLogHeaderCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ShowLogHeaderSettings settings)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
-            var wellName = "<?>";
-            var wellboreName = "<?>";
-            var logName = "<?>";
+            string wellName = "<?>";
+            string wellboreName = "<?>";
+            string logName = "<?>";
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching log...".WithColor(Color.Orange1), async _ =>
                 {
-                    var log = await GetLogHeader(settings.WellUid, settings.WellboreUid, settings.LogUid);
+                    WitsmlLog log = await GetLogHeader(settings.WellUid, settings.WellboreUid, settings.LogUid);
                     wellName = log.NameWell;
                     wellboreName = log.NameWellbore;
                     logName = log.Name;
 
-                    var list = settings.OrderByEndIndex
+                    List<WitsmlLogCurveInfo> list = settings.OrderByEndIndex
                         ? log.LogCurveInfo.OrderByDescending(lci => DateTime.Parse(lci.MaxDateTimeIndex)).ToList()
                         : log.LogCurveInfo;
 
 
-                    foreach (var logCurveInfo in list.Take(settings.MaxMnemonics))
+                    foreach (WitsmlLogCurveInfo logCurveInfo in list.Take(settings.MaxMnemonics))
                     {
                         if (!string.IsNullOrEmpty(settings.FilterOnMnemonic) && logCurveInfo.Mnemonic != settings.FilterOnMnemonic)
+                        {
                             continue;
+                        }
 
                         table.AddRow(
                             logCurveInfo.Mnemonic,
@@ -70,9 +78,9 @@ namespace WitsmlExplorer.Console.ShowCommands
             return 0;
         }
 
-        private Table CreateTable()
+        private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("Mnemonic".Bold());
             table.AddColumn("Start index".Bold());
             table.AddColumn("End index".Bold());
@@ -81,7 +89,7 @@ namespace WitsmlExplorer.Console.ShowCommands
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
-            var query = new WitsmlLogs
+            WitsmlLogs query = new()
             {
                 Logs = new List<WitsmlLog>
                 {
@@ -94,7 +102,7 @@ namespace WitsmlExplorer.Console.ShowCommands
                 }
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs.FirstOrDefault();
         }
     }

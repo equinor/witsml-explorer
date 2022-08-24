@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -15,18 +18,21 @@ namespace WitsmlExplorer.Console.ListCommands
 {
     public class ListRisksCommand : AsyncCommand<ListRisksSettings>
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ListRisksCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListRisksSettings settings)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
             IList<WitsmlRisk> risks = new List<WitsmlRisk>();
             await AnsiConsole.Status()
@@ -40,7 +46,7 @@ namespace WitsmlExplorer.Console.ListCommands
                         AnsiConsole.MarkupLine($"\nToo many risks returned ({risks.Count}). Please filter your query".WithColor(Color.Red1));
                     }
 
-                    foreach (var risk in risks)
+                    foreach (WitsmlRisk risk in risks)
                     {
                         table.AddRow(
                             risk.Uid,
@@ -54,13 +60,16 @@ namespace WitsmlExplorer.Console.ListCommands
                 });
 
             if (risks.Any())
+            {
                 AnsiConsole.Write(table);
+            }
+
             return 0;
         }
 
         private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("Uid".Bold());
             table.AddColumn("UidWell".Bold());
             table.AddColumn("UidWellbore".Bold());
@@ -73,7 +82,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async Task<IList<WitsmlRisk>> GetRisks(string wellUid, string wellboreUid, string source, string lastChanged)
         {
-            var query = new WitsmlRisks
+            WitsmlRisks query = new()
             {
                 Risks = new WitsmlRisk
                 {
@@ -89,7 +98,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
             try
             {
-                var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+                WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
                 return result?.Risks
                     .OrderBy(risk => risk.NameWellbore)
                     .ThenBy(risk => DateTime.Parse(risk.CommonData.DTimLastChange))

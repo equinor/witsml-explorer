@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -14,35 +17,40 @@ namespace WitsmlExplorer.Console.ListCommands
 {
     public class ListLogsCommand : AsyncCommand<ListLogsSettings>
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ListLogsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListLogsSettings settings)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
-            var wellName = "<?>";
-            var wellboreName = "<?>";
+            string wellName = "<?>";
+            string wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching logs...".WithColor(Color.Orange1), async _ =>
                 {
-                    var logs = await GetLogs(settings.WellUid, settings.WellboreUid);
+                    IList<WitsmlLog> logs = await GetLogs(settings.WellUid, settings.WellboreUid);
 
                     wellName = logs.FirstOrDefault()?.NameWell;
                     wellboreName = logs.FirstOrDefault()?.NameWellbore;
 
-                    var previousIndexType = "";
-                    foreach (var log in logs.OrderBy(l => l.IndexType))
+                    string previousIndexType = "";
+                    foreach (WitsmlLog log in logs.OrderBy(l => l.IndexType))
                     {
                         if (!string.IsNullOrEmpty(previousIndexType) && log.IndexType != previousIndexType)
+                        {
                             table.AddEmptyRow();
+                        }
 
                         if (log.ObjectGrowing == "true")
                         {
@@ -78,9 +86,9 @@ namespace WitsmlExplorer.Console.ListCommands
             return 0;
         }
 
-        private Table CreateTable()
+        private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
             table.AddColumn("Service company".Bold());
@@ -92,7 +100,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async Task<IList<WitsmlLog>> GetLogs(string wellUid, string wellboreUid)
         {
-            var query = new WitsmlLogs
+            WitsmlLogs query = new()
             {
                 Logs = new WitsmlLog
                 {
@@ -101,7 +109,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs;
         }
     }

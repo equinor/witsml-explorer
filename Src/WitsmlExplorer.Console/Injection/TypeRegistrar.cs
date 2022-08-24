@@ -1,31 +1,33 @@
 using System;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Spectre.Console.Cli;
 
 namespace WitsmlExplorer.Console.Injection
 {
     public sealed class TypeRegistrar : ITypeRegistrar
     {
-        private readonly IServiceCollection builder;
+        private readonly IServiceCollection _builder;
 
         public TypeRegistrar(IServiceCollection builder)
         {
-            this.builder = builder;
+            this._builder = builder;
         }
 
         public ITypeResolver Build()
         {
-            return new TypeResolver(builder.BuildServiceProvider());
+            return new TypeResolver(_builder.BuildServiceProvider());
         }
 
         public void Register(Type service, Type implementation)
         {
-            builder.AddSingleton(service, implementation);
+            _builder.AddSingleton(service, implementation);
         }
 
         public void RegisterInstance(Type service, object implementation)
         {
-            builder.AddSingleton(service, implementation);
+            _builder.AddSingleton(service, implementation);
         }
 
         public void RegisterLazy(Type service, Func<object> func)
@@ -35,7 +37,7 @@ namespace WitsmlExplorer.Console.Injection
                 throw new ArgumentNullException(nameof(func));
             }
 
-            builder.AddSingleton(service, (provider) => func());
+            _builder.AddSingleton(service, (provider) => func());
         }
     }
 }

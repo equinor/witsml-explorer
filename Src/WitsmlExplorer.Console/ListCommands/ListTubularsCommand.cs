@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Spectre.Console;
 using Spectre.Console.Cli;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Console.Extensions;
 using WitsmlExplorer.Console.WitsmlClient;
 
@@ -15,31 +18,34 @@ namespace WitsmlExplorer.Console.ListCommands
 {
     public class ListTubularsCommand : AsyncCommand<ListTubularsSettings>
     {
-        private readonly IWitsmlClient witsmlClient;
+        private readonly IWitsmlClient _witsmlClient;
 
         public ListTubularsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListTubularsSettings settings)
         {
-            if (witsmlClient == null) return -1;
+            if (_witsmlClient == null)
+            {
+                return -1;
+            }
 
-            var table = CreateTable();
+            Table table = CreateTable();
 
-            var wellName = "<?>";
-            var wellboreName = "<?>";
+            string wellName = "<?>";
+            string wellboreName = "<?>";
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots)
                 .StartAsync("Fetching tubulars...".WithColor(Color.Orange1), async _ =>
                 {
-                    var tubulars = (await GetTubulars(settings.WellUid, settings.WellboreUid)).ToList();
+                    List<WitsmlTubular> tubulars = (await GetTubulars(settings.WellUid, settings.WellboreUid)).ToList();
 
                     wellName = tubulars.FirstOrDefault()?.NameWell;
                     wellboreName = tubulars.FirstOrDefault()?.NameWellbore;
 
-                    foreach (var tubular in tubulars.OrderBy(l => l.Name))
+                    foreach (WitsmlTubular tubular in tubulars.OrderBy(l => l.Name))
                     {
                         table.AddRow(
                             tubular.Uid,
@@ -60,7 +66,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private static Table CreateTable()
         {
-            var table = new Table();
+            Table table = new();
             table.AddColumn("Uid".Bold());
             table.AddColumn("Name".Bold());
             table.AddColumn("TypeTubularAssy".Bold());
@@ -70,7 +76,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         private async Task<IEnumerable<WitsmlTubular>> GetTubulars(string wellUid, string wellboreUid)
         {
-            var query = new WitsmlTubulars
+            WitsmlTubulars query = new()
             {
                 Tubulars = new WitsmlTubular
                 {
@@ -88,7 +94,7 @@ namespace WitsmlExplorer.Console.ListCommands
                 }.AsSingletonList()
             };
 
-            var result = await witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return result?.Tubulars;
         }
     }

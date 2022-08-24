@@ -19,29 +19,29 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class CopyBhaRunWorker : BaseWorker<CopyBhaRunJob>, IWorker
     {
-        private readonly IWitsmlClient witsmlClient;
-        private readonly IWitsmlClient witsmlSourceClient;
+        private readonly IWitsmlClient _witsmlClient;
+        private readonly IWitsmlClient _witsmlSourceClient;
         public JobType JobType => JobType.CopyBhaRun;
 
         public CopyBhaRunWorker(ILogger<CopyBhaRunJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
-            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyBhaRunJob job)
         {
-            var (bhaRuns, targetWellbore) = await FetchData(job);
-            var queries = BhaRunQueries.CopyWitsmlBhaRuns(bhaRuns, targetWellbore);
+            (WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore) = await FetchData(job);
+            IEnumerable<WitsmlBhaRuns> queries = BhaRunQueries.CopyWitsmlBhaRuns(bhaRuns, targetWellbore);
 
             bool error = false;
-            var successUids = new List<string>();
-            var errorReasons = new List<string>();
-            var errorEnitities = new List<EntityDescription>();
-            var results = await Task.WhenAll(queries.Select(async (query) =>
+            List<string> successUids = new();
+            List<string> errorReasons = new();
+            List<EntityDescription> errorEnitities = new();
+            QueryResult[] results = await Task.WhenAll(queries.Select(async (query) =>
             {
-                var result = await witsmlClient.AddToStoreAsync(query);
-                var bhaRun = query.BhaRuns.First();
+                QueryResult result = await _witsmlClient.AddToStoreAsync(query);
+                WitsmlBhaRun bhaRun = query.BhaRuns.First();
                 if (result.IsSuccessful)
                 {
                     Logger.LogInformation(
@@ -70,36 +70,33 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }));
 
-            var refreshAction = new RefreshWellbore(witsmlClient.GetServerHostname(), targetWellbore.UidWell, targetWellbore.Uid, RefreshType.Update);
-            var successString = successUids.Count > 0 ? $"Copied bhaRuns: {string.Join(", ", successUids)}." : "";
-            if (!error)
-            {
-                return (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction);
-            }
-
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some bhaRuns", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
+            RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), targetWellbore.UidWell, targetWellbore.Uid, RefreshType.Update);
+            string successString = successUids.Count > 0 ? $"Copied bhaRuns: {string.Join(", ", successUids)}." : "";
+            return !error
+                ? ((WorkerResult, RefreshAction))(new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction)
+                : (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some bhaRuns", errorReasons.First(), errorEnitities.First()), successUids.Count > 0 ? refreshAction : null);
         }
 
         private async Task<Tuple<WitsmlBhaRuns, WitsmlWellbore>> FetchData(CopyBhaRunJob job)
         {
-            var bhaRunsQuery = GetBhaRuns(witsmlSourceClient, job.Source);
-            var wellboreQuery = GetWellbore(witsmlClient, job.Target);
+            Task<WitsmlBhaRuns> bhaRunsQuery = GetBhaRuns(_witsmlSourceClient, job.Source);
+            Task<WitsmlWellbore> wellboreQuery = GetWellbore(_witsmlClient, job.Target);
             await Task.WhenAll(bhaRunsQuery, wellboreQuery);
-            var bhaRuns = bhaRunsQuery.Result;
-            var targetWellbore = wellboreQuery.Result;
+            WitsmlBhaRuns bhaRuns = bhaRunsQuery.Result;
+            WitsmlWellbore targetWellbore = wellboreQuery.Result;
             return Tuple.Create(bhaRuns, targetWellbore);
         }
 
-        private static async Task<WitsmlBhaRuns> GetBhaRuns(IWitsmlClient client, BhaRunReferences BhaRunReferences)
+        private static async Task<WitsmlBhaRuns> GetBhaRuns(IWitsmlClient client, BhaRunReferences bhaRunReferences)
         {
-            var witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunsById(BhaRunReferences.WellUid, BhaRunReferences.WellboreUid, BhaRunReferences.BhaRunUids);
+            WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunsById(bhaRunReferences.WellUid, bhaRunReferences.WellboreUid, bhaRunReferences.BhaRunUids);
             return await client.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.All));
         }
 
         private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
-            var witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
+            WitsmlWellbores witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
+            WitsmlWellbores wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }

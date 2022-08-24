@@ -1,3 +1,4 @@
+#pragma warning disable CS0253
 using System;
 using System.Globalization;
 
@@ -43,27 +44,27 @@ namespace Witsml.Data.Curves
         private Index Subtract(Index that)
         {
             DepthIndex thatIndex = GetDepthFromIndex(that);
-            if (!HasSameUnitAs(thatIndex)) throw new ArgumentException("Cannot subtract depths with different types");
-            return new DepthIndex(Value - thatIndex.Value, Uom);
+            return HasSameUnitAs(thatIndex) ? new DepthIndex(Value - thatIndex.Value, Uom) : throw new ArgumentException("Cannot subtract depths with different types");
         }
 
         public override int CompareTo(Index that)
         {
             DepthIndex thatDepthIndex = GetDepthFromIndex(that);
-            if (!HasSameUnitAs(thatDepthIndex)) {
+            if (!HasSameUnitAs(thatDepthIndex))
+            {
                 throw new ArgumentException("Cannot compare depths with different unit types");
             }
             var isEqual = Math.Abs(Value - thatDepthIndex.Value) < Epsilon;
             return isEqual ? 0 : Value.CompareTo(thatDepthIndex.Value);
         }
 
-        private DepthIndex GetDepthFromIndex(Index index) => (DepthIndex) index;
+        private static DepthIndex GetDepthFromIndex(Index index) => (DepthIndex)index;
 
         public override string GetValueAsString() => Value.ToString(CultureInfo.InvariantCulture);
 
         public override bool IsContinuous(Index that)
         {
-            var difference = (DepthIndex) Subtract(that);
+            var difference = (DepthIndex)Subtract(that);
             return Math.Abs(difference.Value) < 0.1;
         }
 
@@ -73,16 +74,18 @@ namespace Witsml.Data.Curves
             return Math.Abs(Value - NullValue) < 0;
         }
 
+
         public override bool Equals(object that)
         {
             if (this == that) return true;
             if (that == null || GetType() != that.GetType()) return false;
 
-            var depth = (DepthIndex) that;
+            var depth = (DepthIndex)that;
 
-            if (depth.Value.CompareTo(Value)  != 0) return false;
+            if (depth.Value.CompareTo(Value) != 0) return false;
             return Uom?.Equals(depth.Uom) ?? depth.Uom == null;
         }
+
 
         public override int GetHashCode()
         {
@@ -92,3 +95,4 @@ namespace Witsml.Data.Curves
         public override string ToString() => $"{GetValueAsString()} {Uom}";
     }
 }
+#pragma warning restore CS0253

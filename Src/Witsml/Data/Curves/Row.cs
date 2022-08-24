@@ -11,15 +11,10 @@ namespace Witsml.Data.Curves
 
         public Row(string commaSeparated)
         {
-            var row = commaSeparated.Split(",");
-            if (DateTimeIndex.TryParseISODate(row.First(), out var witsmlDateTime))
-            {
-                Index = witsmlDateTime;
-            }
-            else
-            {
-                Index = new DepthIndex(double.Parse(row.First(), CultureInfo.InvariantCulture));
-            }
+            string[] row = commaSeparated.Split(",");
+            Index = DateTimeIndex.TryParseISODate(row.First(), out DateTimeIndex witsmlDateTime)
+                ? witsmlDateTime
+                : new DepthIndex(double.Parse(row.First(), CultureInfo.InvariantCulture));
 
             Values = row[1..].Select(CurveValue.From);
         }
