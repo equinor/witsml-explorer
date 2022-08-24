@@ -36,13 +36,13 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetJobInfos_CorrectReturn()
+        public void GetJobInfosById_CorrectReturn()
         {
             var indicesToGet = new int[] { 1, 2 };
             var ids = indicesToGet.Select(index => _jobInfos[index].Id);
-            var result = _jobCache.GetJobInfos(ids);
+            var result = _jobCache.GetJobInfosById(ids);
             Assert.Equal(indicesToGet.Length, result.Count());
-            foreach (var jobInfo in result)
+            foreach (JobInfo jobInfo in result)
             {
                 Assert.Contains(jobInfo.Id, ids);
             }
@@ -50,13 +50,32 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetJobInfos_IdNotPresent_ResultOmitted()
+        public void GetJobInfosId_IdNotPresent_ResultOmitted()
         {
             var validId = _jobInfos[3].Id;
             var ids = new string[] { validId, "invalid_id" };
-            var result = _jobCache.GetJobInfos(ids);
+            var result = _jobCache.GetJobInfosById(ids);
             Assert.Single(result);
             Assert.Equal(validId, result.First().Id);
+        }
+
+        [Fact]
+        public void GetJobInfosByUser_ReturnCorrectUser()
+        {
+            var user1 = "Alice";
+            var user2 = "Bob";
+            _jobInfos[0].Username = user1;
+            _jobInfos[1].Username = user2;
+            _jobInfos[2].Username = user1;
+            _jobInfos[3].Username = user2;
+
+            var result = _jobCache.GetJobInfosByUser(user2);
+            Assert.Equal(2, result.Count());
+            foreach (JobInfo jobInfo in result)
+            {
+                Assert.Equal(user2, jobInfo.Username);
+            }
+            Assert.Distinct(result.Select(jobInfo => jobInfo.Id));
         }
     }
 }

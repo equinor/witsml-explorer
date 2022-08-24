@@ -18,6 +18,10 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string Id { get; init; }
 
+        public string Username { get; set; }
+
+        public string Server { get; set; }
+
         public DateTime StartTime { get; init; }
 
         public DateTime? EndTime { get; private set; }

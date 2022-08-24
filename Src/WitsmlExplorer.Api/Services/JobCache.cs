@@ -13,7 +13,8 @@ namespace WitsmlExplorer.Api.Services
     public interface IJobCache
     {
         void CacheJob(JobInfo job);
-        IEnumerable<JobInfo> GetJobInfos(IEnumerable<string> ids);
+        IEnumerable<JobInfo> GetJobInfosById(IEnumerable<string> ids);
+        IEnumerable<JobInfo> GetJobInfosByUser(string username);
     }
 
     public class JobCache : IJobCache
@@ -45,9 +46,14 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        public IEnumerable<JobInfo> GetJobInfos(IEnumerable<string> ids)
+        public IEnumerable<JobInfo> GetJobInfosById(IEnumerable<string> ids)
         {
             return ids.Select(id => _jobs.GetValueOrDefault(id)).Where(jobInfo => jobInfo != default);
+        }
+
+        public IEnumerable<JobInfo> GetJobInfosByUser(string username)
+        {
+            return _jobs.Values.Where(job => job.Username == username);
         }
 
         private void Cleanup()
