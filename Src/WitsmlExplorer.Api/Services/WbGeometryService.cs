@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -24,8 +25,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
         {
-            Witsml.Data.WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
-            Witsml.Data.WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             return result.WbGeometrys.Select(wbGeometry =>
                 new WbGeometry

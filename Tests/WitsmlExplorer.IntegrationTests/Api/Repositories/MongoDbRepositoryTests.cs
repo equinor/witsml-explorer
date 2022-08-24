@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
@@ -16,7 +18,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Repositories
 
         public MongoDbRepositoryTests(ITestOutputHelper output)
         {
-            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
             _repo = new MongoRepository<Server, Guid>(configuration);
             _output = output;
         }

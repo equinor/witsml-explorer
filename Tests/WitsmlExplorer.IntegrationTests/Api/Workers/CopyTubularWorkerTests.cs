@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
@@ -19,7 +20,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         public CopyTubularWorkerTests()
         {
-            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);

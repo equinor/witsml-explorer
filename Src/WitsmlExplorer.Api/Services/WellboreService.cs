@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Serilog;
 
+using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -26,9 +27,9 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Wellbore> GetWellbore(string wellUid, string wellboreUid)
         {
-            Witsml.Data.WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
-            Witsml.Data.WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            Witsml.Data.WitsmlWellbore witsmlWellbore = result.Wellbores.FirstOrDefault();
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(wellUid, wellboreUid);
+            WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlWellbore witsmlWellbore = result.Wellbores.FirstOrDefault();
             return witsmlWellbore == null
                 ? null
                 : new Wellbore
@@ -65,9 +66,9 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null)
         {
             DateTime start = DateTime.Now;
-            Witsml.Data.WitsmlWellbores query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.GetAllWitsmlWellbores() : WellboreQueries.GetWitsmlWellboreByWell(wellUid);
+            WitsmlWellbores query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.GetAllWitsmlWellbores() : WellboreQueries.GetWitsmlWellboreByWell(wellUid);
 
-            Witsml.Data.WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             List<Wellbore> wellbores = result.Wellbores
                 .Select(witsmlWellbore =>
                     new Wellbore

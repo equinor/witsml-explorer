@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
@@ -17,7 +18,7 @@ namespace WitsmlExplorer.Api.Services
         IWitsmlClient GetSourceClient();
     }
 
-    public class WitsmlClientProvider : IWitsmlClientProvider, IDisposable
+    public class WitsmlClientProvider : IWitsmlClientProvider
     {
         public const string WitsmlServerUrlHeader = "Witsml-ServerUrl";
         private const string WitsmlSourceServerUrlHeader = "Witsml-Source-ServerUrl";
@@ -40,7 +41,7 @@ namespace WitsmlExplorer.Api.Services
             _clientCapabilities = witsmlClientCapabilities.Value;
 
             IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
-            Microsoft.Extensions.Primitives.StringValues serverUrl = headers[WitsmlServerUrlHeader];
+            StringValues serverUrl = headers[WitsmlServerUrlHeader];
             bool witsmlServerAccessNeeded = !string.IsNullOrEmpty(serverUrl);
             if (!witsmlServerAccessNeeded)
             {
@@ -59,7 +60,7 @@ namespace WitsmlExplorer.Api.Services
             bool logQueries = StringHelpers.ToBoolean(configuration["LogQueries"]);
             _witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
 
-            Microsoft.Extensions.Primitives.StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
+            StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
 
             if (string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 1)
             {
@@ -106,11 +107,6 @@ namespace WitsmlExplorer.Api.Services
         public IWitsmlClient GetSourceClient()
         {
             return _witsmlSourceClient;
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

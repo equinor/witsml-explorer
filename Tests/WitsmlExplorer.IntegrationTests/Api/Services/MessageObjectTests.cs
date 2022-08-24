@@ -15,7 +15,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
         public MessageObjectTests(ITestOutputHelper output)
         {
             _output = output;
-            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
             _msgObjectService = new MessageObjectService(witsmlClientProvider);
         }

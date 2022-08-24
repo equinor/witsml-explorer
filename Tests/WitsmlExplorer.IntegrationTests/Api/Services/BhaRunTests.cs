@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
+
 using WitsmlExplorer.Api.Services;
 
 using Xunit;
@@ -15,7 +17,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
         public BhaRunTests(ITestOutputHelper output)
         {
             _output = output;
-            Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
             _bhaRunService = new BhaRunService(witsmlClientProvider);
         }
