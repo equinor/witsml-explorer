@@ -1,4 +1,5 @@
 #pragma warning disable IDE0046
+#pragma warning disable CS0253
 using System;
 using System.Globalization;
 
@@ -77,7 +78,7 @@ namespace Witsml.Data.Curves
 
         public override bool Equals(object that)
         {
-            if (this == (Index)that) return true;
+            if (this == that) return true;
             if (that == null || GetType() != that.GetType()) return false;
 
             var depth = (DepthIndex)that;
@@ -96,3 +97,4 @@ namespace Witsml.Data.Curves
     }
 }
 #pragma warning restore IDE0046
+#pragma warning restore CS0253
