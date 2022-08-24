@@ -1,17 +1,17 @@
-import React, { forwardRef, memo, ReactElement, useCallback, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import Moment from "react-moment";
-import orderBy from "lodash/orderBy";
 import { Checkbox, TableCell as MuiTableCell, TableSortLabel } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
+import orderBy from "lodash/orderBy";
 import memoizeOne from "memoize-one";
+import React, { forwardRef, memo, ReactElement, useCallback, useContext, useEffect, useState } from "react";
+import Moment from "react-moment";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
-import { DateFormat } from "../../Constants";
-import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./tableParts";
-import { colors } from "../../../styles/Colors";
-import { useTheme } from "@material-ui/core/styles";
+import styled from "styled-components";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
+import { colors } from "../../../styles/Colors";
+import { DateFormat } from "../../Constants";
+import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./tableParts";
 
 interface RowProps {
   index: number;

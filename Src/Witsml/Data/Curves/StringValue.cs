@@ -2,17 +2,17 @@ namespace Witsml.Data.Curves
 {
     public class StringValue : CurveValue
     {
-        private string value;
+        private readonly string _value;
 
         public StringValue(string value)
         {
-            this.value = value;
+            _value = value;
         }
 
-        public string Get() => value;
+        public string Get() => _value;
 
-        public override string GetAsString() => value;
+        public override string GetAsString() => _value;
 
-        public override string ToString() => value;
+        public override string ToString() => _value;
     }
 }

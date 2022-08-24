@@ -8,17 +8,7 @@ namespace Witsml.Data.Curves
 
         public static CurveValue From(string input)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                return null;
-            }
-
-            if (input.IsNumeric())
-            {
-                return new DoubleValue(input);
-            }
-
-            return new StringValue(input);
+            return string.IsNullOrEmpty(input) ? null : input.IsNumeric() ? new DoubleValue(input) : new StringValue(input);
         }
     }
 }

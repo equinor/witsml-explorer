@@ -105,7 +105,7 @@ var newServer = new Server
 Then run the test from the commandline `dotnet test` or from your IDE. The server is now added to your mongoDB. Repeat this for all your servers.
 After adding your servers, reset file `MongoDbRepositoryTests.cs`.
 
-## Swashbuckle
+### Swashbuckle 
 In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
 
 ### Basic authentication

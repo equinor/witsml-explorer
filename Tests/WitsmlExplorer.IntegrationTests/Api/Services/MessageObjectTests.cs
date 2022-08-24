@@ -1,5 +1,9 @@
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Configuration;
+
 using WitsmlExplorer.Api.Services;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -7,27 +11,26 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
 {
     public class MessageObjectTests
     {
-        private readonly MessageObjectService msgObjectService;
-        private readonly ITestOutputHelper output;
+        private readonly MessageObjectService _msgObjectService;
+        private readonly ITestOutputHelper _output;
 
         public MessageObjectTests(ITestOutputHelper output)
         {
-            this.output = output;
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            msgObjectService = new MessageObjectService(witsmlClientProvider);
+            _output = output;
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            _msgObjectService = new MessageObjectService(witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task ReadMessageObject()
         {
-            var wellUid = "INSERT";
-            var wellboreUid = "INSERT";
-            var msgUid = "INSERT";
+            string wellUid = "INSERT";
+            string wellboreUid = "INSERT";
+            string msgUid = "INSERT";
+            _ = await _msgObjectService.GetMessageObject(wellUid, wellboreUid, msgUid);
 
-            var msgObject = await msgObjectService.GetMessageObject(wellUid, wellboreUid, msgUid);
-
-            output.WriteLine("To be filled out...");
+            _output.WriteLine("To be filled out...");
         }
     }
 }

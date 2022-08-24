@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+
 using Witsml;
 using Witsml.Data;
 
@@ -20,9 +23,9 @@ namespace WitsmlExplorer.Api.Services
         public const string WitsmlServerUrlHeader = "Witsml-ServerUrl";
         private const string WitsmlSourceServerUrlHeader = "Witsml-Source-ServerUrl";
 
-        private readonly WitsmlClient witsmlClient;
-        private readonly WitsmlClient witsmlSourceClient;
-        private readonly WitsmlClientCapabilities clientCapabilities;
+        private readonly WitsmlClient _witsmlClient;
+        private readonly WitsmlClient _witsmlSourceClient;
+        private readonly WitsmlClientCapabilities _clientCapabilities;
 
         public WitsmlClientProvider(
             IConfiguration configuration,
@@ -30,36 +33,49 @@ namespace WitsmlExplorer.Api.Services
             ICredentialsService credentialsService,
             IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
-            if (httpContextAccessor.HttpContext == null || httpContextAccessor.HttpContext.Request.Headers["Authorization"].Count == 0) return;
+            if (httpContextAccessor.HttpContext == null || httpContextAccessor.HttpContext.Request.Headers["Authorization"].Count == 0)
+            {
+                return;
+            }
 
-            clientCapabilities = witsmlClientCapabilities.Value;
+            _clientCapabilities = witsmlClientCapabilities.Value;
 
-            var headers = httpContextAccessor.HttpContext.Request.Headers;
-            var serverUrl = headers[WitsmlServerUrlHeader];
-            var witsmlServerAccessNeeded = !string.IsNullOrEmpty(serverUrl);
-            if (!witsmlServerAccessNeeded) return;
+            IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
+            StringValues serverUrl = headers[WitsmlServerUrlHeader];
+            bool witsmlServerAccessNeeded = !string.IsNullOrEmpty(serverUrl);
+            if (!witsmlServerAccessNeeded)
+            {
+                return;
+            }
 
-            var credentials = ExtractCredentialsFromHeader(headers);
+            List<Credentials> credentials = ExtractCredentialsFromHeader(headers);
 
             //This provider will unintentionally be invoked also on initial authentication requests. Doing this to let the authentication route be triggered.
-            var isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
-            if (!isEncrypted) return;
+            bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
+            if (!isEncrypted)
+            {
+                return;
+            }
 
-            var logQueries = StringHelpers.ToBoolean(configuration["LogQueries"]);
-            witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), clientCapabilities, null, logQueries);
+            bool logQueries = StringHelpers.ToBoolean(configuration["LogQueries"]);
+            _witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
 
-            var sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
+            StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
 
-            if (string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 1) return;
-            witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), clientCapabilities, null, logQueries);
+            if (string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 1)
+            {
+                return;
+            }
+
+            _witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), _clientCapabilities, null, logQueries);
         }
 
         private static List<Credentials> ExtractCredentialsFromHeader(IHeaderDictionary headers)
         {
-            var base64EncodedCredentials = headers["Authorization"].ToString().Substring("Basic ".Length).Trim();
-            var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedCredentials));
-            var usernamesAndPasswords = credentialString.Split(':');
-            var credentials = new List<Credentials> { new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1]) };
+            string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
+            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedCredentials));
+            string[] usernamesAndPasswords = credentialString.Split(':');
+            List<Credentials> credentials = new() { new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1]) };
             if (usernamesAndPasswords.Length == 4)
             {
                 credentials.Add(new Credentials(usernamesAndPasswords[2], usernamesAndPasswords[3]));
@@ -70,20 +86,27 @@ namespace WitsmlExplorer.Api.Services
 
         internal WitsmlClientProvider(IConfiguration configuration)
         {
-            var (serverUrl, username, password) = GetCredentialsFromConfiguration(configuration);
-            witsmlClient = new WitsmlClient(serverUrl, username, password, new WitsmlClientCapabilities(), null, true);
+            (string serverUrl, string username, string password) = GetCredentialsFromConfiguration(configuration);
+            _witsmlClient = new WitsmlClient(serverUrl, username, password, new WitsmlClientCapabilities(), null, true);
         }
 
-        private (string, string, string) GetCredentialsFromConfiguration(IConfiguration configuration)
+        private static (string, string, string) GetCredentialsFromConfiguration(IConfiguration configuration)
         {
-            var serverUrl = configuration["Witsml:Host"];
-            var username = configuration["Witsml:Username"];
-            var password = configuration["Witsml:Password"];
+            string serverUrl = configuration["Witsml:Host"];
+            string username = configuration["Witsml:Username"];
+            string password = configuration["Witsml:Password"];
 
             return (serverUrl, username, password);
         }
 
-        public IWitsmlClient GetClient() => witsmlClient;
-        public IWitsmlClient GetSourceClient() => witsmlSourceClient;
+        public IWitsmlClient GetClient()
+        {
+            return _witsmlClient;
+        }
+
+        public IWitsmlClient GetSourceClient()
+        {
+            return _witsmlSourceClient;
+        }
     }
 }

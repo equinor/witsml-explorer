@@ -1,3 +1,4 @@
+**/.ignore*
 **/.dccache
 # Rider settings
 .idea/
@@ -5,6 +6,7 @@
 # VS Code settings
 .vs/
 .vscode/
+!.vscode/settings.json
 
 # User-specific files
 *.rsuser

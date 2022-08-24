@@ -4,21 +4,21 @@ namespace Witsml.Data.Curves
 {
     public class DoubleValue : CurveValue
     {
-        private double value;
+        private readonly double _value;
 
         public DoubleValue(double value)
         {
-            this.value = value;
+            _value = value;
         }
 
         public DoubleValue(string value)
         {
-            this.value = double.Parse(value, CultureInfo.InvariantCulture);
+            _value = double.Parse(value, CultureInfo.InvariantCulture);
         }
 
-        public double Get() => value;
+        public double Get() => _value;
 
-        public override string GetAsString() => value.ToString(CultureInfo.InvariantCulture);
+        public override string GetAsString() => _value.ToString(CultureInfo.InvariantCulture);
 
         public override string ToString() => GetAsString();
     }

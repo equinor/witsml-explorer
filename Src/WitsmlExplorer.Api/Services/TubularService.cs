@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WitsmlExplorer.Api.Query;
+
+using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using System.Globalization;
-using Witsml.Data.Tubular;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -25,40 +27,36 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid)
         {
-            var witsmlTubular = TubularQueries.GetWitsmlTubularByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularByWellbore(wellUid, wellboreUid);
+            WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
             return result.Tubulars.Select(tubular => WitsmlToTubular(tubular)).OrderBy(tubular => tubular.Name);
         }
 
         public async Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid)
         {
-            var witsmlTubular = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
-            if (result.Tubulars.Any())
-            {
-                return WitsmlToTubular(result.Tubulars.First());
-            }
-
-            return null;
+            return result.Tubulars.Any() ? WitsmlToTubular(result.Tubulars.First()) : null;
         }
 
         public async Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
         {
-            var tubularToQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
-            var result = await WitsmlClient.GetFromStoreAsync(tubularToQuery, new OptionsIn(ReturnElements.All));
-            var witsmlTubular = result.Tubulars.FirstOrDefault();
-            if (witsmlTubular == null) return null;
-            return witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
-            {
-                Uid = tComponent.Uid,
-                Sequence = tComponent.Sequence,
-                Id = tComponent.Id == null ? null : new LengthMeasure { Uom = tComponent.Id.Uom, Value = decimal.Parse(tComponent.Id.Value, CultureInfo.InvariantCulture) },
-                Od = tComponent.Od == null ? null : new LengthMeasure { Uom = tComponent.Od.Uom, Value = decimal.Parse(tComponent.Od.Value, CultureInfo.InvariantCulture) },
-                Len = tComponent.Len == null ? null : new LengthMeasure { Uom = tComponent.Len.Uom, Value = decimal.Parse(tComponent.Len.Value, CultureInfo.InvariantCulture) },
-                TypeTubularComponent = tComponent.TypeTubularComp,
-            })
+            WitsmlTubulars tubularToQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(tubularToQuery, new OptionsIn(ReturnElements.All));
+            WitsmlTubular witsmlTubular = result.Tubulars.FirstOrDefault();
+            return witsmlTubular == null
+                ? null
+                : (IEnumerable<TubularComponent>)witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
+                {
+                    Uid = tComponent.Uid,
+                    Sequence = tComponent.Sequence,
+                    Id = tComponent.Id == null ? null : new LengthMeasure { Uom = tComponent.Id.Uom, Value = decimal.Parse(tComponent.Id.Value, CultureInfo.InvariantCulture) },
+                    Od = tComponent.Od == null ? null : new LengthMeasure { Uom = tComponent.Od.Uom, Value = decimal.Parse(tComponent.Od.Value, CultureInfo.InvariantCulture) },
+                    Len = tComponent.Len == null ? null : new LengthMeasure { Uom = tComponent.Len.Uom, Value = decimal.Parse(tComponent.Len.Value, CultureInfo.InvariantCulture) },
+                    TypeTubularComponent = tComponent.TypeTubularComp,
+                })
                 .OrderBy(tComponent => tComponent.Sequence);
         }
 

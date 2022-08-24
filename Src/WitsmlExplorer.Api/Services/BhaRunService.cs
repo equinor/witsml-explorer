@@ -23,14 +23,14 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid)
         {
-            var query = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, bhaRunUid);
-            var result = await WitsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlBhaRuns query = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, bhaRunUid);
+            WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             return result.BhaRuns.Any() ? WitsmlToBhaRun(result.BhaRuns.First()) : null;
         }
         public async Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
-            var witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunByWellbore(wellUid, wellboreUid);
-            var result = await WitsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
+            WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunByWellbore(wellUid, wellboreUid);
+            WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
             return result.BhaRuns.Select(bhaRun =>
                     WitsmlToBhaRun(bhaRun)
                 ).OrderBy(bhaRun => bhaRun.Name);

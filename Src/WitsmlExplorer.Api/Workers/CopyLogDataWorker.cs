@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,31 +20,31 @@ namespace WitsmlExplorer.Api.Workers
 {
     public interface ICopyLogDataWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(Stream jobStream);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job);
     }
 
     public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
     {
-        private readonly IWitsmlClient witsmlClient;
-        private readonly IWitsmlClient witsmlSourceClient;
+        private readonly IWitsmlClient _witsmlClient;
+        private readonly IWitsmlClient _witsmlSourceClient;
         public JobType JobType => JobType.CopyLogData;
 
         public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null) : base(logger)
         {
-            witsmlClient = witsmlClientProvider.GetClient();
-            witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
         {
-            var (sourceLog, targetLog) = await GetLogs(job);
-            var mnemonicsToCopy = job.Source.Mnemonics.Any()
+            (WitsmlLog sourceLog, WitsmlLog targetLog) = await GetLogs(job);
+            List<string> mnemonicsToCopy = job.Source.Mnemonics.Any()
                 ? job.Source.Mnemonics.Distinct().ToList()
                 : sourceLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
 
-            var targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
-            var existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
-            var newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
+            IEnumerable<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
+            List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
+            List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 
             try
             {
@@ -57,53 +56,57 @@ namespace WitsmlExplorer.Api.Workers
             }
             catch (Exception e)
             {
-                var errorMessage = "Failed to copy log data.";
+                string errorMessage = "Failed to copy log data.";
                 Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
-                return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, e.Message), null);
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
-            var copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget);
+            CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget);
             if (!copyResultForExistingMnemonics.Success)
             {
-                var message = $"Failed to copy curves for existing mnemonics to log. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows";
+                string message = $"Failed to copy curves for existing mnemonics to log. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows";
                 return LogAndReturnErrorResult(message, job);
             }
 
-            var copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget);
+            CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget);
             if (!copyResultForNewMnemonics.Success)
             {
-                var message = $"Failed to copy curves for new mnemonics to log. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
+                string message = $"Failed to copy curves for new mnemonics to log. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
                 return LogAndReturnErrorResult(message, job);
             }
 
-            var totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
+            int totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
             Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
-            var workerResult = new WorkerResult(witsmlClient.GetServerHostname(), true, $"{totalRowsCopied} rows copied");
-            var refreshAction = new RefreshLogObject(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.LogUid, RefreshType.Update);
+            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"{totalRowsCopied} rows copied");
+            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.LogUid, RefreshType.Update);
             return (workerResult, refreshAction);
         }
 
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
         {
             Logger.LogError("{message} - {Description}", message, job.Description());
-            return (new WorkerResult(witsmlClient.GetServerHostname(), false, "Failed to copy log data", message), null);
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
         private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics)
         {
-            var startIndex = Index.Start(sourceLog);
-            var endIndex = Index.End(sourceLog);
-            var numberOfDataRowsCopied = 0;
+            Index startIndex = Index.Start(sourceLog);
+            Index endIndex = Index.End(sourceLog);
+            int numberOfDataRowsCopied = 0;
 
             while (startIndex < endIndex)
             {
-                var query = LogQueries.GetLogContent(job.Source.LogReference.WellUid, job.Source.LogReference.WellboreUid,
+                WitsmlLogs query = LogQueries.GetLogContent(job.Source.LogReference.WellUid, job.Source.LogReference.WellboreUid,
                     job.Source.LogReference.LogUid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
-                var sourceData = await witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
-                if (!sourceData.Logs.Any()) break;
-                var sourceLogWithData = sourceData.Logs.First();
-                var copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
-                var result = await witsmlClient.UpdateInStoreAsync(copyNewCurvesQuery);
+                WitsmlLogs sourceData = await _witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+                if (!sourceData.Logs.Any())
+                {
+                    break;
+                }
+
+                WitsmlLog sourceLogWithData = sourceData.Logs.First();
+                WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
+                QueryResult result = await _witsmlClient.UpdateInStoreAsync(copyNewCurvesQuery);
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
@@ -121,22 +124,24 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
         {
-            var newLogCurveInfos = new List<WitsmlLogCurveInfo>();
-            foreach (var mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
+            List<WitsmlLogCurveInfo> newLogCurveInfos = new();
+            foreach (string mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
             {
                 if (targetLog.LogCurveInfo.All(lci => !string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase)))
+                {
                     newLogCurveInfos.Add(sourceLog.LogCurveInfo.Find(lci => lci.Mnemonic == mnemonic));
+                }
             }
 
             if (newLogCurveInfos.Any())
             {
                 targetLog.LogCurveInfo.AddRange(newLogCurveInfos);
-                var query = new WitsmlLogs { Logs = new List<WitsmlLog> { targetLog } };
+                WitsmlLogs query = new() { Logs = new List<WitsmlLog> { targetLog } };
 
-                var result = await witsmlClient.UpdateInStoreAsync(query);
+                QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
                 if (!result.IsSuccessful)
                 {
-                    var newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
+                    string newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
                     Logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
                               "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetLogUid}. ",
                         newMnemonics, targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
@@ -146,7 +151,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLog sourceLogWithData)
         {
-            var updatedData = new WitsmlLog
+            WitsmlLog updatedData = new()
             {
                 UidWell = targetLog.UidWell,
                 UidWellbore = targetLog.UidWellbore,
@@ -154,7 +159,7 @@ namespace WitsmlExplorer.Api.Workers
                 LogData = sourceLogWithData.LogData
             };
 
-            var updatedWitsmlLog = new WitsmlLogs
+            WitsmlLogs updatedWitsmlLog = new()
             {
                 Logs = new List<WitsmlLog> { updatedData }
             };
@@ -164,52 +169,61 @@ namespace WitsmlExplorer.Api.Workers
         private static void VerifyMatchingIndexTypes(WitsmlLog sourceLog, WitsmlLog targetLog)
         {
             if (sourceLog.IndexType != targetLog.IndexType)
+            {
                 throw new Exception($"{nameof(sourceLog)} and {nameof(targetLog)} has mismatching index types");
+            }
         }
 
         private static void VerifyValidInterval(WitsmlLog sourceLog)
         {
-            var sourceStart = Index.Start(sourceLog);
-            var sourceEnd = Index.End(sourceLog);
+            Index sourceStart = Index.Start(sourceLog);
+            Index sourceEnd = Index.End(sourceLog);
 
             if (sourceStart > sourceEnd)
+            {
                 throw new Exception($"Invalid interval. Start must be before End. Start: {sourceStart}, End: {sourceEnd}");
+            }
         }
 
         private static void VerifyMatchingIndexCurves(WitsmlLog sourceLog, WitsmlLog targetLog)
         {
-            var sourceIndexMnemonic = sourceLog.IndexCurve.Value;
-            var targetIndexMnemonic = targetLog.IndexCurve.Value;
+            string sourceIndexMnemonic = sourceLog.IndexCurve.Value;
+            string targetIndexMnemonic = targetLog.IndexCurve.Value;
             if (sourceIndexMnemonic.Equals(targetIndexMnemonic, StringComparison.OrdinalIgnoreCase))
+            {
                 return;
+            }
 
             throw new Exception($"Source and Target has different index mnemonics. Source: {sourceIndexMnemonic}, Target: {targetIndexMnemonic}");
         }
 
         private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, IList<string> newMnemonics, IList<string> existingMnemonics)
         {
-            var indexMnemonic = log.IndexCurve.Value;
+            string indexMnemonic = log.IndexCurve.Value;
             if (!newMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
+            {
                 newMnemonics.Insert(0, indexMnemonic);
+            }
 
             if (!existingMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
+            {
                 existingMnemonics.Insert(0, indexMnemonic);
+            }
         }
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            var sourceLog = WorkerTools.GetLog(witsmlSourceClient, job.Source.LogReference, ReturnElements.HeaderOnly);
-            var targetLog = WorkerTools.GetLog(witsmlClient, job.Target, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(_witsmlSourceClient, job.Source.LogReference, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> targetLog = WorkerTools.GetLog(_witsmlClient, job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
-            if (sourceLog.Result == null)
-                throw new Exception($"Could not find source log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}");
-            if (targetLog.Result == null)
-                throw new Exception($"Could not find target log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}");
-
-            return (sourceLog.Result, targetLog.Result);
+            return sourceLog.Result == null
+                ? throw new Exception($"Could not find source log object: UidWell: {job.Source.LogReference.WellUid}, " +
+                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}")
+                : targetLog.Result == null
+                ? throw new Exception($"Could not find target log object: UidWell: {job.Source.LogReference.WellUid}, " +
+                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}")
+                : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
         }
 
         private class CopyResult

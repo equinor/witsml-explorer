@@ -1,7 +1,11 @@
 using System;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Configuration;
+
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -9,45 +13,45 @@ namespace WitsmlExplorer.IntegrationTests.Api.Repositories
 {
     public class MongoDbRepositoryTests
     {
-        private readonly IDocumentRepository<Server, Guid> repo;
-        private readonly ITestOutputHelper output;
+        private readonly IDocumentRepository<Server, Guid> _repo;
+        private readonly ITestOutputHelper _output;
 
         public MongoDbRepositoryTests(ITestOutputHelper output)
         {
-            var configuration = ConfigurationReader.GetConfig();
-            repo = new MongoRepository<Server, Guid>(configuration);
-            this.output = output;
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            _repo = new MongoRepository<Server, Guid>(configuration);
+            _output = output;
         }
 
-        [Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetAllServers()
         {
-            var servers = await repo.GetDocumentsAsync();
-            foreach (var server in servers)
+            System.Collections.Generic.IEnumerable<Server> servers = await _repo.GetDocumentsAsync();
+            foreach (Server server in servers)
             {
-                output.WriteLine(server.ToString());
+                _output.WriteLine(server.ToString());
             }
         }
 
-        [Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task AddServer()
         {
-            var newServer = new Server
+            Server newServer = new()
             {
                 Name = "<insert servername>",
                 Url = new Uri("<insert url>"),
                 Description = ""
             };
-            var server = await repo.CreateDocumentAsync(newServer);
-            output.WriteLine($"Inserted server {server}");
+            Server server = await _repo.CreateDocumentAsync(newServer);
+            _output.WriteLine($"Inserted server {server}");
         }
 
-        [Fact(Skip="Should only be run manually")]
+        [Fact(Skip = "Should only be run manually")]
         public async Task RemoveServer()
         {
-            var serverId = new Guid("");
-            await repo.DeleteDocumentAsync(serverId);
-            output.WriteLine($"Removed server");
+            Guid serverId = new("");
+            await _repo.DeleteDocumentAsync(serverId);
+            _output.WriteLine($"Removed server");
         }
     }
 }

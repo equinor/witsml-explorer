@@ -1,11 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
-
-using Witsml;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
@@ -16,18 +14,17 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class CopyTrajectoryWorkerTests
     {
         private readonly CopyTrajectoryWorker _worker;
 
         public CopyTrajectoryWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
+            ILogger<CopyTrajectoryJob> logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
 
             _worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
         }
@@ -35,7 +32,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyTrajectory()
         {
-            var job = new CopyTrajectoryJob
+            CopyTrajectoryJob job = new()
             {
                 Source = new TrajectoryReference
                 {

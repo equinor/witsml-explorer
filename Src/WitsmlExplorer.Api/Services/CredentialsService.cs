@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 using Witsml;
@@ -22,42 +21,42 @@ namespace WitsmlExplorer.Api.Services
     // ReSharper disable once UnusedMember.Global
     public class CredentialsService : ICredentialsService
     {
-        private readonly ITimeLimitedDataProtector dataProtector;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IConfiguration configuration;
-        private readonly WitsmlClientCapabilities clientCapabilities;
+        private readonly ITimeLimitedDataProtector _dataProtector;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly WitsmlClientCapabilities _clientCapabilities;
         private const string AuthorizationHeader = "Authorization";
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration,
             IOptions<WitsmlClientCapabilities> clientCapabilities)
         {
-            dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
-            this.httpContextAccessor = httpContextAccessor;
-            this.configuration = configuration;
-            this.clientCapabilities = clientCapabilities.Value;
+            _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
+            _httpContextAccessor = httpContextAccessor;
+            _clientCapabilities = clientCapabilities.Value;
         }
 
         public async Task<string> Authorize(Uri serverUrl)
         {
-            if (httpContextAccessor.HttpContext == null) return "";
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return "";
+            }
 
-            var headers = httpContextAccessor.HttpContext.Request.Headers;
-            var base64EncodedCredentials = headers[AuthorizationHeader].ToString().Substring("Basic ".Length).Trim();
-            var credentials = new Credentials(base64EncodedCredentials);
+            IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
+            string base64EncodedCredentials = headers[AuthorizationHeader].ToString()["Basic ".Length..].Trim();
+            Credentials credentials = new(base64EncodedCredentials);
 
             await VerifyCredentials(serverUrl, credentials);
 
-            var protectedPayload = dataProtector.Protect(credentials.Password, TimeSpan.FromDays(1));
+            string protectedPayload = _dataProtector.Protect(credentials.Password, TimeSpan.FromDays(1));
 
             return protectedPayload;
         }
 
         public string Decrypt(Credentials credentials)
         {
-            return dataProtector.Unprotect(credentials.Password);
+            return _dataProtector.Unprotect(credentials.Password);
         }
 
         public bool VerifyIsEncrypted(Credentials credentials)
@@ -75,7 +74,7 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task VerifyCredentials(Uri serverUrl, Credentials credentials)
         {
-            var witsmlClient = new WitsmlClient(serverUrl.ToString(), credentials.Username, credentials.Password, clientCapabilities);
+            WitsmlClient witsmlClient = new(serverUrl.ToString(), credentials.Username, credentials.Password, _clientCapabilities);
             await witsmlClient.TestConnectionAsync();
         }
     }
@@ -87,8 +86,8 @@ namespace WitsmlExplorer.Api.Services
 
         public Credentials(string base64EncodedString)
         {
-            var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
-            var credentials = credentialString.Split(new[] { ':' }, 2);
+            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
+            string[] credentials = credentialString.Split(new[] { ':' }, 2);
             Username = credentials[0];
             Password = credentials[1];
         }

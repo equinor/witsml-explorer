@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
@@ -14,7 +14,6 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    [SuppressMessage("ReSharper", "xUnit1004")]
     public class DeleteLogsWorkerTests
     {
 
@@ -22,23 +21,23 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         public DeleteLogsWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
-            var logger2 = loggerFactory.CreateLogger<DeleteUtils>();
+            ILogger<DeleteLogObjectsJob> logger = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
+            ILogger<DeleteUtils> logger2 = loggerFactory.CreateLogger<DeleteUtils>();
             _worker = new DeleteLogObjectsWorker(logger, witsmlClientProvider, new DeleteUtils(logger2, witsmlClientProvider));
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task DeleteLogs()
         {
-            var logs = new LogReference[] {
+            LogReference[] logs = new LogReference[] {
                 new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_1>" },
                 new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_2>" }
             };
-            var job = new DeleteLogObjectsJob()
+            DeleteLogObjectsJob job = new()
             {
                 ToDelete = new LogReferences() { LogReferenceList = logs }
             };
