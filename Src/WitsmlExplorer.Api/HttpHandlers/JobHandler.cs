@@ -25,14 +25,24 @@ public static class JobHandler
     }
 
     [Produces(typeof(IEnumerable<JobInfo>))]
-    public static IResult GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache)
+    public static async Task<IResult> GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
     {
+        bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+        if (!authorized)
+        {
+            return Results.Unauthorized();
+        }
         return Results.Ok(jobCache.GetJobInfosById(ids));
     }
 
     [Produces(typeof(IEnumerable<JobInfo>))]
-    public static IResult GetJobInfosByUser(string username, IJobCache jobCache)
+    public static async Task<IResult> GetJobInfosByUser(string username, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
     {
+        bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+        if (!authorized)
+        {
+            return Results.Unauthorized();
+        }
         return Results.Ok(jobCache.GetJobInfosByUser(username));
     }
 
