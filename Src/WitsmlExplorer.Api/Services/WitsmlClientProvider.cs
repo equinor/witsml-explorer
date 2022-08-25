@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                 return;
             }
 
-            List<Credentials> credentials = ExtractCredentialsFromHeader(headers);
+            List<Credentials> credentials = CredentialsService.ExtractCredentialsFromHeader(headers);
 
             //This provider will unintentionally be invoked also on initial authentication requests. Doing this to let the authentication route be triggered.
             bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
@@ -68,20 +68,6 @@ namespace WitsmlExplorer.Api.Services
             }
 
             _witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), _clientCapabilities, null, logQueries);
-        }
-
-        private static List<Credentials> ExtractCredentialsFromHeader(IHeaderDictionary headers)
-        {
-            string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
-            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedCredentials));
-            string[] usernamesAndPasswords = credentialString.Split(':');
-            List<Credentials> credentials = new() { new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1]) };
-            if (usernamesAndPasswords.Length == 4)
-            {
-                credentials.Add(new Credentials(usernamesAndPasswords[2], usernamesAndPasswords[3]));
-            }
-
-            return credentials;
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)

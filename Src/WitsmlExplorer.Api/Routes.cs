@@ -49,7 +49,8 @@ public static class Api
         app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations);
 
         app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob);
-        app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfos);
+        app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfosById);
+        app.MapGet("/api/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser);
 
         app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize);
 
