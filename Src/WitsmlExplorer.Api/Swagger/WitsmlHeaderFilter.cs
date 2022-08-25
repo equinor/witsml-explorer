@@ -14,6 +14,7 @@ public class WitsmlHeaderFilter : IOperationFilter
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var noHeader = new List<string>() { "WitsmlExplorer.Api.HttpHandler.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandler.WitsmlServerHandler" };
+        var witsmlSourceHeader = new List<string>() { "WitsmlExplorer.Api.HttpHandler.JobHandler" };
         if (operation.Parameters == null)
             operation.Parameters = new List<OpenApiParameter>();
 
@@ -25,6 +26,16 @@ public class WitsmlHeaderFilter : IOperationFilter
                 In = ParameterLocation.Header,
                 Schema = new OpenApiSchema { Type = "string" },
                 Required = true
+            });
+        }
+        if (witsmlSourceHeader.Contains(context.MethodInfo.DeclaringType.FullName))
+        {
+            operation.Parameters.Add(new OpenApiParameter
+            {
+                Name = "Witsml-Source-ServerUrl",
+                In = ParameterLocation.Header,
+                Schema = new OpenApiSchema { Type = "string" },
+                Required = false
             });
         }
     }
