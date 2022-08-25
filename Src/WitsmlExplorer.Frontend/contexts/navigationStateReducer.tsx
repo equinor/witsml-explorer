@@ -61,6 +61,8 @@ export interface NavigationState {
 
 export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
+export const selectedJobs = "jobs";
+
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
 };
@@ -116,6 +118,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectWell(state, action);
     case NavigationType.SelectWellbore:
       return selectWellbore(state, action);
+    case NavigationType.SelectJobs:
+      return selectJobs(state);
     case NavigationType.SelectBhaRunGroup:
       return selectBhaRunGroup(state, action);
     case NavigationType.SelectLogGroup:
@@ -693,6 +697,15 @@ const selectWellbore = (state: NavigationState, { payload }: SelectWellboreActio
   };
 };
 
+const selectJobs = (state: NavigationState) => {
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    currentSelected: selectedJobs
+  };
+};
+
 const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
   const { well, wellbore, bhaRunGroup } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateBhaRunGroupId(wellbore), calculateWellboreNodeId(wellbore));
@@ -1129,6 +1142,10 @@ export interface SelectWellboreAction extends Action {
   };
 }
 
+export interface SelectJobsAction extends Action {
+  type: NavigationType.SelectJobs;
+}
+
 export interface SelectBhaRunGroupAction extends Action {
   type: NavigationType.SelectBhaRunGroup;
   payload: { well: Well; wellbore: Wellbore; bhaRunGroup: any };
@@ -1233,6 +1250,7 @@ export type NavigationAction =
   | UpdateWellboreTubularsAction
   | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
+  | SelectJobsAction
   | SelectBhaRunGroupAction
   | SelectLogTypeAction
   | SelectLogGroupAction

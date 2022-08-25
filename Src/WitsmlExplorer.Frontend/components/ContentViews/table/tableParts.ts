@@ -24,6 +24,7 @@ export interface ContentTableProps {
   onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
+  order?: Order;
 }
 
 export enum Order {
@@ -46,8 +47,6 @@ export const getComparatorByColumn = (column: ContentTableColumn): [(row: any) =
       comparator = (row: any): number => Number(row[column.property]);
       break;
     case ContentType.Date:
-      comparator = (row: any): Date => new Date(row[column.property]);
-      break;
     case ContentType.DateTime:
       comparator = (row: any): Date => new Date(row[column.property]);
       break;

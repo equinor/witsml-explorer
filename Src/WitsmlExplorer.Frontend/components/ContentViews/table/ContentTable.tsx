@@ -9,10 +9,10 @@ import Icon from "../../../styles/Icons";
 import { colors } from "../../../styles/Colors";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, order } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
-  const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
+  const [sortOrder, setSortOrder] = useState<Order>(order ?? Order.Ascending);
   const [sortedColumn, setSortedColumn] = useState<ContentTableColumn>(columns[0]);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
 

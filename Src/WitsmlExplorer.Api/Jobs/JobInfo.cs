@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace WitsmlExplorer.Api.Jobs
 {
@@ -32,6 +33,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         private JobStatus _status;
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobStatus Status
         {
             get { return _status; }

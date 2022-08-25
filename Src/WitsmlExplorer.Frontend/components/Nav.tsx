@@ -3,7 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
 import {
+  Selectable,
   SelectBhaRunGroupAction,
+  selectedJobs,
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
@@ -28,6 +30,7 @@ import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
 import Well from "../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import JobsButton from "./JobsButton";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
@@ -56,6 +59,7 @@ const Nav = (): React.ReactElement => {
   const createBreadcrumbContent = () => {
     return [
       getServerCrumb(selectedServer, dispatchNavigation),
+      getJobsCrumb(currentSelected),
       getWellCrumb(selectedWell, dispatchNavigation),
       getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
       getBhaRunGroupCrumb(selectedBhaRunGroup, selectedWell, selectedWellbore, dispatchNavigation),
@@ -82,6 +86,7 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <Title>WITSML Explorer</Title>
+        <JobsButton />
         <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
           {breadcrumbContent.map((breadCrumb, index) => (
             <Breadcrumbs.Breadcrumb key={index} href="#" onClick={breadCrumb.onClick}>
@@ -309,6 +314,14 @@ const getTubularCrumb = (selectedTubular: Tubular, selectedWell: Well, selectedW
             type: NavigationType.SelectTubular,
             payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular: selectedTubular }
           })
+      }
+    : {};
+};
+
+const getJobsCrumb = (currentSelected: Selectable) => {
+  return currentSelected == selectedJobs
+    ? {
+        name: "Jobs"
       }
     : {};
 };
