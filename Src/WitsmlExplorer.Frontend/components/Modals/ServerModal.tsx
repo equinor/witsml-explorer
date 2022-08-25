@@ -180,9 +180,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             id="securityScheme"
             label="Security Scheme Type"
             options={schemeValues}
-            initialSelectedOptions={[server.securityscheme]}
+            initialSelectedOptions={[server.securityscheme || schemeValues[0]]}
             onOptionsChange={({ selectedItems }) => {
-              setServer({ ...server, securityscheme: selectedItems[0] });
+              setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
             }}
           />
           <TextField
