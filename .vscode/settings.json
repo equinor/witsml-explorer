@@ -1,0 +1,58 @@
+{
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "javascript.autoClosingTags": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+    "eslint.alwaysShowStatus": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+      "source.fixAll.stylelint": true,
+      "source.fixAll": true,
+      "source.organizeImports": true
+    },
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
+    ],
+    "stylelint.validate": [
+      "css",
+      "html",
+      "javascript",
+      "javascriptreact",
+      "styled-css",
+      "typescript",
+      "typescriptreact",
+    ],
+    "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "json.format.enable": false,
+    "json.schemaDownload.enable": false,
+    "[csharp]": {
+      "editor.defaultFormatter": "ms-dotnettools.csharp",
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features",
+      "editor.formatOnSave": true
+    },    
+    "[javascript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features",
+      "editor.formatOnSave": true
+    },
+    "editor.quickSuggestions": {
+      "other": "inline",
+      "comments": "inline",
+      "strings": "inline"
+    },    
+  }
