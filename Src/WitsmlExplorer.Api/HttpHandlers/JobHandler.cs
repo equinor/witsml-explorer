@@ -17,10 +17,11 @@ public static class JobHandler
     {
         IHeaderDictionary headers = httpRequest.Headers;
         string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
-        StringValues witsmlServer = headers["Witsml-Source-ServerUrl"];
+        StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
+        StringValues targetServer = headers["Witsml-ServerUrl"];
         Credentials credentials = new(base64EncodedCredentials);
 
-        return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, witsmlServer, httpRequest.Body));
+        return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
     }
 
     [Produces(typeof(IEnumerable<JobInfo>))]
