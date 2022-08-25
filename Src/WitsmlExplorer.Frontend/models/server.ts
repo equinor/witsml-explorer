@@ -3,6 +3,8 @@ export interface Server {
   name: string;
   description: string;
   url: string;
+  securityscheme: string;
+  role: string;
 }
 
 export function emptyServer(): Server {
@@ -10,6 +12,8 @@ export function emptyServer(): Server {
     id: undefined,
     name: "",
     description: "",
-    url: ""
+    url: "",
+    securityscheme: "Basic",
+    role: ""
   };
 }

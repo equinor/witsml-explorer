@@ -1,17 +1,18 @@
-import React, { ChangeEvent, useState } from "react";
-import ModalDialog from "./ModalDialog";
+import { Autocomplete } from "@equinor/eds-core-react";
 import { Button, TextField } from "@material-ui/core";
-import styled from "styled-components";
-import { Server } from "../../models/server";
-import ServerService from "../../services/serverService";
-import OperationType from "../../contexts/operationType";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
-import { ServerCredentials } from "../../services/credentialsService";
 import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
-import { colors } from "../../styles/Colors";
+import React, { ChangeEvent, useState } from "react";
+import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
 import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { Server } from "../../models/server";
+import { ServerCredentials } from "../../services/credentialsService";
+import ServerService from "../../services/serverService";
+import { colors } from "../../styles/Colors";
+import ModalDialog from "./ModalDialog";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
 
 export interface ServerModalProps {
   server: Server;
@@ -29,6 +30,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isAddingNewServer = props.server.id === undefined;
+  const schemeValues = ["Basic", "OAuth2"];
 
   const onSubmit = async () => {
     const abortController = new AbortController();
@@ -173,6 +175,23 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             fullWidth
             inputProps={{ maxLength: 64 }}
             onChange={(e) => setServer({ ...server, description: e.target.value })}
+          />
+          <Autocomplete
+            id="securityScheme"
+            label="Security Scheme Type"
+            options={schemeValues}
+            initialSelectedOptions={[server.securityscheme]}
+            onOptionsChange={({ selectedItems }) => {
+              setServer({ ...server, securityscheme: selectedItems[0] });
+            }}
+          />
+          <TextField
+            id="role"
+            label="Roles (space delimited)"
+            defaultValue={server.role}
+            fullWidth
+            inputProps={{ maxLength: 64 }}
+            onChange={(e) => setServer({ ...server, role: e.target.value })}
           />
         </>
       }
