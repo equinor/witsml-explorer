@@ -1,8 +1,12 @@
 import ApiClient from "./apiClient";
+import CredentialsService from "./credentialsService";
 
 export default class JobService {
   public static async orderJob(jobType: JobType, payload: Record<string, any>): Promise<any> {
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload));
+    if (CredentialsService.getSourceServerCredentials()) {
+      CredentialsService.removeSourceServerCredentials();
+    }
     if (response.ok) {
       return response.body;
     } else {

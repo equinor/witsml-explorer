@@ -29,6 +29,10 @@ class CredentialsService {
     this.sourceServer = server;
   }
 
+  public removeSourceServerCredentials() {
+    this.sourceServer = null;
+  }
+
   public saveCredentials(serverCredentials: ServerCredentials) {
     const index = this.credentials.findIndex((c) => c.server.id === serverCredentials.server.id);
     if (index === -1) {
