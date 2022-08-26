@@ -1,24 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { WellsListView } from "./ContentViews/WellsListView";
-import { WellboresListView } from "./ContentViews/WellboresListView";
-import { LogTypeListView } from "./ContentViews/LogTypeListView";
-import { LogsListView } from "./ContentViews/LogsListView";
-import { RigsListView } from "./ContentViews/RigsListView";
-import { MessagesListView } from "./ContentViews/MessagesListView";
+import NavigationContext from "../contexts/navigationContext";
+import { selectedJobsFlag } from "../contexts/navigationStateReducer";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
+import { CurveValuesView } from "./ContentViews/CurveValuesView";
+import JobsView from "./ContentViews/JobsView";
+import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
+import { LogsListView } from "./ContentViews/LogsListView";
+import { LogTypeListView } from "./ContentViews/LogTypeListView";
+import { MessagesListView } from "./ContentViews/MessagesListView";
+import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
+import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
+import TrajectoryView from "./ContentViews/TrajectoryView";
+import TubularsListView from "./ContentViews/TubularsListView";
+import TubularView from "./ContentViews/TubularView";
 import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
-import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
-import TubularsListView from "./ContentViews/TubularsListView";
-import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
-import TrajectoryView from "./ContentViews/TrajectoryView";
-import NavigationContext from "../contexts/navigationContext";
-import { CurveValuesView } from "./ContentViews/CurveValuesView";
-import TubularView from "./ContentViews/TubularView";
-import { selectedJobs } from "../contexts/navigationStateReducer";
-import JobsView from "./ContentViews/JobsView";
+import { WellboresListView } from "./ContentViews/WellboresListView";
+import { WellsListView } from "./ContentViews/WellsListView";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -79,7 +79,7 @@ const ContentView = (): React.ReactElement => {
         setView(<TubularView />);
       } else if (currentSelected === selectedWbGeometryGroup) {
         setView(<WbGeometrysListView />);
-      } else if (currentSelected === selectedJobs) {
+      } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
       } else {
         // eslint-disable-next-line no-console

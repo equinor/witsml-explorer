@@ -1,13 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
-import CredentialsService from "../../services/credentialsService";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
-import JobService from "../../services/jobService";
 import { Server } from "../../models/server";
+import CredentialsService from "../../services/credentialsService";
+import JobService from "../../services/jobService";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
+import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedServer, servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
@@ -31,6 +36,15 @@ export const JobsView = (): React.ReactElement => {
     }
   }, [username]);
 
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, selectedItem: any) => {
+    const contextMenuProps: JobInfoContextMenuProps = {
+      dispatchOperation,
+      jobInfo: selectedItem.jobInfo
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <JobInfoContextMenu {...contextMenuProps} />, position } });
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "startTime", label: "Start time", type: ContentType.String },
     { property: "jobType", label: "Job Type", type: ContentType.String },
@@ -52,11 +66,12 @@ export const JobsView = (): React.ReactElement => {
       endTime: jobInfo.endTime ? new Date(jobInfo.endTime).toLocaleString() : "-",
       killTime: jobInfo.killTime ? new Date(jobInfo.killTime).toLocaleString() : "-",
       targetServer: serverUrlToName(servers, jobInfo.targetServer),
-      sourceServer: serverUrlToName(servers, jobInfo.sourceServer)
+      sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
+      jobInfo: jobInfo
     };
   });
 
-  return !isFetchingData ? <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} /> : <></>;
+  return !isFetchingData ? <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} /> : <></>;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {

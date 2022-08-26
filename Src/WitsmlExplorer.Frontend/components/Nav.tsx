@@ -5,7 +5,7 @@ import NavigationContext from "../contexts/navigationContext";
 import {
   Selectable,
   SelectBhaRunGroupAction,
-  selectedJobs,
+  selectedJobsFlag,
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
@@ -319,7 +319,7 @@ const getTubularCrumb = (selectedTubular: Tubular, selectedWell: Well, selectedW
 };
 
 const getJobsCrumb = (currentSelected: Selectable) => {
-  return currentSelected == selectedJobs
+  return currentSelected == selectedJobsFlag
     ? {
         name: "Jobs"
       }

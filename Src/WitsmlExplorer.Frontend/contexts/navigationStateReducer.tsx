@@ -1,32 +1,32 @@
 import { Dispatch, useReducer } from "react";
+import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
+import BhaRun from "../models/bhaRun";
 import LogObject, { getLogObjectProperties } from "../models/logObject";
 import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
-import RiskObject from "../models/riskObject";
 import Rig from "../models/rig";
-import NavigationType from "./navigationType";
+import RiskObject from "../models/riskObject";
+import { Server } from "../models/server";
 import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
+import Tubular, { getTubularProperties } from "../models/tubular";
+import WbGeometryObject from "../models/wbGeometry";
 import Well, { getWellProperties } from "../models/well";
 import Wellbore, {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateLogTypeId,
-  calculateRigGroupId,
-  calculateTrajectoryGroupId,
   calculateMessageGroupId,
+  calculateRigGroupId,
   calculateRiskGroupId,
-  calculateWellboreNodeId,
-  getWellboreProperties,
+  calculateTrajectoryGroupId,
   calculateTubularGroupId,
-  calculateWbGeometryGroupId
+  calculateWbGeometryGroupId,
+  calculateWellboreNodeId,
+  getWellboreProperties
 } from "../models/wellbore";
-import { Server } from "../models/server";
-import ModificationType from "./modificationType";
-import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
-import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
-import Tubular, { getTubularProperties } from "../models/tubular";
-import WbGeometryObject from "../models/wbGeometry";
-import BhaRun from "../models/bhaRun";
+import Filter, { EMPTY_FILTER, filterWells } from "./filter";
+import ModificationType from "./modificationType";
+import NavigationType from "./navigationType";
 
 export interface NavigationState {
   selectedServer: Server;
@@ -61,7 +61,7 @@ export interface NavigationState {
 
 export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
-export const selectedJobs = "jobs";
+export const selectedJobsFlag = "jobs";
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -702,7 +702,7 @@ const selectJobs = (state: NavigationState) => {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
-    currentSelected: selectedJobs
+    currentSelected: selectedJobsFlag
   };
 };
 
