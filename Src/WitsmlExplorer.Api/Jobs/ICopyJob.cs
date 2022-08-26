@@ -1,5 +1,3 @@
-using System.Text;
-
 using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
@@ -11,10 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public override string Description()
         {
-            var jobDesc = new StringBuilder();
-            jobDesc.Append($"Source: {Source.Description()}");
-            jobDesc.Append($"\t\nTarget: {Target.Description()}");
-            return jobDesc.ToString();
+            return $"Source - {Source.Description()}\t\nTarget - {Target.Description()}";
         }
 
     }

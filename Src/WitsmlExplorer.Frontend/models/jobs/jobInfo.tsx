@@ -9,4 +9,5 @@ export default interface JobInfo {
   endTime: string;
   killTime: string;
   status: string;
+  failedReason: string;
 }

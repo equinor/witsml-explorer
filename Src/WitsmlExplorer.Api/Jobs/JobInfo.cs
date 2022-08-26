@@ -31,15 +31,17 @@ namespace WitsmlExplorer.Api.Jobs
 
         public DateTime KillTime { get; set; }
 
+        public string FailedReason { get; set; }
+
         private JobStatus _status;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public JobStatus Status
         {
-            get { return _status; }
+            get => _status;
             set
             {
-                if (value == JobStatus.Finished || value == JobStatus.Failed)
+                if (value is JobStatus.Finished or JobStatus.Failed)
                 {
                     EndTime = DateTime.Now;
                 }

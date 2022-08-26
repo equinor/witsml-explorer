@@ -50,6 +50,7 @@ export const JobsView = (): React.ReactElement => {
     { property: "jobType", label: "Job Type", type: ContentType.String },
     { property: "status", label: "Status", type: ContentType.String },
     { property: "description", label: "Description", type: ContentType.String },
+    { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
     { property: "endTime", label: "Finish time", type: ContentType.String },
@@ -61,7 +62,8 @@ export const JobsView = (): React.ReactElement => {
   const jobInfoRows = jobInfos.map((jobInfo) => {
     return {
       ...jobInfo,
-      description: jobInfo.description.length > 90 ? `${jobInfo.description.substring(0, 50)}...` : jobInfo.description,
+      description: clipLongString(jobInfo.description, 25),
+      failedReason: clipLongString(jobInfo.failedReason, 20),
       startTime: jobInfo.startTime ? new Date(jobInfo.startTime).toLocaleString() : "-",
       endTime: jobInfo.endTime ? new Date(jobInfo.endTime).toLocaleString() : "-",
       killTime: jobInfo.killTime ? new Date(jobInfo.killTime).toLocaleString() : "-",
@@ -72,6 +74,13 @@ export const JobsView = (): React.ReactElement => {
   });
 
   return !isFetchingData ? <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} /> : <></>;
+};
+
+const clipLongString = (toClip: string, length: number): string => {
+  if (!toClip) {
+    return "-";
+  }
+  return toClip.length > length ? `${toClip.substring(0, length).trim()}…` : toClip;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {
