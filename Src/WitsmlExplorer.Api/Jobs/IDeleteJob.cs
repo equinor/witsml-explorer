@@ -1,5 +1,3 @@
-using System.Text;
-
 using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
@@ -10,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public override string Description()
         {
-            return $"ToDelete: {ToDelete.Description()}";
+            return $"ToDelete - {ToDelete.Description()}";
         }
 
     }

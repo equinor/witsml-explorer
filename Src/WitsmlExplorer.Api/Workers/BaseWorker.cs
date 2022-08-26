@@ -21,8 +21,8 @@ namespace WitsmlExplorer.Api.Workers
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)
         {
-            var job = await jobStream.Deserialize<T>();
-            var task = ExecuteBase(job);
+            T job = await jobStream.Deserialize<T>();
+            Task<(WorkerResult, RefreshAction)> task = ExecuteBase(job);
             return (task, job);
         }
 
@@ -31,13 +31,19 @@ namespace WitsmlExplorer.Api.Workers
             try
             {
                 job.JobInfo.Status = JobStatus.Started;
-                var task = await Execute(job);
+                (WorkerResult WorkerResult, RefreshAction RefreshAction) task = await Execute(job);
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
+                if (!task.WorkerResult.IsSuccess)
+                {
+                    job.JobInfo.FailedReason = task.WorkerResult.Reason;
+                }
+
                 return task;
             }
             catch (Exception ex)
             {
                 job.JobInfo.Status = JobStatus.Failed;
+                job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("An unexpected exception has occured: {ex}", ex);
                 throw;
             }
