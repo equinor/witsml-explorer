@@ -17,6 +17,8 @@ import TrajectoryView from "./ContentViews/TrajectoryView";
 import NavigationContext from "../contexts/navigationContext";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import TubularView from "./ContentViews/TubularView";
+import { selectedJobs } from "../contexts/navigationStateReducer";
+import JobsView from "./ContentViews/JobsView";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -77,6 +79,8 @@ const ContentView = (): React.ReactElement => {
         setView(<TubularView />);
       } else if (currentSelected === selectedWbGeometryGroup) {
         setView(<WbGeometrysListView />);
+      } else if (currentSelected === selectedJobs) {
+        setView(<JobsView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

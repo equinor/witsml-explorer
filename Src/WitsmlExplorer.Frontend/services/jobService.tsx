@@ -1,3 +1,4 @@
+import JobInfo from "../models/jobs/jobInfo";
 import ApiClient from "./apiClient";
 import CredentialsService from "./credentialsService";
 
@@ -11,6 +12,15 @@ export default class JobService {
       return response.body;
     } else {
       return "";
+    }
+  }
+
+  public static async getJobInfos(username: string, abortSignal?: AbortSignal): Promise<JobInfo[]> {
+    const response = await ApiClient.get(`/api/jobs/jobinfos/${username}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
     }
   }
 }

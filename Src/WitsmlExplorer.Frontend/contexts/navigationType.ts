@@ -4,6 +4,7 @@ enum NavigationType {
   SelectWell = "SelectWell",
   SelectWellbore = "SelectWellbore",
   SelectBhaRunGroup = "SelectBhaRunGroup",
+  SelectJobs = "SelectJobs",
   SelectLogGroup = "SelectLogGroup",
   SelectLogType = "SelectLogType",
   SelectLogObject = "SelectLogObject",
