@@ -1,7 +1,7 @@
 import { Button as MuiButton, CircularProgress as MuiCircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, PropTypes } from "@material-ui/core";
 import React, { ReactElement, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
 import styled from "styled-components";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { colors } from "../../styles/Colors";
 
@@ -18,10 +18,24 @@ interface ModalDialogProps {
   width?: ModalWidth;
   onCancel?: () => void;
   onDelete?: () => void;
+  showSaveButton?: boolean;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
-  const { heading, content, onDelete, onSubmit, isLoading, confirmColor, confirmText, confirmDisabled, errorMessage, switchButtonPlaces, width = ModalWidth.MEDIUM } = props;
+  const {
+    heading,
+    content,
+    onDelete,
+    onSubmit,
+    isLoading,
+    confirmColor,
+    confirmText,
+    confirmDisabled,
+    errorMessage,
+    switchButtonPlaces,
+    width = ModalWidth.MEDIUM,
+    showSaveButton = true
+  } = props;
   const context = React.useContext(OperationContext);
   const { displayModal } = context.operationState;
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] = useState<boolean>(false);
@@ -43,17 +57,21 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   };
 
   const buttons = [
-    <Button
-      key={"confirm"}
-      onFocus={() => setConfirmButtonIsFocused(true)}
-      onBlur={() => setConfirmButtonIsFocused(false)}
-      disabled={confirmButtonIsDisabled}
-      onClick={onSubmit}
-      color={confirmColor ?? "primary"}
-      variant="contained"
-    >
-      {confirmText ?? "Save"}
-    </Button>,
+    showSaveButton ? (
+      <Button
+        key={"confirm"}
+        onFocus={() => setConfirmButtonIsFocused(true)}
+        onBlur={() => setConfirmButtonIsFocused(false)}
+        disabled={confirmButtonIsDisabled}
+        onClick={onSubmit}
+        color={confirmColor ?? "primary"}
+        variant="contained"
+      >
+        {confirmText ?? "Save"}
+      </Button>
+    ) : (
+      <></>
+    ),
     <Button key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
       Cancel
     </Button>,

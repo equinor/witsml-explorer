@@ -13,7 +13,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
   return (
     <>
       <ModalDialog
-        heading={`Properties for ${jobInfo.jobType} - ${jobInfo.id}`}
+        heading={`Properties for ${jobInfo.jobType}`}
         content={
           <>
             <TextField InputProps={{ readOnly: true }} id="id" label="Job ID" defaultValue={jobInfo.id} fullWidth />
@@ -59,6 +59,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
         }}
         confirmDisabled={true}
         isLoading={false}
+        showSaveButton={false}
       />
     </>
   );
