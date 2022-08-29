@@ -12,8 +12,10 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
 
@@ -34,27 +36,27 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CopyTubularComponentWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTubularComponentsJob>>();
+            Mock<ILogger<CopyTubularComponentsJob>> logger = new();
             _copyTubularComponentWorker = new CopyTubularComponentsWorker(logger.Object, witsmlClientProvider.Object);
         }
 
         [Fact]
-        public async Task CopyTubularComponent_CopiedCorrectly()
+        public async Task CopyTubularComponentCopiedCorrectly()
         {
-            var copyTubularComponentJob = CreateJobTemplate();
+            CopyTubularComponentsJob copyTubularComponentJob = CreateJobTemplate();
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == SourceTubularUid), new OptionsIn(ReturnElements.All, null)))
                 .ReturnsAsync(GetSourceTubulars());
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == TargetTubularUid), new OptionsIn(ReturnElements.All, null)))
                 .ReturnsAsync(GetTargetTubulars());
-            var copyTubularComponentQuery = SetupUpdateInStoreAsync();
+            List<WitsmlTubulars> copyTubularComponentQuery = SetupUpdateInStoreAsync();
 
-            var result = await _copyTubularComponentWorker.Execute(copyTubularComponentJob);
-            var updatedTubular = copyTubularComponentQuery.First().Tubulars.First();
+            (WorkerResult, RefreshAction) result = await _copyTubularComponentWorker.Execute(copyTubularComponentJob);
+            WitsmlTubular updatedTubular = copyTubularComponentQuery.First().Tubulars.First();
             Assert.True(result.Item1.IsSuccess);
             Assert.Equal(TargetTubularUid, updatedTubular.Uid);
             Assert.Empty(updatedTubular.TubularComponents.FindAll((tc) => tc.Uid == TcUid1));
@@ -66,7 +68,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private List<WitsmlTubulars> SetupUpdateInStoreAsync()
         {
-            var updatedTubulars = new List<WitsmlTubulars>();
+            List<WitsmlTubulars> updatedTubulars = new();
             _witsmlClient.Setup(client => client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>()))
                 .Callback<WitsmlTubulars>(witsmlTubulars => updatedTubulars.Add(witsmlTubulars))
                 .ReturnsAsync(new QueryResult(true));
@@ -98,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlTubulars GetSourceTubulars()
         {
-            var witsmlTubular = new WitsmlTubular
+            WitsmlTubular witsmlTubular = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -124,7 +126,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlTubulars GetTargetTubulars()
         {
-            var witsmlTubular = new WitsmlTubular
+            WitsmlTubular witsmlTubular = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,

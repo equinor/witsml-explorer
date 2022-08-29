@@ -5,6 +5,7 @@ using Serilog;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 
@@ -38,7 +39,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 NewMnemonic = ""
             };
 
-            (WorkerResult result, WitsmlExplorer.Api.Models.RefreshAction _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             Assert.True(result.IsSuccess, result.Reason);
         }

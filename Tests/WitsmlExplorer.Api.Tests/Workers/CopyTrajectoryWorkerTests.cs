@@ -14,8 +14,10 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
 
@@ -33,25 +35,25 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CopyTrajectoryWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTrajectoryJob>>();
+            Mock<ILogger<CopyTrajectoryJob>> logger = new();
             _copyTrajectoryWorker = new CopyTrajectoryWorker(logger.Object, witsmlClientProvider.Object);
         }
 
         [Fact]
-        public async Task CopyTrajectory_OK()
+        public async Task CopyTrajectoryOK()
         {
-            var copyTrajectoryJob = CreateJobTemplate();
+            CopyTrajectoryJob copyTrajectoryJob = CreateJobTemplate();
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlTrajectories>(witsmlTrajectories => witsmlTrajectories.Trajectories.First().Uid == TrajectoryUid), new OptionsIn(ReturnElements.All, null)))
                 .ReturnsAsync(GetSourceTrajectories());
             SetupGetWellbore();
-            var copyTrajectoryQuery = SetupAddInStoreAsync();
+            List<WitsmlTrajectories> copyTrajectoryQuery = SetupAddInStoreAsync();
 
-            var result = await _copyTrajectoryWorker.Execute(copyTrajectoryJob);
-            var trajectory = copyTrajectoryQuery.First().Trajectories.First();
+            (WorkerResult, RefreshAction) result = await _copyTrajectoryWorker.Execute(copyTrajectoryJob);
+            WitsmlTrajectory trajectory = copyTrajectoryQuery.First().Trajectories.First();
             Assert.True(result.Item1.IsSuccess);
             Assert.NotEmpty(trajectory.TrajectoryStations);
         }
@@ -77,7 +79,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private List<WitsmlTrajectories> SetupAddInStoreAsync()
         {
-            var addedTrajectory = new List<WitsmlTrajectories>();
+            List<WitsmlTrajectories> addedTrajectory = new();
             _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()))
                 .Callback<WitsmlTrajectories>(witsmlTrajectories => addedTrajectory.Add(witsmlTrajectories))
                 .ReturnsAsync(new QueryResult(true));
@@ -104,7 +106,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlTrajectories GetSourceTrajectories()
         {
-            var witsmlTrajectory = new WitsmlTrajectory
+            WitsmlTrajectory witsmlTrajectory = new()
             {
                 UidWell = WellUid,
                 UidWellbore = SourceWellboreUid,

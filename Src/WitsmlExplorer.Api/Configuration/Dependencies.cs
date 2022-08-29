@@ -13,6 +13,7 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api.Configuration
 {
@@ -52,7 +53,7 @@ namespace WitsmlExplorer.Api.Configuration
 
         public static void InitializeRepository(this IApplicationBuilder app)
         {
-            var repository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
+            IDocumentRepository<Server, Guid> repository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
             repository?.InitClientAsync().GetAwaiter().GetResult();
         }
     }

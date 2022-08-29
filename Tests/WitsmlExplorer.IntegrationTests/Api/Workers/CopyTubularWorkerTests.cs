@@ -8,7 +8,7 @@ using Serilog;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
 
@@ -25,7 +25,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyTubularJob> logger = loggerFactory.CreateLogger<CopyTubularJob>();
-            _worker = new CopyTubularWorker(logger, witsmlClientProvider);
+            CopyUtils copyUtils = new(loggerFactory.CreateLogger<CopyUtils>(), witsmlClientProvider);
+            _worker = new CopyTubularWorker(logger, witsmlClientProvider, copyUtils);
         }
 
         [Fact(Skip = "Should only be run manually")]

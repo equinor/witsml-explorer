@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Serilog;
 
+using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -48,8 +49,8 @@ namespace WitsmlExplorer.Api.Services
         private async Task<IEnumerable<Well>> GetWellsInformation(string wellUid = null)
         {
             DateTime start = DateTime.Now;
-            Witsml.Data.WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
-            Witsml.Data.WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.All));
+            WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
+            WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.All));
             List<Well> wells = result.Wells
                 .Select(well => new Well
                 {
