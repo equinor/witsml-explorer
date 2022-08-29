@@ -37,7 +37,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyTubularJob>> logger = new();
-            _copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object);
+            CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object, witsmlClientProvider.Object);
+            _copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
         }
 
         [Fact]

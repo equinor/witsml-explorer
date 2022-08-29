@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task<Tuple<WitsmlTrajectory, WitsmlWellbore>> FetchData(CopyTrajectoryJob job)
         {
             Task<WitsmlTrajectory> trajectoryQuery = GetTrajectory(_witsmlSourceClient, job.Source);
-            Task<WitsmlWellbore> wellboreQuery = GetWellbore(_witsmlClient, job.Target);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
             await Task.WhenAll(trajectoryQuery, wellboreQuery);
             WitsmlTrajectory trajectory = await trajectoryQuery;
             WitsmlWellbore targetWellbore = await wellboreQuery;
@@ -62,13 +62,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.TrajectoryUid);
             WitsmlTrajectories result = await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
             return !result.Trajectories.Any() ? null : result.Trajectories.First();
-        }
-
-        private static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
-        {
-            WitsmlWellbores witsmlWellbore = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            WitsmlWellbores wellbores = await client.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.Requested));
-            return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
     }
 }

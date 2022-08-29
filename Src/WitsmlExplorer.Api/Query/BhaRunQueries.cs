@@ -167,7 +167,7 @@ namespace WitsmlExplorer.Api.Query
                 }
             );
         }
-        public static IEnumerable<WitsmlBhaRuns> CopyWitsmlBhaRuns(WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore)
+        public static IEnumerable<WitsmlBhaRun> CopyWitsmlBhaRuns(WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore)
         {
             return bhaRuns.BhaRuns.Select((bhaRun) =>
             {
@@ -175,10 +175,7 @@ namespace WitsmlExplorer.Api.Query
                 bhaRun.NameWell = targetWellbore.NameWell;
                 bhaRun.UidWellbore = targetWellbore.Uid;
                 bhaRun.NameWellbore = targetWellbore.Name;
-                return new WitsmlBhaRuns
-                {
-                    BhaRuns = bhaRun.AsSingletonList()
-                };
+                return bhaRun;
             });
         }
     }

@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 }
             }));
 
-            string successString = successUids.Count > 0 ? $"Deleted {queries.First().GetType()}s: {string.Join(", ", successUids)}." : "";
+            string successString = successUids.Count > 0 ? $"Deleted {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction)
                 : (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.First().GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
