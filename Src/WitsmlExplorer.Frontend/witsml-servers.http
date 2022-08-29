@@ -1,0 +1,42 @@
+@adminToken = ey...
+@devToken = ey...
+@contentType = application/json
+
+
+GET https://localhost:5001/api/witsml-servers HTTP/1.1
+Authorization: Bearer {{devToken}}
+
+###
+
+
+POST https://localhost:5001/api/witsml-servers HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+    "name": "SteinArne Test",
+    "url": "https://witsml-explorer.dev.equinor.com",
+    "description": "Just a test",
+    "securityscheme": "OAuth2",
+    "role": "access"
+}
+
+###
+@serverId = eed55d6c-7d29-47b2-a71b-e8aa46f37124
+DELETE https://localhost:5001/api/witsml-servers/{{serverId}} HTTP/1.1
+Authorization: Bearer {{adminToken}}
+###
+
+@serverId = eed55d6c-7d29-47b2-a71b-e8aa46f37124
+PATCH https://localhost:5001/api/witsml-servers/{{serverId}} HTTP/1.1
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+    "name": "SteinArne PatchTest",
+    "url": "https://witsml-explorer.dev.equinor.com",
+    "description": "PATCHED",
+    "securityscheme": "OAuth2",
+    "role": "access",
+    "id": "eed55d6c-7d29-47b2-a71b-e8aa46f37124"
+}

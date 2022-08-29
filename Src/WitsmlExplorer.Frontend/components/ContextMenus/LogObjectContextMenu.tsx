@@ -1,30 +1,30 @@
-import LogPropertiesModal from "../Modals/LogPropertiesModal";
-import React, { useEffect, useState } from "react";
-import ContextMenu from "./ContextMenu";
+import { Typography } from "@equinor/eds-core-react";
 import { Divider, ListItemIcon, makeStyles, MenuItem } from "@material-ui/core";
-import JobService, { JobType } from "../../services/jobService";
-import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import LogObjectService from "../../services/logObjectService";
-import ConfirmModal from "../Modals/ConfirmModal";
-import OperationType from "../../contexts/operationType";
+import { ImportExport } from "@material-ui/icons";
+import React, { useEffect, useState } from "react";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreLogAction, UpdateWellboreLogsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { Server } from "../../models/server";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import NestedMenuItem from "./NestedMenuItem";
-import { LogObjectRow } from "../ContentViews/LogsListView";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import { ImportExport } from "@material-ui/icons";
-import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
+import OperationType from "../../contexts/operationType";
+import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
+import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
 import LogReference from "../../models/jobs/logReference";
 import LogReferences from "../../models/jobs/logReferences";
-import { Typography } from "@equinor/eds-core-react";
-import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
+import { Server } from "../../models/server";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
+import LogObjectService from "../../services/logObjectService";
+import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import { LogObjectRow } from "../ContentViews/LogsListView";
+import ConfirmModal from "../Modals/ConfirmModal";
+import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
+import LogPropertiesModal from "../Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import ContextMenu from "./ContextMenu";
+import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -87,7 +87,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const showCredentialsModal = (server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: ServerCredentials) => {
+    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
       await CredentialsService.saveCredentials(credentials);
       orderCopyPasteJob();
       dispatchOperation({ type: OperationType.HideModal });

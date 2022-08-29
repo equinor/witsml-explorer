@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
+import React, { useEffect, useState } from "react";
 import { Server } from "../../models/server";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
 export interface UserCredentialsModalProps {
   server: Server;
-  serverCredentials: ServerCredentials;
+  serverCredentials: BasicServerCredentials;
   mode: CredentialsMode;
   errorMessage?: string;
-  onConnectionVerified?: (credentials?: ServerCredentials) => void;
+  onConnectionVerified?: (credentials?: BasicServerCredentials) => void;
   onCancel?: () => void;
   confirmText?: string;
 }

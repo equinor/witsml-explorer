@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -22,7 +23,7 @@ namespace WitsmlExplorer.Api
 {
     public class Startup
     {
-        readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -34,7 +35,7 @@ namespace WitsmlExplorer.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
-            var host = Configuration["Host"];
+            string host = Configuration["Host"];
             if (string.IsNullOrEmpty(host) || !host.StartsWith("http"))
             {
                 throw new Exception(
@@ -65,7 +66,11 @@ namespace WitsmlExplorer.Api
             if (Configuration["OAuth2Enabled"] == "True")
             {
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-                services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
+                List<string> policyRoles = Configuration.GetSection("AzureAd:PolicyRoles").Get<List<string>>();
+                foreach (string policyRole in policyRoles)
+                {
+                    services.AddAuthorization(options => options.AddPolicy(policyRole, authBuilder => authBuilder.RequireRole(policyRole)));
+                }
             }
 
         }
@@ -73,6 +78,7 @@ namespace WitsmlExplorer.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.InitializeRepository();
             if (env.IsDevelopment())
             {
@@ -93,6 +99,7 @@ namespace WitsmlExplorer.Api
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
+
             }
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }

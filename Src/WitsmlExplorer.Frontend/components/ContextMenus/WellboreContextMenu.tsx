@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
-import ContextMenu from "./ContextMenu";
+import { Typography } from "@equinor/eds-core-react";
 import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
-import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import OperationType from "../../contexts/operationType";
-import Wellbore from "../../models/wellbore";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import WellboreService from "../../services/wellboreService";
-import ConfirmModal from "../Modals/ConfirmModal";
-import JobService, { JobType } from "../../services/jobService";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import { Server } from "../../models/server";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import WellboreReference from "../../models/jobs/wellboreReference";
-import NestedMenuItem from "./NestedMenuItem";
-import LogObject from "../../models/logObject";
-import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreAction } from "../../contexts/navigationStateReducer";
-import TrajectoryReference from "../../models/jobs/trajectoryReference";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
 import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajectoryJob";
-import LogReferences from "../../models/jobs/logReferences";
-import { Typography } from "@equinor/eds-core-react";
-import { useClipboardTubularReferences } from "./TubularContextMenuUtils";
 import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
+import LogReferences from "../../models/jobs/logReferences";
+import TrajectoryReference from "../../models/jobs/trajectoryReference";
+import WellboreReference from "../../models/jobs/wellboreReference";
+import LogObject from "../../models/logObject";
+import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
+import WellboreService from "../../services/wellboreService";
+import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import ConfirmModal from "../Modals/ConfirmModal";
+import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import { useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
+import ContextMenu from "./ContextMenu";
+import NestedMenuItem from "./NestedMenuItem";
+import { useClipboardTubularReferences } from "./TubularContextMenuUtils";
 
 export interface WellboreContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreAction) => void;
@@ -105,7 +105,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
 
   // ToDo: Equal LogObjectContextMenu.showCredentialModal...Should be refactored out?
   const showCredentialsModal = (jobType: JobType, server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: ServerCredentials) => {
+    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
       await CredentialsService.saveCredentials(credentials);
       jobType === JobType.CopyLog ? orderCopyJob(JobType.CopyLog) : orderCopyJob(JobType.CopyTrajectory);
       dispatchOperation({ type: OperationType.HideModal });

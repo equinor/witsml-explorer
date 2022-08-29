@@ -1,14 +1,13 @@
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTubularComponentReferences, TubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
-import { Server } from "../../models/server";
-import JobService, { JobType } from "../../services/jobService";
-import { DispatchOperation } from "./TubularContextMenuUtils";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import React from "react";
 import TubularReference from "../../models/jobs/tubularReference";
+import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import { DispatchOperation } from "./TubularContextMenuUtils";
 
 export const useClipboardTubularComponentReferences: () => [TubularComponentReferences | null, Dispatch<SetStateAction<TubularComponentReferences>>] = () => {
   const [tubularComponentReferences, setTubularComponentReferences] = useState<TubularComponentReferences>(null);
@@ -30,7 +29,7 @@ export const useClipboardTubularComponentReferences: () => [TubularComponentRefe
 };
 
 export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentReferences: TubularComponentReferences) => {
-  const onConnectionVerified = async (credentials: ServerCredentials) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
     await CredentialsService.saveCredentials(credentials);
     orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
     dispatchOperation({ type: OperationType.HideModal });
