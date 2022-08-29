@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Serilog;
@@ -7,7 +8,7 @@ using Serilog;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Delete;
 
 using Xunit;
 
@@ -19,20 +20,20 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         public DeleteTubularWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<DeleteTubularsJob>();
-            var logger2 = loggerFactory.CreateLogger<DeleteUtils>();
-            var deleteUtils = new DeleteUtils(logger2, witsmlClientProvider);
+            ILogger<DeleteTubularsJob> logger = loggerFactory.CreateLogger<DeleteTubularsJob>();
+            ILogger<DeleteUtils> logger2 = loggerFactory.CreateLogger<DeleteUtils>();
+            DeleteUtils deleteUtils = new(logger2, witsmlClientProvider);
             _worker = new DeleteTubularsWorker(logger, witsmlClientProvider, deleteUtils);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task DeleteTubular()
         {
-            var job = new DeleteTubularsJob
+            DeleteTubularsJob job = new()
             {
                 ToDelete = new TubularReferences
                 {

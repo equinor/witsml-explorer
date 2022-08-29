@@ -17,12 +17,13 @@ using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Swagger;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api
 {
     public class Startup
     {
-        readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration configuration)
         {
@@ -34,7 +35,7 @@ namespace WitsmlExplorer.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
-            var host = Configuration["Host"];
+            string host = Configuration["Host"];
             if (string.IsNullOrEmpty(host) || !host.StartsWith("http"))
             {
                 throw new Exception(

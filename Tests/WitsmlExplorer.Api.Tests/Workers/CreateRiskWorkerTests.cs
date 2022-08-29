@@ -15,7 +15,7 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Create;
 
 using Xunit;
 
@@ -32,21 +32,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CreateRiskWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CreateRiskJob>();
+            ILogger<CreateRiskJob> logger = loggerFactory.CreateLogger<CreateRiskJob>();
             _worker = new CreateRiskWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
-        public async Task ValidCreateRiskJob_Execute()
+        public async Task ValidCreateRiskJobExecute()
         {
-            var job = CreateJobTemplate();
+            CreateRiskJob job = CreateJobTemplate();
 
-            var createdRisks = new List<WitsmlRisks>();
+            List<WitsmlRisks> createdRisks = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlRisks>()))
                 .Callback<WitsmlRisks>(risk => createdRisks.Add(risk))
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(createdRisks);
             Assert.Single(createdRisks.First().Risks);
-            var createdRisk = createdRisks.First().Risks.First();
+            WitsmlRisk createdRisk = createdRisks.First().Risks.First();
             Assert.Equal(Name, createdRisk.Name);
             Assert.Equal(WellUid, createdRisk.UidWell);
             Assert.Equal(WellName, createdRisk.NameWell);

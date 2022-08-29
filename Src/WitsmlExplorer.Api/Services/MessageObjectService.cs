@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Serilog;
 
+using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -26,9 +27,9 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid)
         {
-            Witsml.Data.WitsmlMessages witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
-            Witsml.Data.WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
-            Witsml.Data.WitsmlMessage messageObject = result.Messages.FirstOrDefault();
+            WitsmlMessages witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
+            WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
+            WitsmlMessage messageObject = result.Messages.FirstOrDefault();
             return messageObject == null
                 ? null
                 : new MessageObject
@@ -48,8 +49,8 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
         {
             DateTime start = DateTime.Now;
-            Witsml.Data.WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
-            Witsml.Data.WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
+            WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
+            WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
             List<MessageObject> messageObjects = result.Messages
                 .Select(message =>
                     new MessageObject

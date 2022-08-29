@@ -14,7 +14,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
 
@@ -31,22 +31,22 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ModifyMessageObjectWorkerTest()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
 
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ModifyMessageObjectJob>();
+            ILogger<ModifyMessageObjectJob> logger = loggerFactory.CreateLogger<ModifyMessageObjectJob>();
             _worker = new ModifyMessageWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task UpdateMessageInStore()
         {
-            var job = CreateJobTemplate();
+            ModifyMessageObjectJob job = CreateJobTemplate();
 
-            var updatedMessages = new List<WitsmlMessages>();
+            List<WitsmlMessages> updatedMessages = new();
             _witsmlClient.Setup(client =>
                     client.UpdateInStoreAsync(It.IsAny<WitsmlMessages>())).Callback<WitsmlMessages>(msgs => updatedMessages.Add(msgs))
                 .ReturnsAsync(new QueryResult(true));

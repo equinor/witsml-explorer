@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Repositories
         [Fact(Skip = "Should only be run manually")]
         public async Task GetAllServers()
         {
-            System.Collections.Generic.IEnumerable<Server> servers = await _repo.GetDocumentsAsync();
+            IEnumerable<Server> servers = await _repo.GetDocumentsAsync();
             foreach (Server server in servers)
             {
                 _output.WriteLine(server.ToString());
