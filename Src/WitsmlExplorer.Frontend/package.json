@@ -72,7 +72,7 @@
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.26",
     "@types/uuidv4": "^5.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/eslint-plugin": "^5.36.0",
     "@typescript-eslint/parser": "^5.35.1",
     "eslint": "<9.0.0",
     "eslint-plugin-jest": "^26.8.7",
