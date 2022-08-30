@@ -15,7 +15,8 @@ namespace Witsml.Data
                 Risks = this.AsSingletonList()
             };
         }
-
+        [XmlElement("objectReference")]
+        public WitsmlObjectReference ObjectReference { get; set; }
         [XmlElement("type")]
         public string Type { get; set; }
         [XmlElement("category")]
@@ -35,15 +36,15 @@ namespace Witsml.Data
         [XmlElement("mdHoleEnd")]
         public WitsmlMeasuredDepthCoord MdHoleEnd { get; set; }
         [XmlElement("tvdHoleStart")]
-        public string TvdHoleStart { get; set; }
+        public WitsmlWellVerticalDepthCoord TvdHoleStart { get; set; }
         [XmlElement("tvdHoleEnd")]
-        public string TvdHoleEnd { get; set; }
+        public WitsmlWellVerticalDepthCoord TvdHoleEnd { get; set; }
         [XmlElement("mdBitStart")]
         public WitsmlMeasuredDepthCoord MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
         public WitsmlMeasuredDepthCoord MdBitEnd { get; set; }
         [XmlElement("diaHole")]
-        public string DiaHole { get; set; }
+        public WitsmlLengthMeasure DiaHole { get; set; }
         [XmlElement("severityLevel")]
         public string SeverityLevel { get; set; }
         [XmlElement("probabilityLevel")]

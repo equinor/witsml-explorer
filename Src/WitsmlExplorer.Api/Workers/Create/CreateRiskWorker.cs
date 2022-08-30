@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,13 +87,13 @@ namespace WitsmlExplorer.Api.Workers.Create
                     AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
                     DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = risk.MdHoleStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    TvdHoleStart = risk.TvdHoleStart,
-                    TvdHoleEnd = risk.TvdHoleEnd,
-                    MdBitStart = risk.MdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdBitEnd = risk.MdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = risk.MdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    DiaHole = risk.DiaHole,
+                    MdHoleStart = (WitsmlMeasuredDepthCoord)(risk.MdHoleStart?.ToWitsml()),
+                    MdHoleEnd = (WitsmlMeasuredDepthCoord)(risk.MdHoleEnd?.ToWitsml()),
+                    TvdHoleStart = (WitsmlWellVerticalDepthCoord)(risk.TvdHoleStart?.ToWitsml()),
+                    TvdHoleEnd = (WitsmlWellVerticalDepthCoord)(risk.TvdHoleEnd?.ToWitsml()),
+                    MdBitStart = (WitsmlMeasuredDepthCoord)(risk.MdBitStart?.ToWitsml()),
+                    MdBitEnd = (WitsmlMeasuredDepthCoord)(risk.MdBitEnd?.ToWitsml()),
+                    DiaHole = risk.DiaHole?.ToWitsml(),
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,
