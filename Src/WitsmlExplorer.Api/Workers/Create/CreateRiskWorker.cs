@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.Measures;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -34,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             Risk risk = job.Risk;
             Verify(risk);
 
-            WitsmlRisks riskToCreate = SetupRiskToCreate(risk);
+            WitsmlRisks riskToCreate = RiskQueries.CreateRisk(risk);
 
             QueryResult result = await _witsmlClient.AddToStoreAsync(riskToCreate);
             if (result.IsSuccessful)
@@ -66,50 +64,6 @@ namespace WitsmlExplorer.Api.Workers.Create
                 WitsmlRisks riskResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isCreated = riskResult.Risks.Any();
             }
-        }
-
-        private static WitsmlRisks SetupRiskToCreate(Risk risk)
-        {
-            return new WitsmlRisks
-            {
-                Risks = new WitsmlRisk
-                {
-                    Uid = risk.Uid,
-                    UidWellbore = risk.WellboreUid,
-                    UidWell = risk.WellUid,
-                    Name = risk.Name,
-                    NameWellbore = risk.WellboreName,
-                    NameWell = risk.WellName,
-                    Type = risk.Type,
-                    Category = risk.Category,
-                    SubCategory = risk.SubCategory,
-                    ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
-                    DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = (WitsmlMeasuredDepthCoord)(risk.MdHoleStart?.ToWitsml()),
-                    MdHoleEnd = (WitsmlMeasuredDepthCoord)(risk.MdHoleEnd?.ToWitsml()),
-                    TvdHoleStart = (WitsmlWellVerticalDepthCoord)(risk.TvdHoleStart?.ToWitsml()),
-                    TvdHoleEnd = (WitsmlWellVerticalDepthCoord)(risk.TvdHoleEnd?.ToWitsml()),
-                    MdBitStart = (WitsmlMeasuredDepthCoord)(risk.MdBitStart?.ToWitsml()),
-                    MdBitEnd = (WitsmlMeasuredDepthCoord)(risk.MdBitEnd?.ToWitsml()),
-                    DiaHole = risk.DiaHole?.ToWitsml(),
-                    SeverityLevel = risk.SeverityLevel,
-                    ProbabilityLevel = risk.ProbabilityLevel,
-                    Summary = risk.Summary,
-                    Details = risk.Details,
-                    Identification = risk.Identification,
-                    Contingency = risk.Contigency,
-                    Mitigation = risk.Mitigation,
-                    CommonData = new WitsmlCommonData
-                    {
-                        ItemState = risk.CommonData.ItemState,
-                        SourceName = risk.CommonData.SourceName,
-                        DTimCreation = risk.CommonData.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                        DTimLastChange = risk.CommonData.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    },
-                }.AsSingletonList()
-            };
         }
 
         private static void Verify(Risk risk)

@@ -1,18 +1,18 @@
-import { PropertiesModalMode, validText } from "./ModalParts";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import RiskObject from "../../models/riskObject";
-import React, { useEffect, useState } from "react";
-import ModalDialog from "./ModalDialog";
-import { InputAdornment, TextField } from "@material-ui/core";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
-import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
+import { InputAdornment, TextField } from "@material-ui/core";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { itemStateTypes } from "../../models/itemStateTypes";
 import { riskAffectedPersonnel } from "../../models/riskAffectedPersonnel";
 import { riskCategory } from "../../models/riskCategory";
+import RiskObject from "../../models/riskObject";
 import { riskSubCategory } from "../../models/riskSubCategory";
 import { riskType } from "../../models/riskType";
-import { itemStateTypes } from "../../models/itemStateTypes";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export interface RiskPropertiesModalProps {
   mode: PropertiesModalMode;
@@ -96,7 +96,6 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               <TextField
                 id="extendCategory"
                 label="extendCategory"
-                required
                 value={editableRiskObject.extendCategory ? editableRiskObject.extendCategory : ""}
                 fullWidth
                 inputProps={{ minLength: 1 }}
@@ -173,10 +172,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               <TextField
                 id="severityLevel"
                 label="severityLevel"
-                required
                 value={editableRiskObject.severityLevel ? editableRiskObject.severityLevel : ""}
-                error={editableRiskObject.severityLevel.length === 0}
-                helperText={editableRiskObject.severityLevel.length === 0 ? "The risk severityLevel must be at least 1 character" : ""}
+                error={editableRiskObject.severityLevel?.length === 0}
+                helperText={editableRiskObject.severityLevel?.length === 0 ? "The risk severityLevel must be at least 1 character" : ""}
                 fullWidth
                 inputProps={{ minLength: 1 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, severityLevel: e.target.value })}
@@ -184,10 +182,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               <TextField
                 id="probabilityLevel"
                 label="probabilityLevel"
-                required
                 value={editableRiskObject.probabilityLevel ? editableRiskObject.probabilityLevel : ""}
-                error={editableRiskObject.probabilityLevel.length === 0}
-                helperText={editableRiskObject.probabilityLevel.length === 0 ? "The risk probabilityLevel must be at least 1 character" : ""}
+                error={editableRiskObject.probabilityLevel?.length === 0}
+                helperText={editableRiskObject.probabilityLevel?.length === 0 ? "The risk probabilityLevel must be at least 1 character" : ""}
                 fullWidth
                 inputProps={{ minLength: 1 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, probabilityLevel: e.target.value })}
@@ -197,8 +194,8 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 label="summary"
                 required
                 value={editableRiskObject.summary ? editableRiskObject.summary : ""}
-                error={editableRiskObject.summary.length === 0}
-                helperText={editableRiskObject.summary.length === 0 ? "The risk summary must be at least 1 character" : ""}
+                error={editableRiskObject.summary?.length === 0}
+                helperText={editableRiskObject.summary?.length === 0 ? "The risk summary must be at least 1 character" : ""}
                 fullWidth
                 inputProps={{ minLength: 1 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, summary: e.target.value })}
@@ -206,10 +203,9 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               <TextField
                 id="details"
                 label="details"
-                required
                 value={editableRiskObject.details ? editableRiskObject.details : ""}
-                error={editableRiskObject.details.length === 0}
-                helperText={editableRiskObject.details.length === 0 ? "The risk details must be at least 1 character" : ""}
+                error={editableRiskObject.details?.length === 0}
+                helperText={editableRiskObject.details?.length === 0 ? "The risk details must be at least 1 character" : ""}
                 fullWidth
                 inputProps={{ minLength: 1 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, details: e.target.value })}
@@ -217,7 +213,6 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               <TextField
                 id="sourceName"
                 label="sourceName"
-                required
                 value={editableRiskObject.commonData.sourceName ? editableRiskObject.commonData.sourceName : ""}
                 fullWidth
                 onChange={(e) => {
