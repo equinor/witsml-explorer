@@ -29,6 +29,7 @@ import WbGeometryObjectService from "../../services/wbGeometryService";
 import BhaRunsContextMenu, { BhaRunsContextMenuProps } from "../ContextMenus/BhaRunsContextMenu";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
+import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
 import RisksContextMenu, { RisksContextMenuProps } from "../ContextMenus/RisksContextMenu";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
@@ -72,6 +73,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const onRigsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: RigsContextMenuProps = { dispatchOperation, wellbore, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigsContextMenu {...contextMenuProps} />, position } });
   };
 
   const onRisksContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
@@ -236,7 +244,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onLabelClick={() => onSelectMessageGroup(well, wellbore, messageGroupId)}
         onContextMenu={preventContextMenuPropagation}
       />
-      <TreeItem nodeId={rigGroupId} labelText={"Rigs"} onLabelClick={() => onSelectRigGroup(well, wellbore, rigGroupId)} onContextMenu={preventContextMenuPropagation} />
+      <TreeItem
+        nodeId={rigGroupId}
+        labelText={"Rigs"}
+        onLabelClick={() => onSelectRigGroup(well, wellbore, rigGroupId)}
+        onContextMenu={(event) => onRigsContextMenu(event, wellbore)}
+      />
       <TreeItem
         nodeId={riskGroupId}
         labelText={"Risks"}

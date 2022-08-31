@@ -1,31 +1,34 @@
-﻿import React from "react";
-import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
-import ContextMenu from "./ContextMenu";
-import { Server } from "../../models/server";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import { UpdateWellboreRigsAction } from "../../contexts/navigationStateReducer";
-import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import { Typography } from "@equinor/eds-core-react";
-import { RigRow } from "../ContentViews/RigsListView";
+﻿import { Typography } from "@equinor/eds-core-react";
+import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
+import React from "react";
 import styled from "styled-components";
-import JobService, { JobType } from "../../services/jobService";
-import ConfirmModal from "../Modals/ConfirmModal";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
+import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
+import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import { RigRow } from "../ContentViews/RigsListView";
+import ConfirmModal from "../Modals/ConfirmModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
+import ContextMenu from "./ContextMenu";
+import { onClickCopy, onClickPaste, useClipboardRigReferences } from "./RigContextMenuUtils";
 
 export interface RigContextMenuProps {
   checkedRigRows: RigRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreRigsAction) => void;
+  wellbore: Wellbore;
   servers: Server[];
   selectedServer: Server;
 }
 
 const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
-  const { checkedRigRows, dispatchOperation } = props;
+  const { checkedRigRows, dispatchOperation, wellbore, servers, selectedServer } = props;
+  const [rigReferences] = useClipboardRigReferences();
+  const rigs = checkedRigRows.map((row) => row.rig);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -67,15 +70,24 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRigRows.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
+        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, rigs, dispatchOperation)} disabled={rigs.length === 0}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Copy rig{rigs?.length > 1 && "s"}</Typography>
+        </MenuItem>,
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, rigReferences)} disabled={rigReferences === null}>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedRigRows.length !== 1}>
           <ListItemIcon>
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
           <Typography color="primary">Delete</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRigRows.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

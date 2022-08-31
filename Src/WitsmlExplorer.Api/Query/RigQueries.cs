@@ -78,6 +78,19 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
+        public static WitsmlRigs QueryByIds(string wellUid, string wellboreUid, string[] rigUids)
+        {
+            return new WitsmlRigs
+            {
+                Rigs = rigUids.Select((rigUid) => new WitsmlRig
+                {
+                    Uid = rigUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }).ToList()
+            };
+        }
+
         public static IEnumerable<WitsmlRig> DeleteRigQuery(string wellUid, string wellboreUid, string[] rigUids)
         {
             return rigUids.Select((rigUid) =>
@@ -88,6 +101,18 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid
                 }
             );
+        }
+
+        public static IEnumerable<WitsmlRig> CopyWitsmlRigs(WitsmlRigs rigs, WitsmlWellbore targetWellbore)
+        {
+            return rigs.Rigs.Select((rig) =>
+            {
+                rig.UidWell = targetWellbore.UidWell;
+                rig.NameWell = targetWellbore.NameWell;
+                rig.UidWellbore = targetWellbore.Uid;
+                rig.NameWellbore = targetWellbore.Name;
+                return rig;
+            });
         }
 
         public static WitsmlRigs CreateRig(Rig rig)

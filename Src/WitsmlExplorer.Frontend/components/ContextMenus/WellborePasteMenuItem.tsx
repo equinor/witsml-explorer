@@ -17,6 +17,7 @@ import Icon from "../../styles/Icons";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import { useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import { useClipboardRigReferences } from "./RigContextMenuUtils";
 import { useClipboardRiskReferences } from "./RiskContextMenuUtils";
 import { useClipboardTubularReferences } from "./TubularContextMenuUtils";
 
@@ -30,6 +31,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
   const { dispatchOperation, wellbore, servers } = props;
   const [bhaRunReferences] = useClipboardBhaRunReferences();
   const [logReferences, setLogReferences] = useState<LogReferences>(null);
+  const [rigReferences] = useClipboardRigReferences();
   const [riskReferences] = useClipboardRiskReferences();
   const [trajectoryReference, setTrajectoryReference] = useState<TrajectoryReference>(null);
   const [tubularReferences] = useClipboardTubularReferences();
@@ -86,7 +88,8 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
       (jobType === JobType.CopyTrajectory && trajectoryReference.serverUrl) ||
       (jobType === JobType.CopyTubular && tubularReferences.serverUrl) ||
       (jobType === JobType.CopyBhaRun && bhaRunReferences.serverUrl) ||
-      (jobType === JobType.CopyRisk && riskReferences.serverUrl);
+      (jobType === JobType.CopyRisk && riskReferences.serverUrl) ||
+      (jobType === JobType.CopyRig && rigReferences.serverUrl);
     const sourceServer = servers.find((server) => server.url === sourceServerUrl);
     if (sourceServer !== null) {
       CredentialsService.setSourceServer(sourceServer);
@@ -114,7 +117,8 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
       (jobType === JobType.CopyTrajectory && { source: trajectoryReference, target: wellboreReference }) ||
       (jobType === JobType.CopyTubular && { source: tubularReferences, target: wellboreReference }) ||
       (jobType === JobType.CopyBhaRun && { source: bhaRunReferences, target: wellboreReference }) ||
-      (jobType === JobType.CopyRisk && { source: riskReferences, target: wellboreReference });
+      (jobType === JobType.CopyRisk && { source: riskReferences, target: wellboreReference }) ||
+      (jobType === JobType.CopyRig && { source: rigReferences, target: wellboreReference });
     JobService.orderJob(jobType, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -133,7 +137,13 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
         </ListItemIcon>
         <Typography color={"primary"}>Paste log{logReferences?.logReferenceList.length > 1 && "s"}</Typography>
       </MenuItem>
-      <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyRisk)} disabled={riskReferences === null}>
+      <MenuItem key={"pasteRig"} onClick={() => onClickPaste(JobType.CopyRig)} disabled={rigReferences === null}>
+        <ListItemIcon>
+          <Icon name="paste" color={colors.interactive.primaryResting} />
+        </ListItemIcon>
+        <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
+      </MenuItem>
+      <MenuItem key={"pasteRisk"} onClick={() => onClickPaste(JobType.CopyRisk)} disabled={riskReferences === null}>
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
