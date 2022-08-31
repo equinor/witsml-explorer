@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Query
             );
         }
 
-        public static IEnumerable<WitsmlTubulars> CopyWitsmlTubulars(WitsmlTubulars tubulars, WitsmlWellbore targetWellbore)
+        public static IEnumerable<WitsmlTubular> CopyWitsmlTubulars(WitsmlTubulars tubulars, WitsmlWellbore targetWellbore)
         {
             return tubulars.Tubulars.Select((tubular) =>
             {
@@ -78,17 +78,14 @@ namespace WitsmlExplorer.Api.Query
                 tubular.NameWell = targetWellbore.NameWell;
                 tubular.UidWellbore = targetWellbore.Uid;
                 tubular.NameWellbore = targetWellbore.Name;
-                return new WitsmlTubulars
-                {
-                    Tubulars = tubular.AsSingletonList()
-                };
+                return tubular;
             });
         }
 
         public static WitsmlTubulars CopyTubularComponents(WitsmlTubular tubular, IEnumerable<WitsmlTubularComponent> tubularComponents)
         {
             tubular.TubularComponents.AddRange(tubularComponents);
-            var copyTubularQuery = new WitsmlTubulars { Tubulars = new List<WitsmlTubular> { tubular } };
+            WitsmlTubulars copyTubularQuery = new() { Tubulars = new List<WitsmlTubular> { tubular } };
             return copyTubularQuery;
         }
 
@@ -111,7 +108,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlTubulars UpdateTubularComponent(TubularComponent tubularComponent, TubularReference tubularReference)
         {
-            var tc = new WitsmlTubularComponent
+            WitsmlTubularComponent tc = new()
             {
                 Uid = tubularComponent.Uid,
                 Sequence = tubularComponent.Sequence,
@@ -119,13 +116,19 @@ namespace WitsmlExplorer.Api.Query
             };
 
             if (tubularComponent.Id != null)
+            {
                 tc.Id = new WitsmlLengthMeasure { Uom = tubularComponent.Id.Uom, Value = tubularComponent.Id.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             if (tubularComponent.Od != null)
+            {
                 tc.Od = new WitsmlLengthMeasure { Uom = tubularComponent.Od.Uom, Value = tubularComponent.Od.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             if (tubularComponent.Len != null)
+            {
                 tc.Len = new WitsmlLengthMeasure { Uom = tubularComponent.Len.Uom, Value = tubularComponent.Len.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             return new WitsmlTubulars
             {

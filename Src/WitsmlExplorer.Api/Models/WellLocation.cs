@@ -1,3 +1,5 @@
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -11,7 +13,7 @@ namespace WitsmlExplorer.Api.Models
         public WellMeasure LocalX { get; private init; }
         public WellMeasure LocalY { get; private init; }
 
-        public static WellLocation FromWitsmlLocation(Witsml.Data.WitsmlLocation witsmlLocation)
+        public static WellLocation FromWitsmlLocation(WitsmlLocation witsmlLocation)
         {
             return witsmlLocation == null
                 ? null

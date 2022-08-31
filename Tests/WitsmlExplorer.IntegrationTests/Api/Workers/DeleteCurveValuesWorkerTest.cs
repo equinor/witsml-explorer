@@ -10,8 +10,10 @@ using Serilog;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Delete;
 
 using Xunit;
 
@@ -60,7 +62,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 IndexRanges = indexRanges
             };
 
-            (WorkerResult result, WitsmlExplorer.Api.Models.RefreshAction _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
             Assert.True(result.IsSuccess, result.Reason);
         }
     }

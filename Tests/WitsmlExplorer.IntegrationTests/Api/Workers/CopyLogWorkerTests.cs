@@ -18,6 +18,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
+using WitsmlExplorer.Api.Workers.Delete;
 
 using Xunit;
 

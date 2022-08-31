@@ -1,6 +1,6 @@
 namespace Witsml.Data.Measures
 {
-    public class WitsmlMeasuredDepthCoord : MeasureWithDatum
+    public class WitsmlMeasuredDepthCoord : WitsmlMeasureWithDatum
     {
     }
 }

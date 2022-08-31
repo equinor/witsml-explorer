@@ -18,6 +18,7 @@ using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Swagger;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api
 {

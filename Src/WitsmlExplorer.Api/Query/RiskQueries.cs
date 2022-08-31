@@ -39,6 +39,20 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+
+        public static WitsmlRisks QueryByIds(string wellUid, string wellboreUid, string[] riskUids)
+        {
+            return new WitsmlRisks
+            {
+                Risks = riskUids.Select((riskUid) => new WitsmlRisk
+                {
+                    Uid = riskUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }).ToList()
+            };
+        }
+
         public static WitsmlRisks QueryByNameAndDepth(string wellUid, string wellboreUid, string name, Measure mdBitStart, Measure mdBitEnd)
         {
             return new WitsmlRisks
@@ -83,6 +97,18 @@ namespace WitsmlExplorer.Api.Query
             );
         }
 
+        public static IEnumerable<WitsmlRisk> CopyWitsmlRisks(WitsmlRisks risks, WitsmlWellbore targetWellbore)
+        {
+            return risks.Risks.Select((risk) =>
+            {
+                risk.UidWell = targetWellbore.UidWell;
+                risk.NameWell = targetWellbore.NameWell;
+                risk.UidWellbore = targetWellbore.Uid;
+                risk.NameWellbore = targetWellbore.Name;
+                return risk;
+            });
+        }
+
         public static WitsmlRisks CreateRisk(Risk risk)
         {
             return new WitsmlRisks
@@ -99,18 +125,18 @@ namespace WitsmlExplorer.Api.Query
                     Category = risk.Category,
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
+                    AffectedPersonnel = risk.AffectedPersonnel?.Length == 0 ? null : risk.AffectedPersonnel?.Split(", "),
                     DTimStart = risk.DTimStart?.ToUniversalTime
                     ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     DTimEnd = risk.DTimEnd?.ToUniversalTime
                     ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    MdHoleStart = risk.MdHoleStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdBitStart = risk.MdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdBitEnd = risk.MdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = risk.MdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    TvdHoleStart = risk.TvdHoleStart,
-                    TvdHoleEnd = risk.TvdHoleEnd,
-                    DiaHole = risk.DiaHole,
+                    MdHoleStart = risk.MdHoleStart?.ToWitsml(),
+                    MdHoleEnd = risk.MdHoleEnd?.ToWitsml(),
+                    MdBitStart = risk.MdBitStart?.ToWitsml(),
+                    MdBitEnd = risk.MdBitEnd?.ToWitsml(),
+                    TvdHoleStart = risk.TvdHoleStart?.ToWitsml(),
+                    TvdHoleEnd = risk.TvdHoleEnd?.ToWitsml(),
+                    DiaHole = risk.DiaHole?.ToWitsml(),
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,

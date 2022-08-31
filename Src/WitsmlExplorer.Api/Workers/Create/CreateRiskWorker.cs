@@ -1,0 +1,82 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+using Witsml;
+using Witsml.Data;
+using Witsml.ServiceReference;
+
+using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Services;
+
+namespace WitsmlExplorer.Api.Workers.Create
+{
+
+    public class CreateRiskWorker : BaseWorker<CreateRiskJob>, IWorker
+    {
+        private readonly IWitsmlClient _witsmlClient;
+        public JobType JobType => JobType.CreateRisk;
+
+        public CreateRiskWorker(ILogger<CreateRiskJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
+        {
+            _witsmlClient = witsmlClientProvider.GetClient();
+        }
+
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)
+        {
+            Risk risk = job.Risk;
+            Verify(risk);
+
+            WitsmlRisks riskToCreate = RiskQueries.CreateRisk(risk);
+
+            QueryResult result = await _witsmlClient.AddToStoreAsync(riskToCreate);
+            if (result.IsSuccessful)
+            {
+                await WaitUntilRiskHasBeenCreated(risk);
+                Logger.LogInformation("Risk created. {jobDescription}", job.Description());
+                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Risk created ({risk.Name} [{risk.Uid}])");
+                RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), risk.WellUid, risk.Uid, RefreshType.Add);
+                return (workerResult, refreshAction);
+            }
+
+            EntityDescription description = new() { WellboreName = risk.WellboreName };
+            string errorMessage = "Failed to create Risk.";
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
+            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+        }
+        private async Task WaitUntilRiskHasBeenCreated(Risk risk)
+        {
+            bool isCreated = false;
+            WitsmlRisks query = RiskQueries.QueryById(risk.WellUid, risk.WellboreUid, risk.Uid);
+            int maxRetries = 30;
+            while (!isCreated)
+            {
+                if (--maxRetries == 0)
+                {
+                    throw new InvalidOperationException($"Not able to read newly created Risk with name {risk.Name} (id={risk.Uid})");
+                }
+                Thread.Sleep(1000);
+                WitsmlRisks riskResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                isCreated = riskResult.Risks.Any();
+            }
+        }
+
+        private static void Verify(Risk risk)
+        {
+            if (string.IsNullOrEmpty(risk.Uid))
+            {
+                throw new InvalidOperationException($"{nameof(risk.Uid)} cannot be empty");
+            }
+
+            if (string.IsNullOrEmpty(risk.Name))
+            {
+                throw new InvalidOperationException($"{nameof(risk.Name)} cannot be empty");
+            }
+        }
+    }
+}

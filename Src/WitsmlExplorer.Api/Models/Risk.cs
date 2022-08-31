@@ -19,13 +19,13 @@ namespace WitsmlExplorer.Api.Models
         public string AffectedPersonnel { get; set; }
         public DateTime? DTimStart { get; set; }
         public DateTime? DTimEnd { get; set; }
-        public MeasuredDepthCoord MdHoleStart { get; set; }
-        public MeasuredDepthCoord MdHoleEnd { get; set; }
-        public string TvdHoleStart { get; set; }
-        public string TvdHoleEnd { get; set; }
-        public LengthMeasure MdBitStart { get; set; }
-        public LengthMeasure MdBitEnd { get; set; }
-        public string DiaHole { get; set; }
+        public MeasureWithDatum MdHoleStart { get; set; }
+        public MeasureWithDatum MdHoleEnd { get; set; }
+        public MeasureWithDatum TvdHoleStart { get; set; }
+        public MeasureWithDatum TvdHoleEnd { get; set; }
+        public MeasureWithDatum MdBitStart { get; set; }
+        public MeasureWithDatum MdBitEnd { get; set; }
+        public LengthMeasure DiaHole { get; set; }
         public string SeverityLevel { get; set; }
         public string ProbabilityLevel { get; set; }
         public string Summary { get; set; }

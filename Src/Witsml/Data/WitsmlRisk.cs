@@ -15,7 +15,8 @@ namespace Witsml.Data
                 Risks = this.AsSingletonList()
             };
         }
-
+        [XmlElement("objectReference")]
+        public WitsmlObjectReference ObjectReference { get; set; }
         [XmlElement("type")]
         public string Type { get; set; }
         [XmlElement("category")]
@@ -31,19 +32,19 @@ namespace Witsml.Data
         [XmlElement("dTimEnd")]
         public string DTimEnd { get; set; }
         [XmlElement("mdHoleStart")]
-        public WitsmlMeasuredDepthCoord MdHoleStart { get; set; }
+        public WitsmlMeasureWithDatum MdHoleStart { get; set; }
         [XmlElement("mdHoleEnd")]
-        public WitsmlMeasuredDepthCoord MdHoleEnd { get; set; }
+        public WitsmlMeasureWithDatum MdHoleEnd { get; set; }
         [XmlElement("tvdHoleStart")]
-        public string TvdHoleStart { get; set; }
+        public WitsmlMeasureWithDatum TvdHoleStart { get; set; }
         [XmlElement("tvdHoleEnd")]
-        public string TvdHoleEnd { get; set; }
+        public WitsmlMeasureWithDatum TvdHoleEnd { get; set; }
         [XmlElement("mdBitStart")]
-        public WitsmlMeasuredDepthCoord MdBitStart { get; set; }
+        public WitsmlMeasureWithDatum MdBitStart { get; set; }
         [XmlElement("mdBitEnd")]
-        public WitsmlMeasuredDepthCoord MdBitEnd { get; set; }
+        public WitsmlMeasureWithDatum MdBitEnd { get; set; }
         [XmlElement("diaHole")]
-        public string DiaHole { get; set; }
+        public WitsmlLengthMeasure DiaHole { get; set; }
         [XmlElement("severityLevel")]
         public string SeverityLevel { get; set; }
         [XmlElement("probabilityLevel")]

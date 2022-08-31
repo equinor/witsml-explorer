@@ -13,8 +13,10 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
 
@@ -31,24 +33,25 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CopyTubularWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyTubularJob>>();
-            _copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object);
+            Mock<ILogger<CopyTubularJob>> logger = new();
+            CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object, witsmlClientProvider.Object);
+            _copyTubularWorker = new CopyTubularWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
         }
 
         [Fact]
-        public async Task CopyTubular_OK()
+        public async Task CopyTubularOK()
         {
-            var copyTubularJob = CreateJobTemplate();
+            CopyTubularJob copyTubularJob = CreateJobTemplate();
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == TubularUid), new OptionsIn(ReturnElements.All, null)))
                 .ReturnsAsync(GetSourceTubulars());
             SetupGetWellbore();
-            var copyTubularQuery = SetupAddInStoreAsync();
+            List<WitsmlTubulars> copyTubularQuery = SetupAddInStoreAsync();
 
-            var result = await _copyTubularWorker.Execute(copyTubularJob);
+            (WorkerResult, RefreshAction) result = await _copyTubularWorker.Execute(copyTubularJob);
             Assert.True(result.Item1.IsSuccess);
         }
 
@@ -73,7 +76,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private List<WitsmlTubulars> SetupAddInStoreAsync()
         {
-            var addedTubular = new List<WitsmlTubulars>();
+            List<WitsmlTubulars> addedTubular = new();
             _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlTubulars>()))
                 .Callback<WitsmlTubulars>(witsmlTubulars => addedTubular.Add(witsmlTubulars))
                 .ReturnsAsync(new QueryResult(true));
@@ -100,7 +103,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlTubulars GetSourceTubulars()
         {
-            var witsmlTubular = new WitsmlTubular
+            WitsmlTubular witsmlTubular = new()
             {
                 UidWell = WellUid,
                 UidWellbore = SourceWellboreUid,
