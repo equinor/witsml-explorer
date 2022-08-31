@@ -10,7 +10,7 @@ import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -62,7 +62,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
 
   // ToDo: Equal LogObjectContextMenu.showCredentialModal...Should be refactored out?
   const showCredentialsModal = (jobType: JobType, server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: ServerCredentials) => {
+    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
       await CredentialsService.saveCredentials(credentials);
       jobType === JobType.CopyLog ? orderCopyJob(JobType.CopyLog) : orderCopyJob(JobType.CopyTrajectory);
       dispatchOperation({ type: OperationType.HideModal });

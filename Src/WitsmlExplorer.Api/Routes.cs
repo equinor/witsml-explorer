@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 using WitsmlExplorer.Api.HttpHandler;
-using WitsmlExplorer.Api.HttpHandlers;
+
 
 namespace WitsmlExplorer.Api
 {

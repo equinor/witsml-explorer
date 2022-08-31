@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
-namespace WitsmlExplorer.Api.HttpHandlers
+namespace WitsmlExplorer.Api.HttpHandler
 {
     public static class WitsmlServerHandler
     {

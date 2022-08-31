@@ -1,11 +1,11 @@
 import fetch from "isomorphic-unfetch";
-import { getIdToken } from "../msal/MsalAuthProvider";
+import { getAccessToken } from "../msal/MsalAuthProvider";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export default class MsalApiClient {
   static async getCommonHeaders(servers: BasicServerCredentials[]) {
-    const token = await getIdToken([]);
+    const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
     return {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
