@@ -2,7 +2,7 @@ import { AccountInfo, Configuration, InteractionRequiredAuthError, PublicClientA
 import { AuthenticationResult } from "@azure/msal-common";
 
 export const authRequest: RedirectRequest = {
-  scopes: ["openid"]
+  scopes: ["openid profile email"]
 };
 
 export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;
@@ -44,6 +44,31 @@ export async function getAccessToken(scopes: string[]): Promise<string | null> {
       });
   }
   return accessToken;
+}
+
+export async function getIdToken(scopes: string[]): Promise<string | null> {
+  const accounts = msalInstance.getAllAccounts();
+  let idToken = null;
+
+  if (accounts.length > 0) {
+    const request: SilentRequest & RedirectRequest = {
+      scopes: scopes,
+      account: accounts[0]
+    };
+
+    await msalInstance
+      .acquireTokenSilent(request)
+      .then((response: AuthenticationResult) => {
+        idToken = response.idToken;
+      })
+      .catch((error) => {
+        // acquireTokenSilent can fail for a number of reasons, fallback to interaction
+        if (error instanceof InteractionRequiredAuthError) {
+          msalInstance.acquireTokenRedirect(request);
+        }
+      });
+  }
+  return idToken;
 }
 
 export const getAccountInfo = (): AccountInfo | null => {

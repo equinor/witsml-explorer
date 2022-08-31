@@ -1,6 +1,7 @@
 import { Icon } from "@equinor/eds-core-react";
 import {
   accessible,
+  account_circle as accountCircle,
   add,
   check,
   chevron_down as chevronDown,
@@ -18,6 +19,7 @@ import {
   trending_up as isActive
 } from "@equinor/eds-icons";
 const icons = {
+  accountCircle,
   chevronRight,
   chevronDown,
   isActive,

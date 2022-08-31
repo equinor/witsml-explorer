@@ -1,13 +1,14 @@
 import fetch from "isomorphic-unfetch";
-import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
+import { getIdToken } from "../msal/MsalAuthProvider";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export default class MsalApiClient {
-  static getCommonHeaders(servers: BasicServerCredentials[]): HeadersInit {
+  static async getCommonHeaders(servers: BasicServerCredentials[]) {
+    const token = await getIdToken([]);
     return {
       "Content-Type": "application/json",
-      ...(msalEnabled ? { Authorization: `Bearer ${getAccessToken([])}` } : {}),
+      "Authorization": `Bearer ${token}`,
       "Witsml-ServerUrl": servers[0]?.server.url.toString() ?? "",
       "Witsml-Source-ServerUrl": servers[1]?.server.url.toString() ?? ""
     };
@@ -16,19 +17,19 @@ export default class MsalApiClient {
   public static async get(
     pathName: string,
     abortSignal: AbortSignal | null = null,
-    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED,
+    authConfig = MsalAuthConfig.AUTHENTICATION_REQUIRED,
     currentCredentials = CredentialsService.getCredentials()
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: MsalApiClient.getCommonHeaders(currentCredentials)
+      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
     };
     return MsalApiClient.runHttpRequest(pathName, requestInit, authConfig);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig) {
+  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: MsalAuthConfig) {
     return new Promise<Response>((resolve, reject) => {
-      if (authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED && !("Authorization" in requestInit.headers)) {
+      if (authConfig === MsalAuthConfig.AUTHENTICATION_REQUIRED && !("Authorization" in requestInit.headers)) {
         reject("Not authorized");
       }
 
@@ -76,7 +77,8 @@ export function truncateAbortHandler(e: Error): void {
   throw e;
 }
 
-export enum AuthConfig {
+export enum MsalAuthConfig {
   WITSML_AUTHENTICATION_REQUIRED,
-  NO_WITSML_AUTHENTICATION_REQUIRED
+  NO_WITSML_AUTHENTICATION_REQUIRED,
+  AUTHENTICATION_REQUIRED
 }

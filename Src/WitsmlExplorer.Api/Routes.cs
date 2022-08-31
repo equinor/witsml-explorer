@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-
-using Microsoft.Extensions.Configuration;
-
-
 using WitsmlExplorer.Api.HttpHandler;
 using WitsmlExplorer.Api.HttpHandlers;
 
@@ -12,7 +8,7 @@ namespace WitsmlExplorer.Api
 {
     public static class Api
     {
-        public static void ConfigureApi(this WebApplication app, IConfiguration configuration)
+        public static void ConfigureApi(this WebApplication app)
         {
             app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers).RequireAuthorization();
             app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer).RequireAuthorization("admin");
