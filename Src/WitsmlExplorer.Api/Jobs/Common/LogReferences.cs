@@ -11,8 +11,8 @@ namespace WitsmlExplorer.Api.Jobs.Common
 
         public string Description()
         {
-            var desc = new StringBuilder();
-            desc.Append($"ServerUrl: {ServerUrl}");
+            StringBuilder desc = new();
+            desc.Append($"ServerUrl: {ServerUrl} ");
             LogReferenceList.ToList().ForEach(logReference => desc.Append(logReference.Description()));
             return desc.ToString();
         }

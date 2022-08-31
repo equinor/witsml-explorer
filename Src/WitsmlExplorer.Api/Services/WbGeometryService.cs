@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Services
                     WellName = wbGeometry.NameWell,
                     WellboreName = wbGeometry.NameWellbore,
                     DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
-                    MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
+                    MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasureWithDatum { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
                     GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = StringHelpers.ToDecimal(wbGeometry.GapAir.Value) },
                     DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = StringHelpers.ToDecimal(wbGeometry.DepthWaterMean.Value) },
                     CommonData = new CommonData()

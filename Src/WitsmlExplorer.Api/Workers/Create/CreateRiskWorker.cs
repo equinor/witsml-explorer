@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.Measures;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -35,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             Risk risk = job.Risk;
             Verify(risk);
 
-            WitsmlRisks riskToCreate = SetupRiskToCreate(risk);
+            WitsmlRisks riskToCreate = RiskQueries.CreateRisk(risk);
 
             QueryResult result = await _witsmlClient.AddToStoreAsync(riskToCreate);
             if (result.IsSuccessful)
@@ -67,50 +64,6 @@ namespace WitsmlExplorer.Api.Workers.Create
                 WitsmlRisks riskResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isCreated = riskResult.Risks.Any();
             }
-        }
-
-        private static WitsmlRisks SetupRiskToCreate(Risk risk)
-        {
-            return new WitsmlRisks
-            {
-                Risks = new WitsmlRisk
-                {
-                    Uid = risk.Uid,
-                    UidWellbore = risk.WellboreUid,
-                    UidWell = risk.WellUid,
-                    Name = risk.Name,
-                    NameWellbore = risk.WellboreName,
-                    NameWell = risk.WellName,
-                    Type = risk.Type,
-                    Category = risk.Category,
-                    SubCategory = risk.SubCategory,
-                    ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = risk.AffectedPersonnel?.Split(", "),
-                    DTimStart = risk.DTimStart?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    DTimEnd = risk.DTimEnd?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    MdHoleStart = risk.MdHoleStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleStart.Uom, Value = risk.MdHoleStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdHoleEnd = risk.MdHoleEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdHoleEnd.Uom, Value = risk.MdHoleEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    TvdHoleStart = risk.TvdHoleStart,
-                    TvdHoleEnd = risk.TvdHoleEnd,
-                    MdBitStart = risk.MdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitStart.Uom, Value = risk.MdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdBitEnd = risk.MdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = risk.MdBitEnd.Uom, Value = risk.MdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    DiaHole = risk.DiaHole,
-                    SeverityLevel = risk.SeverityLevel,
-                    ProbabilityLevel = risk.ProbabilityLevel,
-                    Summary = risk.Summary,
-                    Details = risk.Details,
-                    Identification = risk.Identification,
-                    Contingency = risk.Contigency,
-                    Mitigation = risk.Mitigation,
-                    CommonData = new WitsmlCommonData
-                    {
-                        ItemState = risk.CommonData.ItemState,
-                        SourceName = risk.CommonData.SourceName,
-                        DTimCreation = risk.CommonData.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                        DTimLastChange = risk.CommonData.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    },
-                }.AsSingletonList()
-            };
         }
 
         private static void Verify(Risk risk)

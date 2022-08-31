@@ -1,19 +1,20 @@
-import React, { useImperativeHandle, useRef, useState } from "react";
+import { Typography } from "@equinor/eds-core-react";
+import { ListItemIcon } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
 import ArrowRight from "@material-ui/icons/ArrowRight";
-import Icon from "../../styles/Icons";
+import React, { useImperativeHandle, useRef, useState } from "react";
 import { colors } from "../../styles/Colors";
-import { ListItemIcon } from "@material-ui/core";
-import { Typography } from "@equinor/eds-core-react";
+import Icon from "../../styles/Icons";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
   ContainerProps?: React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement | null>;
+  icon?: string;
 }
 
 const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props: NestedMenuItemProps, ref) {
-  const { label, children, tabIndex: tabIndexProp, ContainerProps: ContainerPropsProp = {}, ...MenuItemProps } = props;
+  const { label, children, icon, tabIndex: tabIndexProp, ContainerProps: ContainerPropsProp = {}, ...MenuItemProps } = props;
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp;
 
@@ -90,7 +91,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
     <div {...ContainerProps} ref={containerRef} onFocus={handleFocus} tabIndex={tabIndex} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onKeyDown={handleKeyDown}>
       <MenuItem {...MenuItemProps} ref={menuItemRef}>
         <ListItemIcon>
-          <Icon name="launch" color={colors.interactive.primaryResting} />
+          <Icon name={icon ?? "launch"} color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>{label}</Typography>
         <ListItemIcon>

@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreName { get; set; }
         public string Name { get; set; }
         public DateTime? DTimReport { get; set; }
-        public MeasuredDepthCoord MdBottom { get; set; }
+        public MeasureWithDatum MdBottom { get; set; }
         public LengthMeasure GapAir { get; set; }
         public LengthMeasure DepthWaterMean { get; set; }
         public CommonData CommonData { get; set; }
