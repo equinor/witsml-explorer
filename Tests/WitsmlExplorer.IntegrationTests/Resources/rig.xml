@@ -1,0 +1,260 @@
+<rigs version="1.4.1.1" xmlns="http://www.witsml.org/schemas/1series">
+  <rig uidWell="8c77de13-4fad-4b2e-ba3d-7e6b0e35a394" uidWellbore="44e7a064-c2f2-4a3a-9259-5ab92085e110" uid="integration_test">
+    <nameWell>0/1-2-3 SAS</nameWell>
+    <nameWellbore>jan_test</nameWellbore>
+    <name>Deep Drill #5</name>
+    <owner>Deep Drilling Co.</owner>
+    <typeRig>floater</typeRig>
+    <manufacturer>Fitsui Engineering</manufacturer>
+    <yearEntService>1980</yearEntService>
+    <classRig>ABS Class A1 M CSDU AMS ACCU</classRig>
+    <approvals>DNV</approvals>
+    <registration>Panama</registration>
+    <telNumber>281 222-2221</telNumber>
+    <faxNumber>281 222-2222</faxNumber>
+    <emailAddress>John.Doe@his-ISP.com</emailAddress>
+    <nameContact>John Doe</nameContact>
+    <ratingDrillDepth uom="ft">30000</ratingDrillDepth>
+    <ratingWaterDepth uom="ft">500</ratingWaterDepth>
+    <isOffshore>true</isOffshore>
+    <airGap uom="ft">55</airGap>
+    <dTimStartOp>2001-05-11T13:20:00.000Z</dTimStartOp>
+    <dTimEndOp>2001-05-19T13:26:00.000Z</dTimEndOp>
+    <bop>
+      <manufacturer>Cameron</manufacturer>
+      <model>Type "U" Single Ram</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <typeConnectionBop>Vetco HD-H4 18-3/4"</typeConnectionBop>
+      <sizeConnectionBop uom="in">18.625</sizeConnectionBop>
+      <presBopRating uom="psi">5000</presBopRating>
+      <sizeBopSys uom="in">12</sizeBopSys>
+      <rotBop>false</rotBop>
+      <idBoosterLine uom="in">3.7</idBoosterLine>
+      <odBoosterLine uom="in">4.35</odBoosterLine>
+      <lenBoosterLine uom="ft">102</lenBoosterLine>
+      <idSurfLine uom="in">3.5</idSurfLine>
+      <odSurfLine uom="in">4.25</odSurfLine>
+      <lenSurfLine uom="ft">100</lenSurfLine>
+      <idChkLine uom="in">3.6</idChkLine>
+      <odChkLine uom="in">4.3</odChkLine>
+      <lenChkLine uom="ft">150</lenChkLine>
+      <idKillLine uom="in">3.7</idKillLine>
+      <odKillLine uom="in">4.35</odKillLine>
+      <lenKillLine uom="ft">150</lenKillLine>
+      <bopComponent uid="001">
+        <typeBopComp>annular preventer</typeBopComp>
+        <descComp>WP w/ stainless</descComp>
+        <idPassThru uom="in">4</idPassThru>
+        <presWork uom="psi">20000</presWork>
+        <diaCloseMn uom="in">4</diaCloseMn>
+        <diaCloseMx uom="in">12</diaCloseMx>
+        <nomenclature>S</nomenclature>
+        <isVariable>true</isVariable>
+      </bopComponent>
+      <bopComponent uid="002">
+        <typeBopComp>annular preventer</typeBopComp>
+        <descComp>Second WP w/ stainless</descComp>
+        <idPassThru uom="in">4</idPassThru>
+        <presWork uom="psi">22000</presWork>
+        <diaCloseMn uom="in">4</diaCloseMn>
+        <diaCloseMx uom="in">12</diaCloseMx>
+        <nomenclature>S</nomenclature>
+        <isVariable>true</isVariable>
+      </bopComponent>
+      <typeDiverter>Diverter Spool</typeDiverter>
+      <diaDiverter uom="in">10</diaDiverter>
+      <presWorkDiverter uom="psi">250</presWorkDiverter>
+      <accumulator>Type of accumulator</accumulator>
+      <capAccFluid uom="galUS">11</capAccFluid>
+      <presAccPreCharge uom="psi">1000</presAccPreCharge>
+      <volAccPreCharge uom="galUS">5</volAccPreCharge>
+      <presAccOpRating uom="psi">3000</presAccOpRating>
+      <typeControlManifold>Koomey GU2KB53</typeControlManifold>
+      <descControlManifold>5 station w/ remote readout</descControlManifold>
+      <typeChokeManifold>WKM 3 in.</typeChokeManifold>
+      <presChokeManifold uom="psi">2200</presChokeManifold>
+    </bop>
+    <pit uid="Active-1">
+      <index>1</index>
+      <dTimInstall>1983-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2001-05-15T13:20:00.000Z</dTimRemove>
+      <capMx uom="ft3">1000</capMx>
+      <owner>Rig</owner>
+      <typePit>drilling</typePit>
+      <isActive>true</isActive>
+    </pit>
+    <pump uid="Pump-1">
+      <index>1</index>
+      <manufacturer>Oilwell</manufacturer>
+      <model>A 1700 PT</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <owner>Rig</owner>
+      <typePump>triplex</typePump>
+      <numCyl>1</numCyl>
+      <odRod uom="in">2</odRod>
+      <idLiner uom="in">7</idLiner>
+      <pumpAction>2</pumpAction>
+      <eff uom="%">97</eff>
+      <lenStroke uom="in">12</lenStroke>
+      <presMx uom="psi">5000</presMx>
+      <powHydMx uom="hhp">1600</powHydMx>
+      <spmMx uom="rpm">120</spmMx>
+      <displacement uom="m3">20</displacement>
+      <presDamp uom="psi">350</presDamp>
+      <volDamp uom="ft3">10</volDamp>
+      <powMechMx uom="hp">1600</powMechMx>
+    </pump>
+    <shaker uid="1">
+      <name>Shale Shaker</name>
+      <manufacturer>Brandt</manufacturer>
+      <model>ATL-100</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <type>Single tandem</type>
+      <locationShaker>Mud room</locationShaker>
+      <numDecks>3</numDecks>
+      <numCascLevel>2</numCascLevel>
+      <mudCleaner>false</mudCleaner>
+      <capFlow uom="galUS/min">25</capFlow>
+      <owner>Rig</owner>
+      <sizeMeshMn uom="um">0.125</sizeMeshMn>
+    </shaker>
+    <centrifuge uid="Centrifuge-Id.">
+      <manufacturer>Make</manufacturer>
+      <model>Model</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <type>Type</type>
+      <capFlow uom="galUS/min">50</capFlow>
+      <owner>Owner</owner>
+    </centrifuge>
+    <hydrocyclone uid="Hydrocyclone-Id.">
+      <manufacturer>Demco</manufacturer>
+      <model>DM-100</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <type>Type</type>
+      <descCone>2x12 in.</descCone>
+      <owner>RigTech</owner>
+    </hydrocyclone>
+    <degasser uid="Degasser-Id.">
+      <manufacturer>Swaco</manufacturer>
+      <model>D-Gasser</model>
+      <dTimInstall>2001-05-15T13:20:00.000Z</dTimInstall>
+      <dTimRemove>2002-05-15T13:20:00.000Z</dTimRemove>
+      <type>Gas</type>
+      <owner>Rigtech</owner>
+      <height uom="ft">200</height>
+      <len uom="ft">150</len>
+      <id uom="in">4</id>
+      <capFlow uom="galUS/min">1200</capFlow>
+      <areaSeparatorFlow uom="cm2">35</areaSeparatorFlow>
+      <htMudSeal uom="ft">2</htMudSeal>
+      <idInlet uom="in">3</idInlet>
+      <idVentLine uom="in">1</idVentLine>
+      <lenVentLine uom="ft">12</lenVentLine>
+      <capGasSep uom="galUS/min">28</capGasSep>
+      <capBlowdown uom="galUS/min">45</capBlowdown>
+      <presRating uom="psi">450</presRating>
+      <tempRating uom="degC">150</tempRating>
+    </degasser>
+    <surfaceEquipment>
+      <description>Surf Equip. Desc.</description>
+      <presRating uom="psi">5000</presRating>
+      <typeSurfEquip>IADC</typeSurfEquip>
+      <usePumpDischarge>true</usePumpDischarge>
+      <useStandpipe>false</useStandpipe>
+      <useHose>true</useHose>
+      <useSwivel>false</useSwivel>
+      <useKelly>true</useKelly>
+      <useTopStack>false</useTopStack>
+      <useInjStack>true</useInjStack>
+      <useSurfaceIron>false</useSurfaceIron>
+      <idStandpipe uom="in">4</idStandpipe>
+      <lenStandpipe uom="ft">99</lenStandpipe>
+      <idHose uom="in">3</idHose>
+      <lenHose uom="ft">500</lenHose>
+      <idSwivel uom="in">4</idSwivel>
+      <lenSwivel uom="ft">25</lenSwivel>
+      <idKelly uom="in">2.8125</idKelly>
+      <lenKelly uom="ft">40</lenKelly>
+      <idSurfaceIron uom="m">1</idSurfaceIron>
+      <lenSurfaceIron uom="m">2</lenSurfaceIron>
+      <htSurfaceIron uom="m">3</htSurfaceIron>
+      <idDischargeLine uom="in">5</idDischargeLine>
+      <lenDischargeLine uom="ft">100</lenDischargeLine>
+      <ctWrapType>CT Wrap Type</ctWrapType>
+      <odReel uom="in">18</odReel>
+      <odCore uom="in">7</odCore>
+      <widReelWrap uom="ft">50</widReelWrap>
+      <lenReel uom="ft">3</lenReel>
+      <injStkUp>true</injStkUp>
+      <htInjStk uom="ft">10</htInjStk>
+      <umbInside>false</umbInside>
+      <odUmbilical uom="in">2</odUmbilical>
+      <lenUmbilical uom="ft">150</lenUmbilical>
+      <idTopStk uom="in">4</idTopStk>
+      <htTopStk uom="ft">12</htTopStk>
+      <htFlange uom="ft">20</htFlange>
+    </surfaceEquipment>
+    <numDerricks>1</numDerricks>
+    <typeDerrick>triple</typeDerrick>
+    <ratingDerrick uom="lbf">1475000</ratingDerrick>
+    <htDerrick uom="ft">180</htDerrick>
+    <ratingHkld uom="lbf">1700000</ratingHkld>
+    <capWindDerrick uom="mi/h">200</capWindDerrick>
+    <wtBlock uom="klbf">45</wtBlock>
+    <ratingBlock uom="klbf">760</ratingBlock>
+    <numBlockLines>8</numBlockLines>
+    <typeHook>National 435-G-175</typeHook>
+    <ratingHook uom="tonfUS">175</ratingHook>
+    <sizeDrillLine uom="in">1.75</sizeDrillLine>
+    <typeDrawWorks>standard electric</typeDrawWorks>
+    <powerDrawWorks uom="nW">2500</powerDrawWorks>
+    <ratingDrawWorks uom="lbf">1775000</ratingDrawWorks>
+    <motorDrawWorks>GE 752</motorDrawWorks>
+    <descBrake>Parnac V-80</descBrake>
+    <typeSwivel>National P800</typeSwivel>
+    <ratingSwivel uom="lbf">1000000</ratingSwivel>
+    <rotSystem>rotary kelly drive</rotSystem>
+    <descRotSystem>National C-495 49 1/2"</descRotSystem>
+    <ratingTqRotSys uom="ft.lbf">650</ratingTqRotSys>
+    <rotSizeOpening uom="in">49.5</rotSizeOpening>
+    <ratingRotSystem uom="tonfUS">350</ratingRotSystem>
+    <scrSystem>SCR Description</scrSystem>
+    <pipeHandlingSystem>Iron Roughneck - Varco AR-3200</pipeHandlingSystem>
+    <capBulkMud uom="ft3">500</capBulkMud>
+    <capLiquidMud uom="ft3">1200</capLiquidMud>
+    <capDrillWater uom="ft3">2500</capDrillWater>
+    <capPotableWater uom="ft3">100</capPotableWater>
+    <capFuel uom="ft3">1000</capFuel>
+    <capBulkCement uom="ft3">2000</capBulkCement>
+    <mainEngine>4 Bergen KVGB-12 diesel</mainEngine>
+    <generator>GE AT1, 1,805 KWAC, 600 VAC</generator>
+    <cementUnit>Halliburton - advantage 150</cementUnit>
+    <numBunks>30</numBunks>
+    <bunksPerRoom>4</bunksPerRoom>
+    <numCranes>3</numCranes>
+    <numAnch>6</numAnch>
+    <moorType>Type of mooring system</moorType>
+    <numGuideTens>3</numGuideTens>
+    <numRiserTens>6</numRiserTens>
+    <varDeckLdMx uom="klbf">550</varDeckLdMx>
+    <vdlStorm uom="klbf">250</vdlStorm>
+    <numThrusters>12</numThrusters>
+    <azimuthing>true</azimuthing>
+    <motionCompensationMn uom="klbf">500</motionCompensationMn>
+    <motionCompensationMx uom="klbf">600</motionCompensationMx>
+    <strokeMotionCompensation uom="ft">3</strokeMotionCompensation>
+    <riserAngleLimit uom="dega">15</riserAngleLimit>
+    <heaveMx uom="ft">45</heaveMx>
+    <gantry>Description of gantry</gantry>
+    <flares>Description of flare</flares>
+    <commonData>
+      <itemState>plan</itemState>
+      <comments>Currently stack in Cromarty Firth</comments>
+    </commonData>
+  </rig>
+</rigs>

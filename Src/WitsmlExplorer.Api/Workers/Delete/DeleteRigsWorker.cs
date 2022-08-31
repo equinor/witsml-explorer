@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Data;
+using Witsml.Data.Rig;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;

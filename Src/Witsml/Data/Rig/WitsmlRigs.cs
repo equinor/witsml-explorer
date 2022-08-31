@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Witsml.Data
+namespace Witsml.Data.Rig
 {
     [XmlRoot("rigs", Namespace = "http://www.witsml.org/schemas/1series")]
     public class WitsmlRigs : IWitsmlQueryType
