@@ -11,7 +11,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
-import MsalServerService from "../../services/msalServerService";
+import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -63,7 +63,7 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const abortController = new AbortController();
     const getServers = async () => {
-      const freshServers = await MsalServerService.getServers(abortController.signal);
+      const freshServers = await ServerService.getServers(abortController.signal);
       const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
       dispatchNavigation(action);
     };
