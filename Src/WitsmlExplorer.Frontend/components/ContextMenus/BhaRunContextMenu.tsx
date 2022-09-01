@@ -1,21 +1,21 @@
-import React from "react";
-import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { MenuItem } from "@material-ui/core";
-import ContextMenu from "./ContextMenu";
-import { Server } from "../../models/server";
-import { colors } from "../../styles/Colors";
-import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
-import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
-import { BhaRunRow } from "../ContentViews/BhaRunsListView";
-import ConfirmModal from "../Modals/ConfirmModal";
-import JobService, { JobType } from "../../services/jobService";
-import { DeleteBhaRunsJob } from "../../models/jobs/deleteJobs";
+import { Divider, MenuItem } from "@material-ui/core";
+import React from "react";
+import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import BhaRunReferences from "../../models/jobs/bhaRunReferences";
+import { DeleteBhaRunsJob } from "../../models/jobs/deleteJobs";
+import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
+import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import { BhaRunRow } from "../ContentViews/BhaRunsListView";
+import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
+import ConfirmModal from "../Modals/ConfirmModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
 import { onClickPaste, useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface BhaRunContextMenuProps {
@@ -82,10 +82,6 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedBhaRunRows.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedBhaRunRows.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy bhaRun{checkedBhaRunRows?.length > 1 && "s"}</Typography>
@@ -97,6 +93,11 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedBhaRunRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedBhaRunRows.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

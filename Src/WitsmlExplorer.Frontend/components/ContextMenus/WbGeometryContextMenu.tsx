@@ -1,21 +1,21 @@
-import React from "react";
-import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { MenuItem } from "@material-ui/core";
-import ContextMenu from "./ContextMenu";
-import { Server } from "../../models/server";
-import { colors } from "../../styles/Colors";
-import { UpdateWellboreWbGeometrysAction } from "../../contexts/navigationStateReducer";
-import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
 import { Typography } from "@equinor/eds-core-react";
-import { WbGeometryObjectRow } from "../ContentViews/WbGeometrysListView";
-import ConfirmModal from "../Modals/ConfirmModal";
+import { Divider, MenuItem } from "@material-ui/core";
+import React from "react";
+import ModificationType from "../../contexts/modificationType";
+import { UpdateWellboreWbGeometrysAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { DeleteWbGeometrysJob } from "../../models/jobs/deleteJobs";
+import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import WbGeometryService from "../../services/wbGeometryService";
-import ModificationType from "../../contexts/modificationType";
+import { colors } from "../../styles/Colors";
+import { WbGeometryObjectRow } from "../ContentViews/WbGeometrysListView";
+import ConfirmModal from "../Modals/ConfirmModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { DeleteWbGeometrysJob } from "../../models/jobs/deleteJobs";
 
 export interface WbGeometryObjectContextMenuProps {
   checkedWbGeometryObjectRows: WbGeometryObjectRow[];
@@ -77,13 +77,14 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedWbGeometryObjectRows.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedWbGeometryObjectRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedWbGeometryObjectRows.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
