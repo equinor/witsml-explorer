@@ -4,7 +4,7 @@ import { getAccessToken } from "../msal/MsalAuthProvider";
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export default class MsalApiClient {
-  static async getCommonHeaders(servers: BasicServerCredentials[]) {
+  static async getCommonHeaders(servers: BasicServerCredentials[]): Promise<HeadersInit> {
     const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
     return {
       "Content-Type": "application/json",
@@ -14,22 +14,50 @@ export default class MsalApiClient {
     };
   }
 
-  public static async get(
-    pathName: string,
-    abortSignal: AbortSignal | null = null,
-    authConfig = MsalAuthConfig.AUTHENTICATION_REQUIRED,
-    currentCredentials = CredentialsService.getCredentials()
-  ): Promise<Response> {
+  public static async get(pathName: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await MsalApiClient.getCommonHeaders(currentCredentials)
     };
-    return MsalApiClient.runHttpRequest(pathName, requestInit, authConfig);
+    return MsalApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: MsalAuthConfig) {
+  public static async post(pathName: string, body: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
+    const requestInit = {
+      signal: abortSignal,
+      method: "POST",
+      body: body,
+      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+    };
+    return MsalApiClient.runHttpRequest(pathName, requestInit);
+  }
+
+  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
+    const currentCredentials = CredentialsService.getCredentials();
+    const requestInit = {
+      signal: abortSignal,
+      method: "PATCH",
+      body: body,
+      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+    };
+
+    return MsalApiClient.runHttpRequest(pathName, requestInit);
+  }
+
+  public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
+    const currentCredentials = CredentialsService.getCredentials();
+    const requestInit = {
+      signal: abortSignal,
+      method: "DELETE",
+      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+    };
+
+    return MsalApiClient.runHttpRequest(pathName, requestInit);
+  }
+
+  private static runHttpRequest(pathName: string, requestInit: RequestInit) {
     return new Promise<Response>((resolve, reject) => {
-      if (authConfig === MsalAuthConfig.AUTHENTICATION_REQUIRED && !("Authorization" in requestInit.headers)) {
+      if (!("Authorization" in requestInit.headers)) {
         reject("Not authorized");
       }
 
@@ -75,10 +103,4 @@ export function truncateAbortHandler(e: Error): void {
     return;
   }
   throw e;
-}
-
-export enum MsalAuthConfig {
-  WITSML_AUTHENTICATION_REQUIRED,
-  NO_WITSML_AUTHENTICATION_REQUIRED,
-  AUTHENTICATION_REQUIRED
 }
