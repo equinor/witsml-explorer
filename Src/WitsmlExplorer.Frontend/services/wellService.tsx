@@ -1,6 +1,6 @@
-import ApiClient from "./apiClient";
-import Well, { emptyWell } from "../models/well";
 import { ErrorDetails } from "../models/errorDetails";
+import Well, { emptyWell } from "../models/well";
+import { ApiClient } from "./apiClient";
 
 export default class WellService {
   public static async getWells(abortSignal: AbortSignal = null): Promise<Well[]> {

@@ -1,5 +1,6 @@
 import fetch from "isomorphic-unfetch";
 import { getAccessToken } from "../msal/MsalAuthProvider";
+import { getBaseUrl } from "./apiClient";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
@@ -61,7 +62,7 @@ export default class MsalApiClient {
         reject("Not authorized");
       }
 
-      const url = new URL(MsalApiClient.getBasePathName() + pathName, MsalApiClient.getBaseUrl());
+      const url = new URL(MsalApiClient.getBasePathName() + pathName, getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -75,26 +76,8 @@ export default class MsalApiClient {
   }
 
   private static getBasePathName(): string {
-    const basePathName = MsalApiClient.getBaseUrl().pathname;
+    const basePathName = getBaseUrl().pathname;
     return basePathName !== "/" ? basePathName : "";
-  }
-
-  public static getBaseUrl(): URL {
-    let baseUrl: URL;
-    try {
-      const configuredUrl = process.env.WITSMLEXPLORER_API_URL;
-      if (configuredUrl && configuredUrl.length > 0) {
-        baseUrl = new URL(configuredUrl);
-      } else {
-        const protocol = window.location.protocol.slice(0, -1);
-        const host = window.location.hostname;
-        const port = window.location.port === "3000" ? ":5000" : "";
-        baseUrl = new URL(`${protocol}://${host}${port}`);
-      }
-    } catch (e) {
-      baseUrl = new URL("http://localhost");
-    }
-    return baseUrl;
   }
 }
 

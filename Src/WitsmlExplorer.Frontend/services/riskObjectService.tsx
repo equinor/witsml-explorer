@@ -1,5 +1,5 @@
-import ApiClient from "./apiClient";
 import RiskObject from "../models/riskObject";
+import { ApiClient } from "./apiClient";
 
 export default class RiskObjectService {
   public static async getRisks(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<RiskObject[]> {
