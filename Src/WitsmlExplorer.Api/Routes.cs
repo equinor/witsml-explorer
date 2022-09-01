@@ -7,7 +7,7 @@ using WitsmlExplorer.Api.HttpHandler;
 
 namespace WitsmlExplorer.Api
 {
-    public static class Api
+    public static class Routes
     {
         public static void ConfigureApi(this WebApplication app, IConfiguration configuration)
         {
