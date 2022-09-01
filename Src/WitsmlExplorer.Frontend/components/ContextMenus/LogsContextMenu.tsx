@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import Wellbore from "../../models/wellbore";
-import LogObject from "../../models/logObject";
-import { v4 as uuid } from "uuid";
-import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
-import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import ContextMenu from "./ContextMenu";
-import JobService, { JobType } from "../../services/jobService";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import CopyLogJob, { parseStringToLogReference } from "../../models/jobs/copyLogJob";
-import { Server } from "../../models/server";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import WellboreReference from "../../models/jobs/wellboreReference";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import LogReferences from "../../models/jobs/logReferences";
 import { Typography } from "@equinor/eds-core-react";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { v4 as uuid } from "uuid";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import CopyLogJob, { parseStringToLogReference } from "../../models/jobs/copyLogJob";
+import LogReferences from "../../models/jobs/logReferences";
+import WellboreReference from "../../models/jobs/wellboreReference";
+import LogObject from "../../models/logObject";
+import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import ContextMenu from "./ContextMenu";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -55,7 +55,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   };
 
   const showCredentialsModal = (jobType: JobType, server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: ServerCredentials) => {
+    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
       await CredentialsService.saveCredentials(credentials);
       orderCopyJob(JobType.CopyLog);
       dispatchOperation({ type: OperationType.HideModal });

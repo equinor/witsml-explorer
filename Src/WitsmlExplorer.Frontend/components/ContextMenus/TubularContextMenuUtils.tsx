@@ -1,21 +1,20 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import ModificationType from "../../contexts/modificationType";
+import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTubularReferences } from "../../models/jobs/copyTubularJob";
-import { Server } from "../../models/server";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import React from "react";
-import WellboreReference from "../../models/jobs/wellboreReference";
-import Wellbore from "../../models/wellbore";
-import JobService, { JobType } from "../../services/jobService";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import TubularService from "../../services/tubularService";
-import Tubular from "../../models/tubular";
-import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
-import ModificationType from "../../contexts/modificationType";
-import ConfirmModal from "../Modals/ConfirmModal";
-import TubularReferences from "../../models/jobs/tubularReferences";
 import { DeleteTubularsJob } from "../../models/jobs/deleteJobs";
+import TubularReferences from "../../models/jobs/tubularReferences";
+import WellboreReference from "../../models/jobs/wellboreReference";
+import { Server } from "../../models/server";
+import Tubular from "../../models/tubular";
+import Wellbore from "../../models/wellbore";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
+import TubularService from "../../services/tubularService";
+import ConfirmModal from "../Modals/ConfirmModal";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -39,7 +38,7 @@ export const useClipboardTubularReferences: () => [TubularReferences | null, Dis
 };
 
 export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, wellbore: Wellbore, tubularReferences: TubularReferences) => {
-  const onConnectionVerified = async (credentials: ServerCredentials) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
     await CredentialsService.saveCredentials(credentials);
     orderCopyJob(wellbore, tubularReferences, dispatchOperation);
     dispatchOperation({ type: OperationType.HideModal });

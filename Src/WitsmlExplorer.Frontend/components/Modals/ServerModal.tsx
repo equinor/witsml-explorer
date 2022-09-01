@@ -8,8 +8,8 @@ import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from ".
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import { ServerCredentials } from "../../services/credentialsService";
-import ServerService from "../../services/serverService";
+import { BasicServerCredentials } from "../../services/credentialsService";
+import MsalServerService from "../../services/msalServerService";
 import { colors } from "../../styles/Colors";
 import ModalDialog from "./ModalDialog";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
@@ -37,10 +37,10 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 
     setIsLoading(true);
     if (isAddingNewServer) {
-      const freshServer = await ServerService.addServer(server, abortController.signal);
+      const freshServer = await MsalServerService.addServer(server, abortController.signal);
       dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
     } else {
-      const freshServer = await ServerService.updateServer(server, abortController.signal);
+      const freshServer = await MsalServerService.updateServer(server, abortController.signal);
       dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
     }
     setIsLoading(false);
@@ -58,7 +58,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
     };
 
-    const serverCredentials: ServerCredentials = { username: "", password: "", server };
+    const serverCredentials: BasicServerCredentials = { username: "", password: "", server };
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server,
       serverCredentials,
@@ -81,7 +81,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       const abortController = new AbortController();
 
       try {
-        await ServerService.removeServer(server.id, abortController.signal);
+        await MsalServerService.removeServer(server.id, abortController.signal);
         dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
       } catch (error) {
         //TODO Add a commmon way to handle such errors.

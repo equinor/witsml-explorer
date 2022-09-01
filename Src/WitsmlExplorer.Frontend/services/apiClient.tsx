@@ -1,8 +1,8 @@
 import fetch from "isomorphic-unfetch";
-import CredentialsService, { ServerCredentials } from "./credentialsService";
+import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export default class ApiClient {
-  static getCommonHeaders(credentials: ServerCredentials[]): HeadersInit {
+  static getCommonHeaders(credentials: BasicServerCredentials[]): HeadersInit {
     const hasCredentials = credentials[0] !== undefined && credentials[0].password !== undefined;
     return {
       "Content-Type": "application/json",
@@ -12,7 +12,7 @@ export default class ApiClient {
     };
   }
 
-  private static createAuthorizationString(credentials: ServerCredentials[]): string {
+  private static createAuthorizationString(credentials: BasicServerCredentials[]): string {
     const credentialsStrings = credentials.map(({ username, password }) => `${username}:${password}`);
     return "Basic " + btoa(credentialsStrings.join(":"));
   }
@@ -36,7 +36,7 @@ export default class ApiClient {
     body: string,
     abortSignal: AbortSignal | null = null,
     authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED,
-    currentCredentials: ServerCredentials[] = CredentialsService.getCredentials()
+    currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials()
   ): Promise<Response> {
     const requestInit = {
       signal: abortSignal,

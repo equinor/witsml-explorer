@@ -1,9 +1,9 @@
-import { Server } from "../models/server";
 import { SimpleEventDispatcher } from "ste-simple-events";
-import ApiClient, { AuthConfig } from "./apiClient";
 import { ErrorDetails } from "../models/errorDetails";
+import { Server } from "../models/server";
+import ApiClient, { AuthConfig } from "./apiClient";
 
-export interface ServerCredentials {
+export interface BasicServerCredentials {
   server: Server;
   username: string;
   password: string;
@@ -12,7 +12,7 @@ export interface ServerCredentials {
 class CredentialsService {
   private static _instance: CredentialsService;
   private _onCredentialStateChanged = new SimpleEventDispatcher<{ server: Server; hasPassword: boolean }>();
-  private credentials: ServerCredentials[];
+  private credentials: BasicServerCredentials[];
   private server?: Server;
   private sourceServer?: Server;
 
@@ -33,7 +33,7 @@ class CredentialsService {
     this.sourceServer = null;
   }
 
-  public saveCredentials(serverCredentials: ServerCredentials) {
+  public saveCredentials(serverCredentials: BasicServerCredentials) {
     const index = this.credentials.findIndex((c) => c.server.id === serverCredentials.server.id);
     if (index === -1) {
       this.credentials.push(serverCredentials);
@@ -44,13 +44,13 @@ class CredentialsService {
     this._onCredentialStateChanged.dispatch({ server: serverCredentials.server, hasPassword: Boolean(serverCredentials.password) });
   }
 
-  public getCredentials(): ServerCredentials[] {
+  public getCredentials(): BasicServerCredentials[] {
     const currentCredentials = this.credentials.find((c) => c.server.id === this.server?.id);
     const sourceCredentials = this.getSourceServerCredentials();
     return [...(currentCredentials ? [currentCredentials] : []), ...(sourceCredentials ? [sourceCredentials] : [])];
   }
 
-  public getSourceServerCredentials(): ServerCredentials | undefined {
+  public getSourceServerCredentials(): BasicServerCredentials | undefined {
     return this.credentials.find((c) => c.server.id === this.sourceServer?.id);
   }
 
@@ -63,7 +63,7 @@ class CredentialsService {
     return this.credentials.find((c) => c.server.id === server.id)?.password !== undefined;
   }
 
-  public async verifyCredentials(credentials: ServerCredentials, abortSignal?: AbortSignal): Promise<any> {
+  public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
     const response = await ApiClient.post(`/api/credentials/authorize`, JSON.stringify(credentials.server), abortSignal, AuthConfig.WITSML_AUTHENTICATION_REQUIRED, [credentials]);
     if (response.ok) {
       return response.json();
@@ -84,8 +84,8 @@ class CredentialsService {
     }
   }
 
-  private static getLocallyStoredServerUsernames(): ServerCredentials[] {
-    let locallyStoredServerUsernames: ServerCredentials[];
+  private static getLocallyStoredServerUsernames(): BasicServerCredentials[] {
+    let locallyStoredServerUsernames: BasicServerCredentials[];
     if (typeof window !== "undefined") {
       locallyStoredServerUsernames = JSON.parse(localStorage.getItem("serverCredentials"));
     }

@@ -4,39 +4,43 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace WitsmlExplorer.Api.Swagger;
-
-/// <summary>
-/// This class will add a Required HTTP Header `Witsml-ServerUrl` to SwaggerUI for all endpoints except where it is not needed
-/// </summary>
-public class WitsmlHeaderFilter : IOperationFilter
+namespace WitsmlExplorer.Api.Swagger
 {
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    /// <summary>
+    /// This class will add a Required HTTP Header `Witsml-ServerUrl` and `Witsml-Source-ServerUrl`to SwaggerUI for all endpoints except where it is not needed
+    /// </summary>
+    public class WitsmlHeaderFilter : IOperationFilter
     {
-        var noHeader = new List<string>() { "WitsmlExplorer.Api.HttpHandler.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandler.WitsmlServerHandler" };
-        var witsmlSourceHeader = new List<string>() { "WitsmlExplorer.Api.HttpHandler.JobHandler" };
-        if (operation.Parameters == null)
-            operation.Parameters = new List<OpenApiParameter>();
-
-        if (!noHeader.Contains(context.MethodInfo.DeclaringType.FullName))
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            operation.Parameters.Add(new OpenApiParameter
+            List<string> emptyHeader = new() { "WitsmlExplorer.Api.HttpHandler.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandler.WitsmlServerHandler" };
+            List<string> witsmlSourceHeader = new() { "WitsmlExplorer.Api.HttpHandler.JobHandler" };
+            if (operation.Parameters == null)
             {
-                Name = "Witsml-ServerUrl",
-                In = ParameterLocation.Header,
-                Schema = new OpenApiSchema { Type = "string" },
-                Required = true
-            });
-        }
-        if (witsmlSourceHeader.Contains(context.MethodInfo.DeclaringType.FullName))
-        {
-            operation.Parameters.Add(new OpenApiParameter
+                operation.Parameters = new List<OpenApiParameter>();
+            }
+            bool noHeader = emptyHeader.Contains(context.MethodInfo.DeclaringType.FullName);
+            bool sourceServerHeader = witsmlSourceHeader.Contains(context.MethodInfo.DeclaringType.FullName);
+            if (!noHeader)
             {
-                Name = "Witsml-Source-ServerUrl",
-                In = ParameterLocation.Header,
-                Schema = new OpenApiSchema { Type = "string" },
-                Required = false
-            });
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = "Witsml-ServerUrl",
+                    In = ParameterLocation.Header,
+                    Schema = new OpenApiSchema { Type = "string" },
+                    Required = true
+                });
+                if (sourceServerHeader)
+                {
+                    operation.Parameters.Add(new OpenApiParameter
+                    {
+                        Name = "Witsml-Source-ServerUrl",
+                        In = ParameterLocation.Header,
+                        Schema = new OpenApiSchema { Type = "string" },
+                        Required = false
+                    });
+                }
+            }
         }
     }
 }
