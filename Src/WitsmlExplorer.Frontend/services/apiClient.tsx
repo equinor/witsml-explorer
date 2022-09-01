@@ -1,14 +1,14 @@
 import { msalEnabled } from "../msal/MsalAuthProvider";
-import BasicClient from "./basicClient";
+import ApiClientBasic from "./apiClientBasic";
+import ApiClientMsal from "./apiClientMsal";
 import { BasicServerCredentials } from "./credentialsService";
-import MsalApiClient from "./msalApiClient";
 
 export let ApiClient: IApiClient;
 
 if (msalEnabled) {
-  ApiClient = MsalApiClient;
+  ApiClient = ApiClientMsal;
 } else {
-  ApiClient = BasicClient;
+  ApiClient = ApiClientBasic;
 }
 
 export interface IApiClient {

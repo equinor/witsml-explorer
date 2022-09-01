@@ -4,7 +4,7 @@ import { getBaseUrl } from "./apiClient";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
-export default class MsalApiClient {
+export default class ApiClientMsal {
   static async getCommonHeaders(servers: BasicServerCredentials[]): Promise<HeadersInit> {
     const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
     return {
@@ -18,9 +18,9 @@ export default class MsalApiClient {
   public static async get(pathName: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClientMsal.getCommonHeaders(currentCredentials)
     };
-    return MsalApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClientMsal.runHttpRequest(pathName, requestInit);
   }
 
   public static async post(pathName: string, body: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
@@ -28,9 +28,9 @@ export default class MsalApiClient {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClientMsal.getCommonHeaders(currentCredentials)
     };
-    return MsalApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClientMsal.runHttpRequest(pathName, requestInit);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
@@ -39,10 +39,10 @@ export default class MsalApiClient {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClientMsal.getCommonHeaders(currentCredentials)
     };
 
-    return MsalApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClientMsal.runHttpRequest(pathName, requestInit);
   }
 
   public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
@@ -50,10 +50,10 @@ export default class MsalApiClient {
     const requestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: await MsalApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClientMsal.getCommonHeaders(currentCredentials)
     };
 
-    return MsalApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClientMsal.runHttpRequest(pathName, requestInit);
   }
 
   private static runHttpRequest(pathName: string, requestInit: RequestInit) {
@@ -62,7 +62,7 @@ export default class MsalApiClient {
         reject("Not authorized");
       }
 
-      const url = new URL(MsalApiClient.getBasePathName() + pathName, getBaseUrl());
+      const url = new URL(ApiClientMsal.getBasePathName() + pathName, getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))

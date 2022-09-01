@@ -2,7 +2,7 @@ import fetch from "isomorphic-unfetch";
 import { getBaseUrl } from "./apiClient";
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
-export default class BasicClient {
+export default class ApiClientBasic {
   static getCommonHeaders(credentials: BasicServerCredentials[]): HeadersInit {
     const hasCredentials = credentials[0] !== undefined && credentials[0].password !== undefined;
     return {
@@ -26,10 +26,10 @@ export default class BasicClient {
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: BasicClient.getCommonHeaders(currentCredentials)
+      headers: ApiClientBasic.getCommonHeaders(currentCredentials)
     };
 
-    return BasicClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClientBasic.runHttpRequest(pathName, requestInit, authConfig);
   }
 
   public static async post(
@@ -43,9 +43,9 @@ export default class BasicClient {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: BasicClient.getCommonHeaders(currentCredentials)
+      headers: ApiClientBasic.getCommonHeaders(currentCredentials)
     };
-    return BasicClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClientBasic.runHttpRequest(pathName, requestInit, authConfig);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
@@ -54,10 +54,10 @@ export default class BasicClient {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: BasicClient.getCommonHeaders(currentCredentials)
+      headers: ApiClientBasic.getCommonHeaders(currentCredentials)
     };
 
-    return BasicClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClientBasic.runHttpRequest(pathName, requestInit, authConfig);
   }
 
   public static async delete(pathName: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
@@ -65,10 +65,10 @@ export default class BasicClient {
     const requestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: BasicClient.getCommonHeaders(currentCredentials)
+      headers: ApiClientBasic.getCommonHeaders(currentCredentials)
     };
 
-    return BasicClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClientBasic.runHttpRequest(pathName, requestInit, authConfig);
   }
 
   private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig) {
@@ -77,7 +77,7 @@ export default class BasicClient {
         reject("Not authorized");
       }
 
-      const url = new URL(BasicClient.getBasePathName() + pathName, getBaseUrl());
+      const url = new URL(ApiClientBasic.getBasePathName() + pathName, getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))

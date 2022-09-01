@@ -1,10 +1,10 @@
 import { ErrorDetails } from "../models/errorDetails";
 import { emptyServer, Server } from "../models/server";
-import MsalApiClient from "./msalApiClient";
+import ApiClientMsal from "./apiClientMsal";
 
 export default class MsalServerService {
   public static async getServers(abortSignal?: AbortSignal): Promise<Server[]> {
-    const response = await MsalApiClient.get(`/api/witsml-servers`, abortSignal);
+    const response = await ApiClientMsal.get(`/api/witsml-servers`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -13,7 +13,7 @@ export default class MsalServerService {
   }
 
   public static async addServer(server: Server, abortSignal?: AbortSignal): Promise<Server> {
-    const response = await MsalApiClient.post(`/api/witsml-servers`, JSON.stringify(server), abortSignal);
+    const response = await ApiClientMsal.post(`/api/witsml-servers`, JSON.stringify(server), abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -22,7 +22,7 @@ export default class MsalServerService {
   }
 
   public static async updateServer(server: Server, abortSignal?: AbortSignal): Promise<Server> {
-    const response = await MsalApiClient.patch(`/api/witsml-servers/${server.id}`, JSON.stringify(server), abortSignal);
+    const response = await ApiClientMsal.patch(`/api/witsml-servers/${server.id}`, JSON.stringify(server), abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -31,7 +31,7 @@ export default class MsalServerService {
   }
 
   public static async removeServer(serverUid: string, abortSignal?: AbortSignal): Promise<boolean> {
-    const response = await MsalApiClient.delete(`/api/witsml-servers/${serverUid}`, abortSignal);
+    const response = await ApiClientMsal.delete(`/api/witsml-servers/${serverUid}`, abortSignal);
     if (response.ok) {
       return true;
     } else {
