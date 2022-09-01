@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { HttpTransportType, HubConnection } from "@microsoft/signalr";
-import ApiClient from "./apiClient";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
+import { getBaseUrl } from "./apiClient";
 
 export interface Notification {
   serverUrl: URL;
@@ -44,7 +44,7 @@ export default class NotificationService {
   private _onConnectionStateChanged = new SimpleEventDispatcher<boolean>();
 
   private constructor() {
-    let notificationURL = ApiClient.getBaseUrl().toString();
+    let notificationURL = getBaseUrl().toString();
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }

@@ -1,7 +1,7 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
-import ApiClient, { AuthConfig } from "./apiClient";
+import { ApiClient, AuthConfig } from "./apiClient";
 
 export interface BasicServerCredentials {
   server: Server;
@@ -64,7 +64,7 @@ class CredentialsService {
   }
 
   public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.post(`/api/credentials/authorize`, JSON.stringify(credentials.server), abortSignal, AuthConfig.WITSML_AUTHENTICATION_REQUIRED, [credentials]);
+    const response = await ApiClient.post(`/api/credentials/authorize`, JSON.stringify(credentials.server), abortSignal, [credentials], AuthConfig.WITSML_AUTHENTICATION_REQUIRED);
     if (response.ok) {
       return response.json();
     } else {

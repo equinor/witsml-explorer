@@ -1,5 +1,5 @@
-import ApiClient from "./apiClient";
 import BhaRun from "../models/bhaRun";
+import { ApiClient } from "./apiClient";
 
 export default class BhaRunService {
   public static async getBhaRuns(wellId: string, wellboreId: string, abortSignal?: AbortSignal): Promise<BhaRun[]> {

@@ -1,7 +1,7 @@
-import ApiClient from "./apiClient";
-import LogObject, { emptyLogObject } from "../models/logObject";
 import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
+import LogObject, { emptyLogObject } from "../models/logObject";
+import { ApiClient } from "./apiClient";
 
 export default class LogObjectService {
   public static async getLogs(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<LogObject[]> {
