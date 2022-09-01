@@ -1,5 +1,5 @@
-import ApiClient from "./apiClient";
 import MessageObject, { emptyMessageObject } from "../models/messageObject";
+import { ApiClient } from "./apiClient";
 
 export default class MessageObjectService {
   public static async getMessage(wellUid: string, wellboreUid: string, uid: string, abortSignal?: AbortSignal): Promise<MessageObject> {

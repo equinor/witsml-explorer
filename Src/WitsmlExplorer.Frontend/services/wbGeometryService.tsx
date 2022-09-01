@@ -1,5 +1,5 @@
-import ApiClient from "./apiClient";
 import WbGeometryObject from "../models/wbGeometry";
+import { ApiClient } from "./apiClient";
 
 export default class WbGeometryObjectService {
   public static async getWbGeometrys(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<WbGeometryObject[]> {
