@@ -46,31 +46,6 @@ export async function getAccessToken(scopes: string[]): Promise<string | null> {
   return accessToken;
 }
 
-export async function getIdToken(scopes: string[]): Promise<string | null> {
-  const accounts = msalInstance.getAllAccounts();
-  let accessToken = null;
-
-  if (accounts.length > 0) {
-    const request: SilentRequest & RedirectRequest = {
-      scopes: scopes,
-      account: accounts[0]
-    };
-
-    await msalInstance
-      .acquireTokenSilent(request)
-      .then((response: AuthenticationResult) => {
-        accessToken = response.accessToken;
-      })
-      .catch((error) => {
-        // acquireTokenSilent can fail for a number of reasons, fallback to interaction
-        if (error instanceof InteractionRequiredAuthError) {
-          msalInstance.acquireTokenRedirect(request);
-        }
-      });
-  }
-  return accessToken;
-}
-
 export const getAccountInfo = (): AccountInfo | null => {
   let activeAccount = null;
   const allAccounts = msalInstance.getAllAccounts();
