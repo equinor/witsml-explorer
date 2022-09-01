@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Witsml.Data;
+using Witsml.Data.Rig;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -17,7 +17,6 @@ namespace WitsmlExplorer.Api.Services
         Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid);
     }
 
-    // ReSharper disable once UnusedMember.Global
     public class RigService : WitsmlService, IRigService
     {
         public RigService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
@@ -26,41 +25,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlRigs witsmlRigs = RigQueries.GetWitsmlRigByWellbore(wellUid, wellboreUid);
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.All));
-            return result.Rigs.Select(rig =>
-                new Rig
-                {
-                    AirGap = rig.AirGap == null ? null : new LengthMeasure { Uom = rig.AirGap.Uom, Value = StringHelpers.ToDecimal(rig.AirGap.Value) },
-                    Approvals = rig.Approvals,
-                    ClassRig = rig.ClassRig,
-                    DTimStartOp = StringHelpers.ToDateTime(rig.DTimStartOp),
-                    DTimEndOp = StringHelpers.ToDateTime(rig.DTimEndOp),
-                    EmailAddress = rig.EmailAddress,
-                    FaxNumber = rig.FaxNumber,
-                    IsOffshore = rig.IsOffshore,
-                    Manufacturer = rig.Manufacturer,
-                    Name = rig.Name,
-                    NameContact = rig.NameContact,
-                    WellName = rig.NameWell,
-                    WellboreName = rig.NameWellbore,
-                    Owner = rig.Owner,
-                    Uid = rig.Uid,
-                    WellUid = rig.UidWell,
-                    WellboreUid = rig.UidWellbore,
-                    RatingDrillDepth = rig.RatingDrillDepth == null ? null : new LengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingDrillDepth.Value) },
-                    RatingWaterDepth = rig.RatingWaterDepth == null ? null : new LengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = StringHelpers.ToDecimal(rig.RatingWaterDepth.Value) },
-                    Registration = rig.Registration,
-                    TelNumber = rig.TelNumber,
-                    TypeRig = rig.TypeRig,
-                    YearEntService = rig.YearEntService,
-                    CommonData = new CommonData()
-                    {
-                        ItemState = rig.CommonData.ItemState,
-                        SourceName = rig.CommonData.SourceName,
-                        DTimLastChange = StringHelpers.ToDateTime(rig.CommonData.DTimLastChange),
-                        DTimCreation = StringHelpers.ToDateTime(rig.CommonData.DTimCreation),
-                    }
-
-                }).OrderBy(rig => rig.Name);
+            return result.Rigs.Select(rig => WitsmlRigToRig(rig)).OrderBy(rig => rig.Name);
         }
 
         public async Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid)
@@ -69,6 +34,11 @@ namespace WitsmlExplorer.Api.Services
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             WitsmlRig witsmlRig = result.Rigs.FirstOrDefault();
 
+            return WitsmlRigToRig(witsmlRig);
+        }
+
+        private static Rig WitsmlRigToRig(WitsmlRig witsmlRig)
+        {
             return (witsmlRig == null) ? null : new Rig
             {
                 AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = StringHelpers.ToDecimal(witsmlRig.AirGap.Value) },
@@ -78,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                 DTimEndOp = StringHelpers.ToDateTime(witsmlRig.DTimEndOp),
                 EmailAddress = witsmlRig.EmailAddress,
                 FaxNumber = witsmlRig.FaxNumber,
-                IsOffshore = witsmlRig.IsOffshore,
+                IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBooleanSafe(witsmlRig.IsOffshore),
                 Owner = witsmlRig.Owner,
                 Manufacturer = witsmlRig.Manufacturer,
                 Name = witsmlRig.Name,
@@ -101,7 +71,6 @@ namespace WitsmlExplorer.Api.Services
                     DTimLastChange = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimLastChange),
                     DTimCreation = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimCreation),
                 }
-
             };
         }
     }

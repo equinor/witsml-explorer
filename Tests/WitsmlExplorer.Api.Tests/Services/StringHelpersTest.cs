@@ -65,5 +65,23 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Assert.Equal(StringHelpers.ToDateTime(v)?.ToUniversalTime(), p);
             }
         }
+
+        [Fact]
+        public void OptionalBooleanToString_False_CorrectResult()
+        {
+            Assert.Equal("false", StringHelpers.OptionalBooleanToString(false));
+        }
+
+        [Fact]
+        public void OptionalBooleanToString_True_CorrectResult()
+        {
+            Assert.Equal("true", StringHelpers.OptionalBooleanToString(true));
+        }
+
+        [Fact]
+        public void OptionalBooleanToString_Null_CorrectResult()
+        {
+            Assert.Null(StringHelpers.OptionalBooleanToString(null));
+        }
     }
 }

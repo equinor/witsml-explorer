@@ -4,9 +4,11 @@ using System.Linq;
 
 using Witsml.Data;
 using Witsml.Data.Measures;
+using Witsml.Data.Rig;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -109,7 +111,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimEndOp = rig.DTimEndOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     EmailAddress = rig.EmailAddress,
                     FaxNumber = rig.FaxNumber,
-                    IsOffshore = rig.IsOffshore,
+                    IsOffshore = StringHelpers.OptionalBooleanToString(rig.IsOffshore),
                     Manufacturer = rig.Manufacturer,
                     NameContact = rig.NameContact,
                     RatingDrillDepth = rig.RatingDrillDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = rig.RatingDrillDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
