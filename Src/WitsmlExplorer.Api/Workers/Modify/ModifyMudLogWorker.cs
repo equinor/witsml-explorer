@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     Name = mudLog.Name,
                     NameWellbore = mudLog.WellboreName,
                     NameWell = mudLog.WellName,
-                    ObjectGrowing = mudLog.ObjectGrowing.ToString(),
+                    ObjectGrowing = StringHelpers.OptionalBooleanToString(mudLog.ObjectGrowing),
                     MudLogCompany = mudLog.MudLogCompany,
                     MudLogEngineers = mudLog.MudLogEngineers,
                     StartMd = new WitsmlIndex { Uom = "m", Value = mudLog.StartMd },
