@@ -37,8 +37,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlRigs serverRig = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverRigXml = XmlHelper.Serialize(serverRig);
             //disregard commonData times as they are handled by the Witsml Server
-            serverRigXml = Regex.Replace(serverRigXml, "<dTimCreation>.+<\\/dTimCreation>", "");
-            serverRigXml = Regex.Replace(serverRigXml, "<dTimLastChange>.+<\\/dTimLastChange>", "");
+            serverRigXml = Regex.Replace(serverRigXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
+            serverRigXml = Regex.Replace(serverRigXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
 
             string fileRigXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/rig.xml"));
             //handle whitespace

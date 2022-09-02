@@ -115,11 +115,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 NameWellbore = "",
                 Name = "",
                 ObjectGrowing = null,
-                ParentTrajectory = new WitsmlWellboreTrajectory
-                {
-                    TrajectoryReference = "",
-                    WellboreParent = ""
-                },
+                ParentTrajectory = null,
                 DTimTrajStart = "",
                 DTimTrajEnd = "",
                 MdMin = new WitsmlMeasuredDepthCoord(),

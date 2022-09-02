@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data
@@ -7,7 +8,7 @@ namespace Witsml.Data
     public class WitsmlLocation
     {
         [XmlAttribute("uid")] public string Uid { get; set; }
-        [XmlElement("wellCRS")] public string WellCrs { get; set; }
+        [XmlElement("wellCRS")] public WitsmlObjectReference WellCrs { get; set; }
         [XmlElement("latitude")] public Measure Latitude { get; set; }
         [XmlElement("longitude")] public Measure Longitude { get; set; }
         [XmlElement("easting")] public Measure Easting { get; set; }
@@ -23,8 +24,8 @@ namespace Witsml.Data
         [XmlElement("original")]
         public string OriginalText
         {
-            get { return Original.HasValue ? XmlConvert.ToString(Original.Value) : null; }
-            set { Original = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?); }
+            get => Original.HasValue ? XmlConvert.ToString(Original.Value) : null;
+            set => Original = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
         [XmlElement("description")] public string Description { get; set; }
 
