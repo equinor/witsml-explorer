@@ -5,16 +5,15 @@ namespace Witsml.Data.Curves
 {
     public class DateTimeIndex : Index
     {
-        private readonly DateTime _dateTime;
+
+        private DateTime Value { get; }
         public const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
         public const string NullValue = "1900-01-01T00:00:00.000Z";
 
         public DateTimeIndex(DateTime dateTime)
         {
-            this._dateTime = dateTime;
+            Value = dateTime;
         }
-
-        public DateTime Value => _dateTime;
 
         public static DateTimeIndex FromString(string dateString)
         {
@@ -35,20 +34,20 @@ namespace Witsml.Data.Curves
             return false;
         }
 
-        public override Index AddEpsilon() => new DateTimeIndex(_dateTime.AddMilliseconds(1));
+        public override Index AddEpsilon() => new DateTimeIndex(Value.AddMilliseconds(1));
 
         public override int CompareTo(Index that)
         {
             var thatWitsmlDateTime = (DateTimeIndex)that;
-            return _dateTime.CompareTo(thatWitsmlDateTime._dateTime);
+            return Value.CompareTo(thatWitsmlDateTime.Value);
         }
 
-        public override string GetValueAsString() => _dateTime.ToUniversalTime().ToString(IsoPattern);
+        public override string GetValueAsString() => Value.ToUniversalTime().ToString(IsoPattern);
 
         public override bool IsContinuous(Index that)
         {
             var thatWitsmlDateTime = (DateTimeIndex)that;
-            var timespan = _dateTime - thatWitsmlDateTime._dateTime;
+            var timespan = Value - thatWitsmlDateTime.Value;
             return Math.Abs(timespan.Seconds) < 10;
         }
 

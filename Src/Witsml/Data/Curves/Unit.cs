@@ -4,8 +4,8 @@ namespace Witsml.Data.Curves
     {
         private readonly string _unitCode;
 
-        public static Unit NoUnit = new("");
-        public static Unit TimeUnit = new("s");
+        public static readonly Unit NoUnit = new("");
+        public static readonly Unit TimeUnit = new("s");
 
         public Unit(string unitCode)
         {
