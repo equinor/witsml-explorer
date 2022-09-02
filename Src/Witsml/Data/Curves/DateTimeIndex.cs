@@ -6,7 +6,7 @@ namespace Witsml.Data.Curves
     public class DateTimeIndex : Index
     {
 
-        private DateTime Value { get; }
+        public DateTime Value { get; }
         public const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
         public const string NullValue = "1900-01-01T00:00:00.000Z";
 
