@@ -88,7 +88,7 @@ const serverUrlToName = (servers: Server[], url: string): string => {
     return "-";
   }
   const server = servers.find((server) => server.url == url);
-  return server ? server.name : server.url;
+  return server ? server.name : url;
 };
 
 export default JobsView;

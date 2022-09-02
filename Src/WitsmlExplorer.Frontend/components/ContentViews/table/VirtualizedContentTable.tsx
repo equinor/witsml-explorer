@@ -254,7 +254,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
 };
 
 export const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedLog: LogObject): IndexRange[] => {
-  const sortedItems = checkedContentItems.sort((a, b) => (+a.id > +b.id ? 1 : -1));
+  const sortedItems = checkedContentItems.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   const indexCurve = selectedLog.indexCurve;
 
   return sortedItems.reduce((accumulator: IndexRange[], currentElement: any, currentIndex) => {
