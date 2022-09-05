@@ -22,11 +22,11 @@ namespace Witsml.Data
         [XmlElement("objectGrowing")]
         public string ObjectGrowingText
         {
-            get { return ObjectGrowing.HasValue ? XmlConvert.ToString(ObjectGrowing.Value) : null; }
-            set { ObjectGrowing = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?); }
+            get => ObjectGrowing.HasValue ? XmlConvert.ToString(ObjectGrowing.Value) : null;
+            set => ObjectGrowing = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
-        [XmlElement("parentTrajectory")] public WitsmlWellboreTrajectory ParentTrajectory { get; set; }
+        [XmlElement("parentTrajectory")] public WitsmlRefWellboreTrajectory ParentTrajectory { get; set; }
         [XmlElement("dTimTrajStart")] public string DTimTrajStart { get; set; }
         [XmlElement("dTimTrajEnd")] public string DTimTrajEnd { get; set; }
         [XmlElement("mdMn")] public WitsmlMeasuredDepthCoord MdMin { get; set; }

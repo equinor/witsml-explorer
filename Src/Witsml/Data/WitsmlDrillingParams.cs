@@ -19,7 +19,7 @@ namespace Witsml.Data
         public WitsmlMeasuredDepthCoord MdHoleStop { get; set; }
 
         [XmlElement("tubular")]
-        public WitsmlObjectReference Tubular { get; set; }
+        public WitsmlRefNameString Tubular { get; set; }
 
         [XmlElement("hkldRot")]
         public Measure HkldRot { get; set; }

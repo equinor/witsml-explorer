@@ -85,7 +85,7 @@ namespace WitsmlExplorer.Console.ListCommands
                     NameWell = "",
                     NameWellbore = "",
                     Name = "",
-                    Tubular = new WitsmlObjectReference
+                    Tubular = new WitsmlRefNameString
                     {
                         UidRef = ""
                     },

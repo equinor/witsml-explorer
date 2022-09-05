@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -37,8 +36,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlBhaRuns serverBhaRun = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverBhaRunXml = XmlHelper.Serialize(serverBhaRun);
             //disregard commonData times as they are handled by the Witsml Server
-            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimCreation>.+<\\/dTimCreation>", "");
-            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimLastChange>.+<\\/dTimLastChange>", "");
+            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
+            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
 
             string fileBhaRunXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/bhaRun.xml"));
             //handle whitespace

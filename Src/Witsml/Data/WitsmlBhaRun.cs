@@ -17,7 +17,7 @@ namespace Witsml.Data
         }
 
         [XmlElement("tubular")]
-        public WitsmlObjectReference Tubular { get; set; }
+        public WitsmlRefNameString Tubular { get; set; }
 
         [XmlElement("dTimStart")]
         public string DTimStart { get; set; }

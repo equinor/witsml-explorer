@@ -37,8 +37,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlTubulars serverTubular = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverTubularXml = XmlHelper.Serialize(serverTubular);
             //disregard commonData times as they are handled by the Witsml Server
-            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimCreation>.+<\\/dTimCreation>", "");
-            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimLastChange>.+<\\/dTimLastChange>", "");
+            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
+            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
 
             string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/tubular.xml"));
             //handle whitespace
