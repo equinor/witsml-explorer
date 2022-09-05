@@ -8,7 +8,7 @@ namespace Witsml.Data
 {
     public class WitsmlTrajectoryStation
     {
-        [XmlElement("target")] public WitsmlObjectReference Target { get; set; }
+        [XmlElement("target")] public WitsmlRefNameString Target { get; set; }
         [XmlAttribute("uid")] public string Uid { get; set; }
         [XmlElement("dTimStn")] public string DTimStn { get; set; }
         [XmlElement("typeTrajStation")] public string TypeTrajStation { get; set; }
@@ -29,7 +29,7 @@ namespace Witsml.Data
         [XmlElement("mdDelta")] public WitsmlLengthMeasure MdDelta { get; set; }
         [XmlElement("tvdDelta")] public WitsmlLengthMeasure TvdDelta { get; set; }
         [XmlElement("modelToolError")] public string ModelToolError { get; set; }
-        [XmlElement("iscwsaToolErrorModel")] public WitsmlObjectReference IscwsaToolErrorModel { get; set; }
+        [XmlElement("iscwsaToolErrorModel")] public WitsmlRefNameString IscwsaToolErrorModel { get; set; }
         [XmlElement("gravTotalUncert")] public Measure GravTotalUncert { get; set; }
         [XmlElement("dipAngleUncert")] public Measure DipAngleUncert { get; set; }
         [XmlElement("magTotalUncert")] public Measure MagTotalUncert { get; set; }

@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Query
                     NameWellbore = "",
                     Name = "",
                     NumStringRun = "",
-                    Tubular = new WitsmlObjectReference
+                    Tubular = new WitsmlRefNameString
                     {
                         UidRef = "",
                         Value = ""
@@ -80,7 +80,7 @@ namespace WitsmlExplorer.Api.Query
                     NameWellbore = "",
                     Name = "",
                     NumStringRun = "",
-                    Tubular = new WitsmlObjectReference
+                    Tubular = new WitsmlRefNameString
                     {
                         UidRef = "",
                         Value = ""
@@ -122,7 +122,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = bhaRun.Uid,
                     Name = bhaRun.Name,
                     NumStringRun = bhaRun.NumStringRun,
-                    Tubular = new WitsmlObjectReference
+                    Tubular = new WitsmlRefNameString
                     {
                         UidRef = bhaRun.TubularUidRef,
                         Value = bhaRun.Tubular

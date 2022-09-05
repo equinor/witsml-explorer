@@ -8,7 +8,7 @@ namespace Witsml.Data
     public class WitsmlLocation
     {
         [XmlAttribute("uid")] public string Uid { get; set; }
-        [XmlElement("wellCRS")] public WitsmlObjectReference WellCrs { get; set; }
+        [XmlElement("wellCRS")] public WitsmlRefNameString WellCrs { get; set; }
         [XmlElement("latitude")] public Measure Latitude { get; set; }
         [XmlElement("longitude")] public Measure Longitude { get; set; }
         [XmlElement("easting")] public Measure Easting { get; set; }
