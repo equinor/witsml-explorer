@@ -45,10 +45,9 @@ const TopRightCornerMenu = (): React.ReactElement => {
   return (
     <>
       <Pointer>
-        <Icon name="moreVertical" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
+        <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
       <Menu id="ThemeMenu" anchorEl={anchorThemeEl} open={openTheme}>
-        <MenuLabel key={"text"}>Theme</MenuLabel>
         <StyledMenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
           <SelectTypography selected={theme === UserTheme.Comfortable}>Comfortable </SelectTypography>
           {theme === UserTheme.Comfortable && <Icon name="check" />}
@@ -61,10 +60,9 @@ const TopRightCornerMenu = (): React.ReactElement => {
       {msalEnabled && (
         <>
           <Pointer>
-            <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
+            <Icon name="accountCircle" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
           </Pointer>
           <Menu id="AccountMenu" anchorEl={anchorAccountEl} open={openAccount}>
-            <MenuLabel key={"text"}>Account</MenuLabel>
             <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
             <StyledMenuItem key={"signout"} onClick={() => signOut()}>
               Logout
@@ -92,12 +90,6 @@ const StyledMenuItem = styled(Menu.Item)`
       outline: 0;
     }
   }
-`;
-
-const MenuLabel = styled.p`
-  font-family: inherit;
-  font-size: 0.75rem;
-  margin: 0.5rem 1.5rem 0.5rem 1.5rem;
 `;
 
 const Pointer = styled.div`

@@ -8,7 +8,7 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import Rig from "../../models/rig";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
@@ -34,7 +34,7 @@ export const useClipboardRigReferences: () => [RigReferences | null, Dispatch<Se
 };
 
 export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, wellbore: Wellbore, rigReferences: RigReferences) => {
-  const onConnectionVerified = async (credentials: ServerCredentials) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
     await CredentialsService.saveCredentials(credentials);
     orderCopyJob(wellbore, rigReferences, dispatchOperation);
     dispatchOperation({ type: OperationType.HideModal });

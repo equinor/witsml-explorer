@@ -1,6 +1,6 @@
-import ApiClient from "./apiClient";
 import Tubular from "../models/tubular";
 import TubularComponent from "../models/tubularComponent";
+import { ApiClient } from "./apiClient";
 
 export default class TubularService {
   public static async getTubulars(wellId: string, wellboreId: string, abortSignal?: AbortSignal): Promise<Tubular[]> {

@@ -1,10 +1,10 @@
-import { emptyServer, Server } from "../models/server";
-import ApiClient, { AuthConfig } from "./apiClient";
 import { ErrorDetails } from "../models/errorDetails";
+import { emptyServer, Server } from "../models/server";
+import { ApiClient, AuthConfig } from "./apiClient";
 
 export default class ServerService {
   public static async getServers(abortSignal?: AbortSignal): Promise<Server[]> {
-    const response = await ApiClient.get(`/api/witsml-servers`, abortSignal, AuthConfig.NO_WITSML_AUTHENTICATION_REQUIRED);
+    const response = await ApiClient.get(`/api/witsml-servers`, abortSignal, undefined, AuthConfig.NO_WITSML_AUTHENTICATION_REQUIRED);
     if (response.ok) {
       return response.json();
     } else {
@@ -13,7 +13,7 @@ export default class ServerService {
   }
 
   public static async addServer(server: Server, abortSignal?: AbortSignal): Promise<Server> {
-    const response = await ApiClient.post(`/api/witsml-servers`, JSON.stringify(server), abortSignal, AuthConfig.NO_WITSML_AUTHENTICATION_REQUIRED);
+    const response = await ApiClient.post(`/api/witsml-servers`, JSON.stringify(server), abortSignal, undefined, AuthConfig.NO_WITSML_AUTHENTICATION_REQUIRED);
     if (response.ok) {
       return response.json();
     } else {

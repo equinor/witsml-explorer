@@ -1,62 +1,66 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandler;
 
-namespace WitsmlExplorer.Api;
-
-public static class Api
+namespace WitsmlExplorer.Api
 {
-    public static void ConfigureApi(this WebApplication app)
+    public static class Routes
     {
-        app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers);
-        app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer);
-        app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer);
-        app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer);
-
-        app.MapGet("/api/wells", WellHandler.GetAllWells);
-        app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", WbGeometryHandler.GetWbGeometries);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", RiskHandler.GetRisks);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", TubularHandler.GetTubulars);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", TubularHandler.GetTubular);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", MessageHandler.GetMessages);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", MessageHandler.GetMessage);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", BhaRunHandler.GetBhaRuns);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", BhaRunHandler.GetBhaRun);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", RigHandler.GetRigs);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", RigHandler.GetRig);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo);
-        app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog);
-
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory);
-        app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations);
-
-        app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob);
-        app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfosById);
-        app.MapGet("/api/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser);
-
-        app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize);
-
-        if (app.Environment.EnvironmentName == "Development")
+        public static void ConfigureApi(this WebApplication app, IConfiguration configuration)
         {
-            app.MapFallback(() => Results.Redirect("/swagger"));
+            app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers).SetupAuthorization(configuration);
+            app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer).SetupAuthorization(configuration, AuthorizationPolicyRoles.ADMIN);
+            app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer).SetupAuthorization(configuration, AuthorizationPolicyRoles.ADMIN);
+            app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer).SetupAuthorization(configuration, AuthorizationPolicyRoles.ADMIN);
+
+            app.MapGet("/api/wells", WellHandler.GetAllWells).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", WbGeometryHandler.GetWbGeometries).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", RiskHandler.GetRisks).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", TubularHandler.GetTubulars).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", TubularHandler.GetTubular).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", MessageHandler.GetMessages).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", MessageHandler.GetMessage).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", BhaRunHandler.GetBhaRuns).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", BhaRunHandler.GetBhaRun).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", RigHandler.GetRigs).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", RigHandler.GetRig).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo).SetupAuthorization(configuration);
+            app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog).SetupAuthorization(configuration);
+
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory).SetupAuthorization(configuration);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations).SetupAuthorization(configuration);
+
+            app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob).SetupAuthorization(configuration);
+            app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfosById).SetupAuthorization(configuration);
+            app.MapGet("/api/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser).SetupAuthorization(configuration);
+
+            app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize).SetupAuthorization(configuration);
+
+            if (app.Environment.EnvironmentName == "Development")
+            {
+                app.MapFallback(() => Results.Redirect("/swagger"));
+            }
+
         }
     }
 }

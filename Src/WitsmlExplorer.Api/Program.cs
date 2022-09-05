@@ -30,7 +30,7 @@ Startup startup = new(builder.Configuration);
 startup.ConfigureServices(builder.Services);
 
 WebApplication app = builder.Build();
-app.ConfigureApi();
+app.ConfigureApi(builder.Configuration);
 
 startup.Configure(app, app.Environment);
 

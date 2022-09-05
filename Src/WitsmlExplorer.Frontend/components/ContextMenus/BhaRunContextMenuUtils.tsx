@@ -1,15 +1,14 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import BhaRunReferences from "../../models/jobs/bhaRunReferences";
 import { parseStringToBhaRunReferences } from "../../models/jobs/copyBhaRunJob";
-import Wellbore from "../../models/wellbore";
-import { Server } from "../../models/server";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
-import OperationType from "../../contexts/operationType";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import React from "react";
 import WellboreReference from "../../models/jobs/wellboreReference";
+import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -46,7 +45,7 @@ export const onClickPaste = async (servers: Server[], dispatchOperation: Dispatc
 };
 
 const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, wellbore: Wellbore, bhaRunReferences: BhaRunReferences) => {
-  const onConnectionVerified = async (credentials: ServerCredentials) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
     await CredentialsService.saveCredentials(credentials);
     orderCopyJob(wellbore, bhaRunReferences, dispatchOperation);
     dispatchOperation({ type: OperationType.HideModal });

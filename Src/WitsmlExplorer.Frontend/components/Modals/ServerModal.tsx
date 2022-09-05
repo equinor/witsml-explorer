@@ -8,7 +8,7 @@ import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from ".
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import { ServerCredentials } from "../../services/credentialsService";
+import { BasicServerCredentials } from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
 import ModalDialog from "./ModalDialog";
@@ -58,7 +58,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
     };
 
-    const serverCredentials: ServerCredentials = { username: "", password: "", server };
+    const serverCredentials: BasicServerCredentials = { username: "", password: "", server };
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server,
       serverCredentials,

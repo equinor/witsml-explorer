@@ -1,6 +1,6 @@
-import ApiClient from "./apiClient";
 import Trajectory from "../models/trajectory";
 import TrajectoryStation from "../models/trajectoryStation";
+import { ApiClient } from "./apiClient";
 
 export default class TrajectoryService {
   public static async getTrajectories(wellId: string, wellboreId: string, abortSignal?: AbortSignal): Promise<Trajectory[]> {

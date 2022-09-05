@@ -1,5 +1,5 @@
 import JobInfo from "../models/jobs/jobInfo";
-import ApiClient from "./apiClient";
+import { ApiClient } from "./apiClient";
 import CredentialsService from "./credentialsService";
 
 export default class JobService {

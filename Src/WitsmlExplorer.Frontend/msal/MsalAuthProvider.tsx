@@ -2,7 +2,7 @@ import { AccountInfo, Configuration, InteractionRequiredAuthError, PublicClientA
 import { AuthenticationResult } from "@azure/msal-common";
 
 export const authRequest: RedirectRequest = {
-  scopes: ["openid"]
+  scopes: ["openid profile"]
 };
 
 export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;

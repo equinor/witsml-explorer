@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Logging;
 
 using Serilog;
 
@@ -66,7 +68,11 @@ namespace WitsmlExplorer.Api
             if (Configuration["OAuth2Enabled"] == "True")
             {
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-                services.AddAuthorization(options => options.AddPolicy("Policy_Access", authBuilder => authBuilder.RequireRole("app-role-A")));
+                List<string> policyRoles = Configuration.GetSection("AzureAd:PolicyRoles").Get<List<string>>();
+                foreach (string policyRole in policyRoles)
+                {
+                    services.AddAuthorization(options => options.AddPolicy(policyRole, authBuilder => authBuilder.RequireRole(policyRole)));
+                }
             }
 
         }
@@ -74,10 +80,12 @@ namespace WitsmlExplorer.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.InitializeRepository();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
                 app.ConfigureSwagger(Configuration);
             }
             else
@@ -94,6 +102,7 @@ namespace WitsmlExplorer.Api
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
+
             }
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }

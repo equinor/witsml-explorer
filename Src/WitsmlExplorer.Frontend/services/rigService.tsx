@@ -1,5 +1,5 @@
-import ApiClient from "./apiClient";
 import Rig, { emptyRig } from "../models/rig";
+import { ApiClient } from "./apiClient";
 
 export default class RigService {
   public static async getRigs(wellId: string, wellboreId: string, abortSignal?: AbortSignal): Promise<Rig[]> {
