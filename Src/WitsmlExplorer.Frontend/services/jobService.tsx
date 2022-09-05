@@ -33,6 +33,7 @@ export enum JobType {
   CopyRig = "CopyRig",
   CopyRisk = "CopyRisk",
   CopyTrajectory = "CopyTrajectory",
+  CopyTrajectoryStations = "CopyTrajectoryStations",
   CopyTubular = "CopyTubular",
   CopyTubularComponents = "CopyTubularComponents",
   CreateWellbore = "CreateWellbore",

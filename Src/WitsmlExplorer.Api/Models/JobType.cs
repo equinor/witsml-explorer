@@ -8,6 +8,7 @@ namespace WitsmlExplorer.Api.Models
         CopyRig,
         CopyRisk,
         CopyTrajectory,
+        CopyTrajectoryStations,
         CopyTubular,
         CopyTubularComponents,
         ModifyBhaRun,

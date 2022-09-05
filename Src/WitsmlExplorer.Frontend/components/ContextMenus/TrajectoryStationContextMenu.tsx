@@ -1,19 +1,22 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
-import { Divider, MenuItem } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
-import { colors } from "../../styles/Colors";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import Trajectory from "../../models/trajectory";
-import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
-import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
+import { Divider, MenuItem } from "@material-ui/core";
+import React from "react";
 import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
-import ConfirmModal from "../Modals/ConfirmModal";
-import JobService, { JobType } from "../../services/jobService";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { createTrajectoryStationReferences } from "../../models/jobs/copyTrajectoryStationJob";
 import { DeleteTrajectoryStationsJob } from "../../models/jobs/deleteJobs";
-import { StyledIcon } from "./ContextMenuUtils";
+import { Server } from "../../models/server";
+import Trajectory from "../../models/trajectory";
+import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
+import ConfirmModal from "../Modals/ConfirmModal";
+import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
+import ContextMenu from "./ContextMenu";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { orderCopyJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
@@ -25,7 +28,14 @@ export interface TrajectoryStationContextMenuProps {
 }
 
 const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps): React.ReactElement => {
-  const { checkedTrajectoryStations, dispatchOperation, trajectory } = props;
+  const { checkedTrajectoryStations, dispatchOperation, trajectory, selectedServer, servers } = props;
+  const [trajectoryStationReferences] = useClipboardTrajectoryStationReferences();
+
+  const onClickCopy = async () => {
+    const trajectoryStationReferences = createTrajectoryStationReferences(checkedTrajectoryStations, trajectory, selectedServer.url);
+    await navigator.clipboard.writeText(JSON.stringify(trajectoryStationReferences));
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
 
   const onClickProperties = async () => {
     const trajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
@@ -70,12 +80,22 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const serverUrl = trajectoryStationReferences?.serverUrl;
+  const orderCopy = () => orderCopyJob(trajectory, trajectoryStationReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedTrajectoryStations.length === 0}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
+        </MenuItem>,
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={trajectoryStationReferences === null}>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.trajectoryStationUids)}</Typography>
+        </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedTrajectoryStations.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTrajectoryStations.length !== 1}>

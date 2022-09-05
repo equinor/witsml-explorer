@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
-import Trajectory from "../../models/trajectory";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import TrajectoryContextMenu, { TrajectoryContextMenuProps } from "../ContextMenus/TrajectoryContextMenu";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import OperationType from "../../contexts/operationType";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
+import Trajectory from "../../models/trajectory";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import TrajectoryContextMenu, { TrajectoryContextMenuProps } from "../ContextMenus/TrajectoryContextMenu";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TrajectoriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTrajectoryGroup } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedTrajectoryGroup, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
 
@@ -21,7 +21,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   }, [selectedWellbore?.trajectories]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, trajectory: Trajectory) => {
-    const contextProps: TrajectoryContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, trajectory };
+    const contextProps: TrajectoryContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, trajectory, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextProps} />, position } });
   };
