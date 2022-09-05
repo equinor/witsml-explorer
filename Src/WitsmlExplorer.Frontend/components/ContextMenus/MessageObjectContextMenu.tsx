@@ -1,20 +1,20 @@
+import { Typography } from "@equinor/eds-core-react";
+import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { DisplayModalAction, HideModalAction, HideContextMenuAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
-import ContextMenu from "./ContextMenu";
-import JobService, { JobType } from "../../services/jobService";
-import { Server } from "../../models/server";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { MessageObjectRow } from "../ContentViews/MessagesListView";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import MessageObjectService from "../../services/messageObjectService";
 import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { DeleteMessageObjectsJob } from "../../models/jobs/deleteJobs";
+import { Server } from "../../models/server";
+import JobService, { JobType } from "../../services/jobService";
+import MessageObjectService from "../../services/messageObjectService";
+import { colors } from "../../styles/Colors";
+import { MessageObjectRow } from "../ContentViews/MessagesListView";
+import ConfirmModal from "../Modals/ConfirmModal";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import { Typography } from "@equinor/eds-core-react";
-import { DeleteMessageObjectsJob } from "../../models/jobs/deleteJobs";
+import ContextMenu from "./ContextMenu";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
@@ -73,17 +73,14 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"modify"} onClick={onClickModify} disabled={checkedMessageObjectRows.length !== 1}>
-          <ListItemIcon>
-            <Icon name="formatLine" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
-          <Typography color={"primary"}>Modify</Typography>
-        </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedMessageObjectRows.length === 0}>
-          <ListItemIcon>
-            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedMessageObjectRows.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

@@ -11,7 +11,6 @@ import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
 import LogReference from "../../models/jobs/logReference";
 import LogReferences from "../../models/jobs/logReferences";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { colors } from "../../styles/Colors";
@@ -22,8 +21,8 @@ import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataIm
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import ContextMenu from "./ContextMenu";
+import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogObjectContextMenuProps {
@@ -67,42 +66,6 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${logObject.wellUid}&wellboreUid=${logObject.wellboreUid}&logObjectUid=${logObject.uid}`;
     window.open(logUrl);
     dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const onClickPasteLogCurves = async () => {
-    const sourceServerUrl = logCurvesReference.serverUrl;
-    const sourceServer = servers.find((server) => server.url === sourceServerUrl);
-    if (sourceServer !== null) {
-      CredentialsService.setSourceServer(sourceServer);
-      const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-      if (!hasPassword) {
-        showCredentialsModal(
-          sourceServer,
-          `You are trying to paste curve values from a server that you are not logged in to. Please provide username and password for ${sourceServer.name}.`
-        );
-      } else {
-        orderCopyPasteJob();
-      }
-    }
-  };
-
-  const showCredentialsModal = (server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-      await CredentialsService.saveCredentials(credentials);
-      orderCopyPasteJob();
-      dispatchOperation({ type: OperationType.HideModal });
-    };
-
-    const currentCredentials = CredentialsService.getSourceServerCredentials();
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: server,
-      serverCredentials: currentCredentials,
-      mode: CredentialsMode.TEST,
-      errorMessage,
-      onConnectionVerified,
-      confirmText: "Save"
-    };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
   const orderCopyPasteJob = () => {
@@ -207,7 +170,11 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
         </MenuItem>,
-        <MenuItem key={"pastelogcurves"} onClick={onClickPasteLogCurves} disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}>
+        <MenuItem
+          key={"pastelogcurves"}
+          onClick={() => onClickPaste(servers, logCurvesReference?.serverUrl, dispatchOperation, () => orderCopyPasteJob())}
+          disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}
+        >
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>

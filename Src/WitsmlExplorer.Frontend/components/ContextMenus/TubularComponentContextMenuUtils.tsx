@@ -2,11 +2,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTubularComponentReferences, TubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
 import TubularReference from "../../models/jobs/tubularReference";
-import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import { DispatchOperation } from "./TubularContextMenuUtils";
 
 export const useClipboardTubularComponentReferences: () => [TubularComponentReferences | null, Dispatch<SetStateAction<TubularComponentReferences>>] = () => {
@@ -28,25 +25,6 @@ export const useClipboardTubularComponentReferences: () => [TubularComponentRefe
   return [tubularComponentReferences, setTubularComponentReferences];
 };
 
-export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentReferences: TubularComponentReferences) => {
-  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-    await CredentialsService.saveCredentials(credentials);
-    orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
-    dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const currentCredentials = CredentialsService.getSourceServerCredentials();
-  const userCredentialsModalProps: UserCredentialsModalProps = {
-    server: server,
-    serverCredentials: currentCredentials,
-    mode: CredentialsMode.TEST,
-    errorMessage: `You are trying to paste tubular components from a server that you are not logged in to. Please provide username and password for ${server.name}.`,
-    onConnectionVerified,
-    confirmText: "Save"
-  };
-  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
-};
-
 export const orderCopyJob = (tubular: Tubular, tubularComponentReferences: TubularComponentReferences, dispatchOperation: DispatchOperation) => {
   const tubularReference: TubularReference = {
     wellUid: tubular.wellUid,
@@ -57,17 +35,4 @@ export const orderCopyJob = (tubular: Tubular, tubularComponentReferences: Tubul
   const copyJob = { source: tubularComponentReferences, target: tubularReference };
   JobService.orderJob(JobType.CopyTubularComponents, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
-export const onClickPaste = async (servers: Server[], dispatchOperation: DispatchOperation, tubular: Tubular, tubularComponentReferences: TubularComponentReferences) => {
-  const sourceServer = servers.find((server) => server.url === tubularComponentReferences.serverUrl);
-  if (sourceServer !== null) {
-    CredentialsService.setSourceServer(sourceServer);
-    const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-    if (!hasPassword) {
-      showCredentialsModal(sourceServer, dispatchOperation, tubular, tubularComponentReferences);
-    } else {
-      orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
-    }
-  }
 };

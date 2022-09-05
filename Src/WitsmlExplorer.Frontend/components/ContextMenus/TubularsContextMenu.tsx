@@ -1,14 +1,15 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
+import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import { colors } from "../../styles/Colors";
+import React from "react";
+import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { Server } from "../../models/server";
-import { Typography } from "@equinor/eds-core-react";
 import Wellbore from "../../models/wellbore";
-import { onClickPaste, onClickRefreshAll, useClipboardTubularReferences } from "./TubularContextMenuUtils";
-import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { colors } from "../../styles/Colors";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { onClickRefreshAll, orderCopyJob, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 
 export interface TubularsContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction) => void;
@@ -28,7 +29,11 @@ const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElemen
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh tubulars</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReferences)} disabled={tubularReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation))}
+          disabled={tubularReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>

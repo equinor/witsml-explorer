@@ -10,14 +10,13 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import LogObject from "../../models/logObject";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import ContextMenu from "./ContextMenu";
+import { onClickPaste } from "./CopyUtils";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -43,34 +42,15 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
     tryToParseClipboardContent();
   }, []);
 
-  const orderCopyJob = (jobType: JobType) => {
+  const orderCopyJob = () => {
     const targetWellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
       wellboreUid: wellbore.uid
     };
 
     const copyJob: CopyLogJob = { source: logReferences, target: targetWellboreReference };
-    JobService.orderJob(jobType, copyJob);
+    JobService.orderJob(JobType.CopyLog, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const showCredentialsModal = (jobType: JobType, server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-      await CredentialsService.saveCredentials(credentials);
-      orderCopyJob(JobType.CopyLog);
-      dispatchOperation({ type: OperationType.HideModal });
-    };
-
-    const currentCredentials = CredentialsService.getSourceServerCredentials();
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: server,
-      serverCredentials: currentCredentials,
-      mode: CredentialsMode.TEST,
-      errorMessage,
-      onConnectionVerified,
-      confirmText: "Save"
-    };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
   const onClickNewLog = () => {
@@ -88,24 +68,6 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
     dispatchOperation(action);
   };
 
-  const onClickPaste = async (jobType: JobType) => {
-    const sourceServerUrl = logReferences.serverUrl;
-    const sourceServer = servers.find((server) => server.url === sourceServerUrl);
-    if (sourceServer !== null) {
-      CredentialsService.setSourceServer(sourceServer);
-      const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-      if (!hasPassword) {
-        showCredentialsModal(
-          jobType,
-          sourceServer,
-          `You are trying to paste curve values from a server that you are not logged in to. Please provide username and password for ${sourceServer.name}.`
-        );
-      } else {
-        orderCopyJob(jobType);
-      }
-    }
-  };
-
   return (
     <ContextMenu
       menuItems={[
@@ -115,7 +77,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
-        <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
+        <MenuItem key={"pasteLog"} onClick={() => onClickPaste(servers, logReferences?.serverUrl, dispatchOperation, () => orderCopyJob())} disabled={logReferences === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>

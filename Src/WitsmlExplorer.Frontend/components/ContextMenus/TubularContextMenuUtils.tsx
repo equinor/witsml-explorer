@@ -10,11 +10,9 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import TubularService from "../../services/tubularService";
 import ConfirmModal from "../Modals/ConfirmModal";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -37,25 +35,6 @@ export const useClipboardTubularReferences: () => [TubularReferences | null, Dis
   return [tubularReferences, setTubularReferences];
 };
 
-export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, wellbore: Wellbore, tubularReferences: TubularReferences) => {
-  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-    await CredentialsService.saveCredentials(credentials);
-    orderCopyJob(wellbore, tubularReferences, dispatchOperation);
-    dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const currentCredentials = CredentialsService.getSourceServerCredentials();
-  const userCredentialsModalProps: UserCredentialsModalProps = {
-    server: server,
-    serverCredentials: currentCredentials,
-    mode: CredentialsMode.TEST,
-    errorMessage: `You are trying to paste a tubular from a server that you are not logged in to. Please provide username and password for ${server.name}.`,
-    onConnectionVerified,
-    confirmText: "Save"
-  };
-  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
-};
-
 export const orderCopyJob = (wellbore: Wellbore, tubularReferences: TubularReferences, dispatchOperation: DispatchOperation) => {
   const wellboreReference: WellboreReference = {
     wellUid: wellbore.wellUid,
@@ -65,19 +44,6 @@ export const orderCopyJob = (wellbore: Wellbore, tubularReferences: TubularRefer
   const copyJob = { source: tubularReferences, target: wellboreReference };
   JobService.orderJob(JobType.CopyTubular, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
-export const onClickPaste = async (servers: Server[], dispatchOperation: DispatchOperation, wellbore: Wellbore, tubularReferences: TubularReferences) => {
-  const sourceServer = servers.find((server) => server.url === tubularReferences.serverUrl);
-  if (sourceServer !== null) {
-    CredentialsService.setSourceServer(sourceServer);
-    const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-    if (!hasPassword) {
-      showCredentialsModal(sourceServer, dispatchOperation, wellbore, tubularReferences);
-    } else {
-      orderCopyJob(wellbore, tubularReferences, dispatchOperation);
-    }
-  }
 };
 
 export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {

@@ -10,12 +10,11 @@ import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import { useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardRigReferences } from "./RigContextMenuUtils";
 import { useClipboardRiskReferences } from "./RiskContextMenuUtils";
@@ -62,50 +61,6 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
     tryToParseClipboardContent();
   }, []);
 
-  // ToDo: Equal LogObjectContextMenu.showCredentialModal...Should be refactored out?
-  const showCredentialsModal = (jobType: JobType, server: Server, errorMessage: string) => {
-    const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-      await CredentialsService.saveCredentials(credentials);
-      jobType === JobType.CopyLog ? orderCopyJob(JobType.CopyLog) : orderCopyJob(JobType.CopyTrajectory);
-      dispatchOperation({ type: OperationType.HideModal });
-    };
-
-    const currentCredentials = CredentialsService.getSourceServerCredentials();
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: server,
-      serverCredentials: currentCredentials,
-      mode: CredentialsMode.TEST,
-      errorMessage,
-      onConnectionVerified,
-      confirmText: "Save"
-    };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
-  };
-
-  const onClickPaste = async (jobType: JobType) => {
-    const sourceServerUrl =
-      (jobType === JobType.CopyLog && logReferences.serverUrl) ||
-      (jobType === JobType.CopyTrajectory && trajectoryReference.serverUrl) ||
-      (jobType === JobType.CopyTubular && tubularReferences.serverUrl) ||
-      (jobType === JobType.CopyBhaRun && bhaRunReferences.serverUrl) ||
-      (jobType === JobType.CopyRisk && riskReferences.serverUrl) ||
-      (jobType === JobType.CopyRig && rigReferences.serverUrl);
-    const sourceServer = servers.find((server) => server.url === sourceServerUrl);
-    if (sourceServer !== null) {
-      CredentialsService.setSourceServer(sourceServer);
-      const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-      if (!hasPassword) {
-        showCredentialsModal(
-          jobType,
-          sourceServer,
-          `You are trying to paste curve values from a server that you are not logged in to. Please provide username and password for ${sourceServer.name}.`
-        );
-      } else {
-        orderCopyJob(jobType);
-      }
-    }
-  };
-
   const orderCopyJob = (jobType: JobType) => {
     const wellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
@@ -125,37 +80,61 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
 
   return (
     <NestedMenuItem key={"paste"} label={"Paste"} icon="paste">
-      <MenuItem key={"pasteBhaRun"} onClick={() => onClickPaste(JobType.CopyBhaRun)} disabled={bhaRunReferences === null}>
+      <MenuItem
+        key={"pasteBhaRun"}
+        onClick={() => onClickPaste(servers, bhaRunReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyBhaRun))}
+        disabled={bhaRunReferences === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>Paste bhaRun{bhaRunReferences?.bhaRunUids.length > 1 && "s"}</Typography>
       </MenuItem>
-      <MenuItem key={"pasteLog"} onClick={() => onClickPaste(JobType.CopyLog)} disabled={logReferences === null}>
+      <MenuItem
+        key={"pasteLog"}
+        onClick={() => onClickPaste(servers, logReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyLog))}
+        disabled={logReferences === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>Paste log{logReferences?.logReferenceList.length > 1 && "s"}</Typography>
       </MenuItem>
-      <MenuItem key={"pasteRig"} onClick={() => onClickPaste(JobType.CopyRig)} disabled={rigReferences === null}>
+      <MenuItem
+        key={"pasteRig"}
+        onClick={() => onClickPaste(servers, rigReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyRig))}
+        disabled={rigReferences === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
       </MenuItem>
-      <MenuItem key={"pasteRisk"} onClick={() => onClickPaste(JobType.CopyRisk)} disabled={riskReferences === null}>
+      <MenuItem
+        key={"pasteRisk"}
+        onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyRisk))}
+        disabled={riskReferences === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>Paste risk{riskReferences?.riskUids.length > 1 && "s"}</Typography>
       </MenuItem>
-      <MenuItem key={"pasteTrajectory"} onClick={() => onClickPaste(JobType.CopyTrajectory)} disabled={trajectoryReference === null}>
+      <MenuItem
+        key={"pasteTrajectory"}
+        onClick={() => onClickPaste(servers, trajectoryReference?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyTrajectory))}
+        disabled={trajectoryReference === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
         <Typography color={"primary"}>Paste trajectory</Typography>
       </MenuItem>
-      <MenuItem key={"pasteTubular"} onClick={() => onClickPaste(JobType.CopyTubular)} disabled={tubularReferences === null}>
+      <MenuItem
+        key={"pasteTubular"}
+        onClick={() => onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyTubular))}
+        disabled={tubularReferences === null}
+      >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>

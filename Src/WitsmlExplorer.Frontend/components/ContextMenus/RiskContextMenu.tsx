@@ -11,7 +11,8 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickCopy, onClickDelete, onClickPaste, useClipboardRiskReferences } from "./RiskContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { onClickCopy, onClickDelete, orderCopyJob, useClipboardRiskReferences } from "./RiskContextMenuUtils";
 
 export interface RiskObjectContextMenuProps {
   checkedRiskObjectRows: RiskObjectRow[];
@@ -40,7 +41,11 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy risk{risks?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, riskReferences)} disabled={riskReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation))}
+          disabled={riskReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste risk{riskReferences?.riskUids.length > 1 && "s"}</Typography>
         </MenuItem>,
