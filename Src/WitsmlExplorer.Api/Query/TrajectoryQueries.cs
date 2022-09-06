@@ -56,7 +56,14 @@ namespace WitsmlExplorer.Api.Query
             trajectory.CustomData ??= new WitsmlCustomData();
             trajectory.CommonData.ItemState = string.IsNullOrEmpty(trajectory.CommonData.ItemState) ? null : trajectory.CommonData.ItemState;
             trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
-            var copyTrajectoryQuery = new WitsmlTrajectories { Trajectories = new List<WitsmlTrajectory> { trajectory } };
+            WitsmlTrajectories copyTrajectoryQuery = new() { Trajectories = new List<WitsmlTrajectory> { trajectory } };
+            return copyTrajectoryQuery;
+        }
+
+        public static WitsmlTrajectories CopyTrajectoryStations(WitsmlTrajectory trajectory, IEnumerable<WitsmlTrajectoryStation> trajectoryStations)
+        {
+            trajectory.TrajectoryStations.AddRange(trajectoryStations);
+            WitsmlTrajectories copyTrajectoryQuery = new() { Trajectories = new List<WitsmlTrajectory> { trajectory } };
             return copyTrajectoryQuery;
         }
 
@@ -78,7 +85,7 @@ namespace WitsmlExplorer.Api.Query
         }
         public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
         {
-            var ts = new WitsmlTrajectoryStation
+            WitsmlTrajectoryStation ts = new()
             {
                 Uid = trajectoryStation.Uid,
                 Md = new WitsmlMeasuredDepthCoord { Uom = trajectoryStation.Md.Uom, Value = trajectoryStation.Md.Value.ToString(CultureInfo.InvariantCulture) },
@@ -86,16 +93,25 @@ namespace WitsmlExplorer.Api.Query
             };
 
             if (!trajectoryStation.Tvd.Equals(null))
+            {
                 ts.Tvd = new WitsmlWellVerticalDepthCoord { Uom = trajectoryStation.Tvd.Uom, Value = trajectoryStation.Tvd.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             if (!trajectoryStation.Incl.Equals(null))
+            {
                 ts.Incl = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Incl.Uom, Value = trajectoryStation.Incl.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             if (!trajectoryStation.Azi.Equals(null))
+            {
                 ts.Azi = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
+            }
 
             if (trajectoryStation.DTimStn != null)
+            {
                 ts.DTimStn = ((DateTime)trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            }
+
             return new WitsmlTrajectories
             {
                 Trajectories = new WitsmlTrajectory

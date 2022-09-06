@@ -32,6 +32,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)
         {
             (WitsmlTubular targetTubular, IEnumerable<WitsmlTubularComponent> componentsToCopy) = await FetchData(job);
+            if (componentsToCopy.Count() != job.Source.TubularComponentUids.Count())
+            {
+                string errorMessage = "Failed to copy tubular components.";
+                string missingUids = string.Join(", ", componentsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.TubularComponentUids.Contains(uid)));
+                string reason = $"Could not retrieve all tubular components, missing uids: {missingUids}.";
+                Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
+                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, reason), null);
+            }
             WitsmlTubulars updatedTubularQuery = TubularQueries.CopyTubularComponents(targetTubular, componentsToCopy);
             QueryResult copyResult = await _witsmlClient.UpdateInStoreAsync(updatedTubularQuery);
             string tubularComponentsString = string.Join(", ", job.Source.TubularComponentUids);

@@ -1,7 +1,6 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
 import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import React from "react";
-import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
@@ -9,12 +8,12 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import { RigRow } from "../ContentViews/RigsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
+import { StyledIcon } from "./ContextMenuUtils";
 import { onClickCopy, onClickPaste, useClipboardRigReferences } from "./RigContextMenuUtils";
 
 export interface RigContextMenuProps {
@@ -93,10 +92,5 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
     />
   );
 };
-const StyledIcon = styled(Icon)`
-  && {
-    margin-right: 5px;
-  }
-`;
 
 export default RigContextMenu;
