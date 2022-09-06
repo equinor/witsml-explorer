@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task RenameLogObjectEmptyNameThrowsException()
+        public async Task RenameLogObject_EmptyName_ThrowsException()
         {
             ModifyLogObjectJob job = CreateJobTemplate();
             job.LogObject.Name = "";

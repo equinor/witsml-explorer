@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task RenameTubularEmptyNameThrowsException()
+        public async Task RenameTubular_EmptyName_ThrowsException()
         {
             ModifyTubularJob job = CreateJobTemplate(TubularUid, "");
 

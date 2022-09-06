@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task RenameWellEmptyNameThrowsException()
+        public async Task RenameWell_EmptyName_ThrowsException()
         {
             ModifyWellJob job = CreateJobTemplate(WellUid, "");
 
