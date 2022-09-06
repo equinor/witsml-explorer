@@ -62,8 +62,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Task<WitsmlTrajectory> targetTrajectoryQuery = GetTrajectory(_witsmlClient, job.Target);
             Task<IEnumerable<WitsmlTrajectoryStation>> sourceTrajectoryStationsQuery = GetTrajectoryStations(_witsmlSourceClient, job.Source.TrajectoryReference, job.Source.TrajectoryStationUids);
             await Task.WhenAll(targetTrajectoryQuery, sourceTrajectoryStationsQuery);
-            WitsmlTrajectory targetTrajectory = targetTrajectoryQuery.Result;
-            IEnumerable<WitsmlTrajectoryStation> sourceTrajectoryStations = sourceTrajectoryStationsQuery.Result;
+            WitsmlTrajectory targetTrajectory = await targetTrajectoryQuery;
+            IEnumerable<WitsmlTrajectoryStation> sourceTrajectoryStations = await sourceTrajectoryStationsQuery;
             return Tuple.Create(targetTrajectory, sourceTrajectoryStations);
         }
 

@@ -21,7 +21,7 @@ export const onClickPaste = async (servers: Server[], serverUrl: string, dispatc
 
 const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
   const onConnectionVerified = async (credentials: ServerCredentials) => {
-    await CredentialsService.saveCredentials(credentials);
+    CredentialsService.saveCredentials(credentials);
     orderCopyJob();
     dispatchOperation({ type: OperationType.HideModal });
   };
