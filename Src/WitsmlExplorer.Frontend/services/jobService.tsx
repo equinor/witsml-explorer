@@ -48,7 +48,7 @@ export enum JobType {
   DeleteWbGeometrys = "DeleteWbGeometrys",
   DeleteWell = "DeleteWell",
   DeleteWellbore = "DeleteWellbore",
-  DeleteTrajectory = "DeleteTrajectory",
+  DeleteTrajectories = "DeleteTrajectories",
   DeleteTrajectoryStations = "DeleteTrajectoryStations",
   DeleteTubulars = "DeleteTubular",
   DeleteTubularComponents = "DeleteTubularComponents",

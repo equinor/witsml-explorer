@@ -31,6 +31,7 @@ import { getContextMenuPosition, preventContextMenuPropagation } from "../Contex
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
 import RisksContextMenu, { RisksContextMenuProps } from "../ContextMenus/RisksContextMenu";
+import TrajectoriesContextMenu, { TrajectoriesContextMenuProps } from "../ContextMenus/TrajectoriesContextMenu";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
@@ -87,6 +88,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: RisksContextMenuProps = { dispatchOperation, wellbore, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RisksContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const onTrajectoriesContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: TrajectoriesContextMenuProps = { dispatchOperation, wellbore, servers };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoriesContextMenu {...contextMenuProps} />, position } });
   };
 
   const onTubularsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
@@ -260,7 +268,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={trajectoryGroupId}
         labelText={"Trajectories"}
         onLabelClick={() => onSelectTrajectoryGroup(well, wellbore, trajectoryGroupId)}
-        onContextMenu={preventContextMenuPropagation}
+        onContextMenu={(event) => onTrajectoriesContextMenu(event, wellbore)}
       >
         {wellbore &&
           wellbore.trajectories &&

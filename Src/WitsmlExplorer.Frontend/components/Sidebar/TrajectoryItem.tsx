@@ -7,7 +7,7 @@ import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import TrajectoryContextMenu, { TrajectoryContextMenuProps } from "../ContextMenus/TrajectoryContextMenu";
+import TrajectorySidebarContextMenu, { TrajectorySidebarContextMenuProps } from "../ContextMenus/TrajectorySidebarContextMenu";
 import TreeItem from "./TreeItem";
 
 interface TrajectoryProps {
@@ -30,9 +30,9 @@ const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, trajectory: Trajectory) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TrajectoryContextMenuProps = { trajectory, selectedServer, dispatchOperation, dispatchNavigation, servers };
+    const contextMenuProps: TrajectorySidebarContextMenuProps = { trajectory, selectedServer, dispatchOperation, servers };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectorySidebarContextMenu {...contextMenuProps} />, position } });
   };
 
   return (

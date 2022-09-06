@@ -48,6 +48,9 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Trajectory:
             await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
             break;
+          case EntityType.Trajectories:
+            await refreshTrajectories(refreshAction, ModificationType.UpdateTrajectoriesOnWellbore);
+            break;
           case EntityType.Tubular:
             await refreshTubulars(refreshAction, ModificationType.UpdateTubularsOnWellbore);
             break;
@@ -176,6 +179,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (trajectory) {
         dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshTrajectories(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateTrajectoriesOnWellbore) {
+      const trajectories = await TrajectoryService.getTrajectories(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (trajectories) {
+        dispatchNavigation({ type: modificationType, payload: { trajectories, wellUid, wellboreUid } });
       }
     }
   }

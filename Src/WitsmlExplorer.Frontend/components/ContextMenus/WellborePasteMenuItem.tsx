@@ -4,9 +4,7 @@ import React, { useEffect, useState } from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToLogReference } from "../../models/jobs/copyLogJob";
-import { parseStringToTrajectoryReference } from "../../models/jobs/copyTrajectoryJob";
 import LogReferences from "../../models/jobs/logReferences";
-import TrajectoryReference from "../../models/jobs/trajectoryReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
@@ -14,10 +12,12 @@ import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import { useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
+import { menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardRigReferences } from "./RigContextMenuUtils";
 import { useClipboardRiskReferences } from "./RiskContextMenuUtils";
+import { useClipboardTrajectoryReferences } from "./TrajectoryContextMenuUtils";
 import { useClipboardTubularReferences } from "./TubularContextMenuUtils";
 
 export interface WellborePasteMenuItemProps {
@@ -32,7 +32,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
   const [logReferences, setLogReferences] = useState<LogReferences>(null);
   const [rigReferences] = useClipboardRigReferences();
   const [riskReferences] = useClipboardRiskReferences();
-  const [trajectoryReference, setTrajectoryReference] = useState<TrajectoryReference>(null);
+  const [trajectoryReferences] = useClipboardTrajectoryReferences();
   const [tubularReferences] = useClipboardTubularReferences();
 
   useEffect(() => {
@@ -48,19 +48,6 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
     tryToParseClipboardContent();
   }, []);
 
-  useEffect(() => {
-    const tryToParseClipboardContent = async () => {
-      try {
-        const clipboardText = await navigator.clipboard.readText();
-        const trajectoryReference = parseStringToTrajectoryReference(clipboardText);
-        setTrajectoryReference(trajectoryReference);
-      } catch (e) {
-        //Not a valid object on the clipboard? That is fine, we won't use it.
-      }
-    };
-    tryToParseClipboardContent();
-  }, []);
-
   const orderCopyJob = (jobType: JobType) => {
     const wellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
@@ -69,7 +56,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
 
     const copyJob =
       (jobType === JobType.CopyLog && { source: logReferences, target: wellboreReference }) ||
-      (jobType === JobType.CopyTrajectory && { source: trajectoryReference, target: wellboreReference }) ||
+      (jobType === JobType.CopyTrajectory && { source: trajectoryReferences, target: wellboreReference }) ||
       (jobType === JobType.CopyTubular && { source: tubularReferences, target: wellboreReference }) ||
       (jobType === JobType.CopyBhaRun && { source: bhaRunReferences, target: wellboreReference }) ||
       (jobType === JobType.CopyRisk && { source: riskReferences, target: wellboreReference }) ||
@@ -122,13 +109,13 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
       </MenuItem>
       <MenuItem
         key={"pasteTrajectory"}
-        onClick={() => onClickPaste(servers, trajectoryReference?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyTrajectory))}
-        disabled={trajectoryReference === null}
+        onClick={() => onClickPaste(servers, trajectoryReferences?.serverUrl, dispatchOperation, () => orderCopyJob(JobType.CopyTrajectory))}
+        disabled={trajectoryReferences === null}
       >
         <ListItemIcon>
           <Icon name="paste" color={colors.interactive.primaryResting} />
         </ListItemIcon>
-        <Typography color={"primary"}>Paste trajectory</Typography>
+        <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.trajectoryUids)}</Typography>
       </MenuItem>
       <MenuItem
         key={"pasteTubular"}

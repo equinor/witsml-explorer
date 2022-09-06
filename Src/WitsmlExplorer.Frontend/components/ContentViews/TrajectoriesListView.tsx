@@ -20,8 +20,8 @@ export const TrajectoriesListView = (): React.ReactElement => {
     }
   }, [selectedWellbore?.trajectories]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, trajectory: Trajectory) => {
-    const contextProps: TrajectoryContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, trajectory, servers };
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, trajectories: Trajectory[]) => {
+    const contextProps: TrajectoryContextMenuProps = { dispatchOperation, selectedServer, trajectories, servers, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextProps} />, position } });
   };
@@ -45,7 +45,18 @@ export const TrajectoriesListView = (): React.ReactElement => {
     });
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={trajectories} onSelect={onSelect} onContextMenu={onContextMenu} /> : <></>;
+  const trajectoryRows = trajectories.map((trajectory) => {
+    return {
+      ...trajectory,
+      id: trajectory.uid
+    };
+  });
+
+  return selectedWellbore && trajectories == selectedWellbore.trajectories ? (
+    <ContentTable columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default TrajectoriesListView;
