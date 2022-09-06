@@ -1,14 +1,14 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
-import Icon from "../../styles/Icons";
-import { colors } from "../../styles/Colors";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
-import ConfirmModal from "../Modals/ConfirmModal";
-import OperationType from "../../contexts/operationType";
-import JobService, { JobType } from "../../services/jobService";
 import { Typography } from "@equinor/eds-core-react";
+import { ListItemIcon, MenuItem } from "@material-ui/core";
+import React from "react";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import ConfirmModal from "../Modals/ConfirmModal";
+import ContextMenu from "./ContextMenu";
 
 export interface MnemonicsContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;

@@ -1,20 +1,20 @@
+import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import styled from "styled-components";
-import moment, { Moment } from "moment";
-import LogObject from "../../../models/logObject";
-import LogObjectService from "../../../services/logObjectService";
-import { truncateAbortHandler } from "../../../services/apiClient";
-import ModalDialog from "../ModalDialog";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../../Constants";
-import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
-import JobService, { JobType } from "../../../services/jobService";
-import { colors } from "../../../styles/Colors";
-import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
-import AdjustDateTimeModal from "./AdjustDateTimeModal";
-import OperationType from "../../../contexts/operationType";
 import ModificationType from "../../../contexts/modificationType";
 import { UpdateWellboreLogsAction } from "../../../contexts/navigationStateReducer";
 import { HideModalAction } from "../../../contexts/operationStateReducer";
+import OperationType from "../../../contexts/operationType";
+import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
+import LogObject from "../../../models/logObject";
+import { truncateAbortHandler } from "../../../services/apiClient";
+import JobService, { JobType } from "../../../services/jobService";
+import LogObjectService from "../../../services/logObjectService";
+import { colors } from "../../../styles/Colors";
+import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../../Constants";
+import ModalDialog from "../ModalDialog";
+import AdjustDateTimeModal from "./AdjustDateTimeModal";
+import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
 
 export interface TrimLogObjectModalProps {
   dispatchNavigation: (action: UpdateWellboreLogsAction) => void;

@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data.Tubular
@@ -14,8 +15,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("numCutter")]
         public string NumCutterText
         {
-            get { return NumCutter.HasValue ? XmlConvert.ToString(NumCutter.Value) : null; }
-            set { NumCutter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => NumCutter.HasValue ? XmlConvert.ToString(NumCutter.Value) : null;
+            set => NumCutter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("manufacturer")]

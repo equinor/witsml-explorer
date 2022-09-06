@@ -16,10 +16,19 @@ namespace Witsml.Data.Curves
             _value = double.Parse(value, CultureInfo.InvariantCulture);
         }
 
-        public double Get() => _value;
+        public double Get()
+        {
+            return _value;
+        }
 
-        public override string GetAsString() => _value.ToString(CultureInfo.InvariantCulture);
+        public override string GetAsString()
+        {
+            return _value.ToString(CultureInfo.InvariantCulture);
+        }
 
-        public override string ToString() => GetAsString();
+        public override string ToString()
+        {
+            return GetAsString();
+        }
     }
 }

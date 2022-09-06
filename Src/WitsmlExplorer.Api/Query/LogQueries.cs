@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
@@ -70,8 +71,8 @@ namespace WitsmlExplorer.Api.Query
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    queryLog.StartIndex = new WitsmlIndex((DepthIndex) startIndex);
-                    queryLog.EndIndex = new WitsmlIndex((DepthIndex) endIndex);
+                    queryLog.StartIndex = new WitsmlIndex((DepthIndex)startIndex);
+                    queryLog.EndIndex = new WitsmlIndex((DepthIndex)endIndex);
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
@@ -81,7 +82,7 @@ namespace WitsmlExplorer.Api.Query
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {queryLog}
+                Logs = new List<WitsmlLog> { queryLog }
             };
         }
 
@@ -109,8 +110,8 @@ namespace WitsmlExplorer.Api.Query
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    queryLog.StartIndex = new WitsmlIndex((DepthIndex) startIndex);
-                    queryLog.EndIndex = new WitsmlIndex((DepthIndex) endIndex);
+                    queryLog.StartIndex = new WitsmlIndex((DepthIndex)startIndex);
+                    queryLog.EndIndex = new WitsmlIndex((DepthIndex)endIndex);
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
@@ -120,7 +121,7 @@ namespace WitsmlExplorer.Api.Query
 
             return new WitsmlLogs
             {
-                Logs = new List<WitsmlLog> {queryLog}
+                Logs = new List<WitsmlLog> { queryLog }
             };
         }
 

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import BhaRunContextMenu, { BhaRunContextMenuProps } from "../ContextMenus/BhaRunContextMenu";
-import OperationContext from "../../contexts/operationContext";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import OperationType from "../../contexts/operationType";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface BhaRunRow extends ContentTableRow, BhaRun {
   bhaRun: BhaRun;

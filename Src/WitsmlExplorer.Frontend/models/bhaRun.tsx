@@ -1,6 +1,6 @@
-import Wellbore from "./wellbore";
 import CommonData from "./commonData";
 import Measure from "./measure";
+import Wellbore from "./wellbore";
 
 export default interface BhaRun {
   wellName: string;

@@ -1,5 +1,5 @@
-import { getIndexRanges } from "../table";
 import LogObject from "../../../models/logObject";
+import { getIndexRanges } from "../table";
 
 const logObject: LogObject = {
   uid: "",

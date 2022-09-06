@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { calculateLogGroupId, calculateLogTypeDepthId, calculateLogTypeTimeId } from "../../models/wellbore";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 interface LogType {
   uid: number;

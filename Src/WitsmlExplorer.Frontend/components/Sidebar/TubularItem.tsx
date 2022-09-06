@@ -1,14 +1,14 @@
 import React, { useContext } from "react";
-import TreeItem from "./TreeItem";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import Tubular from "../../models/tubular";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import TubularSidebarContextMenu, { TubularSidebarContextMenuProps } from "../ContextMenus/TubularSidebarContextMenu";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import Tubular from "../../models/tubular";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
+import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
+import TubularSidebarContextMenu, { TubularSidebarContextMenuProps } from "../ContextMenus/TubularSidebarContextMenu";
+import TreeItem from "./TreeItem";
 
 interface TubularProps {
   nodeId: string;

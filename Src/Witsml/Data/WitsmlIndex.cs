@@ -1,4 +1,5 @@
 using System.Xml.Serialization;
+
 using Witsml.Data.Curves;
 
 namespace Witsml.Data

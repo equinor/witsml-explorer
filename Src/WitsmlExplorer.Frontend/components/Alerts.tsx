@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
-import styled from "styled-components";
 import { Collapse, IconButton } from "@material-ui/core";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import NotificationService from "../services/notificationService";
 import { Close } from "@material-ui/icons";
-import { colors } from "../styles/Colors";
+import { Alert, AlertTitle } from "@material-ui/lab";
+import React, { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
+import NotificationService from "../services/notificationService";
+import { colors } from "../styles/Colors";
 
 const Alerts = (): React.ReactElement => {
   const [alert, setAlert] = useState<string | React.ReactNode>();

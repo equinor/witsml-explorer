@@ -1,7 +1,7 @@
-﻿import filter, { EMPTY_FILTER, filterWells } from "../filter";
-import Wellbore from "../../models/wellbore";
+﻿import LogObject from "../../models/logObject";
 import Well from "../../models/well";
-import LogObject from "../../models/logObject";
+import Wellbore from "../../models/wellbore";
+import filter, { EMPTY_FILTER, filterWells } from "../filter";
 
 describe("Filter", () => {
   let filter: filter;

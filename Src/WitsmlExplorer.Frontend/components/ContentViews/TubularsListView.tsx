@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
-import Tubular from "../../models/tubular";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import OperationType from "../../contexts/operationType";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
+import Tubular from "../../models/tubular";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

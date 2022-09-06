@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Icon from "../../styles/Icons";
 import { colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
 
 interface PropertiesPanelProps {
   properties: Map<string, string>;

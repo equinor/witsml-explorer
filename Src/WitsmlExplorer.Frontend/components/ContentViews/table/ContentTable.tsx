@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import Moment from "react-moment";
-import orderBy from "lodash/orderBy";
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
-import { DateFormat } from "../../Constants";
-import { ContentTableProps, ContentTableRow, ContentType, Order, getSelectedRange, getCheckedRows, ContentTableColumn, getComparatorByColumn } from "./";
-import Icon from "../../../styles/Icons";
+import orderBy from "lodash/orderBy";
+import React, { useEffect, useState } from "react";
+import Moment from "react-moment";
+import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
+import Icon from "../../../styles/Icons";
+import { DateFormat } from "../../Constants";
+import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows, order } = props;

@@ -1,7 +1,8 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
-using System.Globalization;
 
 namespace Witsml.Data.Tubular
 {
@@ -15,8 +16,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("presLossFact")]
         public string PresLossFactText
         {
-            get { return PresLossFact.HasValue ? XmlConvert.ToString(PresLossFact.Value) : null; }
-            set { PresLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture); }
+            get => PresLossFact.HasValue ? XmlConvert.ToString(PresLossFact.Value) : null;
+            set => PresLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture);
         }
 
         [XmlElement("flowrateMn")]
@@ -36,8 +37,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("lobesRotor")]
         public string LobesRotorText
         {
-            get { return LobesRotor.HasValue ? XmlConvert.ToString(LobesRotor.Value) : null; }
-            set { LobesRotor = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => LobesRotor.HasValue ? XmlConvert.ToString(LobesRotor.Value) : null;
+            set => LobesRotor = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlIgnore]
@@ -45,8 +46,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("lobesStator")]
         public string LobesStatorText
         {
-            get { return LobesStator.HasValue ? XmlConvert.ToString(LobesStator.Value) : null; }
-            set { LobesStator = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => LobesStator.HasValue ? XmlConvert.ToString(LobesStator.Value) : null;
+            set => LobesStator = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("typeBearing")]
@@ -60,8 +61,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("rotorCatcher")]
         public string RotorCatcherText
         {
-            get { return RotorCatcher.HasValue ? XmlConvert.ToString(RotorCatcher.Value) : null; }
-            set { RotorCatcher = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
+            get => RotorCatcher.HasValue ? XmlConvert.ToString(RotorCatcher.Value) : null;
+            set => RotorCatcher = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
         [XmlIgnore]
@@ -69,8 +70,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("dumpValve")]
         public string DumpValveText
         {
-            get { return DumpValve.HasValue ? XmlConvert.ToString(DumpValve.Value) : null; }
-            set { DumpValve = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
+            get => DumpValve.HasValue ? XmlConvert.ToString(DumpValve.Value) : null;
+            set => DumpValve = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
         [XmlElement("diaNozzle")]
@@ -81,8 +82,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("rotatable")]
         public string RotatableText
         {
-            get { return Rotatable.HasValue ? XmlConvert.ToString(Rotatable.Value) : null; }
-            set { Rotatable = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
+            get => Rotatable.HasValue ? XmlConvert.ToString(Rotatable.Value) : null;
+            set => Rotatable = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
         [XmlElement("bendSettingsMn")]

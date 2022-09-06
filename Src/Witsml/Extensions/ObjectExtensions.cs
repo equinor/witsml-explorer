@@ -6,9 +6,9 @@ namespace Witsml.Extensions
     {
         public static string PrintProperties(this object obj)
         {
-            var props = obj.GetType().GetProperties();
-            var sb = new StringBuilder();
-            foreach (var p in props)
+            System.Reflection.PropertyInfo[] props = obj.GetType().GetProperties();
+            StringBuilder sb = new();
+            foreach (System.Reflection.PropertyInfo p in props)
             {
                 sb.AppendLine(p.Name + ": " + p.GetValue(obj, null));
             }

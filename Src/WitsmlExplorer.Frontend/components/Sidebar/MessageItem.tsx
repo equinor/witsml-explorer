@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import TreeItem from "./TreeItem";
-import Wellbore from "../../models/wellbore";
-import Well from "../../models/well";
-import MessageObject from "../../models/messageObject";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import MessageObject from "../../models/messageObject";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
+import TreeItem from "./TreeItem";
 
 interface MessageItemProps {
   message: MessageObject;

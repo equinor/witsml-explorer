@@ -13,7 +13,7 @@ namespace WitsmlExplorer.IntegrationTests
 
         public static WitsmlConfiguration GetWitsmlConfiguration()
         {
-            var config = GetConfig();
+            IConfiguration config = GetConfig();
             return new WitsmlConfiguration
             {
                 Hostname = config["Witsml:Host"],

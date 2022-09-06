@@ -1,13 +1,13 @@
-﻿import Filter, { EMPTY_FILTER } from "../../contexts/filter";
-import NavigationType from "../../contexts/navigationType";
-import React, { useContext, useEffect, useState } from "react";
-import { Checkbox, Divider, FormControlLabel as MuiFormControlLabel, TextField as MuiTextField } from "@material-ui/core";
-import styled from "styled-components";
-import { colors } from "../../styles/Colors";
-import NavigationContext from "../../contexts/navigationContext";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+﻿import { Checkbox, Divider, FormControlLabel as MuiFormControlLabel, TextField as MuiTextField } from "@material-ui/core";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "../../contexts/curveThreshold";
+import Filter, { EMPTY_FILTER } from "../../contexts/filter";
+import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
+import { colors } from "../../styles/Colors";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

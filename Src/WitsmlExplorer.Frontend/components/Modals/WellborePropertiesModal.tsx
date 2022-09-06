@@ -1,15 +1,15 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
-import MenuItem from "@material-ui/core/MenuItem";
-import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import { PropertiesModalMode, validText } from "./ModalParts";
-import styled from "styled-components";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import styled from "styled-components";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export interface WellborePropertiesModalProps {
   mode: PropertiesModalMode;

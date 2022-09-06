@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentType, ContentTableRow } from "./table";
-import TrajectoryService from "../../services/trajectoryService";
-import TrajectoryStation from "../../models/trajectoryStation";
 import NavigationContext from "../../contexts/navigationContext";
-import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
 import OperationContext from "../../contexts/operationContext";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
+import TrajectoryStation from "../../models/trajectoryStation";
+import TrajectoryService from "../../services/trajectoryService";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;

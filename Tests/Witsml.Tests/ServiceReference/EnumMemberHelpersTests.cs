@@ -1,5 +1,7 @@
 using System;
+
 using Witsml.ServiceReference;
+
 using Xunit;
 
 namespace Witsml.Tests.ServiceReference

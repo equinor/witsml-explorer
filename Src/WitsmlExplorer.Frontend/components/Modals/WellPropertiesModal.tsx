@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
-import Well from "../../models/well";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
+import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import Well from "../../models/well";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText, validTimeZone } from "./ModalParts";
 
 export interface WellPropertiesModalProps {

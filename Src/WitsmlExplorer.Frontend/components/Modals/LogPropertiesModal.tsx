@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
-import LogObject from "../../models/logObject";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
+import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import LogObject from "../../models/logObject";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
 export enum IndexCurve {

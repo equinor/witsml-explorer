@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { Button, ButtonGroup, TextField } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;

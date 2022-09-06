@@ -1,20 +1,20 @@
 import React, { useContext } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
-import LogObjectService from "../../services/logObjectService";
-import RigService from "../../services/rigService";
-import TrajectoryService from "../../services/trajectoryService";
-import BhaRunService from "../../services/bhaRunService";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
-import OperationType from "../../contexts/operationType";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import BhaRunService from "../../services/bhaRunService";
+import LogObjectService from "../../services/logObjectService";
 import MessageObjectService from "../../services/messageObjectService";
+import RigService from "../../services/rigService";
 import RiskObjectService from "../../services/riskObjectService";
+import TrajectoryService from "../../services/trajectoryService";
 import TubularService from "../../services/tubularService";
 import WbGeometryObjectService from "../../services/wbGeometryService";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
 import { InputAdornment, TextField } from "@material-ui/core";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
-import moment from "moment";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
 
 export interface TrajectoryStationPropertiesModalInterface {
   trajectoryStation: TrajectoryStation;

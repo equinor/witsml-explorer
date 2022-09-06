@@ -1,13 +1,13 @@
-import Rig from "./rig";
-import MessageObject from "./messageObject";
-import LogObject from "./logObject";
-import Trajectory from "./trajectory";
-import Measure from "./measure";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
-import Tubular from "./tubular";
-import RiskObject from "./riskObject";
-import WbGeometryObject from "./wbGeometry";
 import BhaRun from "./bhaRun";
+import LogObject from "./logObject";
+import Measure from "./measure";
+import MessageObject from "./messageObject";
+import Rig from "./rig";
+import RiskObject from "./riskObject";
+import Trajectory from "./trajectory";
+import Tubular from "./tubular";
+import WbGeometryObject from "./wbGeometry";
 
 export interface WellboreProperties {
   uid: string;
