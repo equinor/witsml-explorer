@@ -1,3 +1,23 @@
+import BhaRun from "../../models/bhaRun";
+import LogObject from "../../models/logObject";
+import MessageObject from "../../models/messageObject";
+import Rig from "../../models/rig";
+import RiskObject from "../../models/riskObject";
+import { Server } from "../../models/server";
+import Trajectory, { getTrajectoryProperties } from "../../models/trajectory";
+import Tubular from "../../models/tubular";
+import WbGeometryObject from "../../models/wbGeometry";
+import Well, { emptyWell, getWellProperties } from "../../models/well";
+import Wellbore, {
+  calculateLogGroupId,
+  calculateLogTypeTimeId,
+  calculateRigGroupId,
+  calculateTrajectoryGroupId,
+  calculateWellboreNodeId,
+  getWellboreProperties
+} from "../../models/wellbore";
+import Filter, { EMPTY_FILTER } from "../filter";
+import ModificationType from "../modificationType";
 import {
   EMPTY_NAVIGATION_STATE,
   NavigationState,
@@ -11,26 +31,6 @@ import {
   ToggleTreeNodeAction
 } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
-import Wellbore, {
-  calculateLogGroupId,
-  calculateLogTypeTimeId,
-  calculateRigGroupId,
-  calculateTrajectoryGroupId,
-  calculateWellboreNodeId,
-  getWellboreProperties
-} from "../../models/wellbore";
-import LogObject from "../../models/logObject";
-import Well, { emptyWell, getWellProperties } from "../../models/well";
-import Trajectory, { getTrajectoryProperties } from "../../models/trajectory";
-import { Server } from "../../models/server";
-import ModificationType from "../modificationType";
-import Rig from "../../models/rig";
-import Filter, { EMPTY_FILTER } from "../filter";
-import MessageObject from "../../models/messageObject";
-import Tubular from "../../models/tubular";
-import RiskObject from "../../models/riskObject";
-import WbGeometryObject from "../../models/wbGeometry";
-import BhaRun from "../../models/bhaRun";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -102,7 +102,7 @@ it("Should update list of servers, and current selected, if editing current sele
 });
 
 it("Should update list of servers when adding a server", () => {
-  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server" };
+  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", securityscheme: "", role: "" };
   const selectServerAction = { type: ModificationType.AddServer, payload: { server: newServer } };
   const actual = reducer({ ...getInitialState() }, selectServerAction);
   expect(actual).toStrictEqual({
@@ -715,8 +715,8 @@ it("Should collapse child nodes when toggling an expanded parent node", () => {
   expect(afterRemoveServer).toStrictEqual(expectedState);
 });
 
-const SERVER_1 = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server" };
-const SERVER_2 = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2" };
+const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", role: "" };
+const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", role: "" };
 const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
@@ -775,6 +775,7 @@ const BHARUN_1: BhaRun = {
   wellUid: WELL_1.uid,
   wellboreUid: WELLBORE_1.uid,
   wellboreName: "",
+  wellName: "",
   numStringRun: "",
   tubular: "",
   dTimStart: null,
@@ -788,7 +789,8 @@ const BHARUN_1: BhaRun = {
   numBitRun: "",
   reasonTrip: "",
   objectiveBha: "",
-  commonData: null
+  commonData: null,
+  tubularUidRef: ""
 };
 const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid };
 const RIG_1 = { uid: "rig1", name: "Rig 1" };
