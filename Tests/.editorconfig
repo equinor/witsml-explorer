@@ -1,0 +1,7 @@
+# .editorconfig file for tests that overrides the root one
+
+#### C# Coding Conventions ####
+[*.cs]
+
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.xUnit1004.severity = none
