@@ -1,17 +1,17 @@
-import { PropertiesModalMode, validText } from "./ModalParts";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import React, { useEffect, useState } from "react";
-import ModalDialog from "./ModalDialog";
-import { InputAdornment, TextField } from "@material-ui/core";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
-import moment from "moment";
 import { Autocomplete } from "@equinor/eds-core-react";
-import { itemStateTypes } from "../../models/itemStateTypes";
-import BhaRun from "../../models/bhaRun";
-import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
+import { InputAdornment, TextField } from "@material-ui/core";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import ModificationType from "../../contexts/modificationType";
+import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import BhaRun from "../../models/bhaRun";
+import { itemStateTypes } from "../../models/itemStateTypes";
 import BhaRunService from "../../services/bhaRunService";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
 

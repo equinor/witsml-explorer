@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
-import WbGeometryObject from "../../models/wbGeometry";
-import WbGeometryObjectContextMenu, { WbGeometryObjectContextMenuProps } from "../ContextMenus/WbGeometryContextMenu";
 import OperationContext from "../../contexts/operationContext";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
+import WbGeometryObject from "../../models/wbGeometry";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import WbGeometryObjectContextMenu, { WbGeometryObjectContextMenuProps } from "../ContextMenus/WbGeometryContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;

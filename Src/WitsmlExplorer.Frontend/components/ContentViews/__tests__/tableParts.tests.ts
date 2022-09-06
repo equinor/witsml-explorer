@@ -1,4 +1,4 @@
-import { getRowsInRange, ContentTableRow, updateCheckedRows } from "../table/tableParts";
+import { ContentTableRow, getRowsInRange, updateCheckedRows } from "../table/tableParts";
 
 describe("Table parts - getRowsInRange", () => {
   it("Selecting a single row", () => {

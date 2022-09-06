@@ -1,18 +1,18 @@
 import React, { useContext } from "react";
-import TreeItem from "./TreeItem";
-import LogItem from "./LogItem";
+import NavigationContext from "../../contexts/navigationContext";
+import { SelectLogTypeAction } from "../../contexts/navigationStateReducer";
+import NavigationType from "../../contexts/navigationType";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
+import LogObject, { calculateLogObjectNodeId } from "../../models/logObject";
 import Well from "../../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
-import LogObject, { calculateLogObjectNodeId } from "../../models/logObject";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import { SelectLogTypeAction } from "../../contexts/navigationStateReducer";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
-import OperationType from "../../contexts/operationType";
-import OperationContext from "../../contexts/operationContext";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
+import LogItem from "./LogItem";
+import TreeItem from "./TreeItem";
 
 interface LogTypeItemProps {
   well: Well;

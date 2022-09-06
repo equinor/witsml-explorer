@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data.Tubular
@@ -14,8 +15,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("index")]
         public string IndexText
         {
-            get { return Index.HasValue ? XmlConvert.ToString(Index.Value) : null; }
-            set { Index = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => Index.HasValue ? XmlConvert.ToString(Index.Value) : null;
+            set => Index = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("diaNozzle")]

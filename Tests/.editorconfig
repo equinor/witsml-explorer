@@ -1,0 +1,9 @@
+# .editorconfig file for tests that overrides the root one
+
+#### C# Coding Conventions ####
+[*.cs]
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+# xUnit1004: Test methods should not be skipped
+dotnet_diagnostic.xUnit1004.severity = none

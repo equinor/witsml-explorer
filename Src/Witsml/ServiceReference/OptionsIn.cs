@@ -9,10 +9,13 @@ namespace Witsml.ServiceReference
     {
         public string GetKeywords()
         {
-            var keywords = new StringBuilder();
+            StringBuilder keywords = new();
             keywords.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
             if (MaxReturnNodes is > 0)
+            {
                 keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+            }
+
             return keywords.ToString();
         }
     }

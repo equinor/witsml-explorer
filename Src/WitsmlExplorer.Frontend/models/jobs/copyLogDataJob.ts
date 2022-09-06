@@ -1,6 +1,6 @@
-import LogReference from "./logReference";
-import LogObject from "../logObject";
 import { LogCurveInfoRow } from "../../components/ContentViews/LogCurveInfoListView";
+import LogObject from "../logObject";
+import LogReference from "./logReference";
 
 export interface CopyLogDataJob {
   source: LogCurvesReference;

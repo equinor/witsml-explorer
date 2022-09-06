@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
 import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
-import TubularComponent from "../../models/tubularComponent";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import { validText } from "./ModalParts";
-import { tubularComponentTypes } from "../../models/tubularComponentTypes";
 import { isInteger } from "lodash";
+import React, { useEffect, useState } from "react";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import Tubular from "../../models/tubular";
+import TubularComponent from "../../models/tubularComponent";
+import { tubularComponentTypes } from "../../models/tubularComponentTypes";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
+import { validText } from "./ModalParts";
 
 export interface TubularComponentPropertiesModalInterface {
   tubularComponent: TubularComponent;

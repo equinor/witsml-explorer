@@ -15,7 +15,6 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
@@ -32,23 +31,23 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ModifyLogObjectWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ModifyLogObjectJob>();
+            ILogger<ModifyLogObjectJob> logger = loggerFactory.CreateLogger<ModifyLogObjectJob>();
             _worker = new ModifyLogObjectWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task RenameLogObject()
         {
-            var expectedNewName = "NewName";
-            var job = CreateJobTemplate();
+            string expectedNewName = "NewName";
+            ModifyLogObjectJob job = CreateJobTemplate();
             job.LogObject.Name = expectedNewName;
 
-            var updatedLogs = new List<WitsmlLogs>();
+            List<WitsmlLogs> updatedLogs = new();
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).Callback<WitsmlLogs>(logs => updatedLogs.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -62,10 +61,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameLogObject_EmptyName_ThrowsException()
         {
-            var job = CreateJobTemplate();
+            ModifyLogObjectJob job = CreateJobTemplate();
             job.LogObject.Name = "";
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);

@@ -1,17 +1,17 @@
 import React, { useContext } from "react";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
-  calculateRiskGroupId,
   calculateRigGroupId,
+  calculateRiskGroupId,
   calculateTrajectoryGroupId,
   calculateTubularGroupId,
   calculateWbGeometryGroupId
 } from "../../models/wellbore";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace Witsml.Data.Measures
+namespace Witsml.Data
 {
     public class WitsmlCost
     {

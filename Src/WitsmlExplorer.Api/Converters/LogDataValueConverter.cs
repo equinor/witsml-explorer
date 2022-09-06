@@ -1,11 +1,12 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Converters
 {
-    public class LogDataValueConverter: JsonConverter<LogDataValue>
+    public class LogDataValueConverter : JsonConverter<LogDataValue>
     {
         public override LogDataValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -21,7 +22,7 @@ namespace WitsmlExplorer.Api.Converters
             }
             else
             {
-                writer.WriteStringValue((string) value.Value);
+                writer.WriteStringValue((string)value.Value);
             }
         }
     }

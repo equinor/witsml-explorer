@@ -1,6 +1,6 @@
-﻿import Well from "../well";
-import { WellRow } from "../../components/ContentViews/WellsListView";
+﻿import { WellRow } from "../../components/ContentViews/WellsListView";
 import { validText, validTimeZone } from "../../components/Modals/ModalParts";
+import Well from "../well";
 
 export default interface BatchModifyWellJob {
   wells: Well[];

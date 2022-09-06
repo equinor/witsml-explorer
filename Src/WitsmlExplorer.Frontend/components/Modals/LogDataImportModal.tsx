@@ -1,15 +1,15 @@
-﻿import React, { useCallback, useEffect, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import ModalDialog from "./ModalDialog";
-import { Box, Button, Grid, Tooltip, Typography } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
-import JobService, { JobType } from "../../services/jobService";
-import LogObject from "../../models/logObject";
+﻿import { Box, Button, Grid, Tooltip, Typography } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
-import LogObjectService from "../../services/logObjectService";
-import LogCurveInfo from "../../models/logCurveInfo";
-import { truncateAbortHandler } from "../../services/apiClient";
+import React, { useCallback, useEffect, useState } from "react";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import ImportLogDataJob from "../../models/jobs/importLogDataJob";
+import LogCurveInfo from "../../models/logCurveInfo";
+import LogObject from "../../models/logObject";
+import { truncateAbortHandler } from "../../services/apiClient";
+import JobService, { JobType } from "../../services/jobService";
+import LogObjectService from "../../services/logObjectService";
+import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;

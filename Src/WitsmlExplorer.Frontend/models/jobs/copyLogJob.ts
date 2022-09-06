@@ -1,5 +1,5 @@
-import WellboreReference from "./wellboreReference";
 import LogReferences from "./logReferences";
+import WellboreReference from "./wellboreReference";
 
 export default interface CopyLogJob {
   source: LogReferences;

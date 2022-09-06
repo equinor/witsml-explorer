@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
-using Xunit;
-using WitsmlDatum = Witsml.Data.WellDatum;
+using System.Collections.Generic;
+
 using WitsmlExplorer.Api.Models;
+
+using Xunit;
+
+using WitsmlDatum = Witsml.Data.WellDatum;
 
 namespace WitsmlExplorer.Api.Tests.Models
 {
@@ -21,7 +24,7 @@ namespace WitsmlExplorer.Api.Tests.Models
                 Elevation = elevation
             };
 
-            var sourceWitsmlDatumList = new List<WitsmlDatum> {sourceWitsmlDatum};
+            var sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
 
             var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
 
@@ -50,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void FromWitsmlDatum_ReturnsNullIfWellDatumIsNull()
         {
             WitsmlDatum sourceWitsmlDatum = null;
-            var sourceWitsmlDatumList = new List<WitsmlDatum> {sourceWitsmlDatum};
+            var sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
             var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
             Assert.Null(newWellDatum);
         }

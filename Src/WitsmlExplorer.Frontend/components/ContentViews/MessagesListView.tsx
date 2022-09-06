@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
-import { MessageObjectContextMenuProps } from "../ContextMenus/MessageObjectContextMenu";
 import NavigationContext from "../../contexts/navigationContext";
-import MessageObject from "../../models/messageObject";
 import OperationContext from "../../contexts/operationContext";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
-import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
+import MessageObject from "../../models/messageObject";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import MessageObjectContextMenu, { MessageObjectContextMenuProps } from "../ContextMenus/MessageObjectContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MessageObjectRow extends ContentTableRow, MessageObject {}
 

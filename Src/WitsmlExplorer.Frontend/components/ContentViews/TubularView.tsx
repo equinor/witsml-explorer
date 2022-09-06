@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
-import TubularService from "../../services/tubularService";
-import TubularComponent from "../../models/tubularComponent";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
+import TubularComponent from "../../models/tubularComponent";
+import TubularService from "../../services/tubularService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, { TubularComponentContextMenuProps } from "../ContextMenus/TubularComponentContextMenu";
-import OperationType from "../../contexts/operationType";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface TubularComponentRow extends ContentTableRow {
   uid: string;

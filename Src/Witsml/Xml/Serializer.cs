@@ -30,7 +30,7 @@ namespace Witsml.Xml
             using var stream = new MemoryStream(bytes);
 
             var serializer = new XmlSerializer(typeof(T));
-            return (T) serializer.Deserialize(stream);
+            return (T)serializer.Deserialize(stream);
         }
     }
 }

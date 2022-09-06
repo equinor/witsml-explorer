@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
-import ModalDialog from "./ModalDialog";
-import JobService, { JobType } from "../../services/jobService";
+import React, { useEffect, useState } from "react";
+import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import RenameMnemonicJob from "../../models/jobs/renameMnemonicJob";
+import JobService, { JobType } from "../../services/jobService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import ModalDialog from "./ModalDialog";
 
 export interface LogCurveInfoPropertiesModalProps {
   logCurveInfo: LogCurveInfoRow;

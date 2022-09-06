@@ -1,31 +1,31 @@
+import { Button, Grid, LinearProgress } from "@material-ui/core";
+import orderBy from "lodash/orderBy";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import orderBy from "lodash/orderBy";
-import LogObjectService from "../../services/logObjectService";
-import { truncateAbortHandler } from "../../services/apiClient";
 import NavigationContext from "../../contexts/navigationContext";
-import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import {
-  VirtualizedContentTable,
-  ContentTableRow,
-  ExportableContentTableColumn,
-  Order,
-  getIndexRanges,
-  ContentTableColumn,
-  getComparatorByColumn,
-  getProgressRange,
-  calculateProgress,
-  getColumnType
-} from "./table";
-import { Button, Grid, LinearProgress } from "@material-ui/core";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import useExport from "../../hooks/useExport";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
 import LogObject from "../../models/logObject";
+import { truncateAbortHandler } from "../../services/apiClient";
+import LogObjectService from "../../services/logObjectService";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import OperationContext from "../../contexts/operationContext";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import OperationType from "../../contexts/operationType";
+import {
+  calculateProgress,
+  ContentTableColumn,
+  ContentTableRow,
+  ExportableContentTableColumn,
+  getColumnType,
+  getComparatorByColumn,
+  getIndexRanges,
+  getProgressRange,
+  Order,
+  VirtualizedContentTable
+} from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 

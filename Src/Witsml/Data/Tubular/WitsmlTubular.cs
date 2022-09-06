@@ -25,8 +25,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("valveFloat")]
         public string ValveFloatText
         {
-            get { return ValveFloat.HasValue ? XmlConvert.ToString(ValveFloat.Value) : null; }
-            set { ValveFloat = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
+            get => ValveFloat.HasValue ? XmlConvert.ToString(ValveFloat.Value) : null;
+            set => ValveFloat = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
         [XmlIgnore]
@@ -34,8 +34,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("sourceNuclear")]
         public string SourceNuclearText
         {
-            get { return SourceNuclear.HasValue ? XmlConvert.ToString(SourceNuclear.Value) : null; }
-            set { SourceNuclear = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value); }
+            get => SourceNuclear.HasValue ? XmlConvert.ToString(SourceNuclear.Value) : null;
+            set => SourceNuclear = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
         [XmlElement("diaHoleAssy")]

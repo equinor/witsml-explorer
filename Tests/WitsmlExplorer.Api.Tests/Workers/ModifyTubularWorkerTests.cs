@@ -15,7 +15,6 @@ using Witsml.Data.Tubular;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
@@ -30,12 +29,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ModifyTubularWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ModifyTubularJob>();
+            ILogger<ModifyTubularJob> logger = loggerFactory.CreateLogger<ModifyTubularJob>();
             _worker = new ModifyTubularWorker(logger, witsmlClientProvider.Object);
         }
 
@@ -44,9 +43,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const string expectedNewName = "NewName";
             const string expectedNewType = "drilling";
-            var job = CreateJobTemplate(TubularUid, expectedNewName, expectedNewType);
+            ModifyTubularJob job = CreateJobTemplate(TubularUid, expectedNewName, expectedNewType);
 
-            var updatedTubulars = new List<WitsmlTubulars>();
+            List<WitsmlTubulars> updatedTubulars = new();
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>())).Callback<WitsmlTubulars>(tubulars => updatedTubulars.Add(tubulars))
                 .ReturnsAsync(new QueryResult(true));
@@ -61,9 +60,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameTubular_EmptyName_ThrowsException()
         {
-            var job = CreateJobTemplate(TubularUid, "");
+            ModifyTubularJob job = CreateJobTemplate(TubularUid, "");
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>()), Times.Never);

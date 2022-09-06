@@ -1,7 +1,8 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
-using System.Globalization;
 
 namespace Witsml.Data.Tubular
 {
@@ -34,7 +35,7 @@ namespace Witsml.Data.Tubular
         public string FactFricText
         {
             get => FactFric.HasValue ? XmlConvert.ToString(FactFric.Value) : null;
-            set { FactFric = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture); }
+            set => FactFric = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture);
         }
 
         [XmlElement("typeBlade")]

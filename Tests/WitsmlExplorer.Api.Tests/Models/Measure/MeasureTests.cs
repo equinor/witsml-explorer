@@ -1,4 +1,5 @@
-﻿using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Models.Measure;
+
 using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Models.Measure

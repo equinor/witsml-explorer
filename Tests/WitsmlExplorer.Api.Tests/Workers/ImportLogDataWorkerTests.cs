@@ -30,20 +30,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ImportLogDataWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ImportLogDataJob>();
+            ILogger<ImportLogDataJob> logger = loggerFactory.CreateLogger<ImportLogDataJob>();
             _worker = new ImportLogDataWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task ImportDepthLogData()
         {
-            var depthJob = CreateDepthJobTemplate();
-            var returnedWitsmlLog = new WitsmlLogs
+            ImportLogDataJob depthJob = CreateDepthJobTemplate();
+            WitsmlLogs returnedWitsmlLog = new()
             {
                 Logs = new List<WitsmlLog> {
                     new WitsmlLog
@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            var depthJobResult = await _worker.Execute(depthJob);
+            (WorkerResult, Api.Models.RefreshAction) depthJobResult = await _worker.Execute(depthJob);
 
             Assert.True(depthJobResult.Item1.IsSuccess);
         }
@@ -86,8 +86,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task ImportTimeLogData()
         {
-            var timeJob = CreateTimeJobTemplate();
-            var returnedWitsmlLog = new WitsmlLogs
+            ImportLogDataJob timeJob = CreateTimeJobTemplate();
+            WitsmlLogs returnedWitsmlLog = new()
             {
                 Logs = new List<WitsmlLog> {
                     new WitsmlLog
@@ -122,7 +122,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            var timeJobResult = await _worker.Execute(timeJob);
+            (WorkerResult, Api.Models.RefreshAction) timeJobResult = await _worker.Execute(timeJob);
 
             Assert.True(timeJobResult.Item1.IsSuccess);
         }
@@ -130,9 +130,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task ImportLogDataRequiresExistingLog()
         {
-            var depthJob = CreateDepthJobTemplate();
+            ImportLogDataJob depthJob = CreateDepthJobTemplate();
 
-            var result = await _worker.Execute(depthJob);
+            (WorkerResult, Api.Models.RefreshAction) result = await _worker.Execute(depthJob);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.Contains(result.Item1.Message, "Unable to find log", StringComparison.InvariantCultureIgnoreCase);
@@ -140,9 +140,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static ImportLogDataJob CreateDepthJobTemplate()
         {
-            var mnemonics = new List<string> { "Depth", "mnemo1", "mnemo2" };
-            var units = new List<string> { "m", "unitless", "unitless" };
-            var dataRows = new List<List<string>> {
+            List<string> mnemonics = new() { "Depth", "mnemo1", "mnemo2" };
+            List<string> units = new() { "m", "unitless", "unitless" };
+            List<List<string>> dataRows = new()
+            {
                 new List<string> { "1", "something", "something2" },
                 new List<string> { "2", "something", "something2" },
                 new List<string> { "3", "something", "something2" },
@@ -163,9 +164,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
         private static ImportLogDataJob CreateTimeJobTemplate()
         {
-            var mnemonics = new List<string> { "Time", "mnemo1", "mnemo2" };
-            var units = new List<string> { "date time", "unitless", "unitless" };
-            var dataRows = new List<List<string>> {
+            List<string> mnemonics = new() { "Time", "mnemo1", "mnemo2" };
+            List<string> units = new() { "date time", "unitless", "unitless" };
+            List<List<string>> dataRows = new()
+            {
                 new List<string> { "2018-01-21T12:24:30.000Z", "something", "something2" },
                 new List<string> { "2019-01-21T12:24:30.000Z", "something", "something2" },
                 new List<string> { "2020-01-21T12:24:30.000Z", "something", "something2" },

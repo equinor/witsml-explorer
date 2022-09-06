@@ -1,13 +1,13 @@
-import { PropertiesModalMode, validText } from "./ModalParts";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import WbGeometryObject from "../../models/wbGeometry";
-import React, { useEffect, useState } from "react";
-import ModalDialog from "./ModalDialog";
-import { InputAdornment, TextField } from "@material-ui/core";
-import JobService, { JobType } from "../../services/jobService";
-import OperationType from "../../contexts/operationType";
 import { Autocomplete } from "@equinor/eds-core-react";
+import { InputAdornment, TextField } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
+import WbGeometryObject from "../../models/wbGeometry";
+import JobService, { JobType } from "../../services/jobService";
+import ModalDialog from "./ModalDialog";
+import { PropertiesModalMode, validText } from "./ModalParts";
 
 export interface WbGeometryPropertiesModalProps {
   mode: PropertiesModalMode;

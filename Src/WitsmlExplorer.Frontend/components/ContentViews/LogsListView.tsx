@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
-import LogObject from "../../models/logObject";
-import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
-import { calculateLogTypeDepthId, calculateLogTypeId } from "../../models/wellbore";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import LogObject from "../../models/logObject";
+import { calculateLogTypeDepthId, calculateLogTypeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {}
 

@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
 
 namespace Witsml.Data
@@ -41,8 +42,8 @@ namespace Witsml.Data
         [XmlElement("condInitInner")]
         public string CondInitInnerText
         {
-            get { return CondInitInner.HasValue ? XmlConvert.ToString(CondInitInner.Value) : null; }
-            set { CondInitInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => CondInitInner.HasValue ? XmlConvert.ToString(CondInitInner.Value) : null;
+            set => CondInitInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlIgnore]
@@ -50,8 +51,8 @@ namespace Witsml.Data
         [XmlElement("condInitOuter")]
         public string CondInitOuterText
         {
-            get { return CondInitOuter.HasValue ? XmlConvert.ToString(CondInitOuter.Value) : null; }
-            set { CondInitOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => CondInitOuter.HasValue ? XmlConvert.ToString(CondInitOuter.Value) : null;
+            set => CondInitOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("condInitDull")]
@@ -77,8 +78,8 @@ namespace Witsml.Data
         [XmlElement("condFinalInner")]
         public string CondFinalInnerText
         {
-            get { return CondFinalInner.HasValue ? XmlConvert.ToString(CondFinalInner.Value) : null; }
-            set { CondFinalInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => CondFinalInner.HasValue ? XmlConvert.ToString(CondFinalInner.Value) : null;
+            set => CondFinalInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlIgnore]
@@ -86,8 +87,8 @@ namespace Witsml.Data
         [XmlElement("condFinalOuter")]
         public string CondFinalOuterText
         {
-            get { return CondFinalOuter.HasValue ? XmlConvert.ToString(CondFinalOuter.Value) : null; }
-            set { CondFinalOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => CondFinalOuter.HasValue ? XmlConvert.ToString(CondFinalOuter.Value) : null;
+            set => CondFinalOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("condFinalDull")]

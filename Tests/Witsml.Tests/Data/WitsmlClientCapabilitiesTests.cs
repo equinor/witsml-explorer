@@ -1,4 +1,5 @@
 using Witsml.Data;
+
 using Xunit;
 
 namespace Witsml.Tests.Data

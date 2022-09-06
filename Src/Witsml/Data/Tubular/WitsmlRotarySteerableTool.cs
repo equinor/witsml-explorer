@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+
 using Witsml.Data.Measures;
-using System.Globalization;
 
 namespace Witsml.Data.Tubular
 {
@@ -49,8 +50,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("pressLossFact")]
         public string PressLossFactText
         {
-            get { return PressLossFact.HasValue ? XmlConvert.ToString(PressLossFact.Value) : null; }
-            set { PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture); }
+            get => PressLossFact.HasValue ? XmlConvert.ToString(PressLossFact.Value) : null;
+            set => PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture);
         }
 
         [XmlIgnore]
@@ -58,8 +59,8 @@ namespace Witsml.Data.Tubular
         [XmlElement("padCount")]
         public string PadCountText
         {
-            get { return PadCount.HasValue ? XmlConvert.ToString(PadCount.Value) : null; }
-            set { PadCount = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value); }
+            get => PadCount.HasValue ? XmlConvert.ToString(PadCount.Value) : null;
+            set => PadCount = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
         [XmlElement("padLen")]

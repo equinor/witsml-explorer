@@ -1,21 +1,21 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
+import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import React from "react";
+import { SelectLogCurveInfoAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { colors } from "../../styles/Colors";
-import ConfirmModal from "../Modals/ConfirmModal";
+import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
+import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
+import LogObject from "../../models/logObject";
+import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
+import { colors } from "../../styles/Colors";
+import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
+import ConfirmModal from "../Modals/ConfirmModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
-import LogObject from "../../models/logObject";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationStateReducer";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import { Server } from "../../models/server";
-import { Typography } from "@equinor/eds-core-react";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];

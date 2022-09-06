@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObjectService from "../../services/logObjectService";
-import { truncateAbortHandler } from "../../services/apiClient";
-import LogCurveInfoContextMenu, { LogCurveInfoContextMenuProps } from "../ContextMenus/LogCurveInfoContextMenu";
+import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import LogCurveInfo from "../../models/logCurveInfo";
+import { truncateAbortHandler } from "../../services/apiClient";
+import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
+import LogCurveInfoContextMenu, { LogCurveInfoContextMenuProps } from "../ContextMenus/LogCurveInfoContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;

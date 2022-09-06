@@ -1,6 +1,9 @@
-﻿using Witsml.Data;
-using Xunit;
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Models;
+
+using Xunit;
+
 using WitsmlMeasure = Witsml.Data.Measures.Measure;
 
 namespace WitsmlExplorer.Api.Tests.Models
@@ -12,12 +15,12 @@ namespace WitsmlExplorer.Api.Tests.Models
         {
             var sourceWitsmlLocation = new WitsmlLocation
             {
-                Latitude = new WitsmlMeasure {Uom = "LatitudeUom", Value = "LatitudeValue"},
-                Longitude = new WitsmlMeasure {Uom = "LongitudeUom", Value = "LongitudeValue"},
-                Easting = new WitsmlMeasure {Uom = "EastingUom", Value = "EastingValue"},
-                Northing = new WitsmlMeasure {Uom = "NorthingUom", Value = "NorthingValue"},
-                LocalX = new WitsmlMeasure {Uom = "LocalXUom", Value = "LocalXValue"},
-                LocalY = new WitsmlMeasure {Uom = "LocalYUom", Value = "LocalYValue"},
+                Latitude = new WitsmlMeasure { Uom = "LatitudeUom", Value = "LatitudeValue" },
+                Longitude = new WitsmlMeasure { Uom = "LongitudeUom", Value = "LongitudeValue" },
+                Easting = new WitsmlMeasure { Uom = "EastingUom", Value = "EastingValue" },
+                Northing = new WitsmlMeasure { Uom = "NorthingUom", Value = "NorthingValue" },
+                LocalX = new WitsmlMeasure { Uom = "LocalXUom", Value = "LocalXValue" },
+                LocalY = new WitsmlMeasure { Uom = "LocalYUom", Value = "LocalYValue" },
             };
 
             var newWellLocation = WellLocation.FromWitsmlLocation(sourceWitsmlLocation);

@@ -1,4 +1,3 @@
-import React from "react";
 import { ContextMenu, OperationState, reducer, UserTheme } from "../operationStateReducer";
 import OperationType from "../operationType";
 

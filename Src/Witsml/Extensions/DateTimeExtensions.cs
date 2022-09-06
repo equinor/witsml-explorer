@@ -1,4 +1,5 @@
 using System;
+
 using Witsml.Data.Curves;
 
 namespace Witsml.Extensions

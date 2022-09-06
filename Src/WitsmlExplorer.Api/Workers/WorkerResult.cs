@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Workers
             Description = description;
         }
 
-        public Uri ServerUrl { get;  }
+        public Uri ServerUrl { get; }
         public bool IsSuccess { get; }
         public string Message { get; }
         public string Reason { get; }

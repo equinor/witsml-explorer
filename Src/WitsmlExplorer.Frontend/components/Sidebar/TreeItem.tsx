@@ -1,14 +1,14 @@
-import React, { useContext } from "react";
-import { TreeItem } from "@material-ui/lab";
-import styled from "styled-components";
-import { TreeItemProps } from "@material-ui/lab/TreeItem";
-import { colors } from "../../styles/Colors";
+import { DotProgress } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core/styles";
+import { TreeItem } from "@material-ui/lab";
+import { TreeItemProps } from "@material-ui/lab/TreeItem";
+import React, { useContext } from "react";
+import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import { ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
+import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { DotProgress } from "@equinor/eds-core-react";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;

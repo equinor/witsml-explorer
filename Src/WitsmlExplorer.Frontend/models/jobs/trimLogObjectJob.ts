@@ -1,6 +1,6 @@
-import LogReference from "./logReference";
-import LogObject from "../logObject";
 import { Moment } from "moment";
+import LogObject from "../logObject";
+import LogReference from "./logReference";
 
 export default interface TrimLogObjectJob {
   logObject: LogReference;

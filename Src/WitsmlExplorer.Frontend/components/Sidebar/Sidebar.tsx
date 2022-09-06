@@ -1,13 +1,13 @@
+import { TreeView } from "@material-ui/lab";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { TreeView } from "@material-ui/lab";
-import Icon from "../../styles/Icons";
-import WellItem from "./WellItem";
-import PropertiesPanel from "./PropertiesPanel";
 import NavigationContext from "../../contexts/navigationContext";
-import ServerManager from "./ServerManager";
 import Well from "../../models/well";
+import Icon from "../../styles/Icons";
 import FilterPanel from "./FilterPanel";
+import PropertiesPanel from "./PropertiesPanel";
+import ServerManager from "./ServerManager";
+import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);

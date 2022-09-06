@@ -1,6 +1,6 @@
 import { createTheme, Theme } from "@material-ui/core";
-import { colors } from "./Colors";
 import { UserTheme } from "../contexts/operationStateReducer";
+import { colors } from "./Colors";
 
 const EquinorRegular = {
   fontFamily: "EquinorRegular"

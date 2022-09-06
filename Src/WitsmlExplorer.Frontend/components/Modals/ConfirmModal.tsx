@@ -1,6 +1,6 @@
+import { PropTypes } from "@material-ui/core";
 import React, { ReactElement } from "react";
 import ModalDialog from "./ModalDialog";
-import { PropTypes } from "@material-ui/core";
 
 interface ConfirmProps {
   heading: string;

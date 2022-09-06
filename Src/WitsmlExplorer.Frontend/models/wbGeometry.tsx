@@ -1,5 +1,5 @@
-import Measure from "./measure";
 import CommonData from "./commonData";
+import Measure from "./measure";
 
 export default interface WbGeometryObject {
   wellUid: string;

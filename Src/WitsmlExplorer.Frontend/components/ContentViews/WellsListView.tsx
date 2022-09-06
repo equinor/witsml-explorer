@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import Well from "../../models/well";
-import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
 import OperationContext from "../../contexts/operationContext";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import OperationType from "../../contexts/operationType";
+import Well from "../../models/well";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface WellRow extends ContentTableRow, Well {}
 

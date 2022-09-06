@@ -1,5 +1,5 @@
-using System.Reflection;
 using System.Xml.Serialization;
+
 using Witsml.Xml;
 
 namespace Witsml.Data
@@ -39,7 +39,7 @@ namespace Witsml.Data
 
         public string ToXml()
         {
-            var capClients = new WitsmlClientCapabilitiesRoot {ClientCapabilities = this};
+            WitsmlClientCapabilitiesRoot capClients = new() { ClientCapabilities = this };
             return XmlHelper.Serialize(capClients);
         }
     }

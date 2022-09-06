@@ -1,6 +1,5 @@
-import * as React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ContentTable, ContentTableRow, ContentType } from "../table";
 
 describe("<ContentTable />", () => {

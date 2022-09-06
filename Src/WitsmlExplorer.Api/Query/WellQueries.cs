@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+
 using Witsml.Data;
 using Witsml.Extensions;
+
 using WitsmlExplorer.Api.Models;
+
 using WellDatum = Witsml.Data.WellDatum;
 
 namespace WitsmlExplorer.Api.Query
@@ -64,7 +67,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlWells DeleteWitsmlWell(string wellUid)
         {
-            return new WitsmlWells {Wells = new WitsmlWell {Uid = wellUid}.AsSingletonList()};
+            return new WitsmlWells { Wells = new WitsmlWell { Uid = wellUid }.AsSingletonList() };
         }
 
         private static WitsmlWells GetWitsmlWell(string wellUid = "")

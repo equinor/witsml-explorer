@@ -15,7 +15,6 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
@@ -30,12 +29,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ModifyWellWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ModifyWellJob>();
+            ILogger<ModifyWellJob> logger = loggerFactory.CreateLogger<ModifyWellJob>();
             _worker = new ModifyWellWorker(logger, witsmlClientProvider.Object);
         }
 
@@ -43,9 +42,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task RenameWell()
         {
             const string expectedNewName = "NewName";
-            var job = CreateJobTemplate(WellUid, expectedNewName);
+            ModifyWellJob job = CreateJobTemplate(WellUid, expectedNewName);
 
-            var updatedWells = new List<WitsmlWells>();
+            List<WitsmlWells> updatedWells = new();
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWells>())).Callback<WitsmlWells>(wells => updatedWells.Add(wells))
                 .ReturnsAsync(new QueryResult(true));
@@ -59,9 +58,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameWell_EmptyName_ThrowsException()
         {
-            var job = CreateJobTemplate(WellUid, "");
+            ModifyWellJob job = CreateJobTemplate(WellUid, "");
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);

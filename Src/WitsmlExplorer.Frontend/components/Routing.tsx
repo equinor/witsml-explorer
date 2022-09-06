@@ -1,17 +1,6 @@
+import { NextRouter, useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../contexts/navigationContext";
-import { NextRouter, useRouter } from "next/router";
-import { Server } from "../models/server";
-import NavigationType from "../contexts/navigationType";
-import CredentialsService from "../services/credentialsService";
-import Well from "../models/well";
-import LogObjectService from "../services/logObjectService";
-import RigService from "../services/rigService";
-import TrajectoryService from "../services/trajectoryService";
-import BhaRunService from "../services/bhaRunService";
-import { truncateAbortHandler } from "../services/apiClient";
-import Wellbore, { calculateTubularGroupId } from "../models/wellbore";
-import LogObject from "../models/logObject";
 import {
   NavigationState,
   SelectLogObjectAction,
@@ -21,10 +10,21 @@ import {
   SelectWellboreAction,
   SetFilterAction
 } from "../contexts/navigationStateReducer";
-import MessageObjectService from "../services/messageObjectService";
-import RiskObjectService from "../services/riskObjectService";
-import TubularService from "../services/tubularService";
+import NavigationType from "../contexts/navigationType";
+import LogObject from "../models/logObject";
+import { Server } from "../models/server";
 import Tubular from "../models/tubular";
+import Well from "../models/well";
+import Wellbore, { calculateTubularGroupId } from "../models/wellbore";
+import { truncateAbortHandler } from "../services/apiClient";
+import BhaRunService from "../services/bhaRunService";
+import CredentialsService from "../services/credentialsService";
+import LogObjectService from "../services/logObjectService";
+import MessageObjectService from "../services/messageObjectService";
+import RigService from "../services/rigService";
+import RiskObjectService from "../services/riskObjectService";
+import TrajectoryService from "../services/trajectoryService";
+import TubularService from "../services/tubularService";
 import WbGeometryObjectService from "../services/wbGeometryService";
 
 const Routing = (): React.ReactElement => {
