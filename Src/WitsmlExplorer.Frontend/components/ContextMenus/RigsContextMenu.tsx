@@ -7,7 +7,8 @@ import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, useClipboardRigReferences } from "./RigContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { orderCopyJob, useClipboardRigReferences } from "./RigContextMenuUtils";
 
 export interface RigsContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -22,7 +23,11 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, rigReferences)} disabled={rigReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, rigReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, rigReferences, dispatchOperation))}
+          disabled={rigReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
         </MenuItem>

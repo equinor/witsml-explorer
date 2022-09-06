@@ -7,7 +7,8 @@ import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, useClipboardRiskReferences } from "./RiskContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { orderCopyJob, useClipboardRiskReferences } from "./RiskContextMenuUtils";
 
 export interface RisksContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -22,7 +23,11 @@ const RisksContextMenu = (props: RisksContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, riskReferences)} disabled={riskReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation))}
+          disabled={riskReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste risk{riskReferences?.riskUids.length > 1 && "s"}</Typography>
         </MenuItem>

@@ -14,9 +14,10 @@ import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import { onClickPaste, useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
+import { orderCopyJob, useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
 
 export interface BhaRunContextMenuProps {
   checkedBhaRunRows: BhaRunRow[];
@@ -86,7 +87,11 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy bhaRun{checkedBhaRunRows?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, bhaRunReferences)} disabled={bhaRunReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, bhaRunReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, bhaRunReferences, dispatchOperation))}
+          disabled={bhaRunReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste bhaRun{bhaRunReferences?.bhaRunUids.length > 1 && "s"}</Typography>
         </MenuItem>,

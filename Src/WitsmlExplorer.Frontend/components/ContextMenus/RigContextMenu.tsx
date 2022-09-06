@@ -14,7 +14,8 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickCopy, onClickPaste, useClipboardRigReferences } from "./RigContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import { onClickCopy, orderCopyJob, useClipboardRigReferences } from "./RigContextMenuUtils";
 
 export interface RigContextMenuProps {
   checkedRigRows: RigRow[];
@@ -73,11 +74,15 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy rig{rigs?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, rigReferences)} disabled={rigReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, rigReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, rigReferences, dispatchOperation))}
+          disabled={rigReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedRigRows.length !== 1}>
+        <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedRigRows.length === 0}>
           <ListItemIcon>
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>

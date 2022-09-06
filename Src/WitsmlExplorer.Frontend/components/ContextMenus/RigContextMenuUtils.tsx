@@ -8,9 +8,7 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import Rig from "../../models/rig";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -33,25 +31,6 @@ export const useClipboardRigReferences: () => [RigReferences | null, Dispatch<Se
   return [rigReferences, setRigReferences];
 };
 
-export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, wellbore: Wellbore, rigReferences: RigReferences) => {
-  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-    await CredentialsService.saveCredentials(credentials);
-    orderCopyJob(wellbore, rigReferences, dispatchOperation);
-    dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const currentCredentials = CredentialsService.getSourceServerCredentials();
-  const userCredentialsModalProps: UserCredentialsModalProps = {
-    server: server,
-    serverCredentials: currentCredentials,
-    mode: CredentialsMode.TEST,
-    errorMessage: `You are trying to paste a rig from a server that you are not logged in to. Please provide username and password for ${server.name}.`,
-    onConnectionVerified,
-    confirmText: "Save"
-  };
-  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
-};
-
 export const orderCopyJob = (wellbore: Wellbore, rigReferences: RigReferences, dispatchOperation: DispatchOperation) => {
   const wellboreReference: WellboreReference = {
     wellUid: wellbore.wellUid,
@@ -61,19 +40,6 @@ export const orderCopyJob = (wellbore: Wellbore, rigReferences: RigReferences, d
   const copyJob = { source: rigReferences, target: wellboreReference };
   JobService.orderJob(JobType.CopyRig, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
-export const onClickPaste = async (servers: Server[], dispatchOperation: DispatchOperation, wellbore: Wellbore, rigReferences: RigReferences) => {
-  const sourceServer = servers.find((server) => server.url === rigReferences.serverUrl);
-  if (sourceServer !== null) {
-    CredentialsService.setSourceServer(sourceServer);
-    const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
-    if (!hasPassword) {
-      showCredentialsModal(sourceServer, dispatchOperation, wellbore, rigReferences);
-    } else {
-      orderCopyJob(wellbore, rigReferences, dispatchOperation);
-    }
-  }
 };
 
 export const deleteRig = async (rigs: Rig[], dispatchOperation: DispatchOperation) => {

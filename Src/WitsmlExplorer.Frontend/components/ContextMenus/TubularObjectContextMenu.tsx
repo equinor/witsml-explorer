@@ -1,19 +1,20 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
-import { Divider, MenuItem } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
-import Tubular from "../../models/tubular";
-import { colors } from "../../styles/Colors";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { Server } from "../../models/server";
 import { Typography } from "@equinor/eds-core-react";
-import Wellbore from "../../models/wellbore";
+import { Divider, MenuItem } from "@material-ui/core";
+import React from "react";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete, onClickPaste, onClickRefresh, onClickShowOnServer, useClipboardTubularReferences } from "./TubularContextMenuUtils";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { Server } from "../../models/server";
+import Tubular from "../../models/tubular";
+import Wellbore from "../../models/wellbore";
+import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
-import NestedMenuItem from "./NestedMenuItem";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
+import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer, orderCopyJob, useClipboardTubularReferences } from "./TubularContextMenuUtils";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -45,7 +46,11 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular{tubulars?.length > 1 && "s"}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, wellbore, tubularReferences)} disabled={tubularReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation))}
+          disabled={tubularReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
         </MenuItem>,

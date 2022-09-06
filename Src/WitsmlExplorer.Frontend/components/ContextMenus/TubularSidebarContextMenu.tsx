@@ -1,19 +1,20 @@
-import React from "react";
-import ContextMenu from "./ContextMenu";
+import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import React from "react";
+import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
 import { colors } from "../../styles/Colors";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import { Server } from "../../models/server";
-import { Typography } from "@equinor/eds-core-react";
-import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
-import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
-import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import OperationType from "../../contexts/operationType";
-import { onClickPaste, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
-import NestedMenuItem from "./NestedMenuItem";
+import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
+import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
+import { orderCopyJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -33,6 +34,8 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const serverUrl = tubularComponentReferences?.serverUrl;
+  const orderCopy = () => orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[
@@ -44,7 +47,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, dispatchOperation, tubular, tubularComponentReferences)} disabled={tubularComponentReferences === null}>
+        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste tubular component{tubularComponentReferences?.tubularComponentUids.length > 1 && "s"}</Typography>
         </MenuItem>,
