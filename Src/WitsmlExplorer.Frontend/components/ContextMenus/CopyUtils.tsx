@@ -1,7 +1,7 @@
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { ServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -20,7 +20,7 @@ export const onClickPaste = async (servers: Server[], serverUrl: string, dispatc
 };
 
 const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
-  const onConnectionVerified = async (credentials: ServerCredentials) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
     CredentialsService.saveCredentials(credentials);
     orderCopyJob();
     dispatchOperation({ type: OperationType.HideModal });
