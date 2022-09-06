@@ -25,8 +25,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyTrajectoryJob> logger = loggerFactory.CreateLogger<CopyTrajectoryJob>();
+            ICopyUtils copyUtils = new CopyUtils(loggerFactory.CreateLogger<CopyUtils>(), witsmlClientProvider);
 
-            _worker = new CopyTrajectoryWorker(logger, witsmlClientProvider);
+            _worker = new CopyTrajectoryWorker(logger, witsmlClientProvider, copyUtils);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -34,11 +35,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             CopyTrajectoryJob job = new()
             {
-                Source = new TrajectoryReference
+                Source = new TrajectoryReferences
                 {
                     WellUid = "4d287b3e-9d9c-472a-9b82-d667d9ea1bec",
                     WellboreUid = "a2d2854b-3880-4058-876b-29b14ed7c917",
-                    TrajectoryUid = "1YJFL7"
+                    TrajectoryUids = new string[] { "1YJFL7" }
                 },
                 Target = new WellboreReference
                 {
