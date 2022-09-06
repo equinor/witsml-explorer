@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteCurveValues,
         DeleteLogObjects,
         DeleteMnemonics,
-        DeleteTrajectory,
+        DeleteTrajectories,
         DeleteTrajectoryStations,
         DeleteTubular,
         DeleteTubularComponents,

@@ -39,7 +39,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyTrajectoryJob>> logger = new();
-            _copyTrajectoryWorker = new CopyTrajectoryWorker(logger.Object, witsmlClientProvider.Object);
+            CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object, witsmlClientProvider.Object);
+            _copyTrajectoryWorker = new CopyTrajectoryWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
         }
 
         [Fact]
@@ -90,11 +91,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyTrajectoryJob
             {
-                Source = new TrajectoryReference
+                Source = new TrajectoryReferences
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
-                    TrajectoryUid = TrajectoryUid
+                    TrajectoryUids = new string[] { TrajectoryUid }
                 },
                 Target = new WellboreReference
                 {

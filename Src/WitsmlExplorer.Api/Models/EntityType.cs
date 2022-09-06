@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Models
         Rigs,
         Risks,
         Tubular,
+        Trajectories,
         Trajectory,
         TrajectoryStation,
         WbGeometryObjects

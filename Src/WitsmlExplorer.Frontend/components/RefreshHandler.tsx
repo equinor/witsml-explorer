@@ -1,20 +1,20 @@
 import React, { useContext, useEffect } from "react";
-import NotificationService, { RefreshAction } from "../services/notificationService";
-import CredentialsService from "../services/credentialsService";
-import WellService from "../services/wellService";
-import WellboreService from "../services/wellboreService";
-import NavigationContext from "../contexts/navigationContext";
-import LogObjectService from "../services/logObjectService";
-import EntityType from "../models/entityType";
 import ModificationType from "../contexts/modificationType";
+import NavigationContext from "../contexts/navigationContext";
 import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
-import MessageObjectService from "../services/messageObjectService";
-import TubularService from "../services/tubularService";
-import RiskObjectService from "../services/riskObjectService";
-import RigService from "../services/rigService";
-import TrajectoryService from "../services/trajectoryService";
-import WbGeometryObjectService from "../services/wbGeometryService";
+import EntityType from "../models/entityType";
 import BhaRunService from "../services/bhaRunService";
+import CredentialsService from "../services/credentialsService";
+import LogObjectService from "../services/logObjectService";
+import MessageObjectService from "../services/messageObjectService";
+import NotificationService, { RefreshAction } from "../services/notificationService";
+import RigService from "../services/rigService";
+import RiskObjectService from "../services/riskObjectService";
+import TrajectoryService from "../services/trajectoryService";
+import TubularService from "../services/tubularService";
+import WbGeometryObjectService from "../services/wbGeometryService";
+import WellboreService from "../services/wellboreService";
+import WellService from "../services/wellService";
 
 const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -47,6 +47,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.Trajectory:
             await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
+            break;
+          case EntityType.Trajectories:
+            await refreshTrajectories(refreshAction, ModificationType.UpdateTrajectoriesOnWellbore);
             break;
           case EntityType.Tubular:
             await refreshTubulars(refreshAction, ModificationType.UpdateTubularsOnWellbore);
@@ -176,6 +179,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (trajectory) {
         dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshTrajectories(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateTrajectoriesOnWellbore) {
+      const trajectories = await TrajectoryService.getTrajectories(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (trajectories) {
+        dispatchNavigation({ type: modificationType, payload: { trajectories, wellUid, wellboreUid } });
       }
     }
   }

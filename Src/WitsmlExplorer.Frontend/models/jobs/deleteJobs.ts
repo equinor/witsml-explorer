@@ -5,6 +5,7 @@ import MessageObjectReferences from "./messageObjectReferences";
 import RigReferences from "./rigReferences";
 import RiskReferences from "./riskReferences";
 import TrajectoryReference from "./trajectoryReference";
+import TrajectoryReferences from "./trajectoryReferences";
 import TubularReference from "./tubularReference";
 import TubularReferences from "./tubularReferences";
 import WbGeometryObjectReferences from "./wbGeometryReferences";
@@ -37,8 +38,8 @@ export interface DeleteRisksJob {
   toDelete: RiskReferences;
 }
 
-export interface DeleteTrajectoryJob {
-  toDelete: TrajectoryReference;
+export interface DeleteTrajectoriesJob {
+  toDelete: TrajectoryReferences;
 }
 
 export interface DeleteTrajectoryStationsJob {

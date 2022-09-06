@@ -8,6 +8,7 @@ enum EntityType {
   Tubular = "Tubular",
   Rigs = "Rigs",
   Trajectory = "Trajectory",
+  Trajectories = "Trajectories",
   TrajectoryStation = "TrajectoryStation",
   WbGeometryObjects = "WbGeometryObjects"
 }

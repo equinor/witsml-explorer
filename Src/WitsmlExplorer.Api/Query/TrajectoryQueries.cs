@@ -47,17 +47,41 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlTrajectories CopyWitsmlTrajectory(WitsmlTrajectory trajectory, WitsmlWellbore targetWellbore)
+        public static WitsmlTrajectories GetWitsmlTrajectoriesById(string wellUid, string wellboreUid, string[] trajectoryUids)
         {
-            trajectory.UidWell = targetWellbore.UidWell;
-            trajectory.NameWell = targetWellbore.NameWell;
-            trajectory.UidWellbore = targetWellbore.Uid;
-            trajectory.NameWellbore = targetWellbore.Name;
-            trajectory.CustomData ??= new WitsmlCustomData();
-            trajectory.CommonData.ItemState = string.IsNullOrEmpty(trajectory.CommonData.ItemState) ? null : trajectory.CommonData.ItemState;
-            trajectory.CommonData.SourceName = string.IsNullOrEmpty(trajectory.CommonData.SourceName) ? null : trajectory.CommonData.SourceName;
-            WitsmlTrajectories copyTrajectoryQuery = new() { Trajectories = new List<WitsmlTrajectory> { trajectory } };
-            return copyTrajectoryQuery;
+            return new WitsmlTrajectories
+            {
+                Trajectories = trajectoryUids.Select((trajectoryUid) => new WitsmlTrajectory
+                {
+                    Uid = trajectoryUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }).ToList()
+            };
+        }
+
+        public static IEnumerable<WitsmlTrajectory> DeleteTrajectories(string wellUid, string wellboreUid, string[] trajectoryUids)
+        {
+            return trajectoryUids.Select((trajectoryUid) =>
+                new WitsmlTrajectory
+                {
+                    Uid = trajectoryUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }
+            );
+        }
+
+        public static IEnumerable<WitsmlTrajectory> CopyWitsmlTrajectories(WitsmlTrajectories trajectories, WitsmlWellbore targetWellbore)
+        {
+            return trajectories.Trajectories.Select((trajectory) =>
+            {
+                trajectory.UidWell = targetWellbore.UidWell;
+                trajectory.NameWell = targetWellbore.NameWell;
+                trajectory.UidWellbore = targetWellbore.Uid;
+                trajectory.NameWellbore = targetWellbore.Name;
+                return trajectory;
+            });
         }
 
         public static WitsmlTrajectories CopyTrajectoryStations(WitsmlTrajectory trajectory, IEnumerable<WitsmlTrajectoryStation> trajectoryStations)

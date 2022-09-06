@@ -1,4 +1,5 @@
 import TrajectoryReference from "./trajectoryReference";
+import TrajectoryReferences from "./trajectoryReferences";
 import WellboreReference from "./wellboreReference";
 
 export default interface CopyTrajectoryJob {
@@ -6,16 +7,16 @@ export default interface CopyTrajectoryJob {
   target: WellboreReference;
 }
 
-function verifyRequiredProperties(jsonObject: TrajectoryReference) {
-  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "trajectoryUid"];
+function verifyRequiredProperties(jsonObject: TrajectoryReferences) {
+  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "trajectoryUids"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
     throw new Error("Missing required fields.");
   }
 }
 
-export function parseStringToTrajectoryReference(input: string): TrajectoryReference {
-  let jsonObject: TrajectoryReference;
+export function parseStringToTrajectoryReferences(input: string): TrajectoryReferences {
+  let jsonObject: TrajectoryReferences;
   try {
     jsonObject = JSON.parse(input);
   } catch (error) {
