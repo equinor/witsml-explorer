@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.HttpHandler;
-
-public static class WellboreHandler
+namespace WitsmlExplorer.Api.HttpHandlers
 {
-    [Produces(typeof(Wellbore))]
-    public static async Task<IResult> GetWellbore(string wellUid, string wellboreUid, IWellboreService wellboreService)
+    public static class WellboreHandler
     {
-        return Results.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid));
+        [Produces(typeof(Wellbore))]
+        public static async Task<IResult> GetWellbore(string wellUid, string wellboreUid, IWellboreService wellboreService)
+        {
+            return Results.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid));
+        }
     }
 }

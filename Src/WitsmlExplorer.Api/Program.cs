@@ -9,8 +9,10 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 
 using WitsmlExplorer.Api;
+using WitsmlExplorer.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", false, true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
@@ -21,6 +23,10 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Startup>();
+}
+else
+{
+    builder.Configuration.AddAzureWitsmlServerCreds();
 }
 
 builder.Host.ConfigureLogging(logging => logging.ClearProviders());

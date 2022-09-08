@@ -9,41 +9,43 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.HttpHandler;
-public static class JobHandler
+namespace WitsmlExplorer.Api.HttpHandlers
 {
-    [Produces(typeof(string))]
-    public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService)
+    public static class JobHandler
     {
-        IHeaderDictionary headers = httpRequest.Headers;
-        string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
-        StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
-        StringValues targetServer = headers["Witsml-ServerUrl"];
-        Credentials credentials = new(base64EncodedCredentials);
-
-        return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
-    }
-
-    [Produces(typeof(IEnumerable<JobInfo>))]
-    public static async Task<IResult> GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
-    {
-        bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
-        if (!authorized)
+        [Produces(typeof(string))]
+        public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService)
         {
-            return Results.Unauthorized();
-        }
-        return Results.Ok(jobCache.GetJobInfosById(ids));
-    }
+            IHeaderDictionary headers = httpRequest.Headers;
+            string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
+            StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
+            StringValues targetServer = headers["Witsml-ServerUrl"];
+            Credentials credentials = new(base64EncodedCredentials);
 
-    [Produces(typeof(IEnumerable<JobInfo>))]
-    public static async Task<IResult> GetJobInfosByUser(string username, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
-    {
-        bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
-        if (!authorized)
+            return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
+        }
+
+        [Produces(typeof(IEnumerable<JobInfo>))]
+        public static async Task<IResult> GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
         {
-            return Results.Unauthorized();
+            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            if (!authorized)
+            {
+                return Results.Unauthorized();
+            }
+            return Results.Ok(jobCache.GetJobInfosById(ids));
         }
-        return Results.Ok(jobCache.GetJobInfosByUser(username));
-    }
 
+        [Produces(typeof(IEnumerable<JobInfo>))]
+        public static async Task<IResult> GetJobInfosByUser(string username, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
+        {
+            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            if (!authorized)
+            {
+                return Results.Unauthorized();
+            }
+            return Results.Ok(jobCache.GetJobInfosByUser(username));
+        }
+
+    }
 }

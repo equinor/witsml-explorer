@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.HttpHandler;
-
-public static class WbGeometryHandler
+namespace WitsmlExplorer.Api.HttpHandlers
 {
-    [Produces(typeof(IEnumerable<WbGeometry>))]
-    public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
+    public static class WbGeometryHandler
     {
-        return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
+        [Produces(typeof(IEnumerable<WbGeometry>))]
+        public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
+        {
+            return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
+        }
     }
 }
