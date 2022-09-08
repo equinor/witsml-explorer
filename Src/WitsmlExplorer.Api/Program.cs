@@ -9,8 +9,11 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 
 using WitsmlExplorer.Api;
+using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", false, true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
@@ -21,6 +24,12 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
 if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Startup>();
+}
+else
+{
+    string keyVault = builder.Configuration[ConfigConstants.KVWitsmlServerCreds];
+    bool useOAuth2 = builder.Configuration[ConfigConstants.OAuth2Enabled] == "True";
+    builder.Configuration.AddAzureWitsmlServerCreds(keyVault, useOAuth2);
 }
 
 builder.Host.ConfigureLogging(logging => logging.ClearProviders());
@@ -33,5 +42,6 @@ WebApplication app = builder.Build();
 app.ConfigureApi(builder.Configuration);
 
 startup.Configure(app, app.Environment);
+
 
 app.Run();

@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Http;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.HttpHandler;
-
-public static class AuthorizeHandler
+namespace WitsmlExplorer.Api.HttpHandlers
 {
-    public static async Task<IResult> Authorize(Server witsmlServer, ICredentialsService credentialsService)
+    public static class AuthorizeHandler
     {
-        return Results.Ok(await credentialsService.Authorize(witsmlServer.Url));
+        public static async Task<IResult> Authorize(Server witsmlServer, ICredentialsService credentialsService)
+        {
+            return Results.Ok(await credentialsService.Authorize(witsmlServer.Url));
+        }
     }
 }

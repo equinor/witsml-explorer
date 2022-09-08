@@ -7,19 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.HttpHandler;
-
-public static class MessageHandler
-
+namespace WitsmlExplorer.Api.HttpHandlers
 {
-    [Produces(typeof(IEnumerable<MessageObject>))]
-    public static async Task<IResult> GetMessages(string wellUid, string wellboreUid, IMessageObjectService messageService)
+    public static class MessageHandler
+
     {
-        return Results.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
-    }
-    [Produces(typeof(MessageObject))]
-    public static async Task<IResult> GetMessage(string wellUid, string wellboreUid, string messageUid, IMessageObjectService messageService)
-    {
-        return Results.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
+        [Produces(typeof(IEnumerable<MessageObject>))]
+        public static async Task<IResult> GetMessages(string wellUid, string wellboreUid, IMessageObjectService messageService)
+        {
+            return Results.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
+        }
+        [Produces(typeof(MessageObject))]
+        public static async Task<IResult> GetMessage(string wellUid, string wellboreUid, string messageUid, IMessageObjectService messageService)
+        {
+            return Results.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
+        }
     }
 }

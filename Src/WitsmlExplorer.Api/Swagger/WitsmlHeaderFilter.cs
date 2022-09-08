@@ -7,14 +7,14 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace WitsmlExplorer.Api.Swagger
 {
     /// <summary>
-    /// This class will add a Required HTTP Header `Witsml-ServerUrl` and `Witsml-Source-ServerUrl`to SwaggerUI for all endpoints except where it is not needed
+    /// This class will add a Required HTTP Header `Witsml-ServerUrl` and `Witsml-Source-ServerUrl`to SwaggerUI for all required endpoints,
     /// </summary>
     public class WitsmlHeaderFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            List<string> emptyHeader = new() { "WitsmlExplorer.Api.HttpHandler.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandler.WitsmlServerHandler" };
-            List<string> witsmlSourceHeader = new() { "WitsmlExplorer.Api.HttpHandler.JobHandler" };
+            List<string> emptyHeader = new() { "WitsmlExplorer.Api.HttpHandlers.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandlers.WitsmlServerHandler" };
+            List<string> witsmlSourceHeader = new() { "WitsmlExplorer.Api.HttpHandlers.JobHandler" };
             if (operation.Parameters == null)
             {
                 operation.Parameters = new List<OpenApiParameter>();

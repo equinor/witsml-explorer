@@ -10,6 +10,7 @@
     <NoWarn>AD0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.30.1" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.2" />
