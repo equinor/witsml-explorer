@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
             StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
             StringValues targetServer = headers["Witsml-ServerUrl"];
-            BasicCredentials credentials = new(base64EncodedCredentials);
+            Credentials credentials = new(base64EncodedCredentials);
 
             return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
         }

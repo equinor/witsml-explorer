@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Text;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +9,6 @@ using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
-
-using WitsmlExplorer.Api.Configuration;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -48,19 +47,18 @@ namespace WitsmlExplorer.Api.Services
             {
                 return;
             }
-            Task<List<ICredentials>> credTask = credentialsService.ExtractCredentialsFromHeader(headers);
-            Task.WaitAny(credTask);
-            List<ICredentials> credentials = credTask.Result;
+
+            List<Credentials> credentials = CredentialsService.ExtractCredentialsFromHeader(headers);
 
             //This provider will unintentionally be invoked also on initial authentication requests. Doing this to let the authentication route be triggered.
-            //bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
-            //if (!isEncrypted)
-            //{
-            //    return;
-            //}
+            bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
+            if (!isEncrypted)
+            {
+                return;
+            }
 
-            bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
-            _witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentials[0].Password, _clientCapabilities, null, logQueries);
+            bool logQueries = StringHelpers.ToBoolean(configuration["LogQueries"]);
+            _witsmlClient = new WitsmlClient(serverUrl, credentials[0].Username, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
 
             StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
 
@@ -69,7 +67,7 @@ namespace WitsmlExplorer.Api.Services
                 return;
             }
 
-            _witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentials[1].Password, _clientCapabilities, null, logQueries);
+            _witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].Username, credentialsService.Decrypt(credentials[1]), _clientCapabilities, null, logQueries);
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)

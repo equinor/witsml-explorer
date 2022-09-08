@@ -28,7 +28,7 @@ else
 {
     builder.Configuration.AddAzureWitsmlServerCreds();
 }
-builder.Configuration.AddAzureWitsmlServerCreds();
+
 builder.Host.ConfigureLogging(logging => logging.ClearProviders());
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 

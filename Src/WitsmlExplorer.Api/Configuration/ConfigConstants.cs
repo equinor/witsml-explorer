@@ -5,6 +5,5 @@ namespace WitsmlExplorer.Api.Configuration
         public static readonly string WitsmlServerCredsSection = "WitsmlCreds";
         public static readonly string KVWitsmlServerCreds = "KVWitsmlServerCreds";
         public static readonly string OAuth2Enabled = "OAuth2Enabled";
-        public static readonly string LogQueries = "LogQueries";
     }
 }
