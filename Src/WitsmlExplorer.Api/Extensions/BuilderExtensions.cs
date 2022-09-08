@@ -5,6 +5,8 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
+using WitsmlExplorer.Api.Configuration;
+
 namespace WitsmlExplorer.Api.Extensions
 {
     public static class BuilderExtensions
@@ -27,17 +29,13 @@ namespace WitsmlExplorer.Api.Extensions
             return builder;
         }
 
-        public static IConfigurationBuilder AddAzureWitsmlServerCreds(this IConfigurationBuilder configuration, string keyVaultName, bool oAuth2Enabled)
+        public static IConfigurationBuilder AddAzureWitsmlServerCreds(this ConfigurationManager configuration)
         {
-
-            if (oAuth2Enabled)
+            string keyVault = configuration[ConfigConstants.KVWitsmlServerCreds];
+            bool useOAuth2 = configuration[ConfigConstants.OAuth2Enabled] == "True";
+            if (useOAuth2)
             {
-                configuration.AddAzureKeyVault(new Uri($"https://{keyVaultName}.vault.azure.net/"), new DefaultAzureCredential(
-                                    new DefaultAzureCredentialOptions
-                                    {
-                                        ExcludeVisualStudioCredential = true,
-                                        ExcludeVisualStudioCodeCredential = true
-                                    }));
+                configuration.AddAzureKeyVault(new Uri($"https://{keyVault}.vault.azure.net/"), new DefaultAzureCredential());
             }
             return configuration;
         }

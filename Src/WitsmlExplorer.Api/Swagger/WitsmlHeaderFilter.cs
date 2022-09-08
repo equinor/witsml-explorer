@@ -13,8 +13,8 @@ namespace WitsmlExplorer.Api.Swagger
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            List<string> emptyHeader = new() { "WitsmlExplorer.Api.HttpHandlers.AuthorizeHandler", "WitsmlExplorer.Api.HttpHandlers.WitsmlServerHandler" };
-            List<string> witsmlSourceHeader = new() { "WitsmlExplorer.Api.HttpHandlers.JobHandler" };
+            List<string> emptyHeader = new() { typeof(HttpHandlers.AuthorizeHandler).ToString(), typeof(HttpHandlers.WitsmlServerHandler).ToString() };
+            List<string> witsmlSourceHeader = new() { typeof(HttpHandlers.JobHandler).ToString() };
             if (operation.Parameters == null)
             {
                 operation.Parameters = new List<OpenApiParameter>();

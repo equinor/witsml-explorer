@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 
 using WitsmlExplorer.Api;
-using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -27,9 +26,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    string keyVault = builder.Configuration[ConfigConstants.KVWitsmlServerCreds];
-    bool useOAuth2 = builder.Configuration[ConfigConstants.OAuth2Enabled] == "True";
-    builder.Configuration.AddAzureWitsmlServerCreds(keyVault, useOAuth2);
+    builder.Configuration.AddAzureWitsmlServerCreds();
 }
 
 builder.Host.ConfigureLogging(logging => logging.ClearProviders());
@@ -42,6 +39,5 @@ WebApplication app = builder.Build();
 app.ConfigureApi(builder.Configuration);
 
 startup.Configure(app, app.Environment);
-
 
 app.Run();
