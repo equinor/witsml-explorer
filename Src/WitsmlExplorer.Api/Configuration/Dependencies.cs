@@ -26,6 +26,7 @@ namespace WitsmlExplorer.Api.Configuration
             AddRepository<Server, Guid>(services, configuration);
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
+                .IgnoreThisInterface<ICredentials>()
                 .AsPublicImplementedInterfaces();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
