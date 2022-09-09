@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToRigReferences } from "../../models/jobs/copyRigJob";
 import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
@@ -9,8 +8,7 @@ import Rig from "../../models/rig";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardRigReferences: () => [RigReferences | null, Dispatch<SetStateAction<RigReferences>>] = () => {
   const [rigReferences, setRigReferences] = useState<RigReferences>(null);

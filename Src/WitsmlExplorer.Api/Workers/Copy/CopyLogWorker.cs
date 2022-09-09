@@ -16,7 +16,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
 {
-    public class CopyLogWorker : BaseWorker<CopyLogJob>, IWorker
+    public interface ICopyLogWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job);
+    }
+
+    public class CopyLogWorker : BaseWorker<CopyLogJob>, IWorker, ICopyLogWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         private readonly IWitsmlClient _witsmlSourceClient;
@@ -61,7 +66,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            string copiedLogsMessage = sourceLogs.Length == 1 ? $"Log object {sourceLogs[0].Name}" : $"{sourceLogs.Length} logs" + $" copied to: {targetWellbore.Name}";
+            string copiedLogsMessage = (sourceLogs.Length == 1 ? $"Copied log object {sourceLogs[0].Name}" : $"Copied {sourceLogs.Length} logs") + $" to: {targetWellbore.Name}";
             WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, copiedLogsMessage);
 
             return (workerResult, refreshAction);

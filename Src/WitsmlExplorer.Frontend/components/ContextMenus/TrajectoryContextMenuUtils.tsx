@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTrajectoryReferences } from "../../models/jobs/copyTrajectoryJob";
 import { DeleteTrajectoriesJob } from "../../models/jobs/deleteJobs";
@@ -10,8 +9,7 @@ import Trajectory from "../../models/trajectory";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import ConfirmModal from "../Modals/ConfirmModal";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardTrajectoryReferences: () => [TrajectoryReferences | null, Dispatch<SetStateAction<TrajectoryReferences>>] = () => {
   const [trajectoryReferences, setTrajectoryReferences] = useState<TrajectoryReferences>(null);
