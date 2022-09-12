@@ -36,41 +36,31 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             Verify(job);
 
-            string wellUid = job.ToDelete.LogReferenceList.First().WellUid;
-            string wellboreUid = job.ToDelete.LogReferenceList.First().WellboreUid;
-            IEnumerable<WitsmlLog> queries = job.ToDelete.LogReferenceList.Select(CreateRequest);
+            string wellUid = job.ToDelete.WellUid;
+            string wellboreUid = job.ToDelete.WellboreUid;
+            IEnumerable<WitsmlLog> queries = job.ToDelete.ObjectUids.Select(uid => new WitsmlLog
+            {
+                UidWell = wellUid,
+                UidWellbore = wellboreUid,
+                Uid = uid
+            });
             RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static WitsmlLog CreateRequest(LogReference logReference)
-        {
-            return new WitsmlLog
-            {
-                UidWell = logReference.WellUid,
-                UidWellbore = logReference.WellboreUid,
-                Uid = logReference.LogUid
-            };
-        }
-
         private static void Verify(DeleteLogObjectsJob job)
         {
-            if (!job.ToDelete.LogReferenceList.Any())
+            if (!job.ToDelete.ObjectUids.Any())
             {
                 throw new ArgumentException("A minimum of one job is required");
             }
 
-            if (job.ToDelete.LogReferenceList.Select(l => l.WellboreUid).Distinct().Count() != 1)
-            {
-                throw new ArgumentException("All logs should belong to the same Wellbore");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.LogReferenceList.First().WellUid))
+            if (string.IsNullOrEmpty(job.ToDelete.WellUid))
             {
                 throw new ArgumentException("WellUid is required");
             }
 
-            if (string.IsNullOrEmpty(job.ToDelete.LogReferenceList.First().WellboreUid))
+            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid))
             {
                 throw new ArgumentException("WellboreUid is required");
             }

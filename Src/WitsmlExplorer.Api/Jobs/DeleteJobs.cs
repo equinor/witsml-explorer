@@ -3,7 +3,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 namespace WitsmlExplorer.Api.Jobs
 {
     public record DeleteBhaRunsJob : IDeleteJob<ObjectReferences> { }
-    public record DeleteLogObjectsJob : IDeleteJob<LogReferences> { }
+    public record DeleteLogObjectsJob : IDeleteJob<ObjectReferences> { }
     public record DeleteMessageObjectsJob : IDeleteJob<ObjectReferences> { }
     public record DeleteMnemonicsJob : IDeleteJob<LogCurvesReference> { }
     public record DeleteRigsJob : IDeleteJob<ObjectReferences> { }

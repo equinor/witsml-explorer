@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,26 +47,26 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CopyLogWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _copyLogDataWorker = new Mock<ICopyLogDataWorker>();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyLogJob>>();
+            Mock<ILogger<CopyLogJob>> logger = new();
             _copyLogWorker = new CopyLogWorker(logger.Object, witsmlClientProvider.Object, _copyLogDataWorker.Object);
         }
 
         [Fact]
         public async Task CopyLog_TimeIndexed()
         {
-            var copyLogJob = CreateJobTemplate();
+            CopyLogJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
-            var copyLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
-            var result = await _copyLogWorker.Execute(copyLogJob);
-            var logInQuery = copyLogQuery.First().Logs.First();
+            (WorkerResult, Api.Models.RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
+            WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);
             Assert.Empty(logInQuery.LogData.Data);
             Assert.Null(logInQuery.EndIndex);
@@ -79,16 +78,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLog_DepthIndexed()
         {
-            var copyLogJob = CreateJobTemplate();
+            CopyLogJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
-            var copyLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
-            var result = await _copyLogWorker.Execute(copyLogJob);
+            (WorkerResult, Api.Models.RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
 
-            var logInQuery = copyLogQuery.First().Logs.First();
+            WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);
             Assert.Empty(logInQuery.LogData.Data);
             Assert.Equal(DepthEnd, double.Parse(logInQuery.EndIndex.Value));
@@ -110,6 +109,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     _witsmlClient.Setup(client =>
                             client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
+                    break;
+                default:
                     break;
             }
         }
@@ -135,7 +136,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private IEnumerable<WitsmlLogs> SetupAddInStoreAsync()
         {
-            var addedLog = new List<WitsmlLogs>();
+            List<WitsmlLogs> addedLog = new();
             _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>((witsmlLogs) => addedLog.Add(witsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
@@ -146,17 +147,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyLogJob
             {
-                Source = new LogReferences
+                Source = new ObjectReferences
                 {
-                    LogReferenceList = new[]
-                    {
-                        new LogReference
-                        {
-                            WellUid = WellUid,
-                            WellboreUid = SourceWellboreUid,
-                            LogUid = LogUid,
-                        }
-                    }
+                    WellUid = WellUid,
+                    WellboreUid = SourceWellboreUid,
+                    ObjectUids = new string[] { LogUid },
                 },
                 Target = new WellboreReference
                 {
@@ -168,7 +163,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetSourceLogs(string indexType, string startDateTimeIndex, string endDateTimeIndex)
         {
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = SourceWellboreUid,
@@ -198,10 +193,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetSourceLogs(string indexType, double startIndex, double endIndex)
         {
-            var minIndex = new WitsmlIndex(new DepthIndex(startIndex));
-            var maxIndex = new WitsmlIndex(new DepthIndex(endIndex));
+            WitsmlIndex minIndex = new(new DepthIndex(startIndex));
+            WitsmlIndex maxIndex = new(new DepthIndex(endIndex));
 
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = SourceWellboreUid,
