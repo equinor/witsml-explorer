@@ -24,8 +24,8 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceLogObjectsJob job)
         {
-            (WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob);
-            if (!result.Item1.IsSuccess)
+            (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob);
+            if (!result.WorkerResult.IsSuccess)
             {
                 return result;
             }

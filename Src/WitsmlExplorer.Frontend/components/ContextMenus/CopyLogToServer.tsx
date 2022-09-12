@@ -115,7 +115,7 @@ function displayConfirmationModal(
       </span>
     ) : (
       <span>
-        {contentIntro} exists on the target wellbore. Do you want to delte and replace it?
+        {contentIntro} exists on the target wellbore. Do you want to delete and replace it?
         <br />
         Existing log:
         {printLog(existingLogs[0])}

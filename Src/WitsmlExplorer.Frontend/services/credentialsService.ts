@@ -64,7 +64,7 @@ class CredentialsService {
   }
 
   public hasPasswordForServer(server: Server) {
-    return this.credentials.find((c) => c.server.id === server.id)?.password !== undefined;
+    return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;
   }
 
   public hasPasswordForUrl(serverUrl: string) {
