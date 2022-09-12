@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Services
             StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
             bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
 
-            Task<List<ICredentials>> credTask = credentialsService.ExtractCredentialsFromHeader(headers);
+            Task<List<ICredentials>> credTask = credentialsService.GetCredentials(headers);
             Task.WaitAny(credTask);
             List<ICredentials> credentials = credTask.Result;
 

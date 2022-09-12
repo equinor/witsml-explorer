@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api
             services.AddEndpointsApiExplorer();
             services.ConfigureSwaggerGen(Configuration);
 
-            if (Configuration["OAuth2Enabled"] == "True")
+            if (StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]))
             {
                 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
                 List<string> policyRoles = Configuration.GetSection("AzureAd:PolicyRoles").Get<List<string>>();
@@ -98,7 +98,7 @@ namespace WitsmlExplorer.Api
             app.UseCors(_myAllowSpecificOrigins);
 
             app.UseRouting();
-            if (Configuration["OAuth2Enabled"] == "True")
+            if (StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]))
             {
                 app.UseAuthentication();
                 app.UseAuthorization();

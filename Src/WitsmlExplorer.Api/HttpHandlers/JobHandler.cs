@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static async Task<IResult> GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
         {
-            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            bool authorized = await credentialsService.AuthorizeWithEncryptedPassword(httpRequest);
             if (!authorized)
             {
                 return Results.Unauthorized();
@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static async Task<IResult> GetJobInfosByUser(string username, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
         {
-            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            bool authorized = await credentialsService.AuthorizeWithEncryptedPassword(httpRequest);
             if (!authorized)
             {
                 return Results.Unauthorized();

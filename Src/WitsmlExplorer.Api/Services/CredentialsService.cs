@@ -43,18 +43,18 @@ namespace WitsmlExplorer.Api.Services
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentException("Missing IHttpContextAccessor");
             _logger = logger ?? throw new ArgumentException("Missing ILogger");
-            _clientCapabilities = clientCapabilities.Value;
-            _witsmlServerCredentials = witsmlServerCredentials;
+            _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
+            _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
         }
 
-        public async Task<string> Authorize(Uri serverUrl)
+        public async Task<string> BasicAuthorization(Uri serverUrl)
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
             string base64EncodedCredentials = headers[AuthorizationHeader].ToString()["Basic ".Length..].Trim();
-            ServerCredentials credentials = new(serverUrl.ToString(), new BasicCredentials(base64EncodedCredentials));
+            ServerCredentials credentials = new(serverUrl.AbsoluteUri, new BasicCredentials(base64EncodedCredentials));
 
             await VerifyCredentials(credentials);
 
@@ -81,18 +81,12 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        private async Task VerifyCredentials(ServerCredentials serverCreds)
-        {
-            WitsmlClient witsmlClient = new(serverCreds.Host, serverCreds.UserId, serverCreds.Password, _clientCapabilities);
-            await witsmlClient.TestConnectionAsync();
-        }
-
-        public async Task<bool> AuthorizeWithToken(HttpRequest httpRequest)
+        public async Task<bool> AuthorizeWithEncryptedPassword(HttpRequest httpRequest)
         {
             try
             {
                 IHeaderDictionary headers = httpRequest.Headers;
-                List<ICredentials> credentialsList = await ExtractCredentialsFromHeader(headers);
+                List<ICredentials> credentialsList = await GetCredentials(headers);
                 StringValues server = headers["Witsml-ServerUrl"];
                 ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0]));
                 await VerifyCredentials(serverCreds);
@@ -105,7 +99,7 @@ namespace WitsmlExplorer.Api.Services
             return true;
         }
 
-        public Task<List<ICredentials>> ExtractCredentialsFromHeader(IHeaderDictionary headers)
+        public Task<List<ICredentials>> GetCredentials(IHeaderDictionary headers)
         {
             Task<List<ICredentials>> credentials = Task.FromResult(new List<ICredentials>());
             string scheme = headers["Authorization"].ToString().Split()[0];
@@ -121,7 +115,13 @@ namespace WitsmlExplorer.Api.Services
             return credentials;
         }
 
-        private async Task<bool> UserHasRoleForHosts(string[] roles, string[] hosts)
+        private async Task VerifyCredentials(ServerCredentials serverCreds)
+        {
+            WitsmlClient witsmlClient = new(serverCreds.Host, serverCreds.UserId, serverCreds.Password, _clientCapabilities);
+            await witsmlClient.TestConnectionAsync();
+        }
+
+        private async Task<bool> HasUserRoleForHosts(string[] roles, string[] hosts)
         {
             bool result = true;
             IEnumerable<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
@@ -155,7 +155,7 @@ namespace WitsmlExplorer.Api.Services
             JwtSecurityToken jwt = handler.ReadJwtToken(base64Data);
             string[] roles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
             _logger.LogInformation("{roles}", string.Join(",", roles));
-            if (await UserHasRoleForHosts(roles, new string[] { server, sourceServer }))
+            if (await HasUserRoleForHosts(roles, new string[] { server, sourceServer }))
             {
                 ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
                 credentials.Add(new ServerCredentials(server, creds.UserId, creds.Password));
