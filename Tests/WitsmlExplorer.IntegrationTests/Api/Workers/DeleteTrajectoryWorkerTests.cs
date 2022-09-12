@@ -35,11 +35,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             DeleteTrajectoriesJob job = new()
             {
-                ToDelete = new TrajectoryReferences
+                ToDelete = new ObjectReferences
                 {
                     WellUid = "fa53698b-0a19-4f02-bca5-001f5c31c0ca",
                     WellboreUid = "eea43bf8-e3b7-42b6-b328-21b34cb505eb",
-                    TrajectoryUids = new string[] { "1YJFL7" }
+                    ObjectUids = new string[] { "1YJFL7" }
                 }
             };
             await _worker.Execute(job);

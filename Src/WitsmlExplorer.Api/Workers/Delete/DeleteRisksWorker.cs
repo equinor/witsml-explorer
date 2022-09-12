@@ -30,14 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRisksJob job)
         {
             Verify(job);
-            IEnumerable<WitsmlRisk> queries = RiskQueries.DeleteRiskQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.RiskUids);
+            IEnumerable<WitsmlRisk> queries = RiskQueries.DeleteRiskQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshRisks refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
         private static void Verify(DeleteRisksJob job)
         {
-            if (!job.ToDelete.RiskUids.Any())
+            if (!job.ToDelete.ObjectUids.Any())
             {
                 throw new ArgumentException("A minimum of one risk UID is required");
             }

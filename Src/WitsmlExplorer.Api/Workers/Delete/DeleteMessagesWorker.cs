@@ -30,14 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMessageObjectsJob job)
         {
             Verify(job);
-            IEnumerable<WitsmlMessage> queries = MessageQueries.DeleteMessageQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.MessageObjectUids);
+            IEnumerable<WitsmlMessage> queries = MessageQueries.DeleteMessageQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshMessageObjects refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
         private static void Verify(DeleteMessageObjectsJob job)
         {
-            if (!job.ToDelete.MessageObjectUids.Any())
+            if (!job.ToDelete.ObjectUids.Any())
             {
                 throw new ArgumentException($"A minimum of one message is required");
             }

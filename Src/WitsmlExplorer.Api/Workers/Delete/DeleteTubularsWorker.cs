@@ -30,14 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTubularsJob job)
         {
             Verify(job);
-            IEnumerable<WitsmlTubular> queries = TubularQueries.DeleteWitsmlTubulars(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.TubularUids);
+            IEnumerable<WitsmlTubular> queries = TubularQueries.DeleteWitsmlTubulars(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshTubulars refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
         private static void Verify(DeleteTubularsJob job)
         {
-            if (!job.ToDelete.TubularUids.Any())
+            if (!job.ToDelete.ObjectUids.Any())
             {
                 throw new ArgumentException("A minimum of one tubular UID is required");
             }

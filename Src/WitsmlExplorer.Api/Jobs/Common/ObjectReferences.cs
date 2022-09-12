@@ -2,18 +2,18 @@ using System.Text;
 
 namespace WitsmlExplorer.Api.Jobs.Common
 {
-    public class RigReferences : IReference
+    public class ObjectReferences : IReference
     {
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }
-        public string[] RigUids { get; set; }
+        public string[] ObjectUids { get; set; }
 
         public string Description()
         {
-            var desc = new StringBuilder();
+            StringBuilder desc = new();
             desc.Append($"WellUid: {WellUid}; ");
             desc.Append($"WellboreUid: {WellboreUid}; ");
-            desc.Append($"RigUids: {string.Join(", ", RigUids)}; ");
+            desc.Append($"ObjectUids: {string.Join(", ", ObjectUids)}; ");
             return desc.ToString();
         }
     }

@@ -30,14 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteBhaRunsJob job)
         {
             Verify(job);
-            IEnumerable<WitsmlBhaRun> queries = BhaRunQueries.DeleteBhaRunQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.BhaRunUids);
+            IEnumerable<WitsmlBhaRun> queries = BhaRunQueries.DeleteBhaRunQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshBhaRuns refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
         private static void Verify(DeleteBhaRunsJob job)
         {
-            if (!job.ToDelete.BhaRunUids.Any())
+            if (!job.ToDelete.ObjectUids.Any())
             {
                 throw new ArgumentException("A minimum of one BhaRun UID is required");
             }

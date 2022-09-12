@@ -49,9 +49,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(tubulars, targetWellbore);
         }
 
-        private static async Task<WitsmlTubulars> GetTubulars(IWitsmlClient client, TubularReferences tubularReferences)
+        private static async Task<WitsmlTubulars> GetTubulars(IWitsmlClient client, ObjectReferences objectReferences)
         {
-            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularsById(tubularReferences.WellUid, tubularReferences.WellboreUid, tubularReferences.TubularUids);
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularsById(objectReferences.WellUid, objectReferences.WellboreUid, objectReferences.ObjectUids);
             return await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
         }
     }
