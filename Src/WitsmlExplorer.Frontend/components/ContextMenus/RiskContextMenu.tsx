@@ -3,16 +3,19 @@ import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { RiskObjectRow } from "../ContentViews/RisksListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
-import { onClickCopy, onClickDelete, orderCopyJob, useClipboardRiskReferences } from "./RiskContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { onClickCopy, onClickDelete } from "./RiskContextMenuUtils";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface RiskObjectContextMenuProps {
   checkedRiskObjectRows: RiskObjectRow[];
@@ -24,7 +27,7 @@ export interface RiskObjectContextMenuProps {
 
 const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactElement => {
   const { checkedRiskObjectRows, dispatchOperation, selectedServer, wellbore, servers } = props;
-  const [riskReferences] = useClipboardRiskReferences();
+  const riskReferences = useClipboardReferencesOfType(ObjectType.Risk);
   const risks = checkedRiskObjectRows.map((row) => row.risk);
 
   const onClickModify = async () => {
@@ -39,19 +42,19 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
       menuItems={[
         <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, risks, dispatchOperation)} disabled={risks.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy risk{risks?.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "risk", risks)}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation))}
+          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation, JobType.CopyRisk))}
           disabled={riskReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste risk{riskReferences?.riskUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "risk", riskReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(checkedRiskObjectRows, dispatchOperation)} disabled={checkedRiskObjectRows.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(risks, dispatchOperation)} disabled={risks.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "risk", risks)}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRiskObjectRows.length !== 1}>

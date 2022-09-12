@@ -4,6 +4,7 @@ import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
@@ -14,8 +15,9 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
-import { onClickCopy, orderCopyJob, useClipboardRigReferences } from "./RigContextMenuUtils";
+import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { onClickCopy } from "./RigContextMenuUtils";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface RigContextMenuProps {
   checkedRigRows: RigRow[];
@@ -27,7 +29,7 @@ export interface RigContextMenuProps {
 
 const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
   const { checkedRigRows, dispatchOperation, wellbore, servers, selectedServer } = props;
-  const [rigReferences] = useClipboardRigReferences();
+  const rigReferences = useClipboardReferencesOfType(ObjectType.Rig);
   const rigs = checkedRigRows.map((row) => row.rig);
 
   const onClickModify = async () => {
@@ -41,9 +43,10 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteRigsJob = {
       toDelete: {
-        rigUids: checkedRigRows.map((rig) => rig.uid),
+        objectUids: checkedRigRows.map((rig) => rig.uid),
         wellUid: checkedRigRows[0].wellUid,
-        wellboreUid: checkedRigRows[0].wellboreUid
+        wellboreUid: checkedRigRows[0].wellboreUid,
+        objectType: ObjectType.Rig
       }
     };
     await JobService.orderJob(JobType.DeleteRigs, job);
@@ -76,11 +79,11 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, rigReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, rigReferences, dispatchOperation))}
+          onClick={() => onClickPaste(servers, rigReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, rigReferences, dispatchOperation, JobType.CopyRig))}
           disabled={rigReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste rig{rigReferences?.rigUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste rig{rigReferences?.objectUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedRigRows.length === 0}>
           <ListItemIcon>

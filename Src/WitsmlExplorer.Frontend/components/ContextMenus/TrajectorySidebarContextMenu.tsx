@@ -9,7 +9,7 @@ import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
-import { orderCopyJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
+import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
 export interface TrajectorySidebarContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -23,7 +23,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
   const [trajectoryStationReferences] = useClipboardTrajectoryStationReferences();
 
   const serverUrl = trajectoryStationReferences?.serverUrl;
-  const orderCopy = () => orderCopyJob(trajectory, trajectoryStationReferences, dispatchOperation);
+  const orderCopy = () => orderCopyTrajectoryStationsJob(trajectory, trajectoryStationReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[
