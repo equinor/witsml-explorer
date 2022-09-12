@@ -42,20 +42,17 @@ namespace WitsmlExplorer.Api.Services
             IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
             StringValues serverUrl = headers[WitsmlServerUrlHeader];
             StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
+            bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
 
             Task<List<ICredentials>> credTask = credentialsService.ExtractCredentialsFromHeader(headers);
             Task.WaitAny(credTask);
             List<ICredentials> credentials = credTask.Result;
 
-            //This provider will unintentionally be invoked also on initial authentication requests. Doing this to let the authentication route be triggered.
-            // bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
-            // if (!isEncrypted)
-            // {
-            //     return;
-            // }
+            bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
+            _witsmlClient = !isEncrypted
+                ? new WitsmlClient(serverUrl, credentials[0].UserId, credentials[0].Password, _clientCapabilities, null, logQueries)
+                : new WitsmlClient(serverUrl, credentials[0].UserId, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
 
-            bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
-            _witsmlClient = new WitsmlClient(serverUrl, credentials[0].UserId, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
 
             bool useSourceWitsmlServer = !string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 2;
             if (useSourceWitsmlServer)
