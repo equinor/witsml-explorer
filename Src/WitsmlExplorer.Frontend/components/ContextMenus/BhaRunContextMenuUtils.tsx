@@ -1,13 +1,11 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import BhaRunReferences from "../../models/jobs/bhaRunReferences";
 import { parseStringToBhaRunReferences } from "../../models/jobs/copyBhaRunJob";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardBhaRunReferences: () => [BhaRunReferences | null, Dispatch<SetStateAction<BhaRunReferences>>] = () => {
   const [bhaRunReferences, setBhaRunReferences] = useState<BhaRunReferences>(null);

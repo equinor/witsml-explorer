@@ -4,7 +4,7 @@ import { parseStringToTubularComponentReferences, TubularComponentReferences } f
 import TubularReference from "../../models/jobs/tubularReference";
 import Tubular from "../../models/tubular";
 import JobService, { JobType } from "../../services/jobService";
-import { DispatchOperation } from "./TubularContextMenuUtils";
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardTubularComponentReferences: () => [TubularComponentReferences | null, Dispatch<SetStateAction<TubularComponentReferences>>] = () => {
   const [tubularComponentReferences, setTubularComponentReferences] = useState<TubularComponentReferences>(null);

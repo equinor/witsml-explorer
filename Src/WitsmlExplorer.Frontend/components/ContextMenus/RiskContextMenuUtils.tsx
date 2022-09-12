@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToRiskReferences } from "../../models/jobs/copyRiskJob";
 import { DeleteRisksJob } from "../../models/jobs/deleteJobs";
@@ -10,8 +9,7 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import ConfirmModal from "../Modals/ConfirmModal";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardRiskReferences: () => [RiskReferences | null, Dispatch<SetStateAction<RiskReferences>>] = () => {
   const [riskReferences, setRiskReferences] = useState<RiskReferences>(null);

@@ -15,7 +15,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
 {
-    public class DeleteLogObjectsWorker : BaseWorker<DeleteLogObjectsJob>, IWorker
+    public interface IDeleteLogObjectsWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteLogObjectsJob job);
+    }
+
+    public class DeleteLogObjectsWorker : BaseWorker<DeleteLogObjectsJob>, IWorker, IDeleteLogObjectsWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;

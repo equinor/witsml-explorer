@@ -40,7 +40,7 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
       if (currentLoginState.server) {
-        const isLoggedInToSelectedServer = currentLoginState.isLoggedIn && currentLoginState.server.id === selectedServer?.id;
+        const isLoggedInToSelectedServer = CredentialsService.hasPasswordForServer(selectedServer);
         if (isLoggedInToSelectedServer) {
           try {
             const hasWells = wells.length > 0;

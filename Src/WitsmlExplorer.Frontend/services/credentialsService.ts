@@ -29,7 +29,7 @@ class CredentialsService {
     this.sourceServer = server;
   }
 
-  public removeSourceServerCredentials() {
+  public resetSourceServer() {
     this.sourceServer = null;
   }
 
@@ -50,6 +50,10 @@ class CredentialsService {
     return [...(currentCredentials ? [currentCredentials] : []), ...(sourceCredentials ? [sourceCredentials] : [])];
   }
 
+  public getCredentialsForServer(server: Server): BasicServerCredentials {
+    return this.credentials.find((c) => c.server.id === server.id);
+  }
+
   public getSourceServerCredentials(): BasicServerCredentials | undefined {
     return this.credentials.find((c) => c.server.id === this.sourceServer?.id);
   }
@@ -60,7 +64,11 @@ class CredentialsService {
   }
 
   public hasPasswordForServer(server: Server) {
-    return this.credentials.find((c) => c.server.id === server.id)?.password !== undefined;
+    return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;
+  }
+
+  public hasPasswordForUrl(serverUrl: string) {
+    return this.credentials.find((c) => c.server.url === serverUrl)?.password !== undefined;
   }
 
   public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {

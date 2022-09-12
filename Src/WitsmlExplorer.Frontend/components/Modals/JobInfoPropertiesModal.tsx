@@ -59,7 +59,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
         }}
         confirmDisabled={true}
         isLoading={false}
-        showSaveButton={false}
+        showConfirmButton={false}
       />
     </>
   );

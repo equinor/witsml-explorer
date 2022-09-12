@@ -2,6 +2,7 @@ import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
 import { ApiClient } from "./apiClient";
+import { BasicServerCredentials } from "./credentialsService";
 
 export default class LogObjectService {
   public static async getLogs(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<LogObject[]> {
@@ -16,7 +17,22 @@ export default class LogObjectService {
   public static async getLog(wellUid: string, wellboreUid: string, logUid: string, abortSignal?: AbortSignal): Promise<LogObject> {
     const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal);
     if (response.ok) {
-      return response.json();
+      response.json();
+    } else {
+      return emptyLogObject();
+    }
+  }
+
+  public static async getLogFromServer(wellUid: string, wellboreUid: string, logUid: string, credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<LogObject> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal, [credentials]);
+    if (response.ok) {
+      // the route returns null if the log was not found so we need to check for it
+      const text = await response.text();
+      if (text.length) {
+        return JSON.parse(text);
+      } else {
+        return emptyLogObject();
+      }
     } else {
       return emptyLogObject();
     }

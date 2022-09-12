@@ -47,6 +47,7 @@ namespace WitsmlExplorer.Api.Models
         CreateMudLog,
         CreateWbGeometry,
         BatchModifyWell,
-        ImportLogData
+        ImportLogData,
+        ReplaceLogObjects
     }
 }

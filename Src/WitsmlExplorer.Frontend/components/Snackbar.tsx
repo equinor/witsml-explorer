@@ -1,6 +1,7 @@
 import { useSnackbar } from "notistack";
 import React, { useContext, useEffect } from "react";
 import NavigationContext from "../contexts/navigationContext";
+import CredentialsService from "../services/credentialsService";
 import NotificationService from "../services/notificationService";
 
 const Snackbar = (): React.ReactElement => {
@@ -9,7 +10,7 @@ const Snackbar = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.snackbarDispatcher.subscribe((notification) => {
-      const shouldNotify = notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldNotify = CredentialsService.hasPasswordForUrl(notification.serverUrl.toString());
       if (shouldNotify) {
         enqueueSnackbar(notification.message, {
           variant: notification.isSuccess ? "success" : "error"

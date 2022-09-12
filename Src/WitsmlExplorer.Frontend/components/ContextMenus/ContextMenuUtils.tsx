@@ -1,5 +1,12 @@
 import styled from "styled-components";
+import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { Server } from "../../models/server";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import Icon from "../../styles/Icons";
+import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+
+export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -13,4 +20,23 @@ export const menuItemText = (operation: string, object: string, array: any[] | n
   const isPlural = array ? array.length > 1 : false;
   const count = array?.length > 0 ? ` ${array.length} ` : " ";
   return `${operationUpperCase}${count}${isPlural ? objectPlural : object}`;
+};
+
+export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, onSuccess: () => void, message: string) => {
+  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
+    CredentialsService.saveCredentials(credentials);
+    onSuccess();
+    dispatchOperation({ type: OperationType.HideModal });
+  };
+
+  const currentCredentials = CredentialsService.getSourceServerCredentials();
+  const userCredentialsModalProps: UserCredentialsModalProps = {
+    server: server,
+    serverCredentials: currentCredentials,
+    mode: CredentialsMode.TEST,
+    errorMessage: message,
+    onConnectionVerified,
+    confirmText: "Save"
+  };
+  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };

@@ -18,7 +18,8 @@ interface ModalDialogProps {
   width?: ModalWidth;
   onCancel?: () => void;
   onDelete?: () => void;
-  showSaveButton?: boolean;
+  showConfirmButton?: boolean;
+  showCancelButton?: boolean;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -34,7 +35,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     errorMessage,
     switchButtonPlaces,
     width = ModalWidth.MEDIUM,
-    showSaveButton = true
+    showConfirmButton = true,
+    showCancelButton = true
   } = props;
   const context = React.useContext(OperationContext);
   const { displayModal } = context.operationState;
@@ -57,7 +59,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   };
 
   const buttons = [
-    showSaveButton ? (
+    showConfirmButton ? (
       <Button
         key={"confirm"}
         onFocus={() => setConfirmButtonIsFocused(true)}
@@ -72,9 +74,13 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ) : (
       <></>
     ),
-    <Button key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
-      Cancel
-    </Button>,
+    showCancelButton ? (
+      <Button key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+        Cancel
+      </Button>
+    ) : (
+      <></>
+    ),
     <Button key={"delete"} disabled={isLoading} onClick={onDelete} color={"secondary"} variant="outlined" align={"right"}>
       Delete
     </Button>

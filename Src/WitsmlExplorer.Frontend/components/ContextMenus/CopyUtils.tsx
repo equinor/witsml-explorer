@@ -1,10 +1,6 @@
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-
-type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import CredentialsService from "../../services/credentialsService";
+import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
 
 export const onClickPaste = async (servers: Server[], serverUrl: string, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === serverUrl);
@@ -12,28 +8,10 @@ export const onClickPaste = async (servers: Server[], serverUrl: string, dispatc
     CredentialsService.setSourceServer(sourceServer);
     const hasPassword = CredentialsService.hasPasswordForServer(sourceServer);
     if (!hasPassword) {
-      showCredentialsModal(sourceServer, dispatchOperation, () => orderCopyJob());
+      const message = `You are trying to paste an object from a server that you are not logged in to. Please provide username and password for ${sourceServer.name}.`;
+      showCredentialsModal(sourceServer, dispatchOperation, () => orderCopyJob(), message);
     } else {
       orderCopyJob();
     }
   }
-};
-
-const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
-  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-    CredentialsService.saveCredentials(credentials);
-    orderCopyJob();
-    dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const currentCredentials = CredentialsService.getSourceServerCredentials();
-  const userCredentialsModalProps: UserCredentialsModalProps = {
-    server: server,
-    serverCredentials: currentCredentials,
-    mode: CredentialsMode.TEST,
-    errorMessage: `You are trying to paste an object from a server that you are not logged in to. Please provide username and password for ${server.name}.`,
-    onConnectionVerified,
-    confirmText: "Save"
-  };
-  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };

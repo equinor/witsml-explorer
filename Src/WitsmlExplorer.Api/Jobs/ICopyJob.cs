@@ -9,7 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public override string Description()
         {
-            return $"Source - {Source.Description()}\t\nTarget - {Target.Description()}";
+            return $"ToCopy - Source - {Source.Description()}\t\nTarget - {Target.Description()}";
         }
 
     }
