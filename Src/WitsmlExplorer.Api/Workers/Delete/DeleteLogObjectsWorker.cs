@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
-using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
@@ -34,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteLogObjectsJob job)
         {
-            Verify(job);
+            job.ToDelete.Verify();
 
             string wellUid = job.ToDelete.WellUid;
             string wellboreUid = job.ToDelete.WellboreUid;
@@ -48,22 +46,5 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteLogObjectsJob job)
-        {
-            if (!job.ToDelete.ObjectUids.Any())
-            {
-                throw new ArgumentException("A minimum of one job is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellUid))
-            {
-                throw new ArgumentException("WellUid is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid))
-            {
-                throw new ArgumentException("WellboreUid is required");
-            }
-        }
     }
 }

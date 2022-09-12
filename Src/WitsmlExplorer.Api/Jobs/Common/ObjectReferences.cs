@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace WitsmlExplorer.Api.Jobs.Common
@@ -15,6 +16,24 @@ namespace WitsmlExplorer.Api.Jobs.Common
             desc.Append($"WellboreUid: {WellboreUid}; ");
             desc.Append($"ObjectUids: {string.Join(", ", ObjectUids)}; ");
             return desc.ToString();
+        }
+
+        public void Verify()
+        {
+            if (ObjectUids == null || ObjectUids.Length == 0)
+            {
+                throw new ArgumentException("A minimum of one object UID is required");
+            }
+
+            if (string.IsNullOrEmpty(WellUid))
+            {
+                throw new ArgumentException("WellUid is required");
+            }
+
+            if (string.IsNullOrEmpty(WellboreUid))
+            {
+                throw new ArgumentException("WellboreUid is required");
+            }
         }
     }
 }

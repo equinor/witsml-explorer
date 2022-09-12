@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -29,28 +27,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRisksJob job)
         {
-            Verify(job);
+            job.ToDelete.Verify();
             IEnumerable<WitsmlRisk> queries = RiskQueries.DeleteRiskQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshRisks refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteRisksJob job)
-        {
-            if (!job.ToDelete.ObjectUids.Any())
-            {
-                throw new ArgumentException("A minimum of one risk UID is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellUid))
-            {
-                throw new ArgumentException("WellUid is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid))
-            {
-                throw new ArgumentException("WellboreUid is required");
-            }
-        }
     }
 }
