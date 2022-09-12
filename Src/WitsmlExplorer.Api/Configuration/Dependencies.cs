@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .AsPublicImplementedInterfaces();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
-            services.AddSingleton<IWitsmlServerCredentials, WitsmlServerCredentials>();
+            services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
+using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
@@ -22,7 +23,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             StringValues targetServer = headers["Witsml-ServerUrl"];
             BasicCredentials credentials = new(base64EncodedCredentials);
 
-            return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
+            return Results.Ok(await jobService.CreateJob(jobType, credentials.UserId, sourceServer, targetServer, httpRequest.Body));
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]

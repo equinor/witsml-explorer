@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 
+using WitsmlExplorer.Api.Configuration;
+
 namespace WitsmlExplorer.Api.Services
 {
     public interface ICredentialsService

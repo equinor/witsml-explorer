@@ -1,8 +1,8 @@
-namespace WitsmlExplorer.Api.Services
+namespace WitsmlExplorer.Api.Configuration
 {
     public interface ICredentials
     {
-        internal string Username { get; }
+        internal string UserId { get; }
         internal string Password { get; }
 
     }
