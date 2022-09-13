@@ -1,4 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
+import { getAccountInfo, msalEnabled, msalSecurityScheme } from "../../msal/MsalAuthProvider";
 import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
@@ -26,7 +27,8 @@ const ServerManager = (): React.ReactElement => {
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isOpen, setIsOpen] = useState<boolean>();
-  const [currentLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const userAppRoles: string[] = getAccountInfo()?.idTokenClaims?.roles ?? [];
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
@@ -39,7 +41,7 @@ const ServerManager = (): React.ReactElement => {
 
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
-      if (currentLoginState.server) {
+      if (currentWitsmlLoginState.server) {
         const isLoggedInToSelectedServer = CredentialsService.hasPasswordForServer(selectedServer);
         if (isLoggedInToSelectedServer) {
           try {
@@ -50,15 +52,15 @@ const ServerManager = (): React.ReactElement => {
             }
             dispatchOperation({ type: OperationType.HideModal });
           } catch (error) {
-            showCredentialsModal(currentLoginState.server, error.message);
+            showCredentialsModal(currentWitsmlLoginState.server, error.message);
           }
         } else {
-          showCredentialsModal(currentLoginState.server);
+          showCredentialsModal(currentWitsmlLoginState.server);
         }
       }
     };
     onCurrentLoginStateChange();
-  }, [currentLoginState]);
+  }, [currentWitsmlLoginState]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -100,10 +102,10 @@ const ServerManager = (): React.ReactElement => {
     if (!selectedServer?.id) {
       return <FormHelperText>No server selected</FormHelperText>;
     } else {
-      if (currentLoginState.isLoggedIn) {
+      if (currentWitsmlLoginState.isLoggedIn) {
         return (
           <FormHelperText>
-            Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentLoginState.username}</LinkButton>
+            Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentWitsmlLoginState.username}</LinkButton>
           </FormHelperText>
         );
       } else {
@@ -132,6 +134,7 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((server: Server) => server.securityscheme === "Basic" || (msalEnabled && server.securityscheme === msalSecurityScheme && userAppRoles.includes(server.role)))
             .map((server: Server) => (
               <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
                 <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>

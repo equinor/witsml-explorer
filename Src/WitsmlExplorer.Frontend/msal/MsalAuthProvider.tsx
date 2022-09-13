@@ -6,6 +6,7 @@ export const authRequest: RedirectRequest = {
 };
 
 export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;
+export const msalSecurityScheme = "OAuth2";
 
 const msalConfig: Configuration = {
   auth: {
