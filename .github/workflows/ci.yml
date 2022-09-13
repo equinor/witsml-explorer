@@ -7,6 +7,7 @@ on:
       - 'Src/Witsml/**'
       - 'Src/WitsmlExplorer.Api/**'
       - 'Src/WitsmlExplorer.Console/**'
+      - 'Tests/**'
 
 jobs:
   backend:
@@ -22,26 +23,3 @@ jobs:
         run: dotnet build /warnaserror --configuration Release
       - name: Test
         run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release
-
-  frontend:
-    name: Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install dependencies
-        run: yarn
-        working-directory: ./Src/WitsmlExplorer.Frontend
-      - name: Linting
-        run: yarn lint
-        working-directory: ./Src/WitsmlExplorer.Frontend
-      - name: Prettier
-        run: npx prettier --check .
-      - name: Build
-        run: yarn build
-        working-directory: ./Src/WitsmlExplorer.Frontend
-      - name: Test
-        run: yarn test
-        working-directory: ./Src/WitsmlExplorer.Frontend
