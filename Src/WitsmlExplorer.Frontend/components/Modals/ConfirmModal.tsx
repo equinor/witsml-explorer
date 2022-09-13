@@ -9,6 +9,7 @@ interface ConfirmProps {
   confirmColor?: PropTypes.Color;
   confirmText?: string;
   switchButtonPlaces?: boolean;
+  showCancelButton?: boolean;
 }
 
 const ConfirmModal = (props: ConfirmProps): React.ReactElement => {
@@ -21,6 +22,7 @@ const ConfirmModal = (props: ConfirmProps): React.ReactElement => {
       confirmText={props.confirmText ?? "Yes"}
       confirmColor={props.confirmColor}
       switchButtonPlaces={props.switchButtonPlaces}
+      showCancelButton={props.showCancelButton}
     />
   );
 };

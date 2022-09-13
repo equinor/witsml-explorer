@@ -1,12 +1,24 @@
 import JobInfo from "../models/jobs/jobInfo";
 import { ApiClient } from "./apiClient";
-import CredentialsService from "./credentialsService";
+import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export default class JobService {
   public static async orderJob(jobType: JobType, payload: Record<string, any>): Promise<any> {
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload));
     if (CredentialsService.getSourceServerCredentials()) {
-      CredentialsService.removeSourceServerCredentials();
+      CredentialsService.resetSourceServer();
+    }
+    if (response.ok) {
+      return response.body;
+    } else {
+      return "";
+    }
+  }
+
+  public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, credentials: BasicServerCredentials[]): Promise<any> {
+    const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, credentials);
+    if (CredentialsService.getSourceServerCredentials()) {
+      CredentialsService.resetSourceServer();
     }
     if (response.ok) {
       return response.body;
@@ -66,5 +78,6 @@ export enum JobType {
   ModifyWellbore = "ModifyWellbore",
   TrimLogObject = "TrimLogObject",
   BatchModifyWell = "BatchModifyWell",
-  ImportLogData = "ImportLogData"
+  ImportLogData = "ImportLogData",
+  ReplaceLogObjects = "ReplaceLogObjects"
 }

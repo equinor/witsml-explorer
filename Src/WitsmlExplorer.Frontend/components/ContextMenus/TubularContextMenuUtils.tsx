@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTubularReferences } from "../../models/jobs/copyTubularJob";
 import { DeleteTubularsJob } from "../../models/jobs/deleteJobs";
@@ -13,8 +12,7 @@ import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import TubularService from "../../services/tubularService";
 import ConfirmModal from "../Modals/ConfirmModal";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const useClipboardTubularReferences: () => [TubularReferences | null, Dispatch<SetStateAction<TubularReferences>>] = () => {
   const [tubularReferences, setTubularReferences] = useState<TubularReferences>(null);
