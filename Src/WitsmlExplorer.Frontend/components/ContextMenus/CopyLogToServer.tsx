@@ -13,8 +13,9 @@ import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
+import { displayConfirmationModal } from "./CopyToServer";
 
-export const onClickCopyToServer = async (targetServer: Server, sourceServer: Server, logsToCopy: LogObject[], dispatchOperation: DispatchOperation) => {
+export const onClickCopyLogToServer = async (targetServer: Server, sourceServer: Server, logsToCopy: LogObject[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellUid = logsToCopy[0].wellUid;
   const wellboreUid = logsToCopy[0].wellboreUid;
@@ -37,9 +38,10 @@ export const onClickCopyToServer = async (targetServer: Server, sourceServer: Se
       }
     }
     if (existingLogs.length > 0) {
-      displayConfirmationModal(existingLogs, logsToCopy, sourceServer, targetCredentials, sourceCredentials, dispatchOperation);
+      const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, dispatchOperation);
+      displayConfirmationModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
     } else {
-      const copyJob = createCopyJob(sourceServer, logsToCopy, wellUid, wellboreUid);
+      const copyJob = createCopyJob(sourceServer, logsToCopy);
       CredentialsService.setSourceServer(sourceServer);
       JobService.orderJobAtServer(JobType.CopyLog, copyJob, [targetCredentials, sourceCredentials]);
     }
@@ -54,7 +56,7 @@ export const onClickCopyToServer = async (targetServer: Server, sourceServer: Se
   }
 };
 
-const createCopyJob = (sourceServer: Server, logs: LogObject[], wellUid: string, wellboreUid: string): CopyLogJob => {
+const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyLogJob => {
   const logReferences: ObjectReferences = {
     serverUrl: sourceServer.url,
     wellUid: logs[0].wellUid,
@@ -63,8 +65,8 @@ const createCopyJob = (sourceServer: Server, logs: LogObject[], wellUid: string,
     objectType: ObjectType.Log
   };
   const targetWellboreReference: WellboreReference = {
-    wellUid: wellUid,
-    wellboreUid: wellboreUid
+    wellUid: logs[0].wellUid,
+    wellboreUid: logs[0].wellboreUid
   };
   const copyJob: CopyLogJob = { source: logReferences, target: targetWellboreReference };
   return copyJob;
@@ -86,49 +88,11 @@ const replaceLogObjects = async (
       objectType: ObjectType.Log
     }
   };
-  const copyJob: CopyLogJob = createCopyJob(sourceServer, logsToCopy, logsToCopy[0].wellUid, logsToCopy[0].wellboreUid);
+  const copyJob: CopyLogJob = createCopyJob(sourceServer, logsToCopy);
   const replaceJob: ReplaceLogObjectsJob = { deleteJob, copyJob };
   await JobService.orderJobAtServer(JobType.ReplaceLogObjects, replaceJob, credentials);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
-
-function displayConfirmationModal(
-  existingLogs: LogObject[],
-  logsToCopy: LogObject[],
-  sourceServer: Server,
-  targetCredentials: BasicServerCredentials,
-  sourceCredentials: BasicServerCredentials,
-  dispatchOperation: DispatchOperation
-) {
-  const contentIntro = logsToCopy.length > 1 ? `${existingLogs.length} out of the ${logsToCopy.length} logs to copy already` : "The log you are trying to copy already";
-  const content =
-    existingLogs.length > 1 ? (
-      <span>
-        {contentIntro} exist on the target wellbore. Do you want to delete and replace them?
-        <br />
-        Existing logs:
-        {existingLogs.map((log) => printLog(log))}
-      </span>
-    ) : (
-      <span>
-        {contentIntro} exists on the target wellbore. Do you want to delete and replace it?
-        <br />
-        Existing log:
-        {printLog(existingLogs[0])}
-      </span>
-    );
-  const confirmation = (
-    <ConfirmModal
-      heading={`Replace log${existingLogs.length > 1 ? "s" : ""}?`}
-      content={content}
-      onConfirm={() => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, dispatchOperation)}
-      confirmColor={"secondary"}
-      confirmText={`Replace log${existingLogs.length > 1 ? "s" : ""}`}
-      switchButtonPlaces={true}
-    />
-  );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-}
 
 function printLog(log: LogObject): JSX.Element {
   return (

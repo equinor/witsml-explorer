@@ -15,7 +15,9 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { onClickCopyCurveToServer } from "./CopyCurveToServer";
+import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -23,10 +25,11 @@ export interface LogCurveInfoContextMenuProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   selectedLog: LogObject;
   selectedServer: Server;
+  servers: Server[];
 }
 
 const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.ReactElement => {
-  const { checkedLogCurveInfoRows, dispatchOperation, dispatchNavigation, selectedLog, selectedServer } = props;
+  const { checkedLogCurveInfoRows, dispatchOperation, dispatchNavigation, selectedLog, selectedServer, servers } = props;
 
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -93,6 +96,20 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} to server`} disabled={checkedLogCurveInfoRows.length < 1}>
+          {servers.map(
+            (server: Server) =>
+              server.id !== selectedServer.id && (
+                <MenuItem
+                  key={server.name}
+                  onClick={() => onClickCopyCurveToServer(server, selectedServer, checkedLogCurveInfoRows, dispatchOperation)}
+                  disabled={checkedLogCurveInfoRows.length < 1}
+                >
+                  <Typography color={"primary"}>{server.name}</Typography>
+                </MenuItem>
+              )
+          )}
+        </NestedMenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>

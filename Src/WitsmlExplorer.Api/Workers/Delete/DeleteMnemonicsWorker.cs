@@ -15,7 +15,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
 {
-    public class DeleteMnemonicsWorker : BaseWorker<DeleteMnemonicsJob>, IWorker
+    public interface IDeleteMnemonicsWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteMnemonicsJob job);
+    }
+
+    public class DeleteMnemonicsWorker : BaseWorker<DeleteMnemonicsJob>, IWorker, IDeleteMnemonicsWorker
     {
         private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteMnemonics;

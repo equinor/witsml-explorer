@@ -48,6 +48,7 @@ namespace WitsmlExplorer.Api.Models
         CreateWbGeometry,
         BatchModifyWell,
         ImportLogData,
+        ReplaceLogData,
         ReplaceLogObjects
     }
 }

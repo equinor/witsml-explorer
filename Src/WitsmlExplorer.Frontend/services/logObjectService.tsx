@@ -47,6 +47,26 @@ export default class LogObjectService {
     }
   }
 
+  public static async getLogCurveInfoFromServer(
+    wellUid: string,
+    wellboreUid: string,
+    logUid: string,
+    credentials: BasicServerCredentials,
+    abortSignal?: AbortSignal
+  ): Promise<LogCurveInfo[]> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, [credentials]);
+    if (response.ok) {
+      const text = await response.text();
+      if (text.length) {
+        return JSON.parse(text);
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
   public static async getLogData(
     wellUid: string,
     wellboreUid: string,
