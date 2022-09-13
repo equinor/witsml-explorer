@@ -1,5 +1,4 @@
 import { Typography } from "@equinor/eds-core-react";
-import { getAccountInfo, msalEnabled, msalSecurityScheme } from "../../msal/MsalAuthProvider";
 import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
@@ -11,6 +10,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
+import { basicSecurityScheme, getAccountInfo, msalEnabled, msalSecurityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -134,7 +134,10 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
-            .filter((server: Server) => server.securityscheme === "Basic" || (msalEnabled && server.securityscheme === msalSecurityScheme && userAppRoles.includes(server.role)))
+            .filter(
+              (server: Server) =>
+                server.securityscheme === basicSecurityScheme || (msalEnabled && server.securityscheme === msalSecurityScheme && userAppRoles.includes(server.role))
+            )
             .map((server: Server) => (
               <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
                 <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
