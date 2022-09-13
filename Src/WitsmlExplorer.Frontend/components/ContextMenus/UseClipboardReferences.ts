@@ -9,8 +9,8 @@ export const useClipboardReferences: () => ObjectReferences | null = () => {
     const tryToParseClipboardContent = async () => {
       try {
         const clipboardText = await navigator.clipboard.readText();
-        const bhaRunReferences = parseStringToReferences(clipboardText);
-        setReferences(bhaRunReferences);
+        const objectReferences = parseStringToReferences(clipboardText);
+        setReferences(objectReferences);
       } catch (e) {
         //Not a valid object on the clipboard? That is fine, we won't use it.
       }

@@ -48,9 +48,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(trajectories, targetWellbore);
         }
 
-        private static async Task<WitsmlTrajectories> GetTrajectories(IWitsmlClient client, ObjectReferences objectReferences)
+        private static async Task<WitsmlTrajectories> GetTrajectories(IWitsmlClient client, ObjectReferences trajectoryReferences)
         {
-            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoriesById(objectReferences.WellUid, objectReferences.WellboreUid, objectReferences.ObjectUids);
+            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoriesById(trajectoryReferences.WellUid, trajectoryReferences.WellboreUid, trajectoryReferences.ObjectUids);
             return await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
         }
     }

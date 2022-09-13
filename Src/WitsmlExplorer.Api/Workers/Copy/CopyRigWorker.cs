@@ -49,9 +49,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(rigs, targetWellbore);
         }
 
-        private static async Task<WitsmlRigs> GetRigs(IWitsmlClient client, ObjectReferences objectReferences)
+        private static async Task<WitsmlRigs> GetRigs(IWitsmlClient client, ObjectReferences rigReferences)
         {
-            WitsmlRigs witsmlRig = RigQueries.QueryByIds(objectReferences.WellUid, objectReferences.WellboreUid, objectReferences.ObjectUids);
+            WitsmlRigs witsmlRig = RigQueries.QueryByIds(rigReferences.WellUid, rigReferences.WellboreUid, rigReferences.ObjectUids);
             return await client.GetFromStoreAsync(witsmlRig, new OptionsIn(ReturnElements.All));
         }
     }
