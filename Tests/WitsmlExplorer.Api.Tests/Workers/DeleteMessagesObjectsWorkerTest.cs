@@ -12,7 +12,9 @@ using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Delete;
 
 using Xunit;
@@ -54,7 +56,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     WellboreUid = WellboreUid
                 }
             };
-            (Api.Workers.WorkerResult, Api.Models.RefreshAction) result = await _worker.Execute(job);
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
             Assert.True(result.Item1.IsSuccess);
         }
     }

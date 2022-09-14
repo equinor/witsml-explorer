@@ -14,6 +14,7 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Copy;
@@ -65,7 +66,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
-            (WorkerResult, Api.Models.RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
+            (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
             WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);
             Assert.Empty(logInQuery.LogData.Data);
@@ -85,7 +86,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
-            (WorkerResult, Api.Models.RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
+            (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
 
             WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);

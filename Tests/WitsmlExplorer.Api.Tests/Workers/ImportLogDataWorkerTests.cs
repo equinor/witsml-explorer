@@ -13,6 +13,7 @@ using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 
@@ -78,7 +79,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            (WorkerResult, Api.Models.RefreshAction) depthJobResult = await _worker.Execute(depthJob);
+            (WorkerResult, RefreshAction) depthJobResult = await _worker.Execute(depthJob);
 
             Assert.True(depthJobResult.Item1.IsSuccess);
         }
@@ -122,7 +123,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).ReturnsAsync(new QueryResult(true));
 
-            (WorkerResult, Api.Models.RefreshAction) timeJobResult = await _worker.Execute(timeJob);
+            (WorkerResult, RefreshAction) timeJobResult = await _worker.Execute(timeJob);
 
             Assert.True(timeJobResult.Item1.IsSuccess);
         }
@@ -132,7 +133,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             ImportLogDataJob depthJob = CreateDepthJobTemplate();
 
-            (WorkerResult, Api.Models.RefreshAction) result = await _worker.Execute(depthJob);
+            (WorkerResult, RefreshAction) result = await _worker.Execute(depthJob);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
             Assert.Contains(result.Item1.Message, "Unable to find log", StringComparison.InvariantCultureIgnoreCase);

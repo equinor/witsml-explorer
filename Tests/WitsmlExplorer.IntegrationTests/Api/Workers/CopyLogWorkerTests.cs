@@ -13,6 +13,7 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers.Copy;
@@ -115,11 +116,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             Index endIndex = await GetEndIndex(targetReference);
             while (currentIndex != endIndex)
             {
-                WitsmlExplorer.Api.Models.LogData sourceLogData = await _logObjectService.ReadLogData(sourceReference.WellUid,
+                LogData sourceLogData = await _logObjectService.ReadLogData(sourceReference.WellUid,
                     sourceReference.WellboreUid, logUid,
                     new List<string>(sourceLog.LogData.MnemonicList.Split(",")), currentIndex.Equals(Index.Start(sourceLog)),
                     currentIndex.GetValueAsString(), endIndex.ToString());
-                WitsmlExplorer.Api.Models.LogData targetLogData = await _logObjectService.ReadLogData(targetReference.WellUid, targetReference.WellboreUid, logUid,
+                LogData targetLogData = await _logObjectService.ReadLogData(targetReference.WellUid, targetReference.WellboreUid, logUid,
                     new List<string>(targetLog.LogData.MnemonicList.Split(",")), currentIndex.Equals(Index.Start(targetLog)),
                     currentIndex.GetValueAsString(), endIndex.ToString());
 
