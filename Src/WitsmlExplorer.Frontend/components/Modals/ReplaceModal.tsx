@@ -1,8 +1,8 @@
 import OperationType from "../../contexts/operationType";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { DispatchOperation } from "./ContextMenuUtils";
+import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
+import ConfirmModal from "./ConfirmModal";
 
-export function displayConfirmationModal(
+export function displayReplaceModal(
   existingObjects: any[],
   objectsToCopy: any[],
   toCopyType: string,

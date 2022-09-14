@@ -10,8 +10,8 @@ import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ConfirmModal from "../Modals/ConfirmModal";
+import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
-import { displayConfirmationModal } from "./CopyToServer";
 
 export const onClickCopyCurveToServer = async (targetServer: Server, sourceServer: Server, curvesToCopy: LogCurveInfoRow[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
@@ -32,7 +32,7 @@ export const onClickCopyCurveToServer = async (targetServer: Server, sourceServe
     const existingCurves: LogCurveInfo[] = allCurves.filter((curve) => curvesToCopy.find((curveToCopy) => curveToCopy.uid === curve.uid));
     if (existingCurves.length > 0) {
       const onConfirm = () => replaceCurves(sourceServer, [targetCredentials, sourceCredentials], curvesToCopy, existingCurves, dispatchOperation);
-      displayConfirmationModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
+      displayReplaceModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
     } else {
       const copyJob = createCopyJob(sourceServer, curvesToCopy);
       CredentialsService.setSourceServer(sourceServer);

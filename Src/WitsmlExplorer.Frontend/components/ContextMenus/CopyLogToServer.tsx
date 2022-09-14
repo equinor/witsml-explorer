@@ -12,8 +12,8 @@ import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
 import ConfirmModal from "../Modals/ConfirmModal";
+import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
-import { displayConfirmationModal } from "./CopyToServer";
 
 export const onClickCopyLogToServer = async (targetServer: Server, sourceServer: Server, logsToCopy: LogObject[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
@@ -39,7 +39,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     }
     if (existingLogs.length > 0) {
       const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, dispatchOperation);
-      displayConfirmationModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
+      displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
     } else {
       const copyJob = createCopyJob(sourceServer, logsToCopy);
       CredentialsService.setSourceServer(sourceServer);
