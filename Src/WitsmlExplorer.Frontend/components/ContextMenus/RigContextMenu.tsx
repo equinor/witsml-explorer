@@ -14,7 +14,7 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import { onClickCopy } from "./RigContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -75,7 +75,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
       menuItems={[
         <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, rigs, dispatchOperation)} disabled={rigs.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy rig{rigs?.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "rig", rigs)}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}
@@ -83,13 +83,13 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           disabled={rigReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste rig{rigReferences?.objectUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedRigRows.length === 0}>
           <ListItemIcon>
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color="primary">Delete</Typography>
+          <Typography color="primary">{menuItemText("delete", "rig", rigs)}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRigRows.length !== 1}>
