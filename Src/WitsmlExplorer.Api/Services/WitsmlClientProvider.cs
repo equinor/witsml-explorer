@@ -49,9 +49,9 @@ namespace WitsmlExplorer.Api.Services
             List<ICredentials> credentials = credTask.Result;
 
             bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
-            _witsmlClient = !isEncrypted
-                ? new WitsmlClient(serverUrl, credentials[0].UserId, credentials[0].Password, _clientCapabilities, null, logQueries)
-                : new WitsmlClient(serverUrl, credentials[0].UserId, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries);
+            _witsmlClient = isEncrypted
+                ? new WitsmlClient(serverUrl, credentials[0].UserId, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries)
+                : new WitsmlClient(serverUrl, credentials[0].UserId, credentials[0].Password, _clientCapabilities, null, logQueries);
 
 
             bool useSourceWitsmlServer = !string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 2;

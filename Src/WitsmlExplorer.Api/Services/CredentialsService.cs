@@ -154,7 +154,7 @@ namespace WitsmlExplorer.Api.Services
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(base64Data);
             string[] roles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
-            _logger.LogInformation("{roles}", string.Join(",", roles));
+            _logger.LogDebug("{roles}", string.Join(",", roles));
             if (await HasUserRoleForHosts(roles, new string[] { server, sourceServer }))
             {
                 ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
