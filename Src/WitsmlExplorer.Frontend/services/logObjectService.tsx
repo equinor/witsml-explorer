@@ -17,7 +17,7 @@ export default class LogObjectService {
   public static async getLog(wellUid: string, wellboreUid: string, logUid: string, abortSignal?: AbortSignal): Promise<LogObject> {
     const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal);
     if (response.ok) {
-      response.json();
+      return response.json();
     } else {
       return emptyLogObject();
     }
