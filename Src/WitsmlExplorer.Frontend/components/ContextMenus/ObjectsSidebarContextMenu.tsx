@@ -8,34 +8,36 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
-export interface RisksContextMenuProps {
-  dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+export interface ObjectsSidebarContextMenuProps {
+  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
+  servers: Server[];
   wellbore: Wellbore;
-  servers?: Server[];
+  objectType: ObjectType;
+  jobType: JobType;
 }
 
-const RisksContextMenu = (props: RisksContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers } = props;
-  const riskReferences = useClipboardReferencesOfType(ObjectType.Risk);
+const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React.ReactElement => {
+  const { wellbore, dispatchOperation, servers, objectType, jobType } = props;
+  const objectReferences = useClipboardReferencesOfType(objectType);
 
   return (
     <ContextMenu
       menuItems={[
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation, JobType.CopyRisk))}
-          disabled={riskReferences === null}
+          onClick={() => onClickPaste(servers, objectReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, objectReferences, dispatchOperation, jobType))}
+          disabled={objectReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste risk{riskReferences?.objectUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", objectType, objectReferences?.objectUids)}</Typography>
         </MenuItem>
       ]}
     />
   );
 };
 
-export default RisksContextMenu;
+export default ObjectsSidebarContextMenu;

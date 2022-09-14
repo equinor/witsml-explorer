@@ -10,7 +10,7 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
@@ -49,7 +49,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         </MenuItem>,
         <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular component{tubularComponentReferences?.tubularComponentUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "tubular components", tubularComponentReferences?.tubularComponentUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete([tubular], dispatchOperation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

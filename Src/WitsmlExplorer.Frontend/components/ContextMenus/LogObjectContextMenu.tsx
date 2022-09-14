@@ -166,7 +166,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "log", checkedLogObjectRows)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "log", checkedLogObjectRows)} to server`} disabled={checkedLogObjectRows.length < 1}>
           {servers.map(
@@ -190,7 +190,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Paste log curves</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.mnemonics)}</Typography>
         </MenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
@@ -202,7 +202,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "log", checkedLogObjectRows)}</Typography>
         </MenuItem>,
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedLogObjectRows.length === 0}>
           <ListItemIcon>

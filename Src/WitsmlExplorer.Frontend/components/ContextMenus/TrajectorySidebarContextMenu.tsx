@@ -6,7 +6,7 @@ import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
 import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
@@ -33,7 +33,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
         </MenuItem>,
         <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={trajectoryStationReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste trajectory station{trajectoryStationReferences?.trajectoryStationUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.trajectoryStationUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete([trajectory], dispatchOperation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
