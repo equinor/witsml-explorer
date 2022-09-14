@@ -14,15 +14,22 @@ namespace WitsmlExplorer.Api.Workers
     {
         public static async Task<WitsmlWellbore> GetWellbore(IWitsmlClient client, WellboreReference wellboreReference)
         {
-            var query = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
-            var wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(wellboreReference.WellUid, wellboreReference.WellboreUid);
+            WitsmlWellbores wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
 
         public static async Task<WitsmlLog> GetLog(IWitsmlClient client, LogReference logReference, ReturnElements optionsInReturnElements)
         {
-            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
-            var result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
+            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
+            return !result.Logs.Any() ? null : result.Logs.First();
+        }
+
+        public static async Task<WitsmlLog> GetLog(IWitsmlClient client, string logUid, string wellboreUid, string wellUid, ReturnElements optionsInReturnElements)
+        {
+            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
             return !result.Logs.Any() ? null : result.Logs.First();
         }
 

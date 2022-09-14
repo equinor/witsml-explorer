@@ -5,6 +5,7 @@ import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../..
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteMessageObjectsJob } from "../../models/jobs/deleteJobs";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import MessageObjectService from "../../services/messageObjectService";
@@ -31,9 +32,10 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteMessageObjectsJob = {
       toDelete: {
-        messageObjectUids: checkedMessageObjectRows.map((row) => row.uid),
+        objectUids: checkedMessageObjectRows.map((row) => row.uid),
         wellUid: checkedMessageObjectRows[0].wellUid,
-        wellboreUid: checkedMessageObjectRows[0].wellboreUid
+        wellboreUid: checkedMessageObjectRows[0].wellboreUid,
+        objectType: ObjectType.Message
       }
     };
 

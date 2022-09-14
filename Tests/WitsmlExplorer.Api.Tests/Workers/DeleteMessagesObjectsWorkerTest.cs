@@ -12,6 +12,7 @@ using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Delete;
@@ -29,33 +30,33 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public DeleteMessagesObjectsWorkerTest()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            var witsmlClient = new Mock<IWitsmlClient>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
+            Mock<IWitsmlClient> witsmlClient = new();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<WitsmlMessages>(o => o.Messages.First().UidWell == WellUid && o.Messages.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
 
-            var logger = loggerFactory.CreateLogger<DeleteUtils>();
-            var deleteUtils = new DeleteUtils(logger, witsmlClientProvider.Object);
+            ILogger<DeleteUtils> logger = loggerFactory.CreateLogger<DeleteUtils>();
+            DeleteUtils deleteUtils = new(logger, witsmlClientProvider.Object);
 
-            var logger2 = loggerFactory.CreateLogger<DeleteMessageObjectsJob>();
+            ILogger<DeleteMessageObjectsJob> logger2 = loggerFactory.CreateLogger<DeleteMessageObjectsJob>();
 
             _worker = new DeleteMessagesWorker(logger2, witsmlClientProvider.Object, deleteUtils);
         }
         [Fact]
         public async Task DeleteMessageObjectsSuccessful_ReturnResult()
         {
-            var job = new DeleteMessageObjectsJob
+            DeleteMessageObjectsJob job = new()
             {
-                ToDelete = new MessageObjectReferences()
+                ToDelete = new ObjectReferences()
                 {
-                    MessageObjectUids = MessageUids,
+                    ObjectUids = MessageUids,
                     WellUid = WellUid,
                     WellboreUid = WellboreUid
                 }
             };
-            var result = await _worker.Execute(job);
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
             Assert.True(result.Item1.IsSuccess);
         }
     }

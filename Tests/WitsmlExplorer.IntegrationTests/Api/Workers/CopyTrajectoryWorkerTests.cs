@@ -35,11 +35,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             CopyTrajectoryJob job = new()
             {
-                Source = new TrajectoryReferences
+                Source = new ObjectReferences
                 {
                     WellUid = "4d287b3e-9d9c-472a-9b82-d667d9ea1bec",
                     WellboreUid = "a2d2854b-3880-4058-876b-29b14ed7c917",
-                    TrajectoryUids = new string[] { "1YJFL7" }
+                    ObjectUids = new string[] { "1YJFL7" }
                 },
                 Target = new WellboreReference
                 {

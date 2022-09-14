@@ -30,33 +30,33 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public DeleteLogObjectsWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
-            var witsmlClient = new Mock<IWitsmlClient>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
+            Mock<IWitsmlClient> witsmlClient = new();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<WitsmlLogs>(o => o.Logs.First().UidWell == WellUid && o.Logs.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
 
-            var logger = loggerFactory.CreateLogger<DeleteUtils>();
-            var deleteUtils = new DeleteUtils(logger, witsmlClientProvider.Object);
+            ILogger<DeleteUtils> logger = loggerFactory.CreateLogger<DeleteUtils>();
+            DeleteUtils deleteUtils = new(logger, witsmlClientProvider.Object);
 
-            var logger2 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
+            ILogger<DeleteLogObjectsJob> logger2 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
             _worker = new DeleteLogObjectsWorker(logger2, witsmlClientProvider.Object, deleteUtils);
         }
 
         [Fact]
         public async Task DeleteLogsSuccessful_ReturnResult()
         {
-            var job = new DeleteLogObjectsJob
+            DeleteLogObjectsJob job = new()
             {
-                ToDelete = new LogReferences()
+                ToDelete = new ObjectReferences()
                 {
-                    LogReferenceList = LogUids
-                            .Select(logUid => new LogReference { WellUid = WellUid, WellboreUid = WellboreUid, LogUid = logUid })
-                            .AsEnumerable()
+                    WellUid = WellUid,
+                    WellboreUid = WellboreUid,
+                    ObjectUids = LogUids
                 }
             };
-            var (result, refreshAction) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(job);
             Assert.True(result.IsSuccess && ((RefreshWellbore)refreshAction).WellboreUid == WellboreUid);
         }
     }

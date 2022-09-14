@@ -74,8 +74,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<Tuple<WitsmlLog[], WitsmlWellbore>> FetchSourceLogsAndTargetWellbore(CopyLogJob job)
         {
-            IEnumerable<LogReference> sourceLogReferenceList = job.Source.LogReferenceList;
-            Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(sourceLogReferenceList.Select(logReference => WorkerTools.GetLog(_witsmlSourceClient, logReference, ReturnElements.All)));
+            string[] logUids = job.Source.ObjectUids;
+            Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(logUids.Select(
+                logUid => WorkerTools.GetLog(_witsmlSourceClient, logUid, job.Source.WellboreUid, job.Source.WellUid, ReturnElements.All)));
             Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);
@@ -102,8 +103,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             LogReference sourceLogReference = new()
             {
-                WellUid = job.Source.LogReferenceList.FirstOrDefault()?.WellUid,
-                WellboreUid = job.Source.LogReferenceList.FirstOrDefault()?.WellboreUid,
+                WellUid = job.Source.WellUid,
+                WellboreUid = job.Source.WellboreUid,
                 LogUid = targetLog.Uid
             };
 

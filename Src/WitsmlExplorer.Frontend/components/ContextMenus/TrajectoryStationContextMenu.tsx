@@ -16,7 +16,7 @@ import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropert
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
-import { orderCopyJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
+import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
@@ -81,7 +81,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
   };
 
   const serverUrl = trajectoryStationReferences?.serverUrl;
-  const orderCopy = () => orderCopyJob(trajectory, trajectoryStationReferences, dispatchOperation);
+  const orderCopy = () => orderCopyTrajectoryStationsJob(trajectory, trajectoryStationReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[

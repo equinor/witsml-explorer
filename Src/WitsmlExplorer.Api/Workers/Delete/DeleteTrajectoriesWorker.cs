@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -29,28 +27,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTrajectoriesJob job)
         {
-            Verify(job);
-            IEnumerable<WitsmlTrajectory> queries = TrajectoryQueries.DeleteTrajectories(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.TrajectoryUids);
+            job.ToDelete.Verify();
+            IEnumerable<WitsmlTrajectory> queries = TrajectoryQueries.DeleteTrajectories(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshTrajectories refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
             return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private static void Verify(DeleteTrajectoriesJob job)
-        {
-            if (!job.ToDelete.TrajectoryUids.Any())
-            {
-                throw new ArgumentException("A minimum of one trajectory UID is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellUid))
-            {
-                throw new ArgumentException("WellUid is required");
-            }
-
-            if (string.IsNullOrEmpty(job.ToDelete.WellboreUid))
-            {
-                throw new ArgumentException("WellboreUid is required");
-            }
-        }
     }
 }

@@ -27,7 +27,7 @@ export const useClipboardTrajectoryStationReferences: () => [TrajectoryStationRe
   return [trajectoryStationReferences, setTrajectoryStationReferences];
 };
 
-export const orderCopyJob = (trajectory: Trajectory, trajectoryStationReferences: TrajectoryStationReferences, dispatchOperation: DispatchOperation) => {
+export const orderCopyTrajectoryStationsJob = (trajectory: Trajectory, trajectoryStationReferences: TrajectoryStationReferences, dispatchOperation: DispatchOperation) => {
   const trajectoryReference: TrajectoryReference = {
     wellUid: trajectory.wellUid,
     wellboreUid: trajectory.wellboreUid,

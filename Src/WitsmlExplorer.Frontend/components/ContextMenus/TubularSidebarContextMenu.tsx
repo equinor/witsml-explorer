@@ -13,7 +13,7 @@ import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { orderCopyJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
+import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
@@ -35,7 +35,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
   };
 
   const serverUrl = tubularComponentReferences?.serverUrl;
-  const orderCopy = () => orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
+  const orderCopy = () => orderCopyTubularComponentsJob(tubular, tubularComponentReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[

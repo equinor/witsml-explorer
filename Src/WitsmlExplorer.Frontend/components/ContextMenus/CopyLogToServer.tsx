@@ -1,11 +1,11 @@
 import OperationType from "../../contexts/operationType";
 import CopyLogJob from "../../models/jobs/copyLogJob";
 import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
-import LogReference from "../../models/jobs/logReference";
-import LogReferences from "../../models/jobs/logReferences";
+import ObjectReferences from "../../models/jobs/objectReferences";
 import { ReplaceLogObjectsJob } from "../../models/jobs/replaceLogObjectsJob";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
@@ -55,15 +55,12 @@ export const onClickCopyToServer = async (targetServer: Server, sourceServer: Se
 };
 
 const createCopyJob = (sourceServer: Server, logs: LogObject[], wellUid: string, wellboreUid: string): CopyLogJob => {
-  const logReferences: LogReferences = {
+  const logReferences: ObjectReferences = {
     serverUrl: sourceServer.url,
-    logReferenceList: logs.map((log): LogReference => {
-      return {
-        wellUid: log.wellUid,
-        wellboreUid: log.wellboreUid,
-        logUid: log.uid
-      };
-    })
+    wellUid: logs[0].wellUid,
+    wellboreUid: logs[0].wellboreUid,
+    objectUids: logs.map((log) => log.uid),
+    objectType: ObjectType.Log
   };
   const targetWellboreReference: WellboreReference = {
     wellUid: wellUid,
@@ -83,11 +80,10 @@ const replaceLogObjects = async (
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteLogObjectsJob = {
     toDelete: {
-      logReferenceList: logsToDelete.map((log) => ({
-        wellUid: log.wellUid,
-        wellboreUid: log.wellboreUid,
-        logUid: log.uid
-      }))
+      wellUid: logsToDelete[0].wellUid,
+      wellboreUid: logsToDelete[0].wellboreUid,
+      objectUids: logsToDelete.map((log) => log.uid),
+      objectType: ObjectType.Log
     }
   };
   const copyJob: CopyLogJob = createCopyJob(sourceServer, logsToCopy, logsToCopy[0].wellUid, logsToCopy[0].wellboreUid);
