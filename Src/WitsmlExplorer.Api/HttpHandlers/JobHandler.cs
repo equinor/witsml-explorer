@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
+using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
@@ -20,15 +21,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
             string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
             StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
             StringValues targetServer = headers["Witsml-ServerUrl"];
-            Credentials credentials = new(base64EncodedCredentials);
+            BasicCredentials credentials = new(base64EncodedCredentials);
 
-            return Results.Ok(await jobService.CreateJob(jobType, credentials.Username, sourceServer, targetServer, httpRequest.Body));
+            return Results.Ok(await jobService.CreateJob(jobType, credentials.UserId, sourceServer, targetServer, httpRequest.Body));
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static async Task<IResult> GetJobInfosById([FromBody] IEnumerable<string> ids, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
         {
-            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            bool authorized = await credentialsService.AuthorizeWithEncryptedPassword(httpRequest);
             if (!authorized)
             {
                 return Results.Unauthorized();
@@ -39,7 +40,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static async Task<IResult> GetJobInfosByUser(string username, IJobCache jobCache, HttpRequest httpRequest, ICredentialsService credentialsService)
         {
-            bool authorized = await credentialsService.AuthorizeWithToken(httpRequest);
+            bool authorized = await credentialsService.AuthorizeWithEncryptedPassword(httpRequest);
             if (!authorized)
             {
                 return Results.Unauthorized();

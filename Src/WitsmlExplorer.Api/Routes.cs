@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api
 {
@@ -12,7 +13,7 @@ namespace WitsmlExplorer.Api
     {
         public static void ConfigureApi(this WebApplication app, IConfiguration configuration)
         {
-            bool useOAuth2 = configuration[ConfigConstants.OAuth2Enabled] == "True";
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers).SetupAuthorization(useOAuth2);
             app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer).SetupAuthorization(useOAuth2, AuthorizationPolicyRoles.ADMIN);
