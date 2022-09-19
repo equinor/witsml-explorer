@@ -22,7 +22,8 @@ import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { onClickCopyToServer } from "./CopyLogToServer";
+import { menuItemText } from "./ContextMenuUtils";
+import { onClickCopyLogToServer } from "./CopyLogToServer";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
@@ -167,13 +168,13 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"copyToServer"} label={"Copy log to server"} disabled={checkedLogObjectRows.length < 1}>
+        <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "log", checkedLogObjectRows)} to server`} disabled={checkedLogObjectRows.length < 1}>
           {servers.map(
             (server: Server) =>
               server.id !== selectedServer.id && (
                 <MenuItem
                   key={server.name}
-                  onClick={() => onClickCopyToServer(server, selectedServer, checkedLogObjectRows, dispatchOperation)}
+                  onClick={() => onClickCopyLogToServer(server, selectedServer, checkedLogObjectRows, dispatchOperation)}
                   disabled={checkedLogObjectRows.length < 1}
                 >
                   <Typography color={"primary"}>{server.name}</Typography>
