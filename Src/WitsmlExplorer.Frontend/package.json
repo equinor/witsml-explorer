@@ -66,7 +66,7 @@
     "@types/enzyme": "^3.10.12",
     "@types/jest": "^29.0.1",
     "@types/lodash": "^4.14.185",
-    "@types/node": "^18.7.17",
+    "@types/node": "^18.7.18",
     "@types/react": "^18.0.19",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
