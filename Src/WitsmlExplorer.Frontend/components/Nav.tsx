@@ -336,12 +336,12 @@ const Layout = styled.div`
 const Title = styled.p`
   line-height: 1rem;
   padding-left: 2rem;
-  width: 15vw;
+  width: 12%;
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-left: 1rem;
-  width: 70vw;
+  width: 60%;
 `;
 
 export default Nav;
