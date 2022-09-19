@@ -59,7 +59,7 @@ const ServerManager = (): React.ReactElement => {
         }
       } else {
         try {
-          if (wells.length < 0) {
+          if (wells.length === 0) {
             const wells = await WellService.getWells();
             dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
           }
