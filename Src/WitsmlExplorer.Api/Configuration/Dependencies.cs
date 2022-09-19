@@ -26,10 +26,11 @@ namespace WitsmlExplorer.Api.Configuration
             AddRepository<Server, Guid>(services, configuration);
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
+                .IgnoreThisInterface<ICredentials>()
                 .AsPublicImplementedInterfaces();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
-            services.AddSingleton<IWitsmlServerCredentials, WitsmlServerCredentials>();
+            services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

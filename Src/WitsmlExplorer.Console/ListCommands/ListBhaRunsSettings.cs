@@ -1,6 +1,3 @@
-using System;
-using System.ComponentModel;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace WitsmlExplorer.Console.ListCommands

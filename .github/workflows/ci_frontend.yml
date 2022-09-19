@@ -1,0 +1,31 @@
+name: Frontend Build and Test
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Src/WitsmlExplorer.Frontend/**'
+
+jobs:
+  frontend:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: yarn
+        working-directory: ./Src/WitsmlExplorer.Frontend
+      - name: Linting
+        run: yarn lint
+        working-directory: ./Src/WitsmlExplorer.Frontend
+      - name: Prettier
+        run: npx prettier --check .
+      - name: Build
+        run: yarn build
+        working-directory: ./Src/WitsmlExplorer.Frontend
+      - name: Test
+        run: yarn test
+        working-directory: ./Src/WitsmlExplorer.Frontend

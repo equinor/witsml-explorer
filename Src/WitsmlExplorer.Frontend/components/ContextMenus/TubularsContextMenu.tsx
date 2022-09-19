@@ -3,13 +3,16 @@ import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
-import { onClickRefreshAll, orderCopyJob, useClipboardTubularReferences } from "./TubularContextMenuUtils";
+import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { onClickRefreshAll } from "./TubularContextMenuUtils";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularsContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction) => void;
@@ -20,7 +23,7 @@ export interface TubularsContextMenuProps {
 
 const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, wellbore, servers } = props;
-  const [tubularReferences] = useClipboardTubularReferences();
+  const tubularReferences = useClipboardReferencesOfType(ObjectType.Tubular);
 
   return (
     <ContextMenu
@@ -31,11 +34,13 @@ const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElemen
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation))}
+          onClick={() =>
+            onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation, JobType.CopyTubular))
+          }
           disabled={tubularReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste tubular{tubularReferences?.objectUids.length > 1 && "s"}</Typography>
         </MenuItem>
       ]}
     />

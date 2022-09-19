@@ -4,17 +4,20 @@ import React from "react";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
 import Wellbore from "../../models/wellbore";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
+import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer, orderCopyJob, useClipboardTubularReferences } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -27,7 +30,7 @@ export interface TubularObjectContextMenuProps {
 
 const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, tubulars, selectedServer, wellbore, servers } = props;
-  const [tubularReferences] = useClipboardTubularReferences();
+  const tubularReferences = useClipboardReferencesOfType(ObjectType.Tubular);
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular: tubulars[0], dispatchOperation };
@@ -48,11 +51,13 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation))}
+          onClick={() =>
+            onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation, JobType.CopyTubular))
+          }
           disabled={tubularReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular{tubularReferences?.tubularUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste tubular{tubularReferences?.objectUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDelete(tubulars, dispatchOperation)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

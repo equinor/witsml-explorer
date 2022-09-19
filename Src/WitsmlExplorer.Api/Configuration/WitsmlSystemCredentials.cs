@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace WitsmlExplorer.Api.Configuration
 {
-    public interface IWitsmlServerCredentials
+    public interface IWitsmlSystemCredentials
     {
         public ServerCredentials[] WitsmlCreds { get; set; }
     }
@@ -26,11 +26,11 @@ namespace WitsmlExplorer.Api.Configuration
     ///    witsmlcreds--homeserver--password
     /// </c>
     /// </summary>
-    public class WitsmlServerCredentials : IWitsmlServerCredentials
+    public class WitsmlSystemCredentials : IWitsmlSystemCredentials
     {
         public ServerCredentials[] WitsmlCreds { get; set; }
 
-        public WitsmlServerCredentials(IConfiguration configuration)
+        public WitsmlSystemCredentials(IConfiguration configuration)
         {
             Bind(configuration);
         }
@@ -50,21 +50,6 @@ namespace WitsmlExplorer.Api.Configuration
 
             WitsmlCreds = credsList.ToArray();
         }
-    }
-    public class ServerCredentials
-    {
-        internal ServerCredentials() { }
-
-        public ServerCredentials(string host, string userid, string password)
-        {
-            Host = host;
-            UserId = userid;
-            Password = password;
-        }
-        public string Host { get; init; }
-        public string UserId { get; init; }
-        public string Password { get; init; }
-
     }
 
 }

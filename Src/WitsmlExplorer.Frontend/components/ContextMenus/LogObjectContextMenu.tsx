@@ -8,8 +8,8 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
-import LogReference from "../../models/jobs/logReference";
-import LogReferences from "../../models/jobs/logReferences";
+import ObjectReferences from "../../models/jobs/objectReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
@@ -22,7 +22,8 @@ import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { onClickCopyToServer } from "./CopyLogToServer";
+import { menuItemText } from "./ContextMenuUtils";
+import { onClickCopyLogToServer } from "./CopyLogToServer";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
@@ -114,34 +115,30 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteLogObjectsJob = {
       toDelete: {
-        logReferenceList: checkedLogObjectRows.map((row) => ({
-          wellUid: row.wellUid,
-          wellboreUid: row.wellboreUid,
-          logUid: row.uid
-        }))
+        wellUid: checkedLogObjectRows[0].wellUid,
+        wellboreUid: checkedLogObjectRows[0].wellboreUid,
+        objectUids: checkedLogObjectRows.map((log) => log.uid),
+        objectType: ObjectType.Log
       }
     };
 
     await JobService.orderJob(JobType.DeleteLogObjects, job);
     checkedLogObjectRows.length = 0;
-    const freshLogs = await LogObjectService.getLogs(job.toDelete.logReferenceList[0].wellUid, job.toDelete.logReferenceList[0].wellboreUid);
+    const freshLogs = await LogObjectService.getLogs(job.toDelete.wellUid, job.toDelete.wellboreUid);
     dispatchNavigation({
       type: ModificationType.UpdateLogObjects,
-      payload: { wellUid: job.toDelete.logReferenceList[0].wellUid, wellboreUid: job.toDelete.logReferenceList[0].wellboreUid, logs: freshLogs }
+      payload: { wellUid: job.toDelete.wellUid, wellboreUid: job.toDelete.wellboreUid, logs: freshLogs }
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickCopyLog = async () => {
-    const logReferences: LogReferences = {
+    const logReferences: ObjectReferences = {
       serverUrl: selectedServer.url,
-      logReferenceList: checkedLogObjectRows.map((row): LogReference => {
-        return {
-          wellUid: row.wellUid,
-          wellboreUid: row.wellboreUid,
-          logUid: row.uid
-        };
-      })
+      wellUid: checkedLogObjectRows[0].wellUid,
+      wellboreUid: checkedLogObjectRows[0].wellboreUid,
+      objectUids: checkedLogObjectRows.map((log) => log.uid),
+      objectType: ObjectType.Log
     };
     await navigator.clipboard.writeText(JSON.stringify(logReferences));
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -171,13 +168,13 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Copy {pluralize("log")}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"copyToServer"} label={"Copy log to server"} disabled={checkedLogObjectRows.length < 1}>
+        <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "log", checkedLogObjectRows)} to server`} disabled={checkedLogObjectRows.length < 1}>
           {servers.map(
             (server: Server) =>
               server.id !== selectedServer.id && (
                 <MenuItem
                   key={server.name}
-                  onClick={() => onClickCopyToServer(server, selectedServer, checkedLogObjectRows, dispatchOperation)}
+                  onClick={() => onClickCopyLogToServer(server, selectedServer, checkedLogObjectRows, dispatchOperation)}
                   disabled={checkedLogObjectRows.length < 1}
                 >
                   <Typography color={"primary"}>{server.name}</Typography>

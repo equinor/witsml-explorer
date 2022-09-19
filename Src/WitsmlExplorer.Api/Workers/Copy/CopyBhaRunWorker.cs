@@ -49,9 +49,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(bhaRuns, targetWellbore);
         }
 
-        private static async Task<WitsmlBhaRuns> GetBhaRuns(IWitsmlClient client, BhaRunReferences bhaRunReferences)
+        private static async Task<WitsmlBhaRuns> GetBhaRuns(IWitsmlClient client, ObjectReferences bhaRunReferences)
         {
-            WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunsById(bhaRunReferences.WellUid, bhaRunReferences.WellboreUid, bhaRunReferences.BhaRunUids);
+            WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRunsById(bhaRunReferences.WellUid, bhaRunReferences.WellboreUid, bhaRunReferences.ObjectUids);
             return await client.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.All));
         }
     }

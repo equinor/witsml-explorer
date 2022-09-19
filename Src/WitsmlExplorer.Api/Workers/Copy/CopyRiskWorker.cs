@@ -48,9 +48,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(risks, targetWellbore);
         }
 
-        private static async Task<WitsmlRisks> GetRisks(IWitsmlClient client, RiskReferences riskReferences)
+        private static async Task<WitsmlRisks> GetRisks(IWitsmlClient client, ObjectReferences riskReferences)
         {
-            WitsmlRisks witsmlRisk = RiskQueries.QueryByIds(riskReferences.WellUid, riskReferences.WellboreUid, riskReferences.RiskUids);
+            WitsmlRisks witsmlRisk = RiskQueries.QueryByIds(riskReferences.WellUid, riskReferences.WellboreUid, riskReferences.ObjectUids);
             return await client.GetFromStoreAsync(witsmlRisk, new OptionsIn(ReturnElements.All));
         }
     }

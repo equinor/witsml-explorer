@@ -15,11 +15,12 @@ export const StyledIcon = styled(Icon)`
 `;
 
 export const menuItemText = (operation: string, object: string, array: any[] | null) => {
-  const operationUpperCase = operation.charAt(0).toUpperCase() + operation.slice(1);
-  const objectPlural = object.charAt(object.length - 1) == "y" ? object.slice(0, object.length - 1) + "ies" : object + "s";
+  const operationUpperCase = operation.charAt(0).toUpperCase() + operation.slice(1).toLowerCase();
+  const objectLowercase = object.toLowerCase();
+  const objectPlural = objectLowercase.charAt(object.length - 1) == "y" ? objectLowercase.slice(0, object.length - 1) + "ies" : object + "s";
   const isPlural = array ? array.length > 1 : false;
   const count = array?.length > 0 ? ` ${array.length} ` : " ";
-  return `${operationUpperCase}${count}${isPlural ? objectPlural : object}`;
+  return `${operationUpperCase}${count}${isPlural ? objectPlural : objectLowercase}`;
 };
 
 export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, onSuccess: () => void, message: string) => {

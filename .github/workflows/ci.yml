@@ -1,44 +1,25 @@
-name: Build and Test
+name: Backend Build and Test
 on:
   pull_request:
     branches:
       - main
-  pull_request_target:
+    paths:
+      - 'Src/Witsml/**'
+      - 'Src/WitsmlExplorer.Api/**'
+      - 'Src/WitsmlExplorer.Console/**'
+      - 'Tests/**'
 
 jobs:
   backend:
-    name: Backend
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET 6
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 6.0.100
-      - name: Build with dotnet
-        run: dotnet build /warnaserror --configuration Release
-      - name: Test with dotnet
-        run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release
-
-  frontend:
-    name: Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Install dependencies
-        run: yarn
-        working-directory: ./Src/WitsmlExplorer.Frontend
-      - name: Linting
-        run: yarn lint
-        working-directory: ./Src/WitsmlExplorer.Frontend
-      - name: Prettier
-        run: npx prettier --check .
+          dotnet-version: 6.0.x
       - name: Build
-        run: yarn build
-        working-directory: ./Src/WitsmlExplorer.Frontend
+        run: dotnet build /warnaserror --configuration Release
       - name: Test
-        run: yarn test
-        working-directory: ./Src/WitsmlExplorer.Frontend
+        run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release

@@ -25,7 +25,7 @@ export const useClipboardTubularComponentReferences: () => [TubularComponentRefe
   return [tubularComponentReferences, setTubularComponentReferences];
 };
 
-export const orderCopyJob = (tubular: Tubular, tubularComponentReferences: TubularComponentReferences, dispatchOperation: DispatchOperation) => {
+export const orderCopyTubularComponentsJob = (tubular: Tubular, tubularComponentReferences: TubularComponentReferences, dispatchOperation: DispatchOperation) => {
   const tubularReference: TubularReference = {
     wellUid: tubular.wellUid,
     wellboreUid: tubular.wellboreUid,

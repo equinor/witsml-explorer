@@ -4,8 +4,9 @@ import React from "react";
 import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import BhaRunReferences from "../../models/jobs/bhaRunReferences";
 import { DeleteBhaRunsJob } from "../../models/jobs/deleteJobs";
+import ObjectReferences from "../../models/jobs/objectReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
@@ -14,10 +15,10 @@ import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import { orderCopyJob, useClipboardBhaRunReferences } from "./BhaRunContextMenuUtils";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
+import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface BhaRunContextMenuProps {
   checkedBhaRunRows: BhaRunRow[];
@@ -30,7 +31,7 @@ export interface BhaRunContextMenuProps {
 
 const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement => {
   const { checkedBhaRunRows, wellbore, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
-  const [bhaRunReferences] = useClipboardBhaRunReferences();
+  const bhaRunReferences = useClipboardReferencesOfType(ObjectType.BhaRun);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -43,9 +44,10 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteBhaRunsJob = {
       toDelete: {
-        bhaRunUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
+        objectUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
         wellUid: checkedBhaRunRows[0].wellUid,
-        wellboreUid: checkedBhaRunRows[0].wellboreUid
+        wellboreUid: checkedBhaRunRows[0].wellboreUid,
+        objectType: ObjectType.BhaRun
       }
     };
     await JobService.orderJob(JobType.DeleteBhaRuns, job);
@@ -70,11 +72,12 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
   };
 
   const onClickCopy = async () => {
-    const bhaRunReferences: BhaRunReferences = {
+    const bhaRunReferences: ObjectReferences = {
       serverUrl: selectedServer.url,
-      bhaRunUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
+      objectUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
       wellUid: checkedBhaRunRows[0].wellUid,
-      wellboreUid: checkedBhaRunRows[0].wellboreUid
+      wellboreUid: checkedBhaRunRows[0].wellboreUid,
+      objectType: ObjectType.BhaRun
     };
     await navigator.clipboard.writeText(JSON.stringify(bhaRunReferences));
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -89,11 +92,13 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => onClickPaste(servers, bhaRunReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, bhaRunReferences, dispatchOperation))}
+          onClick={() =>
+            onClickPaste(servers, bhaRunReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, bhaRunReferences, dispatchOperation, JobType.CopyBhaRun))
+          }
           disabled={bhaRunReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste bhaRun{bhaRunReferences?.bhaRunUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>Paste bhaRun{bhaRunReferences?.objectUids.length > 1 && "s"}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedBhaRunRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

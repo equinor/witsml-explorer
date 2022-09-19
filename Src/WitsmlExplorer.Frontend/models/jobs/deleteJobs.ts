@@ -1,26 +1,19 @@
-import BhaRunReferences from "./bhaRunReferences";
 import LogReference from "./logReference";
-import LogReferences from "./logReferences";
-import MessageObjectReferences from "./messageObjectReferences";
-import RigReferences from "./rigReferences";
-import RiskReferences from "./riskReferences";
+import ObjectReferences from "./objectReferences";
 import TrajectoryReference from "./trajectoryReference";
-import TrajectoryReferences from "./trajectoryReferences";
 import TubularReference from "./tubularReference";
-import TubularReferences from "./tubularReferences";
-import WbGeometryObjectReferences from "./wbGeometryReferences";
 import WellboreReference from "./wellboreReference";
 
 export interface DeleteBhaRunsJob {
-  toDelete: BhaRunReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteLogObjectsJob {
-  toDelete: LogReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteMessageObjectsJob {
-  toDelete: MessageObjectReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteMnemonicsJob {
@@ -31,15 +24,15 @@ export interface DeleteMnemonicsJob {
 }
 
 export interface DeleteRigsJob {
-  toDelete: RigReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteRisksJob {
-  toDelete: RiskReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteTrajectoriesJob {
-  toDelete: TrajectoryReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteTrajectoryStationsJob {
@@ -57,11 +50,11 @@ export interface DeleteTubularComponentsJob {
 }
 
 export interface DeleteTubularsJob {
-  toDelete: TubularReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteWbGeometrysJob {
-  toDelete: WbGeometryObjectReferences;
+  toDelete: ObjectReferences;
 }
 
 export interface DeleteWellboreJob {

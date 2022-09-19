@@ -17,7 +17,7 @@ import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { orderCopyJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
+import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import { onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
 
 export interface TubularComponentContextMenuProps {
@@ -80,7 +80,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
   };
 
   const serverUrl = tubularComponentReferences?.serverUrl;
-  const orderCopy = () => orderCopyJob(tubular, tubularComponentReferences, dispatchOperation);
+  const orderCopy = () => orderCopyTubularComponentsJob(tubular, tubularComponentReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[

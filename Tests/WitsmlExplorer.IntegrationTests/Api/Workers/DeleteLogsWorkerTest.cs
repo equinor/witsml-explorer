@@ -33,13 +33,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async Task DeleteLogs()
         {
-            LogReference[] logs = new LogReference[] {
-                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_1>" },
-                new LogReference{ WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", LogUid = "<log_uid_2>" }
-            };
             DeleteLogObjectsJob job = new()
             {
-                ToDelete = new LogReferences() { LogReferenceList = logs }
+                ToDelete = new ObjectReferences() { WellUid = "<well_uid>", WellboreUid = "<wellbore_uid>", ObjectUids = new string[] { "<log_uid_1>", "<log_uid_2>" } }
             };
             await _worker.Execute(job);
         }

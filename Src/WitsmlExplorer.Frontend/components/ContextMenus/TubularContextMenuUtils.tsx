@@ -1,56 +1,24 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { parseStringToTubularReferences } from "../../models/jobs/copyTubularJob";
 import { DeleteTubularsJob } from "../../models/jobs/deleteJobs";
-import TubularReferences from "../../models/jobs/tubularReferences";
-import WellboreReference from "../../models/jobs/wellboreReference";
+import ObjectReferences from "../../models/jobs/objectReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
-import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import TubularService from "../../services/tubularService";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { DispatchOperation } from "./ContextMenuUtils";
 
-export const useClipboardTubularReferences: () => [TubularReferences | null, Dispatch<SetStateAction<TubularReferences>>] = () => {
-  const [tubularReferences, setTubularReferences] = useState<TubularReferences>(null);
-
-  useEffect(() => {
-    const tryToParseClipboardContent = async () => {
-      try {
-        const clipboardText = await navigator.clipboard.readText();
-        const tubularReferences = parseStringToTubularReferences(clipboardText);
-        setTubularReferences(tubularReferences);
-      } catch (e) {
-        //Not a valid object on the clipboard? That is fine, we won't use it.
-      }
-    };
-    tryToParseClipboardContent();
-  }, []);
-
-  return [tubularReferences, setTubularReferences];
-};
-
-export const orderCopyJob = (wellbore: Wellbore, tubularReferences: TubularReferences, dispatchOperation: DispatchOperation) => {
-  const wellboreReference: WellboreReference = {
-    wellUid: wellbore.wellUid,
-    wellboreUid: wellbore.uid
-  };
-
-  const copyJob = { source: tubularReferences, target: wellboreReference };
-  JobService.orderJob(JobType.CopyTubular, copyJob);
-  dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
 export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
   const job: DeleteTubularsJob = {
     toDelete: {
-      tubularUids: tubulars.map((tubular) => tubular.uid),
+      objectUids: tubulars.map((tubular) => tubular.uid),
       wellUid: tubulars[0].wellUid,
-      wellboreUid: tubulars[0].wellboreUid
+      wellboreUid: tubulars[0].wellboreUid,
+      objectType: ObjectType.Tubular
     }
   };
   await JobService.orderJob(JobType.DeleteTubulars, job);
@@ -58,11 +26,12 @@ export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: Disp
 };
 
 export const onClickCopy = async (selectedServer: Server, tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
-  const tubularReferences: TubularReferences = {
+  const tubularReferences: ObjectReferences = {
     serverUrl: selectedServer.url,
-    tubularUids: tubulars.map((tubular) => tubular.uid),
+    objectUids: tubulars.map((tubular) => tubular.uid),
     wellUid: tubulars[0].wellUid,
-    wellboreUid: tubulars[0].wellboreUid
+    wellboreUid: tubulars[0].wellboreUid,
+    objectType: ObjectType.Tubular
   };
   await navigator.clipboard.writeText(JSON.stringify(tubularReferences));
   dispatchOperation({ type: OperationType.HideContextMenu });

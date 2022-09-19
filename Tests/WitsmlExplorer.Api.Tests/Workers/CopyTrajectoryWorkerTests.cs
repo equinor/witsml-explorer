@@ -91,11 +91,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyTrajectoryJob
             {
-                Source = new TrajectoryReferences
+                Source = new ObjectReferences
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
-                    TrajectoryUids = new string[] { TrajectoryUid }
+                    ObjectUids = new string[] { TrajectoryUid }
                 },
                 Target = new WellboreReference
                 {

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,15 +14,12 @@ using Microsoft.Extensions.Primitives;
 using Witsml;
 using Witsml.Data;
 
+using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Repositories;
+
 namespace WitsmlExplorer.Api.Services
 {
-    public interface ICredentialsService
-    {
-        Task<string> Authorize(Uri serverUrl);
-        string Decrypt(Credentials credentials);
-        bool VerifyIsEncrypted(Credentials credentials);
-        Task<bool> AuthorizeWithToken(HttpRequest httpRequest);
-    }
 
     // ReSharper disable once UnusedMember.Global
     public class CredentialsService : ICredentialsService
@@ -29,44 +28,47 @@ namespace WitsmlExplorer.Api.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<CredentialsService> _logger;
         private readonly WitsmlClientCapabilities _clientCapabilities;
+        private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
+        private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private const string AuthorizationHeader = "Authorization";
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             IOptions<WitsmlClientCapabilities> clientCapabilities,
+            IWitsmlSystemCredentials witsmlServerCredentials,
+            IDocumentRepository<Server, Guid> witsmlServerRepository,
             ILogger<CredentialsService> logger)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
-            _clientCapabilities = clientCapabilities.Value;
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentException("Missing IHttpContextAccessor");
+            _logger = logger ?? throw new ArgumentException("Missing ILogger");
+            _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
+            _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
+            _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
         }
 
-        public async Task<string> Authorize(Uri serverUrl)
+        public async Task<string> BasicAuthorization(Uri serverUrl)
         {
-            if (_httpContextAccessor.HttpContext == null)
-            {
-                return "";
-            }
+            if (_httpContextAccessor.HttpContext == null) { return ""; }
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
             string base64EncodedCredentials = headers[AuthorizationHeader].ToString()["Basic ".Length..].Trim();
-            Credentials credentials = new(base64EncodedCredentials);
+            ServerCredentials credentials = new(serverUrl.AbsoluteUri, new BasicCredentials(base64EncodedCredentials));
 
-            await VerifyCredentials(serverUrl, credentials);
+            await VerifyCredentials(credentials);
 
             string protectedPayload = _dataProtector.Protect(credentials.Password, TimeSpan.FromDays(1));
 
             return protectedPayload;
         }
 
-        public string Decrypt(Credentials credentials)
+        public string Decrypt(ICredentials credentials)
         {
             return _dataProtector.Unprotect(credentials.Password);
         }
 
-        public bool VerifyIsEncrypted(Credentials credentials)
+        public bool VerifyIsEncrypted(ICredentials credentials)
         {
             try
             {
@@ -79,21 +81,15 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        private async Task VerifyCredentials(Uri serverUrl, Credentials credentials)
-        {
-            WitsmlClient witsmlClient = new(serverUrl.ToString(), credentials.Username, credentials.Password, _clientCapabilities);
-            await witsmlClient.TestConnectionAsync();
-        }
-
-        public async Task<bool> AuthorizeWithToken(HttpRequest httpRequest)
+        public async Task<bool> AuthorizeWithEncryptedPassword(HttpRequest httpRequest)
         {
             try
             {
                 IHeaderDictionary headers = httpRequest.Headers;
-                List<Credentials> credentialsList = ExtractCredentialsFromHeader(headers);
+                List<ICredentials> credentialsList = await GetCredentials(headers);
                 StringValues server = headers["Witsml-ServerUrl"];
-                Credentials credentials = new(credentialsList[0].Username, Decrypt(credentialsList[0]));
-                await VerifyCredentials(new Uri(server), credentials);
+                ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0]));
+                await VerifyCredentials(serverCreds);
             }
             catch (Exception ex)
             {
@@ -103,38 +99,71 @@ namespace WitsmlExplorer.Api.Services
             return true;
         }
 
-        public static List<Credentials> ExtractCredentialsFromHeader(IHeaderDictionary headers)
+        public Task<List<ICredentials>> GetCredentials(IHeaderDictionary headers)
         {
-            string base64EncodedCredentials = headers["Authorization"].ToString()["Basic ".Length..].Trim();
-            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedCredentials));
-            string[] usernamesAndPasswords = credentialString.Split(':');
-            List<Credentials> credentials = new() { new Credentials(usernamesAndPasswords[0], usernamesAndPasswords[1]) };
-            if (usernamesAndPasswords.Length == 4)
+            Task<List<ICredentials>> credentials = Task.FromResult(new List<ICredentials>());
+            string scheme = headers["Authorization"].ToString().Split()[0];
+            if (string.IsNullOrEmpty(scheme)) { return credentials; }
+
+            string base64Data = headers["Authorization"].ToString().Split()[1];
+            string server = headers["Witsml-ServerUrl"].ToString();
+            string sourceServer = headers["Witsml-Source-ServerUrl"].ToString();
+
+            if (scheme == "Basic") { credentials = Task.FromResult(ParseBasicAuthorization(base64Data, sourceServer, server)); }
+            else if (scheme == "Bearer") { credentials = ParseBearerAuthorization(base64Data, sourceServer, server); }
+
+            return credentials;
+        }
+
+        private async Task VerifyCredentials(ServerCredentials serverCreds)
+        {
+            WitsmlClient witsmlClient = new(serverCreds.Host, serverCreds.UserId, serverCreds.Password, _clientCapabilities);
+            await witsmlClient.TestConnectionAsync();
+        }
+
+        private async Task<bool> HasUserRoleForHosts(string[] roles, string[] hosts)
+        {
+            bool result = true;
+            IEnumerable<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
+            foreach (string host in hosts.Where(h => !string.IsNullOrEmpty(h)))
             {
-                credentials.Add(new Credentials(usernamesAndPasswords[2], usernamesAndPasswords[3]));
+                bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
+                IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host);
+                bool validRole = hostServer.Any(n => roles.Contains(n.Role));
+                result &= systemCredsExists & validRole;
+            }
+            return result;
+        }
+
+        private static List<ICredentials> ParseBasicAuthorization(string base64Data, string sourceServer, string server)
+        {
+            List<ICredentials> credentials = new();
+            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Data));
+            string[] usernamesAndPasswords = credentialString.Split(':');
+            credentials.Add(new ServerCredentials(server, usernamesAndPasswords[0], usernamesAndPasswords[1]));
+            if (usernamesAndPasswords.Length == 4 && !string.IsNullOrEmpty(sourceServer))
+            {
+                credentials.Add(new ServerCredentials(sourceServer, usernamesAndPasswords[2], usernamesAndPasswords[3]));
+            }
+            return credentials;
+        }
+
+        private async Task<List<ICredentials>> ParseBearerAuthorization(string base64Data, string sourceServer, string server)
+        {
+            List<ICredentials> credentials = new();
+            JwtSecurityTokenHandler handler = new();
+            JwtSecurityToken jwt = handler.ReadJwtToken(base64Data);
+            string[] roles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
+            _logger.LogDebug("{roles}", string.Join(",", roles));
+            if (await HasUserRoleForHosts(roles, new string[] { server, sourceServer }))
+            {
+                ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
+                credentials.Add(new ServerCredentials(server, creds.UserId, creds.Password));
             }
 
             return credentials;
         }
+
     }
 
-    public class Credentials
-    {
-        internal string Username { get; }
-        internal string Password { get; }
-
-        public Credentials(string base64EncodedString)
-        {
-            string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
-            string[] credentials = credentialString.Split(new[] { ':' }, 2);
-            Username = credentials[0];
-            Password = credentials[1];
-        }
-
-        public Credentials(string username, string password)
-        {
-            Username = username;
-            Password = password;
-        }
-    }
 }
