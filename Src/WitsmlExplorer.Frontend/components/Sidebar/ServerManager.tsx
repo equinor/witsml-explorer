@@ -10,7 +10,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
-import { basicSecurityScheme, getAccountInfo, msalEnabled, msalSecurityScheme } from "../../msal/MsalAuthProvider";
+import { getAccountInfo, msalEnabled, securityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -41,7 +41,7 @@ const ServerManager = (): React.ReactElement => {
 
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
-      if (currentWitsmlLoginState.server) {
+      if (!msalEnabled && currentWitsmlLoginState.server) {
         const isLoggedInToSelectedServer = CredentialsService.hasPasswordForServer(selectedServer);
         if (isLoggedInToSelectedServer) {
           try {
@@ -57,10 +57,19 @@ const ServerManager = (): React.ReactElement => {
         } else {
           showCredentialsModal(currentWitsmlLoginState.server);
         }
+      } else {
+        try {
+          if (wells.length < 0) {
+            const wells = await WellService.getWells();
+            dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
+          }
+        } catch (error) {
+          // Show error in Alert.tsx
+        }
       }
     };
     onCurrentLoginStateChange();
-  }, [currentWitsmlLoginState]);
+  }, [msalEnabled, currentWitsmlLoginState]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -119,7 +128,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const onIdle = () => {
-    if (selectedServer?.id) {
+    if (!msalEnabled && selectedServer?.id) {
       CredentialsService.clearPasswords();
       showCredentialsModal(selectedServer);
     }
@@ -134,10 +143,7 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
-            .filter(
-              (server: Server) =>
-                server.securityscheme === basicSecurityScheme || (msalEnabled && server.securityscheme === msalSecurityScheme && userAppRoles.includes(server.role))
-            )
+            .filter((server: Server) => !msalEnabled || (msalEnabled && server.securityscheme === securityScheme.OAuth2 && userAppRoles.includes(server.role)))
             .map((server: Server) => (
               <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
                 <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
