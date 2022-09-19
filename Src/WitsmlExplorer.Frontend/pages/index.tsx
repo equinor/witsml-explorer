@@ -23,6 +23,7 @@ import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import { initOperationStateReducer } from "../contexts/operationStateReducer";
+import useDocumentDimensions from "../hooks/useDocumentDimensions";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
 import { colors } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
@@ -34,6 +35,7 @@ const Home = (): React.ReactElement => {
   const sidebarRef = useRef(null);
   const [isResizing, setIsResizing] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(268);
+  const { width: documentWidth } = useDocumentDimensions();
 
   const startResizing = React.useCallback(() => {
     setIsResizing(true);
@@ -63,6 +65,8 @@ const Home = (): React.ReactElement => {
     };
   }, [resize, stopResizing]);
 
+  const approximateDividerWidth = 13;
+  const contentWidth = documentWidth - sidebarWidth - approximateDividerWidth;
   return (
     <MsalProvider instance={msalInstance}>
       {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
@@ -88,7 +92,7 @@ const Home = (): React.ReactElement => {
                   <Sidebar />
                 </SidebarLayout>
                 <Divider onMouseDown={startResizing} />
-                <ContentViewLayout>
+                <ContentViewLayout style={{ width: contentWidth }}>
                   <Alerts />
                   <ContentView />
                 </ContentViewLayout>
@@ -148,7 +152,7 @@ const ContentViewLayout = styled.div`
   overflow-x: auto;
   word-wrap: wrap;
   height: 93vh;
-  width: 100vw;
+  padding-right: 0.2rem;
 `;
 
 export default Home;

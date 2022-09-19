@@ -43,7 +43,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   };
 
   return (
-    <>
+    <div style={{ paddingRight: "1rem" }}>
       <Pointer>
         <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
@@ -70,7 +70,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
           </Menu>
         </>
       )}
-    </>
+    </div>
   );
 };
 

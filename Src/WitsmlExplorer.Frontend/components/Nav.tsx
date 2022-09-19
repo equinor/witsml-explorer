@@ -330,6 +330,7 @@ const Layout = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const Title = styled.p`
@@ -339,8 +340,8 @@ const Title = styled.p`
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
-  padding-left: 10rem;
-  width: 80vw;
+  padding-left: 1rem;
+  width: 70vw;
 `;
 
 export default Nav;
