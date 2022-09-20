@@ -2,6 +2,7 @@ import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
+import { msalEnabled } from "../msal/MsalAuthProvider";
 import CredentialsService from "../services/credentialsService";
 import Icon from "../styles/Icons";
 
@@ -15,7 +16,7 @@ const JobsButton = (): React.ReactElement => {
   };
 
   const currentPassword = CredentialsService.getCredentials().find((cred) => cred.server.id == selectedServer?.id)?.password;
-  const disabled = !selectedServer || !currentPassword;
+  const disabled = !selectedServer || (!msalEnabled && !currentPassword);
 
   return (
     <Button variant="ghost" onClick={onClick} disabled={disabled}>
