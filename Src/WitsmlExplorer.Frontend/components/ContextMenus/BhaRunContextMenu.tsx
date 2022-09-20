@@ -16,7 +16,7 @@ import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/Bha
 import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -88,7 +88,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
       menuItems={[
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedBhaRunRows.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy bhaRun{checkedBhaRunRows?.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}
@@ -98,11 +98,11 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
           disabled={bhaRunReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste bhaRun{bhaRunReferences?.objectUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "bhaRun", bhaRunReferences?.objectUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedBhaRunRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedBhaRunRows.length !== 1}>

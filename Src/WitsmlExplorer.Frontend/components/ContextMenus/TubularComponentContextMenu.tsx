@@ -14,7 +14,7 @@ import { TubularComponentRow } from "../ContentViews/TubularView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
@@ -90,15 +90,15 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
         </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedTubularComponents.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy tubular component{checkedTubularComponents?.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "tubular component", checkedTubularComponents)}</Typography>
         </MenuItem>,
         <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Paste tubular component{tubularComponentReferences?.tubularComponentUids.length > 1 && "s"}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.tubularComponentUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedTubularComponents.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "tubular component", checkedTubularComponents)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (

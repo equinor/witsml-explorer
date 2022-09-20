@@ -26,7 +26,7 @@ export const useClipboardReferencesOfType = (type: ObjectType): ObjectReferences
   return objectReferences?.objectType == type ? objectReferences : null;
 };
 
-function parseStringToReferences(input: string): ObjectReferences {
+export function parseStringToReferences(input: string): ObjectReferences {
   let jsonObject: ObjectReferences;
   try {
     jsonObject = JSON.parse(input);
