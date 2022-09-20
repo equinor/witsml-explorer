@@ -85,7 +85,7 @@ const Layout = styled.div`
   width: 20rem;
 `;
 
-const SelectTypography = styled(Typography) <{ selected: boolean }>`
+const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
     font-family: ${(props) => (props.selected ? "EquinorBold" : "EquinorRegular")};
   }
