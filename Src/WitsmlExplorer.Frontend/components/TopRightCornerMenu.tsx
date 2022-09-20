@@ -43,7 +43,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   };
 
   return (
-    <>
+    <Layout>
       <Pointer>
         <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
       </Pointer>
@@ -70,9 +70,17 @@ const TopRightCornerMenu = (): React.ReactElement => {
           </Menu>
         </>
       )}
-    </>
+    </Layout>
   );
 };
+
+const Layout = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  width: 20rem;
+`;
 
 const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
