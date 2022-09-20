@@ -3,6 +3,7 @@ import {
   accessible,
   account_circle as accountCircle,
   add,
+  assignment,
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
@@ -35,7 +36,8 @@ const icons = {
   edit,
   folderOpen,
   deleteToTrash,
-  moreVertical
+  moreVertical,
+  assignment
 };
 
 Icon.add(icons);

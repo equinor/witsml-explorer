@@ -1,8 +1,10 @@
-import { Button } from "@material-ui/core";
+import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
+import { msalEnabled } from "../msal/MsalAuthProvider";
 import CredentialsService from "../services/credentialsService";
+import Icon from "../styles/Icons";
 
 const JobsButton = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -13,10 +15,12 @@ const JobsButton = (): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectJobs, payload: {} });
   };
 
-  const currentPassword = CredentialsService.getCredentials().find((cred) => cred.server.id == selectedServer.id)?.password;
+  const currentPassword = CredentialsService.getCredentials().find((cred) => cred.server.id == selectedServer?.id)?.password;
+  const disabled = !selectedServer || (!msalEnabled && !currentPassword);
 
   return (
-    <Button onClick={onClick} disabled={!selectedServer || !currentPassword}>
+    <Button variant="ghost" onClick={onClick} disabled={disabled}>
+      <Icon name="assignment" />
       Jobs
     </Button>
   );
