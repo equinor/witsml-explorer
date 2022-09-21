@@ -7,7 +7,7 @@ export const authRequest: RedirectRequest = {
 
 export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;
 
-export enum securityScheme {
+export enum SecurityScheme {
   OAuth2 = "OAuth2",
   Basic = "Basic"
 }
