@@ -23,6 +23,7 @@ import Wellbore, {
   calculateWellboreNodeId,
   getWellboreProperties
 } from "../models/wellbore";
+import { getAccountInfo, msalEnabled, SecurityScheme } from "../msal/MsalAuthProvider";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
 import Filter, { EMPTY_FILTER, filterWells } from "./filter";
 import ModificationType from "./modificationType";
@@ -629,10 +630,12 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction) =
   };
 };
 
+const userAppRoles: string[] = getAccountInfo()?.idTokenClaims?.roles ?? [];
+
 const updateServerList = (state: NavigationState, { payload }: UpdateServerListAction) => {
   return {
     ...state,
-    servers: payload.servers
+    servers: payload.servers.filter((server: Server) => !msalEnabled || (msalEnabled && server.securityscheme === SecurityScheme.OAuth2 && userAppRoles.includes(server.role)))
   };
 };
 

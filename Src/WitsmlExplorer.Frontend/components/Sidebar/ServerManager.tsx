@@ -10,7 +10,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
-import { getAccountInfo, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
+import { msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -28,7 +28,6 @@ const ServerManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isOpen, setIsOpen] = useState<boolean>();
   const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
-  const userAppRoles: string[] = getAccountInfo()?.idTokenClaims?.roles ?? [];
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
@@ -144,7 +143,6 @@ const ServerManager = (): React.ReactElement => {
         <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
-            .filter((server: Server) => !msalEnabled || (msalEnabled && server.securityscheme === SecurityScheme.OAuth2 && userAppRoles.includes(server.role)))
             .map((server: Server) => (
               <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
                 <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
