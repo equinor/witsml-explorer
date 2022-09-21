@@ -30,7 +30,6 @@ import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
 import Well from "../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
-import JobsButton from "./JobsButton";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
@@ -86,7 +85,6 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <Title>WITSML Explorer</Title>
-        <JobsButton />
         <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
           {breadcrumbContent.map((breadCrumb, index) => (
             <Breadcrumbs.Breadcrumb key={index} href="#" onClick={breadCrumb.onClick}>
@@ -330,17 +328,18 @@ const Layout = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const Title = styled.p`
   line-height: 1rem;
   padding-left: 2rem;
-  width: 15vw;
+  width: 12%;
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
-  padding-left: 10rem;
-  width: 80vw;
+  padding-left: 1rem;
+  width: 60%;
 `;
 
 export default Nav;

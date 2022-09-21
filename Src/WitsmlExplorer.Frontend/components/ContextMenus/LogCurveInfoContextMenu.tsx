@@ -94,7 +94,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         </MenuItem>,
         <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Copy</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} to server`} disabled={checkedLogCurveInfoRows.length < 1}>
           {servers.map(
@@ -112,7 +112,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         </NestedMenuItem>,
         <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

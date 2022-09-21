@@ -14,6 +14,7 @@ import Icon from "../../styles/Icons";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
+import { menuItemText } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -60,7 +61,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>Paste log</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "log", logReferences?.objectUids)}</Typography>
         </MenuItem>
       ]}
     />

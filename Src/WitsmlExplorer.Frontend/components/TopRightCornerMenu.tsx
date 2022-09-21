@@ -1,12 +1,12 @@
-import { Menu, Typography } from "@equinor/eds-core-react";
+import { Button, Menu, Typography } from "@equinor/eds-core-react";
 import React, { MouseEvent, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
-import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
+import JobsButton from "./JobsButton";
 
 const TopRightCornerMenu = (): React.ReactElement => {
   const {
@@ -26,12 +26,12 @@ const TopRightCornerMenu = (): React.ReactElement => {
     }
   }, []);
 
-  const onToggleThemeMenu = (event: MouseEvent<SVGSVGElement>) => {
+  const onToggleThemeMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorThemeEl(openTheme ? null : event.currentTarget);
     setAnchorAccountEl(null);
   };
 
-  const onToggleAccountMenu = (event: MouseEvent<SVGSVGElement>) => {
+  const onToggleAccountMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorThemeEl(null);
     setAnchorAccountEl(openAccount ? null : event.currentTarget);
   };
@@ -43,10 +43,12 @@ const TopRightCornerMenu = (): React.ReactElement => {
   };
 
   return (
-    <>
-      <Pointer>
-        <Icon name="accessible" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleThemeMenu(event)} size={24} color={colors.interactive.primaryResting} />
-      </Pointer>
+    <Layout>
+      <JobsButton />
+      <Button variant="ghost" onClick={(event) => onToggleThemeMenu(event)}>
+        <Icon name="accessible" />
+        Theme
+      </Button>
       <Menu id="ThemeMenu" anchorEl={anchorThemeEl} open={openTheme}>
         <StyledMenuItem key={"comfortable"} onClick={() => onSelectTheme(UserTheme.Comfortable)}>
           <SelectTypography selected={theme === UserTheme.Comfortable}>Comfortable </SelectTypography>
@@ -59,9 +61,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
       </Menu>
       {msalEnabled && (
         <>
-          <Pointer>
-            <Icon name="accountCircle" onClick={(event: MouseEvent<SVGSVGElement>) => onToggleAccountMenu(event)} size={24} color={colors.interactive.primaryResting} />
-          </Pointer>
+          <Button variant="ghost" onClick={(event) => onToggleAccountMenu(event)}>
+            <Icon name="accountCircle" />
+            Account
+          </Button>
           <Menu id="AccountMenu" anchorEl={anchorAccountEl} open={openAccount}>
             <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>
             <StyledMenuItem key={"signout"} onClick={() => signOut()}>
@@ -70,9 +73,17 @@ const TopRightCornerMenu = (): React.ReactElement => {
           </Menu>
         </>
       )}
-    </>
+    </Layout>
   );
 };
+
+const Layout = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  width: 20rem;
+`;
 
 const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
@@ -90,10 +101,6 @@ const StyledMenuItem = styled(Menu.Item)`
       outline: 0;
     }
   }
-`;
-
-const Pointer = styled.div`
-  cursor: pointer;
 `;
 
 export default TopRightCornerMenu;
