@@ -108,6 +108,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const AuthenticationState = () => {
+    if (msalEnabled && getAccountInfo()) return;
     if (!selectedServer?.id) {
       return <FormHelperText>No server selected</FormHelperText>;
     } else {
