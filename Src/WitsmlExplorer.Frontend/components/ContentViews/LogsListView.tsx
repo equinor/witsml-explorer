@@ -15,6 +15,7 @@ export const LogsListView = (): React.ReactElement => {
   const { selectedWellbore, selectedLogTypeGroup, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
+  const [resetCheckedItems, setResetCheckedItems] = useState(false);
 
   useEffect(() => {
     if (selectedWellbore && selectedWellbore.logs) {
@@ -47,7 +48,17 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
-  return selectedWellbore ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  useEffect(() => {
+    if (resetCheckedItems) {
+      setResetCheckedItems(false);
+    }
+  }, [resetCheckedItems]);
+
+  useEffect(() => {
+    setResetCheckedItems(true);
+  }, [selectedWellbore, selectedLogTypeGroup]);
+
+  return selectedWellbore && !resetCheckedItems ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default LogsListView;
