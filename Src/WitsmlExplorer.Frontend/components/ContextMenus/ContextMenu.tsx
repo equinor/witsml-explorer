@@ -14,7 +14,7 @@ export const preventContextMenuPropagation = (event: React.MouseEvent<HTMLLIElem
   return false;
 };
 
-export const getContextMenuPosition = (event: React.MouseEvent<HTMLLIElement | HTMLDivElement>): MousePosition => {
+export const getContextMenuPosition = (event: React.MouseEvent<HTMLLIElement | HTMLDivElement | HTMLButtonElement>): MousePosition => {
   return { mouseX: event.clientX - 2, mouseY: event.clientY - 2 };
 };
 
