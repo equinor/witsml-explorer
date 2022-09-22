@@ -22,4 +22,4 @@ jobs:
       - name: Build
         run: dotnet build /warnaserror --configuration Release
       - name: Test
-        run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release
+        run: dotnet test --configuration Release

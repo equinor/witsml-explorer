@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/publish.yml'
       - 'Src/Witsml/**'
+  workflow_dispatch:      
 
 jobs:
   build:
@@ -22,12 +23,10 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Build with dotnet
-        run: dotnet build /warnaserror --configuration Release --no-restore
-      - name: Test with dotnet
-        run: dotnet test ./Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj --configuration Release --no-restore
+      - name: Build
+        run: dotnet build Src/Witsml/Witsml.csproj /warnaserror --configuration Release
+      - name: Test
+        run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release
       - name: Package
         run: dotnet pack --configuration Release Src/Witsml -p:Version=2.0.${GITHUB_RUN_NUMBER}
       - name: Publish
