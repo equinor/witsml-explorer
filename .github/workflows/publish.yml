@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: dotnet build Src/Witsml/Witsml.csproj /warnaserror --configuration Release
       - name: Test
-        run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release --no-restore
+        run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release
       - name: Package
         run: dotnet pack --configuration Release Src/Witsml -p:Version=2.0.${GITHUB_RUN_NUMBER}
       - name: Publish
