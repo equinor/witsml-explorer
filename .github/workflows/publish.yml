@@ -24,7 +24,7 @@ jobs:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Build
-        run: dotnet build /warnaserror --configuration Release
+        run: dotnet build Src/Witsml/Witsml.csproj /warnaserror --configuration Release
       - name: Test
         run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release --no-restore
       - name: Package
