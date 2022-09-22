@@ -7,6 +7,11 @@ export const authRequest: RedirectRequest = {
 
 export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;
 
+export enum SecurityScheme {
+  OAuth2 = "OAuth2",
+  Basic = "Basic"
+}
+
 const msalConfig: Configuration = {
   auth: {
     authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`,

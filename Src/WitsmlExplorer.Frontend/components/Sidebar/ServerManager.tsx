@@ -10,6 +10,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
+import { msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -26,7 +27,7 @@ const ServerManager = (): React.ReactElement => {
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isOpen, setIsOpen] = useState<boolean>();
-  const [currentLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
@@ -39,7 +40,16 @@ const ServerManager = (): React.ReactElement => {
 
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
-      if (currentLoginState.server) {
+      if (msalEnabled && selectedServer) {
+        try {
+          if (wells.length === 0) {
+            const wells = await WellService.getWells();
+            dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
+          }
+        } catch (error) {
+          // Show error in Alert.tsx
+        }
+      } else if (currentWitsmlLoginState.server) {
         const isLoggedInToSelectedServer = CredentialsService.hasPasswordForServer(selectedServer);
         if (isLoggedInToSelectedServer) {
           try {
@@ -50,15 +60,15 @@ const ServerManager = (): React.ReactElement => {
             }
             dispatchOperation({ type: OperationType.HideModal });
           } catch (error) {
-            showCredentialsModal(currentLoginState.server, error.message);
+            showCredentialsModal(currentWitsmlLoginState.server, error.message);
           }
         } else {
-          showCredentialsModal(currentLoginState.server);
+          showCredentialsModal(currentWitsmlLoginState.server);
         }
       }
     };
     onCurrentLoginStateChange();
-  }, [currentLoginState]);
+  }, [msalEnabled, currentWitsmlLoginState]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -97,13 +107,14 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const AuthenticationState = () => {
+    if (msalEnabled) return;
     if (!selectedServer?.id) {
       return <FormHelperText>No server selected</FormHelperText>;
     } else {
-      if (currentLoginState.isLoggedIn) {
+      if (currentWitsmlLoginState.isLoggedIn) {
         return (
           <FormHelperText>
-            Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentLoginState.username}</LinkButton>
+            Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentWitsmlLoginState.username}</LinkButton>
           </FormHelperText>
         );
       } else {
@@ -117,7 +128,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const onIdle = () => {
-    if (selectedServer?.id) {
+    if (!msalEnabled && selectedServer?.id) {
       CredentialsService.clearPasswords();
       showCredentialsModal(selectedServer);
     }
