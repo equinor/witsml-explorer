@@ -22,4 +22,4 @@ jobs:
       - name: Build
         run: dotnet build /warnaserror --configuration Release
       - name: Test
-        run: dotnet test --configuration Release --no-restore        
+        run: dotnet test --configuration Release  
