@@ -79,68 +79,10 @@ Change the configuration in `mysettings.json` to the following, so that the back
 ```
 `<username>` and `<password>` is what was configured in the docker-compose.yml file.
 
-#### Populate list of WITSML servers
-The list of WITSML servers a user can connect to is currently not editable by the user itself (feature is disabled until proper authorization is implemented).
-There exists some integration tests that can be run for this purpose, but first you need to add a file `secrets.json` in the integration test folder `WitsmlExplorer.IntegrationTests`. Include following into `secrets.json` (**NB** Use same name as in mySettings.json):
-```
-{
-"MongoDb": {
-  "Name": "witsml-explorer-db",
-  "ConnectionString": "mongodb://<username>:<password>@localhost"
-  }
-}
-```
-`<username>` and `<password>` is what was configured in the docker-compose.yml file.
-
-In the file `WitsmlExplorer.IntegrationTests/Api/Repositories/MongoDbRepositoryTests.cs` you shall use the test AddServer(). First remove `(Skip="Should only be run manually")` from the `[Fact]` just above the AddServer() test.
-Then update with details for your specific server:
-```
-var newServer = new Server
-            {
-                Name = "<insert servername>",
-                Url = new Uri("<insert url>"),
-                Description = ""
-            };
-```
-Then run the test from the commandline `dotnet test` or from your IDE. The server is now added to your mongoDB. Repeat this for all your servers.
-After adding your servers, reset file `MongoDbRepositoryTests.cs`.
-
 ### Swashbuckle 
 In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
 
-### Basic authentication
-The `/witsml-servers` endpoint can be used to get a list of witsml servers in json format.
-
-`Basic` authentication is available by default and `username`/`password` should be used to get an encrypted token from the `/authorize` endpoint along with information about the server as json in the body.
-
-After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`token`. 
-
-This will make sure to include the `Authorization` header for basic authentication in your successive calls to other endpoints that need this. The header value `Witsml-ServerUrl` for the same server you got the token also needs to be filled out.
-
-### OAuth2 authentication
-`OAuth2` authentication is turned off by default through appsettings property `OAuth2Enabled`
-If you want to add this to SwaggerUI, you need to add the following info for your Azure app in the `mysettings.json` file:
-```json
-    "OAuth2Enabled": true,
-    "AzureAd": {
-        "AppName": "miniapp",
-        "Instance": "https://login.microsoftonline.com/",
-        "Domain": "qualified.domain.name",
-        "TenantId": "b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f",
-        "ClientId": "109e12e2-4ca7-48d0-af05-c834c884322c",
-        "Scopes": "openid profile 109e12e2-4ca7-48d0-af05-c834c884322c/access_as_user",
-        "TokenValidationParameters": {
-            "ValidateAudience": false
-        },
-        "Swagger": {
-            "AuthorizationUrl": "https://login.microsoftonline.com/b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f/oauth2/v2.0/authorize",
-            "TokenUrl": "https://login.microsoftonline.com/b3edbf8f-e8b2-4c4e-96fc-c86cdd7ed55f/oauth2/v2.0/token"
-        }
-    }
-``` 
-You should then find a new entry: `AuthorizationCode with PKCE` available in the UI.
-
-If successful authorization, the accesstoken will be included in successive calls as an `Authorization` header bearer token.
+The generated document at `/swagger/v1/swagger.json` describing the endpoints appears as shown in OpenAPI specification [openapi.json](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-6.0#openapi-specification-openapijson).
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
@@ -245,6 +187,9 @@ dotnet test
 ## Code style guidelines
 We use some tools to help us keep the code style as consistent as possible. Automated checks are ran when a PR is opened. The build will break if these rules are not enforced.
 
+### VSCode, settings and editorconfig
+If using VSCode, the settings included in `.vscode/settings.json` will enforce some formatting, and provide code-analysis based on rules added to `.editorconfig`
+
 ### Prettier [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 In our frontend project we use the opinionated code formatter [Prettier](https://prettier.io/). Most of the rules applied are the default, but some changes can be found in `.prettierrc`.
 Most IDEs have plugins that support Prettier. This will make the result of formatting code in your IDE be consistent with running prettier manually. 
@@ -278,20 +223,6 @@ This diagram gives a quick overview over the application components and flows.
 * When the user navigates in the web application, WITSML data is retrieved.
 * When the user adds/updates/deletes, a job is made and a worker is triggered asynchronously on the backend.
 * After a worker has finished, the result message will be pushed to the client, and a refresh is triggered if necessary.
-
-### WITSML server credentials flow
-Every request run against a WITSML server is run from the backend and needs to be authenticated.
-Basic auth is required for a lot of servers, so that is currently the only way WE authenticate against them.
-
-Most actions done by the user in WE involves fetching or writing data to external WITSML servers. All these requests require credentials to be provided. 
-It would be a very bad user experience if the user would have to provide credentials for every request. 
-Therefore an encrypted version of the passwords is saved both on the frontend and backend.
-The webapp only stores them for a limited amount of time, and will provide them for every request involving WITSML servers. 
-The backend has a [Data Protection](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/introduction) storage running in memory, which is used for creating the encrypted passwords as well as decrypting them (only possible for that running instance).
-Whenever a request is run towards a WITSML server, the backend will decrypt the password, and use it when running the request against the given WITSML server.
-
-This is how the flow is when a user has selected a server and will need to authenticate against it. After this is done, a fresh list of wells is fetched.  
-<img src="./credentials-flow.svg">
 
 ## Additional information 
 ### Cosmos database

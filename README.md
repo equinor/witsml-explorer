@@ -5,22 +5,25 @@
 
 Witsml Explorer is a data management tool used for browsing and editing data directly on [WITSML](https://en.wikipedia.org/wiki/Wellsite_information_transfer_standard_markup_language) servers.
 
-<img src="./we-demo.gif" alt="GIF showing the witsml-explorer interface">
+<img src="./we-demo.png" alt="witsml-explorer interface">
 
 ## Key features
 * Runs directly in your browser, no need to install additional software.
 * An intuitive and easy to use interface.
 * Connect to any WITSML server running version 1.4.1.1.
-* Supported WITSML objects includes: wells, wellbores, log objects, curves, trajectories, trajectory stations and rigs.
+* Supported WITSML objects includes: wells, wellbores, bharuns, log objects, curves, messages, rigs, risks, trajectories, trajectory stations, tubulars, tubularcomponents, and wbgeometries.
 * Trim log objects and individual curves.
-* Copy log objects and individual curves (also between different servers!).
-* Deep linking directly to objects using the URL
+* Copy objects and sub objects (also between different servers!).
+* URL deep linking directly to objects
 
 ## Witsml as a Nuget package
 Please see [nuget_witsml.md](/nuget_witsml.md)
 
 ## Contributing
 Please see our [contributing.md](/CONTRIBUTING.md).
+
+## AuthN/Z
+Please see our [auth.md](/AUTH.md).
 
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
