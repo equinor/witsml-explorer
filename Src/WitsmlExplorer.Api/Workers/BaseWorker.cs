@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = JobStatus.Failed;
                 job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("An unexpected exception has occured: {ex}", ex);
-                throw;
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} failed", ex.Message), null);
             }
         }
 
