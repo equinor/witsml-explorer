@@ -1,28 +1,36 @@
 import JobInfo from "../models/jobs/jobInfo";
 import { ApiClient } from "./apiClient";
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import NotificationService from "./notificationService";
 
 export default class JobService {
   public static async orderJob(jobType: JobType, payload: Record<string, any>): Promise<any> {
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload));
-    if (CredentialsService.getSourceServerCredentials()) {
-      CredentialsService.resetSourceServer();
-    }
-    if (response.ok) {
-      return response.body;
-    } else {
-      return "";
-    }
+    return this.onResponse(jobType, response);
   }
 
   public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, credentials: BasicServerCredentials[]): Promise<any> {
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, credentials);
+    return this.onResponse(jobType, response, credentials);
+  }
+
+  private static async onResponse(jobType: JobType, response: Response, credentials = CredentialsService.getCredentials()): Promise<any> {
     if (CredentialsService.getSourceServerCredentials()) {
       CredentialsService.resetSourceServer();
     }
     if (response.ok) {
+      NotificationService.Instance.snackbarDispatcher.dispatch({
+        serverUrl: new URL(credentials[0]?.server.url),
+        message: `Ordered ${jobType} job`,
+        isSuccess: true
+      });
       return response.body;
     } else {
+      NotificationService.Instance.snackbarDispatcher.dispatch({
+        serverUrl: new URL(credentials[0]?.server.url),
+        message: `Failed ordering ${jobType} job`,
+        isSuccess: false
+      });
       return "";
     }
   }
