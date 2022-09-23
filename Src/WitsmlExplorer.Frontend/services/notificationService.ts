@@ -78,7 +78,11 @@ export default class NotificationService {
     this.hubConnection.start();
   }
 
-  public get snackbarDispatcher(): ISimpleEvent<Notification> {
+  public get snackbarDispatcher(): SimpleEventDispatcher<Notification> {
+    return this._snackbarDispatcher;
+  }
+
+  public get snackbarDispatcherAsEvent(): ISimpleEvent<Notification> {
     return this._snackbarDispatcher.asEvent();
   }
 
