@@ -66,7 +66,8 @@ namespace WitsmlExplorer.Api.Services
                     PurposeWell = well.PurposeWell,
                     WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
                     WaterDepth = well.WaterDepth,
-                    WellLocation = WellLocation.FromWitsmlLocation(well.WellLocation)
+                    WellLocation = WellLocation.FromWitsmlLocation(well.WellLocation),
+                    Country = well.Country
                 }
                 ).ToList();
             double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
