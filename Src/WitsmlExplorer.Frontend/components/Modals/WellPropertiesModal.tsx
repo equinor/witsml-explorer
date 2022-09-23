@@ -66,7 +66,6 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 label={"field"}
                 value={editableWell.field}
                 fullWidth
-                disabled={editMode}
                 inputProps={{ maxLength: 64 }}
                 onChange={(e) => setEditableWell({ ...editableWell, field: e.target.value })}
               />
@@ -75,7 +74,6 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 label={"country"}
                 value={editableWell.country}
                 fullWidth
-                disabled={editMode}
                 inputProps={{ maxLength: 32 }}
                 onChange={(e) => setEditableWell({ ...editableWell, country: e.target.value })}
               />
@@ -84,7 +82,6 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 label={"operator"}
                 value={editableWell.operator}
                 fullWidth
-                disabled={editMode}
                 inputProps={{ maxLength: 64 }}
                 onChange={(e) => setEditableWell({ ...editableWell, operator: e.target.value })}
               />
@@ -93,7 +90,6 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 label={"time zone"}
                 value={editableWell.timeZone}
                 fullWidth
-                disabled={editMode}
                 error={!validTimeZone(editableWell.timeZone)}
                 helperText={"TimeZone has to be in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"}
                 inputProps={{ maxLength: 6 }}
