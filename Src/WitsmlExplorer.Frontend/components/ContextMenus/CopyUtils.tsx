@@ -1,4 +1,5 @@
 import OperationType from "../../contexts/operationType";
+import CopyObjectsJob from "../../models/jobs/copyObjectsJob";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { Server } from "../../models/server";
@@ -26,7 +27,7 @@ export const orderCopyJob = (wellbore: Wellbore, objectReferences: ObjectReferen
     wellUid: wellbore.wellUid,
     wellboreUid: wellbore.uid
   };
-  const copyJob = { source: objectReferences, target: wellboreReference };
+  const copyJob: CopyObjectsJob = { source: objectReferences, target: wellboreReference };
   JobService.orderJob(jobType, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };

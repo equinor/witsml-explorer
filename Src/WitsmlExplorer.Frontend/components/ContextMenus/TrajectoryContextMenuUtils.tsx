@@ -1,5 +1,5 @@
 import OperationType from "../../contexts/operationType";
-import { DeleteTrajectoriesJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -10,7 +10,7 @@ import { DispatchOperation } from "./ContextMenuUtils";
 
 export const deleteTrajectory = async (trajectories: Trajectory[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
-  const job: DeleteTrajectoriesJob = {
+  const job: DeleteObjectsJob = {
     toDelete: {
       objectUids: trajectories.map((trajectory) => trajectory.uid),
       wellUid: trajectories[0].wellUid,

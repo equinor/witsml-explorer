@@ -5,7 +5,7 @@ import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreWbGeometrysAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteWbGeometrysJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
@@ -38,7 +38,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
 
   const deleteWbGeometrys = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteWbGeometrysJob = {
+    const job: DeleteObjectsJob = {
       toDelete: {
         objectUids: checkedWbGeometryObjectRows.map((wbGeometry) => wbGeometry.uid),
         wellUid: checkedWbGeometryObjectRows[0].wellUid,

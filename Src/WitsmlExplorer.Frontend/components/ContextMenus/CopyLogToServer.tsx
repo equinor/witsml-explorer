@@ -1,6 +1,6 @@
 import OperationType from "../../contexts/operationType";
 import CopyLogJob from "../../models/jobs/copyLogJob";
-import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ReplaceLogObjectsJob } from "../../models/jobs/replaceLogObjectsJob";
 import WellboreReference from "../../models/jobs/wellboreReference";
@@ -80,7 +80,7 @@ const replaceLogObjects = async (
   dispatchOperation: DispatchOperation
 ) => {
   dispatchOperation({ type: OperationType.HideModal });
-  const deleteJob: DeleteLogObjectsJob = {
+  const deleteJob: DeleteObjectsJob = {
     toDelete: {
       wellUid: logsToDelete[0].wellUid,
       wellboreUid: logsToDelete[0].wellboreUid,

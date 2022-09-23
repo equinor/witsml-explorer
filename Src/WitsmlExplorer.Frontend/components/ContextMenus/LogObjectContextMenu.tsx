@@ -7,7 +7,7 @@ import { UpdateWellboreLogAction, UpdateWellboreLogsAction } from "../../context
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import { DeleteLogObjectsJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -113,7 +113,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
 
   const deleteLogObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteLogObjectsJob = {
+    const job: DeleteObjectsJob = {
       toDelete: {
         wellUid: checkedLogObjectRows[0].wellUid,
         wellboreUid: checkedLogObjectRows[0].wellboreUid,

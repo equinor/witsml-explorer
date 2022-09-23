@@ -1,7 +1,7 @@
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteTubularsJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -13,7 +13,7 @@ import { DispatchOperation } from "./ContextMenuUtils";
 
 export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
-  const job: DeleteTubularsJob = {
+  const job: DeleteObjectsJob = {
     toDelete: {
       objectUids: tubulars.map((tubular) => tubular.uid),
       wellUid: tubulars[0].wellUid,

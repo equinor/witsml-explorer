@@ -1,5 +1,5 @@
 import OperationType from "../../contexts/operationType";
-import { DeleteRisksJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import Risk from "../../models/riskObject";
@@ -10,7 +10,7 @@ import { DispatchOperation } from "./ContextMenuUtils";
 
 export const deleteRisk = async (risks: Risk[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideModal });
-  const job: DeleteRisksJob = {
+  const job: DeleteObjectsJob = {
     toDelete: {
       objectUids: risks.map((risk) => risk.uid),
       wellUid: risks[0].wellUid,
