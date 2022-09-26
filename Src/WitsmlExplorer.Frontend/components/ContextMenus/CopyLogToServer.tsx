@@ -1,5 +1,5 @@
 import OperationType from "../../contexts/operationType";
-import CopyLogJob from "../../models/jobs/copyLogJob";
+import CopyObjectsJob from "../../models/jobs/copyObjectsJob";
 import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ReplaceLogObjectsJob } from "../../models/jobs/replaceLogObjectsJob";
@@ -56,7 +56,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
   }
 };
 
-const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyLogJob => {
+const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyObjectsJob => {
   const logReferences: ObjectReferences = {
     serverUrl: sourceServer.url,
     wellUid: logs[0].wellUid,
@@ -68,7 +68,7 @@ const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyLogJob => {
     wellUid: logs[0].wellUid,
     wellboreUid: logs[0].wellboreUid
   };
-  const copyJob: CopyLogJob = { source: logReferences, target: targetWellboreReference };
+  const copyJob: CopyObjectsJob = { source: logReferences, target: targetWellboreReference };
   return copyJob;
 };
 
@@ -88,7 +88,7 @@ const replaceLogObjects = async (
       objectType: ObjectType.Log
     }
   };
-  const copyJob: CopyLogJob = createCopyJob(sourceServer, logsToCopy);
+  const copyJob: CopyObjectsJob = createCopyJob(sourceServer, logsToCopy);
   const replaceJob: ReplaceLogObjectsJob = { deleteJob, copyJob };
   await JobService.orderJobAtServer(JobType.ReplaceLogObjects, replaceJob, credentials);
   dispatchOperation({ type: OperationType.HideContextMenu });
