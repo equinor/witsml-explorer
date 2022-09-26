@@ -6,6 +6,7 @@ import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
 import JobService from "../../services/jobService";
+import NotificationService, { Notification } from "../../services/notificationService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
@@ -15,17 +16,16 @@ export const JobsView = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedServer, servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
 
   const credentials = CredentialsService.getCredentials();
   const username = credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
-  useEffect(() => {
-    setIsFetchingData(true);
+
+  const fetchJobs = () => {
     if (username) {
       const abortController = new AbortController();
       const getJobInfos = async () => {
         setJobInfos(await JobService.getJobInfos(username, abortController.signal));
-        setIsFetchingData(false);
       };
 
       getJobInfos();
@@ -34,12 +34,40 @@ export const JobsView = (): React.ReactElement => {
         abortController.abort();
       };
     }
+  };
+
+  useEffect(() => {
+    const eventHandler = (notification: Notification) => {
+      const shouldFetch = CredentialsService.hasPasswordForUrl(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      if (shouldFetch) {
+        setShouldRefresh(true);
+      }
+    };
+    const unsubscribeOnSnackbar = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(eventHandler);
+    const unsubscribeOnAlert = NotificationService.Instance.alertDispatcher.subscribe(eventHandler);
+
+    return function cleanup() {
+      unsubscribeOnSnackbar();
+      unsubscribeOnAlert();
+    };
+  }, [navigationState.selectedServer]);
+
+  useEffect(() => {
+    return setShouldRefresh(true);
   }, [username]);
+
+  useEffect(() => {
+    if (shouldRefresh) {
+      setShouldRefresh(false);
+      fetchJobs();
+    }
+  }, [shouldRefresh]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, selectedItem: any) => {
     const contextMenuProps: JobInfoContextMenuProps = {
       dispatchOperation,
-      jobInfo: selectedItem.jobInfo
+      jobInfo: selectedItem.jobInfo,
+      setShouldRefresh
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <JobInfoContextMenu {...contextMenuProps} />, position } });
@@ -73,7 +101,7 @@ export const JobsView = (): React.ReactElement => {
     };
   });
 
-  return !isFetchingData ? <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} /> : <></>;
+  return <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />;
 };
 
 const clipLongString = (toClip: string, length: number): string => {
