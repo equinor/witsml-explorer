@@ -1,15 +1,15 @@
 import { TubularComponentRow } from "../../components/ContentViews/TubularView";
 import Tubular from "../tubular";
-import TubularReference from "./tubularReference";
+import ObjectReference from "./objectReference";
 
 export interface CopyTubularComponentJob {
   source: TubularComponentReferences;
-  target: TubularReference;
+  target: ObjectReference;
 }
 
 export interface TubularComponentReferences {
   serverUrl: string;
-  tubularReference: TubularReference;
+  tubularReference: ObjectReference;
   tubularComponentUids: string[];
 }
 
@@ -43,7 +43,7 @@ export function createTubularComponentReferences(tubularComponents: TubularCompo
     tubularReference: {
       wellUid: source.wellUid,
       wellboreUid: source.wellboreUid,
-      tubularUid: source.uid
+      uid: source.uid
     },
     tubularComponentUids: tubularComponents.map((component) => component.uid)
   };
@@ -55,7 +55,7 @@ export function createCopyTubularComponentJob(sourceTubularComponentReferences: 
     target: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,
-      tubularUid: target.uid
+      uid: target.uid
     }
   };
 }

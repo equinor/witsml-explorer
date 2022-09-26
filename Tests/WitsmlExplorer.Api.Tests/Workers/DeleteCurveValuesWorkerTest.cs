@@ -18,6 +18,7 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Delete;
@@ -49,11 +50,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             _witsmlClient = new Mock<IWitsmlClient>();
 
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();
+            ILogger<DeleteCurveValuesJob> logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();
             _worker = new DeleteCurveValuesWorker(logger, witsmlClientProvider.Object);
         }
 
@@ -61,8 +62,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task JobHasNoIndexRanges_DoNothing()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with { IndexRanges = Array.Empty<IndexRange>() };
-            var (result, _) = await _worker.Execute(job);
+            DeleteCurveValuesJob job = CreateJobTemplate() with { IndexRanges = Array.Empty<IndexRange>() };
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -73,12 +74,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task MnemonicsNotFoundOnLogObject_DoNothing()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = Array.Empty<IndexRange>(),
                 Mnemonics = new List<string> { "NOT_A_MNEMONIC" }
             };
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -89,13 +90,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task LogObjectNotFound_SetNoSuccess()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = Array.Empty<IndexRange>(),
                 Mnemonics = new List<string> { "NOT_A_MNEMONIC" }
             };
-            job.LogReference.LogUid = "NOT_A_LOG";
-            var (result, _) = await _worker.Execute(job);
+            job.LogReference.Uid = "NOT_A_LOG";
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -106,8 +107,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task SingleIndexRange_ShouldRunSingleDeleteQuery()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate();
-            var (result, _) = await _worker.Execute(job);
+            DeleteCurveValuesJob job = CreateJobTemplate();
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Once());
@@ -118,7 +119,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task TwoIndexRanges_ShouldRunTwoDeleteQueries_DepthIndexed()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = new List<IndexRange>
                 {
@@ -127,7 +128,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Exactly(2));
@@ -137,11 +138,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task TwoIndexRanges_ShouldRunTwoDeleteQueries_TimeIndexed()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
 
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = new List<IndexRange>
                 {
@@ -158,7 +159,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Exactly(2));
@@ -169,7 +170,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task IndexRangeOutsideLogIndex_ShouldNotRunAnyDeleteQueries_DepthIndex()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = new List<IndexRange>
                 {
@@ -181,7 +182,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -191,11 +192,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task IndexRangeOutsideLogIndex_ShouldNotRunAnyDeleteQueries_TimeIndex()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
 
-            var job = CreateJobTemplate() with
+            DeleteCurveValuesJob job = CreateJobTemplate() with
             {
                 IndexRanges = new List<IndexRange>
                 {
@@ -207,7 +208,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.HeaderOnly, null)), Times.Once);
             _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
@@ -232,7 +233,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
         {
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -255,6 +256,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     witsmlLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     witsmlLog.EndDateTimeIndex = endIndex.GetValueAsString();
                     break;
+                default:
+                    break;
             }
 
             return new WitsmlLogs
@@ -267,11 +270,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new DeleteCurveValuesJob
             {
-                LogReference = new LogReference
+                LogReference = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 },
                 Mnemonics = Mnemonics,
                 IndexRanges = IndexRanges

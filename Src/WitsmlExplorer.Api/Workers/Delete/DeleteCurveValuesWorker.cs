@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             string wellUid = job.LogReference.WellUid;
             string wellboreUid = job.LogReference.WellboreUid;
-            string logUid = job.LogReference.LogUid;
+            string logUid = job.LogReference.Uid;
             WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
             if (witsmlLog == null)
             {
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             IEnumerable<(Index, Index)> indexRanges = job.IndexRanges.ToList().Select(range => (Index.Start(witsmlLog, range.StartIndex), Index.End(witsmlLog, range.EndIndex)));
             return indexRanges
                 .Where(range => range.Item1 >= Index.Start(witsmlLog) && range.Item2 <= Index.End(witsmlLog))
-                .Select(range => LogQueries.DeleteLogCurveContent(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.LogUid, witsmlLog.IndexType,
+                .Select(range => LogQueries.DeleteLogCurveContent(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, witsmlLog.IndexType,
                     logCurveInfos, range.Item1, range.Item2));
         }
     }

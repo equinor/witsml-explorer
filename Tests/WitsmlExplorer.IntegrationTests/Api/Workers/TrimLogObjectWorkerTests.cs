@@ -36,11 +36,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             string logUid = "a58adfe9-6132-446d-bff2-631fa6885244";
             TrimLogDataJob job = new()
             {
-                LogObject = new LogReference
+                LogObject = new ObjectReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
-                    LogUid = logUid
+                    Uid = logUid
                 },
                 StartIndex = "200",
                 EndIndex = "2000"

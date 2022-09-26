@@ -16,7 +16,9 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
@@ -47,21 +49,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CopyLogDataWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var logger = new Mock<ILogger<CopyLogDataJob>>();
+            Mock<ILogger<CopyLogDataJob>> logger = new();
             _worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object);
         }
 
         [Fact]
         public async Task CopyLogData_TimeIndexed()
         {
-            var job = CreateJobTemplate();
+            CopyLogDataJob job = CreateJobTemplate();
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
-            var updatedLogs = SetupUpdateInStoreAsync();
+            List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
             WitsmlLogs query = null;
             _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
@@ -76,12 +78,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLogData_DepthIndexed()
         {
-            var job = CreateJobTemplate();
+            CopyLogDataJob job = CreateJobTemplate();
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetDepthIndexed();
-            var updatedLogs = SetupUpdateInStoreAsync();
+            List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
             await _worker.Execute(job);
 
@@ -92,7 +94,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLogData_DepthIndexed_SelectedMnemonics()
         {
-            var job = CreateJobTemplate();
+            CopyLogDataJob job = CreateJobTemplate();
             job.Source.Mnemonics = new[] { "Depth", "DepthBit" };
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
@@ -102,17 +104,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
-                    var startIndex = double.Parse(query.Logs.First().StartIndex.Value);
-                    var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
                     return GetSourceLogData(startIndex, endIndex, job.Source.Mnemonics);
                 });
-            var updatedLogs = SetupUpdateInStoreAsync();
+            List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
             await _worker.Execute(job);
 
             Assert.NotNull(query);
-            var queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            var copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
+            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
+            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
             Assert.Equal(job.Source.Mnemonics, queriedMnemonics);
             Assert.Equal(job.Source.Mnemonics, copiedMnemonics);
         }
@@ -120,8 +122,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLogData_DepthIndexed_AddsIndexMnemonicIfNotIncludedInJob()
         {
-            var indexMnemonic = "Depth";
-            var job = CreateJobTemplate();
+            string indexMnemonic = "Depth";
+            CopyLogDataJob job = CreateJobTemplate();
             job.Source.Mnemonics = new[] { "DepthBit" };
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
@@ -132,17 +134,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
-                    var startIndex = double.Parse(query.Logs.First().StartIndex.Value);
-                    var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
                     return GetSourceLogData(startIndex, endIndex);
                 });
-            var updatedLogs = SetupUpdateInStoreAsync();
+            List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
             await _worker.Execute(job);
 
             Assert.NotNull(query);
-            var queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            var copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
+            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
+            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
             Assert.Contains(indexMnemonic, queriedMnemonics);
             Assert.Contains(indexMnemonic, copiedMnemonics);
         }
@@ -150,12 +152,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLogData_Returns_Error_IfMismatchedIndexTypes()
         {
-            var job = CreateJobTemplate();
+            CopyLogDataJob job = CreateJobTemplate();
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
             Assert.False(result.IsSuccess);
             Assert.Equal("sourceLog and targetLog has mismatching index types", result.Reason);
         }
@@ -163,12 +165,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLogData_DepthIndexed_AllowIndexCurveNamesThatOnlyDifferInCasing()
         {
-            var sourceIndexCurve = "DEPTH";
-            var targetIndexCurve = "Depth";
-            var mnemonics = new[] { sourceIndexCurve, "DepthBit", "DepthHole" };
-            var job = CreateJobTemplate();
+            string sourceIndexCurve = "DEPTH";
+            string targetIndexCurve = "Depth";
+            string[] mnemonics = new[] { sourceIndexCurve, "DepthBit", "DepthHole" };
+            CopyLogDataJob job = CreateJobTemplate();
             job.Source.Mnemonics = mnemonics;
-            var sourceLogs = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd, sourceIndexCurve);
+            WitsmlLogs sourceLogs = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd, sourceIndexCurve);
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
 
@@ -177,13 +179,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
-                    var startIndex = double.Parse(query.Logs.First().StartIndex.Value);
-                    var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
                     return GetSourceLogData(startIndex, endIndex, job.Source.Mnemonics);
                 });
-            var updatedLogs = SetupUpdateInStoreAsync();
+            List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
-            var (result, _) = await _worker.Execute(job);
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
             Assert.True(result.IsSuccess);
             Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
             Assert.Equal(targetIndexCurve, updatedLogs.First().Logs.First().LogCurveInfo.First().Mnemonic);
@@ -203,6 +205,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
+                default:
+                    break;
             }
         }
 
@@ -220,12 +224,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
                         .ReturnsAsync(targetLogs ?? GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
                     break;
+                default:
+                    break;
             }
         }
 
         private List<WitsmlLogs> SetupUpdateInStoreAsync()
         {
-            var updatedLogs = new List<WitsmlLogs>();
+            List<WitsmlLogs> updatedLogs = new();
             _witsmlClient.Setup(client =>
                     client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).Callback<WitsmlLogs>(witsmlLogs => updatedLogs.Add(witsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
@@ -238,8 +244,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
-                    var startIndex = double.Parse(query!.Logs.First().StartIndex.Value);
-                    var endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    double startIndex = double.Parse(query!.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
                     return GetSourceLogData(startIndex, endIndex);
 
                 });
@@ -251,25 +257,25 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 Source = new LogCurvesReference
                 {
-                    LogReference = new LogReference
+                    LogReference = new ObjectReference
                     {
                         WellUid = WellUid,
                         WellboreUid = WellboreUid,
-                        LogUid = SourceLogUid
+                        Uid = SourceLogUid
                     }
                 },
-                Target = new LogReference
+                Target = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = TargetLogUid
+                    Uid = TargetLogUid
                 }
             };
         }
 
         private static WitsmlLogs GetSourceLogs(string indexType, string startDateTimeIndex, string endDateTimeIndex)
         {
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -295,9 +301,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetSourceLogs(string indexType, double startIndex, double endIndex, string indexCurveValue = null)
         {
-            var minIndex = new WitsmlIndex(new DepthIndex(startIndex));
-            var maxIndex = new WitsmlIndex(new DepthIndex(endIndex));
-            var witsmlLog = new WitsmlLog
+            WitsmlIndex minIndex = new(new DepthIndex(startIndex));
+            WitsmlIndex maxIndex = new(new DepthIndex(endIndex));
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -323,7 +329,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetTargetLogs(string indexType)
         {
-            var indexLogCurveInfo = indexType switch
+            WitsmlLogCurveInfo indexLogCurveInfo = indexType switch
             {
                 WitsmlLog.WITSML_INDEX_TYPE_MD => new WitsmlLogCurveInfo
                 {
@@ -342,7 +348,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 _ => null
             };
 
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -361,6 +367,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     witsmlLog.StartDateTimeIndex = DateTimeIndex.NullValue;
                     witsmlLog.EndDateTimeIndex = DateTimeIndex.NullValue;
                     break;
+                default:
+                    break;
             }
 
             return new WitsmlLogs
@@ -371,11 +379,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetSourceLogData(string startIndexValue, string endIndexValue)
         {
-            var startIndex = DateTimeIndex.FromString(startIndexValue);
-            var endIndex = DateTimeIndex.FromString(endIndexValue);
-            var currentIndex = DateTimeIndex.FromString(startIndexValue);
+            DateTimeIndex startIndex = DateTimeIndex.FromString(startIndexValue);
+            DateTimeIndex endIndex = DateTimeIndex.FromString(endIndexValue);
+            DateTimeIndex currentIndex = DateTimeIndex.FromString(startIndexValue);
 
-            var data = new List<WitsmlData>();
+            List<WitsmlData> data = new();
             while (currentIndex <= endIndex)
             {
                 data.Add(new WitsmlData { Data = $"{currentIndex.GetValueAsString()},1,1" });
@@ -406,11 +414,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetSourceLogData(double startIndexValue, double endIndexValue, IEnumerable<string> mnemonics = null)
         {
-            var startIndex = new DepthIndex(startIndexValue);
-            var endIndex = new DepthIndex(endIndexValue);
-            var currentIndex = new DepthIndex(startIndexValue);
+            DepthIndex startIndex = new(startIndexValue);
+            DepthIndex endIndex = new(endIndexValue);
+            DepthIndex currentIndex = new(startIndexValue);
 
-            var data = new List<WitsmlData>();
+            List<WitsmlData> data = new();
             if (startIndex < endIndex)
             {
                 while (currentIndex <= endIndex)

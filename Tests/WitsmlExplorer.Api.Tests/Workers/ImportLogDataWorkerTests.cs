@@ -13,6 +13,7 @@ using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
@@ -152,11 +153,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             return new ImportLogDataJob
             {
-                TargetLog = new Jobs.Common.LogReference
+                TargetLog = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 },
                 Mnemonics = mnemonics,
                 DataRows = dataRows,
@@ -176,11 +177,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             return new ImportLogDataJob
             {
-                TargetLog = new Jobs.Common.LogReference
+                TargetLog = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 },
                 Mnemonics = mnemonics,
                 DataRows = dataRows,

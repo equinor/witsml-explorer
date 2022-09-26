@@ -1,7 +1,5 @@
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 import ObjectReferences from "./objectReferences";
-import TrajectoryReference from "./trajectoryReference";
-import TubularReference from "./tubularReference";
 import WellboreReference from "./wellboreReference";
 
 export interface DeleteObjectsJob {
@@ -10,21 +8,21 @@ export interface DeleteObjectsJob {
 
 export interface DeleteMnemonicsJob {
   toDelete: {
-    logReference: LogReference;
+    logReference: ObjectReference;
     mnemonics: string[];
   };
 }
 
 export interface DeleteTrajectoryStationsJob {
   toDelete: {
-    trajectoryReference: TrajectoryReference;
+    trajectoryReference: ObjectReference;
     trajectoryStationUids: string[];
   };
 }
 
 export interface DeleteTubularComponentsJob {
   toDelete: {
-    tubularReference: TubularReference;
+    tubularReference: ObjectReference;
     tubularComponentUids: string[];
   };
 }

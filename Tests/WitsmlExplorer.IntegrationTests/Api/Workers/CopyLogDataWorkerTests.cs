@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Copy;
 
 using Xunit;
@@ -18,32 +18,32 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         public CopyLogDataWorkerTests()
         {
-            var configuration = ConfigurationReader.GetConfig();
-            var witsmlClientProvider = new WitsmlClientProvider(configuration);
+            IConfiguration configuration = ConfigurationReader.GetConfig();
+            WitsmlClientProvider witsmlClientProvider = new(configuration);
             _worker = new CopyLogDataWorker(witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyLogData_TimeIndexed()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
-            var job = new CopyLogDataJob
+            string wellUid = "W-5232880";
+            string wellboreUid = "B-5232880";
+            CopyLogDataJob job = new()
             {
                 Source = new LogCurvesReference
                 {
-                    LogReference = new LogReference
+                    LogReference = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
-                        LogUid = "GM_Date_Time_GMTime"
+                        Uid = "GM_Date_Time_GMTime"
                     }
                 },
-                Target = new LogReference
+                Target = new ObjectReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
-                    LogUid = "230a60db-54e1-441d-afa6-0807ad308d7a"
+                    Uid = "230a60db-54e1-441d-afa6-0807ad308d7a"
                 }
             };
 
@@ -53,24 +53,24 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyLogData_DepthIndexed()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
-            var job = new CopyLogDataJob
+            string wellUid = "W-5232880";
+            string wellboreUid = "B-5232880";
+            CopyLogDataJob job = new()
             {
                 Source = new LogCurvesReference
                 {
-                    LogReference = new LogReference
+                    LogReference = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
-                        LogUid = "GM_Measured_Depth_GMDepth"
+                        Uid = "GM_Measured_Depth_GMDepth"
                     }
                 },
-                Target = new LogReference
+                Target = new ObjectReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
-                    LogUid = "974f84b3-88da-4c5d-b318-b111c948dbc3"
+                    Uid = "974f84b3-88da-4c5d-b318-b111c948dbc3"
                 }
             };
 
@@ -80,17 +80,17 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyLogData_TimeIndexed_SelectedMnemonics()
         {
-            var wellUid = "W-5232880";
-            var wellboreUid = "B-5232880";
-            var job = new CopyLogDataJob
+            string wellUid = "W-5232880";
+            string wellboreUid = "B-5232880";
+            CopyLogDataJob job = new()
             {
                 Source = new LogCurvesReference
                 {
-                    LogReference = new LogReference
+                    LogReference = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
-                        LogUid = "GM_Date_Time_GMTime"
+                        Uid = "GM_Date_Time_GMTime"
                     },
                     Mnemonics = new List<string>
                     {
@@ -100,11 +100,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                         "DEPTH_HOLE"
                     }
                 },
-                Target = new LogReference
+                Target = new ObjectReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
-                    LogUid = "8daba8bd-8d42-4fd0-80e4-b4d1a3a583e3"
+                    Uid = "8daba8bd-8d42-4fd0-80e4-b4d1a3a583e3"
                 }
             };
 

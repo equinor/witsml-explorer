@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             string wellUid = job.ToDelete.LogReference.WellUid;
             string wellboreUid = job.ToDelete.LogReference.WellboreUid;
-            string logUid = job.ToDelete.LogReference.LogUid;
+            string logUid = job.ToDelete.LogReference.Uid;
             ReadOnlyCollection<string> mnemonics = new(job.ToDelete.Mnemonics.ToList());
             string mnemonicsString = string.Join(", ", mnemonics);
 

@@ -9,13 +9,13 @@ using Moq;
 using Serilog;
 
 using Witsml;
+using Witsml.Data.Measures;
 using Witsml.Data.Tubular;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
@@ -31,12 +31,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ModifyTubularComponentWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<ModifyTubularComponentJob>();
+            ILogger<ModifyTubularComponentJob> logger = loggerFactory.CreateLogger<ModifyTubularComponentJob>();
             _worker = new ModifyTubularComponentWorker(logger, witsmlClientProvider.Object);
         }
 
@@ -44,11 +44,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Id()
         {
             const int expectedValue = 10;
-            var job = CreateJobTemplate();
+            ModifyTubularComponentJob job = CreateJobTemplate();
             job.TubularComponent.Id = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
-            var updatedTubulars = await MockJob(job);
-            var id = updatedTubulars.First().Tubulars.First().TubularComponents.First().Id;
-            var actual = decimal.Parse(id.Value);
+            List<WitsmlTubulars> updatedTubulars = await MockJob(job);
+            WitsmlLengthMeasure id = updatedTubulars.First().Tubulars.First().TubularComponents.First().Id;
+            decimal actual = decimal.Parse(id.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -57,11 +57,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Od()
         {
             const int expectedValue = 10;
-            var job = CreateJobTemplate();
+            ModifyTubularComponentJob job = CreateJobTemplate();
             job.TubularComponent.Od = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
-            var updatedTubulars = await MockJob(job);
-            var od = updatedTubulars.First().Tubulars.First().TubularComponents.First().Od;
-            var actual = decimal.Parse(od.Value);
+            List<WitsmlTubulars> updatedTubulars = await MockJob(job);
+            WitsmlLengthMeasure od = updatedTubulars.First().Tubulars.First().TubularComponents.First().Od;
+            decimal actual = decimal.Parse(od.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -70,11 +70,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Len()
         {
             const int expectedValue = 10;
-            var job = CreateJobTemplate();
+            ModifyTubularComponentJob job = CreateJobTemplate();
             job.TubularComponent.Len = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
-            var updatedTubulars = await MockJob(job);
-            var len = updatedTubulars.First().Tubulars.First().TubularComponents.First().Len;
-            var actual = decimal.Parse(len.Value);
+            List<WitsmlTubulars> updatedTubulars = await MockJob(job);
+            WitsmlLengthMeasure len = updatedTubulars.First().Tubulars.First().TubularComponents.First().Len;
+            decimal actual = decimal.Parse(len.Value);
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -83,10 +83,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Type()
         {
             const string expectedValue = "tc_type";
-            var job = CreateJobTemplate();
+            ModifyTubularComponentJob job = CreateJobTemplate();
             job.TubularComponent.TypeTubularComponent = expectedValue;
-            var updatedTubulars = await MockJob(job);
-            var actual = updatedTubulars.First().Tubulars.First().TubularComponents.First().TypeTubularComp;
+            List<WitsmlTubulars> updatedTubulars = await MockJob(job);
+            string actual = updatedTubulars.First().Tubulars.First().TubularComponents.First().TypeTubularComp;
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
@@ -95,17 +95,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Update_Sequence()
         {
             const int expectedValue = 10;
-            var job = CreateJobTemplate();
+            ModifyTubularComponentJob job = CreateJobTemplate();
             job.TubularComponent.Sequence = expectedValue;
-            var updatedTubulars = await MockJob(job);
-            var actual = updatedTubulars.First().Tubulars.First().TubularComponents.First().Sequence;
+            List<WitsmlTubulars> updatedTubulars = await MockJob(job);
+            int? actual = updatedTubulars.First().Tubulars.First().TubularComponents.First().Sequence;
             Assert.Single(updatedTubulars);
             Assert.Equal(expectedValue, actual);
         }
 
         private async Task<List<WitsmlTubulars>> MockJob(ModifyTubularComponentJob job)
         {
-            var updatedTubulars = new List<WitsmlTubulars>();
+            List<WitsmlTubulars> updatedTubulars = new();
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>())).Callback<WitsmlTubulars>(tubulars => updatedTubulars.Add(tubulars))
                 .ReturnsAsync(new QueryResult(true));
@@ -122,11 +122,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     Uid = "tc_uid"
                 },
-                TubularReference = new TubularReference()
+                TubularReference = new ObjectReference()
                 {
                     WellUid = "welluid",
                     WellboreUid = "wellboreuid",
-                    TubularUid = "tubularuid"
+                    Uid = "tubularuid"
                 }
             };
         }

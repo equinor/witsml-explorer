@@ -5,7 +5,7 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record ModifyTrajectoryStationJob : Job
     {
-        public TrajectoryReference TrajectoryReference { get; init; }
+        public ObjectReference TrajectoryReference { get; init; }
         public TrajectoryStation TrajectoryStation { get; init; }
 
         public override string Description()

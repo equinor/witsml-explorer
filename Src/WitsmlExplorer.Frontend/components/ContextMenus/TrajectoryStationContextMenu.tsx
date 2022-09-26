@@ -71,7 +71,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
         trajectoryReference: {
           wellUid,
           wellboreUid,
-          trajectoryUid: uid
+          uid: uid
         },
         trajectoryStationUids: checkedTrajectoryStations.map((item) => item.uid)
       }

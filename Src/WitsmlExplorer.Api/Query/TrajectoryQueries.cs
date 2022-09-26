@@ -107,7 +107,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-        public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
+        public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, ObjectReference trajectoryReference)
         {
             WitsmlTrajectoryStation ts = new()
             {
@@ -142,7 +142,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWell = trajectoryReference.WellUid,
                     UidWellbore = trajectoryReference.WellboreUid,
-                    Uid = trajectoryReference.TrajectoryUid,
+                    Uid = trajectoryReference.Uid,
                     TrajectoryStations = ts.AsSingletonList()
                 }.AsSingletonList()
             };

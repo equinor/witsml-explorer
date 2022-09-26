@@ -101,18 +101,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
         {
-            LogReference sourceLogReference = new()
+            ObjectReference sourceLogReference = new()
             {
                 WellUid = job.Source.WellUid,
                 WellboreUid = job.Source.WellboreUid,
-                LogUid = targetLog.Uid
+                Uid = targetLog.Uid
             };
 
-            LogReference targetLogReference = new()
+            ObjectReference targetLogReference = new()
             {
                 WellUid = job.Target.WellUid,
                 WellboreUid = job.Target.WellboreUid,
-                LogUid = targetLog.Uid
+                Uid = targetLog.Uid
             };
 
             CopyLogDataJob copyLogDataJob = new()

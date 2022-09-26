@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             string wellUid = job.TrajectoryReference.WellUid;
             string wellboreUid = job.TrajectoryReference.WellboreUid;
-            string trajectoryUid = job.TrajectoryReference.TrajectoryUid;
+            string trajectoryUid = job.TrajectoryReference.Uid;
 
             WitsmlTrajectories query = TrajectoryQueries.UpdateTrajectoryStation(job.TrajectoryStation, job.TrajectoryReference);
             QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
-        private static void Verify(TrajectoryStation trajectoryStation, TrajectoryReference trajectoryReference)
+        private static void Verify(TrajectoryStation trajectoryStation, ObjectReference trajectoryReference)
         {
             if (string.IsNullOrEmpty(trajectoryReference.WellUid))
             {
@@ -74,9 +74,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 throw new InvalidOperationException($"{nameof(trajectoryReference.WellboreUid)} cannot be empty");
             }
 
-            if (string.IsNullOrEmpty(trajectoryReference.TrajectoryUid))
+            if (string.IsNullOrEmpty(trajectoryReference.Uid))
             {
-                throw new InvalidOperationException($"{nameof(trajectoryReference.TrajectoryUid)} cannot be empty");
+                throw new InvalidOperationException($"{nameof(trajectoryReference.Uid)} cannot be empty");
             }
 
             if (string.IsNullOrEmpty(trajectoryStation.Uid))

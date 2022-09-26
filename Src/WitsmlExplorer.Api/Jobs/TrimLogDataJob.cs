@@ -4,7 +4,7 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record TrimLogDataJob : Job
     {
-        public LogReference LogObject { get; init; }
+        public ObjectReference LogObject { get; init; }
 
         public string StartIndex { get; init; }
 

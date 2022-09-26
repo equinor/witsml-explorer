@@ -69,7 +69,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         logReference: {
           wellUid,
           wellboreUid,
-          logUid
+          uid: logUid
         },
         mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
       }

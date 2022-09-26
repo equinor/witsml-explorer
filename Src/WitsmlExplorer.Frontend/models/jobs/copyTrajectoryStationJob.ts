@@ -1,15 +1,15 @@
 import { TrajectoryStationRow } from "../../components/ContentViews/TrajectoryView";
 import Trajectory from "../trajectory";
-import TrajectoryReference from "./trajectoryReference";
+import ObjectReference from "./objectReference";
 
 export interface CopyTrajectoryStationJob {
   source: TrajectoryStationReferences;
-  target: TrajectoryReference;
+  target: ObjectReference;
 }
 
 export interface TrajectoryStationReferences {
   serverUrl: string;
-  trajectoryReference: TrajectoryReference;
+  trajectoryReference: ObjectReference;
   trajectoryStationUids: string[];
 }
 
@@ -43,7 +43,7 @@ export function createTrajectoryStationReferences(trajectoryStations: Trajectory
     trajectoryReference: {
       wellUid: source.wellUid,
       wellboreUid: source.wellboreUid,
-      trajectoryUid: source.uid
+      uid: source.uid
     },
     trajectoryStationUids: trajectoryStations.map((component) => component.uid)
   };
@@ -55,7 +55,7 @@ export function createCopyTrajectoryStationJob(sourceTrajectoryStationReferences
     target: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,
-      trajectoryUid: target.uid
+      uid: target.uid
     }
   };
 }

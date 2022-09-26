@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import ImportLogDataJob from "../../models/jobs/importLogDataJob";
+import ObjectReference from "../../models/jobs/objectReference";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { truncateAbortHandler } from "../../services/apiClient";
@@ -103,10 +104,10 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   const onSubmit = async () => {
     setIsLoading(true);
 
-    const logReference = {
+    const logReference: ObjectReference = {
       wellUid: targetLog.wellUid,
       wellboreUid: targetLog.wellboreUid,
-      logUid: targetLog.uid
+      uid: targetLog.uid
     };
 
     const job: ImportLogDataJob = {

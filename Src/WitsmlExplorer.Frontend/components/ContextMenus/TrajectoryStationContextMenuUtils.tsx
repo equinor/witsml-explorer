@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTrajectoryStationReferences, TrajectoryStationReferences } from "../../models/jobs/copyTrajectoryStationJob";
-import TrajectoryReference from "../../models/jobs/trajectoryReference";
+import ObjectReference from "../../models/jobs/objectReference";
 import Trajectory from "../../models/trajectory";
 import JobService, { JobType } from "../../services/jobService";
 
@@ -28,10 +28,10 @@ export const useClipboardTrajectoryStationReferences: () => [TrajectoryStationRe
 };
 
 export const orderCopyTrajectoryStationsJob = (trajectory: Trajectory, trajectoryStationReferences: TrajectoryStationReferences, dispatchOperation: DispatchOperation) => {
-  const trajectoryReference: TrajectoryReference = {
+  const trajectoryReference: ObjectReference = {
     wellUid: trajectory.wellUid,
     wellboreUid: trajectory.wellboreUid,
-    trajectoryUid: trajectory.uid
+    uid: trajectory.uid
   };
 
   const copyJob = { source: trajectoryStationReferences, target: trajectoryReference };

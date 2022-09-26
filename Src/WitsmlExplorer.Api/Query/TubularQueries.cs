@@ -106,7 +106,7 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlTubulars UpdateTubularComponent(TubularComponent tubularComponent, TubularReference tubularReference)
+        public static WitsmlTubulars UpdateTubularComponent(TubularComponent tubularComponent, ObjectReference tubularReference)
         {
             WitsmlTubularComponent tc = new()
             {
@@ -136,7 +136,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     UidWell = tubularReference.WellUid,
                     UidWellbore = tubularReference.WellboreUid,
-                    Uid = tubularReference.TubularUid,
+                    Uid = tubularReference.Uid,
                     TubularComponents = tc.AsSingletonList()
                 }.AsSingletonList()
             };

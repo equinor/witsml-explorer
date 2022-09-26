@@ -27,25 +27,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public RenameMnemonicWorkerTests()
         {
-            var witsmlClient = new Mock<IWitsmlClient>();
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClient> witsmlClient = new();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
+            ILogger<RenameMnemonicJob> logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
             _worker = new RenameMnemonicWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async void MnemonicEmpty_RenameMnemonic_ShouldThrowException()
         {
-            var job = CreateJobTemplate() with
+            RenameMnemonicJob job = CreateJobTemplate() with
             {
                 Mnemonic = "",
                 NewMnemonic = "Felgen"
             };
 
-            Task ExecuteWorker() => _worker.Execute(job);
+            Task ExecuteWorker()
+            {
+                return _worker.Execute(job);
+            }
 
             await Assert.ThrowsAsync<InvalidOperationException>(ExecuteWorker);
         }
@@ -53,13 +56,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async void NewMnemonicNull_RenameMnemonic_ShouldThrowException()
         {
-            var job = CreateJobTemplate() with
+            RenameMnemonicJob job = CreateJobTemplate() with
             {
                 Mnemonic = "Reodor",
                 NewMnemonic = null
             };
 
-            Task ExecuteWorker() => _worker.Execute(job);
+            Task ExecuteWorker()
+            {
+                return _worker.Execute(job);
+            }
 
             await Assert.ThrowsAsync<InvalidOperationException>(ExecuteWorker);
         }
@@ -68,11 +74,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new RenameMnemonicJob
             {
-                LogReference = new LogReference
+                LogReference = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 }
             };
         }

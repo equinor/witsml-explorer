@@ -1,6 +1,6 @@
-export default interface TubularReference {
+export default interface ObjectReference {
   serverUrl?: string;
-  tubularUid: string;
   wellUid: string;
   wellboreUid: string;
+  uid: string;
 }

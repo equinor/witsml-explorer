@@ -1,4 +1,4 @@
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 
 export interface IndexRange {
   startIndex: string;
@@ -6,7 +6,7 @@ export interface IndexRange {
 }
 
 export interface DeleteLogCurveValuesJob {
-  logReference: LogReference;
+  logReference: ObjectReference;
   mnemonics: string[];
   indexRanges: IndexRange[];
 }

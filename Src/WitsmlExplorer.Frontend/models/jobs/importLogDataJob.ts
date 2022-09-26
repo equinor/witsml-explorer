@@ -1,7 +1,7 @@
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 
 export default interface ImportLogDataJob {
-  targetLog: LogReference;
+  targetLog: ObjectReference;
   mnemonics: string[];
   units: string[];
   dataRows: string[][];

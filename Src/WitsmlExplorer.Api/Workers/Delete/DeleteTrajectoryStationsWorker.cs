@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             string wellUid = job.ToDelete.TrajectoryReference.WellUid;
             string wellboreUid = job.ToDelete.TrajectoryReference.WellboreUid;
-            string trajectoryUid = job.ToDelete.TrajectoryReference.TrajectoryUid;
+            string trajectoryUid = job.ToDelete.TrajectoryReference.Uid;
             ReadOnlyCollection<string> trajectoryStations = new(job.ToDelete.TrajectoryStationUids.ToList());
             string trajectoryStationsString = string.Join(", ", trajectoryStations);
 
