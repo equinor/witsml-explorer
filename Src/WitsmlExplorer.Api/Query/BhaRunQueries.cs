@@ -12,7 +12,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class BhaRunQueries
     {
-        public static WitsmlBhaRuns GetWitsmlBhaRunByUid(string wellUid, string wellboreUid, string bhaRunUid)
+        public static WitsmlBhaRuns GetWitsmlBhaRun(string wellUid, string wellboreUid, string bhaRunUid = "")
         {
             return new WitsmlBhaRuns
             {
@@ -54,6 +54,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+
         public static WitsmlBhaRuns GetWitsmlBhaRunsById(string wellUid, string wellboreUid, string[] bhaRunUids)
         {
             return new WitsmlBhaRuns
@@ -67,48 +68,6 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlBhaRuns GetWitsmlBhaRunByWellbore(string wellUid, string wellboreUid)
-        {
-            return new WitsmlBhaRuns
-            {
-                BhaRuns = new WitsmlBhaRun
-                {
-                    Uid = "",
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
-                    NameWell = "",
-                    NameWellbore = "",
-                    Name = "",
-                    NumStringRun = "",
-                    Tubular = new WitsmlRefNameString
-                    {
-                        UidRef = "",
-                        Value = ""
-                    },
-                    DTimStart = "",
-                    DTimStop = "",
-                    DTimStartDrilling = "",
-                    DTimStopDrilling = "",
-                    PlanDogleg = new WitsmlAnglePerLengthMeasure() { Uom = "" },
-                    ActDogleg = new WitsmlAnglePerLengthMeasure() { Uom = "" },
-                    ActDoglegMx = new WitsmlAnglePerLengthMeasure() { Uom = "" },
-                    StatusBha = "",
-                    NumBitRun = "",
-                    ReasonTrip = "",
-                    ObjectiveBha = "",
-                    CommonData = new WitsmlCommonData()
-                    {
-                        ItemState = "",
-                        SourceName = "",
-                        DTimLastChange = "",
-                        DTimCreation = "",
-                        ServiceCategory = "",
-                        Comments = "",
-                        DefaultDatum = "",
-                    }
-                }.AsSingletonList()
-            };
-        }
         public static WitsmlBhaRuns CreateBhaRun(BhaRun bhaRun)
         {
             return new WitsmlBhaRuns
