@@ -1,13 +1,8 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
+import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
-export default interface RiskObject {
-  uid: string;
-  name: string;
-  wellboreUid: string;
-  wellboreName: string;
-  wellUid: string;
-  wellName?: string;
+export default interface RiskObject extends ObjectOnWellbore {
   type: string;
   category: string;
   subCategory: string;
@@ -26,12 +21,7 @@ export default interface RiskObject {
 
 export function emptyRiskObject(): RiskObject {
   return {
-    wellboreUid: "",
-    wellboreName: "",
-    wellUid: "",
-    wellName: "",
-    uid: "",
-    name: "",
+    ...emptyObjectOnWellbore(),
     type: "",
     category: "",
     subCategory: "",
@@ -53,18 +43,3 @@ export function emptyRiskObject(): RiskObject {
     }
   };
 }
-
-export const calculateRiskObjectNodeId = (riskObject: RiskObject): string => {
-  return riskObject.wellUid + riskObject.wellboreUid + riskObject.uid;
-};
-
-export const getRiskObjectProperties = (riskObject: RiskObject): Map<string, string> => {
-  return new Map([
-    ["Well", riskObject.wellName],
-    ["UID Well", riskObject.wellUid],
-    ["Wellbore", riskObject.wellboreName],
-    ["UID Wellbore", riskObject.wellboreUid],
-    ["Risk", riskObject.name],
-    ["UID Risk", riskObject.uid]
-  ]);
-};

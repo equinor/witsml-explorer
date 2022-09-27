@@ -55,7 +55,7 @@ export const CurveValuesView = (): React.ReactElement => {
       logReference: {
         wellUid: selectedLog.wellUid,
         wellboreUid: selectedLog.wellboreUid,
-        logUid: selectedLog.uid
+        uid: selectedLog.uid
       },
       mnemonics: mnemonics,
       indexRanges: indexRanges

@@ -3,7 +3,7 @@ import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteRigsJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
@@ -41,7 +41,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
 
   const deleteRigs = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteRigsJob = {
+    const job: DeleteObjectsJob = {
       toDelete: {
         objectUids: checkedRigRows.map((rig) => rig.uid),
         wellUid: checkedRigRows[0].wellUid,

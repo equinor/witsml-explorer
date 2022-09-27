@@ -81,19 +81,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 Source = new TubularComponentReferences
                 {
-                    TubularReference = new TubularReference
+                    TubularReference = new ObjectReference
                     {
-                        TubularUid = SourceTubularUid,
+                        Uid = SourceTubularUid,
                         WellboreUid = WellboreUid,
                         WellUid = WellUid
                     },
                     TubularComponentUids = new List<string> { TcUid2, TcUid3 }
                 },
-                Target = new TubularReference
+                Target = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    TubularUid = TargetTubularUid
+                    Uid = TargetTubularUid
                 }
             };
         }

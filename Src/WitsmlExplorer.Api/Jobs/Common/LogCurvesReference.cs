@@ -5,12 +5,12 @@ namespace WitsmlExplorer.Api.Jobs.Common
 {
     public class LogCurvesReference : IReference
     {
-        public LogReference LogReference { get; set; }
+        public ObjectReference LogReference { get; set; }
         public IEnumerable<string> Mnemonics { get; set; } = new List<string>();
 
         public string Description()
         {
-            var desc = new StringBuilder();
+            StringBuilder desc = new();
             desc.Append($"{LogReference.Description()}");
             desc.Append($"Mnemonics: {string.Join(", ", Mnemonics)}; ");
             return desc.ToString();

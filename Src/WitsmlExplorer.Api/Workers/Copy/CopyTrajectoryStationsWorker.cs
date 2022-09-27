@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshTrajectory refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.TrajectoryUid, RefreshType.Update);
+            RefreshTrajectory refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
             WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"TrajectoryStations {trajectoryStationsString} copied to: {targetTrajectory.Name}");
 
             return (workerResult, refreshAction);
@@ -67,14 +67,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(targetTrajectory, sourceTrajectoryStations);
         }
 
-        private static async Task<WitsmlTrajectory> GetTrajectory(IWitsmlClient client, TrajectoryReference trajectoryReference)
+        private static async Task<WitsmlTrajectory> GetTrajectory(IWitsmlClient client, ObjectReference trajectoryReference)
         {
-            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.TrajectoryUid);
+            WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryById(trajectoryReference.WellUid, trajectoryReference.WellboreUid, trajectoryReference.Uid);
             WitsmlTrajectories result = await client.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.All));
             return !result.Trajectories.Any() ? null : result.Trajectories.First();
         }
 
-        private static async Task<IEnumerable<WitsmlTrajectoryStation>> GetTrajectoryStations(IWitsmlClient client, TrajectoryReference trajectoryReference, IEnumerable<string> trajectoryStationsUids)
+        private static async Task<IEnumerable<WitsmlTrajectoryStation>> GetTrajectoryStations(IWitsmlClient client, ObjectReference trajectoryReference, IEnumerable<string> trajectoryStationsUids)
         {
             WitsmlTrajectory witsmlTrajectory = await GetTrajectory(client, trajectoryReference);
             return witsmlTrajectory?.TrajectoryStations.FindAll((WitsmlTrajectoryStation tc) => trajectoryStationsUids.Contains(tc.Uid));

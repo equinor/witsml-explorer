@@ -27,27 +27,27 @@ namespace WitsmlExplorer.Api.Workers
         }
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
-            var chunkSize = 1000;
-            var wellUid = job.TargetLog.WellUid;
-            var wellboreUid = job.TargetLog.WellboreUid;
-            var logUid = job.TargetLog.LogUid;
-            var witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
+            int chunkSize = 1000;
+            string wellUid = job.TargetLog.WellUid;
+            string wellboreUid = job.TargetLog.WellboreUid;
+            string logUid = job.TargetLog.Uid;
+            WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
 
             if (witsmlLog == null)
             {
-                var reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
+                string reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
                 return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Unable to find log", reason), null);
             }
 
-            var logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
+            List<WitsmlLogCurveInfo> logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
 
             //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
-            var queries = CreateImportQueries(job, chunkSize).ToArray();
+            WitsmlLogs[] queries = CreateImportQueries(job, chunkSize).ToArray();
 
             //Todo: update import progress for the user using websockets
-            for (var i = 0; i < queries.Length; i++)
+            for (int i = 0; i < queries.Length; i++)
             {
-                var result = await _witsmlClient.UpdateInStoreAsync(queries[i]);
+                QueryResult result = await _witsmlClient.UpdateInStoreAsync(queries[i]);
                 if (result.IsSuccessful)
                 {
                     Logger.LogInformation("{JobType} - Query {QueryCount}/{CurrentQuery} successful", GetType().Name, queries.Length, i + 1);
@@ -66,16 +66,16 @@ namespace WitsmlExplorer.Api.Workers
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            var refreshAction = new RefreshLogObject(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
-            var mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
-            var workerResult = new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
+            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+            string mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
+            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);
         }
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
         {
-            var query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            var result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs.FirstOrDefault();
         }
 
@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         new WitsmlLog
                         {
-                            Uid = job.TargetLog.LogUid,
+                            Uid = job.TargetLog.Uid,
                             UidWellbore = job.TargetLog.WellboreUid,
                             UidWell = job.TargetLog.WellUid,
                             LogData = new WitsmlLogData

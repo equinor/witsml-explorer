@@ -1,7 +1,7 @@
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 
 export default interface RenameMnemonicJob {
-  logReference: LogReference;
+  logReference: ObjectReference;
   mnemonic: string;
   newMnemonic: string;
 }

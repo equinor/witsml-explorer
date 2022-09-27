@@ -48,11 +48,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             return new RenameMnemonicJob
             {
-                LogReference = new LogReference
+                LogReference = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 }
             };
         }

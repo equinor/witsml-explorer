@@ -78,11 +78,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 WellboreUid = "",
                 ObjectUids = new string[] { "" }
             };
-            LogReference targetReference = new()
+            ObjectReference targetReference = new()
             {
                 WellUid = "",
                 WellboreUid = "",
-                LogUid = logUid
+                Uid = logUid
             };
 
             await _deleteLogsWorker.Execute(
@@ -132,9 +132,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             }
         }
 
-        private async Task<WitsmlLog> GetLog(LogReference logReference)
+        private async Task<WitsmlLog> GetLog(ObjectReference logReference)
         {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.Uid);
             WitsmlLogs logs = await _client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.All));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
@@ -146,9 +146,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
 
-        private async Task<Index> GetEndIndex(LogReference logReference)
+        private async Task<Index> GetEndIndex(ObjectReference logReference)
         {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.Uid);
             WitsmlLogs logs = await _client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return Index.End(logs.Logs.First());
         }

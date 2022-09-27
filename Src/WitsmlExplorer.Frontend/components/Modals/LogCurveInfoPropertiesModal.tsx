@@ -23,7 +23,7 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
       logReference: {
         wellUid: logCurveInfo.wellUid,
         wellboreUid: logCurveInfo.wellboreUid,
-        logUid: logCurveInfo.logUid
+        uid: logCurveInfo.logUid
       },
       mnemonic: logCurveInfo.mnemonic,
       newMnemonic: editableLogCurveInfo.mnemonic

@@ -64,7 +64,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
         tubularReference: {
           wellUid,
           wellboreUid,
-          tubularUid: uid
+          uid: uid
         },
         tubularComponentUids: checkedTubularComponents.map((item) => item.uid)
       }

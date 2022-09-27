@@ -4,9 +4,8 @@ import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navig
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import { calculateTrajectoryId } from "../../models/trajectory";
-import { calculateTubularId } from "../../models/tubular";
 import Well from "../../models/well";
 import Wellbore, {
   calculateBhaRunGroupId,
@@ -252,12 +251,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           wellbore.trajectories &&
           wellbore.trajectories.map((trajectory) => (
             <TrajectoryItem
-              key={calculateTrajectoryId(trajectory)}
+              key={calculateObjectNodeId(trajectory)}
               trajectoryGroup={trajectoryGroupId}
               trajectory={trajectory}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateTrajectoryId(trajectory)}
+              nodeId={calculateObjectNodeId(trajectory)}
               selected={selectedTrajectory && selectedTrajectory.uid === trajectory.uid ? true : undefined}
             />
           ))}
@@ -272,12 +271,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           wellbore.tubulars &&
           wellbore.tubulars.map((tubular) => (
             <TubularItem
-              key={calculateTubularId(tubular)}
+              key={calculateObjectNodeId(tubular)}
               tubularGroup={tubularGroupId}
               tubular={tubular}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateTubularId(tubular)}
+              nodeId={calculateObjectNodeId(tubular)}
               selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
             />
           ))}

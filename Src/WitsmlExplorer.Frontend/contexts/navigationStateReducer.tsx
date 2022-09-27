@@ -1,13 +1,15 @@
 import { Dispatch, useReducer } from "react";
 import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView";
 import BhaRun from "../models/bhaRun";
-import LogObject, { getLogObjectProperties } from "../models/logObject";
-import MessageObject, { getMessageObjectProperties } from "../models/messageObject";
+import LogObject from "../models/logObject";
+import MessageObject from "../models/messageObject";
+import { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
+import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
-import Trajectory, { getTrajectoryProperties } from "../models/trajectory";
-import Tubular, { getTubularProperties } from "../models/tubular";
+import Trajectory from "../models/trajectory";
+import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well, { getWellProperties } from "../models/well";
 import Wellbore, {
@@ -778,7 +780,7 @@ const selectLogObject = (state: NavigationState, { payload }: SelectLogObjectAct
     selectedLogTypeGroup: logTypeGroup,
     selectedLog: log,
     currentSelected: log,
-    currentProperties: getLogObjectProperties(log),
+    currentProperties: getObjectOnWellboreProperties(log, ObjectType.Log),
     expandedTreeNodes
   };
 };
@@ -840,7 +842,7 @@ const selectMessageObject = (state: NavigationState, { payload }: SelectMessageO
     selectedMessageGroup: messageGroup,
     selectedMessage: message,
     currentSelected: message,
-    currentProperties: getMessageObjectProperties(message),
+    currentProperties: getObjectOnWellboreProperties(message, ObjectType.Message),
     expandedTreeNodes
   };
 };
@@ -904,7 +906,7 @@ const selectTrajectory = (state: NavigationState, { payload }: SelectTrajectoryA
     selectedTrajectoryGroup: trajectoryGroup,
     selectedTrajectory: trajectory,
     currentSelected: trajectory,
-    currentProperties: getTrajectoryProperties(trajectory, wellbore)
+    currentProperties: getObjectOnWellboreProperties(trajectory, ObjectType.Trajectory)
   };
 };
 
@@ -937,7 +939,7 @@ const selectTubular = (state: NavigationState, { payload }: SelectTubularAction)
     selectedTubular: tubular,
     currentSelected: tubular,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateTubularGroupId(wellbore)) : state.expandedTreeNodes,
-    currentProperties: getTubularProperties(tubular, wellbore)
+    currentProperties: getObjectOnWellboreProperties(tubular, ObjectType.Tubular)
   };
 };
 

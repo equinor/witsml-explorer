@@ -1,13 +1,8 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
+import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
-export default interface WbGeometryObject {
-  wellUid: string;
-  uid: string;
-  wellboreUid: string;
-  wellName?: string;
-  wellboreName: string;
-  name: string;
+export default interface WbGeometryObject extends ObjectOnWellbore {
   dTimReport?: Date;
   mdBottom?: Measure;
   gapAir?: Measure;
@@ -17,12 +12,7 @@ export default interface WbGeometryObject {
 
 export function emptyWbGeometryObject(): WbGeometryObject {
   return {
-    wellUid: "",
-    uid: "",
-    wellboreUid: "",
-    wellName: "",
-    wellboreName: "",
-    name: "",
+    ...emptyObjectOnWellbore(),
     dTimReport: null,
     mdBottom: null,
     gapAir: null,
@@ -36,18 +26,3 @@ export function emptyWbGeometryObject(): WbGeometryObject {
     }
   };
 }
-
-export const calculateWbGeometryObjectNodeId = (wbGeometryObject: WbGeometryObject): string => {
-  return wbGeometryObject.wellUid + wbGeometryObject.wellboreUid + wbGeometryObject.uid;
-};
-
-export const getWbGeometryObjectProperties = (wbGeometryObject: WbGeometryObject): Map<string, string> => {
-  return new Map([
-    ["Well", wbGeometryObject.wellName],
-    ["UID Well", wbGeometryObject.wellUid],
-    ["Wellbore", wbGeometryObject.wellboreName],
-    ["UID Wellbore", wbGeometryObject.wellboreUid],
-    ["WbGeometry", wbGeometryObject.name],
-    ["UID WbGeometry", wbGeometryObject.uid]
-  ]);
-};

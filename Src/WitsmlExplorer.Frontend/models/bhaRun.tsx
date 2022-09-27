@@ -1,14 +1,8 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
-import Wellbore from "./wellbore";
+import ObjectOnWellbore from "./objectOnWellbore";
 
-export default interface BhaRun {
-  wellName: string;
-  uid: string;
-  wellUid: string;
-  wellboreUid: string;
-  wellboreName: string;
-  name: string;
+export default interface BhaRun extends ObjectOnWellbore {
   numStringRun: string;
   tubular: string;
   tubularUidRef: string;
@@ -25,13 +19,3 @@ export default interface BhaRun {
   objectiveBha: string;
   commonData: CommonData;
 }
-
-export const getBhaRunProperties = (bhaRun: BhaRun, wellbore: Wellbore): Map<string, string> => {
-  return new Map([
-    ["Well", wellbore.wellName],
-    ["UID Well", bhaRun.wellUid],
-    ["Wellbore", wellbore.name],
-    ["UID Wellbore", bhaRun.wellboreUid],
-    ["BhaRun", bhaRun.name]
-  ]);
-};

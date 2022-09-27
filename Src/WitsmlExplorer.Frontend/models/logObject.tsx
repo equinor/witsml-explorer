@@ -1,10 +1,6 @@
-export default interface LogObject {
-  uid: string;
-  name: string;
-  wellUid: string;
-  wellName?: string;
-  wellboreUid: string;
-  wellboreName?: string;
+import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
+
+export default interface LogObject extends ObjectOnWellbore {
   indexType?: string;
   startIndex?: string;
   endIndex?: string;
@@ -16,12 +12,7 @@ export default interface LogObject {
 
 export function emptyLogObject(): LogObject {
   return {
-    uid: "",
-    name: "",
-    wellUid: "",
-    wellName: "",
-    wellboreUid: "",
-    wellboreName: "",
+    ...emptyObjectOnWellbore(),
     indexType: "",
     startIndex: "",
     endIndex: "",
@@ -30,18 +21,3 @@ export function emptyLogObject(): LogObject {
     serviceCompany: ""
   };
 }
-
-export const calculateLogObjectNodeId = (logObject: LogObject): string => {
-  return logObject.wellUid + logObject.wellboreUid + logObject.uid;
-};
-
-export const getLogObjectProperties = (logObject: LogObject): Map<string, string> => {
-  return new Map([
-    ["Well", logObject.wellName],
-    ["UID Well", logObject.wellUid],
-    ["Wellbore", logObject.wellboreName],
-    ["UID Wellbore", logObject.wellboreUid],
-    ["Log", logObject.name],
-    ["UID Log", logObject.uid]
-  ]);
-};

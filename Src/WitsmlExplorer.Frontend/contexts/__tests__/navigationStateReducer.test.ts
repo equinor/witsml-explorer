@@ -1,10 +1,12 @@
 import BhaRun from "../../models/bhaRun";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
+import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
 import RiskObject from "../../models/riskObject";
 import { Server } from "../../models/server";
-import Trajectory, { getTrajectoryProperties } from "../../models/trajectory";
+import Trajectory from "../../models/trajectory";
 import Tubular from "../../models/tubular";
 import WbGeometryObject from "../../models/wbGeometry";
 import Well, { emptyWell, getWellProperties } from "../../models/well";
@@ -203,7 +205,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
     wells: WELLS,
     filteredWells: WELLS,
     selectedFilter: EMPTY_FILTER,
-    currentProperties: getTrajectoryProperties(TRAJECTORY_1, WELLBORE_2)
+    currentProperties: getObjectOnWellboreProperties(TRAJECTORY_1, ObjectType.Trajectory)
   });
 });
 
@@ -792,13 +794,15 @@ const BHARUN_1: BhaRun = {
   commonData: null,
   tubularUidRef: ""
 };
-const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid };
+const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "" };
 const RIG_1 = { uid: "rig1", name: "Rig 1" };
 const TRAJECTORY_1: Trajectory = {
   uid: "trajectory1",
   name: "Trajectory 1",
   wellUid: "",
   wellboreUid: "",
+  wellboreName: "",
+  wellName: "",
   aziRef: "",
   mdMax: 0,
   mdMin: 0,

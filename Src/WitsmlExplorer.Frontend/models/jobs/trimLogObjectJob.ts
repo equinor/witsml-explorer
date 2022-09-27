@@ -1,18 +1,18 @@
 import { Moment } from "moment";
 import LogObject from "../logObject";
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 
 export default interface TrimLogObjectJob {
-  logObject: LogReference;
+  logObject: ObjectReference;
   startIndex?: string;
   endIndex?: string;
 }
 
 export function createTrimLogObjectJob(log: LogObject, startIndex?: Moment | number, endIndex?: Moment | number): TrimLogObjectJob {
-  const logObject = {
+  const logObject: ObjectReference = {
     wellUid: log.wellUid,
     wellboreUid: log.wellboreUid,
-    logUid: log.uid
+    uid: log.uid
   };
 
   const formatIndexValue = (value?: Moment | number): string => {

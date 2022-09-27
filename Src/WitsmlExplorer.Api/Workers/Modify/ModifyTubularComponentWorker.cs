@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             string wellUid = job.TubularReference.WellUid;
             string wellboreUid = job.TubularReference.WellboreUid;
-            string tubularUid = job.TubularReference.TubularUid;
+            string tubularUid = job.TubularReference.Uid;
 
             WitsmlTubulars query = TubularQueries.UpdateTubularComponent(job.TubularComponent, job.TubularReference);
             QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
-        private static void Verify(TubularComponent tubularComponent, TubularReference tubularReference)
+        private static void Verify(TubularComponent tubularComponent, ObjectReference tubularReference)
         {
             if (string.IsNullOrEmpty(tubularReference.WellUid))
             {
@@ -74,9 +74,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 throw new InvalidOperationException($"{nameof(tubularReference.WellboreUid)} cannot be empty");
             }
 
-            if (string.IsNullOrEmpty(tubularReference.TubularUid))
+            if (string.IsNullOrEmpty(tubularReference.Uid))
             {
-                throw new InvalidOperationException($"{nameof(tubularReference.TubularUid)} cannot be empty");
+                throw new InvalidOperationException($"{nameof(tubularReference.Uid)} cannot be empty");
             }
 
             if (string.IsNullOrEmpty(tubularComponent.Uid))

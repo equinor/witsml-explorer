@@ -1,60 +1,30 @@
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 import ObjectReferences from "./objectReferences";
-import TrajectoryReference from "./trajectoryReference";
-import TubularReference from "./tubularReference";
 import WellboreReference from "./wellboreReference";
 
-export interface DeleteBhaRunsJob {
-  toDelete: ObjectReferences;
-}
-
-export interface DeleteLogObjectsJob {
-  toDelete: ObjectReferences;
-}
-
-export interface DeleteMessageObjectsJob {
+export interface DeleteObjectsJob {
   toDelete: ObjectReferences;
 }
 
 export interface DeleteMnemonicsJob {
   toDelete: {
-    logReference: LogReference;
+    logReference: ObjectReference;
     mnemonics: string[];
   };
 }
 
-export interface DeleteRigsJob {
-  toDelete: ObjectReferences;
-}
-
-export interface DeleteRisksJob {
-  toDelete: ObjectReferences;
-}
-
-export interface DeleteTrajectoriesJob {
-  toDelete: ObjectReferences;
-}
-
 export interface DeleteTrajectoryStationsJob {
   toDelete: {
-    trajectoryReference: TrajectoryReference;
+    trajectoryReference: ObjectReference;
     trajectoryStationUids: string[];
   };
 }
 
 export interface DeleteTubularComponentsJob {
   toDelete: {
-    tubularReference: TubularReference;
+    tubularReference: ObjectReference;
     tubularComponentUids: string[];
   };
-}
-
-export interface DeleteTubularsJob {
-  toDelete: ObjectReferences;
-}
-
-export interface DeleteWbGeometrysJob {
-  toDelete: ObjectReferences;
 }
 
 export interface DeleteWellboreJob {

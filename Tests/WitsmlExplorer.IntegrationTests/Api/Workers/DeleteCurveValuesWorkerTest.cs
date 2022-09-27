@@ -52,11 +52,11 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
             DeleteCurveValuesJob job = new()
             {
-                LogReference = new LogReference
+                LogReference = new ObjectReference
                 {
                     WellUid = wellUid,
                     WellboreUid = wellboreUid,
-                    LogUid = logUid
+                    Uid = logUid
                 },
                 Mnemonics = mnemonics,
                 IndexRanges = indexRanges

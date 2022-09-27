@@ -1,10 +1,6 @@
-export default interface MessageObject {
-  uid: string;
-  name: string;
-  wellboreUid: string;
-  wellboreName: string;
-  wellUid: string;
-  wellName?: string;
+import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
+
+export default interface MessageObject extends ObjectOnWellbore {
   messageText: string;
   dateTimeCreation?: Date;
   dateTimeLastChange?: Date;
@@ -12,29 +8,9 @@ export default interface MessageObject {
 
 export function emptyMessageObject(): MessageObject {
   return {
-    wellboreUid: "",
-    wellboreName: "",
-    wellUid: "",
-    wellName: "",
-    uid: "",
-    name: "",
+    ...emptyObjectOnWellbore(),
     messageText: "",
     dateTimeCreation: null,
     dateTimeLastChange: null
   };
 }
-
-export const calculateMessageObjectNodeId = (messageObject: MessageObject): string => {
-  return messageObject.wellUid + messageObject.wellboreUid + messageObject.uid;
-};
-
-export const getMessageObjectProperties = (messageObject: MessageObject): Map<string, string> => {
-  return new Map([
-    ["Well", messageObject.wellName],
-    ["UID Well", messageObject.wellUid],
-    ["Wellbore", messageObject.wellboreName],
-    ["UID Wellbore", messageObject.wellboreUid],
-    ["Message", messageObject.name],
-    ["UID Message", messageObject.uid]
-  ]);
-};

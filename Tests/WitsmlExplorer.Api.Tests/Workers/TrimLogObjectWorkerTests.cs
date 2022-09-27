@@ -36,12 +36,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public TrimLogObjectWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<TrimLogDataJob>();
+            ILogger<TrimLogDataJob> logger = loggerFactory.CreateLogger<TrimLogDataJob>();
             _worker = new TrimLogObjectWorker(logger, witsmlClientProvider.Object);
         }
 
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task JobHasNoIndexes_DoNothing()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate();
+            TrimLogDataJob job = CreateJobTemplate();
 
             await _worker.Execute(job);
 
@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
 
-            var job = CreateJobTemplate() with { StartIndex = "8" };
+            TrimLogDataJob job = CreateJobTemplate() with { StartIndex = "8" };
             await _worker.Execute(job);
 
             job = CreateJobTemplate() with { EndIndex = "110" };
@@ -80,11 +80,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasIndexesOutOfScope_DoNothing_TimeIndexed()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
 
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = logStart.AddDays(-1).ToISODateTimeString()
             };
@@ -106,16 +106,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidLaterStart_DeleteAllBeforeNewStartIndex_DepthIndexed()
         {
-            var newStartIndex = "50";
+            string newStartIndex = "50";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = newStartIndex,
                 EndIndex = "100"
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -123,7 +123,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
-            var query = deleteQueries.First();
+            WitsmlLogs query = deleteQueries.First();
             Assert.Null(query.Logs.First().StartIndex);
             Assert.Equal(newStartIndex, query.Logs.First().EndIndex.Value);
         }
@@ -131,18 +131,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidLaterStart_DeleteAllBeforeNewStartIndex_TimeIndexed()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
-            var newLogStart = new DateTime(2000, 1, 5).ToISODateTimeString();
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
+            string newLogStart = new DateTime(2000, 1, 5).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = newLogStart,
                 EndIndex = logEnd.ToISODateTimeString()
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -150,7 +150,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
-            var query = deleteQueries.First();
+            WitsmlLogs query = deleteQueries.First();
             Assert.Null(query.Logs.First().StartDateTimeIndex);
             Assert.Equal(newLogStart, query.Logs.First().EndDateTimeIndex);
         }
@@ -158,16 +158,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidEarlierEnd_DeleteAllAfterNewEndIndex_DepthIndexed()
         {
-            var newEndIndex = "90";
+            string newEndIndex = "90";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = "10",
                 EndIndex = newEndIndex
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -175,7 +175,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
-            var query = deleteQueries.First();
+            WitsmlLogs query = deleteQueries.First();
             Assert.Equal(newEndIndex, query.Logs.First().StartIndex.Value);
             Assert.Null(query.Logs.First().EndIndex);
         }
@@ -183,18 +183,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidEarlierEnd_DeleteAllAfterNewEndIndex_TimeIndexed()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
-            var newLogEnd = new DateTime(2000, 1, 5).ToISODateTimeString();
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
+            string newLogEnd = new DateTime(2000, 1, 5).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = logStart.ToISODateTimeString(),
                 EndIndex = newLogEnd
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -202,7 +202,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(deleteQueries);
-            var query = deleteQueries.First();
+            WitsmlLogs query = deleteQueries.First();
             Assert.Equal(newLogEnd, query.Logs.First().StartDateTimeIndex);
             Assert.Null(query.Logs.First().EndDateTimeIndex);
         }
@@ -210,17 +210,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidLaterStartAndEarlierEnd_DeletesAllBeforeNewStart_DeleteAllAfterNewEndIndex_DepthIndexed()
         {
-            var newLogStart = "20";
-            var newLogEnd = "90";
+            string newLogStart = "20";
+            string newLogEnd = "90";
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = newLogStart,
                 EndIndex = newLogEnd
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -229,11 +229,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Equal(2, deleteQueries.Count);
 
-            var trimStartQuery = deleteQueries.First();
+            WitsmlLogs trimStartQuery = deleteQueries.First();
             Assert.Null(trimStartQuery.Logs.First().StartIndex);
             Assert.Equal(newLogStart, trimStartQuery.Logs.First().EndIndex.Value);
 
-            var trimEndQuery = deleteQueries.Last();
+            WitsmlLogs trimEndQuery = deleteQueries.Last();
             Assert.Equal(newLogEnd, trimEndQuery.Logs.First().StartIndex.Value);
             Assert.Null(trimEndQuery.Logs.First().EndIndex);
         }
@@ -241,19 +241,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task JobHasValidLaterStandAndEarlierEnd_DeletesAllBeforeNewStart_DeleteAllAfterNewEndIndex_TimeIndexed()
         {
-            var logStart = new DateTime(2000, 1, 1);
-            var logEnd = new DateTime(2000, 1, 10);
-            var newLogStart = logStart.AddDays(1).ToISODateTimeString();
-            var newLogEnd = logEnd.AddDays(-1).ToISODateTimeString();
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
+            string newLogStart = logStart.AddDays(1).ToISODateTimeString();
+            string newLogEnd = logEnd.AddDays(-1).ToISODateTimeString();
 
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
-            var job = CreateJobTemplate() with
+            TrimLogDataJob job = CreateJobTemplate() with
             {
                 StartIndex = newLogStart,
                 EndIndex = newLogEnd
             };
 
-            var deleteQueries = new List<WitsmlLogs>();
+            List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
@@ -262,11 +262,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Equal(2, deleteQueries.Count);
 
-            var trimStartQuery = deleteQueries.First();
+            WitsmlLogs trimStartQuery = deleteQueries.First();
             Assert.Null(trimStartQuery.Logs.First().StartDateTimeIndex);
             Assert.Equal(newLogStart, trimStartQuery.Logs.First().EndDateTimeIndex);
 
-            var trimEndQuery = deleteQueries.Last();
+            WitsmlLogs trimEndQuery = deleteQueries.Last();
             Assert.Equal(newLogEnd, trimEndQuery.Logs.First().StartDateTimeIndex);
             Assert.Null(trimEndQuery.Logs.First().EndDateTimeIndex);
         }
@@ -280,7 +280,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
         {
-            var witsmlLog = new WitsmlLog
+            WitsmlLog witsmlLog = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
@@ -297,6 +297,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     witsmlLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     witsmlLog.EndDateTimeIndex = endIndex.GetValueAsString();
                     break;
+                default:
+                    break;
             }
 
             return new WitsmlLogs
@@ -309,11 +311,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new TrimLogDataJob
             {
-                LogObject = new LogReference
+                LogObject = new ObjectReference
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
-                    LogUid = LogUid
+                    Uid = LogUid
                 }
             };
         }

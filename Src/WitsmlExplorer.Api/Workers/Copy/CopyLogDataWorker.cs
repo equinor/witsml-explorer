@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             int totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
             Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
             WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"{totalRowsCopied} rows copied");
-            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.LogUid, RefreshType.Update);
+            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
             return (workerResult, refreshAction);
         }
 
@@ -97,7 +97,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             while (startIndex < endIndex)
             {
                 WitsmlLogs query = LogQueries.GetLogContent(job.Source.LogReference.WellUid, job.Source.LogReference.WellboreUid,
-                    job.Source.LogReference.LogUid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
+                    job.Source.LogReference.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
                 WitsmlLogs sourceData = await _witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
                 if (!sourceData.Logs.Any())
                 {
@@ -219,10 +219,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             return sourceLog.Result == null
                 ? throw new Exception($"Could not find source log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}")
+                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.Uid}")
                 : targetLog.Result == null
                 ? throw new Exception($"Could not find target log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.LogUid}")
+                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.Uid}")
                 : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
         }
 

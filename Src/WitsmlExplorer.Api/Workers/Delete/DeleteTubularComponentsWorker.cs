@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             string wellUid = job.ToDelete.TubularReference.WellUid;
             string wellboreUid = job.ToDelete.TubularReference.WellboreUid;
-            string tubularUid = job.ToDelete.TubularReference.TubularUid;
+            string tubularUid = job.ToDelete.TubularReference.Uid;
             ReadOnlyCollection<string> tubularcomponents = new(job.ToDelete.TubularComponentUids.ToList());
             string tubularComponentsString = string.Join(", ", tubularcomponents);
 

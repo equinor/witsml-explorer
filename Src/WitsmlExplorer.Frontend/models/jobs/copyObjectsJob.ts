@@ -1,7 +1,7 @@
 import ObjectReferences from "./objectReferences";
 import WellboreReference from "./wellboreReference";
 
-export default interface CopyLogJob {
+export default interface CopyObjectsJob {
   source: ObjectReferences;
   target: WellboreReference;
 }

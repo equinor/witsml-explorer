@@ -1,15 +1,15 @@
 import { LogCurveInfoRow } from "../../components/ContentViews/LogCurveInfoListView";
 import LogObject from "../logObject";
-import LogReference from "./logReference";
+import ObjectReference from "./objectReference";
 
 export interface CopyLogDataJob {
   source: LogCurvesReference;
-  target: LogReference;
+  target: ObjectReference;
 }
 
 export interface LogCurvesReference {
   serverUrl: string;
-  logReference: LogReference;
+  logReference: ObjectReference;
   mnemonics: string[];
 }
 
@@ -43,7 +43,7 @@ export function createLogCurvesReference(logCurveInfoRows: LogCurveInfoRow[], so
     logReference: {
       wellUid: source.wellUid,
       wellboreUid: source.wellboreUid,
-      logUid: source.uid
+      uid: source.uid
     },
     mnemonics: logCurveInfoRows.map((dataRow) => dataRow.mnemonic)
   };
@@ -55,7 +55,7 @@ export function createCopyLogDataJob(sourceLogCurvesReference: LogCurvesReferenc
     target: {
       wellUid: target.wellUid,
       wellboreUid: target.wellboreUid,
-      logUid: target.uid
+      uid: target.uid
     }
   };
 }

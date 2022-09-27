@@ -1,7 +1,8 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
+import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
-export default interface Rig {
+export default interface Rig extends ObjectOnWellbore {
   airGap: Measure;
   approvals: string;
   commonData: CommonData;
@@ -13,7 +14,6 @@ export default interface Rig {
   itemState?: string;
   isOffshore?: boolean;
   manufacturer: string;
-  name: string;
   nameContact: string;
   owner: string;
   ratingDrillDepth: Measure;
@@ -21,16 +21,12 @@ export default interface Rig {
   registration: string;
   telNumber: string;
   typeRig: string;
-  uid: string;
-  wellUid: string;
-  wellboreUid: string;
-  wellboreName: string;
-  wellName?: string;
   yearEntService: string;
 }
 
 export function emptyRig(): Rig {
   return {
+    ...emptyObjectOnWellbore(),
     airGap: null,
     approvals: "",
     classRig: "",
@@ -41,7 +37,6 @@ export function emptyRig(): Rig {
     itemState: "",
     isOffshore: null,
     manufacturer: "",
-    name: "",
     nameContact: "",
     owner: "",
     ratingDrillDepth: null,
@@ -49,11 +44,6 @@ export function emptyRig(): Rig {
     registration: "",
     typeRig: "",
     telNumber: "",
-    uid: "",
-    wellboreUid: "",
-    wellboreName: "",
-    wellName: "",
-    wellUid: "",
     yearEntService: "",
     commonData: {
       sourceName: "",
@@ -63,17 +53,3 @@ export function emptyRig(): Rig {
     }
   };
 }
-export const calculateRigNodeId = (rig: Rig): string => {
-  return rig.wellUid + rig.wellboreUid + rig.uid;
-};
-
-export const getRigProperties = (rig: Rig): Map<string, string> => {
-  return new Map([
-    ["Well", rig.wellName],
-    ["UID Well", rig.wellUid],
-    ["Wellbore", rig.wellboreName],
-    ["UID Wellbore", rig.wellboreUid],
-    ["Rig", rig.name],
-    ["UID Rig", rig.uid]
-  ]);
-};

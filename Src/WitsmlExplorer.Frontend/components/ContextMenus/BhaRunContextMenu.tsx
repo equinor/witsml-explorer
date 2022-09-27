@@ -4,7 +4,7 @@ import React from "react";
 import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteBhaRunsJob } from "../../models/jobs/deleteJobs";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -42,7 +42,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
 
   const deleteBhaRuns = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteBhaRunsJob = {
+    const job: DeleteObjectsJob = {
       toDelete: {
         objectUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
         wellUid: checkedBhaRunRows[0].wellUid,

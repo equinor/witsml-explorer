@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers
                 startIndex = Index.End(logData).AddEpsilon();
             }
 
-            var resultDeleteOldMnemonic = await DeleteOldMnemonic(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.LogUid, job.Mnemonic);
+            var resultDeleteOldMnemonic = await DeleteOldMnemonic(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonic);
             if (!resultDeleteOldMnemonic.IsSuccess)
             {
                 return (resultDeleteOldMnemonic, null);
@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Workers
             Logger.LogInformation("{JobType} - Job successful. Mnemonic renamed from {Mnemonic} to {NewMnemonic}", GetType().Name, job.Mnemonic, job.NewMnemonic);
             return (
                 new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Mnemonic renamed from {job.Mnemonic} to {job.NewMnemonic}"),
-                new RefreshLogObject(_witsmlClient.GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.LogUid, RefreshType.Update));
+                new RefreshLogObject(_witsmlClient.GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, RefreshType.Update));
         }
 
         private static WitsmlLogs CreateNewLogWithRenamedMnemonic(RenameMnemonicJob job, WitsmlLog logHeader, IEnumerable<string> mnemonics, WitsmlLog logData)
@@ -135,9 +135,9 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        private async Task<WitsmlLog> GetLog(LogReference logReference)
+        private async Task<WitsmlLog> GetLog(ObjectReference logReference)
         {
-            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.LogUid);
+            var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.Uid);
             var logs = await _witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }

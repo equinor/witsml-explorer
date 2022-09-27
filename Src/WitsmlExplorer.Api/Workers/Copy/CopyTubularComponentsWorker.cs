@@ -67,14 +67,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return Tuple.Create(targetTubular, sourceTubularComponents);
         }
 
-        private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, TubularReference tubularReference)
+        private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, ObjectReference tubularReference)
         {
-            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularById(tubularReference.WellUid, tubularReference.WellboreUid, tubularReference.TubularUid);
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularById(tubularReference.WellUid, tubularReference.WellboreUid, tubularReference.Uid);
             WitsmlTubulars result = await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
             return !result.Tubulars.Any() ? null : result.Tubulars.First();
         }
 
-        private static async Task<IEnumerable<WitsmlTubularComponent>> GetTubularComponents(IWitsmlClient client, TubularReference tubularReference, IEnumerable<string> tubularComponentsUids)
+        private static async Task<IEnumerable<WitsmlTubularComponent>> GetTubularComponents(IWitsmlClient client, ObjectReference tubularReference, IEnumerable<string> tubularComponentsUids)
         {
             WitsmlTubular witsmlTubular = await GetTubular(client, tubularReference);
             return witsmlTubular?.TubularComponents.FindAll((WitsmlTubularComponent tc) => tubularComponentsUids.Contains(tc.Uid));

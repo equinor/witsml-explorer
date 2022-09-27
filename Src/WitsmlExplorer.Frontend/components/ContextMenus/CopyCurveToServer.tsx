@@ -1,7 +1,7 @@
 import OperationType from "../../contexts/operationType";
 import { CopyLogDataJob, LogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
-import LogReference from "../../models/jobs/logReference";
+import ObjectReference from "../../models/jobs/objectReference";
 import { ReplaceLogDataJob } from "../../models/jobs/replaceLogDataJob";
 import LogCurveInfo from "../../models/logCurveInfo";
 import { Server } from "../../models/server";
@@ -55,14 +55,14 @@ const createCopyJob = (sourceServer: Server, curves: LogCurveInfoRow[]): CopyLog
     logReference: {
       wellUid: curves[0].wellUid,
       wellboreUid: curves[0].wellboreUid,
-      logUid: curves[0].logUid
+      uid: curves[0].logUid
     },
     mnemonics: curves.map((curve) => curve.mnemonic)
   };
-  const targetLogReference: LogReference = {
+  const targetLogReference: ObjectReference = {
     wellUid: curves[0].wellUid,
     wellboreUid: curves[0].wellboreUid,
-    logUid: curves[0].logUid
+    uid: curves[0].logUid
   };
   const copyJob: CopyLogDataJob = { source: curveReferences, target: targetLogReference };
   return copyJob;
@@ -81,7 +81,7 @@ const replaceCurves = async (
       logReference: {
         wellUid: curvesToCopy[0].wellUid,
         wellboreUid: curvesToCopy[0].wellboreUid,
-        logUid: curvesToCopy[0].logUid
+        uid: curvesToCopy[0].logUid
       },
       mnemonics: curvesToDelete.map((item) => item.mnemonic)
     }

@@ -1,23 +1,5 @@
-import Wellbore from "./wellbore";
+import ObjectOnWellbore from "./objectOnWellbore";
 
-export default interface Tubular {
-  uid: string;
-  wellUid: string;
-  wellboreUid: string;
-  name: string;
+export default interface Tubular extends ObjectOnWellbore {
   typeTubularAssy: string;
 }
-
-export const calculateTubularId = (tubular: Tubular): string => {
-  return tubular.wellUid + tubular.wellboreUid + tubular.uid;
-};
-
-export const getTubularProperties = (tubular: Tubular, wellbore: Wellbore): Map<string, string> => {
-  return new Map([
-    ["Well", wellbore.wellName],
-    ["UID Well", tubular.wellUid],
-    ["Wellbore", wellbore.name],
-    ["UID Wellbore", tubular.wellboreUid],
-    ["Tubular", tubular.name]
-  ]);
-};
