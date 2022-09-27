@@ -73,7 +73,7 @@
     "@types/styled-components": "^5.1.26",
     "@types/uuidv4": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.1",
     "eslint": "<9.0.0",
     "eslint-plugin-jest": "^27.0.4",
     "eslint-plugin-react": "^7.31.8",
