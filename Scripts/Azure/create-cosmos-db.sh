@@ -4,6 +4,7 @@ declare subscriptionId
 declare resourceGroupName
 declare databaseAccountName
 declare databaseName
+declare regionName
 
 if [[ -f "./config.cfg" ]]; then
 
@@ -15,7 +16,7 @@ if [[ -f "./config.cfg" ]]; then
         --resource-group "$resourceGroupName" \
         --name "$databaseAccountName" \
         --kind GlobalDocumentDB \
-        --locations regionName="Norway East" failoverPriority=0 \
+        --locations regionName="$regionName" failoverPriority=0 \
         --default-consistency-level "Session" \
         --verbose
 

@@ -13,7 +13,6 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public static class WitsmlServerHandler
     {
         [Produces(typeof(IEnumerable<Server>))]
-
         public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
