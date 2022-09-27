@@ -15,7 +15,7 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickCopyCurveToServer } from "./CopyCurveToServer";
 import NestedMenuItem from "./NestedMenuItem";
 
@@ -114,6 +114,13 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, selectedLog, "logObjectUid")}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>

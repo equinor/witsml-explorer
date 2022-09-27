@@ -10,11 +10,11 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
-import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickRefresh } from "./TubularContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -57,7 +57,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid)}>
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular, "tubularUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

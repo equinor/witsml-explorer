@@ -16,7 +16,8 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+import { onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import NestedMenuItem from "./NestedMenuItem";
 
 export interface WbGeometryObjectContextMenuProps {
   checkedWbGeometryObjectRows: WbGeometryObjectRow[];
@@ -27,7 +28,7 @@ export interface WbGeometryObjectContextMenuProps {
 }
 
 const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): React.ReactElement => {
-  const { checkedWbGeometryObjectRows, dispatchOperation, dispatchNavigation } = props;
+  const { checkedWbGeometryObjectRows, dispatchOperation, dispatchNavigation, servers } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -83,6 +84,17 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedWbGeometryObjectRows.length !== 1}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedWbGeometryObjectRows[0], "wbGeometryUid")}
+              disabled={checkedWbGeometryObjectRows.length !== 1}
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedWbGeometryObjectRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

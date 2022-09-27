@@ -897,6 +897,7 @@ const selectTrajectoriesGroup = (state: NavigationState, { payload }: SelectTraj
 
 const selectTrajectory = (state: NavigationState, { payload }: SelectTrajectoryAction) => {
   const { well, wellbore, trajectory, trajectoryGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateTrajectoryGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
@@ -906,7 +907,8 @@ const selectTrajectory = (state: NavigationState, { payload }: SelectTrajectoryA
     selectedTrajectoryGroup: trajectoryGroup,
     selectedTrajectory: trajectory,
     currentSelected: trajectory,
-    currentProperties: getObjectOnWellboreProperties(trajectory, ObjectType.Trajectory)
+    currentProperties: getObjectOnWellboreProperties(trajectory, ObjectType.Trajectory),
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateTrajectoryGroupId(wellbore)) : state.expandedTreeNodes
   };
 };
 

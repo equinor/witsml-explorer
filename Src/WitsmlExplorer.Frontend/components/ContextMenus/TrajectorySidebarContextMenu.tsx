@@ -6,8 +6,9 @@ import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
 import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
@@ -38,7 +39,14 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
         <MenuItem key={"delete"} onClick={() => onClickDelete([trajectory], dispatchOperation)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete trajectory</Typography>
-        </MenuItem>
+        </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>
       ]}
     />
   );

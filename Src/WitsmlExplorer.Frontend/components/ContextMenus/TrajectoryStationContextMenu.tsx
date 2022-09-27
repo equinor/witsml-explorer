@@ -14,8 +14,9 @@ import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
 export interface TrajectoryStationContextMenuProps {
@@ -97,6 +98,13 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTrajectoryStations.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
