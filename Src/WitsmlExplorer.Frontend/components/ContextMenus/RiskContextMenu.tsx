@@ -12,8 +12,9 @@ import { RiskObjectRow } from "../ContentViews/RisksListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { onClickCopy, onClickDelete } from "./RiskContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -56,6 +57,17 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "risk", risks)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={risks.length !== 1}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() => onClickShowOnServer(dispatchOperation, server, risks[0].wellUid, risks[0].wellboreUid, risks[0].uid, "riskUid")}
+              disabled={risks.length !== 1}
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRiskObjectRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

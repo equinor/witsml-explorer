@@ -5,6 +5,7 @@ import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import Icon from "../../styles/Icons";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import { QueryParams } from "../Routing";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -40,4 +41,18 @@ export const showCredentialsModal = (server: Server, dispatchOperation: Dispatch
     confirmText: "Save"
   };
   dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
+};
+
+export const onClickShowOnServer = async (
+  dispatchOperation: DispatchOperation,
+  server: Server,
+  wellUid: string,
+  wellboreUid: string,
+  uid: string,
+  paramName: keyof QueryParams
+) => {
+  const host = `${window.location.protocol}//${window.location.host}`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellUid}&wellboreUid=${wellboreUid}&${paramName}=${uid}`;
+  window.open(logUrl);
+  dispatchOperation({ type: OperationType.HideContextMenu });
 };

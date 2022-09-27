@@ -14,11 +14,11 @@ import { TubularComponentRow } from "../ContentViews/TubularView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
-import { onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
+import { onClickRefresh } from "./TubularContextMenuUtils";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
@@ -102,7 +102,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid)}>
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid, "tubularUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

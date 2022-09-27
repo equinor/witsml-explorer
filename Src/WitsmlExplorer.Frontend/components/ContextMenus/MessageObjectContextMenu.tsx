@@ -15,7 +15,8 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import NestedMenuItem from "./NestedMenuItem";
 
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
@@ -26,7 +27,7 @@ export interface MessageObjectContextMenuProps {
 }
 
 const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.ReactElement => {
-  const { checkedMessageObjectRows, dispatchOperation } = props;
+  const { checkedMessageObjectRows, dispatchOperation, servers } = props;
 
   const deleteMessageObjects = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -79,6 +80,26 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "message", checkedMessageObjectRows)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedMessageObjectRows.length !== 1}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowOnServer(
+                  dispatchOperation,
+                  server,
+                  checkedMessageObjectRows[0].wellUid,
+                  checkedMessageObjectRows[0].wellboreUid,
+                  checkedMessageObjectRows[0].uid,
+                  "messageUid"
+                )
+              }
+              disabled={checkedMessageObjectRows.length !== 1}
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedMessageObjectRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

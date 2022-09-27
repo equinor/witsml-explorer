@@ -13,10 +13,10 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickCopy, onClickDelete, onClickRefresh, onClickShowOnServer } from "./TubularContextMenuUtils";
+import { onClickCopy, onClickDelete, onClickRefresh } from "./TubularContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularObjectContextMenuProps {
@@ -67,7 +67,7 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, tubulars[0].wellUid, tubulars[0].wellboreUid, tubulars[0].uid)}
+              onClick={() => onClickShowOnServer(dispatchOperation, server, tubulars[0].wellUid, tubulars[0].wellboreUid, tubulars[0].uid, "tubularUid")}
               disabled={tubulars.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

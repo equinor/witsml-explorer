@@ -14,8 +14,9 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { onClickCopy } from "./RigContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -91,6 +92,17 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           </ListItemIcon>
           <Typography color="primary">{menuItemText("delete", "rig", rigs)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedRigRows.length !== 1}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedRigRows[0].wellUid, checkedRigRows[0].wellboreUid, checkedRigRows[0].uid, "rigUid")}
+              disabled={checkedRigRows.length !== 1}
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRigRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
