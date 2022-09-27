@@ -59,11 +59,7 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={risks.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, risks[0].wellUid, risks[0].wellboreUid, risks[0].uid, "riskUid")}
-              disabled={risks.length !== 1}
-            >
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, risks[0], "riskUid")} disabled={risks.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

@@ -88,16 +88,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() =>
-                onClickShowOnServer(
-                  dispatchOperation,
-                  server,
-                  checkedWbGeometryObjectRows[0].wellUid,
-                  checkedWbGeometryObjectRows[0].wellboreUid,
-                  checkedWbGeometryObjectRows[0].uid,
-                  "wbGeometryUid"
-                )
-              }
+              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedWbGeometryObjectRows[0], "wbGeometryUid")}
               disabled={checkedWbGeometryObjectRows.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

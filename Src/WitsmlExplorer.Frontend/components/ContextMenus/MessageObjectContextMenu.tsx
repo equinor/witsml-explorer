@@ -84,16 +84,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() =>
-                onClickShowOnServer(
-                  dispatchOperation,
-                  server,
-                  checkedMessageObjectRows[0].wellUid,
-                  checkedMessageObjectRows[0].wellboreUid,
-                  checkedMessageObjectRows[0].uid,
-                  "messageUid"
-                )
-              }
+              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedMessageObjectRows[0], "messageUid")}
               disabled={checkedMessageObjectRows.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

@@ -50,11 +50,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={trajectories.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, trajectories[0].wellUid, trajectories[0].wellboreUid, trajectories[0].uid, "trajectoryUid")}
-              disabled={trajectories.length !== 1}
-            >
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectories[0], "trajectoryUid")} disabled={trajectories.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

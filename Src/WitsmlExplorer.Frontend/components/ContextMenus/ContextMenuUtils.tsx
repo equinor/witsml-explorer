@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import Icon from "../../styles/Icons";
@@ -43,16 +44,9 @@ export const showCredentialsModal = (server: Server, dispatchOperation: Dispatch
   dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };
 
-export const onClickShowOnServer = async (
-  dispatchOperation: DispatchOperation,
-  server: Server,
-  wellUid: string,
-  wellboreUid: string,
-  uid: string,
-  paramName: keyof QueryParams
-) => {
+export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, paramName: keyof QueryParams) => {
   const host = `${window.location.protocol}//${window.location.host}`;
-  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellUid}&wellboreUid=${wellboreUid}&${paramName}=${uid}`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&${paramName}=${objectOnWellbore.uid}`;
   window.open(logUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };

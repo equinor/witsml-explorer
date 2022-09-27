@@ -100,7 +100,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory.wellUid, trajectory.wellboreUid, trajectory.uid, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

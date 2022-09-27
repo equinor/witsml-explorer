@@ -57,7 +57,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular.wellUid, tubular.wellboreUid, tubular.uid, "tubularUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular, "tubularUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

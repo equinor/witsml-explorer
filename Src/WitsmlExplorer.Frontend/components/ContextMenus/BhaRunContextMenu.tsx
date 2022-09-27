@@ -107,11 +107,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedBhaRunRows.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedBhaRunRows[0].wellUid, checkedBhaRunRows[0].wellboreUid, checkedBhaRunRows[0].uid, "bhaRunUid")}
-              disabled={checkedBhaRunRows.length !== 1}
-            >
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, checkedBhaRunRows[0], "bhaRunUid")} disabled={checkedBhaRunRows.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
