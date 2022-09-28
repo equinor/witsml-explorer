@@ -57,8 +57,8 @@ namespace WitsmlExplorer.Api.Services
             // Use b64 encoded Basic creds
             else if (authorizationHeader?.Count == 0 && targetServerHeader?.Count > 0)
             {
-                _targetCreds = credentialsService.GetBasicCreds(targetServerHeader.ToString());
-                _sourceCreds = credentialsService.GetBasicCreds(sourceServerHeader.ToString());
+                _targetCreds = credentialsService.GetBasicCredsFromHeader(targetServerHeader.ToString());
+                _sourceCreds = credentialsService.GetBasicCredsFromHeader(sourceServerHeader.ToString());
             }
 
             _witsmlClient = !_targetCreds.IsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host, _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;

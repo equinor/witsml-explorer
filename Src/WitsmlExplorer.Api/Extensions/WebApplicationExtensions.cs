@@ -6,57 +6,60 @@ using Microsoft.AspNetCore.Routing;
 
 namespace WitsmlExplorer.Api.Extensions
 {
+
     public static class WebApplicationExtensions
     {
+        private static readonly string OAuth2Path = "/secure";
+        private static readonly string BasicPath = "/basic";
         public static void MapGet(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2)
         {
             if (useOAuth2)
             {
-                endpoints.MapGet("/api2" + pattern, handler).RequireAuthorization();
+                endpoints.MapGet(OAuth2Path + pattern, handler).RequireAuthorization();
             }
-            endpoints.MapGet("api" + pattern, handler);
+            endpoints.MapGet(BasicPath + pattern, handler);
         }
 
         public static void MapGet(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2, params string[] policyNames)
         {
             if (useOAuth2)
             {
-                endpoints.MapGet("/api2" + pattern, handler).RequireAuthorization(policyNames);
+                endpoints.MapGet(OAuth2Path + pattern, handler).RequireAuthorization(policyNames);
             }
-            endpoints.MapGet("api" + pattern, handler);
+            endpoints.MapGet(BasicPath + pattern, handler);
         }
         public static void MapPost(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2)
         {
             if (useOAuth2)
             {
-                endpoints.MapPost("/api2" + pattern, handler).RequireAuthorization();
+                endpoints.MapPost(OAuth2Path + pattern, handler).RequireAuthorization();
             }
-            endpoints.MapPost("api" + pattern, handler);
+            endpoints.MapPost(BasicPath + pattern, handler);
         }
         public static void MapPost(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2, params string[] policyNames)
         {
             if (useOAuth2)
             {
-                endpoints.MapPost("/api2" + pattern, handler).RequireAuthorization(policyNames);
+                endpoints.MapPost(OAuth2Path + pattern, handler).RequireAuthorization(policyNames);
             }
-            endpoints.MapPost("api" + pattern, handler);
+            endpoints.MapPost(BasicPath + pattern, handler);
         }
         public static void MapDelete(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2, params string[] policyNames)
         {
             if (useOAuth2)
             {
-                endpoints.MapDelete("/api2" + pattern, handler).RequireAuthorization(policyNames);
+                endpoints.MapDelete(OAuth2Path + pattern, handler).RequireAuthorization(policyNames);
             }
-            endpoints.MapDelete("api" + pattern, handler);
+            endpoints.MapDelete(BasicPath + pattern, handler);
         }
 
         public static void MapMethods(this IEndpointRouteBuilder endpoints, string pattern, IEnumerable<string> httpMethods, Delegate handler, bool useOAuth2, params string[] policyNames)
         {
             if (useOAuth2)
             {
-                endpoints.MapMethods("/api2" + pattern, httpMethods, handler).RequireAuthorization(policyNames);
+                endpoints.MapMethods(OAuth2Path + pattern, httpMethods, handler).RequireAuthorization(policyNames);
             }
-            endpoints.MapMethods("api" + pattern, httpMethods, handler);
+            endpoints.MapMethods(BasicPath + pattern, httpMethods, handler);
         }
     }
 }

@@ -5,9 +5,9 @@ namespace WitsmlExplorer.Api.Configuration
 {
     public class BasicCredentials : ICredentials
     {
-        public string UserId { get; }
-        public string Password { get; }
-
+        public string UserId { get; init; }
+        public string Password { get; init; }
+        internal BasicCredentials() { }
         public BasicCredentials(string base64EncodedString)
         {
             string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
@@ -20,6 +20,10 @@ namespace WitsmlExplorer.Api.Configuration
         {
             UserId = username;
             Password = password;
+        }
+        public bool IsNullOrEmpty()
+        {
+            return string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
         }
     }
 }

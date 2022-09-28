@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Services
             _allServers = _witsmlServerRepository.GetDocumentsAsync();
         }
 
-        public async Task<string> BasicAuthorization(Uri serverUrl)
+        public async Task<string> ProtectBasicAuthorization(Uri serverUrl)
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
@@ -60,20 +60,16 @@ namespace WitsmlExplorer.Api.Services
 
             await VerifyCredentials(credentials);
 
-            string protectedPayload = _dataProtector.Protect(credentials.Password, TimeSpan.FromDays(1));
-
-            return protectedPayload;
+            return Encrypt(credentials.Password);
         }
 
-        public string Decrypt(ServerCredentials credentials)
+        private string Encrypt(string inputString)
         {
-            return _dataProtector.Unprotect(credentials.Password);
+            return _dataProtector.Protect(inputString, TimeSpan.FromDays(1));
         }
 
-
-        public string Decrypt(string inputString)
+        private string Decrypt(string inputString)
         {
-
             try
             {
                 return _dataProtector.Unprotect(inputString);
@@ -91,7 +87,7 @@ namespace WitsmlExplorer.Api.Services
                 IHeaderDictionary headers = httpRequest.Headers;
                 List<ServerCredentials> credentialsList = await GetCredentialsFromHeaders(headers);
                 StringValues server = headers["Witsml-ServerUrl"];
-                ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0]));
+                ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0].Password));
                 await VerifyCredentials(serverCreds);
             }
             catch (Exception ex)
@@ -185,8 +181,8 @@ namespace WitsmlExplorer.Api.Services
         /// </summary>
         public async Task<ServerCredentials> GetCredsWithToken(string token, string serverHeader)
         {
-            ServerCredentials result = GetBasicCreds(serverHeader);
-            if (result == null)
+            ServerCredentials result = GetBasicCredsFromHeader(serverHeader);
+            if (result.IsNullOrEmpty())
             {
                 JwtSecurityTokenHandler handler = new();
                 JwtSecurityToken jwt = handler.ReadJwtToken(token);
@@ -201,22 +197,22 @@ namespace WitsmlExplorer.Api.Services
             return result;
         }
 
-        public ServerCredentials GetBasicCreds(string serverHeader)
+        public ServerCredentials GetBasicCredsFromHeader(string serverHeader)
         {
-            BasicCredentials basic = new(serverHeader.Split("@")[1]);
-            if (serverHeader.Split().Length > 1 && Decrypt(basic?.Password) != null)
+            BasicCredentials basic = serverHeader.Split("@").Length == 2 ? new(serverHeader.Split("@")[0]) : new BasicCredentials();
+            if (!basic.IsNullOrEmpty())
             {
                 return new ServerCredentials()
                 {
                     Host = serverHeader.Split("@")[1],
                     UserId = basic.UserId,
-                    Password = Decrypt(basic.Password)
+                    Password = Decrypt(basic.Password) ?? basic.Password
                 };
             }
-            return null;
+            return new ServerCredentials();
         }
 
-        public bool VerifyIsEncrypted(ServerCredentials credentials)
+        public string Decrypt(ServerCredentials credentials)
         {
             throw new NotImplementedException();
         }

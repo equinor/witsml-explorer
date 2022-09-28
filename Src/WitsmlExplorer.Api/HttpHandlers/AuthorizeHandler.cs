@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     {
         public static async Task<IResult> Authorize(Server witsmlServer, ICredentialsService credentialsService)
         {
-            return Results.Ok(await credentialsService.BasicAuthorization(witsmlServer.Url));
+            return Results.Ok(await credentialsService.ProtectBasicAuthorization(witsmlServer.Url));
         }
     }
 }

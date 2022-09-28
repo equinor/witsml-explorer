@@ -2,7 +2,7 @@ namespace WitsmlExplorer.Api.Configuration
 {
     public class ServerCredentials : ICredentials
     {
-        internal ServerCredentials() { }
+        public ServerCredentials() { }
 
         public ServerCredentials(string host, string userid, string password)
         {
