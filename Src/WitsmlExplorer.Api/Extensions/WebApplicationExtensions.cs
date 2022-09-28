@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Extensions
     public static class WebApplicationExtensions
     {
         private static readonly string OAuth2Path = "/secure";
-        private static readonly string BasicPath = "/basic";
+        private static readonly string BasicPath = "/api";
         public static void MapGet(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2)
         {
             if (useOAuth2)
