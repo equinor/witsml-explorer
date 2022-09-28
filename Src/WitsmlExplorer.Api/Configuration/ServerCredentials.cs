@@ -19,6 +19,10 @@ namespace WitsmlExplorer.Api.Configuration
         public string Host { get; init; }
         public string UserId { get; init; }
         public string Password { get; init; }
+        public bool IsNullOrEmpty()
+        {
+            return string.IsNullOrEmpty(Host) || string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
+        }
 
     }
 }

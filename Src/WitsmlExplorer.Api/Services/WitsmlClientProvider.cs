@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -24,41 +23,46 @@ namespace WitsmlExplorer.Api.Services
         public const string WitsmlServerUrlHeader = "Witsml-ServerUrl";
         private const string WitsmlSourceServerUrlHeader = "Witsml-Source-ServerUrl";
 
+        private readonly ServerCredentials _targetCreds;
+        private readonly ServerCredentials _sourceCreds;
         private readonly WitsmlClient _witsmlClient;
         private readonly WitsmlClient _witsmlSourceClient;
         private readonly WitsmlClientCapabilities _clientCapabilities;
 
         public WitsmlClientProvider(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
-            if (httpContextAccessor.HttpContext?.Request.Headers["Authorization"].Count == 0 ||
-                httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader].Count == 0
-            )
+            if (httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader].Count == 0)
             {
                 return;
             }
-
             _clientCapabilities = witsmlClientCapabilities.Value;
-
-            IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
-            StringValues serverUrl = headers[WitsmlServerUrlHeader];
-            StringValues sourceServerUrl = headers[WitsmlSourceServerUrlHeader];
             bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
 
-            Task<List<ICredentials>> credTask = credentialsService.GetCredentials(headers);
-            Task.WaitAny(credTask);
-            List<ICredentials> credentials = credTask.Result;
+            StringValues? authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
+            StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader];
+            StringValues? sourceServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlSourceServerUrlHeader];
 
-            bool isEncrypted = credentialsService.VerifyIsEncrypted(credentials[0]);
-            _witsmlClient = isEncrypted
-                ? new WitsmlClient(serverUrl, credentials[0].UserId, credentialsService.Decrypt(credentials[0]), _clientCapabilities, null, logQueries)
-                : new WitsmlClient(serverUrl, credentials[0].UserId, credentials[0].Password, _clientCapabilities, null, logQueries);
-
-
-            bool useSourceWitsmlServer = !string.IsNullOrEmpty(sourceServerUrl) && credentials.Count == 2;
-            if (useSourceWitsmlServer)
+            // Use system creds by role from Bearer token
+            if (authorizationHeader?.Count > 0)
             {
-                _witsmlSourceClient = new WitsmlClient(sourceServerUrl, credentials[1].UserId, credentialsService.Decrypt(credentials[1]), _clientCapabilities, null, logQueries);
+                string bearerToken = authorizationHeader.ToString().Split()[1];
+
+                Task<ServerCredentials> targetCredsTask = credentialsService.GetCredsWithToken(bearerToken, targetServerHeader.ToString());
+                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCredsWithToken(bearerToken, sourceServerHeader.ToString());
+                Task.WaitAll(targetCredsTask, sourceCredsTask);
+                _targetCreds = targetCredsTask.Result;
+                _sourceCreds = sourceCredsTask.Result;
+
             }
+            // Use b64 encoded Basic creds
+            else if (authorizationHeader?.Count == 0 && targetServerHeader?.Count > 0)
+            {
+                _targetCreds = credentialsService.GetBasicCreds(targetServerHeader.ToString());
+                _sourceCreds = credentialsService.GetBasicCreds(sourceServerHeader.ToString());
+            }
+
+            _witsmlClient = !_targetCreds.IsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host, _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
+            _witsmlSourceClient = !_sourceCreds.IsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host, _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, logQueries) : null;
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)
