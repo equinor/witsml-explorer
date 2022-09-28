@@ -1,21 +1,110 @@
-import { msalEnabled } from "../msal/MsalAuthProvider";
-import ApiClientBasic from "./apiClientBasic";
-import ApiClientMsal from "./apiClientMsal";
-import { BasicServerCredentials } from "./credentialsService";
+import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
-export let ApiClient: IApiClient;
+import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
-if (msalEnabled) {
-  ApiClient = ApiClientMsal;
-} else {
-  ApiClient = ApiClientBasic;
+export class ApiClient {
+  static async getCommonHeaders(credentials: BasicServerCredentials[]): Promise<HeadersInit> {
+    const authorizationHeader = await this.getAuthorizationHeader(credentials);
+    return {
+      "Content-Type": "application/json",
+      ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
+      "Witsml-ServerUrl": credentials[0]?.server?.url.toString() ?? "",
+      "Witsml-Source-ServerUrl": credentials[1]?.server?.url.toString() ?? ""
+    };
+  }
+
+  private static async getAuthorizationHeader(credentials: BasicServerCredentials[]): Promise<string | null> {
+    if (msalEnabled) {
+      const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
+      return `Bearer ${token}`;
+    } else {
+      const hasCredentials = credentials[0] !== undefined && credentials[0].password !== undefined;
+      if (!hasCredentials) {
+        return null;
+      }
+      const credentialsStrings = credentials.map(({ username, password }) => `${username}:${password}`);
+      return "Basic " + btoa(credentialsStrings.join(":"));
+    }
+  }
+
+  public static async get(
+    pathName: string,
+    abortSignal: AbortSignal | null = null,
+    currentCredentials = CredentialsService.getCredentials(),
+    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
+  ): Promise<Response> {
+    const requestInit: RequestInit = {
+      signal: abortSignal,
+      headers: await ApiClient.getCommonHeaders(currentCredentials)
+    };
+
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+  }
+
+  public static async post(
+    pathName: string,
+    body: string,
+    abortSignal: AbortSignal | null = null,
+    currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials(),
+    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
+  ): Promise<Response> {
+    const requestInit = {
+      signal: abortSignal,
+      method: "POST",
+      body: body,
+      headers: await ApiClient.getCommonHeaders(currentCredentials)
+    };
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+  }
+
+  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+    const currentCredentials = CredentialsService.getCredentials();
+    const requestInit = {
+      signal: abortSignal,
+      method: "PATCH",
+      body: body,
+      headers: await ApiClient.getCommonHeaders(currentCredentials)
+    };
+
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+  }
+
+  public static async delete(pathName: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+    const currentCredentials = CredentialsService.getCredentials();
+    const requestInit = {
+      signal: abortSignal,
+      method: "DELETE",
+      headers: await ApiClient.getCommonHeaders(currentCredentials)
+    };
+
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+  }
+
+  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig) {
+    return new Promise<Response>((resolve, reject) => {
+      if (!("Authorization" in requestInit.headers)) {
+        if (msalEnabled || authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED) {
+          reject("Not authorized");
+        }
+      }
+
+      const url = new URL(getBasePathName() + pathName, getBaseUrl());
+
+      fetch(url.toString(), requestInit)
+        .then((response) => resolve(response))
+        .catch((error) => {
+          if (error.name === "AbortError") {
+            return;
+          }
+          reject(error);
+        });
+    });
+  }
 }
 
-export interface IApiClient {
-  get: (pathName: string, abortSignal?: AbortSignal | null, currentCredentials?: BasicServerCredentials[], authConfig?: AuthConfig) => Promise<Response>;
-  post: (pathName: string, body: string, abortSignal?: AbortSignal | null, currentCredentials?: BasicServerCredentials[], authConfig?: AuthConfig) => Promise<Response>;
-  patch: (pathName: string, body: string, abortSignal?: AbortSignal | null, authConfig?: AuthConfig) => Promise<Response>;
-  delete: (pathName: string, abortSignal?: AbortSignal | null, authConfig?: AuthConfig) => Promise<Response>;
+export function getBasePathName(): string {
+  const basePathName = getBaseUrl().pathname;
+  return basePathName !== "/" ? basePathName : "";
 }
 
 export function getBaseUrl(): URL {
