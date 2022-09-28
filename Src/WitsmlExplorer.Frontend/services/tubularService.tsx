@@ -4,7 +4,7 @@ import { ApiClient } from "./apiClient";
 
 export default class TubularService {
   public static async getTubulars(wellId: string, wellboreId: string, abortSignal?: AbortSignal): Promise<Tubular[]> {
-    const response = await ApiClient.get(`/api/wells/${wellId}/wellbores/${wellboreId}/tubulars`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellId}/wellbores/${wellboreId}/tubulars`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -13,7 +13,7 @@ export default class TubularService {
   }
 
   public static async getTubular(wellUid: string, wellboreUid: string, tubularId: string, abortSignal?: AbortSignal): Promise<Tubular> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/tubulars/${tubularId}`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/tubulars/${tubularId}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -22,7 +22,7 @@ export default class TubularService {
   }
 
   public static async getTubularComponents(wellUid: string, wellboreUid: string, tubularId: string, abortSignal: AbortSignal): Promise<TubularComponent[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/tubulars/${tubularId}/tubularcomponents`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/tubulars/${tubularId}/tubularcomponents`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {

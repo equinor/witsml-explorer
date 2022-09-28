@@ -72,7 +72,7 @@ class CredentialsService {
   }
 
   public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.post(`/api/credentials/authorize`, JSON.stringify(credentials.server), abortSignal, [credentials], AuthConfig.WITSML_AUTHENTICATION_REQUIRED);
+    const response = await ApiClient.post(`/credentials/authorize`, JSON.stringify(credentials.server), abortSignal, [credentials], AuthConfig.WITSML_AUTHENTICATION_REQUIRED);
     if (response.ok) {
       return response.json();
     } else {

@@ -11,7 +11,7 @@ import WbGeometryObjectService from "./wbGeometryService";
 
 export default class WellboreService {
   public static async getWellbore(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<Wellbore> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -20,7 +20,7 @@ export default class WellboreService {
   }
 
   public static async getWellboreFromServer(wellUid: string, wellboreUid: string, credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<Wellbore> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal, [credentials]);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal, [credentials]);
     if (response.ok) {
       const text = await response.text();
       if (text.length) {

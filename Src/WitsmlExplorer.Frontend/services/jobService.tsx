@@ -5,12 +5,12 @@ import NotificationService from "./notificationService";
 
 export default class JobService {
   public static async orderJob(jobType: JobType, payload: Record<string, any>): Promise<any> {
-    const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload));
+    const response = await ApiClient.post(`/jobs/${jobType}`, JSON.stringify(payload));
     return this.onResponse(jobType, response);
   }
 
   public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, credentials: BasicServerCredentials[]): Promise<any> {
-    const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, credentials);
+    const response = await ApiClient.post(`/jobs/${jobType}`, JSON.stringify(payload), undefined, credentials);
     return this.onResponse(jobType, response, credentials);
   }
 
@@ -36,7 +36,7 @@ export default class JobService {
   }
 
   public static async getJobInfos(username: string, abortSignal?: AbortSignal): Promise<JobInfo[]> {
-    const response = await ApiClient.get(`/api/jobs/jobinfos/${username}`, abortSignal);
+    const response = await ApiClient.get(`/jobs/jobinfos/${username}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {

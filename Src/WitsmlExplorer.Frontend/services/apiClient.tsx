@@ -1,4 +1,4 @@
-import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
+import { getAccessToken, msalEnabled, SecurityScheme } from "../msal/MsalAuthProvider";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
@@ -38,7 +38,7 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
   }
 
   public static async post(
@@ -54,7 +54,7 @@ export class ApiClient {
       body: body,
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
@@ -66,7 +66,7 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
   }
 
   public static async delete(pathName: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
@@ -77,10 +77,10 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig);
+    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig) {
+  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig, credentials: BasicServerCredentials[]) {
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled || authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED) {
@@ -88,7 +88,7 @@ export class ApiClient {
         }
       }
 
-      const url = new URL(getBasePathName() + pathName, getBaseUrl());
+      const url = new URL(getBasePathName() + getApiPath(credentials) + pathName, getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -102,7 +102,19 @@ export class ApiClient {
   }
 }
 
-export function getBasePathName(): string {
+function getApiPath(credentials: BasicServerCredentials[]): string {
+  if (msalEnabled) {
+    if (credentials[0].server.securityscheme == SecurityScheme.OAuth2 || credentials[1]?.server?.securityscheme == SecurityScheme.OAuth2) {
+      return ApiRoute.Api2;
+    } else {
+      return ApiRoute.Api;
+    }
+  } else {
+    return ApiRoute.Api;
+  }
+}
+
+function getBasePathName(): string {
   const basePathName = getBaseUrl().pathname;
   return basePathName !== "/" ? basePathName : "";
 }
@@ -130,6 +142,11 @@ export function truncateAbortHandler(e: Error): void {
     return;
   }
   throw e;
+}
+
+enum ApiRoute {
+  Api = "/api",
+  Api2 = "/api2"
 }
 
 export enum AuthConfig {

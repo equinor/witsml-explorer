@@ -6,7 +6,7 @@ import { BasicServerCredentials } from "./credentialsService";
 
 export default class LogObjectService {
   public static async getLogs(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<LogObject[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/logs`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -15,7 +15,7 @@ export default class LogObjectService {
   }
 
   public static async getLog(wellUid: string, wellboreUid: string, logUid: string, abortSignal?: AbortSignal): Promise<LogObject> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -24,7 +24,7 @@ export default class LogObjectService {
   }
 
   public static async getLogFromServer(wellUid: string, wellboreUid: string, logUid: string, credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<LogObject> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal, [credentials]);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal, [credentials]);
     if (response.ok) {
       // the route returns null if the log was not found so we need to check for it
       const text = await response.text();
@@ -39,7 +39,7 @@ export default class LogObjectService {
   }
 
   public static async getLogCurveInfo(wellUid: string, wellboreUid: string, logUid: string, abortSignal?: AbortSignal): Promise<LogCurveInfo[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -54,7 +54,7 @@ export default class LogObjectService {
     credentials: BasicServerCredentials,
     abortSignal?: AbortSignal
   ): Promise<LogCurveInfo[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, [credentials]);
+    const response = await ApiClient.get(`/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, [credentials]);
     if (response.ok) {
       const text = await response.text();
       if (text.length) {
@@ -79,7 +79,7 @@ export default class LogObjectService {
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
     const params = [`startIndex=${encodeURIComponent(startIndex)}`, `endIndex=${encodeURIComponent(endIndex)}`, `startIndexIsInclusive=${startIndexIsInclusive}`];
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join("&")}`;
+    const pathName = `/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join("&")}`;
     const response = await ApiClient.post(pathName, JSON.stringify(mnemonics), abortSignal);
     if (response.ok) {
       return response.json();
