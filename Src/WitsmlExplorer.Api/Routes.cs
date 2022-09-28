@@ -15,55 +15,50 @@ namespace WitsmlExplorer.Api
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
-            app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers).SetupAuthorization(useOAuth2);
-            app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer).SetupAuthorization(useOAuth2, AuthorizationPolicyRoles.ADMIN);
-            app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer).SetupAuthorization(useOAuth2, AuthorizationPolicyRoles.ADMIN);
-            app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer).SetupAuthorization(useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapGet("/api/witsml-servers", WitsmlServerHandler.GetWitsmlServers, useOAuth2);
+            app.MapPost("/api/witsml-servers", WitsmlServerHandler.CreateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapMethods("/api/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapDelete("/api/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
 
-            app.MapGet("/api/wells", WellHandler.GetAllWells).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells", WellHandler.GetAllWells, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}", WellHandler.GetWell, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore).SetupAuthorization(useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", WbGeometryHandler.GetWbGeometries).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", WbGeometryHandler.GetWbGeometries, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", RiskHandler.GetRisks).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/risks", RiskHandler.GetRisks, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", TubularHandler.GetTubulars).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", TubularHandler.GetTubular).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", TubularHandler.GetTubulars, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}", TubularHandler.GetTubular, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/tubulars/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", MessageHandler.GetMessages).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", MessageHandler.GetMessage).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages", MessageHandler.GetMessages, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/messages/{messageUid}", MessageHandler.GetMessage, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", BhaRunHandler.GetBhaRuns).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", BhaRunHandler.GetBhaRun).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns", BhaRunHandler.GetBhaRuns, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/bharuns/{bhaRunUid}", BhaRunHandler.GetBhaRun, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", RigHandler.GetRigs).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", RigHandler.GetRig).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs", RigHandler.GetRigs, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/rigs/{rigUid}", RigHandler.GetRig, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo).SetupAuthorization(useOAuth2);
-            app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs", LogHandler.GetLogs, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}", LogHandler.GetLog, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo, useOAuth2);
+            app.MapPost("/api/wells/{wellUid}/wellbores/{wellboreUid}/logs/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog, useOAuth2);
 
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations).SetupAuthorization(useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);
+            app.MapGet("/api/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations, useOAuth2);
 
-            app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob).SetupAuthorization(useOAuth2);
-            app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfosById).SetupAuthorization(useOAuth2);
-            app.MapGet("/api/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser).SetupAuthorization(useOAuth2);
+            app.MapPost("/api/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
+            app.MapPost("/api/jobs/jobinfos", JobHandler.GetJobInfosById, useOAuth2);
+            app.MapGet("/api/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser, useOAuth2);
 
-            app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize).SetupAuthorization(useOAuth2);
-
-            if (app.Environment.EnvironmentName == "Development")
-            {
-                app.MapFallback(() => Results.Redirect("/swagger"));
-            }
+            app.MapPost("/api/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
 
         }
     }
