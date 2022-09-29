@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api
             app.MapPost("/jobs/jobinfos", JobHandler.GetJobInfosById, useOAuth2);
             app.MapGet("/jobs/jobinfos/{username}", JobHandler.GetJobInfosByUser, useOAuth2);
 
-            app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
+            app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, false);
 
         }
     }
