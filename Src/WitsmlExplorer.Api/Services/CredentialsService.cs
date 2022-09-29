@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly WitsmlClientCapabilities _clientCapabilities;
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
-        private const string AuthorizationHeader = "Authorization";
+        private readonly Task<IEnumerable<Server>> _allServers;
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
@@ -46,38 +46,36 @@ namespace WitsmlExplorer.Api.Services
             _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
             _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
+            _allServers = _witsmlServerRepository.GetDocumentsAsync();
         }
 
-        public async Task<string> BasicAuthorization(Uri serverUrl)
+        public async Task<string> ProtectBasicAuthorization()
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
-            string base64EncodedCredentials = headers[AuthorizationHeader].ToString()["Basic ".Length..].Trim();
-            ServerCredentials credentials = new(serverUrl.AbsoluteUri, new BasicCredentials(base64EncodedCredentials));
+            string witsmlServerWithCreds = headers[WitsmlClientProvider.WitsmlServerUrlHeader];
+            ServerCredentials credentials = this.GetBasicCredsFromHeader(witsmlServerWithCreds);
 
             await VerifyCredentials(credentials);
 
-            string protectedPayload = _dataProtector.Protect(credentials.Password, TimeSpan.FromDays(1));
-
-            return protectedPayload;
+            return Encrypt(credentials.Password);
         }
 
-        public string Decrypt(ICredentials credentials)
+        private string Encrypt(string inputString)
         {
-            return _dataProtector.Unprotect(credentials.Password);
+            return _dataProtector.Protect(inputString, TimeSpan.FromDays(1));
         }
 
-        public bool VerifyIsEncrypted(ICredentials credentials)
+        private string Decrypt(string inputString)
         {
             try
             {
-                Decrypt(credentials);
-                return true;
+                return _dataProtector.Unprotect(inputString);
             }
             catch
             {
-                return false;
+                return null;
             }
         }
 
@@ -86,9 +84,9 @@ namespace WitsmlExplorer.Api.Services
             try
             {
                 IHeaderDictionary headers = httpRequest.Headers;
-                List<ICredentials> credentialsList = await GetCredentials(headers);
+                List<ServerCredentials> credentialsList = await GetCredentialsFromHeaders(headers);
                 StringValues server = headers["Witsml-ServerUrl"];
-                ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0]));
+                ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0].Password));
                 await VerifyCredentials(serverCreds);
             }
             catch (Exception ex)
@@ -99,9 +97,9 @@ namespace WitsmlExplorer.Api.Services
             return true;
         }
 
-        public Task<List<ICredentials>> GetCredentials(IHeaderDictionary headers)
+        public Task<List<ServerCredentials>> GetCredentialsFromHeaders(IHeaderDictionary headers)
         {
-            Task<List<ICredentials>> credentials = Task.FromResult(new List<ICredentials>());
+            Task<List<ServerCredentials>> credentials = Task.FromResult(new List<ServerCredentials>());
             string scheme = headers["Authorization"].ToString().Split()[0];
             if (string.IsNullOrEmpty(scheme)) { return credentials; }
 
@@ -134,10 +132,21 @@ namespace WitsmlExplorer.Api.Services
             }
             return result;
         }
-
-        private static List<ICredentials> ParseBasicAuthorization(string base64Data, string sourceServer, string server)
+        private async Task<bool> UserHasRoleForHost(string[] roles, string host)
         {
-            List<ICredentials> credentials = new();
+            bool result = true;
+            IEnumerable<Server> allServers = await _allServers;
+
+            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
+            IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host);
+            bool validRole = hostServer.Any(n => roles.Contains(n.Role));
+            result &= systemCredsExists & validRole;
+
+            return result;
+        }
+        private static List<ServerCredentials> ParseBasicAuthorization(string base64Data, string sourceServer, string server)
+        {
+            List<ServerCredentials> credentials = new();
             string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64Data));
             string[] usernamesAndPasswords = credentialString.Split(':');
             credentials.Add(new ServerCredentials(server, usernamesAndPasswords[0], usernamesAndPasswords[1]));
@@ -148,22 +157,64 @@ namespace WitsmlExplorer.Api.Services
             return credentials;
         }
 
-        private async Task<List<ICredentials>> ParseBearerAuthorization(string base64Data, string sourceServer, string server)
+        public async Task<List<ServerCredentials>> ParseBearerAuthorization(string token, string sourceServer, string targetServer)
         {
-            List<ICredentials> credentials = new();
+            List<ServerCredentials> credentials = new();
             JwtSecurityTokenHandler handler = new();
-            JwtSecurityToken jwt = handler.ReadJwtToken(base64Data);
+            JwtSecurityToken jwt = handler.ReadJwtToken(token);
             string[] roles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
             _logger.LogDebug("{roles}", string.Join(",", roles));
-            if (await HasUserRoleForHosts(roles, new string[] { server, sourceServer }))
+            if (await HasUserRoleForHosts(roles, new string[] { targetServer, sourceServer }))
             {
-                ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
-                credentials.Add(new ServerCredentials(server, creds.UserId, creds.Password));
+                ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == targetServer);
+                credentials.Add(new ServerCredentials(targetServer, creds.UserId, creds.Password));
             }
 
             return credentials;
         }
 
+        /// <summary>
+        /// 1. Server input has been parsed from HTTP Headers "Witsml-ServerUrl" or "Witsml-Source-ServerUrl" and might contain b64 encoded Basic auth
+        /// 2. Token will always be JWT token and should have <code>roles</code>
+        /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
+        /// </summary>
+        public async Task<ServerCredentials> GetCredsWithToken(string token, string serverHeader)
+        {
+            ServerCredentials result = GetBasicCredsFromHeader(serverHeader);
+            if (result.IsNullOrEmpty())
+            {
+                JwtSecurityTokenHandler handler = new();
+                JwtSecurityToken jwt = handler.ReadJwtToken(token);
+                string[] userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
+                _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
+                if (await UserHasRoleForHost(userRoles, serverHeader))
+                {
+                    return _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == serverHeader);
+                }
+
+            }
+            return result;
+        }
+
+        public ServerCredentials GetBasicCredsFromHeader(string serverHeader)
+        {
+            BasicCredentials basic = serverHeader.Split("@").Length == 2 ? new(serverHeader.Split("@")[0]) : new BasicCredentials();
+            if (!basic.IsNullOrEmpty())
+            {
+                return new ServerCredentials()
+                {
+                    Host = serverHeader.Split("@")[1],
+                    UserId = basic.UserId,
+                    Password = Decrypt(basic.Password) ?? basic.Password
+                };
+            }
+            return new ServerCredentials();
+        }
+
+        public string Decrypt(ServerCredentials credentials)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

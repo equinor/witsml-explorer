@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Swagger
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            List<string> emptyHeader = new() { typeof(HttpHandlers.AuthorizeHandler).ToString(), typeof(HttpHandlers.WitsmlServerHandler).ToString() };
+            List<string> emptyHeader = new() { typeof(HttpHandlers.WitsmlServerHandler).ToString() };
             List<string> witsmlSourceHeader = new() { typeof(HttpHandlers.JobHandler).ToString() };
             if (operation.Parameters == null)
             {
