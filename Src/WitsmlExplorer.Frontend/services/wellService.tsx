@@ -4,7 +4,7 @@ import { ApiClient } from "./apiClient";
 
 export default class WellService {
   public static async getWells(abortSignal: AbortSignal = null): Promise<Well[]> {
-    const response = await ApiClient.get("/wells", abortSignal);
+    const response = await ApiClient.get(`api/wells`, abortSignal);
 
     if (response.ok) {
       return response.json();
