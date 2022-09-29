@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Services
             _allServers = _witsmlServerRepository.GetDocumentsAsync();
         }
 
-        public async Task<string> ProtectBasicAuthorization(Uri serverUrl)
+        public async Task<string> ProtectBasicAuthorization()
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
