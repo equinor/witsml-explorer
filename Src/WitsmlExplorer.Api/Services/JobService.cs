@@ -29,15 +29,17 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<string> CreateJob(JobType jobType, string username, string sourceServer, string targetServer, Stream jobStream)
         {
-            var worker = _workers.FirstOrDefault(worker => worker.JobType == jobType);
+            IWorker worker = _workers.FirstOrDefault(worker => worker.JobType == jobType);
             if (worker == null)
+            {
                 throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType}");
+            }
 
-            var (task, job) = await worker.SetupWorker(jobStream);
+            (Task<(WorkerResult, RefreshAction)> task, Jobs.Job job) = await worker.SetupWorker(jobStream);
             _jobQueue.Enqueue(task);
             job.JobInfo.Username = username;
-            job.JobInfo.SourceServer = sourceServer;
-            job.JobInfo.TargetServer = targetServer;
+            job.JobInfo.SourceServer = sourceServer?.Split("@").Length == 2 ? sourceServer.Split("@")[1] : sourceServer;
+            job.JobInfo.TargetServer = targetServer?.Split("@").Length == 2 ? targetServer.Split("@")[1] : targetServer;
             _jobCache.CacheJob(job.JobInfo);
 
             return job.JobInfo.Id;
