@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(scInput.UserId + ":" + scInput.Password));
             string input = b64Creds + "@" + scInput.Host;
             ServerCredentials serverCreds = _credentialsService.GetBasicCredsFromHeader(input);
-            Assert.Equal(scInput, serverCreds);
+            Assert.Equivalent(scInput, serverCreds);
         }
 
         [Fact]
