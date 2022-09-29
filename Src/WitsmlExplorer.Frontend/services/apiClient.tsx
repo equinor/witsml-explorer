@@ -4,27 +4,32 @@ import CredentialsService, { BasicServerCredentials } from "./credentialsService
 
 export class ApiClient {
   static async getCommonHeaders(credentials: BasicServerCredentials[]): Promise<HeadersInit> {
-    const authorizationHeader = await this.getAuthorizationHeader(credentials);
+    const authorizationHeader = await this.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "Witsml-ServerUrl": credentials[0]?.server?.url.toString() ?? "",
-      "Witsml-Source-ServerUrl": credentials[1]?.server?.url.toString() ?? ""
+      "Witsml-ServerUrl": this.getServerHeader(credentials[0]),
+      "Witsml-Source-ServerUrl": this.getServerHeader(credentials[1])
     };
   }
 
-  private static async getAuthorizationHeader(credentials: BasicServerCredentials[]): Promise<string | null> {
+  private static getServerHeader(credentials: BasicServerCredentials | undefined): string {
+    if (!credentials) {
+      return "";
+    }
+    if (credentials?.server?.securityscheme == SecurityScheme.Basic || credentials?.password) {
+      // send the basic creds if we have the password as a fallback for oauth
+      const creds = btoa(credentials.username + ":" + credentials.password);
+      return creds + "@" + credentials.server.url.toString();
+    }
+  }
+
+  private static async getAuthorizationHeader(): Promise<string | null> {
     if (msalEnabled) {
       const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
       return `Bearer ${token}`;
-    } else {
-      const hasCredentials = credentials[0] !== undefined && credentials[0].password !== undefined;
-      if (!hasCredentials) {
-        return null;
-      }
-      const credentialsStrings = credentials.map(({ username, password }) => `${username}:${password}`);
-      return "Basic " + btoa(credentialsStrings.join(":"));
     }
+    return null;
   }
 
   public static async get(
@@ -146,7 +151,7 @@ export function truncateAbortHandler(e: Error): void {
 
 enum ApiRoute {
   Api = "/api",
-  Api2 = "/api2"
+  Api2 = "/secure"
 }
 
 export enum AuthConfig {
