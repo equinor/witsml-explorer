@@ -33,7 +33,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             string wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
             string wellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110";
             string tubularUid = "integration_test";
-            WitsmlTubulars queryExisting = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            WitsmlTubulars queryExisting = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
             WitsmlTubulars serverTubular = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverTubularXml = XmlHelper.Serialize(serverTubular);
             //disregard commonData times as they are handled by the Witsml Server

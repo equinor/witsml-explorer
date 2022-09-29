@@ -10,10 +10,11 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface ICredentialsService
     {
-        public Task<string> BasicAuthorization(Uri serverUrl);
-        public string Decrypt(ICredentials credentials);
-        public bool VerifyIsEncrypted(ICredentials credentials);
+        public Task<string> ProtectBasicAuthorization();
+
         public Task<bool> AuthorizeWithEncryptedPassword(HttpRequest httpRequest);
-        public Task<List<ICredentials>> GetCredentials(IHeaderDictionary headers);
+        public Task<List<ServerCredentials>> GetCredentialsFromHeaders(IHeaderDictionary headers);
+        public Task<ServerCredentials> GetCredsWithToken(string token, string serverHeader);
+        public ServerCredentials GetBasicCredsFromHeader(string serverHeader);
     }
 }

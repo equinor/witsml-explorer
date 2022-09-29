@@ -4,14 +4,8 @@ using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class BhaRun
+    public class BhaRun : ObjectOnWellbore
     {
-        public string Uid { get; set; }
-        public string Name { get; set; }
-        public string WellUid { get; set; }
-        public string WellName { get; set; }
-        public string WellboreName { get; set; }
-        public string WellboreUid { get; set; }
         public string NumStringRun { get; set; }
         public string Tubular { get; set; }
         public string TubularUidRef { get; set; }

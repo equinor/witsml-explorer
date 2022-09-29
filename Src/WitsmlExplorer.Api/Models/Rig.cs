@@ -4,7 +4,7 @@ using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class Rig
+    public class Rig : ObjectOnWellbore
     {
         public LengthMeasure AirGap { get; set; }
         public string Approvals { get; set; }
@@ -15,9 +15,6 @@ namespace WitsmlExplorer.Api.Models
         public string FaxNumber { get; set; }
         public bool? IsOffshore { get; set; }
         public string Manufacturer { get; set; }
-        public string Name { get; set; }
-        public string WellboreName { get; set; }
-        public string WellName { get; set; }
         public string NameContact { get; set; }
         public string Owner { get; set; }
         public LengthMeasure RatingDrillDepth { get; set; }
@@ -25,9 +22,6 @@ namespace WitsmlExplorer.Api.Models
         public string Registration { get; set; }
         public string TelNumber { get; set; }
         public string TypeRig { get; set; }
-        public string WellUid { get; set; }
-        public string WellboreUid { get; set; }
-        public string Uid { get; set; }
         public string YearEntService { get; set; }
         public CommonData CommonData { get; set; }
     }

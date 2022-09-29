@@ -2,11 +2,11 @@ import { ObjectType } from "./objectType";
 
 export default interface ObjectOnWellbore {
   uid: string;
-  name: string;
   wellboreUid: string;
-  wellboreName: string;
   wellUid: string;
-  wellName?: string;
+  name: string;
+  wellboreName: string;
+  wellName: string;
 }
 
 export function emptyObjectOnWellbore(): ObjectOnWellbore {

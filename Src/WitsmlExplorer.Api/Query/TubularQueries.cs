@@ -14,23 +14,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class TubularQueries
     {
-        public static WitsmlTubulars GetWitsmlTubularByWellbore(string wellUid, string wellboreUid)
-        {
-            return new WitsmlTubulars
-            {
-                Tubulars = new WitsmlTubular
-                {
-                    Uid = "",
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
-                    Name = "",
-                    TypeTubularAssy = "",
-                    CommonData = new WitsmlCommonData()
-                }.AsSingletonList()
-            };
-        }
-
-        public static WitsmlTubulars GetWitsmlTubularById(string wellUid, string wellboreUid, string tubularUid)
+        public static WitsmlTubulars GetWitsmlTubular(string wellUid, string wellboreUid, string tubularUid = "")
         {
             return new WitsmlTubulars
             {
@@ -40,6 +24,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Name = "",
+                    NameWell = "",
+                    NameWellbore = "",
                     TypeTubularAssy = "",
                 }.AsSingletonList()
             };

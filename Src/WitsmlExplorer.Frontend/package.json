@@ -56,8 +56,8 @@
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.7",
     "ste-simple-events": "^3.0.5",
-    "styled-components": "^5.3.5",
-    "typescript": "^4.8.3",
+    "styled-components": "^5.3.6",
+    "typescript": "^4.8.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -77,8 +77,8 @@
     "eslint": "<9.0.0",
     "eslint-plugin-jest": "^27.0.4",
     "eslint-plugin-react": "^7.31.8",
-    "jest": "^29.0.3",
-    "jest-environment-jsdom": "^29.0.3",
+    "jest": "^29.1.1",
+    "jest-environment-jsdom": "^29.1.1",
     "lint-staged": "^13.0.3",
     "ts-jest": "^29.0.2"
   }

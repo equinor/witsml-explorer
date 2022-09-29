@@ -69,6 +69,8 @@ namespace WitsmlExplorer.Api.Services
                 WellUid = trajectory.UidWell,
                 WellboreUid = trajectory.UidWellbore,
                 Name = trajectory.Name,
+                WellName = trajectory.NameWell,
+                WellboreName = trajectory.NameWellbore,
                 MdMin = (trajectory.MdMin == null) ? null : StringHelpers.ToDecimal(trajectory.MdMin.Value),
                 MdMax = (trajectory.MdMax == null) ? null : StringHelpers.ToDecimal(trajectory.MdMax.Value),
                 AziRef = trajectory.AziRef,

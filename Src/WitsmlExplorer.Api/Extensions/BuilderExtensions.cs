@@ -2,7 +2,6 @@ using System;
 
 using Azure.Identity;
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
@@ -12,23 +11,6 @@ namespace WitsmlExplorer.Api.Extensions
 {
     public static class BuilderExtensions
     {
-        public static TBuilder SetupAuthorization<TBuilder>(this TBuilder builder, bool oAuth2Enabled) where TBuilder : IEndpointConventionBuilder
-        {
-            if (oAuth2Enabled)
-            {
-                builder.RequireAuthorization();
-            }
-            return builder;
-        }
-
-        public static TBuilder SetupAuthorization<TBuilder>(this TBuilder builder, bool oAuth2Enabled, params string[] policyNames) where TBuilder : IEndpointConventionBuilder
-        {
-            if (oAuth2Enabled)
-            {
-                builder.RequireAuthorization(policyNames);
-            }
-            return builder;
-        }
 
         public static IConfigurationBuilder AddAzureWitsmlServerCreds(this ConfigurationManager configuration)
         {
