@@ -69,7 +69,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static async Task<WitsmlTubular> GetTubular(IWitsmlClient client, ObjectReference tubularReference)
         {
-            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularById(tubularReference.WellUid, tubularReference.WellboreUid, tubularReference.Uid);
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubular(tubularReference.WellUid, tubularReference.WellboreUid, tubularReference.Uid);
             WitsmlTubulars result = await client.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.All));
             return !result.Tubulars.Any() ? null : result.Tubulars.First();
         }

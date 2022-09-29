@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class MudLog
+    public class MudLog : ObjectOnWellbore
     {
-        public string WellUid { get; set; }
-        public string WellboreUid { get; set; }
-        public string Uid { get; set; }
-        public string WellName { get; set; }
-        public string WellboreName { get; set; }
-        public string Name { get; set; }
         public bool ObjectGrowing { get; set; }
         public string MudLogCompany { get; set; }
         public string MudLogEngineers { get; set; }
