@@ -22,7 +22,7 @@ export default class WellService {
   }
 
   public static async getWell(wellUid: string, abortSignal: AbortSignal = null): Promise<Well> {
-    const response = await ApiClient.get(`/wells/${wellUid}`, abortSignal);
+    const response = await ApiClient.get(`/api/wells/${wellUid}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
