@@ -794,7 +794,7 @@ const BHARUN_1: BhaRun = {
   commonData: null,
   tubularUidRef: ""
 };
-const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "" };
+const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "", wellName: "" };
 const RIG_1 = { uid: "rig1", name: "Rig 1" };
 const TRAJECTORY_1: Trajectory = {
   uid: "trajectory1",

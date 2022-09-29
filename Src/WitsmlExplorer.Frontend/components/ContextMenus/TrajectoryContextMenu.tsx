@@ -9,8 +9,9 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -46,7 +47,14 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
         <MenuItem key={"delete"} onClick={() => onClickDelete(trajectories, dispatchOperation)} disabled={trajectories.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory", trajectories)}</Typography>
-        </MenuItem>
+        </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={trajectories.length !== 1}>
+          {servers.map((server: Server) => (
+            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectories[0], "trajectoryUid")} disabled={trajectories.length !== 1}>
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>
       ]}
     />
   );

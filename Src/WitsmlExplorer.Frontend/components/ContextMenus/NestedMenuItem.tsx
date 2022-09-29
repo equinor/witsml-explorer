@@ -5,7 +5,7 @@ import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
 import ArrowRight from "@material-ui/icons/ArrowRight";
 import React, { useImperativeHandle, useRef, useState } from "react";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
@@ -90,9 +90,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
   return (
     <div {...ContainerProps} ref={containerRef} onFocus={handleFocus} tabIndex={tabIndex} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onKeyDown={handleKeyDown}>
       <MenuItem {...MenuItemProps} ref={menuItemRef}>
-        <ListItemIcon>
-          <Icon name={icon ?? "launch"} color={colors.interactive.primaryResting} />
-        </ListItemIcon>
+        <StyledIcon name={icon ?? "launch"} color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>{label}</Typography>
         <ListItemIcon>
           <ArrowRight />

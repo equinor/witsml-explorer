@@ -4,14 +4,8 @@ using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class Risk
+    public class Risk : ObjectOnWellbore
     {
-        public string WellUid { get; set; }
-        public string WellboreUid { get; set; }
-        public string Uid { get; set; }
-        public string WellName { get; set; }
-        public string WellboreName { get; set; }
-        public string Name { get; set; }
         public string Type { get; set; }
         public string Category { get; set; }
         public string SubCategory { get; set; }

@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid)
         {
-            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularByWellbore(wellUid, wellboreUid);
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid);
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
             return result.Tubulars.Select(tubular => WitsmlToTubular(tubular)).OrderBy(tubular => tubular.Name);
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid)
         {
-            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
             return result.Tubulars.Any() ? WitsmlToTubular(result.Tubulars.First()) : null;
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid)
         {
-            WitsmlTubulars tubularToQuery = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            WitsmlTubulars tubularToQuery = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(tubularToQuery, new OptionsIn(ReturnElements.All));
             WitsmlTubular witsmlTubular = result.Tubulars.FirstOrDefault();
             return witsmlTubular == null
@@ -68,6 +68,8 @@ namespace WitsmlExplorer.Api.Services
                 WellUid = tubular.UidWell,
                 WellboreUid = tubular.UidWellbore,
                 Name = tubular.Name,
+                WellName = tubular.NameWell,
+                WellboreName = tubular.NameWellbore,
                 TypeTubularAssy = tubular.TypeTubularAssy
             };
         }

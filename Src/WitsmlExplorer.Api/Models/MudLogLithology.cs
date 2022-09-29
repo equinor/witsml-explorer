@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-
-
 namespace WitsmlExplorer.Api.Models
 {
     public class MudLogLithology

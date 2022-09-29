@@ -32,7 +32,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             string wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
             string wellboreUid = "ae75db48-5cef-4bd1-9ddf-6035b0d2cd49";
             string bhaRunUid = "run-21";
-            WitsmlBhaRuns queryExisting = BhaRunQueries.GetWitsmlBhaRunByUid(wellUid, wellboreUid, bhaRunUid);
+            WitsmlBhaRuns queryExisting = BhaRunQueries.GetWitsmlBhaRun(wellUid, wellboreUid, bhaRunUid);
             WitsmlBhaRuns serverBhaRun = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverBhaRunXml = XmlHelper.Serialize(serverBhaRun);
             //disregard commonData times as they are handled by the Witsml Server

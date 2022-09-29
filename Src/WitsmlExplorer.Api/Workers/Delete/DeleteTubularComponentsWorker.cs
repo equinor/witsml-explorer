@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 tubularUid,
                 tubularcomponents);
 
-            query = TubularQueries.GetWitsmlTubularById(wellUid, wellboreUid, tubularUid);
+            query = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
             WitsmlTubulars queryResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
 
             WitsmlTubular tubular = queryResult.Tubulars.First();
