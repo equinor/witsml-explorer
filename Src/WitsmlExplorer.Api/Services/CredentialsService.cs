@@ -31,7 +31,6 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private readonly Task<IEnumerable<Server>> _allServers;
-        private const string AuthorizationHeader = "Authorization";
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
@@ -55,8 +54,8 @@ namespace WitsmlExplorer.Api.Services
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
-            string base64EncodedCredentials = headers[AuthorizationHeader].ToString()["Basic ".Length..].Trim();
-            ServerCredentials credentials = new(serverUrl.AbsoluteUri, new BasicCredentials(base64EncodedCredentials));
+            string witsmlServerWithCreds = headers[WitsmlClientProvider.WitsmlServerUrlHeader];
+            ServerCredentials credentials = this.GetBasicCredsFromHeader(witsmlServerWithCreds);
 
             await VerifyCredentials(credentials);
 
