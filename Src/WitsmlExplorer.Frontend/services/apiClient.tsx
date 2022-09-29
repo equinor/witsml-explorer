@@ -21,6 +21,8 @@ export class ApiClient {
       // send the basic creds if we have the password as a fallback for oauth
       const creds = btoa(credentials.username + ":" + credentials.password);
       return creds + "@" + credentials.server.url.toString();
+    } else {
+      return credentials.server.url.toString();
     }
   }
 
@@ -32,26 +34,20 @@ export class ApiClient {
     return null;
   }
 
-  public static async get(
-    pathName: string,
-    abortSignal: AbortSignal | null = null,
-    currentCredentials = CredentialsService.getCredentials(),
-    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
-  ): Promise<Response> {
+  public static async get(pathName: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
+    return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
   public static async post(
     pathName: string,
     body: string,
     abortSignal: AbortSignal | null = null,
-    currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials(),
-    authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED
+    currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials()
   ): Promise<Response> {
     const requestInit = {
       signal: abortSignal,
@@ -59,10 +55,10 @@ export class ApiClient {
       body: body,
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
+    return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
     const requestInit = {
       signal: abortSignal,
@@ -71,10 +67,10 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
+    return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  public static async delete(pathName: string, abortSignal: AbortSignal | null = null, authConfig = AuthConfig.WITSML_AUTHENTICATION_REQUIRED): Promise<Response> {
+  public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
     const requestInit = {
       signal: abortSignal,
@@ -82,18 +78,18 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials)
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit, authConfig, currentCredentials);
+    return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit, authConfig: AuthConfig, credentials: BasicServerCredentials[]) {
+  private static runHttpRequest(pathName: string, requestInit: RequestInit) {
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
-        if (msalEnabled || authConfig === AuthConfig.WITSML_AUTHENTICATION_REQUIRED) {
+        if (msalEnabled) {
           reject("Not authorized");
         }
       }
 
-      const url = new URL(getBasePathName() + getApiPath(credentials) + pathName, getBaseUrl());
+      const url = new URL(getBasePathName() + pathName, getBaseUrl());
 
       fetch(url.toString(), requestInit)
         .then((response) => resolve(response))
@@ -104,18 +100,6 @@ export class ApiClient {
           reject(error);
         });
     });
-  }
-}
-
-function getApiPath(credentials: BasicServerCredentials[]): string {
-  if (msalEnabled) {
-    if (credentials[0].server.securityscheme == SecurityScheme.OAuth2 || credentials[1]?.server?.securityscheme == SecurityScheme.OAuth2) {
-      return ApiRoute.Api2;
-    } else {
-      return ApiRoute.Api;
-    }
-  } else {
-    return ApiRoute.Api;
   }
 }
 
@@ -147,14 +131,4 @@ export function truncateAbortHandler(e: Error): void {
     return;
   }
   throw e;
-}
-
-enum ApiRoute {
-  Api = "/api",
-  Api2 = "/secure"
-}
-
-export enum AuthConfig {
-  WITSML_AUTHENTICATION_REQUIRED,
-  NO_WITSML_AUTHENTICATION_REQUIRED
 }
