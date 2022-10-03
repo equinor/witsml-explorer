@@ -40,14 +40,13 @@ namespace WitsmlExplorer.Api.Services
 
             StringValues? authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
             StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader];
-            StringValues? sourceServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlSourceServerUrlHeader];
 
             if (authorizationHeader?.Count > 0 || targetServerHeader?.Count > 0)
             {
                 string bearerToken = authorizationHeader?.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
 
-                Task<ServerCredentials> targetCredsTask = credentialsService.GetCreds(targetServerHeader.ToString(), bearerToken);
-                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCreds(sourceServerHeader.ToString(), bearerToken);
+                Task<ServerCredentials> targetCredsTask = credentialsService.GetCreds(WitsmlServerUrlHeader, bearerToken);
+                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCreds(WitsmlSourceServerUrlHeader, bearerToken);
                 Task.WaitAll(targetCredsTask, sourceCredsTask);
                 _targetCreds = targetCredsTask.Result;
                 _sourceCreds = sourceCredsTask.Result;
