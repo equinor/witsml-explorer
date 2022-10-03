@@ -61,8 +61,8 @@ namespace WitsmlExplorer.Api.Services
                 _sourceCreds = credentialsService.GetBasicCredsFromHeader(sourceServerHeader.ToString());
             }
 
-            _witsmlClient = !_targetCreds.IsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host, _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
-            _witsmlSourceClient = !_sourceCreds.IsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host, _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, logQueries) : null;
+            _witsmlClient = !_targetCreds.IsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
+            _witsmlSourceClient = !_sourceCreds.IsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, logQueries) : null;
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)

@@ -39,9 +39,12 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             ServerCredentials scInput = new()
             {
-                Host = "http://validstring.com",
-                UserId = "username",
-                Password = "password"
+                Host = new Uri("http://validstring.com"),
+                Creds = new BasicCredentials()
+                {
+                    UserId = "username",
+                    Password = "password"
+                }
             };
 
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(scInput.UserId + ":" + scInput.Password));
@@ -55,9 +58,12 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             ServerCredentials scInput = new()
             {
-                Host = "http://validstring.com",
-                UserId = "username",
-                Password = null
+                Host = new Uri("http://validstring.com"),
+                Creds = new BasicCredentials()
+                {
+                    UserId = "username",
+                    Password = null
+                }
             };
 
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(scInput.UserId + ":" + scInput.Password));

@@ -115,7 +115,7 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task VerifyCredentials(ServerCredentials serverCreds)
         {
-            WitsmlClient witsmlClient = new(serverCreds.Host, serverCreds.UserId, serverCreds.Password, _clientCapabilities);
+            WitsmlClient witsmlClient = new(serverCreds.Host.ToString(), serverCreds.UserId, serverCreds.Password, _clientCapabilities);
             await witsmlClient.TestConnectionAsync();
         }
 
@@ -125,7 +125,7 @@ namespace WitsmlExplorer.Api.Services
             IEnumerable<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
             foreach (string host in hosts.Where(h => !string.IsNullOrEmpty(h)))
             {
-                bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
+                bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.ToString() == host);
                 IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host);
                 bool validRole = hostServer.Any(n => roles.Contains(n.Role));
                 result &= systemCredsExists & validRole;
@@ -137,7 +137,7 @@ namespace WitsmlExplorer.Api.Services
             bool result = true;
             IEnumerable<Server> allServers = await _allServers;
 
-            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
+            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.ToString() == host);
             IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host);
             bool validRole = hostServer.Any(n => roles.Contains(n.Role));
             result &= systemCredsExists & validRole;
@@ -166,7 +166,7 @@ namespace WitsmlExplorer.Api.Services
             _logger.LogDebug("{roles}", string.Join(",", roles));
             if (await HasUserRoleForHosts(roles, new string[] { targetServer, sourceServer }))
             {
-                ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == targetServer);
+                ServerCredentials creds = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host.ToString() == targetServer);
                 credentials.Add(new ServerCredentials(targetServer, creds.UserId, creds.Password));
             }
 
@@ -189,7 +189,7 @@ namespace WitsmlExplorer.Api.Services
                 _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
                 if (await UserHasRoleForHost(userRoles, serverHeader))
                 {
-                    return _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == serverHeader);
+                    return _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host.ToString() == serverHeader);
                 }
 
             }
@@ -203,9 +203,12 @@ namespace WitsmlExplorer.Api.Services
             {
                 return new ServerCredentials()
                 {
-                    Host = serverHeader.Split("@")[1],
-                    UserId = basic.UserId,
-                    Password = Decrypt(basic.Password) ?? basic.Password
+                    Host = new Uri(serverHeader.Split("@")[1]),
+                    Creds = new BasicCredentials()
+                    {
+                        UserId = basic.UserId,
+                        Password = Decrypt(basic.Password) ?? basic.Password
+                    }
                 };
             }
             return new ServerCredentials();
