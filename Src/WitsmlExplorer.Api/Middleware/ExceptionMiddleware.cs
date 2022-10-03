@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Middleware
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = $"Not able to connect to server endpoint: \"{witsmlTarget.Url}\""
+                    Message = $"Not able to connect to server endpoint: \"{witsmlTarget.Uri}\""
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
