@@ -65,6 +65,8 @@ export const getAccountInfo = (): AccountInfo | null => {
   return activeAccount;
 };
 
+export const getUserAppRoles = (): string[] => getAccountInfo()?.idTokenClaims?.roles ?? [];
+
 export async function signOut(): Promise<void> {
   type TokenClaims = {
     login_hint: string;

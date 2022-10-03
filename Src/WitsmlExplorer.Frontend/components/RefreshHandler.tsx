@@ -21,7 +21,7 @@ const RefreshHandler = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction) => {
-      const loggedIn = CredentialsService.hasPasswordForServer(navigationState.selectedServer);
+      const loggedIn = CredentialsService.isAuthorizedForServer(navigationState.selectedServer);
       const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url && loggedIn;
       if (!shouldTryRefresh) {
         return;

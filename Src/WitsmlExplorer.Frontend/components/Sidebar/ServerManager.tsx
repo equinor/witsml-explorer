@@ -1,3 +1,4 @@
+import { useIsAuthenticated } from "@azure/msal-react";
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
@@ -10,7 +11,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
-import { msalEnabled } from "../../msal/MsalAuthProvider";
+import { getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -40,7 +41,7 @@ const ServerManager = (): React.ReactElement => {
 
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
-      if (msalEnabled && selectedServer) {
+      if (msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().includes(selectedServer.role)) {
         try {
           if (wells.length === 0) {
             const wells = await WellService.getWells();
@@ -50,7 +51,7 @@ const ServerManager = (): React.ReactElement => {
           // Show error in Alert.tsx
         }
       } else if (currentWitsmlLoginState.server) {
-        const isLoggedInToSelectedServer = CredentialsService.hasPasswordForServer(selectedServer);
+        const isLoggedInToSelectedServer = CredentialsService.isAuthorizedForServer(selectedServer);
         if (isLoggedInToSelectedServer) {
           try {
             const hasWells = wells.length > 0;
@@ -70,19 +71,22 @@ const ServerManager = (): React.ReactElement => {
     onCurrentLoginStateChange();
   }, [msalEnabled, currentWitsmlLoginState]);
 
+  const isAuthenticated = !msalEnabled || useIsAuthenticated();
   useEffect(() => {
-    const abortController = new AbortController();
-    const getServers = async () => {
-      const freshServers = await ServerService.getServers(abortController.signal);
-      const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
-      dispatchNavigation(action);
-    };
-    getServers();
+    if (isAuthenticated) {
+      const abortController = new AbortController();
+      const getServers = async () => {
+        const freshServers = await ServerService.getServers(abortController.signal);
+        const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
+        dispatchNavigation(action);
+      };
+      getServers();
 
-    return () => {
-      abortController.abort();
-    };
-  }, []);
+      return () => {
+        abortController.abort();
+      };
+    }
+  }, [isAuthenticated]);
 
   const onSelectItem = async (server: Server) => {
     const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };

@@ -1,6 +1,7 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
+import { getUserAppRoles, msalEnabled, SecurityScheme } from "../msal/MsalAuthProvider";
 import { ApiClient } from "./apiClient";
 
 export interface BasicServerCredentials {
@@ -22,7 +23,7 @@ class CredentialsService {
 
   public setSelectedServer(server: Server) {
     this.server = server;
-    this._onCredentialStateChanged.dispatch({ server: server, hasPassword: this.hasPasswordForServer(server) });
+    this._onCredentialStateChanged.dispatch({ server: server, hasPassword: this.isAuthorizedForServer(server) });
   }
 
   public setSourceServer(server: Server) {
@@ -60,10 +61,13 @@ class CredentialsService {
 
   public clearPasswords() {
     this.credentials = CredentialsService.getLocallyStoredServerUsernames();
-    this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.hasPasswordForServer(this.server) });
+    this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
   }
 
-  public hasPasswordForServer(server: Server) {
+  public isAuthorizedForServer(server: Server): boolean {
+    if (msalEnabled && server?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().includes(server.role)) {
+      return true;
+    }
     return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;
   }
 

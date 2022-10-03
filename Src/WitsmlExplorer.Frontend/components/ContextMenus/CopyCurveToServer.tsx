@@ -40,8 +40,8 @@ export const onClickCopyCurveToServer = async (targetServer: Server, sourceServe
     }
   };
 
-  const hasPassword = CredentialsService.hasPasswordForServer(targetServer);
-  if (!hasPassword) {
+  const isAuthorized = CredentialsService.isAuthorizedForServer(targetServer);
+  if (!isAuthorized) {
     const message = `You are trying to copy an object to a server that you are not logged in to. Please provide username and password for ${targetServer.name}.`;
     showCredentialsModal(targetServer, dispatchOperation, () => onCredentials(), message);
   } else {

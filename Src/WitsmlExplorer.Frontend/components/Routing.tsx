@@ -70,7 +70,7 @@ const Routing = (): React.ReactElement => {
   const [queryParamsFromUrl, setQueryParamsFromUrl] = useState<QueryParams>(null);
   const [currentQueryParams, setCurrentQueryParams] = useState<QueryParams>(null);
   useEffect(() => {
-    if (isSyncingUrlAndState && (router.asPath === "/" || router.query?.serverUrl)) {
+    if (isSyncingUrlAndState) {
       setQueryParamsFromUrl(getQueryParamsFromUrl(router));
       setCurrentQueryParams(getQueryParamsFromState(navigationState));
     }
@@ -276,13 +276,13 @@ const Routing = (): React.ReactElement => {
 };
 
 const isQueryParamsEqual = (urlQp: QueryParams, stateQp: QueryParams): boolean => {
-  let property: keyof QueryParams;
-  for (property in urlQp) {
-    if (urlQp[property] !== stateQp[property]) {
-      return false;
-    }
+  if (Object.keys(urlQp).length !== Object.keys(urlQp).length) {
+    return false;
   }
-  return true;
+
+  return (Object.keys(urlQp) as (keyof typeof urlQp)[]).every((key) => {
+    return Object.prototype.hasOwnProperty.call(stateQp, key) && urlQp[key] === stateQp[key];
+  });
 };
 
 const getQueryParamsFromState = (state: NavigationState): QueryParams => {
