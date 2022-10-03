@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Services
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
             string witsmlServerWithCreds = headers[WitsmlClientProvider.WitsmlServerUrlHeader];
-            ServerCredentials credentials = this.GetBasicCredsFromHeader(witsmlServerWithCreds);
+            ServerCredentials credentials = GetBasicCredsFromHeader(witsmlServerWithCreds);
 
             await VerifyCredentials(credentials);
 
@@ -211,10 +211,6 @@ namespace WitsmlExplorer.Api.Services
             return new ServerCredentials();
         }
 
-        public string Decrypt(ServerCredentials credentials)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }
