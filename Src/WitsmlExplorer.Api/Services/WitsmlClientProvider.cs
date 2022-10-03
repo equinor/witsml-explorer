@@ -42,23 +42,15 @@ namespace WitsmlExplorer.Api.Services
             StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader];
             StringValues? sourceServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlSourceServerUrlHeader];
 
-            // Use system creds by role from Bearer token
-            if (authorizationHeader?.Count > 0)
+            if (authorizationHeader?.Count > 0 || targetServerHeader?.Count > 0)
             {
-                string bearerToken = authorizationHeader.ToString().Split()[1];
+                string bearerToken = authorizationHeader?.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
 
-                Task<ServerCredentials> targetCredsTask = credentialsService.GetCredsWithToken(bearerToken, targetServerHeader.ToString());
-                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCredsWithToken(bearerToken, sourceServerHeader.ToString());
+                Task<ServerCredentials> targetCredsTask = credentialsService.GetCreds(targetServerHeader.ToString(), bearerToken);
+                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCreds(sourceServerHeader.ToString(), bearerToken);
                 Task.WaitAll(targetCredsTask, sourceCredsTask);
                 _targetCreds = targetCredsTask.Result;
                 _sourceCreds = sourceCredsTask.Result;
-
-            }
-            // Use b64 encoded Basic creds
-            else if (authorizationHeader?.Count == 0 && targetServerHeader?.Count > 0)
-            {
-                _targetCreds = credentialsService.GetBasicCredsFromHeader(targetServerHeader.ToString());
-                _sourceCreds = credentialsService.GetBasicCredsFromHeader(sourceServerHeader.ToString());
             }
 
             _witsmlClient = !_targetCreds.IsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
