@@ -5,13 +5,13 @@ using System.ServiceModel.Security;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 using Serilog;
 
+using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
-
 namespace WitsmlExplorer.Api.Middleware
 {
     // Source: https://code-maze.com/global-error-handling-aspnetcore/
@@ -37,18 +37,18 @@ namespace WitsmlExplorer.Api.Middleware
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Message = "Not able to authenticate to WITSML server. Double-check your username and password."
+                    Message = "Not able to authenticate to WITSML server with given credentials"
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlTargetServerHeader, out StringValues serverUrl);
+                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlTargetServerHeader, n => "");
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = $"Not able to connect to server endpoint: \"{serverUrl}\". Please verify that server URL is correct."
+                    Message = $"Not able to connect to server endpoint: \"{witsmlTarget.Host}\""
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
@@ -56,6 +56,11 @@ namespace WitsmlExplorer.Api.Middleware
             {
                 Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
                 await HandleExceptionAsync(httpContext, _errorDetails500);
+            }
+            catch (WitsmlClientProviderException ex)
+            {
+                Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
+                await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
             }
             catch (Exception ex)
             {

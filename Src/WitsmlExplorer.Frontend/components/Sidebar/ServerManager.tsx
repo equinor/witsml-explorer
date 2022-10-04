@@ -13,6 +13,7 @@ import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
 import { getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
+import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
@@ -48,7 +49,11 @@ const ServerManager = (): React.ReactElement => {
             dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
           }
         } catch (error) {
-          // Show error in Alert.tsx
+          NotificationService.Instance.alertDispatcher.dispatch({
+            serverUrl: new URL(selectedServer.url),
+            message: error.message,
+            isSuccess: false
+          });
         }
       } else if (currentWitsmlLoginState.server) {
         const isLoggedInToSelectedServer = CredentialsService.isAuthorizedForServer(selectedServer);
