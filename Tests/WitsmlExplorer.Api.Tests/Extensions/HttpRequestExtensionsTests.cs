@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Tests.Extensions
         }
 
         [Fact]
-        public void GetWitsmlServerHttpHeader_ValidInput_CorrectlyParsed()
+        public void GetWitsmlServerHttpHeader_ValidInputWCreds_ServerCredentialsCorrectlyParsed()
         {
             string headerName = "WitsmlServer";
 
@@ -41,11 +41,42 @@ namespace WitsmlExplorer.Api.Tests.Extensions
             Mock<HttpRequest> mockRequest = new();
             mockRequest.Setup(x => x.Headers).Returns(hDict.Object);
 
-            // Decrypt function is not under test, return password back
+            // "Decrypt" function is not under test, return password back
             ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => _scInput.Password);
             Assert.Equal(_scInput, testResult);
         }
 
+        [Fact]
+        public void GetWitsmlServerHttpHeader_ValidInputNoCreds_HostCorrectlyParsed()
+        {
+            string headerName = "WitsmlServer";
+            string headerValue = _scInput.Host.ToString();
+
+            Mock<IHeaderDictionary> hDict = new();
+            hDict.SetupGet(p => p[It.IsAny<string>()]).Returns(headerValue);
+            Mock<HttpRequest> mockRequest = new();
+            mockRequest.Setup(x => x.Headers).Returns(hDict.Object);
+
+            // "Decrypt" function is not under test
+            ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => "");
+            Assert.Equal(_scInput.Host, testResult.Host);
+        }
+
+        [Fact]
+        public void GetWitsmlServerHttpHeader_EmptyInput_NoExceptionReturnNull()
+        {
+            string headerName = "WitsmlServer";
+            string headerValue = "";
+
+            Mock<IHeaderDictionary> hDict = new();
+            hDict.SetupGet(p => p[It.IsAny<string>()]).Returns(headerValue);
+            Mock<HttpRequest> mockRequest = new();
+            mockRequest.Setup(x => x.Headers).Returns(hDict.Object);
+
+            // "Decrypt" function is not under test
+            ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => "");
+            Assert.True(testResult.IsCredsNullOrEmpty() && testResult.Host == null);
+        }
 
     }
 }

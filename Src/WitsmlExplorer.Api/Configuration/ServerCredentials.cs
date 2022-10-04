@@ -27,9 +27,9 @@ namespace WitsmlExplorer.Api.Configuration
         public ICredentials Creds { get; init; }
         public string UserId => Creds?.UserId;
         public string Password => Creds?.Password;
-        public bool IsNullOrEmpty()
+        public bool IsCredsNullOrEmpty()
         {
-            return string.IsNullOrEmpty(Host.ToString()) || string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
+            return string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
         }
         public bool Equals(ServerCredentials other)
         {

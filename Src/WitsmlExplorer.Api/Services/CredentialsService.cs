@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<ServerCredentials> GetCreds(string headerName, string token)
         {
             ServerCredentials result = GetBasicCredsFromHeader(headerName);
-            if (result.IsNullOrEmpty() && token != null && !string.IsNullOrEmpty(result.Host.ToString()))
+            if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
             {
                 return await GetCredsWithToken(token, result.Host);
             }

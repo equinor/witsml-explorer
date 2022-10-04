@@ -12,7 +12,7 @@ namespace WitsmlExplorer.Api.Extensions
         public static ServerCredentials GetWitsmlServerHttpHeader(this HttpRequest httpRequest, string headerName, Func<string, string> delDecrypt)
         {
             string[] headerSplitted = httpRequest.Headers[headerName].ToString().Split('@');
-            if (headerSplitted.Length == 1)
+            if (headerSplitted.Length == 1 && !string.IsNullOrEmpty(headerSplitted[0]))
             {
                 return new ServerCredentials()
                 {
@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Extensions
                     Host = new Uri(headerSplitted[1])
                 };
             }
-            return null;
+            return new ServerCredentials();
         }
 
     }
