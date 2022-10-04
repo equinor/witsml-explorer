@@ -7,7 +7,6 @@ namespace WitsmlExplorer.Api.Extensions
 {
     public static class HttpRequestExtensions
     {
-
         /// The format for WitsmlServer Header value is : "b64(creds)@URL"
         public static ServerCredentials GetWitsmlServerHttpHeader(this HttpRequest httpRequest, string headerName, Func<string, string> delDecrypt)
         {
@@ -24,16 +23,13 @@ namespace WitsmlExplorer.Api.Extensions
                 BasicCredentials creds = new(headerSplit[0]);
                 return new ServerCredentials()
                 {
-                    Creds = new BasicCredentials()
-                    {
-                        UserId = creds.UserId,
-                        Password = delDecrypt(creds.Password) ?? creds.Password
-                    },
+
+                    UserId = creds.UserId,
+                    Password = delDecrypt(creds.Password) ?? creds.Password,
                     Host = new Uri(headerSplit[1])
                 };
             }
             return new ServerCredentials();
         }
-
     }
 }

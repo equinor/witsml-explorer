@@ -8,25 +8,18 @@ namespace WitsmlExplorer.Api.Configuration
         public ServerCredentials(string host, string userid, string password)
         {
             Host = new Uri(host);
-            Creds = new BasicCredentials()
-            {
-                UserId = userid,
-                Password = password
-            };
+            UserId = userid;
+            Password = password;
         }
         public ServerCredentials(string host, ICredentials creds)
         {
             Host = new Uri(host);
-            Creds = new BasicCredentials()
-            {
-                UserId = creds.UserId,
-                Password = creds.Password
-            };
+            UserId = creds.UserId;
+            Password = creds.Password;
         }
         public Uri Host { get; init; }
-        public ICredentials Creds { get; init; }
-        public string UserId => Creds?.UserId;
-        public string Password => Creds?.Password;
+        public string UserId { get; init; }
+        public string Password { get; init; }
         public bool IsCredsNullOrEmpty()
         {
             return string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
