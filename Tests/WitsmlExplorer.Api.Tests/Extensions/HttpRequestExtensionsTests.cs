@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Tests.Extensions
         }
 
         [Fact]
-        public void GetWitsmlServerHttpHeader_ValidInputWCreds_ServerCredentialsCorrectlyParsed()
+        public void GetWitsmlServerHttpHeader_ValidInputWithCreds_ServerCredentialsCorrectlyParsed()
         {
             string headerName = "WitsmlServer";
 

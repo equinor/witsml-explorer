@@ -1,3 +1,5 @@
+using System;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -51,6 +53,10 @@ namespace WitsmlExplorer.Api.Services
                 _targetCreds = targetCredsTask.Result;
                 _sourceCreds = sourceCredsTask.Result;
             }
+            else
+            {
+                throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlServerUrlHeader}'", (int)HttpStatusCode.BadRequest);
+            }
 
             _witsmlClient = !_targetCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
             _witsmlSourceClient = !_sourceCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, logQueries) : null;
@@ -80,5 +86,15 @@ namespace WitsmlExplorer.Api.Services
         {
             return _witsmlSourceClient;
         }
+
+    }
+    public class WitsmlClientProviderException : Exception
+    {
+        public WitsmlClientProviderException(string message, int statusCode) : base(message)
+        {
+            StatusCode = statusCode;
+        }
+
+        public int StatusCode { get; private set; }
     }
 }
