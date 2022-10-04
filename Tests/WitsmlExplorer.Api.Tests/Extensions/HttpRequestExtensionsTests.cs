@@ -20,11 +20,9 @@ namespace WitsmlExplorer.Api.Tests.Extensions
             _scInput = new()
             {
                 Host = new Uri("http://validstring.com"),
-                Creds = new BasicCredentials()
-                {
-                    UserId = "username",
-                    Password = "password"
-                }
+                UserId = "username",
+                Password = "password"
+
             };
         }
 
