@@ -14,17 +14,10 @@ namespace WitsmlExplorer.Api.Tests.Extensions
 {
     public class HttpRequestExtensionsTests
     {
+        private readonly ServerCredentials _scInput;
         public HttpRequestExtensionsTests()
         {
-
-        }
-
-        [Fact]
-        public void GetWitsmlServerHttpHeader_ValidInput_CorrectlyParsed()
-        {
-            string headerName = "WitsmlServer";
-
-            ServerCredentials scInput = new()
+            _scInput = new()
             {
                 Host = new Uri("http://validstring.com"),
                 Creds = new BasicCredentials()
@@ -33,18 +26,24 @@ namespace WitsmlExplorer.Api.Tests.Extensions
                     Password = "password"
                 }
             };
+        }
 
-            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(scInput.UserId + ":" + scInput.Password));
-            string headerValue = b64Creds + "@" + scInput.Host;
+        [Fact]
+        public void GetWitsmlServerHttpHeader_ValidInput_CorrectlyParsed()
+        {
+            string headerName = "WitsmlServer";
 
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(_scInput.UserId + ":" + _scInput.Password));
+            string headerValue = b64Creds + "@" + _scInput.Host;
 
-            Mock<HttpRequest> mockRequest = new();
             Mock<IHeaderDictionary> hDict = new();
-            mockRequest.Setup(x => x.Headers).Returns(hDict.Object);
             hDict.SetupGet(p => p[It.IsAny<string>()]).Returns(headerValue);
+            Mock<HttpRequest> mockRequest = new();
+            mockRequest.Setup(x => x.Headers).Returns(hDict.Object);
 
-            ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => scInput.Password);
-            Assert.Equal(scInput, testResult);
+            // Decrypt function is not under test, return password back
+            ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => _scInput.Password);
+            Assert.Equal(_scInput, testResult);
         }
 
 
