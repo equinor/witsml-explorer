@@ -15,6 +15,7 @@ Whenever a request is run towards a WITSML server, the backend will decrypt the 
 
 This is how the flow is when a user has selected a server and will need to authenticate against it. After this is done, a fresh list of wells is fetched.  
 
+
 <img src="./credentials-flow.svg">
 
 ## OAuth2
@@ -133,3 +134,15 @@ NEXT_PUBLIC_AZURE_AD_URL_WITSMLEXPLORER=http://localhost:3000/
 NEXT_PUBLIC_AZURE_AD_SCOPE_API=
 
 ```
+
+## Hybrid Flow
+It is possible to utilize both OAuth2 and Basic authentication security schemes at the same time. The end user will have to authenticate to an authorization server that supports OAuth2 Authorization Code Flow with PKCE.
+
+As outlined in the serverlist, Witsml-Explorer will choose the correct way of contacting the backend based on how you set up your serverlist. If the Server has securityscheme `OAuth2` it will use the Bearer token received from the authorization server to send to the backend and will not ask the user for basic credentials (Username/Password).
+
+The backend will do a lookup on the users application role, and if eligible, use the system-user fetched from keyvault for further connections to the WITSML server.
+
+The following diagram illustrates this hybrid flow:
+
+<diagram>
+
