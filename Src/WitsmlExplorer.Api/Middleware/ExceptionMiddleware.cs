@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Http;
 
 using Serilog;
 
+using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
-
 namespace WitsmlExplorer.Api.Middleware
 {
     // Source: https://code-maze.com/global-error-handling-aspnetcore/
@@ -21,7 +22,7 @@ namespace WitsmlExplorer.Api.Middleware
         private readonly ErrorDetails _errorDetails500 = new() { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "Something unexpected has happened." };
         public ExceptionMiddleware(RequestDelegate next)
         {
-            this._next = next;
+            _next = next;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -33,21 +34,21 @@ namespace WitsmlExplorer.Api.Middleware
             catch (MessageSecurityException ex)
             {
                 Log.Debug($"Not valid credentials: {ex}");
-                var errorDetails = new ErrorDetails
+                ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Message = "Not able to authenticate to WITSML server. Double-check your username and password."
+                    Message = "Not able to authenticate to WITSML server with given credentials"
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlServerUrlHeader, out var serverUrl);
-                var errorDetails = new ErrorDetails
+                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlServerUrlHeader, n => "");
+                ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
-                    Message = $"Not able to connect to server endpoint: \"{serverUrl}\". Please verify that server URL is correct."
+                    Message = $"Not able to connect to server endpoint: \"{witsmlTarget.Host}\""
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
@@ -55,6 +56,11 @@ namespace WitsmlExplorer.Api.Middleware
             {
                 Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
                 await HandleExceptionAsync(httpContext, _errorDetails500);
+            }
+            catch (WitsmlClientProviderException ex)
+            {
+                Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
+                await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
             }
             catch (Exception ex)
             {

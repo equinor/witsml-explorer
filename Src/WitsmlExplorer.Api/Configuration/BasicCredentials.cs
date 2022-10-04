@@ -7,7 +7,7 @@ namespace WitsmlExplorer.Api.Configuration
     {
         public string UserId { get; init; }
         public string Password { get; init; }
-        internal BasicCredentials() { }
+        public BasicCredentials() { }
         public BasicCredentials(string base64EncodedString)
         {
             string credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedString));
