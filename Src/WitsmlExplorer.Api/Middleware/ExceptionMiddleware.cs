@@ -5,6 +5,7 @@ using System.ServiceModel.Security;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 using Serilog;
 
@@ -33,7 +34,7 @@ namespace WitsmlExplorer.Api.Middleware
             catch (MessageSecurityException ex)
             {
                 Log.Debug($"Not valid credentials: {ex}");
-                ErrorDetails errorDetails = new ErrorDetails
+                ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.Unauthorized,
                     Message = "Not able to authenticate to WITSML server. Double-check your username and password."
@@ -43,8 +44,8 @@ namespace WitsmlExplorer.Api.Middleware
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlTargetServerHeader, out Microsoft.Extensions.Primitives.StringValues serverUrl);
-                ErrorDetails errorDetails = new ErrorDetails
+                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlTargetServerHeader, out StringValues serverUrl);
+                ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
                     Message = $"Not able to connect to server endpoint: \"{serverUrl}\". Please verify that server URL is correct."
