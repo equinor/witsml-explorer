@@ -19,7 +19,7 @@ const Alerts = (): React.ReactElement => {
         setAlert("Lost connection to notifications service. Please wait for reconnection or refresh browser");
       }
     });
-    const unsubscribeOnJobFinished = NotificationService.Instance.alertDispatcher.subscribe((notification) => {
+    const unsubscribeOnJobFinished = NotificationService.Instance.alertDispatcherAsEvent.subscribe((notification) => {
       const shouldNotify = notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (!shouldNotify) {
         return;

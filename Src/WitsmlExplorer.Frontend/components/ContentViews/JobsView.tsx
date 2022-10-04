@@ -44,7 +44,7 @@ export const JobsView = (): React.ReactElement => {
       }
     };
     const unsubscribeOnSnackbar = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(eventHandler);
-    const unsubscribeOnAlert = NotificationService.Instance.alertDispatcher.subscribe(eventHandler);
+    const unsubscribeOnAlert = NotificationService.Instance.alertDispatcherAsEvent.subscribe(eventHandler);
 
     return function cleanup() {
       unsubscribeOnSnackbar();
