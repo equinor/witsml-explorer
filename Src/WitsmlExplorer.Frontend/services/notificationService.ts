@@ -82,11 +82,15 @@ export default class NotificationService {
     return this._snackbarDispatcher;
   }
 
+  public get alertDispatcher(): SimpleEventDispatcher<Notification> {
+    return this._alertDispatcher;
+  }
+
   public get snackbarDispatcherAsEvent(): ISimpleEvent<Notification> {
     return this._snackbarDispatcher.asEvent();
   }
 
-  public get alertDispatcher(): ISimpleEvent<Notification> {
+  public get alertDispatcherAsEvent(): ISimpleEvent<Notification> {
     return this._alertDispatcher.asEvent();
   }
 
