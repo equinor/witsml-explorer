@@ -136,14 +136,14 @@ NEXT_PUBLIC_AZURE_AD_SCOPE_API=
 ```
 
 ## Hybrid Flow
-It is possible to utilize both OAuth2 and Basic authentication security schemes at the same time. The end user will have to authenticate to an authorization server that supports OAuth2 Authorization Code Flow with PKCE.
+It is now possible to utilize both OAuth2 and Basic authentication security schemes at the same time. With this configuration the end user will have to authenticate against an authorization server that supports `OAuth2 Authorization Code Flow with PKCE`.
 
-As outlined in the serverlist, Witsml-Explorer will choose the correct way of contacting the backend based on how you set up your serverlist. If the Server has securityscheme `OAuth2` it will use the Bearer token received from the authorization server to send to the backend and will not ask the user for basic credentials (Username/Password).
+As described in the serverlist, Witsml-Explorer will choose the correct way of contacting the backend based on how you configure up your serverlist. If the Server has securityscheme `OAuth2` and both the server and user have the same app-roles, the frontend will use the Bearer token received from the authorization server and send this to the backend with the url of the server. It will not ask the user for basic credentials (Username/Password).
 
 The backend will do a lookup on the users application role, and if eligible, use the system-user fetched from keyvault for further connections to the WITSML server.
 
 ### Basic witsmlexplorer flow
-<>
+For an illustration of sequences initiated when the user queries a server with property securityscheme set to `Basic`.  See the figure in the beginning of this document under `WITSML server credentials flow`
 
 ### OAuth2 witsmlexplorer flow
 The following diagram illustrates the flow for a user contacting a `Server` that have been assigned securityscheme `OAuth2` (Azure example):
@@ -151,22 +151,23 @@ The following diagram illustrates the flow for a user contacting a `Server` that
 ```mermaid
 
 graph TD
-    A[WitsmlExplorer Frontend] -->|login| B[1. Auth Server]
-    B[1. Auth Server] --> |token| A[WitsmlExplorer Frontend]
-    A[WitsmlExplorer Frontend] --->|getservers| G[2. ServerlistDB]
-    G[2. ServerlistDB] --->|servers| A[itsml-Explorer]
-    A[WitsmlExplorer Frontend] ----> |with:token:getwells| H[3. WitsmlExplorer API]
-    H[3. WitsmlExplorer API] ----> |wells| A[WitsmlExplorer Frontend]  
-    H[3. WitsmlExplorer API] --> |get:syscreds| K[4. Azure Keyvault]
-    K[4. Azure Keyvault] --> |syscreds| H[3. WitsmlExplorer API]
-    H[3. WitsmlExplorer API] ---> |with:syscreds:getwells| J[5. WITSML Server]
-    J[5. WITSML Server]  ---> |wells| H[4. WitsmlExplorer API]
+    A[1. WitsmlExplorer Frontend] -->|login| B[2. Auth Server]
+    B[2. Auth Server] --> |token| A[WitsmlExplorer Frontend]
+    A[1. WitsmlExplorer Frontend] --->|getservers| G[3. ServerlistDB]
+    G[3. ServerlistDB] --->|servers| A[itsml-Explorer]
+    A[1. WitsmlExplorer Frontend] ----> |with:token:getwells| H[3. WitsmlExplorer API]
+    H[3. WitsmlExplorer API] ----> |wells| A[1. WitsmlExplorer Frontend]  
+    H[3. WitsmlExplorer API] --> |getsyscreds| K[5. Azure Keyvault]
+    K[5. Azure Keyvault] --> |syscreds| H[3. WitsmlExplorer API]
+    H[3. WitsmlExplorer API] ---> |with:syscreds:getwells| J[6. WITSML Server]
+    J[6. WITSML Server]  ---> |wells| H[4. WitsmlExplorer API]
 ```
 
-1. The end user will login with the configured OAuth2 Authorization server (here Azure AD)
-2. Witsml-Explorer will fetch the initial Serverlist from DB. All servers includes two properties `securityscheme` and `role`
-3. If the user through the frontend chooses to query a server with a `securityscheme` set to `OAuth2`, the backend will check the received `Bearer` token for `app roles` given in the JWT token to be checked against the servers configurated `role`
-4. If one of the users roles and server roles matches, the backend fetches system credentials from Azure Keyvault for this witsml server
-5. The server now query the witsml server with `Basic` authorization using system credentials fetched from step 4.
+1. End user visit Witsml-Explorer
+2. The end user will be redirected to login with the configured OAuth2 Authorization server (Azure AD)
+3. Witsml-Explorer will fetch the initial Serverlist from DB. All servers include two properties `securityscheme` and `role`
+4. If the user through the frontend chooses to query a server with a `securityscheme` set to `OAuth2`, the backend will check the received `Bearer` JWT token for `app-roles` to be checked against the server configured `roles`
+5. If one of the user roles and server roles matches, the backend fetches system credentials from `Azure Keyvault` for this witsml server
+6. The server will now query the witsml server with `Basic` authorization using system credentials fetched from step 5.
 
 Results will then be passed back to the end user.
