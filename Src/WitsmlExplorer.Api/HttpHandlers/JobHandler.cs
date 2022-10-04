@@ -18,8 +18,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService)
         {
             IHeaderDictionary headers = httpRequest.Headers;
-            StringValues sourceServer = headers["Witsml-Source-ServerUrl"];
-            StringValues targetServer = headers["Witsml-ServerUrl"];
+            StringValues sourceServer = headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            StringValues targetServer = headers[WitsmlClientProvider.WitsmlTargetServerHeader];
             string targetServerString = targetServer.ToString();
             BasicCredentials basic = targetServerString.Split("@").Length == 2 ? new(targetServerString.Split("@")[0]) : new BasicCredentials();
             return Results.Ok(await jobService.CreateJob(jobType, basic.UserId ?? "unknown", sourceServer, targetServer, httpRequest.Body));

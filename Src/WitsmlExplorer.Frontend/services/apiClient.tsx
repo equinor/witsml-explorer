@@ -8,8 +8,8 @@ export class ApiClient {
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "Witsml-ServerUrl": this.getServerHeader(credentials[0]),
-      "Witsml-Source-ServerUrl": this.getServerHeader(credentials[1])
+      "WitsmlTargetServer": this.getServerHeader(credentials[0]),
+      "WitsmlSourceServer": this.getServerHeader(credentials[1])
     };
   }
 

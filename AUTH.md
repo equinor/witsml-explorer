@@ -30,7 +30,7 @@ The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a
 
 After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`encrypted password`. The encrypted password received from the authorizationhandler.
 
-Entering this in swagger the Authorization/BasicAuth fields will make sure to include the `Authorization: Basic ...` header in your successive calls to other endpoints. The header value `Witsml-ServerUrl` for the same server you got the token also needs to be filled out as the credentials are valid only for a specific server.
+Entering this in swagger the Authorization/BasicAuth fields will make sure to include the `Authorization: Basic ...` header in your successive calls to other endpoints. The header value `WitsmlTargetServer` for the same server you got the token also needs to be filled out as the credentials are valid only for a specific server.
 
 ## OAuth2 authentication
 `OAuth2` authentication is turned off by default both in backend and frontend through the appsettings property `OAuth2Enabled`. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)

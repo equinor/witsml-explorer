@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
-            ServerCredentials credentials = GetBasicCredsFromHeader(WitsmlClientProvider.WitsmlServerUrlHeader);
+            ServerCredentials credentials = GetBasicCredsFromHeader(WitsmlClientProvider.WitsmlTargetServerHeader);
             await VerifyCredentials(credentials);
             return Encrypt(credentials.Password);
         }

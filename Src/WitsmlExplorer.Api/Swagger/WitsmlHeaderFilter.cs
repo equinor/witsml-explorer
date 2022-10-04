@@ -4,10 +4,12 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Swagger
 {
     /// <summary>
-    /// This class will add a Required HTTP Header `Witsml-ServerUrl` and `Witsml-Source-ServerUrl`to SwaggerUI for all required endpoints,
+    /// This class will add a Required HTTP Header `WitsmlTargetServer` and `WitsmlSourceServer`to SwaggerUI for all required endpoints,
     /// </summary>
     public class WitsmlHeaderFilter : IOperationFilter
     {
@@ -25,7 +27,7 @@ namespace WitsmlExplorer.Api.Swagger
             {
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = "Witsml-ServerUrl",
+                    Name = WitsmlClientProvider.WitsmlTargetServerHeader,
                     In = ParameterLocation.Header,
                     Schema = new OpenApiSchema { Type = "string" },
                     Required = true
@@ -34,7 +36,7 @@ namespace WitsmlExplorer.Api.Swagger
                 {
                     operation.Parameters.Add(new OpenApiParameter
                     {
-                        Name = "Witsml-Source-ServerUrl",
+                        Name = WitsmlClientProvider.WitsmlSourceServerHeader,
                         In = ParameterLocation.Header,
                         Schema = new OpenApiSchema { Type = "string" },
                         Required = false
