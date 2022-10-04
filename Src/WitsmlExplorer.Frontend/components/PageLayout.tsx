@@ -14,7 +14,7 @@ const PageLayout = (): ReactElement => {
   const sidebarRef = useRef(null);
   const [isResizing, setIsResizing] = useState(false);
   const [isVisible, setIsVisibile] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(268);
+  const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth } = useDocumentDimensions();
 
   const startResizing = useCallback(() => {
