@@ -20,8 +20,8 @@ namespace WitsmlExplorer.Api.Services
 
     public class WitsmlClientProvider : IWitsmlClientProvider
     {
-        public const string WitsmlServerUrlHeader = "Witsml-ServerUrl";
-        private const string WitsmlSourceServerUrlHeader = "Witsml-Source-ServerUrl";
+        public const string WitsmlTargetServerHeader = "WitsmlTargetServer";
+        public const string WitsmlSourceServerHeader = "WitsmlSourceServer";
 
         private readonly ServerCredentials _targetCreds;
         private readonly ServerCredentials _sourceCreds;
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Services
 
         public WitsmlClientProvider(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
-            if (httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader].Count == 0)
+            if (httpContextAccessor.HttpContext?.Request.Headers[WitsmlTargetServerHeader].Count == 0)
             {
                 return;
             }
@@ -39,8 +39,8 @@ namespace WitsmlExplorer.Api.Services
             bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
 
             StringValues? authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
-            StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlServerUrlHeader];
-            StringValues? sourceServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlSourceServerUrlHeader];
+            StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlTargetServerHeader];
+            StringValues? sourceServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlSourceServerHeader];
 
             // Use system creds by role from Bearer token
             if (authorizationHeader?.Count > 0)

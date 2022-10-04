@@ -54,8 +54,8 @@ namespace WitsmlExplorer.Api.Services
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
             IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
-            string witsmlServerWithCreds = headers[WitsmlClientProvider.WitsmlServerUrlHeader];
-            ServerCredentials credentials = this.GetBasicCredsFromHeader(witsmlServerWithCreds);
+            string witsmlServerWithCreds = headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            ServerCredentials credentials = GetBasicCredsFromHeader(witsmlServerWithCreds);
 
             await VerifyCredentials(credentials);
 
@@ -85,7 +85,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 IHeaderDictionary headers = httpRequest.Headers;
                 List<ServerCredentials> credentialsList = await GetCredentialsFromHeaders(headers);
-                StringValues server = headers["Witsml-ServerUrl"];
+                StringValues server = headers[WitsmlClientProvider.WitsmlTargetServerHeader];
                 ServerCredentials serverCreds = new(server, credentialsList[0].UserId, Decrypt(credentialsList[0].Password));
                 await VerifyCredentials(serverCreds);
             }
@@ -104,8 +104,8 @@ namespace WitsmlExplorer.Api.Services
             if (string.IsNullOrEmpty(scheme)) { return credentials; }
 
             string base64Data = headers["Authorization"].ToString().Split()[1];
-            string server = headers["Witsml-ServerUrl"].ToString();
-            string sourceServer = headers["Witsml-Source-ServerUrl"].ToString();
+            string server = headers[WitsmlClientProvider.WitsmlTargetServerHeader].ToString();
+            string sourceServer = headers[WitsmlClientProvider.WitsmlSourceServerHeader].ToString();
 
             if (scheme == "Basic") { credentials = Task.FromResult(ParseBasicAuthorization(base64Data, sourceServer, server)); }
             else if (scheme == "Bearer") { credentials = ParseBearerAuthorization(base64Data, sourceServer, server); }
@@ -174,7 +174,7 @@ namespace WitsmlExplorer.Api.Services
         }
 
         /// <summary>
-        /// 1. Server input has been parsed from HTTP Headers "Witsml-ServerUrl" or "Witsml-Source-ServerUrl" and might contain b64 encoded Basic auth
+        /// 1. Server input has been parsed from HTTP Headers "WitsmlTargetServer" or "WitsmlSourceServer" and might contain b64 encoded Basic auth
         /// 2. Token will always be JWT token and should have <code>roles</code>
         /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
         /// </summary>

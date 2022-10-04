@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Middleware
         private readonly ErrorDetails _errorDetails500 = new() { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "Something unexpected has happened." };
         public ExceptionMiddleware(RequestDelegate next)
         {
-            this._next = next;
+            _next = next;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Middleware
             catch (MessageSecurityException ex)
             {
                 Log.Debug($"Not valid credentials: {ex}");
-                var errorDetails = new ErrorDetails
+                ErrorDetails errorDetails = new ErrorDetails
                 {
                     StatusCode = (int)HttpStatusCode.Unauthorized,
                     Message = "Not able to authenticate to WITSML server. Double-check your username and password."
@@ -43,8 +43,8 @@ namespace WitsmlExplorer.Api.Middleware
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlServerUrlHeader, out var serverUrl);
-                var errorDetails = new ErrorDetails
+                httpContext.Request.Headers.TryGetValue(WitsmlClientProvider.WitsmlTargetServerHeader, out Microsoft.Extensions.Primitives.StringValues serverUrl);
+                ErrorDetails errorDetails = new ErrorDetails
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
                     Message = $"Not able to connect to server endpoint: \"{serverUrl}\". Please verify that server URL is correct."
