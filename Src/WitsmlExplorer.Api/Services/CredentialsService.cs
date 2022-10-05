@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Services
         }
 
         /// <summary>
-        /// 1. Server input has been parsed from HTTP Headers "Witsml-ServerUrl" or "Witsml-Source-ServerUrl" and might contain b64 encoded Basic auth
+        /// 1. Server input has been parsed from HTTP Headers "WitsmlTargetServer" or "WitsmlSourceServer" and might contain b64 encoded Basic auth
         /// 2. Token will always be JWT token and should have <code>roles</code>
         /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
         /// </summary>
