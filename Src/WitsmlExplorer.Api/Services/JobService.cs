@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IJobService
     {
-        Task<string> CreateJob(JobType jobType, string username, string sourceServer, string targetServer, Stream jobStream);
+        Task<string> CreateJob(JobType jobType, string username, string witsmlUsername, string sourceServer, string targetServer, Stream jobStream);
     }
 
     public class JobService : IJobService
@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services
             _jobCache = jobCache;
         }
 
-        public async Task<string> CreateJob(JobType jobType, string username, string sourceServer, string targetServer, Stream jobStream)
+        public async Task<string> CreateJob(JobType jobType, string username, string witsmlUsername, string sourceServer, string targetServer, Stream jobStream)
         {
             IWorker worker = _workers.FirstOrDefault(worker => worker.JobType == jobType);
             if (worker == null)
@@ -38,8 +38,9 @@ namespace WitsmlExplorer.Api.Services
             (Task<(WorkerResult, RefreshAction)> task, Jobs.Job job) = await worker.SetupWorker(jobStream);
             _jobQueue.Enqueue(task);
             job.JobInfo.Username = username;
-            job.JobInfo.SourceServer = sourceServer?.Split("@").Length == 2 ? sourceServer.Split("@")[1] : sourceServer;
-            job.JobInfo.TargetServer = targetServer?.Split("@").Length == 2 ? targetServer.Split("@")[1] : targetServer;
+            job.JobInfo.WitsmlUsername = witsmlUsername;
+            job.JobInfo.SourceServer = sourceServer;
+            job.JobInfo.TargetServer = targetServer;
             _jobCache.CacheJob(job.JobInfo);
 
             return job.JobInfo.Id;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Extensions.Logging;
@@ -19,10 +20,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
         public JobCacheTests()
         {
-            var logger = new Mock<ILogger<JobCache>>();
+            Mock<ILogger<JobCache>> logger = new();
             _jobCache = new(logger.Object);
             _jobInfos = new JobInfo[] { new(), new(), new(), new() };
-            foreach (var jobInfo in _jobInfos)
+            foreach (JobInfo jobInfo in _jobInfos)
             {
                 _jobCache.CacheJob(jobInfo);
             }
@@ -36,40 +37,16 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetJobInfosById_CorrectReturn()
-        {
-            var indicesToGet = new int[] { 1, 2 };
-            var ids = indicesToGet.Select(index => _jobInfos[index].Id);
-            var result = _jobCache.GetJobInfosById(ids);
-            Assert.Equal(indicesToGet.Length, result.Count());
-            foreach (JobInfo jobInfo in result)
-            {
-                Assert.Contains(jobInfo.Id, ids);
-            }
-            Assert.Distinct(result.Select(jobInfo => jobInfo.Id));
-        }
-
-        [Fact]
-        public void GetJobInfosId_IdNotPresent_ResultOmitted()
-        {
-            var validId = _jobInfos[3].Id;
-            var ids = new string[] { validId, "invalid_id" };
-            var result = _jobCache.GetJobInfosById(ids);
-            Assert.Single(result);
-            Assert.Equal(validId, result.First().Id);
-        }
-
-        [Fact]
         public void GetJobInfosByUser_ReturnCorrectUser()
         {
-            var user1 = "Alice";
-            var user2 = "Bob";
+            string user1 = "Alice";
+            string user2 = "Bob";
             _jobInfos[0].Username = user1;
             _jobInfos[1].Username = user2;
             _jobInfos[2].Username = user1;
             _jobInfos[3].Username = user2;
 
-            var result = _jobCache.GetJobInfosByUser(user2);
+            IEnumerable<JobInfo> result = _jobCache.GetJobInfosByUser(user2);
             Assert.Equal(2, result.Count());
             foreach (JobInfo jobInfo in result)
             {

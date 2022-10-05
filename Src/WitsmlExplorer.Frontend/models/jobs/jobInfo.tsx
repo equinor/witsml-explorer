@@ -3,6 +3,7 @@ export default interface JobInfo {
   description: string;
   id: string;
   username: string;
+  witsmlUsername: string;
   sourceServer: string;
   targetServer: string;
   startTime: string;

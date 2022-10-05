@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
+import { getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
@@ -19,7 +20,7 @@ export const JobsView = (): React.ReactElement => {
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
 
   const credentials = CredentialsService.getCredentials();
-  const username = credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
+  const username = msalEnabled ? getUsername() : credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
 
   const fetchJobs = () => {
     if (username) {
