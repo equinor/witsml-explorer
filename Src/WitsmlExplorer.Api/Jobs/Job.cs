@@ -1,24 +1,21 @@
-using System.Text.Json.Serialization;
-
 namespace WitsmlExplorer.Api.Jobs
 {
-    public abstract record Job : IJsonOnDeserialized
+    public abstract record Job
     {
-
-        public Job()
-        {
-            JobInfo = new JobInfo();
-        }
+        private JobInfo _jobInfo;
 
         public abstract string Description();
 
-        public void OnDeserialized()
+        public JobInfo JobInfo
         {
-            JobInfo.Description = Description();
-            JobInfo.JobType = GetType().Name;
+            get => _jobInfo;
+            set
+            {
+                _jobInfo = value;
+                _jobInfo.Description = Description();
+                _jobInfo.JobType = GetType().Name;
+            }
         }
-
-        public JobInfo JobInfo { get; init; }
 
     }
 }

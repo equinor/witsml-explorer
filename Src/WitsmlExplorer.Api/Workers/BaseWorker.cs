@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             try
             {
-                job.JobInfo.Status = JobStatus.Started;
+                await Task.Delay(1);
                 (WorkerResult WorkerResult, RefreshAction RefreshAction) task = await Execute(job);
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 if (!task.WorkerResult.IsSuccess)

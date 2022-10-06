@@ -20,10 +20,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             ServerCredentials witsmlTarget = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlTargetServerHeader, n => "");
             ServerCredentials witsmlSource = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlSourceServerHeader, n => "");
-
             (string username, string witsmlUsername) = await credentialsService.GetUsernames();
-
-            return Results.Ok(await jobService.CreateJob(jobType, username, witsmlUsername, witsmlSource.Host?.ToString(), witsmlTarget.Host?.ToString(), httpRequest.Body));
+            JobInfo jobInfo = new()
+            {
+                Username = username,
+                WitsmlUsername = witsmlUsername,
+                SourceServer = witsmlSource.Host?.ToString(),
+                TargetServer = witsmlTarget.Host?.ToString()
+            };
+            return Results.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]

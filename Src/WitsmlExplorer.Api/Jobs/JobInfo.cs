@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
-            Status = JobStatus.Ordered;
+            Status = JobStatus.Started;
         }
 
         public string JobType { get; internal set; }
@@ -55,7 +55,6 @@ namespace WitsmlExplorer.Api.Jobs
 
     public enum JobStatus
     {
-        Ordered,
         Started,
         Finished,
         Failed
