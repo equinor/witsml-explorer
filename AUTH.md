@@ -166,9 +166,9 @@ graph TD
 
 1. End user visit Witsml-Explorer.
 2. The end user will be redirected to login with the configured OAuth2 Authorization server (Azure AD).
-3. Witsml-Explorer will fetch the initial Serverlist from DB. When MSAL is enabled in the frontend and OAuth2 in the backend, retrieving the serverlist will only be available for logged in users. Similarly create, update and delete will be reserved for users with role `admin`. All servers in the list now include two properties: `securityscheme` and `role`.
+3. Witsml-Explorer will fetch the initial Serverlist from DB. When OAuth2 is enabled both in the frontend and backend, retrieving the serverlist will only be available for logged in users. Similarly Create, Update and Delete will be reserved for users with role `admin`. All servers in the list now include two properties: `securityscheme` and `role`.
 4. If the user through the frontend chooses to query a server with a `securityscheme` set to `OAuth2`, the backend will check the received `Bearer` JWT token for `app-roles`. This in turn will be checked against the configured `roles` for the server.
 5. When one of the user roles and server roles overlap, the backend fetches system credentials from `Azure Keyvault` for this witsml server.
 6. The server will now forward the query to the witsml server using `Basic` authorization with system credentials fetched from step 5.
 
-The resulting list of wells will then be passed back to the end user.
+The resulting list of wells will then be passed back to the frontend.
