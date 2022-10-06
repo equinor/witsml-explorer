@@ -52,6 +52,8 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
               defaultValue={jobInfo.killTime ? new Date(jobInfo.killTime).toLocaleString() : "-"}
               fullWidth
             />
+            <TextField InputProps={{ readOnly: true }} id="username" label="Username" defaultValue={jobInfo.username} fullWidth />
+            <TextField InputProps={{ readOnly: true }} id="witsmlUsername" label="WITSML Username" defaultValue={jobInfo.witsmlUsername} fullWidth />
           </>
         }
         onSubmit={() => {

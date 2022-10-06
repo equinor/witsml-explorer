@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
@@ -58,7 +59,7 @@ namespace WitsmlExplorer.Api.Services
         }
 
         /// <summary>
-        /// 1. Server input has been parsed from HTTP Headers "Witsml-ServerUrl" or "Witsml-Source-ServerUrl" and might contain b64 encoded Basic auth
+        /// 1. Server input has been parsed from HTTP Headers "WitsmlTargetServer" or "WitsmlSourceServer" and might contain b64 encoded Basic auth
         /// 2. Token will always be JWT token and should have <code>roles</code>
         /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
         /// </summary>
@@ -122,6 +123,27 @@ namespace WitsmlExplorer.Api.Services
         private ServerCredentials GetBasicCredsFromHeader(string headerName)
         {
             return _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, Decrypt);
+        }
+
+        public bool ValidEncryptedBasicCredentials(string headerName)
+        {
+            ServerCredentials creds = _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, n => n);
+            return Decrypt(creds.Password) != null;
+        }
+
+        public async Task<(string username, string witsmlUsername)> GetUsernames()
+        {
+            StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
+            ServerCredentials creds = await GetCreds(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
+            if (bearerToken != null)
+            {
+                JwtSecurityTokenHandler handler = new();
+                JwtSecurityToken jwt = handler.ReadJwtToken(bearerToken);
+                string upn = jwt.Claims.Where(n => n.Type == "upn").Select(n => n.Value).First();
+                return (upn, creds.UserId);
+            }
+            return (creds.UserId, creds.UserId);
         }
     }
 
