@@ -9,6 +9,6 @@ namespace WitsmlExplorer.Api.Services
         public Task<string> ProtectBasicAuthorization();
         public Task<ServerCredentials> GetCreds(string headerName, string token = null);
         public bool ValidEncryptedBasicCredentials(string headerName);
-        public Task<(string Username, string WitsmlUsername)> GetUsernames();
+        public Task<(string username, string witsmlUsername)> GetUsernames();
     }
 }

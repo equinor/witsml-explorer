@@ -131,7 +131,7 @@ namespace WitsmlExplorer.Api.Services
             return Decrypt(creds.Password) != null;
         }
 
-        public async Task<(string Username, string WitsmlUsername)> GetUsernames()
+        public async Task<(string username, string witsmlUsername)> GetUsernames()
         {
             StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
             string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;

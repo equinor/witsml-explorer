@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
-        public static IResult GetJobInfosByUser(string username, IJobCache jobCache, IConfiguration configuration, ICredentialsService credentialsService)
+        public static async Task<IResult> GetJobInfosByUser(string polledUser, IJobCache jobCache, IConfiguration configuration, ICredentialsService credentialsService)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             if (!useOAuth2)
@@ -42,7 +42,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
                     return Results.Unauthorized();
                 }
             }
-            return Results.Ok(jobCache.GetJobInfosByUser(username));
+
+            (string username, _) = await credentialsService.GetUsernames();
+            if (polledUser != username)
+            {
+                return Results.Unauthorized();
+            }
+            return Results.Ok(jobCache.GetJobInfosByUser(polledUser));
         }
 
     }
