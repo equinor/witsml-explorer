@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import OperationType from "../../contexts/operationType";
 import { parseStringToTubularComponentReferences, TubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
 import ObjectReference from "../../models/jobs/objectReference";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import Tubular from "../../models/tubular";
 import JobService, { JobType } from "../../services/jobService";
 import { DispatchOperation } from "./ContextMenuUtils";
@@ -26,12 +27,7 @@ export const useClipboardTubularComponentReferences: () => [TubularComponentRefe
 };
 
 export const orderCopyTubularComponentsJob = (tubular: Tubular, tubularComponentReferences: TubularComponentReferences, dispatchOperation: DispatchOperation) => {
-  const tubularReference: ObjectReference = {
-    wellUid: tubular.wellUid,
-    wellboreUid: tubular.wellboreUid,
-    uid: tubular.uid
-  };
-
+  const tubularReference: ObjectReference = toObjectReference(tubular);
   const copyJob = { source: tubularComponentReferences, target: tubularReference };
   JobService.orderJob(JobType.CopyTubularComponents, copyJob);
   dispatchOperation({ type: OperationType.HideContextMenu });

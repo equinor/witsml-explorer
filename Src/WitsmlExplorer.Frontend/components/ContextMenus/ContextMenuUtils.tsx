@@ -1,10 +1,14 @@
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
+import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
+import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
+import ConfirmModal from "../Modals/ConfirmModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import { QueryParams } from "../Routing";
 
@@ -16,13 +20,18 @@ export const StyledIcon = styled(Icon)`
   }
 `;
 
-export const menuItemText = (operation: string, object: string, array: any[] | null) => {
-  const operationUpperCase = operation.charAt(0).toUpperCase() + operation.slice(1).toLowerCase();
+export const pluralizeIfMultiple = (object: string, array: any[] | null) => {
   const objectLowercase = object.toLowerCase();
   const objectPlural = objectLowercase.charAt(object.length - 1) == "y" ? objectLowercase.slice(0, object.length - 1) + "ies" : objectLowercase + "s";
   const isPlural = array ? array.length > 1 : false;
+  return isPlural ? objectPlural : objectLowercase;
+};
+
+export const menuItemText = (operation: string, object: string, array: any[] | null) => {
+  const operationUpperCase = operation.charAt(0).toUpperCase() + operation.slice(1).toLowerCase();
+  const objectPlural = pluralizeIfMultiple(object, array);
   const count = array?.length > 0 ? ` ${array.length} ` : " ";
-  return `${operationUpperCase}${count}${isPlural ? objectPlural : objectLowercase}`;
+  return `${operationUpperCase}${count}${objectPlural}`;
 };
 
 export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, onSuccess: () => void, message: string) => {
@@ -49,4 +58,30 @@ export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, 
   const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&${paramName}=${objectOnWellbore.uid}`;
   window.open(logUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
+export const onClickDelete = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, jobType: JobType) => {
+  const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
+  const orderDeleteJob = async () => {
+    dispatchOperation({ type: OperationType.HideModal });
+    const job: DeleteObjectsJob = {
+      toDelete: toObjectReferences(objectsOnWellbore, objectType)
+    };
+    await JobService.orderJob(jobType, job);
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+  const confirmation = (
+    <ConfirmModal
+      heading={`Delete ${pluralizedName}?`}
+      content={
+        <span>
+          This will permanently delete {pluralizedName}: <strong>{objectsOnWellbore.map((item) => item.name).join(", ")}</strong>
+        </span>
+      }
+      onConfirm={() => orderDeleteJob()}
+      confirmColor={"secondary"}
+      switchButtonPlaces={true}
+    />
+  );
+  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 };

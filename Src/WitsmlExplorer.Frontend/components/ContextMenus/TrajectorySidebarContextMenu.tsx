@@ -2,14 +2,15 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
 import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
 
 export interface TrajectorySidebarContextMenuProps {
@@ -28,7 +29,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, [trajectory], dispatchOperation)}>
+        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, [trajectory], dispatchOperation, ObjectType.Trajectory)}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy trajectory</Typography>
         </MenuItem>,
@@ -36,7 +37,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.trajectoryStationUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete([trajectory], dispatchOperation)}>
+        <MenuItem key={"delete"} onClick={() => () => onClickDelete(dispatchOperation, [trajectory], ObjectType.Trajectory, JobType.DeleteTrajectories)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete trajectory</Typography>
         </MenuItem>,

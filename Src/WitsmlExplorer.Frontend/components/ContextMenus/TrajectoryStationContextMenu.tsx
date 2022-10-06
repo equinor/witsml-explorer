@@ -6,6 +6,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { createTrajectoryStationReferences } from "../../models/jobs/copyTrajectoryStationJob";
 import { DeleteTrajectoryStationsJob } from "../../models/jobs/deleteJobs";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import JobService, { JobType } from "../../services/jobService";
@@ -66,14 +67,9 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
 
   const onConfirmDelete = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const { wellUid, wellboreUid, uid } = trajectory;
     const job: DeleteTrajectoryStationsJob = {
       toDelete: {
-        trajectoryReference: {
-          wellUid,
-          wellboreUid,
-          uid: uid
-        },
+        trajectoryReference: toObjectReference(trajectory),
         trajectoryStationUids: checkedTrajectoryStations.map((item) => item.uid)
       }
     };

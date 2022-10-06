@@ -1,5 +1,6 @@
 import { LogCurveInfoRow } from "../../components/ContentViews/LogCurveInfoListView";
 import LogObject from "../logObject";
+import { toObjectReference } from "../objectOnWellbore";
 import ObjectReference from "./objectReference";
 
 export interface CopyLogDataJob {
@@ -40,11 +41,7 @@ function verifyRequiredProperties(jsonObject: LogCurvesReference) {
 export function createLogCurvesReference(logCurveInfoRows: LogCurveInfoRow[], source: LogObject, serverUrl: string): LogCurvesReference {
   return {
     serverUrl: serverUrl,
-    logReference: {
-      wellUid: source.wellUid,
-      wellboreUid: source.wellboreUid,
-      uid: source.uid
-    },
+    logReference: toObjectReference(source),
     mnemonics: logCurveInfoRows.map((dataRow) => dataRow.mnemonic)
   };
 }
@@ -52,10 +49,6 @@ export function createLogCurvesReference(logCurveInfoRows: LogCurveInfoRow[], so
 export function createCopyLogDataJob(sourceLogCurvesReference: LogCurvesReference, target: LogObject): CopyLogDataJob {
   return {
     source: sourceLogCurvesReference,
-    target: {
-      wellUid: target.wellUid,
-      wellboreUid: target.wellboreUid,
-      uid: target.uid
-    }
+    target: toObjectReference(target)
   };
 }

@@ -15,7 +15,7 @@ import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
 import { menuItemText } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface LogsContextMenuProps {
@@ -53,11 +53,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"pasteLog"}
-          onClick={() => onClickPaste(servers, logReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, logReferences, dispatchOperation, JobType.CopyLog))}
-          disabled={logReferences === null}
-        >
+        <MenuItem key={"pasteLog"} onClick={() => pasteObjectOnWellbore(servers, logReferences, dispatchOperation, wellbore, JobType.CopyLog)} disabled={logReferences === null}>
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>

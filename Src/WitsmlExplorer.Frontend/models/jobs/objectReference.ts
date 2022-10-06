@@ -3,4 +3,7 @@ export default interface ObjectReference {
   wellUid: string;
   wellboreUid: string;
   uid: string;
+  wellName: string;
+  wellboreName: string;
+  name: string;
 }

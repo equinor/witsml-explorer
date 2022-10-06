@@ -4,20 +4,17 @@ import React from "react";
 import { UpdateWellboreBhaRunsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
-import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import JobService, { JobType } from "../../services/jobService";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
-import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -41,67 +38,44 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const deleteBhaRuns = async () => {
-    dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteObjectsJob = {
-      toDelete: {
-        objectUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
-        wellUid: checkedBhaRunRows[0].wellUid,
-        wellboreUid: checkedBhaRunRows[0].wellboreUid,
-        objectType: ObjectType.BhaRun
-      }
-    };
-    await JobService.orderJob(JobType.DeleteBhaRuns, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete bha run(s)?"}
-        content={
-          <span>
-            This will permanently delete bha runs: <strong>{checkedBhaRunRows.map((item) => item.uid).join(", ")}</strong>
-          </span>
-        }
-        onConfirm={() => deleteBhaRuns()}
-        confirmColor={"secondary"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-  };
-
-  const onClickCopy = async () => {
-    const bhaRunReferences: ObjectReferences = {
-      serverUrl: selectedServer.url,
-      objectUids: checkedBhaRunRows.map((bhaRun) => bhaRun.uid),
-      wellUid: checkedBhaRunRows[0].wellUid,
-      wellboreUid: checkedBhaRunRows[0].wellboreUid,
-      objectType: ObjectType.BhaRun
-    };
-    await navigator.clipboard.writeText(JSON.stringify(bhaRunReferences));
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedBhaRunRows.length === 0}>
+        <MenuItem
+          key={"copy"}
+          onClick={() =>
+            copyObjectOnWellbore(
+              selectedServer,
+              checkedBhaRunRows.map((r) => r.bhaRun),
+              dispatchOperation,
+              ObjectType.BhaRun
+            )
+          }
+          disabled={checkedBhaRunRows.length === 0}
+        >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() =>
-            onClickPaste(servers, bhaRunReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, bhaRunReferences, dispatchOperation, JobType.CopyBhaRun))
-          }
+          onClick={() => pasteObjectOnWellbore(servers, bhaRunReferences, dispatchOperation, wellbore, JobType.CopyBhaRun)}
           disabled={bhaRunReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "bhaRun", bhaRunReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedBhaRunRows.length === 0}>
+        <MenuItem
+          key={"delete"}
+          onClick={() =>
+            onClickDelete(
+              dispatchOperation,
+              checkedBhaRunRows.map((r) => r.bhaRun),
+              ObjectType.BhaRun,
+              JobType.DeleteBhaRuns
+            )
+          }
+          disabled={checkedBhaRunRows.length === 0}
+        >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,

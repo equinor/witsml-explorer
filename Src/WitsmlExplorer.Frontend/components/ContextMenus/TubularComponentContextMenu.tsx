@@ -6,6 +6,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { createTubularComponentReferences } from "../../models/jobs/copyTubularComponentJob";
 import { DeleteTubularComponentsJob } from "../../models/jobs/deleteJobs";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
 import JobService, { JobType } from "../../services/jobService";
@@ -58,14 +59,9 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
 
   const onConfirmDelete = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const { wellUid, wellboreUid, uid } = tubular;
     const job: DeleteTubularComponentsJob = {
       toDelete: {
-        tubularReference: {
-          wellUid,
-          wellboreUid,
-          uid: uid
-        },
+        tubularReference: toObjectReference(tubular),
         tubularComponentUids: checkedTubularComponents.map((item) => item.uid)
       }
     };

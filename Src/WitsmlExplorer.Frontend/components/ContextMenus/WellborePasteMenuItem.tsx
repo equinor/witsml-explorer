@@ -8,7 +8,7 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
@@ -36,7 +36,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
       {items.map((item) => (
         <MenuItem
           key={"paste" + item.type}
-          onClick={() => onClickPaste(servers, objectReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, objectReferences, dispatchOperation, item.jobType))}
+          onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, item.jobType)}
           disabled={objectReferences === null || objectReferences.objectType != item.type}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

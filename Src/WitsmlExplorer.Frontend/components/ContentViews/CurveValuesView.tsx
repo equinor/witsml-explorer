@@ -9,6 +9,7 @@ import useExport from "../../hooks/useExport";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
 import LogObject from "../../models/logObject";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -52,11 +53,7 @@ export const CurveValuesView = (): React.ReactElement => {
     const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
 
     const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-      logReference: {
-        wellUid: selectedLog.wellUid,
-        wellboreUid: selectedLog.wellboreUid,
-        uid: selectedLog.uid
-      },
+      logReference: toObjectReference(selectedLog),
       mnemonics: mnemonics,
       indexRanges: indexRanges
     };

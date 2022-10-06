@@ -5,6 +5,7 @@ import ObjectReferences from "../../models/jobs/objectReferences";
 import { ReplaceLogObjectsJob } from "../../models/jobs/replaceLogObjectsJob";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import LogObject from "../../models/logObject";
+import { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
@@ -57,13 +58,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
 };
 
 const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyObjectsJob => {
-  const logReferences: ObjectReferences = {
-    serverUrl: sourceServer.url,
-    wellUid: logs[0].wellUid,
-    wellboreUid: logs[0].wellboreUid,
-    objectUids: logs.map((log) => log.uid),
-    objectType: ObjectType.Log
-  };
+  const logReferences: ObjectReferences = toObjectReferences(logs, ObjectType.Log, sourceServer.url);
   const targetWellboreReference: WellboreReference = {
     wellUid: logs[0].wellUid,
     wellboreUid: logs[0].wellboreUid
@@ -81,12 +76,7 @@ const replaceLogObjects = async (
 ) => {
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteObjectsJob = {
-    toDelete: {
-      wellUid: logsToDelete[0].wellUid,
-      wellboreUid: logsToDelete[0].wellboreUid,
-      objectUids: logsToDelete.map((log) => log.uid),
-      objectType: ObjectType.Log
-    }
+    toDelete: toObjectReferences(logsToDelete, ObjectType.Log)
   };
   const copyJob: CopyObjectsJob = createCopyJob(sourceServer, logsToCopy);
   const replaceJob: ReplaceLogObjectsJob = { deleteJob, copyJob };

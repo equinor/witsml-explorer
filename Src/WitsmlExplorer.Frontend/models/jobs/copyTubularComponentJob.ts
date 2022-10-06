@@ -1,4 +1,5 @@
 import { TubularComponentRow } from "../../components/ContentViews/TubularView";
+import { toObjectReference } from "../objectOnWellbore";
 import Tubular from "../tubular";
 import ObjectReference from "./objectReference";
 
@@ -40,11 +41,7 @@ function verifyRequiredProperties(jsonObject: TubularComponentReferences) {
 export function createTubularComponentReferences(tubularComponents: TubularComponentRow[], source: Tubular, serverUrl: string): TubularComponentReferences {
   return {
     serverUrl: serverUrl,
-    tubularReference: {
-      wellUid: source.wellUid,
-      wellboreUid: source.wellboreUid,
-      uid: source.uid
-    },
+    tubularReference: toObjectReference(source),
     tubularComponentUids: tubularComponents.map((component) => component.uid)
   };
 }
@@ -52,10 +49,6 @@ export function createTubularComponentReferences(tubularComponents: TubularCompo
 export function createCopyTubularComponentJob(sourceTubularComponentReferences: TubularComponentReferences, target: Tubular): CopyTubularComponentJob {
   return {
     source: sourceTubularComponentReferences,
-    target: {
-      wellUid: target.wellUid,
-      wellboreUid: target.wellboreUid,
-      uid: target.uid
-    }
+    target: toObjectReference(target)
   };
 }

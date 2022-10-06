@@ -9,7 +9,7 @@ import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface ObjectsSidebarContextMenuProps {
@@ -27,11 +27,7 @@ const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem
-          key={"paste"}
-          onClick={() => onClickPaste(servers, objectReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, objectReferences, dispatchOperation, jobType))}
-          disabled={objectReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, jobType)} disabled={objectReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", objectType, objectReferences?.objectUids)}</Typography>
         </MenuItem>

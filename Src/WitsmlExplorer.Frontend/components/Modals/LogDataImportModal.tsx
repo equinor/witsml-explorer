@@ -7,6 +7,7 @@ import ImportLogDataJob from "../../models/jobs/importLogDataJob";
 import ObjectReference from "../../models/jobs/objectReference";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
@@ -104,12 +105,7 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   const onSubmit = async () => {
     setIsLoading(true);
 
-    const logReference: ObjectReference = {
-      wellUid: targetLog.wellUid,
-      wellboreUid: targetLog.wellboreUid,
-      uid: targetLog.uid
-    };
-
+    const logReference: ObjectReference = toObjectReference(targetLog);
     const job: ImportLogDataJob = {
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),

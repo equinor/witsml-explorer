@@ -3,6 +3,8 @@ import { isInteger } from "lodash";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import ObjectReference from "../../models/jobs/objectReference";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
 import { tubularComponentTypes } from "../../models/tubularComponentTypes";
@@ -27,13 +29,10 @@ const TubularComponentPropertiesModal = (props: TubularComponentPropertiesModalI
 
   const onSubmit = async (updatedTubularComponent: TubularComponent) => {
     setIsLoading(true);
+    const tubularReference: ObjectReference = toObjectReference(tubular);
     const wellboreTubularComponentJob = {
       tubularComponent: updatedTubularComponent,
-      tubularReference: {
-        tubularUid: tubular.uid,
-        wellUid: tubular.wellUid,
-        wellboreUid: tubular.wellboreUid
-      }
+      tubularReference
     };
     await JobService.orderJob(JobType.ModifyTubularComponent, wellboreTubularComponentJob);
     setIsLoading(false);

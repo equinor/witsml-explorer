@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import RenameMnemonicJob from "../../models/jobs/renameMnemonicJob";
+import LogObject from "../../models/logObject";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import JobService, { JobType } from "../../services/jobService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ModalDialog from "./ModalDialog";
@@ -10,21 +12,18 @@ import ModalDialog from "./ModalDialog";
 export interface LogCurveInfoPropertiesModalProps {
   logCurveInfo: LogCurveInfoRow;
   dispatchOperation: (action: HideModalAction) => void;
+  selectedLog: LogObject;
 }
 
 const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): React.ReactElement => {
-  const { logCurveInfo, dispatchOperation } = props;
+  const { logCurveInfo, dispatchOperation, selectedLog } = props;
   const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfoRow>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async () => {
     setIsLoading(true);
     const job: RenameMnemonicJob = {
-      logReference: {
-        wellUid: logCurveInfo.wellUid,
-        wellboreUid: logCurveInfo.wellboreUid,
-        uid: logCurveInfo.logUid
-      },
+      logReference: toObjectReference(selectedLog),
       mnemonic: logCurveInfo.mnemonic,
       newMnemonic: editableLogCurveInfo.mnemonic
     };

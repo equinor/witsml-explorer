@@ -12,10 +12,9 @@ import { RiskObjectRow } from "../ContentViews/RisksListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickCopy, onClickDelete } from "./RiskContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface RiskObjectContextMenuProps {
@@ -41,19 +40,15 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, risks, dispatchOperation)} disabled={risks.length === 0}>
+        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, risks, dispatchOperation, ObjectType.Risk)} disabled={risks.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "risk", risks)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => onClickPaste(servers, riskReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, riskReferences, dispatchOperation, JobType.CopyRisk))}
-          disabled={riskReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, riskReferences, dispatchOperation, wellbore, JobType.CopyRisk)} disabled={riskReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "risk", riskReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(risks, dispatchOperation)} disabled={risks.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(dispatchOperation, risks, ObjectType.Risk, JobType.DeleteRisks)} disabled={risks.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "risk", risks)}</Typography>
         </MenuItem>,
