@@ -15,6 +15,7 @@ Whenever a request is run towards a WITSML server, the backend will decrypt the 
 
 This is how the flow is when a user has selected a server and will need to authenticate against it. After this is done, a fresh list of wells is fetched.  
 
+
 <img src="./credentials-flow.svg">
 
 ## OAuth2
@@ -98,7 +99,7 @@ To use Azure keyvault, create your keyvault (above named `witsmlexp-servers-kv`)
 
 Credentials will be mapped on URL from secrets with the serverlist. `Server` entry in MongoDB or CosmosDB will have property `securityscheme` that can be `Basic` or `OAuth2`
 
-The app role assigned to a server will be compared to the rolw claims in the JWT provided in the Authorization header. If a user has been assigned the application role, system credentials will be applied to the connection.
+The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be applied to the connection.
 
 For more info on app roles, see: [app roles](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps)
 
@@ -133,3 +134,41 @@ NEXT_PUBLIC_AZURE_AD_URL_WITSMLEXPLORER=http://localhost:3000/
 NEXT_PUBLIC_AZURE_AD_SCOPE_API=
 
 ```
+
+## Hybrid Flow
+It is now possible to utilize both OAuth2 and Basic authentication security schemes at the same time. With this configuration the end user will have to authenticate against an authorization server that supports `OAuth2 Authorization Code Flow with PKCE`.
+
+As described in the serverlist, Witsml-Explorer will choose the correct method to contact the backend, based on how you configure your list of servers. If the Server has securityscheme `OAuth2` and both the server and user have the same `app-roles`, the frontend will use the `Bearer` token received from the authorization server and relay this to the backend along with the url of the server. It will not ask the user for basic credentials (username:password).
+
+The backend in turn will do a lookup on the users application role, and if eligible, use the `system-user` fetched from `keyvault` for further connections to the WITSML server.
+
+### Basic witsmlexplorer flow
+For an illustration of sequences initiated when the user queries a server with property securityscheme set to `Basic`, visit the figure in the beginning of this document under `WITSML server credentials flow`
+
+### OAuth2 witsmlexplorer flow with MSAL
+The following diagram illustrates the flow for a user contacting a `Server` that have been assigned securityscheme `OAuth2`. The setting `OAuth2Enabled=true` has been set in backend, and MSAL enabled in frontend:
+
+
+```mermaid
+
+graph TD
+    A[1. WitsmlExplorer Frontend] -->|login| B[2. Auth Server]
+    B[2. Auth Server] --> |token| A[WitsmlExplorer Frontend]
+    A[1. WitsmlExplorer Frontend] --->|w/token:getservers| G[3. ServerlistDB]
+    G[3. ServerlistDB] --->|servers| A[itsml-Explorer]
+    A[1. WitsmlExplorer Frontend] ----> |w/token:getwells| H[3. WitsmlExplorer API]
+    H[3. WitsmlExplorer API] ----> |wells| A[1. WitsmlExplorer Frontend]  
+    H[3. WitsmlExplorer API] --> |getsyscreds| K[5. Azure Keyvault]
+    K[5. Azure Keyvault] --> |syscreds| H[3. WitsmlExplorer API]
+    H[3. WitsmlExplorer API] ---> |w/syscreds:getwells| J[6. WITSML Server]
+    J[6. WITSML Server]  ---> |wells| H[4. WitsmlExplorer API]
+```
+
+1. End user visit Witsml-Explorer.
+2. The end user will be redirected to login with the configured OAuth2 Authorization server (Azure AD).
+3. Witsml-Explorer will fetch the initial Serverlist from DB. When OAuth2 is enabled both in the frontend and backend, retrieving the serverlist will only be available for logged in users. Similarly Create, Update and Delete will be reserved for users with role `admin`. All servers in the list now include two properties: `securityscheme` and `role`.
+4. If the user through the frontend chooses to query a server with a `securityscheme` set to `OAuth2`, the backend will check the received `Bearer` JWT token for `app-roles`. This in turn will be checked against the configured `roles` for the server.
+5. When one of the user roles and server roles overlap, the backend fetches system credentials from `Azure Keyvault` for this witsml server.
+6. The server will now forward the query to the witsml server using `Basic` authorization with system credentials fetched from step 5.
+
+The resulting list of wells will then be passed back to the frontend.
