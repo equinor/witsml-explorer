@@ -24,11 +24,11 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
   const onSubmit = async (updatedTrajectoryStation: TrajectoryStation) => {
     setIsLoading(true);
     const trajectoryReference: ObjectReference = toObjectReference(trajectory);
-    const wellboreTrajectoryStationJob = {
+    const modifyTrajectoryStationJob = {
       trajectoryStation: updatedTrajectoryStation,
       trajectoryReference
     };
-    await JobService.orderJob(JobType.ModifyTrajectoryStation, wellboreTrajectoryStationJob);
+    await JobService.orderJob(JobType.ModifyTrajectoryStation, modifyTrajectoryStationJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

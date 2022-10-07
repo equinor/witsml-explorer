@@ -30,11 +30,11 @@ const TubularComponentPropertiesModal = (props: TubularComponentPropertiesModalI
   const onSubmit = async (updatedTubularComponent: TubularComponent) => {
     setIsLoading(true);
     const tubularReference: ObjectReference = toObjectReference(tubular);
-    const wellboreTubularComponentJob = {
+    const modifyTubularComponentJob = {
       tubularComponent: updatedTubularComponent,
       tubularReference
     };
-    await JobService.orderJob(JobType.ModifyTubularComponent, wellboreTubularComponentJob);
+    await JobService.orderJob(JobType.ModifyTubularComponent, modifyTubularComponentJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
