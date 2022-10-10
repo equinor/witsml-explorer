@@ -1,4 +1,4 @@
-FROM node:alpine AS builder
+FROM node:16-alpine AS builder
 WORKDIR /app
 COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
