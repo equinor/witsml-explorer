@@ -104,7 +104,7 @@ it("Should update list of servers, and current selected, if editing current sele
 });
 
 it("Should update list of servers when adding a server", () => {
-  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", securityscheme: "", role: "" };
+  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", securityscheme: "", roles: [] };
   const selectServerAction = { type: ModificationType.AddServer, payload: { server: newServer } };
   const actual = reducer({ ...getInitialState() }, selectServerAction);
   expect(actual).toStrictEqual({
@@ -717,8 +717,8 @@ it("Should collapse child nodes when toggling an expanded parent node", () => {
   expect(afterRemoveServer).toStrictEqual(expectedState);
 });
 
-const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", role: "" };
-const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", role: "" };
+const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", roles: [] };
+const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", roles: [] };
 const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
