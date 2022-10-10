@@ -9,10 +9,9 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickCopy, onClickDelete } from "./TrajectoryContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TrajectoryContextMenuProps {
@@ -30,21 +29,23 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, trajectories, dispatchOperation)} disabled={trajectories.length === 0}>
+        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, trajectories, dispatchOperation, ObjectType.Trajectory)} disabled={trajectories.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory", trajectories)}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() =>
-            onClickPaste(servers, trajectoryReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, trajectoryReferences, dispatchOperation, JobType.CopyTrajectory))
-          }
+          onClick={() => pasteObjectOnWellbore(servers, trajectoryReferences, dispatchOperation, wellbore, JobType.CopyTrajectory)}
           disabled={trajectoryReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(trajectories, dispatchOperation)} disabled={trajectories.length === 0}>
+        <MenuItem
+          key={"delete"}
+          onClick={() => onClickDelete(dispatchOperation, trajectories, ObjectType.Trajectory, JobType.DeleteTrajectories)}
+          disabled={trajectories.length === 0}
+        >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory", trajectories)}</Typography>
         </MenuItem>,

@@ -10,7 +10,7 @@ import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste, orderCopyJob } from "./CopyUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
 import { onClickRefreshAll } from "./TubularContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -34,9 +34,7 @@ const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElemen
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() =>
-            onClickPaste(servers, tubularReferences?.serverUrl, dispatchOperation, () => orderCopyJob(wellbore, tubularReferences, dispatchOperation, JobType.CopyTubular))
-          }
+          onClick={() => pasteObjectOnWellbore(servers, tubularReferences, dispatchOperation, wellbore, JobType.CopyTubular)}
           disabled={tubularReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

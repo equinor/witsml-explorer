@@ -1,58 +1,9 @@
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
-import ObjectReferences from "../../models/jobs/objectReferences";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
-import JobService, { JobType } from "../../services/jobService";
 import TubularService from "../../services/tubularService";
-import ConfirmModal from "../Modals/ConfirmModal";
 import { DispatchOperation } from "./ContextMenuUtils";
-
-export const deleteTubular = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
-  dispatchOperation({ type: OperationType.HideModal });
-  const job: DeleteObjectsJob = {
-    toDelete: {
-      objectUids: tubulars.map((tubular) => tubular.uid),
-      wellUid: tubulars[0].wellUid,
-      wellboreUid: tubulars[0].wellboreUid,
-      objectType: ObjectType.Tubular
-    }
-  };
-  await JobService.orderJob(JobType.DeleteTubulars, job);
-  dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
-export const onClickCopy = async (selectedServer: Server, tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
-  const tubularReferences: ObjectReferences = {
-    serverUrl: selectedServer.url,
-    objectUids: tubulars.map((tubular) => tubular.uid),
-    wellUid: tubulars[0].wellUid,
-    wellboreUid: tubulars[0].wellboreUid,
-    objectType: ObjectType.Tubular
-  };
-  await navigator.clipboard.writeText(JSON.stringify(tubularReferences));
-  dispatchOperation({ type: OperationType.HideContextMenu });
-};
-
-export const onClickDelete = async (tubulars: Tubular[], dispatchOperation: DispatchOperation) => {
-  const confirmation = (
-    <ConfirmModal
-      heading={"Delete tubular?"}
-      content={
-        <span>
-          This will permanently delete tubulars: <strong>{tubulars.map((item) => item.uid).join(", ")}</strong>
-        </span>
-      }
-      onConfirm={() => deleteTubular(tubulars, dispatchOperation)}
-      confirmColor={"secondary"}
-      switchButtonPlaces={true}
-    />
-  );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-};
 
 export const onClickRefresh = async (tubular: Tubular, dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
   let freshTubular = await TubularService.getTubular(tubular.wellUid, tubular.wellboreUid, tubular.uid);

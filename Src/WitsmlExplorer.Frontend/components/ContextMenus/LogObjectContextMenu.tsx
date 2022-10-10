@@ -7,8 +7,6 @@ import { UpdateWellboreLogAction, UpdateWellboreLogsAction } from "../../context
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
-import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
@@ -16,15 +14,14 @@ import LogObjectService from "../../services/logObjectService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import { LogObjectRow } from "../ContentViews/LogsListView";
-import ConfirmModal from "../Modals/ConfirmModal";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer } from "./ContextMenuUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
-import { onClickPaste } from "./CopyUtils";
+import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogObjectContextMenuProps {
@@ -74,66 +71,9 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     dispatchOperation({ type: OperationType.DisplayModal, payload: <TrimLogObjectModal {...trimLogObjectProps} /> });
   };
 
-  const blockStyle = {
-    display: "grid"
-  };
-
-  const pluralize = (noun: string, suffix = "s") => `${checkedLogObjectRows.length > 1 ? checkedLogObjectRows.length : ""} ${noun}${checkedLogObjectRows.length > 1 ? suffix : ""}`;
-
-  const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={`Delete ${pluralize("selected log")}`}
-        content={
-          <span style={blockStyle}>
-            This will permanently delete: <strong>{checkedLogObjectRows.map((item) => item.name).join("\n")}</strong>
-          </span>
-        }
-        onConfirm={deleteLogObjects}
-        confirmColor={"secondary"}
-        confirmText={`Delete ${pluralize("log")}?`}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-  };
-
   const onClickImport = async () => {
     const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedLogObjectRows[0], dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
-  };
-
-  const deleteLogObjects = async () => {
-    dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteObjectsJob = {
-      toDelete: {
-        wellUid: checkedLogObjectRows[0].wellUid,
-        wellboreUid: checkedLogObjectRows[0].wellboreUid,
-        objectUids: checkedLogObjectRows.map((log) => log.uid),
-        objectType: ObjectType.Log
-      }
-    };
-
-    await JobService.orderJob(JobType.DeleteLogObjects, job);
-    checkedLogObjectRows.length = 0;
-    const freshLogs = await LogObjectService.getLogs(job.toDelete.wellUid, job.toDelete.wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateLogObjects,
-      payload: { wellUid: job.toDelete.wellUid, wellboreUid: job.toDelete.wellboreUid, logs: freshLogs }
-    });
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const onClickCopyLog = async () => {
-    const logReferences: ObjectReferences = {
-      serverUrl: selectedServer.url,
-      wellUid: checkedLogObjectRows[0].wellUid,
-      wellboreUid: checkedLogObjectRows[0].wellboreUid,
-      objectUids: checkedLogObjectRows.map((log) => log.uid),
-      objectType: ObjectType.Log
-    };
-    await navigator.clipboard.writeText(JSON.stringify(logReferences));
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickRefresh = async () => {
@@ -154,7 +94,11 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
-        <MenuItem key={"copylog"} onClick={onClickCopyLog} disabled={checkedLogObjectRows.length === 0}>
+        <MenuItem
+          key={"copylog"}
+          onClick={() => copyObjectOnWellbore(selectedServer, checkedLogObjectRows, dispatchOperation, ObjectType.Log)}
+          disabled={checkedLogObjectRows.length === 0}
+        >
           <ListItemIcon>
             <Icon name="copy" color={colors.interactive.primaryResting} />
           </ListItemIcon>
@@ -190,7 +134,11 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
-        <MenuItem key={"deletelogobject"} onClick={onClickDelete} disabled={checkedLogObjectRows.length === 0}>
+        <MenuItem
+          key={"deletelogobject"}
+          onClick={() => onClickDelete(dispatchOperation, checkedLogObjectRows, ObjectType.Log, JobType.DeleteLogObjects)}
+          disabled={checkedLogObjectRows.length === 0}
+        >
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>

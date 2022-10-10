@@ -1,4 +1,5 @@
 import { TrajectoryStationRow } from "../../components/ContentViews/TrajectoryView";
+import { toObjectReference } from "../objectOnWellbore";
 import Trajectory from "../trajectory";
 import ObjectReference from "./objectReference";
 
@@ -40,11 +41,7 @@ function verifyRequiredProperties(jsonObject: TrajectoryStationReferences) {
 export function createTrajectoryStationReferences(trajectoryStations: TrajectoryStationRow[], source: Trajectory, serverUrl: string): TrajectoryStationReferences {
   return {
     serverUrl: serverUrl,
-    trajectoryReference: {
-      wellUid: source.wellUid,
-      wellboreUid: source.wellboreUid,
-      uid: source.uid
-    },
+    trajectoryReference: toObjectReference(source),
     trajectoryStationUids: trajectoryStations.map((component) => component.uid)
   };
 }
@@ -52,10 +49,6 @@ export function createTrajectoryStationReferences(trajectoryStations: Trajectory
 export function createCopyTrajectoryStationJob(sourceTrajectoryStationReferences: TrajectoryStationReferences, target: Trajectory): CopyTrajectoryStationJob {
   return {
     source: sourceTrajectoryStationReferences,
-    target: {
-      wellUid: target.wellUid,
-      wellboreUid: target.wellboreUid,
-      uid: target.uid
-    }
+    target: toObjectReference(target)
   };
 }

@@ -3,6 +3,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { parseStringToTrajectoryStationReferences, TrajectoryStationReferences } from "../../models/jobs/copyTrajectoryStationJob";
 import ObjectReference from "../../models/jobs/objectReference";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import Trajectory from "../../models/trajectory";
 import JobService, { JobType } from "../../services/jobService";
 
@@ -28,11 +29,7 @@ export const useClipboardTrajectoryStationReferences: () => [TrajectoryStationRe
 };
 
 export const orderCopyTrajectoryStationsJob = (trajectory: Trajectory, trajectoryStationReferences: TrajectoryStationReferences, dispatchOperation: DispatchOperation) => {
-  const trajectoryReference: ObjectReference = {
-    wellUid: trajectory.wellUid,
-    wellboreUid: trajectory.wellboreUid,
-    uid: trajectory.uid
-  };
+  const trajectoryReference: ObjectReference = toObjectReference(trajectory);
 
   const copyJob = { source: trajectoryStationReferences, target: trajectoryReference };
   JobService.orderJob(JobType.CopyTrajectoryStations, copyJob);

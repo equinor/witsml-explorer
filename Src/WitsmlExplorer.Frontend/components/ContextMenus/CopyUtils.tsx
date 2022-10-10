@@ -2,6 +2,8 @@ import OperationType from "../../contexts/operationType";
 import CopyObjectsJob from "../../models/jobs/copyObjectsJob";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import WellboreReference from "../../models/jobs/wellboreReference";
+import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import CredentialsService from "../../services/credentialsService";
@@ -22,12 +24,22 @@ export const onClickPaste = async (servers: Server[], serverUrl: string, dispatc
   }
 };
 
-export const orderCopyJob = (wellbore: Wellbore, objectReferences: ObjectReferences, dispatchOperation: DispatchOperation, jobType: JobType) => {
-  const wellboreReference: WellboreReference = {
-    wellUid: wellbore.wellUid,
-    wellboreUid: wellbore.uid
+export const pasteObjectOnWellbore = async (servers: Server[], objectReferences: ObjectReferences, dispatchOperation: DispatchOperation, wellbore: Wellbore, jobType: JobType) => {
+  const orderCopyJob = () => {
+    const wellboreReference: WellboreReference = {
+      wellUid: wellbore.wellUid,
+      wellboreUid: wellbore.uid
+    };
+    const copyJob: CopyObjectsJob = { source: objectReferences, target: wellboreReference };
+    JobService.orderJob(jobType, copyJob);
+    dispatchOperation({ type: OperationType.HideContextMenu });
   };
-  const copyJob: CopyObjectsJob = { source: objectReferences, target: wellboreReference };
-  JobService.orderJob(jobType, copyJob);
+
+  onClickPaste(servers, objectReferences?.serverUrl, dispatchOperation, orderCopyJob);
+};
+
+export const copyObjectOnWellbore = async (selectedServer: Server, objectsOnWellbore: ObjectOnWellbore[], dispatchOperation: DispatchOperation, objectType: ObjectType) => {
+  const objectReferences: ObjectReferences = toObjectReferences(objectsOnWellbore, objectType, selectedServer.url);
+  await navigator.clipboard.writeText(JSON.stringify(objectReferences));
   dispatchOperation({ type: OperationType.HideContextMenu });
 };

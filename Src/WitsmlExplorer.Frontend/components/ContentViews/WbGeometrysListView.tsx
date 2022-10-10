@@ -12,7 +12,7 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
 }
 
 export const WbGeometrysListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
@@ -40,7 +40,7 @@ export const WbGeometrysListView = (): React.ReactElement => {
     { property: "itemState", label: "Item State", type: ContentType.String }
   ];
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
-    const contextProps: WbGeometryObjectContextMenuProps = { checkedWbGeometryObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: WbGeometryObjectContextMenuProps = { checkedWbGeometryObjectRows, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometryObjectContextMenu {...contextProps} />, position } });
   };

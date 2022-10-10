@@ -3,6 +3,8 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import ObjectReference from "../../models/jobs/objectReference";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import JobService, { JobType } from "../../services/jobService";
@@ -21,15 +23,12 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
 
   const onSubmit = async (updatedTrajectoryStation: TrajectoryStation) => {
     setIsLoading(true);
-    const wellboreTrajectoryStationJob = {
+    const trajectoryReference: ObjectReference = toObjectReference(trajectory);
+    const modifyTrajectoryStationJob = {
       trajectoryStation: updatedTrajectoryStation,
-      trajectoryReference: {
-        trajectoryUid: trajectory.uid,
-        wellUid: trajectory.wellUid,
-        wellboreUid: trajectory.wellboreUid
-      }
+      trajectoryReference
     };
-    await JobService.orderJob(JobType.ModifyTrajectoryStation, wellboreTrajectoryStationJob);
+    await JobService.orderJob(JobType.ModifyTrajectoryStation, modifyTrajectoryStationJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

@@ -38,7 +38,7 @@ export function parseStringToReferences(input: string): ObjectReferences {
 }
 
 function verifyRequiredProperties(jsonObject: ObjectReferences) {
-  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "objectUids", "objectType"];
+  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "objectUids", "objectType", "wellName", "wellboreName", "names"];
   const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
   if (!hasRequiredProperties) {
     throw new Error("Missing required fields.");

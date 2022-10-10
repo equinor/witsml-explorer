@@ -1,3 +1,5 @@
+import ObjectReference from "./jobs/objectReference";
+import ObjectReferences from "./jobs/objectReferences";
 import { ObjectType } from "./objectType";
 
 export default interface ObjectOnWellbore {
@@ -17,6 +19,24 @@ export function emptyObjectOnWellbore(): ObjectOnWellbore {
     wellName: "",
     uid: "",
     name: ""
+  };
+}
+
+export function toObjectReference(objectOnWellbore: ObjectOnWellbore): ObjectReference {
+  return {
+    ...objectOnWellbore
+  };
+}
+export function toObjectReferences(objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, serverUrl: string = null): ObjectReferences {
+  return {
+    wellboreUid: objectsOnWellbore[0].wellboreUid,
+    wellboreName: objectsOnWellbore[0].wellboreName,
+    wellUid: objectsOnWellbore[0].wellUid,
+    wellName: objectsOnWellbore[0].wellName,
+    objectUids: objectsOnWellbore.map((o) => o.uid),
+    names: objectsOnWellbore.map((o) => o.name),
+    objectType,
+    serverUrl
   };
 }
 

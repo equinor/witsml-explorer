@@ -7,6 +7,7 @@ import OperationType from "../../contexts/operationType";
 import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
 import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
 import LogObject from "../../models/logObject";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
@@ -63,14 +64,9 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
 
   const onConfirmDeleteMnemonics = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const { wellUid, wellboreUid, logUid } = checkedLogCurveInfoRows[0];
     const job: DeleteMnemonicsJob = {
       toDelete: {
-        logReference: {
-          wellUid,
-          wellboreUid,
-          uid: logUid
-        },
+        logReference: toObjectReference(selectedLog),
         mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
       }
     };
@@ -80,7 +76,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
 
   const onClickProperties = () => {
     const logCurveInfo = checkedLogCurveInfoRows[0];
-    const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation };
+    const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation, selectedLog };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -102,7 +98,15 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
               server.id !== selectedServer.id && (
                 <MenuItem
                   key={server.name}
-                  onClick={() => onClickCopyCurveToServer(server, selectedServer, checkedLogCurveInfoRows, dispatchOperation)}
+                  onClick={() =>
+                    onClickCopyCurveToServer({
+                      targetServer: server,
+                      sourceServer: selectedServer,
+                      curvesToCopy: checkedLogCurveInfoRows,
+                      dispatchOperation,
+                      sourceLog: selectedLog
+                    })
+                  }
                   disabled={checkedLogCurveInfoRows.length < 1}
                 >
                   <Typography color={"primary"}>{server.name}</Typography>

@@ -4,17 +4,19 @@ import React from "react";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
+import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
-import { onClickCopy, onClickDelete, onClickRefresh } from "./TubularContextMenuUtils";
+import { onClickRefresh } from "./TubularContextMenuUtils";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -43,15 +45,15 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh tubular</Typography>
         </MenuItem>,
-        <MenuItem key={"copy"} onClick={() => onClickCopy(selectedServer, [tubular], dispatchOperation)}>
+        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, [tubular], dispatchOperation, ObjectType.Tubular)}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular</Typography>
         </MenuItem>,
         <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "tubular components", tubularComponentReferences?.tubularComponentUids)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.tubularComponentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete([tubular], dispatchOperation)}>
+        <MenuItem key={"delete"} onClick={() => onClickDelete(dispatchOperation, [tubular], ObjectType.Tubular, JobType.DeleteTubulars)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
         </MenuItem>,
