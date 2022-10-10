@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,8 +25,8 @@ namespace WitsmlExplorer.Api.Models
         }
         [JsonPropertyName("securityscheme")]
         public string SecurityScheme { get; set; }
-        [JsonPropertyName("role")]
-        public string Role { get; set; }
+        [JsonPropertyName("roles")]
+        public IList<string> Roles { get; set; }
 
     }
 }
