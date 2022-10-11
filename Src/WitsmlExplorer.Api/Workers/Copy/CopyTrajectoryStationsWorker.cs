@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public CopyTrajectoryStationsWorker(ILogger<CopyTrajectoryStationsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException("Missing WitsmlSource in CopyJob", 500);
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryStationsJob job)

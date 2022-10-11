@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException("Missing WitsmlSource in CopyJob", 500);
             _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
         }
 

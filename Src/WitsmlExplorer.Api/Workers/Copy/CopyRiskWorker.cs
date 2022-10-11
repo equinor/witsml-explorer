@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public CopyRiskWorker(ILogger<CopyRiskJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
         {
             _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException("Missing WitsmlSource in CopyJob", 500);
             _copyUtils = copyUtils;
         }
 
