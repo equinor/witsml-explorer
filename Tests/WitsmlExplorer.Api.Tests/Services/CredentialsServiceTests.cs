@@ -139,6 +139,26 @@ namespace WitsmlExplorer.Api.Tests.Services
             ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
+        [Fact]
+        public void GetCreds_BasicAndTokenValidRolesHeaderValidURL_ReturnBasicCreds()
+        {
+            // WHEN
+            //  Valid Basic credentials and Valid Bearer token are present along with Valid URL
+            // THEN 
+            //  Basic auth should always be preferred
+
+            string headerName = WitsmlClientProvider.WitsmlTargetServerHeader;
+            string token = new JwtSecurityTokenHandler().WriteToken(_token);
+            ServerCredentials sc = new() { UserId = "username", Password = "password", Host = new Uri("http://some.url.com") };
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
+            string headerValue = b64Creds + "@" + sc.Host.ToString();
+
+            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, headerValue } });
+            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
+
+            ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
+            Assert.True(creds.UserId == "username" && creds.Password == "password");
+        }
 
         [Fact]
         public void GetCreds_TokenValidRolesHeaderValidURL_ReturnSystemCreds()
