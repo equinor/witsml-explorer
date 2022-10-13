@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             Mock<IWitsmlClient> witsmlClient = new();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<WitsmlMessages>(o => o.Messages.First().UidWell == WellUid && o.Messages.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(witsmlClient.Object));
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
 

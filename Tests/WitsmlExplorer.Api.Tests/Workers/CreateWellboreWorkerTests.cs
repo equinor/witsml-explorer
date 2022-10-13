@@ -16,7 +16,6 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Create;
 
 using Xunit;
@@ -34,20 +33,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CreateWellboreWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CreateWellboreJob>();
+            ILogger<CreateWellboreJob> logger = loggerFactory.CreateLogger<CreateWellboreJob>();
             _worker = new CreateWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task MissingUid_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellboreJob job = CreateJobTemplate(null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
             job = CreateJobTemplate("");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -58,8 +57,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task MissingName_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(name: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellboreJob job = CreateJobTemplate(name: null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
             job = CreateJobTemplate(name: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -70,8 +69,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task MissingWellUid_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(wellUid: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellboreJob job = CreateJobTemplate(wellUid: null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellUid cannot be empty", exception.Message);
             job = CreateJobTemplate(wellUid: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -82,8 +81,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task MissingWellName_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(wellName: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellboreJob job = CreateJobTemplate(wellName: null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellName cannot be empty", exception.Message);
             job = CreateJobTemplate(wellName: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -94,9 +93,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task ValidCreateWellboreJob_Execute_StoresWellboreCorrectly()
         {
-            var job = CreateJobTemplate();
+            CreateWellboreJob job = CreateJobTemplate();
 
-            var createdWellbores = new List<WitsmlWellbores>();
+            List<WitsmlWellbores> createdWellbores = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlWellbores>()))
                 .Callback<WitsmlWellbores>(wellbores => createdWellbores.Add(wellbores))
@@ -108,7 +107,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(createdWellbores);
             Assert.Single(createdWellbores.First().Wellbores);
-            var createdWellbore = createdWellbores.First().Wellbores.First();
+            WitsmlWellbore createdWellbore = createdWellbores.First().Wellbores.First();
             Assert.Equal(WellboreUid, createdWellbore.Uid);
             Assert.Equal(WellboreName, createdWellbore.Name);
             Assert.Equal(WellUid, createdWellbore.UidWell);

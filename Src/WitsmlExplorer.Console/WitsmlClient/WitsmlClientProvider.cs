@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 
@@ -15,7 +16,7 @@ namespace WitsmlExplorer.Console.WitsmlClient
 {
     public interface IWitsmlClientProvider
     {
-        IWitsmlClient GetClient();
+        Task<IWitsmlClient> GetClient();
     }
 
     public class WitsmlClientProvider : IWitsmlClientProvider
@@ -76,6 +77,11 @@ namespace WitsmlExplorer.Console.WitsmlClient
             AnsiConsole.MarkupLine("    \"Username\": \"<WITSML USERNAME>\",");
             AnsiConsole.MarkupLine("    \"Password\": \"<WITSML PASSWORD>\"");
             AnsiConsole.MarkupLine("  }\n}");
+        }
+
+        Task<IWitsmlClient> IWitsmlClientProvider.GetClient()
+        {
+            throw new NotImplementedException();
         }
     }
 }
