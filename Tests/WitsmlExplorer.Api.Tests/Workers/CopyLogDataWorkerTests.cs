@@ -262,8 +262,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         WellUid = WellUid,
                         WellboreUid = WellboreUid,
                         Uid = SourceLogUid
-                    },
-                    ComponentUids = Array.Empty<string>()
+                    }
                 },
                 Target = new ObjectReference
                 {

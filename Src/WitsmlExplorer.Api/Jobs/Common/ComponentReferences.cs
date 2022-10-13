@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace WitsmlExplorer.Api.Jobs.Common
@@ -5,7 +6,7 @@ namespace WitsmlExplorer.Api.Jobs.Common
     public class ComponentReferences : IReference
     {
         public ObjectReference Parent { get; set; }
-        public string[] ComponentUids { get; set; }
+        public string[] ComponentUids { get; set; } = Array.Empty<string>();
 
         public string Description()
         {
