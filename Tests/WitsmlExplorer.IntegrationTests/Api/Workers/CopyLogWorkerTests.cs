@@ -45,7 +45,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
             ILogger<DeleteLogObjectsJob> logger3 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
             ILogger<DeleteUtils> logger4 = loggerFactory.CreateLogger<DeleteUtils>();
-            _deleteLogsWorker = new DeleteLogObjectsWorker(logger3, witsmlClientProvider, new DeleteUtils(logger4, witsmlClientProvider));
+            _deleteLogsWorker = new DeleteLogObjectsWorker(logger3, witsmlClientProvider, new DeleteUtils(logger4));
         }
 
         [Fact(Skip = "Should only be run manually")]

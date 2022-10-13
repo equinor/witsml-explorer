@@ -27,7 +27,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<DeleteLogObjectsJob> logger = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
             ILogger<DeleteUtils> logger2 = loggerFactory.CreateLogger<DeleteUtils>();
-            _worker = new DeleteLogObjectsWorker(logger, witsmlClientProvider, new DeleteUtils(logger2, witsmlClientProvider));
+            _worker = new DeleteLogObjectsWorker(logger, witsmlClientProvider, new DeleteUtils(logger2));
         }
 
         [Fact(Skip = "Should only be run manually")]

@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             loggerFactory.AddSerilog(Log.Logger);
 
             ILogger<DeleteUtils> logger = loggerFactory.CreateLogger<DeleteUtils>();
-            DeleteUtils deleteUtils = new(logger, witsmlClientProvider.Object);
+            DeleteUtils deleteUtils = new(logger);
 
             ILogger<DeleteMessageObjectsJob> logger2 = loggerFactory.CreateLogger<DeleteMessageObjectsJob>();
 
