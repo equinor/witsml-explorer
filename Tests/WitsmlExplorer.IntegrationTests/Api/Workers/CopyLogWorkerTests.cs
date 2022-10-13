@@ -34,7 +34,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
-            _client = witsmlClientProvider.GetClient();
+            _client = witsmlClientProvider.GetClient().Result;
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyLogDataJob> logger = loggerFactory.CreateLogger<CopyLogDataJob>();

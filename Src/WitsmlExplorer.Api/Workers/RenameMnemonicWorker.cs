@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public RenameMnemonicWorker(ILogger<RenameMnemonicJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(RenameMnemonicJob job)

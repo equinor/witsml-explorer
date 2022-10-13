@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteWbGeometrysWorker(ILogger<DeleteWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _deleteUtils = deleteUtils;
         }
 

@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public CopyUtils(ILogger<CopyUtils> logger, IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _logger = logger;
         }
 

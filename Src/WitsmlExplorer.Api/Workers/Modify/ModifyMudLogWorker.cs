@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public ModifyMudLogWorker(ILogger<ModifyMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyMudLogJob job)

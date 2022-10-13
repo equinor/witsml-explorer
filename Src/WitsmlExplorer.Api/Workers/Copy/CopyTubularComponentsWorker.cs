@@ -25,8 +25,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public CopyTubularComponentsWorker(ILogger<CopyTubularComponentsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient().Result ?? _witsmlClient;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)

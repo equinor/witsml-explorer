@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public ListRisksCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListRisksSettings settings)

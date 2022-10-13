@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public TrimLogObjectWorker(ILogger<TrimLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)

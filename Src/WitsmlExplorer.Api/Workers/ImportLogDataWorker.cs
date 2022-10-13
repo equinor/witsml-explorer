@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public ImportLogDataWorker(ILogger<ImportLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {

@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteUtils(ILogger<DeleteUtils> logger, IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _logger = logger;
         }
 

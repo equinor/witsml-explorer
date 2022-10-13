@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public ModifyLogObjectWorker(ILogger<ModifyLogObjectJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyLogObjectJob job)

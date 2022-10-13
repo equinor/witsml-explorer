@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteTrajectoriesWorker(ILogger<DeleteTrajectoriesJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _deleteUtils = deleteUtils;
         }
 

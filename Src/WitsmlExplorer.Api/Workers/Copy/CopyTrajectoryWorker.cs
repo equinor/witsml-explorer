@@ -25,8 +25,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public CopyTrajectoryWorker(ILogger<CopyTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient().Result ?? _witsmlClient;
             _copyUtils = copyUtils;
         }
 

@@ -108,7 +108,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, headerValue } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
             Assert.True(creds.ToString() == sc.ToString());
         }
 
@@ -122,7 +122,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, "http://some.url.com" } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
@@ -136,7 +136,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
         [Fact]
@@ -156,7 +156,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, headerValue } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
             Assert.True(creds.UserId == "username" && creds.Password == "password");
         }
 
@@ -174,7 +174,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.url.com" } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(header, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
             Assert.True(creds.UserId == "systemuser" && creds.Password == "systempassword");
         }
 
@@ -186,7 +186,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.invalidurl.com" } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(header, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
@@ -206,7 +206,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.url.com" } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCreds(header, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
     }

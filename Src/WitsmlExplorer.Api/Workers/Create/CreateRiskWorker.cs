@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateRiskWorker(ILogger<CreateRiskJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)

@@ -30,8 +30,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
+            _witsmlSourceClient = witsmlClientProvider.GetSourceClient().Result ?? _witsmlClient;
             _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
         }
 

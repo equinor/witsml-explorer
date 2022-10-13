@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public BatchModifyWellWorker(ILogger<BatchModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)

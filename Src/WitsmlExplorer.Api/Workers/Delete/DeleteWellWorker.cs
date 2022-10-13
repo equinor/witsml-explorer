@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteWellWorker(ILogger<DeleteWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellJob job)

@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Console.QueryCommands
 
         public GetQueryCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient().Result;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, GetQuerySettings settings)

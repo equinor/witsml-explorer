@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Services
 
         protected WitsmlService(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
+            _witsmlClient = witsmlClientProvider.GetClient().Result;
         }
     }
 }
