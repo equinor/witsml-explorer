@@ -18,13 +18,9 @@ namespace WitsmlExplorer.Api.Workers.Create
 {
     public class CreateWellboreWorker : BaseWorker<CreateWellboreJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateWellbore;
 
-        public CreateWellboreWorker(ILogger<CreateWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public CreateWellboreWorker(ILogger<CreateWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job)
         {
@@ -33,20 +29,20 @@ namespace WitsmlExplorer.Api.Workers.Create
 
             WitsmlWellbores wellboreToCreate = WellboreQueries.CreateWitsmlWellbore(wellbore);
 
-            QueryResult result = await _witsmlClient.AddToStoreAsync(wellboreToCreate);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(wellboreToCreate);
             if (result.IsSuccessful)
             {
                 await WaitUntilWellboreHasBeenCreated(wellbore);
                 Logger.LogInformation("Wellbore created. {jobDescription}", job.Description());
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Wellbore created ({wellbore.Name} [{wellbore.Uid}])");
-                RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), wellbore.WellUid, wellbore.Uid, RefreshType.Add);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Wellbore created ({wellbore.Name} [{wellbore.Uid}])");
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellbore.WellUid, wellbore.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
             EntityDescription description = new() { WellboreName = wellbore.Name };
             string errorMessage = "Failed to create wellbore.";
             Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private async Task WaitUntilWellboreHasBeenCreated(Wellbore wellbore)
@@ -61,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                     throw new InvalidOperationException($"Not able to read newly created wellbore with name {wellbore.Name} (id={wellbore.Uid})");
                 }
                 Thread.Sleep(1000);
-                WitsmlWellbores wellboreResult = await _witsmlClient.GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
+                WitsmlWellbores wellboreResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));
                 isWellboreCreated = wellboreResult.Wellbores.Any();
             }
         }

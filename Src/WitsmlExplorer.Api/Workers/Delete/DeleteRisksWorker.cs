@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
@@ -15,13 +14,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteRisksWorker : BaseWorker<DeleteRisksJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
         public JobType JobType => JobType.DeleteRisks;
 
-        public DeleteRisksWorker(ILogger<DeleteRisksJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteRisksWorker(ILogger<DeleteRisksJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _deleteUtils = deleteUtils;
         }
 
@@ -29,8 +26,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             job.ToDelete.Verify();
             IEnumerable<WitsmlRisk> queries = RiskQueries.DeleteRiskQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
-            RefreshRisks refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
-            return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
+            RefreshRisks refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
 
     }

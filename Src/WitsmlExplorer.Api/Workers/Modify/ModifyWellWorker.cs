@@ -17,13 +17,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyWellWorker : BaseWorker<ModifyWellJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyWell;
 
-        public ModifyWellWorker(ILogger<ModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public ModifyWellWorker(ILogger<ModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWellJob job)
         {
@@ -33,16 +29,16 @@ namespace WitsmlExplorer.Api.Workers.Modify
             string wellName = job.Well.Name;
             WitsmlWells witsmlWellToUpdate = WellQueries.UpdateWitsmlWell(job.Well);
 
-            QueryResult result = await _witsmlClient.UpdateInStoreAsync(witsmlWellToUpdate);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(witsmlWellToUpdate);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Well modified. {jobDescription}", job.Description());
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Well updated ({wellName} [{wellUid}])");
-                RefreshWell refreshAction = new(_witsmlClient.GetServerHostname(), job.Well.Uid, RefreshType.Update);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Well updated ({wellName} [{wellUid}])");
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Well.Uid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
 
-            WitsmlWells updatedWells = await _witsmlClient.GetFromStoreAsync(witsmlWellToUpdate, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlWells updatedWells = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlWellToUpdate, new OptionsIn(ReturnElements.IdOnly));
             WitsmlWell updatedWell = updatedWells.Wells.First();
             EntityDescription description = new()
             {
@@ -50,7 +46,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             };
             const string errorMessage = "Failed to update well";
             Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(Well well)

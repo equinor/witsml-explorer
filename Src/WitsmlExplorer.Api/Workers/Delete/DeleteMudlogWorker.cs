@@ -17,13 +17,9 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteMudLogWorker : BaseWorker<DeleteMudLogJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteMudLog;
 
-        public DeleteMudLogWorker(ILogger<DeleteMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public DeleteMudLogWorker(ILogger<DeleteMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMudLogJob job)
         {
@@ -33,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
             WitsmlMudLogs deleteRequest = DeleteRequest(wellUid, wellboreUid, uid);
 
-            QueryResult result = await _witsmlClient.DeleteFromStoreAsync(deleteRequest);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(deleteRequest);
 
             if (result.IsSuccessful)
             {
@@ -41,8 +37,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellUid,
                         wellboreUid,
                         uid);
-                RefreshWell refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, RefreshType.Remove);
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Deleted mudLog with uid ${wellUid}");
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, RefreshType.Remove);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted mudLog with uid ${wellUid}");
                 return (workerResult, refreshAction);
             }
 
@@ -51,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellboreUid,
                         uid);
             WitsmlMudLogs query = MudLogQueries.QueryById(wellUid, wellboreUid, uid);
-            WitsmlMudLogs queryResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlMudLogs queryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
             EntityDescription description = null;
             WitsmlMudLog mudLog = queryResult.MudLogs.FirstOrDefault();
             if (mudLog != null)
@@ -61,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     ObjectName = mudLog.Name
                 };
             }
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to delete mudLog", result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to delete mudLog", result.Reason, description), null);
 
         }
 

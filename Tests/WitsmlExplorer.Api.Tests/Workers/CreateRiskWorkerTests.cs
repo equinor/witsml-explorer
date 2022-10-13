@@ -67,7 +67,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,
             string wellUid = WellUid, string wellName = WellName)
         {
-
             return new CreateRiskJob
             {
                 Risk = new Risk

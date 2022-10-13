@@ -14,29 +14,25 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyBhaRunWorker : BaseWorker<ModifyBhaRunJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyBhaRun;
 
-        public ModifyBhaRunWorker(ILogger<ModifyBhaRunJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public ModifyBhaRunWorker(ILogger<ModifyBhaRunJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyBhaRunJob job)
         {
             WitsmlBhaRuns modifyBhaRunQuery = BhaRunQueries.CreateBhaRun(job.BhaRun);
-            QueryResult modifyBhaRunResult = await _witsmlClient.UpdateInStoreAsync(modifyBhaRunQuery);
+            QueryResult modifyBhaRunResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(modifyBhaRunQuery);
 
             if (!modifyBhaRunResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify bhaRun";
                 Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, modifyBhaRunResult.Reason), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyBhaRunResult.Reason), null);
             }
 
             Logger.LogInformation("BhaRun modified. {jobDescription}", job.Description());
-            RefreshBhaRuns refreshAction = new(_witsmlClient.GetServerHostname(), job.BhaRun.WellUid, job.BhaRun.WellboreUid, RefreshType.Update);
-            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"BhaRun {job.BhaRun.Name} updated for {job.BhaRun.WellboreName}");
+            RefreshBhaRuns refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.BhaRun.WellUid, job.BhaRun.WellboreUid, RefreshType.Update);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"BhaRun {job.BhaRun.Name} updated for {job.BhaRun.WellboreName}");
 
             return (workerResult, refreshAction);
         }

@@ -18,13 +18,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyTubularComponentWorker : BaseWorker<ModifyTubularComponentJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyTubularComponent;
 
-        public ModifyTubularComponentWorker(ILogger<ModifyTubularComponentJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public ModifyTubularComponentWorker(ILogger<ModifyTubularComponentJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyTubularComponentJob job)
         {
@@ -35,18 +31,18 @@ namespace WitsmlExplorer.Api.Workers.Modify
             string tubularUid = job.TubularReference.Uid;
 
             WitsmlTubulars query = TubularQueries.UpdateTubularComponent(job.TubularComponent, job.TubularReference);
-            QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("TubularComponent modified. {jobDescription}", job.Description());
-                RefreshTubulars refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"TubularComponent updated ({job.TubularComponent.Uid})"), refreshAction);
+                RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TubularComponent updated ({job.TubularComponent.Uid})"), refreshAction);
             }
 
             const string errorMessage = "Failed to update tubularComponent";
             Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             WitsmlTubulars tubularComponentQuery = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
-            WitsmlTubulars tubularComponents = await _witsmlClient.GetFromStoreAsync(tubularComponentQuery, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlTubulars tubularComponents = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(tubularComponentQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlTubular tubular = tubularComponents.Tubulars.FirstOrDefault();
             EntityDescription description = null;
             if (tubular != null)
@@ -59,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(TubularComponent tubularComponent, ObjectReference tubularReference)

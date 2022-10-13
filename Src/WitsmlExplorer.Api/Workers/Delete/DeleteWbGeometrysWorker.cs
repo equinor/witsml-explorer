@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
@@ -17,13 +16,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteWbGeometrysWorker : BaseWorker<DeleteWbGeometryJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
         public JobType JobType => JobType.DeleteWbGeometrys;
 
-        public DeleteWbGeometrysWorker(ILogger<DeleteWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteWbGeometrysWorker(ILogger<DeleteWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _deleteUtils = deleteUtils;
         }
 
@@ -31,8 +28,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             job.ToDelete.Verify();
             IEnumerable<WitsmlWbGeometry> queries = WbGeometryQueries.DeleteWbGeometryQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
-            RefreshWbGeometryObjects refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
-            return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
+            RefreshWbGeometryObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
 
     }

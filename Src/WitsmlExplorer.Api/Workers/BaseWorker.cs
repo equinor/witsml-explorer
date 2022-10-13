@@ -5,18 +5,35 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
+
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-
+using WitsmlExplorer.Api.Services;
 namespace WitsmlExplorer.Api.Workers
 {
     public abstract class BaseWorker<T> where T : Job
     {
         protected ILogger<T> Logger { get; }
+        private IWitsmlClientProvider WitsmlClientProvider { get; }
+
         public BaseWorker(ILogger<T> logger = null)
         {
             Logger = logger;
+        }
+        public BaseWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<T> logger = null)
+        {
+            Logger = logger;
+            WitsmlClientProvider = witsmlClientProvider;
+        }
+        protected IWitsmlClient GetTargetWitsmlClientOrThrow()
+        {
+            return WitsmlClientProvider.GetClient().Result ?? throw new ArgumentException($"Missing Target WitsmlClient for {typeof(T)}");
+        }
+        protected IWitsmlClient GetSourceWitsmlClientOrThrow()
+        {
+            return WitsmlClientProvider.GetClient().Result ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)

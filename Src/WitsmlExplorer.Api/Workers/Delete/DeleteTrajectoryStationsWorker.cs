@@ -17,13 +17,9 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteTrajectoryStationsWorker : BaseWorker<DeleteTrajectoryStationsJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteTrajectoryStations;
 
-        public DeleteTrajectoryStationsWorker(ILogger<DeleteTrajectoryStationsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public DeleteTrajectoryStationsWorker(ILogger<DeleteTrajectoryStationsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTrajectoryStationsJob job)
         {
@@ -34,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             string trajectoryStationsString = string.Join(", ", trajectoryStations);
 
             WitsmlTrajectories query = TrajectoryQueries.DeleteTrajectoryStations(wellUid, wellboreUid, trajectoryUid, trajectoryStations);
-            QueryResult result = await _witsmlClient.DeleteFromStoreAsync(query);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted trajectoryStations for trajectory object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {TrajectoryUid}, TrajectoryStations: {TrajectoryStationsString}",
@@ -42,8 +38,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     wellboreUid,
                     trajectoryUid,
                     trajectoryStations);
-                RefreshTrajectory refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Deleted trajectoryStations: {trajectoryStationsString} for trajectory: {trajectoryUid}");
+                RefreshTrajectory refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted trajectoryStations: {trajectoryStationsString} for trajectory: {trajectoryUid}");
                 return (workerResult, refreshAction);
             }
 
@@ -54,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 trajectoryStations);
 
             query = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            WitsmlTrajectories queryResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlTrajectories queryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
 
             WitsmlTrajectory trajectory = queryResult.Trajectories.First();
             EntityDescription description = null;
@@ -68,7 +64,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to delete trajectory stations", result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to delete trajectory stations", result.Reason, description), null);
         }
     }
 }

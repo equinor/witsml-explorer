@@ -23,7 +23,6 @@ namespace WitsmlExplorer.Api.Extensions
                 BasicCredentials creds = new(headerSplit[0]);
                 return new ServerCredentials()
                 {
-
                     UserId = creds.UserId,
                     Password = delDecrypt(creds.Password) ?? creds.Password,
                     Host = new Uri(headerSplit[1])

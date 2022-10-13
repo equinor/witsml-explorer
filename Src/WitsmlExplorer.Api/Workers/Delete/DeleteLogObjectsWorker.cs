@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
@@ -20,13 +19,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
     public class DeleteLogObjectsWorker : BaseWorker<DeleteLogObjectsJob>, IWorker, IDeleteLogObjectsWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
         public JobType JobType => JobType.DeleteLogObjects;
 
-        public DeleteLogObjectsWorker(ILogger<DeleteLogObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteLogObjectsWorker(ILogger<DeleteLogObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
             _deleteUtils = deleteUtils;
         }
 
@@ -42,8 +39,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 UidWellbore = wellboreUid,
                 Uid = uid
             });
-            RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-            return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
+            RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
 
     }

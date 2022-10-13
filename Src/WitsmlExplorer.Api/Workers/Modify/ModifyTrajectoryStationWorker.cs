@@ -18,13 +18,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyTrajectoryStationWorker : BaseWorker<ModifyTrajectoryStationJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyTrajectoryStation;
 
-        public ModifyTrajectoryStationWorker(ILogger<ModifyTrajectoryStationJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public ModifyTrajectoryStationWorker(ILogger<ModifyTrajectoryStationJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyTrajectoryStationJob job)
         {
@@ -35,18 +31,18 @@ namespace WitsmlExplorer.Api.Workers.Modify
             string trajectoryUid = job.TrajectoryReference.Uid;
 
             WitsmlTrajectories query = TrajectoryQueries.UpdateTrajectoryStation(job.TrajectoryStation, job.TrajectoryReference);
-            QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("TrajectoryStation modified. {jobDescription}", job.Description());
-                RefreshTrajectory refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"TrajectoryStation updated ({job.TrajectoryStation.Uid})"), refreshAction);
+                RefreshTrajectory refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TrajectoryStation updated ({job.TrajectoryStation.Uid})"), refreshAction);
             }
 
             const string errorMessage = "Failed to update TrajectoryStation";
             Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             WitsmlTrajectories trajectoryStationQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
-            WitsmlTrajectories trajectoryStations = await _witsmlClient.GetFromStoreAsync(trajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlTrajectories trajectoryStations = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(trajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlTrajectory trajectory = trajectoryStations.Trajectories.FirstOrDefault();
             EntityDescription description = null;
             if (trajectory != null)
@@ -59,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static void Verify(TrajectoryStation trajectoryStation, ObjectReference trajectoryReference)

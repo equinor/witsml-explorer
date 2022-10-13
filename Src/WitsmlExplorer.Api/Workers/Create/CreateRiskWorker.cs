@@ -19,13 +19,9 @@ namespace WitsmlExplorer.Api.Workers.Create
 
     public class CreateRiskWorker : BaseWorker<CreateRiskJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateRisk;
 
-        public CreateRiskWorker(ILogger<CreateRiskJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
-        }
+        public CreateRiskWorker(ILogger<CreateRiskJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)
         {
@@ -34,20 +30,20 @@ namespace WitsmlExplorer.Api.Workers.Create
 
             WitsmlRisks riskToCreate = RiskQueries.CreateRisk(risk);
 
-            QueryResult result = await _witsmlClient.AddToStoreAsync(riskToCreate);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(riskToCreate);
             if (result.IsSuccessful)
             {
                 await WaitUntilRiskHasBeenCreated(risk);
                 Logger.LogInformation("Risk created. {jobDescription}", job.Description());
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Risk created ({risk.Name} [{risk.Uid}])");
-                RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), risk.WellUid, risk.Uid, RefreshType.Add);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Risk created ({risk.Name} [{risk.Uid}])");
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), risk.WellUid, risk.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
             EntityDescription description = new() { WellboreName = risk.WellboreName };
             string errorMessage = "Failed to create Risk.";
             Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
         private async Task WaitUntilRiskHasBeenCreated(Risk risk)
         {
@@ -61,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                     throw new InvalidOperationException($"Not able to read newly created Risk with name {risk.Name} (id={risk.Uid})");
                 }
                 Thread.Sleep(1000);
-                WitsmlRisks riskResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                WitsmlRisks riskResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isCreated = riskResult.Risks.Any();
             }
         }
