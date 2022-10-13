@@ -72,7 +72,15 @@ namespace WitsmlExplorer.Api.Services
             }
             return result;
         }
-
+        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token)
+        {
+            ServerCredentials result = GetBasicCredentialsFromHeaderValue(headerValue);
+            if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
+            {
+                return await GetCredentialsWithToken(token, result.Host);
+            }
+            return result;
+        }
         private async Task VerifyCredentials(ServerCredentials serverCreds)
         {
             WitsmlClient witsmlClient = new(serverCreds.Host.ToString(), serverCreds.UserId, serverCreds.Password, _clientCapabilities);
@@ -124,7 +132,10 @@ namespace WitsmlExplorer.Api.Services
         {
             return _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, Decrypt);
         }
-
+        private ServerCredentials GetBasicCredentialsFromHeaderValue(string headerValue)
+        {
+            return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
+        }
         public bool ValidEncryptedBasicCredentials(string headerName)
         {
             ServerCredentials creds = _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, n => n);
