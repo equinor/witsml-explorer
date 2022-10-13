@@ -1,4 +1,4 @@
-import CopyObjectsJob from "./copyObjectsJob";
+import { CopyObjectsJob } from "./copyJobs";
 import { DeleteObjectsJob } from "./deleteJobs";
 
 export interface ReplaceLogObjectsJob {

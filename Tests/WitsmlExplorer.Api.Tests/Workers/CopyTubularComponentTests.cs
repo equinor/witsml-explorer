@@ -79,15 +79,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyTubularComponentsJob
             {
-                Source = new TubularComponentReferences
+                Source = new ComponentReferences
                 {
-                    TubularReference = new ObjectReference
+                    Parent = new ObjectReference
                     {
                         Uid = SourceTubularUid,
                         WellboreUid = WellboreUid,
                         WellUid = WellUid
                     },
-                    TubularComponentUids = new List<string> { TcUid2, TcUid3 }
+                    ComponentUids = new string[] { TcUid2, TcUid3 }
                 },
                 Target = new ObjectReference
                 {

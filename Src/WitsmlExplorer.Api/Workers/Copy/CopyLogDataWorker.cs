@@ -38,8 +38,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
         {
             (WitsmlLog sourceLog, WitsmlLog targetLog) = await GetLogs(job);
-            List<string> mnemonicsToCopy = job.Source.Mnemonics.Any()
-                ? job.Source.Mnemonics.Distinct().ToList()
+            List<string> mnemonicsToCopy = job.Source.ComponentUids.Any()
+                ? job.Source.ComponentUids.Distinct().ToList()
                 : sourceLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
 
             IEnumerable<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 VerifyValidInterval(sourceLog);
                 VerifyMatchingIndexCurves(sourceLog, targetLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
-                await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.Mnemonics, targetLog);
+                await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.ComponentUids, targetLog);
             }
             catch (Exception e)
             {
@@ -96,8 +96,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             while (startIndex < endIndex)
             {
-                WitsmlLogs query = LogQueries.GetLogContent(job.Source.LogReference.WellUid, job.Source.LogReference.WellboreUid,
-                    job.Source.LogReference.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
+                WitsmlLogs query = LogQueries.GetLogContent(job.Source.Parent.WellUid, job.Source.Parent.WellboreUid,
+                    job.Source.Parent.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
                 WitsmlLogs sourceData = await _witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
                 if (!sourceData.Logs.Any())
                 {
@@ -213,16 +213,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(_witsmlSourceClient, job.Source.LogReference, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(_witsmlSourceClient, job.Source.Parent, ReturnElements.HeaderOnly);
             Task<WitsmlLog> targetLog = WorkerTools.GetLog(_witsmlClient, job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
             return sourceLog.Result == null
-                ? throw new Exception($"Could not find source log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.Uid}")
+                ? throw new Exception($"Could not find source log object: {job.Source.Parent.Description()}")
                 : targetLog.Result == null
-                ? throw new Exception($"Could not find target log object: UidWell: {job.Source.LogReference.WellUid}, " +
-                                    $"UidWellbore: {job.Source.LogReference.WellboreUid}, Uid: {job.Source.LogReference.Uid}")
+                ? throw new Exception($"Could not find target log object: UidWell: {job.Target.Description()}")
                 : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
         }
 

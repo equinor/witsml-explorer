@@ -95,7 +95,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task CopyLogData_DepthIndexed_SelectedMnemonics()
         {
             CopyLogDataJob job = CreateJobTemplate();
-            job.Source.Mnemonics = new[] { "Depth", "DepthBit" };
+            job.Source.ComponentUids = new[] { "Depth", "DepthBit" };
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
@@ -106,7 +106,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
                     double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
-                    return GetSourceLogData(startIndex, endIndex, job.Source.Mnemonics);
+                    return GetSourceLogData(startIndex, endIndex, job.Source.ComponentUids);
                 });
             List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
@@ -115,8 +115,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.NotNull(query);
             string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
             string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
-            Assert.Equal(job.Source.Mnemonics, queriedMnemonics);
-            Assert.Equal(job.Source.Mnemonics, copiedMnemonics);
+            Assert.Equal(job.Source.ComponentUids, queriedMnemonics);
+            Assert.Equal(job.Source.ComponentUids, copiedMnemonics);
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             string indexMnemonic = "Depth";
             CopyLogDataJob job = CreateJobTemplate();
-            job.Source.Mnemonics = new[] { "DepthBit" };
+            job.Source.ComponentUids = new[] { "DepthBit" };
 
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
@@ -169,7 +169,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             string targetIndexCurve = "Depth";
             string[] mnemonics = new[] { sourceIndexCurve, "DepthBit", "DepthHole" };
             CopyLogDataJob job = CreateJobTemplate();
-            job.Source.Mnemonics = mnemonics;
+            job.Source.ComponentUids = mnemonics;
             WitsmlLogs sourceLogs = GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd, sourceIndexCurve);
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
             SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
@@ -181,7 +181,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
                     double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
-                    return GetSourceLogData(startIndex, endIndex, job.Source.Mnemonics);
+                    return GetSourceLogData(startIndex, endIndex, job.Source.ComponentUids);
                 });
             List<WitsmlLogs> updatedLogs = SetupUpdateInStoreAsync();
 
@@ -255,9 +255,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new CopyLogDataJob
             {
-                Source = new LogCurvesReference
+                Source = new ComponentReferences
                 {
-                    LogReference = new ObjectReference
+                    Parent = new ObjectReference
                     {
                         WellUid = WellUid,
                         WellboreUid = WellboreUid,

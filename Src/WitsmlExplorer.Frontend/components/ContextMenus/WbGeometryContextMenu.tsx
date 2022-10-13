@@ -11,7 +11,7 @@ import { WbGeometryObjectRow } from "../ContentViews/WbGeometrysListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface WbGeometryObjectContextMenuProps {
@@ -36,7 +36,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
       menuItems={[
         <MenuItem
           key={"delete"}
-          onClick={() => onClickDelete(dispatchOperation, checkedWbGeometryObjectRows, ObjectType.WbGeometry, JobType.DeleteWbGeometrys)}
+          onClick={() => onClickDeleteObjects(dispatchOperation, checkedWbGeometryObjectRows, ObjectType.WbGeometry, JobType.DeleteWbGeometrys)}
           disabled={checkedWbGeometryObjectRows.length === 0}
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

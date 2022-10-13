@@ -1,7 +1,7 @@
-import { CopyLogDataJob } from "./copyLogDataJob";
-import { DeleteMnemonicsJob } from "./deleteJobs";
+import { CopyComponentsJob } from "./copyJobs";
+import { DeleteComponentsJob } from "./deleteJobs";
 
 export interface ReplaceLogDataJob {
-  deleteJob: DeleteMnemonicsJob;
-  copyJob: CopyLogDataJob;
+  deleteJob: DeleteComponentsJob;
+  copyJob: CopyComponentsJob;
 }

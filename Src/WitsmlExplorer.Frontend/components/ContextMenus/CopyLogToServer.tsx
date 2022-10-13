@@ -1,5 +1,5 @@
 import OperationType from "../../contexts/operationType";
-import CopyObjectsJob from "../../models/jobs/copyObjectsJob";
+import { CopyObjectsJob } from "../../models/jobs/copyJobs";
 import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ReplaceLogObjectsJob } from "../../models/jobs/replaceLogObjectsJob";

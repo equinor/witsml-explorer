@@ -4,21 +4,19 @@ import React from "react";
 import { UpdateWellboreTrajectoryAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { createTrajectoryStationReferences } from "../../models/jobs/copyTrajectoryStationJob";
-import { DeleteTrajectoryStationsJob } from "../../models/jobs/deleteJobs";
-import { toObjectReference } from "../../models/objectOnWellbore";
+import { ComponentType } from "../../models/componentType";
+import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
-import JobService, { JobType } from "../../services/jobService";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
-import ConfirmModal from "../Modals/ConfirmModal";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { orderCopyTrajectoryStationsJob, useClipboardTrajectoryStationReferences } from "./TrajectoryStationContextMenuUtils";
+import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
@@ -31,13 +29,7 @@ export interface TrajectoryStationContextMenuProps {
 
 const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps): React.ReactElement => {
   const { checkedTrajectoryStations, dispatchOperation, trajectory, selectedServer, servers } = props;
-  const [trajectoryStationReferences] = useClipboardTrajectoryStationReferences();
-
-  const onClickCopy = async () => {
-    const trajectoryStationReferences = createTrajectoryStationReferences(checkedTrajectoryStations, trajectory, selectedServer.url);
-    await navigator.clipboard.writeText(JSON.stringify(trajectoryStationReferences));
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
+  const trajectoryStationReferences = useClipboardComponentReferencesOfType(ComponentType.TrajectoryStation);
 
   const onClickProperties = async () => {
     const trajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
@@ -48,49 +40,39 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete selected trajectory stations?"}
-        content={
-          <span>
-            This will permanently delete the selected trajectory stations: <strong>{checkedTrajectoryStations.map((item) => item.uid).join(", ")}</strong>
-          </span>
-        }
-        onConfirm={onConfirmDelete}
-        confirmColor={"secondary"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-  };
-
-  const onConfirmDelete = async () => {
-    dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteTrajectoryStationsJob = {
-      toDelete: {
-        trajectoryReference: toObjectReference(trajectory),
-        trajectoryStationUids: checkedTrajectoryStations.map((item) => item.uid)
-      }
-    };
-    await JobService.orderJob(JobType.DeleteTrajectoryStations, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const serverUrl = trajectoryStationReferences?.serverUrl;
-  const orderCopy = () => orderCopyTrajectoryStationsJob(trajectory, trajectoryStationReferences, dispatchOperation);
+  const toDelete = createComponentReferences(
+    checkedTrajectoryStations.map((ts) => ts.uid),
+    trajectory,
+    ComponentType.TrajectoryStation
+  );
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedTrajectoryStations.length === 0}>
+        <MenuItem
+          key={"copy"}
+          onClick={() =>
+            copyComponents(
+              selectedServer,
+              checkedTrajectoryStations.map((ts) => ts.uid),
+              trajectory,
+              dispatchOperation,
+              ComponentType.TrajectoryStation
+            )
+          }
+          disabled={checkedTrajectoryStations.length === 0}
+        >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={trajectoryStationReferences === null}>
+        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory, JobType.CopyTrajectoryStations)}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.trajectoryStationUids)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={onClickDelete} disabled={checkedTrajectoryStations.length === 0}>
+        <MenuItem
+          key={"delete"}
+          onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteTrajectoryStations)}
+          disabled={checkedTrajectoryStations.length === 0}
+        >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
