@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
         }
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetClient().Result ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
+            return WitsmlClientProvider.GetSourceClient().Result ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)
