@@ -1,6 +1,7 @@
 import { ErrorDetails } from "../models/errorDetails";
 import { emptyServer, Server } from "../models/server";
 import { ApiClient } from "./apiClient";
+import CredentialsService from "./credentialsService";
 
 export default class ServerService {
   public static async getServers(abortSignal?: AbortSignal): Promise<Server[]> {
@@ -15,7 +16,9 @@ export default class ServerService {
   public static async addServer(server: Server, abortSignal?: AbortSignal): Promise<Server> {
     const response = await ApiClient.post(`/api/witsml-servers`, JSON.stringify(server), abortSignal, undefined);
     if (response.ok) {
-      return response.json();
+      const result = await response.json();
+      CredentialsService.addServer(result);
+      return result;
     } else {
       return emptyServer();
     }
@@ -24,7 +27,9 @@ export default class ServerService {
   public static async updateServer(server: Server, abortSignal?: AbortSignal): Promise<Server> {
     const response = await ApiClient.patch(`/api/witsml-servers/${server.id}`, JSON.stringify(server), abortSignal);
     if (response.ok) {
-      return response.json();
+      const result = await response.json();
+      CredentialsService.updateServer(result);
+      return result;
     } else {
       return emptyServer();
     }
@@ -33,6 +38,7 @@ export default class ServerService {
   public static async removeServer(serverUid: string, abortSignal?: AbortSignal): Promise<boolean> {
     const response = await ApiClient.delete(`/api/witsml-servers/${serverUid}`, abortSignal);
     if (response.ok) {
+      CredentialsService.removeServer(serverUid);
       return true;
     } else {
       const { message }: ErrorDetails = await response.json();
