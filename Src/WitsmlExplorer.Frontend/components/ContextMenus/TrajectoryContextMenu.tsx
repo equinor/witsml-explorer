@@ -9,7 +9,7 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -43,7 +43,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
         </MenuItem>,
         <MenuItem
           key={"delete"}
-          onClick={() => onClickDelete(dispatchOperation, trajectories, ObjectType.Trajectory, JobType.DeleteTrajectories)}
+          onClick={() => onClickDeleteObjects(dispatchOperation, trajectories, ObjectType.Trajectory, JobType.DeleteTrajectories)}
           disabled={trajectories.length === 0}
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

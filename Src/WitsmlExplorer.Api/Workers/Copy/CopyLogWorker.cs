@@ -114,10 +114,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             CopyLogDataJob copyLogDataJob = new()
             {
-                Source = new LogCurvesReference
+                Source = new ComponentReferences
                 {
-                    LogReference = sourceLogReference,
-                    Mnemonics = targetLog.LogData.MnemonicList.Split(",")
+                    Parent = sourceLogReference,
+                    ComponentUids = targetLog.LogData.MnemonicList.Split(",")
                 },
                 Target = targetLogReference
             };

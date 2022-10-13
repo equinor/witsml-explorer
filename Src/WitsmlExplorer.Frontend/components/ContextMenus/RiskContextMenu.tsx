@@ -12,7 +12,7 @@ import { RiskObjectRow } from "../ContentViews/RisksListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -48,7 +48,7 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "risk", riskReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(dispatchOperation, risks, ObjectType.Risk, JobType.DeleteRisks)} disabled={risks.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, risks, ObjectType.Risk, JobType.DeleteRisks)} disabled={risks.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "risk", risks)}</Typography>
         </MenuItem>,

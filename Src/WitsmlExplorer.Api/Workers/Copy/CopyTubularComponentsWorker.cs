@@ -27,17 +27,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularComponentsJob job)
         {
             (WitsmlTubular targetTubular, IEnumerable<WitsmlTubularComponent> componentsToCopy) = await FetchData(job);
-            if (componentsToCopy.Count() != job.Source.TubularComponentUids.Count())
+            if (componentsToCopy.Count() != job.Source.ComponentUids.Length)
             {
                 string errorMessage = "Failed to copy tubular components.";
-                string missingUids = string.Join(", ", componentsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.TubularComponentUids.Contains(uid)));
+                string missingUids = string.Join(", ", componentsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
                 string reason = $"Could not retrieve all tubular components, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, reason), null);
             }
             WitsmlTubulars updatedTubularQuery = TubularQueries.CopyTubularComponents(targetTubular, componentsToCopy);
             QueryResult copyResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(updatedTubularQuery);
-            string tubularComponentsString = string.Join(", ", job.Source.TubularComponentUids);
+            string tubularComponentsString = string.Join(", ", job.Source.ComponentUids);
             if (!copyResult.IsSuccessful)
             {
                 string errorMessage = "Failed to copy tubular components.";
@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task<Tuple<WitsmlTubular, IEnumerable<WitsmlTubularComponent>>> FetchData(CopyTubularComponentsJob job)
         {
             Task<WitsmlTubular> targetTubularQuery = GetTubular(GetTargetWitsmlClientOrThrow(), job.Target);
-            Task<IEnumerable<WitsmlTubularComponent>> sourceTubularComponentsQuery = GetTubularComponents(GetSourceWitsmlClientOrThrow(), job.Source.TubularReference, job.Source.TubularComponentUids);
+            Task<IEnumerable<WitsmlTubularComponent>> sourceTubularComponentsQuery = GetTubularComponents(GetSourceWitsmlClientOrThrow(), job.Source.Parent, job.Source.ComponentUids);
             await Task.WhenAll(targetTubularQuery, sourceTubularComponentsQuery);
             WitsmlTubular targetTubular = targetTubularQuery.Result;
             IEnumerable<WitsmlTubularComponent> sourceTubularComponents = sourceTubularComponentsQuery.Result;

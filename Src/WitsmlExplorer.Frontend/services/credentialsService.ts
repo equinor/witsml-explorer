@@ -6,20 +6,16 @@ import { ApiClient } from "./apiClient";
 
 export interface BasicServerCredentials {
   server: Server;
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
 }
 
 class CredentialsService {
   private static _instance: CredentialsService;
   private _onCredentialStateChanged = new SimpleEventDispatcher<{ server: Server; hasPassword: boolean }>();
-  private credentials: BasicServerCredentials[];
+  private credentials: BasicServerCredentials[] = [];
   private server?: Server;
   private sourceServer?: Server;
-
-  private constructor() {
-    this.credentials = CredentialsService.getLocallyStoredServerUsernames();
-  }
 
   public setSelectedServer(server: Server) {
     this.server = server;
@@ -34,6 +30,30 @@ class CredentialsService {
     this.sourceServer = null;
   }
 
+  public addServer(server: Server) {
+    this.credentials.push({ server });
+  }
+
+  public removeServer(serverUid: string) {
+    const index = this.credentials.findIndex((creds) => creds.server.id == serverUid);
+    if (index > -1) {
+      this.credentials.splice(index, 1);
+    }
+  }
+
+  public updateServer(server: Server) {
+    const creds = this.getCredentialsForServer(server);
+    creds.server = server;
+  }
+
+  public saveServers(servers: Server[]) {
+    this.credentials = servers.map((server) => {
+      return {
+        server
+      };
+    });
+  }
+
   public saveCredentials(serverCredentials: BasicServerCredentials) {
     const index = this.credentials.findIndex((c) => c.server.id === serverCredentials.server.id);
     if (index === -1) {
@@ -41,7 +61,6 @@ class CredentialsService {
     } else {
       this.credentials[index] = serverCredentials;
     }
-    this.updateLocallyStoredServerUsernames();
     this._onCredentialStateChanged.dispatch({ server: serverCredentials.server, hasPassword: Boolean(serverCredentials.password) });
   }
 
@@ -60,7 +79,9 @@ class CredentialsService {
   }
 
   public clearPasswords() {
-    this.credentials = CredentialsService.getLocallyStoredServerUsernames();
+    this.credentials = this.credentials.map((creds) => {
+      return { server: creds.server };
+    });
     this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
   }
 
@@ -94,24 +115,6 @@ class CredentialsService {
       default:
         throw new Error(`Something unexpected has happened.`);
     }
-  }
-
-  private static getLocallyStoredServerUsernames(): BasicServerCredentials[] {
-    let locallyStoredServerUsernames: BasicServerCredentials[];
-    if (typeof window !== "undefined") {
-      locallyStoredServerUsernames = JSON.parse(localStorage.getItem("serverCredentials"));
-    }
-    return locallyStoredServerUsernames ?? [];
-  }
-
-  private updateLocallyStoredServerUsernames() {
-    const credentialsWithoutPasswords = this.credentials.map((c) => {
-      return {
-        server: c.server,
-        username: c.username
-      };
-    });
-    localStorage.setItem("serverCredentials", JSON.stringify(credentialsWithoutPasswords));
   }
 
   public get onCredentialStateChanged() {

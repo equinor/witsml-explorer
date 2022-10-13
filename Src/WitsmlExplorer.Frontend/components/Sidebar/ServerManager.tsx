@@ -29,6 +29,7 @@ const ServerManager = (): React.ReactElement => {
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isOpen, setIsOpen] = useState<boolean>();
+  const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
 
   useEffect(() => {
@@ -78,10 +79,12 @@ const ServerManager = (): React.ReactElement => {
 
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasFetchedServers) {
       const abortController = new AbortController();
       const getServers = async () => {
         const freshServers = await ServerService.getServers(abortController.signal);
+        setHasFetchedServers(true);
+        CredentialsService.saveServers(freshServers);
         const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
         dispatchNavigation(action);
       };

@@ -26,17 +26,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTrajectoryStationsJob job)
         {
             (WitsmlTrajectory targetTrajectory, IEnumerable<WitsmlTrajectoryStation> stationsToCopy) = await FetchData(job);
-            if (stationsToCopy.Count() != job.Source.TrajectoryStationUids.Count())
+            if (stationsToCopy.Count() != job.Source.ComponentUids.Length)
             {
                 string errorMessage = "Failed to copy trajectory stations.";
-                string missingUids = string.Join(", ", stationsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.TrajectoryStationUids.Contains(uid)));
+                string missingUids = string.Join(", ", stationsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
                 string reason = $"Could not retrieve all trajectory stations, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, reason), null);
             }
             WitsmlTrajectories updatedTrajectoryQuery = TrajectoryQueries.CopyTrajectoryStations(targetTrajectory, stationsToCopy);
             QueryResult copyResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(updatedTrajectoryQuery);
-            string trajectoryStationsString = string.Join(", ", job.Source.TrajectoryStationUids);
+            string trajectoryStationsString = string.Join(", ", job.Source.ComponentUids);
             if (!copyResult.IsSuccessful)
             {
                 string errorMessage = "Failed to copy trajectory stations.";
@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task<Tuple<WitsmlTrajectory, IEnumerable<WitsmlTrajectoryStation>>> FetchData(CopyTrajectoryStationsJob job)
         {
             Task<WitsmlTrajectory> targetTrajectoryQuery = GetTrajectory(GetTargetWitsmlClientOrThrow(), job.Target);
-            Task<IEnumerable<WitsmlTrajectoryStation>> sourceTrajectoryStationsQuery = GetTrajectoryStations(GetSourceWitsmlClientOrThrow(), job.Source.TrajectoryReference, job.Source.TrajectoryStationUids);
+            Task<IEnumerable<WitsmlTrajectoryStation>> sourceTrajectoryStationsQuery = GetTrajectoryStations(GetSourceWitsmlClientOrThrow(), job.Source.Parent, job.Source.ComponentUids);
             await Task.WhenAll(targetTrajectoryQuery, sourceTrajectoryStationsQuery);
             WitsmlTrajectory targetTrajectory = await targetTrajectoryQuery;
             IEnumerable<WitsmlTrajectoryStation> sourceTrajectoryStations = await sourceTrajectoryStationsQuery;

@@ -76,14 +76,12 @@ namespace WitsmlExplorer.Api
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.InitializeRepository();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //IdentityModelEventSource.ShowPII = true;
                 app.ConfigureSwagger(Configuration);
             }
             else

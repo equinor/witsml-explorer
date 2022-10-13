@@ -1,6 +1,8 @@
 import OperationType from "../../contexts/operationType";
-import { CopyLogDataJob, LogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
+import { ComponentType } from "../../models/componentType";
+import ComponentReferences, { createComponentReferences } from "../../models/jobs/componentReferences";
+import { CopyComponentsJob } from "../../models/jobs/copyJobs";
+import { DeleteComponentsJob } from "../../models/jobs/deleteJobs";
 import ObjectReference from "../../models/jobs/objectReference";
 import { ReplaceLogDataJob } from "../../models/jobs/replaceLogDataJob";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -60,14 +62,15 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
   }
 };
 
-const createCopyJob = (sourceServer: Server, curves: LogCurveInfoRow[], targetLog: LogObject, sourceLog: LogObject): CopyLogDataJob => {
-  const curveReferences: LogCurvesReference = {
-    serverUrl: sourceServer.url,
-    logReference: toObjectReference(sourceLog),
-    mnemonics: curves.map((curve) => curve.mnemonic)
-  };
+const createCopyJob = (sourceServer: Server, curves: LogCurveInfoRow[], targetLog: LogObject, sourceLog: LogObject): CopyComponentsJob => {
+  const sourceCurveReferences: ComponentReferences = createComponentReferences(
+    curves.map((curve) => curve.mnemonic),
+    sourceLog,
+    ComponentType.Mnemonic,
+    sourceServer.url
+  );
   const targetLogReference: ObjectReference = toObjectReference(targetLog);
-  const copyJob: CopyLogDataJob = { source: curveReferences, target: targetLogReference };
+  const copyJob: CopyComponentsJob = { source: sourceCurveReferences, target: targetLogReference };
   return copyJob;
 };
 
@@ -81,13 +84,14 @@ const replaceCurves = async (
   sourceLog: LogObject
 ) => {
   dispatchOperation({ type: OperationType.HideModal });
-  const deleteJob: DeleteMnemonicsJob = {
-    toDelete: {
-      logReference: toObjectReference(targetLog),
-      mnemonics: curvesToDelete.map((item) => item.mnemonic)
-    }
+  const deleteJob: DeleteComponentsJob = {
+    toDelete: createComponentReferences(
+      curvesToDelete.map((item) => item.mnemonic),
+      targetLog,
+      ComponentType.Mnemonic
+    )
   };
-  const copyJob: CopyLogDataJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
+  const copyJob: CopyComponentsJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
   const replaceJob: ReplaceLogDataJob = { deleteJob, copyJob };
   await JobService.orderJobAtServer(JobType.ReplaceLogData, replaceJob, credentials);
   dispatchOperation({ type: OperationType.HideContextMenu });
