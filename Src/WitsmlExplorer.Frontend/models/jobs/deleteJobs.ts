@@ -1,4 +1,4 @@
-import ObjectReference from "./objectReference";
+import ComponentReferences from "./componentReferences";
 import ObjectReferences from "./objectReferences";
 import WellboreReference from "./wellboreReference";
 
@@ -6,25 +6,8 @@ export interface DeleteObjectsJob {
   toDelete: ObjectReferences;
 }
 
-export interface DeleteMnemonicsJob {
-  toDelete: {
-    logReference: ObjectReference;
-    mnemonics: string[];
-  };
-}
-
-export interface DeleteTrajectoryStationsJob {
-  toDelete: {
-    trajectoryReference: ObjectReference;
-    trajectoryStationUids: string[];
-  };
-}
-
-export interface DeleteTubularComponentsJob {
-  toDelete: {
-    tubularReference: ObjectReference;
-    tubularComponentUids: string[];
-  };
+export interface DeleteComponentsJob {
+  toDelete: ComponentReferences;
 }
 
 export interface DeleteWellboreJob {

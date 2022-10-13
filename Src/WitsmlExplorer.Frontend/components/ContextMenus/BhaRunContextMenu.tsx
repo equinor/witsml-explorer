@@ -13,7 +13,7 @@ import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -67,7 +67,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         <MenuItem
           key={"delete"}
           onClick={() =>
-            onClickDelete(
+            onClickDeleteObjects(
               dispatchOperation,
               checkedBhaRunRows.map((r) => r.bhaRun),
               ObjectType.BhaRun,

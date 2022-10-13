@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
+import ComponentReferences from "../../models/jobs/componentReferences";
+import { DeleteComponentsJob, DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -60,7 +61,7 @@ export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, 
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickDelete = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, jobType: JobType) => {
+export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, jobType: JobType) => {
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -70,15 +71,37 @@ export const onClickDelete = async (dispatchOperation: DispatchOperation, object
     await JobService.orderJob(jobType, job);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
+  displayDeleteModal(
+    pluralizedName,
+    objectsOnWellbore.map((item) => item.name),
+    orderDeleteJob,
+    dispatchOperation
+  );
+};
+
+export const onClickDeleteComponents = async (dispatchOperation: DispatchOperation, componentReferences: ComponentReferences, jobType: JobType) => {
+  const pluralizedName = pluralizeIfMultiple(componentReferences.componentType, componentReferences.componentUids);
+  const orderDeleteJob = async () => {
+    dispatchOperation({ type: OperationType.HideModal });
+    const job: DeleteComponentsJob = {
+      toDelete: componentReferences
+    };
+    await JobService.orderJob(jobType, job);
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+  displayDeleteModal(pluralizedName, componentReferences.componentUids, orderDeleteJob, dispatchOperation);
+};
+
+const displayDeleteModal = (toDeleteTypeName: string, toDeleteNames: string[], onDelete: () => void, dispatchOperation: DispatchOperation) => {
   const confirmation = (
     <ConfirmModal
-      heading={`Delete ${pluralizedName}?`}
+      heading={`Delete ${toDeleteTypeName}?`}
       content={
         <span>
-          This will permanently delete {pluralizedName}: <strong>{objectsOnWellbore.map((item) => item.name).join(", ")}</strong>
+          This will permanently delete {toDeleteTypeName}: <strong>{toDeleteNames.join(", ")}</strong>
         </span>
       }
-      onConfirm={() => orderDeleteJob()}
+      onConfirm={onDelete}
       confirmColor={"secondary"}
       switchButtonPlaces={true}
     />

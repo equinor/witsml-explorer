@@ -1,15 +1,15 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, ListItemIcon, makeStyles, MenuItem } from "@material-ui/core";
 import { ImportExport } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ModificationType from "../../contexts/modificationType";
 import { UpdateWellboreLogAction, UpdateWellboreLogsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { createCopyLogDataJob, LogCurvesReference, parseStringToLogCurvesReference } from "../../models/jobs/copyLogDataJob";
+import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import JobService, { JobType } from "../../services/jobService";
+import { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -19,10 +19,11 @@ import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
-import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
+import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface LogObjectContextMenuProps {
   checkedLogObjectRows: LogObjectRow[];
@@ -36,32 +37,13 @@ const useContextMenuIconStyle = makeStyles({ iconStyle: { width: 16, height: 16,
 
 const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElement => {
   const { checkedLogObjectRows, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
-  const [logCurvesReference, setLogCurvesReference] = useState<LogCurvesReference>(null);
+  const logCurvesReference = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const classes = useContextMenuIconStyle();
-
-  useEffect(() => {
-    const tryToParseClipboardContent = async () => {
-      try {
-        const clipboardText = await navigator.clipboard.readText();
-        const logCurvesReference = parseStringToLogCurvesReference(clipboardText);
-        setLogCurvesReference(logCurvesReference);
-      } catch (e) {
-        //Not a valid object on the clipboard? That is fine, we won't use it.
-      }
-    };
-    tryToParseClipboardContent();
-  }, []);
 
   const onClickProperties = () => {
     const logObject = checkedLogObjectRows[0];
     const logPropertiesModalProps = { mode: PropertiesModalMode.Edit, logObject, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogPropertiesModal {...logPropertiesModalProps} /> });
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const orderCopyPasteJob = () => {
-    const copyLogDataJob = createCopyLogDataJob(logCurvesReference, checkedLogObjectRows[0]);
-    JobService.orderJob(JobType.CopyLogData, copyLogDataJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -120,13 +102,13 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
         </NestedMenuItem>,
         <MenuItem
           key={"pastelogcurves"}
-          onClick={() => onClickPaste(servers, logCurvesReference?.serverUrl, dispatchOperation, () => orderCopyPasteJob())}
+          onClick={() => pasteComponents(servers, logCurvesReference, dispatchOperation, checkedLogObjectRows[0], JobType.CopyLogData)}
           disabled={logCurvesReference === null || checkedLogObjectRows.length !== 1}
         >
           <ListItemIcon>
             <Icon name="paste" color={colors.interactive.primaryResting} />
           </ListItemIcon>
-          <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.mnemonics)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
@@ -136,7 +118,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
         </MenuItem>,
         <MenuItem
           key={"deletelogobject"}
-          onClick={() => onClickDelete(dispatchOperation, checkedLogObjectRows, ObjectType.Log, JobType.DeleteLogObjects)}
+          onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjectRows, ObjectType.Log, JobType.DeleteLogObjects)}
           disabled={checkedLogObjectRows.length === 0}
         >
           <ListItemIcon>

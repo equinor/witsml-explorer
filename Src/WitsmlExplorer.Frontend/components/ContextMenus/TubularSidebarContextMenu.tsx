@@ -4,6 +4,7 @@ import React from "react";
 import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
@@ -12,11 +13,11 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
-import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { orderCopyTubularComponentsJob, useClipboardTubularComponentReferences } from "./TubularComponentContextMenuUtils";
 import { onClickRefresh } from "./TubularContextMenuUtils";
+import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface TubularSidebarContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreTubularsAction | UpdateWellboreTubularAction) => void;
@@ -28,7 +29,7 @@ export interface TubularSidebarContextMenuProps {
 
 const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, tubular, selectedServer, servers } = props;
-  const [tubularComponentReferences] = useClipboardTubularComponentReferences();
+  const tubularComponentReferences = useClipboardComponentReferencesOfType(ComponentType.TubularComponent);
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular, dispatchOperation };
@@ -36,8 +37,6 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const serverUrl = tubularComponentReferences?.serverUrl;
-  const orderCopy = () => orderCopyTubularComponentsJob(tubular, tubularComponentReferences, dispatchOperation);
   return (
     <ContextMenu
       menuItems={[
@@ -49,11 +48,15 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy tubular</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => onClickPaste(servers, serverUrl, dispatchOperation, orderCopy)} disabled={tubularComponentReferences === null}>
+        <MenuItem
+          key={"paste"}
+          onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, tubular, JobType.CopyTubularComponents)}
+          disabled={tubularComponentReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.tubularComponentUids)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDelete(dispatchOperation, [tubular], ObjectType.Tubular, JobType.DeleteTubulars)}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, [tubular], ObjectType.Tubular, JobType.DeleteTubulars)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
         </MenuItem>,

@@ -13,7 +13,7 @@ import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDelete, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface MessageObjectContextMenuProps {
@@ -40,7 +40,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
       menuItems={[
         <MenuItem
           key={"delete"}
-          onClick={() => onClickDelete(dispatchOperation, checkedMessageObjectRows, ObjectType.Message, JobType.DeleteMessageObjects)}
+          onClick={() => onClickDeleteObjects(dispatchOperation, checkedMessageObjectRows, ObjectType.Message, JobType.DeleteMessageObjects)}
           disabled={checkedMessageObjectRows.length === 0}
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

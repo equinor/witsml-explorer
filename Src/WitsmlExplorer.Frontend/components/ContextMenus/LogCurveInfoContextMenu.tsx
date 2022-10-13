@@ -4,20 +4,19 @@ import React from "react";
 import { SelectLogCurveInfoAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { createLogCurvesReference } from "../../models/jobs/copyLogDataJob";
-import { DeleteMnemonicsJob } from "../../models/jobs/deleteJobs";
+import { ComponentType } from "../../models/componentType";
+import { createComponentReferences } from "../../models/jobs/componentReferences";
 import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
-import JobService, { JobType } from "../../services/jobService";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ConfirmModal from "../Modals/ConfirmModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickCopyCurveToServer } from "./CopyCurveToServer";
+import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogCurveInfoContextMenuProps {
@@ -39,41 +38,6 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     dispatchOperation(displayModalAction);
   };
 
-  const onClickCopy = async () => {
-    const logCurvesReference = createLogCurvesReference(checkedLogCurveInfoRows, selectedLog, selectedServer.url);
-    await navigator.clipboard.writeText(JSON.stringify(logCurvesReference));
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const onClickDeleteMnemonics = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete selected mnemonics?"}
-        content={
-          <span>
-            This will permanently delete the selected mnemonics: <strong>{checkedLogCurveInfoRows.map((item) => item.mnemonic).join(", ")}</strong>
-          </span>
-        }
-        onConfirm={onConfirmDeleteMnemonics}
-        confirmColor={"secondary"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-  };
-
-  const onConfirmDeleteMnemonics = async () => {
-    dispatchOperation({ type: OperationType.HideModal });
-    const job: DeleteMnemonicsJob = {
-      toDelete: {
-        logReference: toObjectReference(selectedLog),
-        mnemonics: checkedLogCurveInfoRows.map((item) => item.mnemonic)
-      }
-    };
-    await JobService.orderJob(JobType.DeleteMnemonics, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
   const onClickProperties = () => {
     const logCurveInfo = checkedLogCurveInfoRows[0];
     const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation, selectedLog };
@@ -81,6 +45,11 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const toDelete = createComponentReferences(
+    checkedLogCurveInfoRows.map((lc) => lc.mnemonic),
+    selectedLog,
+    ComponentType.Mnemonic
+  );
   return (
     <ContextMenu
       menuItems={[
@@ -88,7 +57,19 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
           <StyledIcon name="folderOpen" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Open</Typography>
         </MenuItem>,
-        <MenuItem key={"copy"} onClick={onClickCopy} disabled={checkedLogCurveInfoRows.length === 0}>
+        <MenuItem
+          key={"copy"}
+          onClick={() =>
+            copyComponents(
+              selectedServer,
+              checkedLogCurveInfoRows.map((lc) => lc.mnemonic),
+              selectedLog,
+              dispatchOperation,
+              ComponentType.Mnemonic
+            )
+          }
+          disabled={checkedLogCurveInfoRows.length === 0}
+        >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
@@ -114,7 +95,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
               )
           )}
         </NestedMenuItem>,
-        <MenuItem key={"delete"} onClick={onClickDeleteMnemonics} disabled={checkedLogCurveInfoRows.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteMnemonics)} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
