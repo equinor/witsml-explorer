@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
@@ -30,9 +29,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             string wellboreUid = "B-5232880";
             CopyLogDataJob job = new()
             {
-                Source = new LogCurvesReference
+                Source = new ComponentReferences
                 {
-                    LogReference = new ObjectReference
+                    Parent = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
@@ -57,9 +56,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             string wellboreUid = "B-5232880";
             CopyLogDataJob job = new()
             {
-                Source = new LogCurvesReference
+                Source = new ComponentReferences
                 {
-                    LogReference = new ObjectReference
+                    Parent = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
@@ -78,21 +77,21 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         }
 
         [Fact(Skip = "Should only be run manually")]
-        public async Task CopyLogData_TimeIndexed_SelectedMnemonics()
+        public async Task CopyLogData_TimeIndexed_SelectedComponentUids()
         {
             string wellUid = "W-5232880";
             string wellboreUid = "B-5232880";
             CopyLogDataJob job = new()
             {
-                Source = new LogCurvesReference
+                Source = new ComponentReferences
                 {
-                    LogReference = new ObjectReference
+                    Parent = new ObjectReference
                     {
                         WellUid = wellUid,
                         WellboreUid = wellboreUid,
                         Uid = "GM_Date_Time_GMTime"
                     },
-                    Mnemonics = new List<string>
+                    ComponentUids = new string[]
                     {
                         "Time",
                         "BLOCKPOS",

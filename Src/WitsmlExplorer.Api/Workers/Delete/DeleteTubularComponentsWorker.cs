@@ -27,10 +27,10 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteTubularComponentsJob job)
         {
-            string wellUid = job.ToDelete.TubularReference.WellUid;
-            string wellboreUid = job.ToDelete.TubularReference.WellboreUid;
-            string tubularUid = job.ToDelete.TubularReference.Uid;
-            ReadOnlyCollection<string> tubularcomponents = new(job.ToDelete.TubularComponentUids.ToList());
+            string wellUid = job.ToDelete.Parent.WellUid;
+            string wellboreUid = job.ToDelete.Parent.WellboreUid;
+            string tubularUid = job.ToDelete.Parent.Uid;
+            ReadOnlyCollection<string> tubularcomponents = new(job.ToDelete.ComponentUids.ToList());
             string tubularComponentsString = string.Join(", ", tubularcomponents);
 
             WitsmlTubulars query = TubularQueries.DeleteTubularComponents(wellUid, wellboreUid, tubularUid, tubularcomponents);
