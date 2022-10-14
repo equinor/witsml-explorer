@@ -34,7 +34,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             Microsoft.Extensions.Configuration.IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
-            _client = witsmlClientProvider.GetClient();
+            _client = witsmlClientProvider.GetClient().Result;
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyLogDataJob> logger = loggerFactory.CreateLogger<CopyLogDataJob>();
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
             ILogger<DeleteLogObjectsJob> logger3 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
             ILogger<DeleteUtils> logger4 = loggerFactory.CreateLogger<DeleteUtils>();
-            _deleteLogsWorker = new DeleteLogObjectsWorker(logger3, witsmlClientProvider, new DeleteUtils(logger4, witsmlClientProvider));
+            _deleteLogsWorker = new DeleteLogObjectsWorker(logger3, witsmlClientProvider, new DeleteUtils(logger4));
         }
 
         [Fact(Skip = "Should only be run manually")]

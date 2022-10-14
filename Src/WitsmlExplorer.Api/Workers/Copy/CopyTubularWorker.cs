@@ -19,15 +19,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public class CopyTubularWorker : BaseWorker<CopyTubularJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
-        private readonly IWitsmlClient _witsmlSourceClient;
+
         private readonly ICopyUtils _copyUtils;
         public JobType JobType => JobType.CopyTubular;
 
-        public CopyTubularWorker(ILogger<CopyTubularJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
+        public CopyTubularWorker(ILogger<CopyTubularJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
             _copyUtils = copyUtils;
         }
 
@@ -35,14 +32,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlTubulars tubulars, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlTubular> queries = TubularQueries.CopyWitsmlTubulars(tubulars, targetWellbore);
-            RefreshTubulars refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            return await _copyUtils.CopyObjectsOnWellbore(queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
+            RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 
         private async Task<Tuple<WitsmlTubulars, WitsmlWellbore>> FetchData(CopyTubularJob job)
         {
-            Task<WitsmlTubulars> tubularsQuery = GetTubulars(_witsmlSourceClient, job.Source);
-            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
+            Task<WitsmlTubulars> tubularsQuery = GetTubulars(GetSourceWitsmlClientOrThrow(), job.Source);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
             await Task.WhenAll(tubularsQuery, wellboreQuery);
             WitsmlTubulars tubulars = tubularsQuery.Result;
             WitsmlWellbore targetWellbore = wellboreQuery.Result;

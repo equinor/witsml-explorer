@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CreateRiskJob> logger = loggerFactory.CreateLogger<CreateRiskJob>();
@@ -67,7 +67,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,
             string wellUid = WellUid, string wellName = WellName)
         {
-
             return new CreateRiskJob
             {
                 Risk = new Risk

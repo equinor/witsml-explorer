@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Console.ShowCommands
 
         public ShowTubularCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient().Result;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ShowTubularSettings settings)

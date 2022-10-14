@@ -25,15 +25,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
     public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
-        private readonly IWitsmlClient _witsmlSourceClient;
+
         public JobType JobType => JobType.CopyLogData;
 
-        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
-        }
+        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
         {
@@ -58,7 +53,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 string errorMessage = "Failed to copy log data.";
                 Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, e.Message), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
             CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget);
@@ -77,15 +72,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             int totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
             Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
-            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"{totalRowsCopied} rows copied");
-            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{totalRowsCopied} rows copied");
+            RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
             return (workerResult, refreshAction);
         }
 
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
         {
             Logger.LogError("{message} - {Description}", message, job.Description());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to copy log data", message), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
         private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics)
@@ -98,7 +93,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 WitsmlLogs query = LogQueries.GetLogContent(job.Source.Parent.WellUid, job.Source.Parent.WellboreUid,
                     job.Source.Parent.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
-                WitsmlLogs sourceData = await _witsmlSourceClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+                WitsmlLogs sourceData = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
                 if (!sourceData.Logs.Any())
                 {
                     break;
@@ -106,7 +101,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
                 WitsmlLog sourceLogWithData = sourceData.Logs.First();
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
-                QueryResult result = await _witsmlClient.UpdateInStoreAsync(copyNewCurvesQuery);
+                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
@@ -138,7 +133,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 targetLog.LogCurveInfo.AddRange(newLogCurveInfos);
                 WitsmlLogs query = new() { Logs = new List<WitsmlLog> { targetLog } };
 
-                QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
+                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
                 if (!result.IsSuccessful)
                 {
                     string newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
@@ -213,8 +208,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(_witsmlSourceClient, job.Source.Parent, ReturnElements.HeaderOnly);
-            Task<WitsmlLog> targetLog = WorkerTools.GetLog(_witsmlClient, job.Target, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> targetLog = WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
             return sourceLog.Result == null

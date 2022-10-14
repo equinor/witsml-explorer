@@ -86,7 +86,7 @@ class CredentialsService {
   }
 
   public isAuthorizedForServer(server: Server): boolean {
-    if (msalEnabled && server?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().includes(server.role)) {
+    if (msalEnabled && server?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => server.roles.includes(x))) {
       return true;
     }
     return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;

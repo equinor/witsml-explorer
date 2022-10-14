@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
@@ -16,8 +16,8 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IWitsmlClientProvider
     {
-        IWitsmlClient GetClient();
-        IWitsmlClient GetSourceClient();
+        Task<IWitsmlClient> GetClient();
+        Task<IWitsmlClient> GetSourceClient();
     }
 
     public class WitsmlClientProvider : IWitsmlClientProvider
@@ -25,41 +25,28 @@ namespace WitsmlExplorer.Api.Services
         public const string WitsmlTargetServerHeader = "WitsmlTargetServer";
         public const string WitsmlSourceServerHeader = "WitsmlSourceServer";
 
-        private readonly ServerCredentials _targetCreds;
-        private readonly ServerCredentials _sourceCreds;
-        private readonly WitsmlClient _witsmlClient;
-        private readonly WitsmlClient _witsmlSourceClient;
+        private ServerCredentials _targetCreds;
+        private ServerCredentials _sourceCreds;
+        private WitsmlClient _witsmlClient;
+        private WitsmlClient _witsmlSourceClient;
         private readonly WitsmlClientCapabilities _clientCapabilities;
+        private readonly EssentialHeaders _httpHeaders;
+        private readonly ICredentialsService _credentialsService;
+        private readonly ILogger<WitsmlClientProvider> _logger;
+        private readonly bool _logQueries;
 
-        public WitsmlClientProvider(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
+        public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
             if (httpContextAccessor.HttpContext?.Request.Headers[WitsmlTargetServerHeader].Count == 0)
             {
                 return;
             }
-            _clientCapabilities = witsmlClientCapabilities.Value;
-            bool logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
-
-            StringValues? authorizationHeader = httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
-            StringValues? targetServerHeader = httpContextAccessor.HttpContext?.Request.Headers[WitsmlTargetServerHeader];
-
-            if (authorizationHeader?.Count > 0 || targetServerHeader?.Count > 0)
-            {
-                string bearerToken = authorizationHeader?.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
-
-                Task<ServerCredentials> targetCredsTask = credentialsService.GetCreds(WitsmlTargetServerHeader, bearerToken);
-                Task<ServerCredentials> sourceCredsTask = credentialsService.GetCreds(WitsmlSourceServerHeader, bearerToken);
-                Task.WaitAll(targetCredsTask, sourceCredsTask);
-                _targetCreds = targetCredsTask.Result;
-                _sourceCreds = sourceCredsTask.Result;
-            }
-            else
-            {
-                throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlTargetServerHeader}'", (int)HttpStatusCode.BadRequest);
-            }
-
-            _witsmlClient = !_targetCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, logQueries) : null;
-            _witsmlSourceClient = !_sourceCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, logQueries) : null;
+            _clientCapabilities = witsmlClientCapabilities?.Value ?? throw new ArgumentException("WitsmlClientCapabilities missing");
+            _httpHeaders = new EssentialHeaders(httpContextAccessor);
+            _credentialsService = credentialsService ?? throw new ArgumentException("CredentialsService missing");
+            _logger = logger ?? throw new ArgumentException("Logger missing");
+            _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
+            _logger.LogDebug("WitsmlClientProvider initialised");
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)
@@ -77,24 +64,64 @@ namespace WitsmlExplorer.Api.Services
             return (serverUrl, username, password);
         }
 
-        public IWitsmlClient GetClient()
+        public async Task<IWitsmlClient> GetClient()
         {
+            if (_witsmlClient == null)
+            {
+                if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlTargetServer != null)
+                {
+                    string bearerToken = _httpHeaders.Authorization.Split()[1];
+                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlTargetServer, bearerToken);
+                    _targetCreds = targetCredsTask;
+                }
+                else
+                {
+                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlTargetServerHeader}'", (int)HttpStatusCode.BadRequest);
+                }
+                _witsmlClient = !_targetCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries) : null;
+            }
             return _witsmlClient;
         }
 
-        public IWitsmlClient GetSourceClient()
+        public async Task<IWitsmlClient> GetSourceClient()
         {
+            if (_witsmlSourceClient == null)
+            {
+                if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlSourceServer != null)
+                {
+                    string bearerToken = _httpHeaders.Authorization.Split()[1];
+                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlSourceServer, bearerToken);
+                    _sourceCreds = sourceCredsTask;
+                }
+                else
+                {
+                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlSourceServerHeader}'", (int)HttpStatusCode.BadRequest);
+                }
+                _witsmlSourceClient = !_sourceCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries) : null;
+            }
             return _witsmlSourceClient;
         }
-
     }
+
     public class WitsmlClientProviderException : Exception
     {
         public WitsmlClientProviderException(string message, int statusCode) : base(message)
         {
             StatusCode = statusCode;
         }
-
         public int StatusCode { get; private set; }
+    }
+
+    internal class EssentialHeaders
+    {
+        public EssentialHeaders(IHttpContextAccessor httpContextAccessor)
+        {
+            Authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"];
+            WitsmlTargetServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            WitsmlSourceServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlSourceServerHeader];
+        }
+        public string Authorization { get; init; }
+        public string WitsmlTargetServer { get; init; }
+        public string WitsmlSourceServer { get; init; }
     }
 }

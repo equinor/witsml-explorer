@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public ListLogsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient().Result;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListLogsSettings settings)

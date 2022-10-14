@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             Mock<IWitsmlClient> witsmlClient = new();
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(witsmlClient.Object));
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<RenameMnemonicJob> logger = loggerFactory.CreateLogger<RenameMnemonicJob>();

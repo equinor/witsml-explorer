@@ -18,13 +18,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyLogObjectWorker : BaseWorker<ModifyLogObjectJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyLogObject;
 
-        public ModifyLogObjectWorker(ILogger<ModifyLogObjectJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public ModifyLogObjectWorker(ILogger<ModifyLogObjectJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyLogObjectJob job)
         {
@@ -42,18 +38,18 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     UidWellbore = wellboreUid,
                     Name = job.LogObject.Name
                 });
-            QueryResult result = await _witsmlClient.UpdateInStoreAsync(query);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Log modified. {jobDescription}", job.Description());
-                RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
             }
 
             const string errorMessage = "Failed to update log";
             Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            WitsmlLogs logs = await _witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlLogs logs = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlLog log = logs.Logs.FirstOrDefault();
             EntityDescription description = null;
             if (log != null)
@@ -66,7 +62,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static WitsmlLogs CreateRequest(string wellUid, string wellboreUid, string logUid, WitsmlLog logObject)

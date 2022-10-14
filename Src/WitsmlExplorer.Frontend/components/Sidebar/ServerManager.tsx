@@ -43,7 +43,7 @@ const ServerManager = (): React.ReactElement => {
 
   useEffect(() => {
     const onCurrentLoginStateChange = async () => {
-      if (msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().includes(selectedServer.role)) {
+      if (msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x))) {
         try {
           if (wells.length === 0) {
             const wells = await WellService.getWells();

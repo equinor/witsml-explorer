@@ -30,21 +30,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public BatchModifyWellWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<BatchModifyWellJob>();
+            ILogger<BatchModifyWellJob> logger = loggerFactory.CreateLogger<BatchModifyWellJob>();
             _worker = new BatchModifyWellWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task Modify_Wells_Empty_Payload_ThrowsException()
         {
-            var job = CreateJobTemplate(Array.Empty<string>());
+            BatchModifyWellJob job = CreateJobTemplate(Array.Empty<string>());
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("payload cannot be empty", exception.Message);
 
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -55,9 +55,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const string expectedWell1Name = "well1UidName";
             const string expectedWell2Name = "well2UidName";
-            var job = CreateJobTemplate(new[] { Well1Uid, Well2Uid });
+            BatchModifyWellJob job = CreateJobTemplate(new[] { Well1Uid, Well2Uid });
 
-            var updatedWells = new List<WitsmlWells>();
+            List<WitsmlWells> updatedWells = new();
             _witsmlClient.Setup(client =>
                 client.UpdateInStoreAsync(It.IsAny<WitsmlWells>())).Callback<WitsmlWells>(wells => updatedWells.Add(wells))
                 .ReturnsAsync(new QueryResult(true));
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static BatchModifyWellJob CreateJobTemplate(IEnumerable<string> wellUids)
         {
-            var wells = CreateWells(wellUids);
+            IEnumerable<Well> wells = CreateWells(wellUids);
             return new BatchModifyWellJob
             {
                 Wells = wells

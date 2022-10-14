@@ -16,7 +16,6 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Create;
 
 using Xunit;
@@ -36,20 +35,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CreateWellWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CreateWellJob>();
+            ILogger<CreateWellJob> logger = loggerFactory.CreateLogger<CreateWellJob>();
             _worker = new CreateWellWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task MissingUid_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellJob job = CreateJobTemplate(null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
             job = CreateJobTemplate("");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -60,8 +59,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task MissingName_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(name: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellJob job = CreateJobTemplate(name: null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
             job = CreateJobTemplate(name: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -72,8 +71,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task MissingTimeZone_Execute_ThrowsException()
         {
-            var job = CreateJobTemplate(timeZone: null);
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
+            CreateWellJob job = CreateJobTemplate(timeZone: null);
+            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
             job = CreateJobTemplate(timeZone: "");
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
@@ -84,9 +83,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task ValidCreateWellJob_Execute_StoresWellCorrectly()
         {
-            var job = CreateJobTemplate();
+            CreateWellJob job = CreateJobTemplate();
 
-            var createdWells = new List<WitsmlWells>();
+            List<WitsmlWells> createdWells = new();
             _witsmlClient.Setup(client =>
                 client.AddToStoreAsync(It.IsAny<WitsmlWells>()))
                 .Callback<WitsmlWells>(wells => createdWells.Add(wells))
@@ -98,7 +97,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(createdWells);
             Assert.Single(createdWells.First().Wells);
-            var createdWell = createdWells.First().Wells.First();
+            WitsmlWell createdWell = createdWells.First().Wells.First();
             Assert.Equal(WellUid, createdWell.Uid);
             Assert.Equal(WellName, createdWell.Name);
             Assert.Equal(Field, createdWell.Field);

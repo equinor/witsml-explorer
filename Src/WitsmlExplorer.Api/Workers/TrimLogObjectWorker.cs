@@ -20,18 +20,14 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class TrimLogObjectWorker : BaseWorker<TrimLogDataJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.TrimLogObject;
 
-        public TrimLogObjectWorker(ILogger<TrimLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public TrimLogObjectWorker(ILogger<TrimLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
         {
             WitsmlLogs witsmlLogQuery = LogQueries.GetWitsmlLogById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.Uid);
-            WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(witsmlLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs witsmlLogs = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
             WitsmlLog witsmlLog = witsmlLogs.Logs.First();
 
             Index currentStartIndex = Index.Start(witsmlLog);
@@ -49,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers
                     witsmlLog.IndexType,
                     deleteTo: newStartIndex);
 
-                QueryResult result = await _witsmlClient.DeleteFromStoreAsync(trimLogObjectStartQuery);
+                QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(trimLogObjectStartQuery);
                 if (result.IsSuccessful)
                 {
                     trimmedStartOfLog = true;
@@ -57,7 +53,7 @@ namespace WitsmlExplorer.Api.Workers
                 else
                 {
                     Logger.LogError("Job failed. An error occurred when trimming log object start: {Job}", job.PrintProperties());
-                    return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update start of log", result.Reason, witsmlLog.GetDescription()), null);
+                    return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to update start of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
@@ -71,7 +67,7 @@ namespace WitsmlExplorer.Api.Workers
                     witsmlLog.IndexType,
                     deleteFrom: newEndIndex);
 
-                QueryResult result = await _witsmlClient.DeleteFromStoreAsync(trimLogObjectEndQuery);
+                QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(trimLogObjectEndQuery);
                 if (result.IsSuccessful)
                 {
                     trimmedEndOfLog = true;
@@ -79,19 +75,19 @@ namespace WitsmlExplorer.Api.Workers
                 else
                 {
                     Logger.LogError("Job failed. An error occurred when trimming log object end: {Job}", job.PrintProperties());
-                    return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to update end of log", result.Reason, witsmlLog.GetDescription()), null);
+                    return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to update end of log", result.Reason, witsmlLog.GetDescription()), null);
                 }
             }
 
-            RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.Uid, RefreshType.Update);
+            RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.Uid, RefreshType.Update);
 
             return trimmedStartOfLog && trimmedEndOfLog
-                ? ((WorkerResult, RefreshAction))(new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Updated start/end of log [{job.LogObject.Uid}]"), refreshAction)
+                ? ((WorkerResult, RefreshAction))(new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Updated start/end of log [{job.LogObject.Uid}]"), refreshAction)
                 : trimmedStartOfLog
-                ? ((WorkerResult, RefreshAction))(new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Updated start of log [{job.LogObject.Uid}]"), refreshAction)
+                ? ((WorkerResult, RefreshAction))(new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Updated start of log [{job.LogObject.Uid}]"), refreshAction)
                 : trimmedEndOfLog
-                ? ((WorkerResult, RefreshAction))(new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Updated end of log [{job.LogObject.Uid}]"), refreshAction)
-                : (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"Failed to update start/end of log [{job.LogObject.Uid}]", "Invalid index range"), null);
+                ? ((WorkerResult, RefreshAction))(new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Updated end of log [{job.LogObject.Uid}]"), refreshAction)
+                : (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, $"Failed to update start/end of log [{job.LogObject.Uid}]", "Invalid index range"), null);
         }
 
         private static WitsmlLogs CreateRequest(string wellUid, string wellboreUid, string logUid, string indexType, Index deleteTo = null, Index deleteFrom = null)

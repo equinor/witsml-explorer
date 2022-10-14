@@ -18,13 +18,9 @@ namespace WitsmlExplorer.Api.Workers.Create
 {
     public class CreateWellWorker : BaseWorker<CreateWellJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateWell;
 
-        public CreateWellWorker(ILogger<CreateWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public CreateWellWorker(ILogger<CreateWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellJob job)
         {
@@ -32,20 +28,20 @@ namespace WitsmlExplorer.Api.Workers.Create
             Verify(well);
 
             WitsmlWells wellToCreate = WellQueries.CreateWitsmlWell(well);
-            QueryResult result = await _witsmlClient.AddToStoreAsync(wellToCreate);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(wellToCreate);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Well created. {jobDescription}", job.Description());
                 await WaitUntilWellHasBeenCreated(well);
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Well created ({well.Name} [{well.Uid}])");
-                RefreshWell refreshAction = new(_witsmlClient.GetServerHostname(), well.Uid, RefreshType.Add);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Well created ({well.Name} [{well.Uid}])");
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), well.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 
             EntityDescription description = new() { WellName = well.Name };
             string errorMessage = "Failed to create well.";
             Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private async Task WaitUntilWellHasBeenCreated(Well well)
@@ -60,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                     throw new InvalidOperationException($"Not able to read newly created well with name {well.Name} (id={well.Uid})");
                 }
                 Thread.Sleep(1000);
-                WitsmlWells wellResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                WitsmlWells wellResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isWellCreated = wellResult.Wells.Any();
             }
         }

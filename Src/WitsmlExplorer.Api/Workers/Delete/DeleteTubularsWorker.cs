@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Witsml;
 using Witsml.Data.Tubular;
 
 using WitsmlExplorer.Api.Jobs;
@@ -15,13 +14,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteTubularsWorker : BaseWorker<DeleteTubularsJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         private readonly IDeleteUtils _deleteUtils;
         public JobType JobType => JobType.DeleteTubular;
 
-        public DeleteTubularsWorker(ILogger<DeleteTubularsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(logger)
+        public DeleteTubularsWorker(ILogger<DeleteTubularsJob> logger, IWitsmlClientProvider witsmlClientProvider, IDeleteUtils deleteUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
             _deleteUtils = deleteUtils;
         }
 
@@ -29,8 +26,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             job.ToDelete.Verify();
             IEnumerable<WitsmlTubular> queries = TubularQueries.DeleteWitsmlTubulars(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
-            RefreshTubulars refreshAction = new(_witsmlClient.GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
-            return await _deleteUtils.DeleteObjectsOnWellbore(queries, refreshAction);
+            RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, RefreshType.Update);
+            return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
 
     }

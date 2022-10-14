@@ -9,28 +9,25 @@ using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
 {
 
     public interface IDeleteUtils
     {
-        public Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType;
+        public Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType;
     }
 
     public class DeleteUtils : IDeleteUtils
     {
-        private readonly IWitsmlClient _witsmlClient;
         private readonly ILogger<DeleteUtils> _logger;
 
-        public DeleteUtils(ILogger<DeleteUtils> logger, IWitsmlClientProvider witsmlClientProvider)
+        public DeleteUtils(ILogger<DeleteUtils> logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
             _logger = logger;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType
+        public async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType
         {
             string uidWell = queries.First().UidWell;
             string uidWellbore = queries.First().UidWellbore;
@@ -43,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             {
                 try
                 {
-                    QueryResult result = await _witsmlClient.DeleteFromStoreAsync(query.AsSingletonWitsmlList());
+                    QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsSingletonWitsmlList());
                     if (result.IsSuccessful)
                     {
                         _logger.LogInformation("Deleted {ObjectType} successfully, UidWell: {WellUid}, UidWellbore: {WellboreUid}, ObjectUid: {Uid}.",
@@ -75,8 +72,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
             string successString = successUids.Count > 0 ? $"Deleted {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
-                ? (new WorkerResult(_witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.First().GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
+                ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.First().GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }

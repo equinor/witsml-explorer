@@ -18,16 +18,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public class CopyBhaRunWorker : BaseWorker<CopyBhaRunJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
-        private readonly IWitsmlClient _witsmlSourceClient;
         private readonly ICopyUtils _copyUtils;
-
         public JobType JobType => JobType.CopyBhaRun;
 
-        public CopyBhaRunWorker(ILogger<CopyBhaRunJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
+        public CopyBhaRunWorker(ILogger<CopyBhaRunJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
             _copyUtils = copyUtils;
         }
 
@@ -35,14 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlBhaRun> queries = BhaRunQueries.CopyWitsmlBhaRuns(bhaRuns, targetWellbore);
-            RefreshBhaRuns refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            return await _copyUtils.CopyObjectsOnWellbore(queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
+            RefreshBhaRuns refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 
         private async Task<Tuple<WitsmlBhaRuns, WitsmlWellbore>> FetchData(CopyBhaRunJob job)
         {
-            Task<WitsmlBhaRuns> bhaRunsQuery = GetBhaRuns(_witsmlSourceClient, job.Source);
-            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
+            Task<WitsmlBhaRuns> bhaRunsQuery = GetBhaRuns(GetSourceWitsmlClientOrThrow(), job.Source);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
             await Task.WhenAll(bhaRunsQuery, wellboreQuery);
             WitsmlBhaRuns bhaRuns = bhaRunsQuery.Result;
             WitsmlWellbore targetWellbore = wellboreQuery.Result;

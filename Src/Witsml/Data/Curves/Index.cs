@@ -87,7 +87,6 @@ namespace Witsml.Data.Curves
 
         public override bool Equals(object obj)
         {
-
             if (ReferenceEquals(this, obj))
             {
                 return true;

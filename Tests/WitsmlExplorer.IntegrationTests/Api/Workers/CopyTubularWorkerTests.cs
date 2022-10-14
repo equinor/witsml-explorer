@@ -25,7 +25,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyTubularJob> logger = loggerFactory.CreateLogger<CopyTubularJob>();
-            CopyUtils copyUtils = new(loggerFactory.CreateLogger<CopyUtils>(), witsmlClientProvider);
+            CopyUtils copyUtils = new(loggerFactory.CreateLogger<CopyUtils>());
             _worker = new CopyTubularWorker(logger, witsmlClientProvider, copyUtils);
         }
 

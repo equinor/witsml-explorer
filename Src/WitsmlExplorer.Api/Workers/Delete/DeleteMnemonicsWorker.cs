@@ -22,13 +22,9 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
     public class DeleteMnemonicsWorker : BaseWorker<DeleteMnemonicsJob>, IWorker, IDeleteMnemonicsWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.DeleteMnemonics;
 
-        public DeleteMnemonicsWorker(ILogger<DeleteMnemonicsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public DeleteMnemonicsWorker(ILogger<DeleteMnemonicsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMnemonicsJob job)
         {
@@ -39,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             string mnemonicsString = string.Join(", ", mnemonics);
 
             WitsmlLogs query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, mnemonics);
-            QueryResult result = await _witsmlClient.DeleteFromStoreAsync(query);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted mnemonics for log object. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonics: {Mnemonics}",
@@ -47,8 +43,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellboreUid,
                         logUid,
                         mnemonicsString);
-                RefreshLogObject refreshAction = new(_witsmlClient.GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
-                WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Deleted mnemonics: {mnemonicsString} for log: {logUid}");
+                RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+                WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted mnemonics: {mnemonicsString} for log: {logUid}");
                 return (workerResult, refreshAction);
             }
 
@@ -59,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 mnemonics);
 
             query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            WitsmlLogs queryResult = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
+            WitsmlLogs queryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
 
             WitsmlLog log = queryResult.Logs.First();
             EntityDescription description = null;
@@ -73,7 +69,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 };
             }
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to delete mnemonics", result.Reason, description), null);
         }
     }
 }

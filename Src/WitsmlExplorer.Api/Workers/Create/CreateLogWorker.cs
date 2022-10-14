@@ -19,29 +19,25 @@ namespace WitsmlExplorer.Api.Workers.Create
 {
     public class CreateLogWorker : BaseWorker<CreateLogJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.CreateLogObject;
 
-        public CreateLogWorker(ILogger<CreateLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public CreateLogWorker(ILogger<CreateLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job)
         {
-            WitsmlWellbore targetWellbore = await GetWellbore(_witsmlClient, job.LogObject);
+            WitsmlWellbore targetWellbore = await GetWellbore(GetTargetWitsmlClientOrThrow(), job.LogObject);
             WitsmlLogs copyLogQuery = CreateLogQuery(job, targetWellbore);
-            QueryResult createLogResult = await _witsmlClient.AddToStoreAsync(copyLogQuery);
+            QueryResult createLogResult = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(copyLogQuery);
             if (!createLogResult.IsSuccessful)
             {
                 string errorMessage = "Failed to create log.";
                 Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, createLogResult.Reason), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, createLogResult.Reason), null);
             }
 
             Logger.LogInformation("Log object created. {jobDescription}", job.Description());
-            RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, RefreshType.Update);
-            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, $"Log object {job.LogObject.Name} created for {targetWellbore.Name}");
+            RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, RefreshType.Update);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Log object {job.LogObject.Name} created for {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
         }

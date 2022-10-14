@@ -19,15 +19,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public class CopyRigWorker : BaseWorker<CopyRigJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
-        private readonly IWitsmlClient _witsmlSourceClient;
+
         private readonly ICopyUtils _copyUtils;
         public JobType JobType => JobType.CopyRig;
 
-        public CopyRigWorker(ILogger<CopyRigJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
+        public CopyRigWorker(ILogger<CopyRigJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
             _copyUtils = copyUtils;
         }
 
@@ -35,14 +32,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlRigs rigs, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlRig> queries = RigQueries.CopyWitsmlRigs(rigs, targetWellbore);
-            RefreshRigs refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            return await _copyUtils.CopyObjectsOnWellbore(queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
+            RefreshRigs refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 
         private async Task<Tuple<WitsmlRigs, WitsmlWellbore>> FetchData(CopyRigJob job)
         {
-            Task<WitsmlRigs> rigsQuery = GetRigs(_witsmlSourceClient, job.Source);
-            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
+            Task<WitsmlRigs> rigsQuery = GetRigs(GetSourceWitsmlClientOrThrow(), job.Source);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
             await Task.WhenAll(rigsQuery, wellboreQuery);
             WitsmlRigs rigs = rigsQuery.Result;
             WitsmlWellbore targetWellbore = wellboreQuery.Result;

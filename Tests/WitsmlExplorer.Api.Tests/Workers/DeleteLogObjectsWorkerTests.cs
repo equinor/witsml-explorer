@@ -33,12 +33,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             Mock<IWitsmlClient> witsmlClient = new();
             witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<WitsmlLogs>(o => o.Logs.First().UidWell == WellUid && o.Logs.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(witsmlClient.Object));
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
 
             ILogger<DeleteUtils> logger = loggerFactory.CreateLogger<DeleteUtils>();
-            DeleteUtils deleteUtils = new(logger, witsmlClientProvider.Object);
+            DeleteUtils deleteUtils = new(logger);
 
             ILogger<DeleteLogObjectsJob> logger2 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
             _worker = new DeleteLogObjectsWorker(logger2, witsmlClientProvider.Object, deleteUtils);

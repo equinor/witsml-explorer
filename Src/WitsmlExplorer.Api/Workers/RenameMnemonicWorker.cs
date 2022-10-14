@@ -21,13 +21,9 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class RenameMnemonicWorker : BaseWorker<RenameMnemonicJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.RenameMnemonic;
 
-        public RenameMnemonicWorker(ILogger<RenameMnemonicJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public RenameMnemonicWorker(ILogger<RenameMnemonicJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(RenameMnemonicJob job)
         {
@@ -46,11 +42,11 @@ namespace WitsmlExplorer.Api.Workers
 
                 var updatedWitsmlLog = CreateNewLogWithRenamedMnemonic(job, logHeader, mnemonics, logData);
 
-                var result = await _witsmlClient.UpdateInStoreAsync(updatedWitsmlLog);
+                var result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(updatedWitsmlLog);
                 if (!result.IsSuccessful)
                 {
                     Logger.LogError("Failed to rename mnemonic. {jobDescription}", job.Description());
-                    return (new WorkerResult(_witsmlClient.GetServerHostname(), false, $"Failed to rename Mnemonic from {job.Mnemonic} to {job.NewMnemonic}", result.Reason), null);
+                    return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, $"Failed to rename Mnemonic from {job.Mnemonic} to {job.NewMnemonic}", result.Reason), null);
                 }
 
                 startIndex = Index.End(logData).AddEpsilon();
@@ -64,8 +60,8 @@ namespace WitsmlExplorer.Api.Workers
 
             Logger.LogInformation("{JobType} - Job successful. Mnemonic renamed from {Mnemonic} to {NewMnemonic}", GetType().Name, job.Mnemonic, job.NewMnemonic);
             return (
-                new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Mnemonic renamed from {job.Mnemonic} to {job.NewMnemonic}"),
-                new RefreshLogObject(_witsmlClient.GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, RefreshType.Update));
+                new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Mnemonic renamed from {job.Mnemonic} to {job.NewMnemonic}"),
+                new RefreshLogObject(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, RefreshType.Update));
         }
 
         private static WitsmlLogs CreateNewLogWithRenamedMnemonic(RenameMnemonicJob job, WitsmlLog logHeader, IEnumerable<string> mnemonics, WitsmlLog logData)
@@ -97,21 +93,21 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonics,
                 startIndex, endIndex);
 
-            var data = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+            var data = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
             return data.Logs.Any() ? data.Logs.First() : null;
         }
 
         private async Task<WorkerResult> DeleteOldMnemonic(string wellUid, string wellboreUid, string logUid, string mnemonic)
         {
             var query = LogQueries.DeleteMnemonics(wellUid, wellboreUid, logUid, new[] { mnemonic });
-            var result = await _witsmlClient.DeleteFromStoreAsync(query);
+            var result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query);
             if (result.IsSuccessful)
             {
-                return new WorkerResult(_witsmlClient.GetServerHostname(), true, $"Successfully deleted old mnemonic");
+                return new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Successfully deleted old mnemonic");
             }
 
             Logger.LogError("Failed to delete old mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}", wellUid, wellboreUid, logUid, mnemonic);
-            return new WorkerResult(_witsmlClient.GetServerHostname(), false, $"Failed to delete old mnemonic {mnemonic} while renaming mnemonic", result.Reason);
+            return new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, $"Failed to delete old mnemonic {mnemonic} while renaming mnemonic", result.Reason);
         }
 
         private static void Verify(RenameMnemonicJob job)
@@ -138,7 +134,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<WitsmlLog> GetLog(ObjectReference logReference)
         {
             var logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.Uid);
-            var logs = await _witsmlClient.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            var logs = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
             return !logs.Logs.Any() ? null : logs.Logs.First();
         }
     }

@@ -552,7 +552,6 @@ namespace Witsml.ServiceReference
 
         public enum EndpointConfiguration
         {
-
             StoreSoapPort,
         }
     }

@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
 
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<DeleteCurveValuesJob> logger = loggerFactory.CreateLogger<DeleteCurveValuesJob>();

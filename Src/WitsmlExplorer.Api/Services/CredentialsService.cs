@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_httpContextAccessor.HttpContext == null) { return ""; }
 
-            ServerCredentials credentials = GetBasicCredsFromHeader(WitsmlClientProvider.WitsmlTargetServerHeader);
+            ServerCredentials credentials = GetBasicCredentialsFromHeader(WitsmlClientProvider.WitsmlTargetServerHeader);
             await VerifyCredentials(credentials);
             return Encrypt(credentials.Password);
         }
@@ -63,16 +63,24 @@ namespace WitsmlExplorer.Api.Services
         /// 2. Token will always be JWT token and should have <code>roles</code>
         /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
         /// </summary>
-        public async Task<ServerCredentials> GetCreds(string headerName, string token)
+        public async Task<ServerCredentials> GetCredentials(string headerName, string token)
         {
-            ServerCredentials result = GetBasicCredsFromHeader(headerName);
+            ServerCredentials result = GetBasicCredentialsFromHeader(headerName);
             if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
             {
-                return await GetCredsWithToken(token, result.Host);
+                return await GetCredentialsWithToken(token, result.Host);
             }
             return result;
         }
-
+        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token)
+        {
+            ServerCredentials result = GetBasicCredentialsFromHeaderValue(headerValue);
+            if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
+            {
+                return await GetCredentialsWithToken(token, result.Host);
+            }
+            return result;
+        }
         private async Task VerifyCredentials(ServerCredentials serverCreds)
         {
             WitsmlClient witsmlClient = new(serverCreds.Host.ToString(), serverCreds.UserId, serverCreds.Password, _clientCapabilities);
@@ -86,7 +94,7 @@ namespace WitsmlExplorer.Api.Services
 
             bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
             IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host.ToString());
-            bool validRole = hostServer.Any(n => roles.Contains(n.Role));
+            bool validRole = hostServer.Any(n => n.Roles.Intersect(roles).Any());
             result &= systemCredsExists & validRole;
 
             return result;
@@ -107,7 +115,7 @@ namespace WitsmlExplorer.Api.Services
                 return null;
             }
         }
-        private async Task<ServerCredentials> GetCredsWithToken(string token, Uri server)
+        private async Task<ServerCredentials> GetCredentialsWithToken(string token, Uri server)
         {
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
@@ -120,11 +128,14 @@ namespace WitsmlExplorer.Api.Services
             return new ServerCredentials();
         }
 
-        private ServerCredentials GetBasicCredsFromHeader(string headerName)
+        private ServerCredentials GetBasicCredentialsFromHeader(string headerName)
         {
             return _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, Decrypt);
         }
-
+        private ServerCredentials GetBasicCredentialsFromHeaderValue(string headerValue)
+        {
+            return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
+        }
         public bool ValidEncryptedBasicCredentials(string headerName)
         {
             ServerCredentials creds = _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, n => n);
@@ -135,7 +146,7 @@ namespace WitsmlExplorer.Api.Services
         {
             StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
             string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
-            ServerCredentials creds = await GetCreds(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
+            ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
             if (bearerToken != null)
             {
                 JwtSecurityTokenHandler handler = new();

@@ -17,20 +17,16 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class BatchModifyWellWorker : BaseWorker<BatchModifyWellJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.BatchModifyWell;
 
-        public BatchModifyWellWorker(ILogger<BatchModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public BatchModifyWellWorker(ILogger<BatchModifyWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyWellJob job)
         {
             Verify(job.Wells);
 
             IEnumerable<WitsmlWells> wellsToUpdate = job.Wells.Select(WellQueries.UpdateWitsmlWell);
-            IEnumerable<Task<QueryResult>> updateWellTasks = wellsToUpdate.Select(wellToUpdate => _witsmlClient.UpdateInStoreAsync(wellToUpdate));
+            IEnumerable<Task<QueryResult>> updateWellTasks = wellsToUpdate.Select(wellToUpdate => GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(wellToUpdate));
 
             Task resultTask = Task.WhenAll(updateWellTasks);
             await resultTask;
@@ -39,13 +35,13 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 const string errorMessage = "Failed to batch update well properties";
                 Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
             }
 
             Logger.LogInformation("Wells modified. {jobDescription}", job.Description());
-            WorkerResult workerResult = new(_witsmlClient.GetServerHostname(), true, "Batch updated well properties");
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, "Batch updated well properties");
             string[] wells = job.Wells.Select(well => well.Uid).ToArray();
-            RefreshWells refreshAction = new(_witsmlClient.GetServerHostname(), wells, RefreshType.BatchUpdate);
+            RefreshWells refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wells, RefreshType.BatchUpdate);
             return (workerResult, refreshAction);
         }
 

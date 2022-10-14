@@ -188,10 +188,10 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
           <TextField
             id="role"
             label="Roles (space delimited)"
-            defaultValue={server.role}
+            defaultValue={server.roles?.join(" ")}
             fullWidth
             inputProps={{ maxLength: 64 }}
-            onChange={(e) => setServer({ ...server, role: e.target.value })}
+            onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
           />
         </>
       }

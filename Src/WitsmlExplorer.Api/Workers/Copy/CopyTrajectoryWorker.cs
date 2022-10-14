@@ -18,15 +18,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public class CopyTrajectoryWorker : BaseWorker<CopyTrajectoryJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
-        private readonly IWitsmlClient _witsmlSourceClient;
+
         private readonly ICopyUtils _copyUtils;
         public JobType JobType => JobType.CopyTrajectory;
 
-        public CopyTrajectoryWorker(ILogger<CopyTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(logger)
+        public CopyTrajectoryWorker(ILogger<CopyTrajectoryJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(witsmlClientProvider, logger)
         {
-            _witsmlClient = witsmlClientProvider.GetClient();
-            _witsmlSourceClient = witsmlClientProvider.GetSourceClient() ?? _witsmlClient;
             _copyUtils = copyUtils;
         }
 
@@ -34,14 +31,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlTrajectories trajectories, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlTrajectory> queries = TrajectoryQueries.CopyWitsmlTrajectories(trajectories, targetWellbore);
-            RefreshTrajectories refreshAction = new(_witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
-            return await _copyUtils.CopyObjectsOnWellbore(queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
+            RefreshTrajectories refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 
         private async Task<Tuple<WitsmlTrajectories, WitsmlWellbore>> FetchData(CopyTrajectoryJob job)
         {
-            Task<WitsmlTrajectories> trajectoriesQuery = GetTrajectories(_witsmlSourceClient, job.Source);
-            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(_witsmlClient, job.Target);
+            Task<WitsmlTrajectories> trajectoriesQuery = GetTrajectories(GetSourceWitsmlClientOrThrow(), job.Source);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
             await Task.WhenAll(trajectoriesQuery, wellboreQuery);
             WitsmlTrajectories trajectories = trajectoriesQuery.Result;
             WitsmlWellbore targetWellbore = wellboreQuery.Result;

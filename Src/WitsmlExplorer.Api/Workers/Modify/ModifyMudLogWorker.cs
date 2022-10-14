@@ -17,32 +17,28 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public class ModifyMudLogWorker : BaseWorker<ModifyMudLogJob>, IWorker
     {
-        private readonly IWitsmlClient _witsmlClient;
         public JobType JobType => JobType.ModifyMudLog;
 
-        public ModifyMudLogWorker(ILogger<ModifyMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(logger)
-        {
-            _witsmlClient = witsmlClientProvider.GetClient();
-        }
+        public ModifyMudLogWorker(ILogger<ModifyMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyMudLogJob job)
         {
             MudLog mudLog = job.MudLog;
             Verify(mudLog);
             WitsmlMudLogs mudLogToUpdate = SetupMudLogToUpdate(mudLog);
-            QueryResult result = await _witsmlClient.UpdateInStoreAsync(mudLogToUpdate);
+            QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(mudLogToUpdate);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("MudLog modified. {jobDescription}", job.Description());
-                RefreshWellbore refreshAction = new(_witsmlClient.GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, RefreshType.Update);
-                return (new WorkerResult(_witsmlClient.GetServerHostname(), true, $"MudLog updated ({mudLog.Name} [{mudLog.Uid}])"), refreshAction);
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, RefreshType.Update);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"MudLog updated ({mudLog.Name} [{mudLog.Uid}])"), refreshAction);
 
             }
             EntityDescription description = new() { WellboreName = mudLog.WellboreName };
             const string errorMessage = "Failed to update mudLog";
             Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
 
-            return (new WorkerResult(_witsmlClient.GetServerHostname(), false, errorMessage, result.Reason, description), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
         private static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)
@@ -69,7 +65,6 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             return new WitsmlMudLogs
             {
-
                 MudLogs = new WitsmlMudLog
                 {
                     Uid = mudLog.Uid,

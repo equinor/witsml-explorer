@@ -15,7 +15,6 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Create;
 
 using Xunit;
@@ -35,21 +34,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public CreateLogWorkerTests()
         {
-            var witsmlClientProvider = new Mock<IWitsmlClientProvider>();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            var loggerFactory = (ILoggerFactory)new LoggerFactory();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            var logger = loggerFactory.CreateLogger<CreateLogJob>();
+            ILogger<CreateLogJob> logger = loggerFactory.CreateLogger<CreateLogJob>();
             _worker = new CreateLogWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task CreateDepthIndexedLog_OK()
         {
-            var job = CreateJobTemplate();
+            CreateLogJob job = CreateJobTemplate();
             SetupGetWellbore();
-            var createdLogs = new List<WitsmlLogs>();
+            List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
@@ -59,14 +58,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(createdLogs);
             Assert.Single(createdLogs.First().Logs);
-            var createdLog = createdLogs.First().Logs.First();
+            WitsmlLog createdLog = createdLogs.First().Logs.First();
             Assert.Equal(LogUid, createdLog.Uid);
             Assert.Equal(LogName, createdLog.Name);
             Assert.Equal(WellboreUid, createdLog.UidWellbore);
             Assert.Equal(WellboreName, createdLog.NameWellbore);
             Assert.Equal(WellUid, createdLog.UidWell);
             Assert.Equal(WellName, createdLog.NameWell);
-            var indexLogCurve = createdLog.LogCurveInfo.First();
+            WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Depth", indexLogCurve.Mnemonic);
             Assert.Equal("m", indexLogCurve.Unit);
         }
@@ -74,9 +73,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CreateTimeIndexedLog_OK()
         {
-            var job = CreateJobTemplate("Time");
+            CreateLogJob job = CreateJobTemplate("Time");
             SetupGetWellbore();
-            var createdLogs = new List<WitsmlLogs>();
+            List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
@@ -86,14 +85,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Single(createdLogs);
             Assert.Single(createdLogs.First().Logs);
-            var createdLog = createdLogs.First().Logs.First();
+            WitsmlLog createdLog = createdLogs.First().Logs.First();
             Assert.Equal(LogUid, createdLog.Uid);
             Assert.Equal(LogName, createdLog.Name);
             Assert.Equal(WellboreUid, createdLog.UidWellbore);
             Assert.Equal(WellboreName, createdLog.NameWellbore);
             Assert.Equal(WellUid, createdLog.UidWell);
             Assert.Equal(WellName, createdLog.NameWell);
-            var indexLogCurve = createdLog.LogCurveInfo.First();
+            WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Time", indexLogCurve.Mnemonic);
             Assert.Equal("s", indexLogCurve.Unit);
         }
@@ -101,17 +100,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CreateTimeIndexedLog_UseTimeAsIndexIfUnknown()
         {
-            var job = CreateJobTemplate("strange");
+            CreateLogJob job = CreateJobTemplate("strange");
             SetupGetWellbore();
-            var createdLogs = new List<WitsmlLogs>();
+            List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
                 .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
-            var createdLog = createdLogs.First().Logs.First();
-            var indexLogCurve = createdLog.LogCurveInfo.First();
+            WitsmlLog createdLog = createdLogs.First().Logs.First();
+            WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Time", indexLogCurve.Mnemonic);
             Assert.Equal("s", indexLogCurve.Unit);
         }

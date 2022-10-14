@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public ListTubularsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient();
+            _witsmlClient = witsmlClientProvider?.GetClient().Result;
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListTubularsSettings settings)

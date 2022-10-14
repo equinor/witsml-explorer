@@ -4,7 +4,7 @@ export interface Server {
   description: string;
   url: string;
   securityscheme: string;
-  role: string;
+  roles: string[];
 }
 
 export function emptyServer(): Server {
@@ -14,6 +14,6 @@ export function emptyServer(): Server {
     description: "",
     url: "",
     securityscheme: "Basic",
-    role: ""
+    roles: []
   };
 }
