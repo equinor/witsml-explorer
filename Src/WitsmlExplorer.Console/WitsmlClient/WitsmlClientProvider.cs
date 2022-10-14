@@ -63,11 +63,6 @@ namespace WitsmlExplorer.Console.WitsmlClient
                 : ((string, string, string))(serverUrl, username, password);
         }
 
-        public IWitsmlClient GetClient()
-        {
-            return _witsmlClient;
-        }
-
         private static void WriteMissingConfigurationMessage(string exceptionMessage)
         {
             AnsiConsole.MarkupLine($"\nError: {exceptionMessage}\n".WithColor(Color.Red));
