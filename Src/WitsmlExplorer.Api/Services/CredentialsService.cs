@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
@@ -146,6 +147,7 @@ namespace WitsmlExplorer.Api.Services
         {
             StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
             string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
+            bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
             ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
             if (bearerToken != null)
             {
