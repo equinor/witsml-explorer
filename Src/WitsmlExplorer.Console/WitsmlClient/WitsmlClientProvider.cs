@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Console.WitsmlClient
 
         Task<IWitsmlClient> IWitsmlClientProvider.GetClient()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_witsmlClient);
         }
     }
 }
