@@ -188,7 +188,6 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
-
         [Fact]
         public void GetCreds_TokenInValidRolesHeaderValidURL_ReturnEmpty()
         {
@@ -212,15 +211,8 @@ namespace WitsmlExplorer.Api.Tests.Services
         public void GetUsernames_ValidTokenValidRole_ReturnUPNFromToken()
         {
             string upn = "tokenuser@arpa.net";
-            SecurityTokenDescriptor tokenDescriptor = new()
-            {
-                Expires = DateTime.UtcNow.AddSeconds(60),
-                Claims = new Dictionary<string, object>() {
-                    { "roles", new List<string>() { "validrole" } },
-                    { "upn", upn }
-                }
-            };
-            string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> {
                 {  WitsmlClientProvider.WitsmlTargetServerHeader, "http://some.url.com" },
                 {  "Authorization", $"Bearer {token}" }
