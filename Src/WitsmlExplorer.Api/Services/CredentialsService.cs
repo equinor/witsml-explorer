@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
@@ -145,8 +144,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<(string username, string witsmlUsername)> GetUsernames()
         {
-            StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : string.Empty;
+            string authorizationHeader = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+            string bearerToken = string.IsNullOrEmpty(authorizationHeader) ? string.Empty : authorizationHeader.Split()[1];
             bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
             ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
             if (!string.IsNullOrEmpty(bearerToken))
