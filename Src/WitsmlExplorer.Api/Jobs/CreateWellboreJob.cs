@@ -10,5 +10,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Create Wellbore - WellUid: {Wellbore.WellUid}; WellboreUid: {Wellbore.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return null;
+        }
+
+        public override string GetWellboreName()
+        {
+            return Wellbore.Name;
+        }
+
+        public override string GetWellName()
+        {
+            return Wellbore.WellName;
+        }
     }
 }

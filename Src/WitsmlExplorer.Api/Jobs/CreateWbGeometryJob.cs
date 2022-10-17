@@ -10,5 +10,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Create WbGeometry - WellUid: {WbGeometry.WellUid}; WellboreUid: {WbGeometry.WellboreUid}; WbGeometryUid: {WbGeometry.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return WbGeometry.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return WbGeometry.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return WbGeometry.WellName;
+        }
     }
 }

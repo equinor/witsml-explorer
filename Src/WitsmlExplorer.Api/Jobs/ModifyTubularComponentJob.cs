@@ -12,5 +12,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"ToModify - {TubularReference.Description()} TubularComponentUid: {TubularComponent.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return TubularReference.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return TubularReference.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return TubularReference.WellName;
+        }
     }
 }

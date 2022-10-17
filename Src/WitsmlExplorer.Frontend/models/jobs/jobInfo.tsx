@@ -6,6 +6,9 @@ export default interface JobInfo {
   witsmlUsername: string;
   sourceServer: string;
   targetServer: string;
+  wellName: string;
+  wellboreName: string;
+  objectName: string;
   startTime: string;
   endTime: string;
   killTime: string;

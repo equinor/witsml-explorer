@@ -15,5 +15,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Import Log Data - To: {TargetLog.Description()} Mnemonics: {string.Join(", ", Mnemonics)}";
         }
+
+        public override string GetObjectName()
+        {
+            return TargetLog.GetObjectName();
+        }
+
+        public override string GetWellboreName()
+        {
+            return TargetLog.GetWellboreName();
+        }
+
+        public override string GetWellName()
+        {
+            return TargetLog.GetWellName();
+        }
     }
 }

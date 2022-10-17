@@ -24,6 +24,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Name = "",
+                    NameWellbore = "",
+                    NameWell = "",
                     MdMin = new WitsmlMeasuredDepthCoord(),
                     MdMax = new WitsmlMeasuredDepthCoord(),
                     AziRef = "",
