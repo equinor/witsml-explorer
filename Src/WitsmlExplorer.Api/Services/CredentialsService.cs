@@ -149,7 +149,7 @@ namespace WitsmlExplorer.Api.Services
             string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : string.Empty;
             bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
             ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
-            if (string.IsNullOrEmpty(bearerToken))
+            if (!string.IsNullOrEmpty(bearerToken))
             {
                 JwtSecurityTokenHandler handler = new();
                 JwtSecurityToken jwt = handler.ReadJwtToken(bearerToken);
