@@ -14,6 +14,8 @@ namespace WitsmlExplorer.Api.Jobs
 
         public override string GetObjectName()
         {
+            // Return Source.GetObjectName() when Target.GetObjectName() is null to
+            // use the name of the object to be copied when the target is a wellbore
             return Target.GetObjectName() ?? Source.GetObjectName();
         }
 
