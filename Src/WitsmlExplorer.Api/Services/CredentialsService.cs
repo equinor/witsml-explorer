@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<ServerCredentials> GetCredentials(string headerName, string token)
         {
             ServerCredentials result = GetBasicCredentialsFromHeader(headerName);
-            if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
+            if (result.IsCredsNullOrEmpty() && !string.IsNullOrEmpty(token) && result.Host != null)
             {
                 return await GetCredentialsWithToken(token, result.Host);
             }
@@ -146,10 +146,10 @@ namespace WitsmlExplorer.Api.Services
         public async Task<(string username, string witsmlUsername)> GetUsernames()
         {
             StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
+            string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : string.Empty;
             bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
             ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
-            if (bearerToken != null)
+            if (string.IsNullOrEmpty(bearerToken))
             {
                 JwtSecurityTokenHandler handler = new();
                 JwtSecurityToken jwt = handler.ReadJwtToken(bearerToken);
