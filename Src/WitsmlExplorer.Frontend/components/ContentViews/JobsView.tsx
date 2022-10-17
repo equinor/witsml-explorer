@@ -77,25 +77,26 @@ export const JobsView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "startTime", label: "Start time", type: ContentType.String },
     { property: "jobType", label: "Job Type", type: ContentType.String },
+    { property: "wellName", label: "Well Name", type: ContentType.String },
+    { property: "wellboreName", label: "Wellbore Name", type: ContentType.String },
+    { property: "objectName", label: "Object Name(s)", type: ContentType.String },
     { property: "status", label: "Status", type: ContentType.String },
-    { property: "description", label: "Description", type: ContentType.String },
     { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
     { property: "endTime", label: "Finish time", type: ContentType.String },
-    { property: "killTime", label: "Expiration time", type: ContentType.String },
-    { property: "id", label: "Job ID", type: ContentType.String },
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
   const jobInfoRows = jobInfos.map((jobInfo) => {
     return {
       ...jobInfo,
-      description: clipLongString(jobInfo.description, 25),
       failedReason: clipLongString(jobInfo.failedReason, 20),
+      wellName: clipLongString(jobInfo.wellName, 20),
+      wellboreName: clipLongString(jobInfo.wellboreName, 20),
+      objectName: clipLongString(jobInfo.objectName, 30),
       startTime: jobInfo.startTime ? new Date(jobInfo.startTime).toLocaleString() : "-",
       endTime: jobInfo.endTime ? new Date(jobInfo.endTime).toLocaleString() : "-",
-      killTime: jobInfo.killTime ? new Date(jobInfo.killTime).toLocaleString() : "-",
       targetServer: serverUrlToName(servers, jobInfo.targetServer),
       sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
       jobInfo: jobInfo

@@ -11,5 +11,19 @@ namespace WitsmlExplorer.Api.Jobs
             return $"ToDelete - {ToDelete.Description()}";
         }
 
+        public override string GetObjectName()
+        {
+            return ToDelete.GetObjectName();
+        }
+
+        public override string GetWellboreName()
+        {
+            return ToDelete.GetWellboreName();
+        }
+
+        public override string GetWellName()
+        {
+            return ToDelete.GetWellName();
+        }
     }
 }

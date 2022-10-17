@@ -17,5 +17,6 @@ export interface DeleteWellboreJob {
 export interface DeleteWellJob {
   toDelete: {
     wellUid: string;
+    wellName: string;
   };
 }

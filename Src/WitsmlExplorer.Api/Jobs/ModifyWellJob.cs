@@ -10,5 +10,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"ToModify - WellUid: {Well.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return null;
+        }
+
+        public override string GetWellboreName()
+        {
+            return null;
+        }
+
+        public override string GetWellName()
+        {
+            return Well.Name;
+        }
     }
 }

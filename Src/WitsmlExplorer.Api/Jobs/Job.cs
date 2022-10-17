@@ -5,6 +5,9 @@ namespace WitsmlExplorer.Api.Jobs
         private JobInfo _jobInfo;
 
         public abstract string Description();
+        public abstract string GetWellName();
+        public abstract string GetWellboreName();
+        public abstract string GetObjectName();
 
         public JobInfo JobInfo
         {
@@ -14,6 +17,9 @@ namespace WitsmlExplorer.Api.Jobs
                 _jobInfo = value;
                 _jobInfo.Description = Description();
                 _jobInfo.JobType = GetType().Name;
+                _jobInfo.ObjectName = GetObjectName();
+                _jobInfo.WellboreName = GetWellboreName();
+                _jobInfo.WellName = GetWellName();
             }
         }
 

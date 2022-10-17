@@ -14,6 +14,21 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Delete curve values - {LogReference.Description()} Mnemonics: {string.Join(", ", Mnemonics)};";
         }
+
+        public override string GetObjectName()
+        {
+            return LogReference.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return LogReference.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return LogReference.WellName;
+        }
     }
 
     public record IndexRange

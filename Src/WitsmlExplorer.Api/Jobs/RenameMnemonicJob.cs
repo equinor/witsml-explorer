@@ -12,5 +12,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Rename mnemonic - in Log: {LogReference.Description()} from mnemonic: {Mnemonic}; to mnemonic {NewMnemonic};";
         }
+
+        public override string GetObjectName()
+        {
+            return LogReference.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return LogReference.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return LogReference.WellName;
+        }
     }
 }

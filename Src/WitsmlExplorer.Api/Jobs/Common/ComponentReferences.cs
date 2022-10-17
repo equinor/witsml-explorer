@@ -15,5 +15,20 @@ namespace WitsmlExplorer.Api.Jobs.Common
             desc.Append($"ComponentUids: {string.Join(", ", ComponentUids)}; ");
             return desc.ToString();
         }
+
+        public string GetObjectName()
+        {
+            return Parent.Name;
+        }
+
+        public string GetWellboreName()
+        {
+            return Parent.WellboreName;
+        }
+
+        public string GetWellName()
+        {
+            return Parent.WellName;
+        }
     }
 }
