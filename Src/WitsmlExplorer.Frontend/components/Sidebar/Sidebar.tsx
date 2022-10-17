@@ -12,26 +12,27 @@ import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { filteredWells, expandedTreeNodes, currentProperties, wells, selectedServer } = navigationState;
+  const { filteredWells, expandedTreeNodes, currentProperties } = navigationState;
 
   return (
     <>
       <ServerManager />
       <FilterPanel />
       <SidebarTreeView>
-        {filteredWells && filteredWells.length > 0 && (
-          <TreeView
-            defaultCollapseIcon={<Icon name="chevronDown" color={"disabled"} />}
-            defaultExpandIcon={<Icon name="chevronRight" color={"disabled"} />}
-            defaultEndIcon={<div style={{ width: 24 }} />}
-            expanded={expandedTreeNodes}
-          >
-            {filteredWells.map((well: Well) => (
-              <WellItem key={well.uid} well={well} />
-            ))}
-          </TreeView>
-        )}
-        {wells?.length == 0 && selectedServer != null && <WellProgress />}
+        <WellProgress>
+          {filteredWells && filteredWells.length > 0 && (
+            <TreeView
+              defaultCollapseIcon={<Icon name="chevronDown" color={"disabled"} />}
+              defaultExpandIcon={<Icon name="chevronRight" color={"disabled"} />}
+              defaultEndIcon={<div style={{ width: 24 }} />}
+              expanded={expandedTreeNodes}
+            >
+              {filteredWells.map((well: Well) => (
+                <WellItem key={well.uid} well={well} />
+              ))}
+            </TreeView>
+          )}
+        </WellProgress>
       </SidebarTreeView>
       <PropertiesPanel properties={currentProperties} />
     </>

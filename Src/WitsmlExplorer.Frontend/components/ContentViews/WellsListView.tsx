@@ -13,7 +13,7 @@ export interface WellRow extends ContentTableRow, Well {}
 
 export const WellsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, filteredWells, wells, selectedServer } = navigationState;
+  const { servers, filteredWells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
@@ -42,10 +42,10 @@ export const WellsListView = (): React.ReactElement => {
     });
   };
 
-  return wells?.length == 0 && selectedServer != null ? (
-    <WellProgress />
-  ) : (
-    <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+  return (
+    <WellProgress>
+      <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+    </WellProgress>
   );
 };
 
