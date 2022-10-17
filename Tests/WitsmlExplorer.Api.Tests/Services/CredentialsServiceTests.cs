@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Url = new Uri("http://some.url.com"),
                     Description = "Testserver for SystemCreds testing",
                     SecurityScheme = "OAuth2",
-                    Roles = new List<string>() {"user","developer"}
+                    Roles = new List<string>() {"validrole","developer"}
                 }
             });
 
@@ -78,14 +78,12 @@ namespace WitsmlExplorer.Api.Tests.Services
                 logger.Object
             );
 
-            //create baseline token
+            //create baseline token, valid role
             RandomNumberGenerator.Create().GetBytes(_secret);
             SecurityTokenDescriptor tokenDescriptor = new()
             {
                 Expires = DateTime.UtcNow.AddSeconds(60),
-                Claims = new Dictionary<string, object>() {
-                    { "roles", new List<string>() {"tester", "user" } }
-                },
+                Claims = new Dictionary<string, object>() { { "roles", new List<string>() { "validrole" } } },
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(_secret),
                     SecurityAlgorithms.HmacSha256Signature,
@@ -198,7 +196,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             {
                 Expires = DateTime.UtcNow.AddSeconds(60),
                 Claims = new Dictionary<string, object>() {
-                    { "roles", new List<string>() {"public", "nonuser" } }
+                    { "roles", new List<string>() { "invalidrole" } }
                 }
             };
             string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
@@ -209,5 +207,28 @@ namespace WitsmlExplorer.Api.Tests.Services
             ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
+
+        [Fact]
+        public void GetUsernames_ValidTokenValidRole_ReturnUsernameinToken()
+        {
+            string upn = "tokenuser@arpa.net";
+            SecurityTokenDescriptor tokenDescriptor = new()
+            {
+                Expires = DateTime.UtcNow.AddSeconds(60),
+                Claims = new Dictionary<string, object>() {
+                    { "roles", new List<string>() { "validrole" } },
+                    { "upn", upn }
+                }
+            };
+            string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
+            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> {
+                {  WitsmlClientProvider.WitsmlTargetServerHeader, "http://some.url.com" },
+                {  "Authorization", $"Bearer {token}" }
+            });
+            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
+            (string tokenUser, _) = _credentialsService.GetUsernames().Result;
+            Assert.Equal(upn, tokenUser);
+        }
+
     }
 }
