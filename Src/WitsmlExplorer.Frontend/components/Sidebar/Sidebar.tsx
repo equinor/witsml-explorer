@@ -12,7 +12,7 @@ import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { filteredWells, expandedTreeNodes, currentProperties, wells } = navigationState;
+  const { filteredWells, expandedTreeNodes, currentProperties, wells, selectedServer } = navigationState;
 
   return (
     <>
@@ -31,7 +31,7 @@ const Sidebar = (): React.ReactElement => {
             ))}
           </TreeView>
         )}
-        {wells?.length == 0 && <WellProgress />}
+        {wells?.length == 0 && selectedServer != null && <WellProgress />}
       </SidebarTreeView>
       <PropertiesPanel properties={currentProperties} />
     </>
