@@ -6,6 +6,7 @@ import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
+import WellProgress from "../WellProgress";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface WellRow extends ContentTableRow, Well {}
@@ -41,7 +42,11 @@ export const WellsListView = (): React.ReactElement => {
     });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    <WellProgress>
+      <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+    </WellProgress>
+  );
 };
 
 export default WellsListView;
