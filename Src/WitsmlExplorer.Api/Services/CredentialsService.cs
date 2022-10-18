@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 
 using Witsml;
 using Witsml.Data;
@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<ServerCredentials> GetCredentials(string headerName, string token)
         {
             ServerCredentials result = GetBasicCredentialsFromHeader(headerName);
-            if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
+            if (result.IsCredsNullOrEmpty() && !string.IsNullOrEmpty(token) && result.Host != null)
             {
                 return await GetCredentialsWithToken(token, result.Host);
             }
@@ -144,10 +144,11 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<(string username, string witsmlUsername)> GetUsernames()
         {
-            StringValues authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            string bearerToken = authorizationHeader.Count > 0 ? authorizationHeader.ToString().Split()[1] : null;
+            string authorizationHeader = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+            string bearerToken = string.IsNullOrEmpty(authorizationHeader) ? string.Empty : authorizationHeader.Split()[1];
+            bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
             ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
-            if (bearerToken != null)
+            if (!string.IsNullOrEmpty(bearerToken))
             {
                 JwtSecurityTokenHandler handler = new();
                 JwtSecurityToken jwt = handler.ReadJwtToken(bearerToken);
