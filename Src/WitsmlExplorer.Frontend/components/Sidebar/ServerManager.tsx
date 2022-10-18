@@ -42,13 +42,18 @@ const ServerManager = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
+    const abortController = new AbortController();
     const onCurrentLoginStateChange = async () => {
-      if (msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x))) {
+      const fetchWells = async () => {
+        if (wells.length === 0) {
+          const wells = await WellService.getWells(abortController.signal);
+          dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
+        }
+      };
+      const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
+      if (useOauth) {
         try {
-          if (wells.length === 0) {
-            const wells = await WellService.getWells();
-            dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
-          }
+          fetchWells();
         } catch (error) {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer.url),
@@ -57,14 +62,9 @@ const ServerManager = (): React.ReactElement => {
           });
         }
       } else if (currentWitsmlLoginState.server) {
-        const isLoggedInToSelectedServer = CredentialsService.isAuthorizedForServer(selectedServer);
-        if (isLoggedInToSelectedServer) {
+        if (CredentialsService.isAuthorizedForServer(selectedServer)) {
           try {
-            const hasWells = wells.length > 0;
-            if (!hasWells) {
-              const wells = await WellService.getWells();
-              dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
-            }
+            fetchWells();
             dispatchOperation({ type: OperationType.HideModal });
           } catch (error) {
             showCredentialsModal(currentWitsmlLoginState.server, error.message);
@@ -75,6 +75,9 @@ const ServerManager = (): React.ReactElement => {
       }
     };
     onCurrentLoginStateChange();
+    return () => {
+      abortController.abort();
+    };
   }, [msalEnabled, currentWitsmlLoginState]);
 
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
