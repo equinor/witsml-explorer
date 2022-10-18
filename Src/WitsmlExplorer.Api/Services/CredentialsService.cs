@@ -128,9 +128,9 @@ namespace WitsmlExplorer.Api.Services
             return GetBasicCredentialsFromHeaderValue(headerValue) != null;
         }
 
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromHeaderValues(string authorization, string witsmlTargetServer)
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromHeaderValues(string authorization, string witsmlServerHeaderValue)
         {
-            ServerCredentials witsmlCredentials = GetBasicCredentialsFromHeaderValue(witsmlTargetServer);
+            ServerCredentials witsmlCredentials = GetBasicCredentialsFromHeaderValue(witsmlServerHeaderValue);
             return (GetTokenUserPrincipalName(authorization), witsmlCredentials.UserId);
         }
     }

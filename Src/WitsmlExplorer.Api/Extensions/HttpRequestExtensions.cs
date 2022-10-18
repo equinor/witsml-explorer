@@ -15,15 +15,15 @@ namespace WitsmlExplorer.Api.Extensions
 
         public static ServerCredentials ParseServerHttpHeader(string headerValue, Func<string, string> delDecrypt)
         {
-            string[] headerSplit = headerValue.Split('@');
-            if (headerSplit.Length == 1 && !string.IsNullOrEmpty(headerSplit[0]))
+            string[] headerSplit = headerValue?.Split('@');
+            if (headerSplit?.Length == 1 && !string.IsNullOrEmpty(headerSplit[0]))
             {
                 return new ServerCredentials()
                 {
                     Host = new Uri(headerSplit[0])
                 };
             }
-            else if (headerSplit.Length == 2)
+            else if (headerSplit?.Length == 2)
             {
                 BasicCredentials creds = new(headerSplit[0]);
                 return new ServerCredentials()
