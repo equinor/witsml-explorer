@@ -12,6 +12,7 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
@@ -73,7 +74,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             string[] logUids = job.Source.ObjectUids;
             Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(logUids.Select(
-                logUid => WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid, ReturnElements.All)));
+                logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)));
             Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);
@@ -81,6 +82,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WitsmlLog[] sourceLogs = await getLogFromSourceQueries;
             WitsmlWellbore targetWellbore = await getTargetWellboreQuery;
             return Tuple.Create(sourceLogs, targetWellbore);
+        }
+
+        private static async Task<WitsmlLog> GetLogHeaderOnly(IWitsmlClient client, string logUid, string wellboreUid, string wellUid)
+        {
+            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
+            WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            return !result.Logs.Any() ? null : result.Logs.First();
         }
 
         private static WitsmlLogs CreateCopyLogQuery(WitsmlLog log, WitsmlWellbore targetWellbore)
@@ -91,7 +99,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
             log.NameWellbore = targetWellbore.Name;
             log.CommonData.ItemState = string.IsNullOrEmpty(log.CommonData.ItemState) ? null : log.CommonData.ItemState;
             log.CommonData.SourceName = string.IsNullOrEmpty(log.CommonData.SourceName) ? null : log.CommonData.SourceName;
-            log.LogData.Data = new List<WitsmlData>();
             WitsmlLogs copyLogQuery = new() { Logs = new List<WitsmlLog> { log } };
             return copyLogQuery;
         }
@@ -117,7 +124,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Source = new ComponentReferences
                 {
                     Parent = sourceLogReference,
-                    ComponentUids = targetLog.LogData.MnemonicList.Split(",")
+                    ComponentUids = targetLog.LogCurveInfo.Select((lci) => lci.Mnemonic).ToArray()
                 },
                 Target = targetLogReference
             };

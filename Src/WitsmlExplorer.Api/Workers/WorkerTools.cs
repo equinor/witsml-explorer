@@ -26,12 +26,5 @@ namespace WitsmlExplorer.Api.Workers
             return !result.Logs.Any() ? null : result.Logs.First();
         }
 
-        public static async Task<WitsmlLog> GetLog(IWitsmlClient client, string logUid, string wellboreUid, string wellUid, ReturnElements optionsInReturnElements)
-        {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
-            return !result.Logs.Any() ? null : result.Logs.First();
-        }
-
     }
 }
