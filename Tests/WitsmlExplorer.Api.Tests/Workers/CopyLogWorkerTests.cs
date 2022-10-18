@@ -70,7 +70,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
             WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);
-            Assert.Empty(logInQuery.LogData.Data);
             Assert.Null(logInQuery.EndIndex);
             Assert.Null(logInQuery.StartIndex);
             Assert.Equal(TimeStart, logInQuery.StartDateTimeIndex);
@@ -91,7 +90,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
             Assert.True(result.Item1.IsSuccess);
-            Assert.Empty(logInQuery.LogData.Data);
             Assert.Equal(DepthEnd, double.Parse(logInQuery.EndIndex.Value));
             Assert.Equal(DepthStart, double.Parse(logInQuery.StartIndex.Value));
             Assert.Null(logInQuery.StartDateTimeIndex);
@@ -104,12 +102,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     _witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     _witsmlClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.All, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
                 default:
