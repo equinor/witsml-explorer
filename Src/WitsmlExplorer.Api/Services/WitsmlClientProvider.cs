@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlTargetServer != null)
                 {
-                    string bearerToken = _httpHeaders.Authorization.Split()[1];
+                    string bearerToken = _httpHeaders?.Authorization?.Split()[1];
                     ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlTargetServer, bearerToken);
                     _targetCreds = targetCredsTask;
                 }
@@ -89,7 +89,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlSourceServer != null)
                 {
-                    string bearerToken = _httpHeaders.Authorization.Split()[1];
+                    string bearerToken = _httpHeaders?.Authorization?.Split()[1];
                     ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlSourceServer, bearerToken);
                     _sourceCreds = sourceCredsTask;
                 }

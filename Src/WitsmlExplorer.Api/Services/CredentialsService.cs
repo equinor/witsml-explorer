@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Services
             return Encrypt(credentials.Password);
         }
 
-        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token)
+        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null)
         {
             ServerCredentials result = GetBasicCredentialsFromHeaderValue(headerValue);
             if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
@@ -111,7 +111,7 @@ namespace WitsmlExplorer.Api.Services
         }
         private static string GetTokenUserPrincipalName(string token)
         {
-            if (!token.StartsWith("Bearer")) throw new ArgumentException("Bearer token missing");
+            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer")) return null;
 
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token.Split()[1]);
