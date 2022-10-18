@@ -70,7 +70,9 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     const job: DeleteWellboreJob = {
       toDelete: {
         wellUid: wellbore.wellUid,
-        wellboreUid: wellbore.uid
+        wellboreUid: wellbore.uid,
+        wellName: wellbore.wellName,
+        wellboreName: wellbore.name
       }
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);

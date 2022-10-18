@@ -27,6 +27,12 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string TargetServer { get; set; }
 
+        public string WellName { get; set; }
+
+        public string WellboreName { get; set; }
+
+        public string ObjectName { get; set; }
+
         public DateTime StartTime { get; init; }
 
         public DateTime? EndTime { get; private set; }

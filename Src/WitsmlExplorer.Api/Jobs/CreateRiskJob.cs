@@ -10,5 +10,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Create Risk - WellUid: {Risk.WellUid}; WellboreUid: {Risk.WellboreUid}; RiskUid: {Risk.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return Risk.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return Risk.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return Risk.WellName;
+        }
     }
 }

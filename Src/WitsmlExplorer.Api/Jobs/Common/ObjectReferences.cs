@@ -8,6 +8,9 @@ namespace WitsmlExplorer.Api.Jobs.Common
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }
         public string[] ObjectUids { get; set; }
+        public string WellName { get; set; }
+        public string WellboreName { get; set; }
+        public string[] Names { get; set; }
 
         public string Description()
         {
@@ -34,6 +37,21 @@ namespace WitsmlExplorer.Api.Jobs.Common
             {
                 throw new ArgumentException("WellboreUid is required");
             }
+        }
+
+        public string GetObjectName()
+        {
+            return string.Join(", ", Names);
+        }
+
+        public string GetWellboreName()
+        {
+            return WellboreName;
+        }
+
+        public string GetWellName()
+        {
+            return WellName;
         }
     }
 }

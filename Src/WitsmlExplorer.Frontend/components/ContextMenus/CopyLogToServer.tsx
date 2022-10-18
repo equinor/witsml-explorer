@@ -8,6 +8,7 @@ import LogObject from "../../models/logObject";
 import { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
@@ -39,10 +40,10 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
       }
     }
     if (existingLogs.length > 0) {
-      const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, dispatchOperation);
+      const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, wellbore, dispatchOperation);
       displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
     } else {
-      const copyJob = createCopyJob(sourceServer, logsToCopy);
+      const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
       CredentialsService.setSourceServer(sourceServer);
       JobService.orderJobAtServer(JobType.CopyLog, copyJob, [targetCredentials, sourceCredentials]);
     }
@@ -57,11 +58,13 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
   }
 };
 
-const createCopyJob = (sourceServer: Server, logs: LogObject[]): CopyObjectsJob => {
+const createCopyJob = (sourceServer: Server, logs: LogObject[], targetWellbore: Wellbore): CopyObjectsJob => {
   const logReferences: ObjectReferences = toObjectReferences(logs, ObjectType.Log, sourceServer.url);
   const targetWellboreReference: WellboreReference = {
-    wellUid: logs[0].wellUid,
-    wellboreUid: logs[0].wellboreUid
+    wellUid: targetWellbore.wellUid,
+    wellboreUid: targetWellbore.uid,
+    wellName: targetWellbore.wellName,
+    wellboreName: targetWellbore.name
   };
   const copyJob: CopyObjectsJob = { source: logReferences, target: targetWellboreReference };
   return copyJob;
@@ -72,13 +75,14 @@ const replaceLogObjects = async (
   credentials: BasicServerCredentials[],
   logsToCopy: LogObject[],
   logsToDelete: LogObject[],
+  targetWellbore: Wellbore,
   dispatchOperation: DispatchOperation
 ) => {
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteObjectsJob = {
     toDelete: toObjectReferences(logsToDelete, ObjectType.Log)
   };
-  const copyJob: CopyObjectsJob = createCopyJob(sourceServer, logsToCopy);
+  const copyJob: CopyObjectsJob = createCopyJob(sourceServer, logsToCopy, targetWellbore);
   const replaceJob: ReplaceLogObjectsJob = { deleteJob, copyJob };
   await JobService.orderJobAtServer(JobType.ReplaceLogObjects, replaceJob, credentials);
   dispatchOperation({ type: OperationType.HideContextMenu });

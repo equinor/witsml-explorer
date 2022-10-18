@@ -12,5 +12,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"ToModify - {TrajectoryReference.Description()} TrajectoryStationUid: {TrajectoryStation.Uid};";
         }
+
+        public override string GetObjectName()
+        {
+            return TrajectoryReference.Name;
+        }
+
+        public override string GetWellboreName()
+        {
+            return TrajectoryReference.WellboreName;
+        }
+
+        public override string GetWellName()
+        {
+            return TrajectoryReference.WellName;
+        }
     }
 }

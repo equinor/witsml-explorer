@@ -14,5 +14,20 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Trim log data - {LogObject.Description()} StartIndex: {StartIndex}; EndIndex: {EndIndex};";
         }
+
+        public override string GetObjectName()
+        {
+            return LogObject.GetObjectName();
+        }
+
+        public override string GetWellboreName()
+        {
+            return LogObject.GetWellboreName();
+        }
+
+        public override string GetWellName()
+        {
+            return LogObject.GetWellName();
+        }
     }
 }

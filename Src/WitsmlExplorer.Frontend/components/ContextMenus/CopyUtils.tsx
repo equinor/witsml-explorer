@@ -31,7 +31,9 @@ export const pasteObjectOnWellbore = async (servers: Server[], objectReferences:
   const orderCopyJob = () => {
     const wellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
-      wellboreUid: wellbore.uid
+      wellboreUid: wellbore.uid,
+      wellName: wellbore.wellName,
+      wellboreName: wellbore.name
     };
     const copyJob: CopyObjectsJob = { source: objectReferences, target: wellboreReference };
     JobService.orderJob(jobType, copyJob);
