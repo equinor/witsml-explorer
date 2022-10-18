@@ -18,9 +18,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(string))]
         public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IJobService jobService, ICredentialsService credentialsService)
         {
+
+            string bearerAuth = httpRequest.Headers["Authorization"];
+            string basicAuth = httpRequest.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
             ServerCredentials witsmlTarget = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlTargetServerHeader, n => "");
             ServerCredentials witsmlSource = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlSourceServerHeader, n => "");
-            (string username, string witsmlUsername) = await credentialsService.GetUsernames();
+
+            (string username, string witsmlUsername) = credentialsService.GetUsernamesFromHeaderValues(bearerAuth, basicAuth);
             JobInfo jobInfo = new()
             {
                 Username = username,
@@ -32,23 +36,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
-        public static async Task<IResult> GetJobInfosByUser(string polledUser, IJobCache jobCache, IConfiguration configuration, ICredentialsService credentialsService)
+        public static IResult GetJobInfosByAuthorizedUser(IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
         {
+            string bearerAuth = httpRequest.Headers["Authorization"];
+            string basicAuth = httpRequest.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            (string userPrincipalName, _) = credentialsService.GetUsernamesFromHeaderValues(bearerAuth, basicAuth);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            if (!useOAuth2)
-            {
-                if (!credentialsService.ValidEncryptedBasicCredentials(WitsmlClientProvider.WitsmlTargetServerHeader))
-                {
-                    return Results.Unauthorized();
-                }
-            }
-
-            (string username, _) = await credentialsService.GetUsernames();
-            if (polledUser != username)
+            if (!useOAuth2 && !credentialsService.ValidEncryptedBasicCredentials(basicAuth))
             {
                 return Results.Unauthorized();
             }
-            return Results.Ok(jobCache.GetJobInfosByUser(polledUser));
+            return Results.Ok(jobCache.GetJobInfosByUser(userPrincipalName));
         }
 
     }

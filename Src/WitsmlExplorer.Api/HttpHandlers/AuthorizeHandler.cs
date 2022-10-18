@@ -9,9 +9,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
 {
     public static class AuthorizeHandler
     {
-        public static async Task<IResult> Authorize([FromServices] ICredentialsService credentialsService)
+        public static async Task<IResult> Authorize([FromServices] ICredentialsService credentialsService, HttpRequest httpRequest)
         {
-            return Results.Ok(await credentialsService.ProtectBasicAuthorization());
+            string basicAuth = httpRequest.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            return Results.Ok(await credentialsService.ProtectBasicAuthorization(basicAuth));
         }
     }
 }
