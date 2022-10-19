@@ -53,7 +53,7 @@ const ServerManager = (): React.ReactElement => {
       const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
       if (useOauth) {
         try {
-          fetchWells();
+          await fetchWells();
         } catch (error) {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer.url),
@@ -64,7 +64,7 @@ const ServerManager = (): React.ReactElement => {
       } else if (currentWitsmlLoginState.server) {
         if (CredentialsService.isAuthorizedForServer(selectedServer)) {
           try {
-            fetchWells();
+            await fetchWells();
             dispatchOperation({ type: OperationType.HideModal });
           } catch (error) {
             showCredentialsModal(currentWitsmlLoginState.server, error.message);
