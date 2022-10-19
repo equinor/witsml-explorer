@@ -26,8 +26,6 @@ namespace WitsmlExplorer.Api.Tests.Services
     public class CredentialsServiceTests
     {
         private readonly CredentialsService _credentialsService;
-        private readonly byte[] _secret = new byte[64];
-        private readonly JwtSecurityToken _token;
         private readonly Mock<HttpRequest> _httpRequestMock;
 
         public CredentialsServiceTests()
@@ -65,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Url = new Uri("http://some.url.com"),
                     Description = "Testserver for SystemCreds testing",
                     SecurityScheme = "OAuth2",
-                    Roles = new List<string>() {"user","developer"}
+                    Roles = new List<string>() {"validrole","developer"}
                 }
             });
 
@@ -77,52 +75,30 @@ namespace WitsmlExplorer.Api.Tests.Services
                 witsmlServerRepository.Object,
                 logger.Object
             );
-
-            //create baseline token
-            RandomNumberGenerator.Create().GetBytes(_secret);
-            SecurityTokenDescriptor tokenDescriptor = new()
-            {
-                Expires = DateTime.UtcNow.AddSeconds(60),
-                Claims = new Dictionary<string, object>() {
-                    { "roles", new List<string>() {"tester", "user" } }
-                },
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(_secret),
-                    SecurityAlgorithms.HmacSha256Signature,
-                    SecurityAlgorithms.Sha512Digest
-                )
-            };
-            _token = new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor);
         }
 
         [Fact]
         public void GetCreds_BasicCreds_ReturnBasicCreds()
         {
             string token = null;
-            ServerCredentials sc = new() { UserId = "username", Password = "password", Host = new Uri("http://some.url.com") };
-            string headerName = WitsmlClientProvider.WitsmlTargetServerHeader;
-            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
-            string headerValue = b64Creds + "@" + sc.Host.ToString();
+            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
+            IHeaderDictionary headers = CreateHeaders(basicHeader, token);
 
-            //Mock request header content
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, headerValue } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
-            Assert.True(creds.ToString() == sc.ToString());
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
+            Assert.True(creds.UserId == "basicuser" && creds.Password == "basicpassword");
         }
 
         [Fact]
         public void GetCreds_BasicNoCreds_ReturnEmpty()
         {
             string token = null;
-            string headerName = WitsmlClientProvider.WitsmlTargetServerHeader;
+            IHeaderDictionary headers = CreateHeaders("http://some.url.com", token);
 
-            //Mock request header content
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, "http://some.url.com" } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
@@ -130,13 +106,11 @@ namespace WitsmlExplorer.Api.Tests.Services
         public void GetCreds_BasicNoHeader_ReturnEmpty()
         {
             string token = null;
-            string headerName = WitsmlClientProvider.WitsmlTargetServerHeader;
-
-            //Mock request header content
             IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { });
+
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
         [Fact]
@@ -147,21 +121,18 @@ namespace WitsmlExplorer.Api.Tests.Services
             // THEN 
             //  Basic auth should always be preferred
 
-            string headerName = WitsmlClientProvider.WitsmlTargetServerHeader;
-            string token = new JwtSecurityTokenHandler().WriteToken(_token);
-            ServerCredentials sc = new() { UserId = "username", Password = "password", Host = new Uri("http://some.url.com") };
-            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
-            string headerValue = b64Creds + "@" + sc.Host.ToString();
+            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders(basicHeader, token);
 
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { headerName, headerValue } });
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(headerName, token).Result;
-            Assert.True(creds.UserId == "username" && creds.Password == "password");
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
+            Assert.True(creds.UserId == "basicuser" && creds.Password == "basicpassword");
         }
 
         [Fact]
-        public void GetCreds_TokenValidRolesHeaderValidURL_ReturnSystemCreds()
+        public void GetCreds_ValidTokenValidRolesValidURLBasicHeader_ReturnSystemCreds()
         {
             // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.com" and role: ["user"]
             // 2. CONFIG:   There exist system credentials in keyvault for server with URL: "http://some.url.com"
@@ -169,45 +140,102 @@ namespace WitsmlExplorer.Api.Tests.Services
             // 4. REQUEST:  HttpRequest provide WitsmlTargetServer Header with URL: "http://some.url.com"
             // 5. RESPONSE: System creds should be returned because server-roles and user-roles overlap
 
-            string token = new JwtSecurityTokenHandler().WriteToken(_token);
-            string header = WitsmlClientProvider.WitsmlTargetServerHeader;
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.url.com" } });
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders("http://some.url.com", token);
+
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
             Assert.True(creds.UserId == "systemuser" && creds.Password == "systempassword");
         }
 
         [Fact]
-        public void GetCreds_TokenValidRolesHeaderInValidURL_ReturnEmpty()
+        public void GetCreds_ValidTokenValidRolesInvalidURLBasicHeader_ReturnEmpty()
         {
-            string token = new JwtSecurityTokenHandler().WriteToken(_token);
-            string header = WitsmlClientProvider.WitsmlTargetServerHeader;
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.invalidurl.com" } });
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders("http://some.invalidurl.com", token);
+
             _httpRequestMock.Setup(h => h.Headers).Returns(headers);
 
-            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
+        [Fact]
+        public void GetCreds_InvalidTokenRolesURLOnlyBasicHeader_ReturnEmpty()
+        {
+            string token = CreateJwtToken(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders("http://some.url.com", token);
+
+            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
+
+            ServerCredentials creds = _credentialsService.GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, token).Result;
+            Assert.True(creds.IsCredsNullOrEmpty());
+        }
 
         [Fact]
-        public void GetCreds_TokenInValidRolesHeaderValidURL_ReturnEmpty()
+        public void GetUsernames_ValidTokenValidRole_ReturnUPNFromToken()
+        {
+            string upn = "tokenuser@arpa.net";
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders("http://some.url.com", token);
+
+            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
+
+            (string tokenUser, _) = _credentialsService.GetUsernames().Result;
+            Assert.Equal(upn, tokenUser);
+        }
+
+        [Fact]
+        public void GetUsernames_ValidTokenUserValidBasicUserValidRole_ReturnUsernames()
+        {
+            string upn = "tokenuser@arpa.net";
+            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
+            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            IHeaderDictionary headers = CreateHeaders(basicHeader, token);
+
+            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
+
+            (string tokenUser, string basicUser) = _credentialsService.GetUsernames().Result;
+            Assert.Equal((upn, "basicuser"), (tokenUser, basicUser));
+        }
+
+        private static IHeaderDictionary CreateHeaders(string basicHeader, string bearerToken)
+        {
+            return new HeaderDictionary(new Dictionary<string, StringValues> {
+                { WitsmlClientProvider.WitsmlTargetServerHeader, basicHeader },
+                { "Authorization", $"Bearer {bearerToken}" }
+            });
+        }
+
+
+        private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
+        {
+            ServerCredentials sc = new() { UserId = username, Password = dummypassword, Host = new Uri(host) };
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
+            return b64Creds + "@" + sc.Host.ToString();
+        }
+        private static string CreateJwtToken(string[] appRoles, bool signed, string upn)
         {
             SecurityTokenDescriptor tokenDescriptor = new()
             {
                 Expires = DateTime.UtcNow.AddSeconds(60),
                 Claims = new Dictionary<string, object>() {
-                    { "roles", new List<string>() {"public", "nonuser" } }
+                    { "roles", new List<string>(appRoles) },
+                    { "upn", upn }
                 }
             };
-            string token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
-            string header = WitsmlClientProvider.WitsmlTargetServerHeader;
-            IHeaderDictionary headers = new HeaderDictionary(new Dictionary<string, StringValues> { { header, "http://some.url.com" } });
-            _httpRequestMock.Setup(h => h.Headers).Returns(headers);
-
-            ServerCredentials creds = _credentialsService.GetCredentials(header, token).Result;
-            Assert.True(creds.IsCredsNullOrEmpty());
+            if (signed)
+            {
+                byte[] secret = new byte[64];
+                RandomNumberGenerator.Create().GetBytes(secret);
+                tokenDescriptor.SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(secret),
+                    SecurityAlgorithms.HmacSha256Signature,
+                    SecurityAlgorithms.Sha512Digest
+                );
+            }
+            return new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
         }
     }
 }
