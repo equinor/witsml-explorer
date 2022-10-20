@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -19,8 +20,8 @@ namespace WitsmlExplorer.Api.Workers
 
         public BackgroundWorkerService(IJobQueue jobQueue, IHubContext<NotificationsHub> hubContext)
         {
-            this._jobQueue = jobQueue;
-            this._hubContext = hubContext;
+            _jobQueue = jobQueue;
+            _hubContext = hubContext;
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -29,11 +30,13 @@ namespace WitsmlExplorer.Api.Workers
             return base.StopAsync(cancellationToken);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var backgroundWorkers = new List<Task>();
-            for (var i = 0; i < NumberOfThreadsToUse; i++)
-                backgroundWorkers.Add(BackgroundProcessing(cancellationToken));
+            List<Task> backgroundWorkers = new();
+            for (int i = 0; i < NumberOfThreadsToUse; i++)
+            {
+                backgroundWorkers.Add(BackgroundProcessing(stoppingToken));
+            }
 
             await Task.WhenAny(backgroundWorkers);
         }
@@ -44,21 +47,32 @@ namespace WitsmlExplorer.Api.Workers
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var job = _jobQueue.Dequeue();
+                Task<(WorkerResult, RefreshAction)> job = _jobQueue.Dequeue();
                 if (job == null)
                 {
                     await Task.Delay(500, cancellationToken);
                     continue;
                 }
+                if (!job.IsCompleted)
+                {
+                    _jobQueue.Enqueue(job);
+                    await Task.Delay(100, cancellationToken);
+                    continue;
+                }
 
-                var (result, refreshAction) = await job;
+                (WorkerResult result, RefreshAction refreshAction) = await job;
 
-                if (_hubContext == null) continue;
+                if (_hubContext == null)
+                {
+                    continue;
+                }
 
                 await _hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
 
                 if (refreshAction != null)
+                {
                     await _hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction }, cancellationToken);
+                }
             }
         }
     }
