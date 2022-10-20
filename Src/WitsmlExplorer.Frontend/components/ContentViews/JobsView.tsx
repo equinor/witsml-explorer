@@ -23,18 +23,16 @@ export const JobsView = (): React.ReactElement => {
   const username = msalEnabled ? getUsername() : credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
 
   const fetchJobs = () => {
-    if (username) {
-      const abortController = new AbortController();
-      const getJobInfos = async () => {
-        setJobInfos(await JobService.getJobInfos(username, abortController.signal));
-      };
+    const abortController = new AbortController();
+    const getJobInfos = async () => {
+      setJobInfos(await JobService.getJobInfos(abortController.signal));
+    };
 
-      getJobInfos();
+    getJobInfos();
 
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
+    return function cleanup() {
+      abortController.abort();
+    };
   };
 
   useEffect(() => {

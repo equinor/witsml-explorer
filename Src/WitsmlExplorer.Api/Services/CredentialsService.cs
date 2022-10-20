@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -25,7 +26,6 @@ namespace WitsmlExplorer.Api.Services
     public class CredentialsService : ICredentialsService
     {
         private readonly ITimeLimitedDataProtector _dataProtector;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<CredentialsService> _logger;
         private readonly WitsmlClientCapabilities _clientCapabilities;
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
@@ -34,14 +34,12 @@ namespace WitsmlExplorer.Api.Services
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
-            IHttpContextAccessor httpContextAccessor,
             IOptions<WitsmlClientCapabilities> clientCapabilities,
             IWitsmlSystemCredentials witsmlServerCredentials,
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             ILogger<CredentialsService> logger)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentException("Missing IHttpContextAccessor");
             _logger = logger ?? throw new ArgumentException("Missing ILogger");
             _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
             _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
@@ -49,35 +47,19 @@ namespace WitsmlExplorer.Api.Services
             _allServers = _witsmlServerRepository.GetDocumentsAsync();
         }
 
-        public async Task<string> ProtectBasicAuthorization()
+        public async Task<string> ProtectBasicAuthorization(string headerValue)
         {
-            if (_httpContextAccessor.HttpContext == null) { return ""; }
-
-            ServerCredentials credentials = GetBasicCredentialsFromHeader(WitsmlClientProvider.WitsmlTargetServerHeader);
+            ServerCredentials credentials = GetBasicCredentialsFromHeaderValue(headerValue);
             await VerifyCredentials(credentials);
             return Encrypt(credentials.Password);
         }
 
-        /// <summary>
-        /// 1. Server input has been parsed from HTTP Headers "WitsmlTargetServer" or "WitsmlSourceServer" and might contain b64 encoded Basic auth
-        /// 2. Token will always be JWT token and should have <code>roles</code>
-        /// 3. Prefer attached basic credentials over system credentials fetched from keyvault.
-        /// </summary>
-        public async Task<ServerCredentials> GetCredentials(string headerName, string token)
-        {
-            ServerCredentials result = GetBasicCredentialsFromHeader(headerName);
-            if (result.IsCredsNullOrEmpty() && !string.IsNullOrEmpty(token) && result.Host != null)
-            {
-                return await GetCredentialsWithToken(token, result.Host);
-            }
-            return result;
-        }
-        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token)
+        public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null)
         {
             ServerCredentials result = GetBasicCredentialsFromHeaderValue(headerValue);
             if (result.IsCredsNullOrEmpty() && token != null && result.Host != null)
             {
-                return await GetCredentialsWithToken(token, result.Host);
+                return await GetSystemCredentialsWithToken(token, result.Host);
             }
             return result;
         }
@@ -115,7 +97,7 @@ namespace WitsmlExplorer.Api.Services
                 return null;
             }
         }
-        private async Task<ServerCredentials> GetCredentialsWithToken(string token, Uri server)
+        private async Task<ServerCredentials> GetSystemCredentialsWithToken(string token, Uri server)
         {
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
@@ -127,36 +109,29 @@ namespace WitsmlExplorer.Api.Services
             }
             return new ServerCredentials();
         }
-
-        private ServerCredentials GetBasicCredentialsFromHeader(string headerName)
+        private static string GetTokenUserPrincipalName(string token)
         {
-            return _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, Decrypt);
+            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer")) return null;
+
+            JwtSecurityTokenHandler handler = new();
+            JwtSecurityToken jwt = handler.ReadJwtToken(token.Split()[1]);
+            return jwt.Claims.Where(n => n.Type == "upn").Select(n => n.Value).FirstOrDefault();
         }
+
         private ServerCredentials GetBasicCredentialsFromHeaderValue(string headerValue)
         {
             return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
         }
-        public bool ValidEncryptedBasicCredentials(string headerName)
+
+        public bool ValidEncryptedBasicCredentials(string headerValue)
         {
-            ServerCredentials creds = _httpContextAccessor.HttpContext.Request.GetWitsmlServerHttpHeader(headerName, n => n);
-            return Decrypt(creds.Password) != null;
+            return GetBasicCredentialsFromHeaderValue(headerValue) != null;
         }
 
-        public async Task<(string username, string witsmlUsername)> GetUsernames()
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromHeaderValues(string authorization, string witsmlServerHeaderValue)
         {
-            string authorizationHeader = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-            string bearerToken = string.IsNullOrEmpty(authorizationHeader) ? string.Empty : authorizationHeader.Split()[1];
-            bearerToken = Regex.Match(bearerToken, "[a-zA-Z0-9-_.]+").Value;
-            ServerCredentials creds = await GetCredentials(WitsmlClientProvider.WitsmlTargetServerHeader, bearerToken);
-            if (!string.IsNullOrEmpty(bearerToken))
-            {
-                JwtSecurityTokenHandler handler = new();
-                JwtSecurityToken jwt = handler.ReadJwtToken(bearerToken);
-                string upn = jwt.Claims.Where(n => n.Type == "upn").Select(n => n.Value).First();
-                return (upn, creds.UserId);
-            }
-            return (creds.UserId, creds.UserId);
+            ServerCredentials witsmlCredentials = GetBasicCredentialsFromHeaderValue(witsmlServerHeaderValue);
+            return (GetTokenUserPrincipalName(authorization), witsmlCredentials.UserId);
         }
     }
-
 }
