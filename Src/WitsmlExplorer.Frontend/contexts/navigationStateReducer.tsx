@@ -517,7 +517,6 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedTrajectory,
-    currentSelected: state.selectedTrajectoryGroup,
     wells: freshWells
   };
 };

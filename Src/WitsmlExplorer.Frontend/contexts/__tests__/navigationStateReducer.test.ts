@@ -309,7 +309,6 @@ it("Should update trajectories for selected wellbore", () => {
     selectedWellbore: updatedWellbore,
     selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
     selectedTrajectory,
-    currentSelected: TRAJECTORY_GROUP_1,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
   });
