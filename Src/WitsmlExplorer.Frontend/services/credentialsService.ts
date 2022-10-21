@@ -106,6 +106,26 @@ class CredentialsService {
     }
   }
 
+  public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<string> {
+    const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      CredentialsService.throwError(response.status, message);
+    }
+  }
+
+  public async verifyCredentialsAndSetCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
+    const response = await ApiClient.get(`/api/credentials/authorizeandsetcookie`, abortSignal, [credentials]);
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      CredentialsService.throwError(response.status, message);
+    }
+  }
+
   private static throwError(statusCode: number, message: string) {
     switch (statusCode) {
       case 401:

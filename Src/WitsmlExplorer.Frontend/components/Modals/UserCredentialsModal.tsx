@@ -1,5 +1,6 @@
+import { Checkbox } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
@@ -26,7 +27,28 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const shouldFocusPasswordInput = !!username;
+
+  const onOpenModal = async () => {
+    setIsLoading(true);
+    try {
+      const cookie = await CredentialsService.verifyCredentialsWithCookie({ server });
+      const creds = cookie.split(":");
+      props.onConnectionVerified({
+        server,
+        username: creds[0],
+        password: creds[1]
+      });
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    //TODO do this conditionally if user has previously set keep logged in to true for current server
+    onOpenModal();
+  }, []);
 
   useEffect(() => {
     if (serverCredentials) {
@@ -51,7 +73,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const encryptedPassword = await CredentialsService.verifyCredentials(credentials);
+      const encryptedPassword = keepLoggedIn ? await CredentialsService.verifyCredentialsAndSetCookie(credentials) : await CredentialsService.verifyCredentials(credentials);
       CredentialsService.saveCredentials({ ...credentials, password: encryptedPassword });
     } catch (error) {
       setErrorMessage(error.message);
@@ -105,6 +127,12 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             autoComplete="current-password"
             inputProps={{ minLength: 1, maxLength: 7936 }}
             onChange={(e) => setPassword(e.target.value)}
+          />
+          <Checkbox
+            label={`Keep me logged in to ${server.name} for 24 hours`}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setKeepLoggedIn(e.target.checked);
+            }}
           />
         </>
       }
