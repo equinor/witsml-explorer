@@ -37,7 +37,8 @@ export class ApiClient {
   public static async get(pathName: string, abortSignal: AbortSignal | null = null, currentCredentials = CredentialsService.getCredentials()): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: await ApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClient.getCommonHeaders(currentCredentials),
+      credentials: "include"
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
