@@ -33,7 +33,7 @@
     "@azure/msal-browser": "^2.28.3",
     "@azure/msal-react": "^1.4.7",
     "@date-io/moment": "^1.3.13",
-    "@equinor/eds-core-react": "^0.21.0",
+    "@equinor/eds-core-react": "^0.22.0",
     "@equinor/eds-tokens": "^0.7.1",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
