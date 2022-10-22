@@ -34,8 +34,9 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     setIsLoading(true);
     try {
       const cookie = await CredentialsService.verifyCredentialsWithCookie({ server });
-      const creds = cookie.split(":");
-      props.onConnectionVerified({
+      const decoded = Buffer.from(cookie, "base64").toString();
+      const creds = decoded.split(":");
+      CredentialsService.saveCredentials({
         server,
         username: creds[0],
         password: creds[1]

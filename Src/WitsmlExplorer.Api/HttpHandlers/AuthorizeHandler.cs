@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -26,13 +27,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             CookieOptions cookieOptions = new()
             {
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 MaxAge = TimeSpan.FromDays(1),
                 Secure = false,
                 HttpOnly = true
             };
-            //TODO maybe encrypt user id as well
-            httpContextAccessor.HttpContext.Response.Cookies.Append(Uri.EscapeDataString(creds.Host.ToString()), $"{creds.UserId}:{encryptedPassword}", cookieOptions);
+            string cookieValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{creds.UserId}:{encryptedPassword}"));
+            httpContextAccessor.HttpContext.Response.Cookies.Append(Uri.EscapeDataString(creds.Host.ToString()), cookieValue, cookieOptions);
             return Results.Ok(encryptedPassword);
         }
 
@@ -44,7 +45,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 return Results.Unauthorized();
             }
-            if (credentialsService.ValidEncryptedBasicCredentials($"{cookie}@{targetServer.Host}"))
+            if (!credentialsService.ValidEncryptedBasicCredentials($"{cookie}@{targetServer.Host}"))
             {
                 return Results.Unauthorized();
             }
