@@ -2,7 +2,7 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install
 COPY Src/WitsmlExplorer.Frontend  ./
 
 # MSAL settings from optional ARG to ENV with default values

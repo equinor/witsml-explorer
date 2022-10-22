@@ -1,29 +1,28 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as base
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
+WORKDIR /build
 COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
 COPY Tests/Witsml.Tests/Witsml.Tests.csproj Tests/Witsml.Tests/Witsml.Tests.csproj
 COPY Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj Tests/WitsmlExplorer.Api.Tests/WitsmlExplorer.Api.Tests.csproj
 
-RUN dotnet restore Src/Witsml && \
-    dotnet restore Src/WitsmlExplorer.Api
-
-FROM base as backend
-WORKDIR /app
+# Restoring Api.Tests will restore Api + Witsml
+RUN dotnet restore Tests/WitsmlExplorer.Api.Tests
 COPY Src/ Src/
 COPY Tests/Witsml.Tests Tests/Witsml.Tests
 COPY Tests/WitsmlExplorer.Api.Tests Tests/WitsmlExplorer.Api.Tests
-WORKDIR /app/Tests/
-RUN dotnet test -c Release Witsml.Tests && \
-    dotnet test -c Release WitsmlExplorer.Api.Tests
-
-FROM backend as publish
-WORKDIR /app/Src/WitsmlExplorer.Api
+WORKDIR /build/Tests/
+RUN dotnet test -c Release Witsml.Tests --no-restore && \
+    dotnet test -c Release WitsmlExplorer.Api.Tests --no-restore
+WORKDIR /build/Src/WitsmlExplorer.Api
 RUN dotnet publish -c Release -o out --no-restore --no-build --no-dependencies
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as base
+ARG EXPOSE_PORT=5000
 WORKDIR /app
-COPY --from=publish /app/Src/WitsmlExplorer.Api/out .
-ENV ASPNETCORE_URLS=http://+:80
-EXPOSE 80
+COPY --from=build /build/Src/WitsmlExplorer.Api/out .
+RUN adduser --system --no-create-home --disabled-password --uid 1001 witsmlexp
+USER 1001
+ENV ASPNETCORE_URLS=http://+:${EXPOSE_PORT}
+EXPOSE ${EXPOSE_PORT}
+
 ENTRYPOINT ["dotnet", "WitsmlExplorer.Api.dll"]
