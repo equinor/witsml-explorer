@@ -80,9 +80,14 @@ class CredentialsService {
 
   public clearPasswords() {
     this.credentials = this.credentials.map((creds) => {
+      if (this.hasValidCookieForServer(creds.server.url)) {
+        return creds;
+      }
       return { server: creds.server };
     });
-    this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
+    if (!this.hasValidCookieForServer(this.server.url)) {
+      this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
+    }
   }
 
   public isAuthorizedForServer(server: Server): boolean {
@@ -96,6 +101,19 @@ class CredentialsService {
     return this.credentials.find((c) => c.server.url === serverUrl)?.password !== undefined;
   }
 
+  public hasValidCookieForServer(serverUrl: string): boolean {
+    //use local storage to check whether the cookie is valid, because the cookie is httpOnly
+    const cookieTimestamp = localStorage.getItem(serverUrl);
+    if (!cookieTimestamp) {
+      return false;
+    }
+    return new Date().getTime() < new Date(cookieTimestamp).getTime();
+  }
+
+  public keepLoggedInToServer(serverUrl: string): boolean {
+    return !!localStorage.getItem(serverUrl);
+  }
+
   public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
     const response = await ApiClient.get(`/api/credentials/authorize`, abortSignal, [credentials]);
     if (response.ok) {
@@ -107,7 +125,7 @@ class CredentialsService {
   }
 
   public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<string> {
-    const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal);
+    const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal, [credentials], true);
     if (response.ok) {
       return response.json();
     } else {
@@ -117,9 +135,22 @@ class CredentialsService {
   }
 
   public async verifyCredentialsAndSetCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/authorizeandsetcookie`, abortSignal, [credentials]);
+    const response = await ApiClient.get(`/api/credentials/authorizeandsetcookie`, abortSignal, [credentials], true);
     if (response.ok) {
+      const expirationTime = new Date();
+      expirationTime.setDate(expirationTime.getDate() + 1);
+      localStorage.setItem(credentials.server.url, expirationTime.toJSON());
       return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      CredentialsService.throwError(response.status, message);
+    }
+  }
+
+  public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
+    const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal, undefined, true);
+    if (response.ok) {
+      return;
     } else {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);

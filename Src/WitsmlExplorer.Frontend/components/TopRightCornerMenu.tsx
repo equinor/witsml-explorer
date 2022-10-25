@@ -6,6 +6,7 @@ import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
+import CredentialsService from "../services/credentialsService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import JobsButton from "./JobsButton";
@@ -52,7 +53,11 @@ const TopRightCornerMenu = (): React.ReactElement => {
         <StyledMenuItem
           key={"signout"}
           onClick={() => {
-            signOut();
+            const logout = async () => {
+              await CredentialsService.deauthorize();
+              signOut();
+            };
+            logout();
             dispatchOperation({ type: OperationType.HideContextMenu });
           }}
         >

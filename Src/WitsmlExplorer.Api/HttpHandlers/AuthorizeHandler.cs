@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,9 +28,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             CookieOptions cookieOptions = new()
             {
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Strict,
                 MaxAge = TimeSpan.FromDays(1),
-                Secure = false,
+                Secure = true,
                 HttpOnly = true
             };
             string cookieValue = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{creds.UserId}:{encryptedPassword}"));
@@ -50,6 +51,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 return Results.Unauthorized();
             }
             return Results.Ok(cookie);
+        }
+
+        public static IResult Deauthorize(IHttpContextAccessor httpContextAccessor)
+        {
+            foreach (KeyValuePair<string, string> cookie in httpContextAccessor.HttpContext.Request.Cookies)
+            {
+                httpContextAccessor.HttpContext.Response.Cookies.Delete(cookie.Key);
+            }
+            return Results.Ok();
         }
     }
 }

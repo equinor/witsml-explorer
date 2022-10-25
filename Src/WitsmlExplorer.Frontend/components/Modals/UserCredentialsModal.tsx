@@ -27,12 +27,12 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+  const [keepLoggedIn, setKeepLoggedIn] = useState(CredentialsService.keepLoggedInToServer(server.url));
   const shouldFocusPasswordInput = !!username;
 
-  const onOpenModal = async () => {
-    setIsLoading(true);
+  const authorizeWithCookie = async () => {
     try {
+      setIsLoading(true);
       const cookie = await CredentialsService.verifyCredentialsWithCookie({ server });
       const decoded = Buffer.from(cookie, "base64").toString();
       const creds = decoded.split(":");
@@ -47,8 +47,9 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   };
 
   useEffect(() => {
-    //TODO do this conditionally if user has previously set keep logged in to true for current server
-    onOpenModal();
+    if (CredentialsService.hasValidCookieForServer(server.url)) {
+      authorizeWithCookie();
+    }
   }, []);
 
   useEffect(() => {
@@ -76,6 +77,9 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     try {
       const encryptedPassword = keepLoggedIn ? await CredentialsService.verifyCredentialsAndSetCookie(credentials) : await CredentialsService.verifyCredentials(credentials);
       CredentialsService.saveCredentials({ ...credentials, password: encryptedPassword });
+      if (!keepLoggedIn) {
+        localStorage.removeItem(credentials.server.url);
+      }
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);
@@ -131,6 +135,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
           />
           <Checkbox
             label={`Keep me logged in to ${server.name} for 24 hours`}
+            defaultChecked={keepLoggedIn}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setKeepLoggedIn(e.target.checked);
             }}
