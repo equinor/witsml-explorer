@@ -2,7 +2,6 @@ import { useIsAuthenticated } from "@azure/msal-react";
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
-// import { useIdleTimer } from "react-idle-timer";
 import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
@@ -22,7 +21,6 @@ import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 const NEW_SERVER_ID = "1";
-// const IDLE_TIMEOUT = 1000 * 60 * 10;
 
 const ServerManager = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -141,15 +139,6 @@ const ServerManager = (): React.ReactElement => {
       }
     }
   };
-
-  // const onIdle = () => {
-  //   if (!msalEnabled && selectedServer?.id) {
-  //     CredentialsService.clearPasswords();
-  //     showCredentialsModal(selectedServer);
-  //   }
-  // };
-
-  // useIdleTimer({ onIdle: onIdle, timeout: IDLE_TIMEOUT });
 
   return (
     <>

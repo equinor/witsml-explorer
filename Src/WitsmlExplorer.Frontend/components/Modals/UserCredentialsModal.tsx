@@ -30,22 +30,6 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(false);
   const shouldFocusPasswordInput = !!username;
 
-  // const authorizeWithCookie = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const creds = await CredentialsService.verifyCredentialsWithCookie({ server });
-  //     CredentialsService.saveCredentials(creds);
-  //   } catch (error) {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (CredentialsService.hasValidCookieForServer(server.url)) {
-  //     authorizeWithCookie();
-  //   }
-  // }, []);
-
   useEffect(() => {
     if (serverCredentials) {
       setUsername(serverCredentials.username);
