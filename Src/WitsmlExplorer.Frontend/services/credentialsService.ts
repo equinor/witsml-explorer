@@ -124,10 +124,17 @@ class CredentialsService {
     }
   }
 
-  public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<string> {
+  public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<BasicServerCredentials> {
     const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal, [credentials], true);
     if (response.ok) {
-      return response.json();
+      const cookie = await response.json();
+      const decoded = Buffer.from(cookie, "base64").toString();
+      const creds = decoded.split(":");
+      return {
+        server: credentials.server,
+        username: creds[0],
+        password: creds[1]
+      };
     } else {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
@@ -150,6 +157,12 @@ class CredentialsService {
   public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
     const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal, undefined, true);
     if (response.ok) {
+      // set times on all existing local storage server values to indicate that the respective cookies are no longer valid
+      this.credentials.forEach((creds) => {
+        if (localStorage.getItem(creds.server.url)) {
+          localStorage.setItem(creds.server.url, new Date().toJSON());
+        }
+      });
       return;
     } else {
       const { message }: ErrorDetails = await response.json();

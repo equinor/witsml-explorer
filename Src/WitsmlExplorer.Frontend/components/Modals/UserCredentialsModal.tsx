@@ -33,14 +33,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const authorizeWithCookie = async () => {
     try {
       setIsLoading(true);
-      const cookie = await CredentialsService.verifyCredentialsWithCookie({ server });
-      const decoded = Buffer.from(cookie, "base64").toString();
-      const creds = decoded.split(":");
-      CredentialsService.saveCredentials({
-        server,
-        username: creds[0],
-        password: creds[1]
-      });
+      const creds = await CredentialsService.verifyCredentialsWithCookie({ server });
+      CredentialsService.saveCredentials(creds);
     } catch (error) {
       setIsLoading(false);
     }
