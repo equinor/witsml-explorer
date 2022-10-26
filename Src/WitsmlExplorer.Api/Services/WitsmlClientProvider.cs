@@ -68,10 +68,9 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlTargetServer != null)
+                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(WitsmlTargetServerHeader))
                 {
-                    string bearerToken = _httpHeaders?.Authorization?.Split()[1];
-                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlTargetServer, bearerToken);
+                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, WitsmlTargetServerHeader);
                     _targetCreds = targetCredsTask;
                 }
                 else
@@ -87,10 +86,9 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlSourceClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.WitsmlSourceServer != null)
+                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(WitsmlSourceServerHeader))
                 {
-                    string bearerToken = _httpHeaders?.Authorization?.Split()[1];
-                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsFromHeaderValue(_httpHeaders.WitsmlSourceServer, bearerToken);
+                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, WitsmlSourceServerHeader);
                     _sourceCreds = sourceCredsTask;
                 }
                 else
@@ -112,16 +110,37 @@ namespace WitsmlExplorer.Api.Services
         public int StatusCode { get; private set; }
     }
 
-    internal class EssentialHeaders
+    public class EssentialHeaders
     {
         public EssentialHeaders(IHttpContextAccessor httpContextAccessor)
         {
             Authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"];
             WitsmlTargetServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
             WitsmlSourceServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlSourceServerHeader];
+            WitsmlTargetCookie = httpContextAccessor?.HttpContext?.Request.Cookies[Uri.EscapeDataString(WitsmlTargetServer)];
+            WitsmlSourceCookie = httpContextAccessor?.HttpContext?.Request.Cookies[Uri.EscapeDataString(WitsmlSourceServer)];
         }
         public string Authorization { get; init; }
         public string WitsmlTargetServer { get; init; }
         public string WitsmlSourceServer { get; init; }
+        public string WitsmlTargetCookie { get; init; }
+        public string WitsmlSourceCookie { get; init; }
+
+        public bool HasCookieCredentials(string server)
+        {
+            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? !string.IsNullOrEmpty(WitsmlTargetCookie) : !string.IsNullOrEmpty(WitsmlSourceCookie);
+        }
+        public string GetCookie(string server)
+        {
+            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? WitsmlTargetCookie : WitsmlSourceCookie;
+        }
+        public string GetHost(string server)
+        {
+            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? WitsmlTargetServer : WitsmlSourceServer;
+        }
+        public string GetBearerToken()
+        {
+            return Authorization?.Split()[1]; ;
+        }
     }
 }

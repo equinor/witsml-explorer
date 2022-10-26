@@ -51,7 +51,22 @@ namespace WitsmlExplorer.Api.Services
         {
             ServerCredentials credentials = GetBasicCredentialsFromHeaderValue(headerValue);
             await VerifyCredentials(credentials);
-            return Encrypt(credentials.Password);
+            return Encrypt($"{credentials.UserId}:{credentials.Password}");
+        }
+
+        public async Task<ServerCredentials> GetCredentialsCookieFirst(EssentialHeaders headers, string server)
+        {
+            ServerCredentials result;
+            if (headers.HasCookieCredentials(server))
+            {
+                var cred = Decrypt(headers.GetCookie(server)).Split(":");
+                result = new ServerCredentials(headers.GetHost(server), cred[0], cred[1]);
+            }
+            else
+            {
+                result = await GetSystemCredentialsWithToken(headers.GetBearerToken(), new Uri(headers.GetHost(server)));
+            }
+            return result;
         }
 
         public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null)

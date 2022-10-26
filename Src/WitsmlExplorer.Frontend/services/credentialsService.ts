@@ -78,28 +78,29 @@ class CredentialsService {
     return this.credentials.find((c) => c.server.id === this.sourceServer?.id);
   }
 
-  public clearPasswords() {
-    this.credentials = this.credentials.map((creds) => {
-      if (this.hasValidCookieForServer(creds.server.url)) {
-        return creds;
-      }
-      return { server: creds.server };
-    });
-    if (!this.hasValidCookieForServer(this.server.url)) {
-      this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
-    }
-  }
+  // public clearPasswords() {
+  //   this.credentials = this.credentials.map((creds) => {
+  //     if (this.hasValidCookieForServer(creds.server.url)) {
+  //       return creds;
+  //     }
+  //     return { server: creds.server };
+  //   });
+  //   if (!this.hasValidCookieForServer(this.server.url)) {
+  //     this._onCredentialStateChanged.dispatch({ server: this.server, hasPassword: this.isAuthorizedForServer(this.server) });
+  //   }
+  // }
 
   public isAuthorizedForServer(server: Server): boolean {
     if (msalEnabled && server?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => server.roles.includes(x))) {
       return true;
     }
-    return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;
+    return this.hasValidCookieForServer(server?.url);
+    //return this.credentials.find((c) => c.server.id === server?.id)?.password !== undefined;
   }
 
-  public hasPasswordForUrl(serverUrl: string) {
-    return this.credentials.find((c) => c.server.url === serverUrl)?.password !== undefined;
-  }
+  // public hasPasswordForUrl(serverUrl: string) {
+  //   return this.credentials.find((c) => c.server.url === serverUrl)?.password !== undefined;
+  // }
 
   public hasValidCookieForServer(serverUrl: string): boolean {
     //use local storage to check whether the cookie is valid, because the cookie is httpOnly
@@ -110,49 +111,54 @@ class CredentialsService {
     return new Date().getTime() < new Date(cookieTimestamp).getTime();
   }
 
-  public keepLoggedInToServer(serverUrl: string): boolean {
-    return !!localStorage.getItem(serverUrl);
-  }
+  // public keepLoggedInToServer(serverUrl: string): boolean {
+  //   return !!localStorage.getItem(serverUrl) && localStorage.getItem(serverUrl);
+  // }
 
-  public async verifyCredentials(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/authorize`, abortSignal, [credentials]);
+  // Verify basic credentials for the first time
+  // Basic credentials for this call will be set in header: WitsmlTargetServer
+  public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
+    const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], true, false);
     if (response.ok) {
-      return response.json();
-    } else {
-      const { message }: ErrorDetails = await response.json();
-      CredentialsService.throwError(response.status, message);
-    }
-  }
-
-  public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<BasicServerCredentials> {
-    const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal, [credentials], true);
-    if (response.ok) {
-      const cookie = await response.json();
-      const decoded = Buffer.from(cookie, "base64").toString();
-      const creds = decoded.split(":");
-      return {
-        server: credentials.server,
-        username: creds[0],
-        password: creds[1]
-      };
-    } else {
-      const { message }: ErrorDetails = await response.json();
-      CredentialsService.throwError(response.status, message);
-    }
-  }
-
-  public async verifyCredentialsAndSetCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/authorizeandsetcookie`, abortSignal, [credentials], true);
-    if (response.ok) {
+      const offset = keep ? 24 : 1;
       const expirationTime = new Date();
-      expirationTime.setDate(expirationTime.getDate() + 1);
+      expirationTime.setHours(expirationTime.getHours() + offset);
       localStorage.setItem(credentials.server.url, expirationTime.toJSON());
-      return response.json();
     } else {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
     }
   }
+
+  // public async verifyCredentialsWithCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<BasicServerCredentials> {
+  //   const response = await ApiClient.get(`/api/credentials/authorizewithcookie`, abortSignal, [credentials], true);
+  //   if (response.ok) {
+  //     const cookie = await response.json();
+  //     const decoded = Buffer.from(cookie, "base64").toString();
+  //     const creds = decoded.split(":");
+  //     return {
+  //       server: credentials.server,
+  //       username: creds[0],
+  //       password: creds[1]
+  //     };
+  //   } else {
+  //     const { message }: ErrorDetails = await response.json();
+  //     CredentialsService.throwError(response.status, message);
+  //   }
+  // }
+
+  // public async verifyCredentialsAndSetCookie(credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<any> {
+  //   const response = await ApiClient.get(`/api/credentials/authorizeandsetcookie`, abortSignal, [credentials], true);
+  //   if (response.ok) {
+  //     const expirationTime = new Date();
+  //     expirationTime.setDate(expirationTime.getDate() + 1);
+  //     localStorage.setItem(credentials.server.url, expirationTime.toJSON());
+  //     return response.json();
+  //   } else {
+  //     const { message }: ErrorDetails = await response.json();
+  //     CredentialsService.throwError(response.status, message);
+  //   }
+  // }
 
   public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
     const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal, undefined, true);

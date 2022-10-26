@@ -37,7 +37,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      const shouldFetch = CredentialsService.hasPasswordForUrl(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldFetch = CredentialsService.isLoggedInTo(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (shouldFetch) {
         setShouldRefresh(true);
       }

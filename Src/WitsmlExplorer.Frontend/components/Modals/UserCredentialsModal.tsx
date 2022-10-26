@@ -27,24 +27,24 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState(CredentialsService.keepLoggedInToServer(server.url));
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(false);
   const shouldFocusPasswordInput = !!username;
 
-  const authorizeWithCookie = async () => {
-    try {
-      setIsLoading(true);
-      const creds = await CredentialsService.verifyCredentialsWithCookie({ server });
-      CredentialsService.saveCredentials(creds);
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
+  // const authorizeWithCookie = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const creds = await CredentialsService.verifyCredentialsWithCookie({ server });
+  //     CredentialsService.saveCredentials(creds);
+  //   } catch (error) {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (CredentialsService.hasValidCookieForServer(server.url)) {
-      authorizeWithCookie();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (CredentialsService.hasValidCookieForServer(server.url)) {
+  //     authorizeWithCookie();
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (serverCredentials) {
@@ -60,26 +60,6 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     }
   }, [props]);
 
-  const onSave = async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-    const credentials = {
-      server,
-      username,
-      password
-    };
-    try {
-      const encryptedPassword = keepLoggedIn ? await CredentialsService.verifyCredentialsAndSetCookie(credentials) : await CredentialsService.verifyCredentials(credentials);
-      CredentialsService.saveCredentials({ ...credentials, password: encryptedPassword });
-      if (!keepLoggedIn) {
-        localStorage.removeItem(credentials.server.url);
-      }
-    } catch (error) {
-      setErrorMessage(error.message);
-      setIsLoading(false);
-    }
-  };
-
   const onVerifyConnection = async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -89,8 +69,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const encryptedPassword = await CredentialsService.verifyCredentials(credentials);
-      props.onConnectionVerified({ ...credentials, password: encryptedPassword });
+      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      await CredentialsService.saveCredentials({ ...credentials, password: "cookie-handled" });
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -138,7 +118,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       }
       confirmDisabled={!validText(username) || !validText(password)}
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
-      onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
+      onSubmit={onVerifyConnection}
       onCancel={props.onCancel}
       isLoading={isLoading}
       errorMessage={errorMessage}
