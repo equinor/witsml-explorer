@@ -10,6 +10,10 @@ export interface BasicServerCredentials {
   password?: string;
 }
 
+type CookieInfo = {
+  type: "Session" | "Persistent" | "Invalid";
+  expiry: string;
+};
 class CredentialsService {
   private static _instance: CredentialsService;
   private _onCredentialStateChanged = new SimpleEventDispatcher<{ server: Server; hasPassword: boolean }>();
@@ -104,11 +108,13 @@ class CredentialsService {
 
   public hasValidCookieForServer(serverUrl: string): boolean {
     //use local storage to check whether the cookie is valid, because the cookie is httpOnly
-    const cookieTimestamp = localStorage.getItem(serverUrl);
-    if (!cookieTimestamp) {
+    const cookieInfo = localStorage.getItem(serverUrl);
+    if (!cookieInfo) {
       return false;
+    } else {
+      const cInfo: CookieInfo = JSON.parse(cookieInfo);
+      return new Date().getTime() < new Date(cInfo.expiry).getTime();
     }
-    return new Date().getTime() < new Date(cookieTimestamp).getTime();
   }
 
   // public keepLoggedInToServer(serverUrl: string): boolean {
@@ -123,7 +129,8 @@ class CredentialsService {
       const offset = keep ? 24 : 1;
       const expirationTime = new Date();
       expirationTime.setHours(expirationTime.getHours() + offset);
-      localStorage.setItem(credentials.server.url, expirationTime.toJSON());
+      const cookieInfo = { type: keep ? "Persistent" : "Session", expiry: expirationTime };
+      localStorage.setItem(credentials.server.url, JSON.stringify(cookieInfo));
     } else {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
@@ -166,7 +173,8 @@ class CredentialsService {
       // set times on all existing local storage server values to indicate that the respective cookies are no longer valid
       this.credentials.forEach((creds) => {
         if (localStorage.getItem(creds.server.url)) {
-          localStorage.setItem(creds.server.url, new Date().toJSON());
+          const cInfo: CookieInfo = { type: "Invalid", expiry: new Date().toJSON() };
+          localStorage.setItem(creds.server.url, JSON.stringify(cInfo));
         }
       });
       return;

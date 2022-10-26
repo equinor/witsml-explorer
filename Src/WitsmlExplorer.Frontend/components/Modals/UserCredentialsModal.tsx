@@ -60,6 +60,23 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     }
   }, [props]);
 
+  const onSave = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+    const credentials = {
+      server,
+      username,
+      password
+    };
+    try {
+      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      await CredentialsService.saveCredentials({ ...credentials, password: "cookie-handled" });
+    } catch (error) {
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
+  };
+
   const onVerifyConnection = async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -118,7 +135,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       }
       confirmDisabled={!validText(username) || !validText(password)}
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
-      onSubmit={onVerifyConnection}
+      onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={props.onCancel}
       isLoading={isLoading}
       errorMessage={errorMessage}
