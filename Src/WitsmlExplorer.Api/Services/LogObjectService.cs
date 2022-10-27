@@ -170,8 +170,12 @@ namespace WitsmlExplorer.Api.Services
             foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
                 Dictionary<string, LogDataValue> data = new();
-                foreach (var keyValuePair in valueRow.Split(",")
-                    .Select((value, index) => new { index, value }))
+                var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value });
+                if (keyValuePairs.Count() > mnemonics.Length)
+                {
+                    throw new WitsmlException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count()}.");
+                }
+                foreach (var keyValuePair in keyValuePairs)
                 {
                     if (string.IsNullOrEmpty(keyValuePair.value))
                     {

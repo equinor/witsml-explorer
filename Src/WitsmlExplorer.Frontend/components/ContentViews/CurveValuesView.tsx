@@ -39,6 +39,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>(null);
   const { exportData, properties: exportOptions } = useExport({
     fileExtension: ".csv",
     newLineCharacter: "\n",
@@ -151,6 +152,9 @@ export const CurveValuesView = (): React.ReactElement => {
     if (selectedLogCurveInfo) {
       getLogData()
         .catch(truncateAbortHandler)
+        .catch((e) => {
+          setErrorMessage(e.message);
+        })
         .then(() => setIsLoading(false));
     }
 
@@ -182,7 +186,7 @@ export const CurveValuesView = (): React.ReactElement => {
         </ExportButtonGrid>
       )}
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
-      {!isLoading && !tableData.length && <Message>No data</Message>}
+      {!isLoading && !tableData.length && <Message>{errorMessage ?? "No data"}</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
         <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />
       )}

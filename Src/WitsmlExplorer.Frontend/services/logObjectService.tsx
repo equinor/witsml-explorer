@@ -1,3 +1,4 @@
+import { ErrorDetails } from "../models/errorDetails";
 import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
@@ -84,7 +85,13 @@ export default class LogObjectService {
     if (response.ok) {
       return response.json();
     } else {
-      return;
+      const { message }: ErrorDetails = await response.json();
+      switch (response.status) {
+        case 422:
+          throw new Error(message);
+        default:
+          throw new Error(`Something unexpected has happened.`);
+      }
     }
   }
 }
