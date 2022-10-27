@@ -59,7 +59,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     } catch (error) {
       setErrorMessage(error.message);
     }
-    if (mode === CredentialsMode.SAVE) {
+    if (mode !== CredentialsMode.SAVE) {
       setIsLoading(false);
     }
   };

@@ -88,6 +88,7 @@ export class ApiClient {
   }
 
   private static runHttpRequest(pathName: string, requestInit: RequestInit) {
+    CredentialsService.refreshLocalstorageSessions();
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled) {

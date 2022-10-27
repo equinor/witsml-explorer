@@ -11,7 +11,8 @@ export interface BasicServerCredentials {
 }
 
 type CookieInfo = {
-  type: "Session" | "Persistent" | "Invalid";
+  type: "WExSession" | "WExPersistent" | "WExInvalid";
+  url: string;
   expiry: string;
 };
 class CredentialsService {
@@ -100,6 +101,41 @@ class CredentialsService {
     }
   }
 
+  private isJsonString(str: string) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  private allLocalStorage() {
+    const values = [];
+    const keys = Object.keys(localStorage);
+    let i = keys.length;
+    while (i--) {
+      if (keys[i].startsWith("http") && this.isJsonString(localStorage.getItem(keys[i]))) {
+        values.push(localStorage.getItem(keys[i]));
+      }
+    }
+    return values;
+  }
+
+  // refresh timestamp for all "session" entries in localstorage, to match session cookies
+  public refreshLocalstorageSessions() {
+    const expirationTime = new Date();
+    expirationTime.setHours(expirationTime.getHours() + 1);
+    const cookies: CookieInfo[] = this.allLocalStorage()
+      .map((n) => JSON.parse(n))
+      .filter((n) => n.type == "WExSession");
+    cookies.forEach((element) => {
+      localStorage.removeItem(element.url);
+      const refreshedCookie = { type: "WExSession", url: element.url, expiry: expirationTime };
+      localStorage.setItem(element.url, JSON.stringify(refreshedCookie));
+    });
+  }
+
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlTargetServer
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
@@ -108,7 +144,7 @@ class CredentialsService {
       const offset = keep ? 24 : 1;
       const expirationTime = new Date();
       expirationTime.setHours(expirationTime.getHours() + offset);
-      const cookieInfo = { type: keep ? "Persistent" : "Session", expiry: expirationTime };
+      const cookieInfo = { type: keep ? "WExPersistent" : "WExSession", url: credentials.server.url, expiry: expirationTime };
       localStorage.setItem(credentials.server.url, JSON.stringify(cookieInfo));
     } else {
       const { message }: ErrorDetails = await response.json();
@@ -122,7 +158,7 @@ class CredentialsService {
       // set times on all existing local storage server values to indicate that the respective cookies are no longer valid
       this.credentials.forEach((creds) => {
         if (localStorage.getItem(creds.server.url)) {
-          const cInfo: CookieInfo = { type: "Invalid", expiry: new Date().toJSON() };
+          const cInfo: CookieInfo = { type: "WExInvalid", url: creds.server.url, expiry: new Date().toJSON() };
           localStorage.setItem(creds.server.url, JSON.stringify(cInfo));
         }
       });
