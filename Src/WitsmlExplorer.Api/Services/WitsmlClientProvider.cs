@@ -11,6 +11,7 @@ using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.HttpHandlers;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -22,8 +23,6 @@ namespace WitsmlExplorer.Api.Services
 
     public class WitsmlClientProvider : IWitsmlClientProvider
     {
-        public const string WitsmlTargetServerHeader = "WitsmlTargetServer";
-        public const string WitsmlSourceServerHeader = "WitsmlSourceServer";
 
         private ServerCredentials _targetCreds;
         private ServerCredentials _sourceCreds;
@@ -37,12 +36,12 @@ namespace WitsmlExplorer.Api.Services
 
         public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
-            if (httpContextAccessor.HttpContext?.Request.Headers[WitsmlTargetServerHeader].Count == 0)
+            if (httpContextAccessor.HttpContext?.Request.Headers[EssentialHeaders.WitsmlTargetServer].Count == 0)
             {
                 return;
             }
             _clientCapabilities = witsmlClientCapabilities?.Value ?? throw new ArgumentException("WitsmlClientCapabilities missing");
-            _httpHeaders = new EssentialHeaders(httpContextAccessor);
+            _httpHeaders = new EssentialHeaders(httpContextAccessor?.HttpContext?.Request);
             _credentialsService = credentialsService ?? throw new ArgumentException("CredentialsService missing");
             _logger = logger ?? throw new ArgumentException("Logger missing");
             _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
@@ -68,14 +67,14 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(WitsmlTargetServerHeader))
+                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer))
                 {
-                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, WitsmlTargetServerHeader);
+                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, EssentialHeaders.WitsmlTargetServer);
                     _targetCreds = targetCredsTask;
                 }
                 else
                 {
-                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlTargetServerHeader}'", (int)HttpStatusCode.BadRequest);
+                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{EssentialHeaders.WitsmlTargetServer}'", (int)HttpStatusCode.BadRequest);
                 }
                 _witsmlClient = !_targetCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries) : null;
             }
@@ -86,14 +85,14 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlSourceClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(WitsmlSourceServerHeader))
+                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer))
                 {
-                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, WitsmlSourceServerHeader);
+                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, EssentialHeaders.WitsmlSourceServer);
                     _sourceCreds = sourceCredsTask;
                 }
                 else
                 {
-                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{WitsmlSourceServerHeader}'", (int)HttpStatusCode.BadRequest);
+                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{EssentialHeaders.WitsmlSourceServer}'", (int)HttpStatusCode.BadRequest);
                 }
                 _witsmlSourceClient = !_sourceCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries) : null;
             }
@@ -110,37 +109,5 @@ namespace WitsmlExplorer.Api.Services
         public int StatusCode { get; private set; }
     }
 
-    public class EssentialHeaders
-    {
-        public EssentialHeaders(IHttpContextAccessor httpContextAccessor)
-        {
-            Authorization = httpContextAccessor?.HttpContext?.Request.Headers["Authorization"];
-            WitsmlTargetServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
-            WitsmlSourceServer = httpContextAccessor?.HttpContext?.Request.Headers[WitsmlClientProvider.WitsmlSourceServerHeader];
-            WitsmlTargetCookie = httpContextAccessor?.HttpContext?.Request.Cookies[Uri.EscapeDataString(WitsmlTargetServer)];
-            WitsmlSourceCookie = httpContextAccessor?.HttpContext?.Request.Cookies[Uri.EscapeDataString(WitsmlSourceServer)];
-        }
-        public string Authorization { get; init; }
-        public string WitsmlTargetServer { get; init; }
-        public string WitsmlSourceServer { get; init; }
-        public string WitsmlTargetCookie { get; init; }
-        public string WitsmlSourceCookie { get; init; }
 
-        public bool HasCookieCredentials(string server)
-        {
-            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? !string.IsNullOrEmpty(WitsmlTargetCookie) : !string.IsNullOrEmpty(WitsmlSourceCookie);
-        }
-        public string GetCookie(string server)
-        {
-            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? WitsmlTargetCookie : WitsmlSourceCookie;
-        }
-        public string GetHost(string server)
-        {
-            return (server == WitsmlClientProvider.WitsmlTargetServerHeader) ? WitsmlTargetServer : WitsmlSourceServer;
-        }
-        public string GetBearerToken()
-        {
-            return Authorization?.Split()[1]; ;
-        }
-    }
 }

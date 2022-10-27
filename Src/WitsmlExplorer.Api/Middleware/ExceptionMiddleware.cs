@@ -10,8 +10,10 @@ using Serilog;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
+using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Middleware
 {
     // Source: https://code-maze.com/global-error-handling-aspnetcore/
@@ -44,7 +46,7 @@ namespace WitsmlExplorer.Api.Middleware
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlTargetServerHeader, n => "");
+                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlTargetServer, n => "");
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,

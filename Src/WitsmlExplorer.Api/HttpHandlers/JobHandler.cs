@@ -20,9 +20,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
 
             string bearerAuth = httpRequest.Headers["Authorization"];
-            string basicAuth = httpRequest.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
-            ServerCredentials witsmlTarget = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlTargetServerHeader, n => "");
-            ServerCredentials witsmlSource = httpRequest.GetWitsmlServerHttpHeader(WitsmlClientProvider.WitsmlSourceServerHeader, n => "");
+            string basicAuth = httpRequest.Headers[EssentialHeaders.WitsmlTargetServer];
+            ServerCredentials witsmlTarget = httpRequest.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlTargetServer, n => "");
+            ServerCredentials witsmlSource = httpRequest.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlSourceServer, n => "");
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             (string userPrincipalName, string witsmlUsername) = credentialsService.GetUsernamesFromHeaderValues(bearerAuth, basicAuth);
@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             string bearerAuth = httpRequest.Headers["Authorization"];
-            string basicAuth = httpRequest.Headers[WitsmlClientProvider.WitsmlTargetServerHeader];
+            string basicAuth = httpRequest.Headers[EssentialHeaders.WitsmlTargetServer];
             (string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromHeaderValues(bearerAuth, basicAuth);
 
             if ((useOAuth2 && string.IsNullOrEmpty(userPrincipalName)) ||

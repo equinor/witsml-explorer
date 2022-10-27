@@ -13,6 +13,7 @@ using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
+using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
@@ -51,7 +52,7 @@ namespace WitsmlExplorer.Api.Services
             return Encrypt($"{credentials.UserId}:{credentials.Password}");
         }
 
-        public async Task<ServerCredentials> GetCredentialsCookieFirst(EssentialHeaders headers, string server)
+        public async Task<ServerCredentials> GetCredentialsCookieFirst(IEssentialHeaders headers, string server)
         {
             ServerCredentials result;
             if (headers.HasCookieCredentials(server))

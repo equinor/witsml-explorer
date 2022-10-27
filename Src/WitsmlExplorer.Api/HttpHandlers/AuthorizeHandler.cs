@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     {
         public static async Task<IResult> Authorize([FromQuery(Name = "keep")] bool keep, [FromServices] ICredentialsService credentialsService, HttpContext httpContext)
         {
-            string basicAuth = httpContext?.Request.Headers[WitsmlClientProvider.WitsmlTargetServerHeader].ToString();
+            string basicAuth = httpContext?.Request.Headers[EssentialHeaders.WitsmlTargetServer].ToString();
             ServerCredentials creds = await credentialsService.GetCredentialsFromHeaderValue(basicAuth);
 
             if (creds.IsCredsNullOrEmpty())

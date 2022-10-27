@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.HttpHandlers;
 
 namespace WitsmlExplorer.Api.Swagger
 {
@@ -15,8 +15,8 @@ namespace WitsmlExplorer.Api.Swagger
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            List<string> emptyHeader = new() { typeof(HttpHandlers.WitsmlServerHandler).ToString() };
-            List<string> witsmlSourceHeader = new() { typeof(HttpHandlers.JobHandler).ToString() };
+            List<string> emptyHeader = new() { typeof(WitsmlServerHandler).ToString() };
+            List<string> witsmlSourceHeader = new() { typeof(JobHandler).ToString() };
             if (operation.Parameters == null)
             {
                 operation.Parameters = new List<OpenApiParameter>();
@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Swagger
             {
                 operation.Parameters.Add(new OpenApiParameter
                 {
-                    Name = WitsmlClientProvider.WitsmlTargetServerHeader,
+                    Name = EssentialHeaders.WitsmlTargetServer,
                     In = ParameterLocation.Header,
                     Schema = new OpenApiSchema { Type = "string" },
                     Required = true
@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Swagger
                 {
                     operation.Parameters.Add(new OpenApiParameter
                     {
-                        Name = WitsmlClientProvider.WitsmlSourceServerHeader,
+                        Name = EssentialHeaders.WitsmlSourceServer,
                         In = ParameterLocation.Header,
                         Schema = new OpenApiSchema { Type = "string" },
                         Required = false
