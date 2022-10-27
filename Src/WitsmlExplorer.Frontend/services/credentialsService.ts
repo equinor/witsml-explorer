@@ -93,15 +93,24 @@ class CredentialsService {
   public hasValidCookieForServer(serverUrl: string): boolean {
     //use local storage to check whether the cookie is valid, because the cookie is httpOnly
     const cookieInfo = localStorage.getItem(serverUrl);
-    if (!cookieInfo) {
-      return false;
-    } else {
+    if (this.isJsonString(cookieInfo)) {
       const cInfo: CookieInfo = JSON.parse(cookieInfo);
       return new Date().getTime() < new Date(cInfo.expiry).getTime();
     }
+    return false;
+  }
+
+  public keepLoggedInToServer(serverUrl: string): boolean {
+    const item = localStorage.getItem(serverUrl);
+    if (this.isJsonString(item)) {
+      const cookie: CookieInfo = JSON.parse(item);
+      return cookie.type === "WExPersistent";
+    }
+    return false;
   }
 
   private isJsonString(str: string) {
+    if (str === null) return false;
     try {
       JSON.parse(str);
     } catch (e) {

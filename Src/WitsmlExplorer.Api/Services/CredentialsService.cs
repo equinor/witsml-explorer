@@ -137,15 +137,11 @@ namespace WitsmlExplorer.Api.Services
             return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
         }
 
-        public bool ValidEncryptedBasicCredentials(string headerValue)
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCookieAndToken(EssentialHeaders headers)
         {
-            return GetBasicCredentialsFromHeaderValue(headerValue) != null;
+            ServerCredentials witsmlCredentials = GetCredentialsCookieFirst(headers, EssentialHeaders.WitsmlTargetServer).Result;
+            return (GetTokenUserPrincipalName(headers.Authorization), witsmlCredentials.UserId);
         }
 
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromHeaderValues(string authorization, string witsmlServerHeaderValue)
-        {
-            ServerCredentials witsmlCredentials = GetBasicCredentialsFromHeaderValue(witsmlServerHeaderValue);
-            return (GetTokenUserPrincipalName(authorization), witsmlCredentials.UserId);
-        }
     }
 }
