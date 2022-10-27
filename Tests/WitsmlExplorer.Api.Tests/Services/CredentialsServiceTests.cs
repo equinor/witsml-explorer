@@ -148,28 +148,6 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetUsernamesFromHeaderValues_ValidTokenValidRole_ReturnUPNFromToken()
-        {
-            string upn = "tokenuser@arpa.net";
-            string basicHeader = "http://some.url.com";
-            string token = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
-
-            (string tokenUser, _) = _credentialsService.GetUsernamesFromHeaderValues(token, basicHeader);
-            Assert.Equal(upn, tokenUser);
-        }
-
-        [Fact]
-        public void GetUsernamesFromHeaderValues_ValidTokenUserValidBasicUserValidRole_ReturnUsernames()
-        {
-            string upn = "tokenuser@arpa.net";
-            string witsmlServerHeaderValue = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
-            string authorizationHeader = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
-
-            (string tokenUser, string basicUser) = _credentialsService.GetUsernamesFromHeaderValues(authorizationHeader, witsmlServerHeaderValue);
-            Assert.Equal((upn, "basicuser"), (tokenUser, basicUser));
-        }
-
-        [Fact]
         public void GetCredentialsCookieFirst_ValidCookie_ReturnCookieCreds()
         {
             string host = "http://some.targeturl.com/";
@@ -177,7 +155,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             IEssentialHeaders essentialHeaders = CreateEssentialHeaders(scTarget, null);
             ServerCredentials serverCreds = _credentialsService.GetCredentialsCookieFirst(essentialHeaders, EssentialHeaders.WitsmlTargetServer).Result;
 
-            Assert.True(serverCreds.UserId == "cookieuser" && serverCreds.Password == "cookiepass" && serverCreds.Host.ToString() == host);
+            Assert.True(serverCreds.UserId == "cookieuser");
+            Assert.True(serverCreds.Password == "cookiepass");
+            Assert.True(serverCreds.Host.ToString() == host);
         }
 
         private static IEssentialHeaders CreateEssentialHeaders(ServerCredentials targetCreds, ServerCredentials sourceCreds)

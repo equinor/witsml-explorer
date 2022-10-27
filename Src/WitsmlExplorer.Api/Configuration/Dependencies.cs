@@ -22,7 +22,6 @@ namespace WitsmlExplorer.Api.Configuration
         public static void ConfigureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<ICredentialsService, CredentialsService>();
-            services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             AddRepository<Server, Guid>(services, configuration);
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
@@ -31,6 +30,8 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
+            services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
+
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

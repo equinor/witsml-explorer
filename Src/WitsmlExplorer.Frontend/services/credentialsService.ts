@@ -93,15 +93,24 @@ class CredentialsService {
   public hasValidCookieForServer(serverUrl: string): boolean {
     //use local storage to check whether the cookie is valid, because the cookie is httpOnly
     const cookieInfo = localStorage.getItem(serverUrl);
-    if (!cookieInfo) {
-      return false;
-    } else {
+    if (this.isJsonString(cookieInfo)) {
       const cInfo: CookieInfo = JSON.parse(cookieInfo);
       return new Date().getTime() < new Date(cInfo.expiry).getTime();
     }
+    return false;
+  }
+
+  public keepLoggedInToServer(serverUrl: string): boolean {
+    const item = localStorage.getItem(serverUrl);
+    if (this.isJsonString(item)) {
+      const cookie: CookieInfo = JSON.parse(item);
+      return cookie.type === "WExPersistent";
+    }
+    return false;
   }
 
   private isJsonString(str: string) {
+    if (str === null) return false;
     try {
       JSON.parse(str);
     } catch (e) {
@@ -130,7 +139,6 @@ class CredentialsService {
       .map((n) => JSON.parse(n))
       .filter((n) => n.type == "WExSession");
     cookies.forEach((element) => {
-      localStorage.removeItem(element.url);
       const refreshedCookie = { type: "WExSession", url: element.url, expiry: expirationTime };
       localStorage.setItem(element.url, JSON.stringify(refreshedCookie));
     });
@@ -139,7 +147,7 @@ class CredentialsService {
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlTargetServer
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], true, false);
+    const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], false);
     if (response.ok) {
       const offset = keep ? 24 : 1;
       const expirationTime = new Date();

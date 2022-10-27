@@ -37,13 +37,12 @@ export class ApiClient {
     pathName: string,
     abortSignal: AbortSignal | null = null,
     currentCredentials = CredentialsService.getCredentials(),
-    includeCredentials = true,
     serverHeaderOnly = true
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await ApiClient.getCommonHeaders(currentCredentials, serverHeaderOnly),
-      ...(includeCredentials ? { credentials: "include" } : {})
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
@@ -55,22 +54,24 @@ export class ApiClient {
     abortSignal: AbortSignal | null = null,
     currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials()
   ): Promise<Response> {
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: await ApiClient.getCommonHeaders(currentCredentials, true)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: await ApiClient.getCommonHeaders(currentCredentials, true)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
@@ -78,10 +79,11 @@ export class ApiClient {
 
   public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: await ApiClient.getCommonHeaders(currentCredentials, true)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
