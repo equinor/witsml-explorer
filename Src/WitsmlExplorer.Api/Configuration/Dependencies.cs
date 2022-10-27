@@ -26,11 +26,13 @@ namespace WitsmlExplorer.Api.Configuration
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
                 .IgnoreThisInterface<ICredentials>()
+                .IgnoreThisInterface<ICredentialsCache>()
                 .AsPublicImplementedInterfaces();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
+            services.AddSingleton<ICredentialsCache, CredentialsCache>();
 
         }
 

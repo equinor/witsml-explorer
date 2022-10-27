@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public string Authorization { get; }
         public bool HasCookieCredentials(string server);
         public string GetCookie(string server);
-        public string GetHost(string server);
+        public string GetHeaderValue(string witsmlServer);
         public string GetBearerToken();
     }
 
@@ -42,9 +42,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return (server == WitsmlTargetServer) ? TargetServerCookie : SourceServerCookie;
         }
-        public string GetHost(string server)
+        public string GetHeaderValue(string witsmlServer)
         {
-            return (server == WitsmlTargetServer) ? TargetServer : SourceServer;
+            return (witsmlServer == WitsmlTargetServer) ? TargetServer : SourceServer;
         }
         public string GetBearerToken()
         {

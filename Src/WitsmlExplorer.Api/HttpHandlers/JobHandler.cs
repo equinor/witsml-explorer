@@ -25,8 +25,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 Username = useOAuth2 ? userPrincipalName : witsmlUsername,
                 WitsmlUsername = witsmlUsername,
-                SourceServer = eh.GetHost(EssentialHeaders.WitsmlSourceServer),
-                TargetServer = eh.GetHost(EssentialHeaders.WitsmlTargetServer)
+                SourceServer = eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer),
+                TargetServer = eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)
             };
             return Results.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }

@@ -167,8 +167,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             string sourceCookie = CreateCookie(sourceCreds, n => n);
             essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer)).Returns(!string.IsNullOrEmpty(targetCookie));
             essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer)).Returns(!string.IsNullOrEmpty(sourceCookie));
-            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlTargetServer)).Returns(targetCreds?.Host?.ToString());
-            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCreds?.Host?.ToString());
+            essentialHeaders.Setup(eh => eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)).Returns(targetCreds?.Host?.ToString());
+            essentialHeaders.Setup(eh => eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCreds?.Host?.ToString());
             essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlTargetServer)).Returns(targetCookie);
             essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCookie);
             return essentialHeaders.Object;

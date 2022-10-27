@@ -58,11 +58,11 @@ namespace WitsmlExplorer.Api.Services
             if (headers.HasCookieCredentials(server))
             {
                 string[] cred = Decrypt(headers.GetCookie(server)).Split(":");
-                result = new ServerCredentials(headers.GetHost(server), cred[0], cred[1]);
+                result = new ServerCredentials(headers.GetHeaderValue(server), cred[0], cred[1]);
             }
             else
             {
-                result = await GetSystemCredentialsWithToken(headers.GetBearerToken(), new Uri(headers.GetHost(server)));
+                result = await GetSystemCredentialsWithToken(headers.GetBearerToken(), new Uri(headers.GetHeaderValue(server)));
             }
             return result;
         }
@@ -123,9 +123,19 @@ namespace WitsmlExplorer.Api.Services
             }
             return new ServerCredentials();
         }
+        public string GetClaimFromToken(EssentialHeaders headers, string claim)
+        {
+            JwtSecurityTokenHandler handler = new();
+            JwtSecurityToken jwt = handler.ReadJwtToken(headers.GetBearerToken());
+            return jwt.Claims.Where(n => n.Type == claim).Select(n => n.Value).FirstOrDefault();
+        }
+
         private static string GetTokenUserPrincipalName(string token)
         {
-            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer")) return null;
+            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer"))
+            {
+                return null;
+            }
 
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token.Split()[1]);
