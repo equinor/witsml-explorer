@@ -44,6 +44,24 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     }
   }, [props]);
 
+  const onSave = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+    const credentials = {
+      server,
+      username,
+      password
+    };
+    try {
+      const blank = "blank";
+      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      CredentialsService.saveCredentials({ ...credentials, password: blank });
+    } catch (error) {
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    }
+  };
+
   const onVerifyConnection = async () => {
     setIsLoading(true);
     setErrorMessage("");
@@ -55,13 +73,11 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     try {
       const blank = "";
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      CredentialsService.saveCredentials({ ...credentials, password: blank });
+      props.onConnectionVerified({ ...credentials, password: blank });
     } catch (error) {
       setErrorMessage(error.message);
     }
-    if (mode !== CredentialsMode.SAVE) {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   };
 
   return (
@@ -105,7 +121,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       }
       confirmDisabled={!validText(username) || !validText(password)}
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
-      onSubmit={onVerifyConnection}
+      onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={props.onCancel}
       isLoading={isLoading}
       errorMessage={errorMessage}

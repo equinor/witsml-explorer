@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Services
             ServerCredentials result;
             if (headers.HasCookieCredentials(server))
             {
-                var cred = Decrypt(headers.GetCookie(server)).Split(":");
+                string[] cred = Decrypt(headers.GetCookie(server)).Split(":");
                 result = new ServerCredentials(headers.GetHost(server), cred[0], cred[1]);
             }
             else

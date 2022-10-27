@@ -37,13 +37,12 @@ export class ApiClient {
     pathName: string,
     abortSignal: AbortSignal | null = null,
     currentCredentials = CredentialsService.getCredentials(),
-    includeCredentials = true,
     serverHeaderOnly = true
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await ApiClient.getCommonHeaders(currentCredentials, serverHeaderOnly),
-      ...(includeCredentials ? { credentials: "include" } : {})
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);

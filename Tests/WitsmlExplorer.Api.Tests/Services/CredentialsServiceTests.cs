@@ -177,7 +177,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             IEssentialHeaders essentialHeaders = CreateEssentialHeaders(scTarget, null);
             ServerCredentials serverCreds = _credentialsService.GetCredentialsCookieFirst(essentialHeaders, EssentialHeaders.WitsmlTargetServer).Result;
 
-            Assert.True(serverCreds.UserId == "cookieuser" && serverCreds.Password == "cookiepass" && serverCreds.Host.ToString() == host);
+            Assert.True(serverCreds.UserId == "cookieuser");
+            Assert.True(serverCreds.Password == "cookiepass");
+            Assert.True(serverCreds.Host.ToString() == host);
         }
 
         private static IEssentialHeaders CreateEssentialHeaders(ServerCredentials targetCreds, ServerCredentials sourceCreds)
