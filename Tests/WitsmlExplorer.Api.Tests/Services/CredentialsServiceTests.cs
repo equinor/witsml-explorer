@@ -148,28 +148,6 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetUsernamesFromHeaderValues_ValidTokenValidRole_ReturnUPNFromToken()
-        {
-            string upn = "tokenuser@arpa.net";
-            string basicHeader = "http://some.url.com";
-            string token = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
-
-            (string tokenUser, _) = _credentialsService.GetUsernamesFromHeaderValues(token, basicHeader);
-            Assert.Equal(upn, tokenUser);
-        }
-
-        [Fact]
-        public void GetUsernamesFromHeaderValues_ValidTokenUserValidBasicUserValidRole_ReturnUsernames()
-        {
-            string upn = "tokenuser@arpa.net";
-            string witsmlServerHeaderValue = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
-            string authorizationHeader = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
-
-            (string tokenUser, string basicUser) = _credentialsService.GetUsernamesFromHeaderValues(authorizationHeader, witsmlServerHeaderValue);
-            Assert.Equal((upn, "basicuser"), (tokenUser, basicUser));
-        }
-
-        [Fact]
         public void GetCredentialsCookieFirst_ValidCookie_ReturnCookieCreds()
         {
             string host = "http://some.targeturl.com/";

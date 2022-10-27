@@ -27,8 +27,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(false);
   const shouldFocusPasswordInput = !!username;
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.keepLoggedInToServer(server.url));
 
   useEffect(() => {
     if (serverCredentials) {
