@@ -42,12 +42,4 @@ app.ConfigureApi(builder.Configuration);
 
 startup.Configure(app, app.Environment);
 
-foreach (var serv in builder.Services)
-{
-    if (serv.ServiceType.FullName.Contains("WitsmlClientProvider") && !serv.ServiceType.FullName.Contains("Microsoft"))
-    {
-        System.Console.WriteLine($"{serv.Lifetime} - {serv.ServiceType}");
-    }
-}
-
 app.Run();
