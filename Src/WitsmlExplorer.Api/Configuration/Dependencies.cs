@@ -21,13 +21,13 @@ namespace WitsmlExplorer.Api.Configuration
     {
         public static void ConfigureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<ICredentialsService, CredentialsService>();
-            services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
-            AddRepository<Server, Guid>(services, configuration);
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
                 .IgnoreThisInterface<ICredentials>()
                 .AsPublicImplementedInterfaces();
+            AddRepository<Server, Guid>(services, configuration);
+            services.AddSingleton<ICredentialsService, CredentialsService>();
+            services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
