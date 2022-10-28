@@ -1,8 +1,10 @@
+import { ErrorDetails } from "../models/errorDetails";
 import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
 import { ApiClient } from "./apiClient";
-import { BasicServerCredentials } from "./credentialsService";
+import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import NotificationService from "./notificationService";
 
 export default class LogObjectService {
   public static async getLogs(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<LogObject[]> {
@@ -84,6 +86,20 @@ export default class LogObjectService {
     if (response.ok) {
       return response.json();
     } else {
+      const { message }: ErrorDetails = await response.json();
+      let errorMessage;
+      switch (response.status) {
+        case 500:
+          errorMessage = message;
+          break;
+        default:
+          errorMessage = `Something unexpected has happened.`;
+      }
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: new URL(CredentialsService.getCredentials()[0].server.url),
+        message: errorMessage,
+        isSuccess: false
+      });
       return;
     }
   }
