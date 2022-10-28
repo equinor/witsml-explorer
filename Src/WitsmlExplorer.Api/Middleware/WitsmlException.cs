@@ -2,9 +2,9 @@ using System;
 
 namespace WitsmlExplorer.Api.Middleware
 {
-    public class WitsmlException : Exception
+    public class WitsmlResultParsingException : Exception
     {
-        public WitsmlException(string message, int statusCode) : base(message)
+        public WitsmlResultParsingException(string message, int statusCode) : base(message)
         {
             StatusCode = statusCode;
         }

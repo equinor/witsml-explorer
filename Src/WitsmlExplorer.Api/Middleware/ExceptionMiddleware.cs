@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Middleware
                 Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
                 await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
             }
-            catch (WitsmlException ex)
+            catch (WitsmlResultParsingException ex)
             {
                 Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
                 await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
