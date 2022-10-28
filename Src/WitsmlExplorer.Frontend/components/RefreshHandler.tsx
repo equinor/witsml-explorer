@@ -42,6 +42,9 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.LogObject:
             await refreshLogObject(refreshAction, modificationType);
             break;
+          case EntityType.LogObjects:
+            await refreshLogObjects(refreshAction, ModificationType.UpdateLogObjects);
+            break;
           case EntityType.MessageObjects:
             await refreshMessageObjects(refreshAction, modificationType);
             break;
@@ -124,6 +127,15 @@ const RefreshHandler = (): React.ReactElement => {
       const log = await LogObjectService.getLog(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.logObjectUid);
       if (log) {
         dispatchNavigation({ type: modificationType, payload: { log } });
+      }
+    }
+  }
+
+  async function refreshLogObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateLogObjects) {
+      const logs = await LogObjectService.getLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+      if (logs) {
+        dispatchNavigation({ type: modificationType, payload: { logs, wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } });
       }
     }
   }
