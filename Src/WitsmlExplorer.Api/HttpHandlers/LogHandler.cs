@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
@@ -41,15 +40,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             if (mnemonics.Any())
             {
-                try
-                {
-                    LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
-                    return Results.Ok(logData);
-                }
-                catch (WitsmlException e)
-                {
-                    return Results.UnprocessableEntity(new ErrorDetails() { Message = e.Message, StatusCode = 422 });
-                }
+                LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
+                return Results.Ok(logData);
             }
             else
             {

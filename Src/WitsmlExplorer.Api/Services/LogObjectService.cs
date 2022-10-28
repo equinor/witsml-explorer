@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 
@@ -173,7 +175,7 @@ namespace WitsmlExplorer.Api.Services
                 var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value });
                 if (keyValuePairs.Count() > mnemonics.Length)
                 {
-                    throw new WitsmlException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count()}.");
+                    throw new WitsmlException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count()}.", (int)HttpStatusCode.InternalServerError);
                 }
                 foreach (var keyValuePair in keyValuePairs)
                 {

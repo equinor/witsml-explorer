@@ -3,7 +3,8 @@ import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
 import { ApiClient } from "./apiClient";
-import { BasicServerCredentials } from "./credentialsService";
+import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import NotificationService from "./notificationService";
 
 export default class LogObjectService {
   public static async getLogs(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<LogObject[]> {
@@ -86,12 +87,20 @@ export default class LogObjectService {
       return response.json();
     } else {
       const { message }: ErrorDetails = await response.json();
+      let errorMessage;
       switch (response.status) {
-        case 422:
-          throw new Error(message);
+        case 500:
+          errorMessage = message;
+          break;
         default:
-          throw new Error(`Something unexpected has happened.`);
+          errorMessage = `Something unexpected has happened.`;
       }
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: new URL(CredentialsService.getCredentials()[0].server.url),
+        message: errorMessage,
+        isSuccess: false
+      });
+      return;
     }
   }
 }
