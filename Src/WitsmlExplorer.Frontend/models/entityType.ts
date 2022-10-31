@@ -3,6 +3,7 @@ enum EntityType {
   Wellbore = "Wellbore",
   BhaRuns = "BhaRuns",
   LogObject = "LogObject",
+  LogObjects = "LogObjects",
   MessageObjects = "MessageObjects",
   Risks = "Risks",
   Tubular = "Tubular",
