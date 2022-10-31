@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Models
         Wellbore,
         BhaRuns,
         LogObject,
+        LogObjects,
         MessageObjects,
         Rigs,
         Risks,

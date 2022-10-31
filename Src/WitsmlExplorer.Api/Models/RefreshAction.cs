@@ -97,6 +97,22 @@ namespace WitsmlExplorer.Api.Models
             RefreshType = refreshType;
         }
     }
+
+    public class RefreshLogObjects : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.LogObjects;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+        public RefreshType RefreshType { get; }
+
+        public RefreshLogObjects(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
+
     public class RefreshMessageObjects : RefreshAction
     {
         public override EntityType EntityType => EntityType.MessageObjects;
