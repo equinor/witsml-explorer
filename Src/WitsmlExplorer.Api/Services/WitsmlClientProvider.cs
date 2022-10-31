@@ -1,6 +1,4 @@
 using System;
-using System.Net;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -17,8 +15,8 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IWitsmlClientProvider
     {
-        Task<IWitsmlClient> GetClient();
-        Task<IWitsmlClient> GetSourceClient();
+        IWitsmlClient GetClient();
+        IWitsmlClient GetSourceClient();
     }
 
     public class WitsmlClientProvider : IWitsmlClientProvider
@@ -33,6 +31,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICredentialsService _credentialsService;
         private readonly ILogger<WitsmlClientProvider> _logger;
         private readonly bool _logQueries;
+        private readonly bool _useOAuth;
 
         public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
@@ -46,6 +45,7 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger ?? throw new ArgumentException("Logger missing");
             _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
             _logger.LogDebug("WitsmlClientProvider initialised");
+            _useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)
@@ -63,38 +63,34 @@ namespace WitsmlExplorer.Api.Services
             return (serverUrl, username, password);
         }
 
-        public async Task<IWitsmlClient> GetClient()
+        public IWitsmlClient GetClient()
         {
             if (_witsmlClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer))
+                _targetCreds = _credentialsService.GetCredentialsFromCache(_useOAuth, _httpHeaders, EssentialHeaders.WitsmlTargetServer);
+                if (_targetCreds == null)
                 {
-                    ServerCredentials targetCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, EssentialHeaders.WitsmlTargetServer);
-                    _targetCreds = targetCredsTask;
+                    _targetCreds = _credentialsService.GetSystemCredentialsWithToken(_httpHeaders.GetBearerToken(), new Uri(_httpHeaders.GetHeaderValue(EssentialHeaders.WitsmlTargetServer))).Result;
                 }
-                else
-                {
-                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{EssentialHeaders.WitsmlTargetServer}'", (int)HttpStatusCode.BadRequest);
-                }
-                _witsmlClient = !_targetCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries) : null;
+                _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
+                    ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries)
+                    : null;
             }
             return _witsmlClient;
         }
 
-        public async Task<IWitsmlClient> GetSourceClient()
+        public IWitsmlClient GetSourceClient()
         {
             if (_witsmlSourceClient == null)
             {
-                if (_httpHeaders.Authorization != null || _httpHeaders.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer))
+                _sourceCreds = _credentialsService.GetCredentialsFromCache(_useOAuth, _httpHeaders, EssentialHeaders.WitsmlSourceServer);
+                if (_sourceCreds == null)
                 {
-                    ServerCredentials sourceCredsTask = await _credentialsService.GetCredentialsCookieFirst(_httpHeaders, EssentialHeaders.WitsmlSourceServer);
-                    _sourceCreds = sourceCredsTask;
+                    _sourceCreds = _credentialsService.GetSystemCredentialsWithToken(_httpHeaders.GetBearerToken(), new Uri(_httpHeaders.GetHeaderValue(EssentialHeaders.WitsmlSourceServer))).Result;
                 }
-                else
-                {
-                    throw new WitsmlClientProviderException($"Missing headers for 'Authorization' or '{EssentialHeaders.WitsmlSourceServer}'", (int)HttpStatusCode.BadRequest);
-                }
-                _witsmlSourceClient = !_sourceCreds.IsCredsNullOrEmpty() ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries) : null;
+                _witsmlSourceClient = _witsmlClient = (_sourceCreds != null && !_sourceCreds.IsCredsNullOrEmpty())
+                    ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries)
+                    : null;
             }
             return _witsmlSourceClient;
         }

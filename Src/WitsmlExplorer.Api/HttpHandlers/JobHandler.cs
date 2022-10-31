@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
-            (string userPrincipalName, string witsmlUsername) = credentialsService.GetUsernamesFromCookieAndToken(eh);
+            (string userPrincipalName, string witsmlUsername) = credentialsService.GetUsernamesFromCacheAndToken(eh);
             JobInfo jobInfo = new()
             {
                 Username = useOAuth2 ? userPrincipalName : witsmlUsername,
@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            (string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromCookieAndToken(eh);
+            (string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromCacheAndToken(eh);
 
             if ((useOAuth2 && string.IsNullOrEmpty(userPrincipalName)) ||
             (!useOAuth2 && string.IsNullOrEmpty(witsmlUserName)))

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Caching;
 
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,6 @@ namespace WitsmlExplorer.Api.Services
         public void RefreshSession(string id, string credentials);
     }
 
-    // Good candidate for Redis cache (key,value,ttl)
     public class CredentialsCache : ICredentialsCache
     {
         private readonly ObjectCache _cache = MemoryCache.Default;
@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Services
         {
             return _cache.Get(id) as string;
         }
+
         public void RefreshSession(string id, string credentials)
         {
             Set(id, credentials, new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1.0) });
@@ -40,11 +41,12 @@ namespace WitsmlExplorer.Api.Services
 
         public void LogCache()
         {
-            foreach (System.Collections.Generic.KeyValuePair<string, object> item in _cache)
+            foreach (KeyValuePair<string, object> item in _cache)
             {
                 _logger.LogDebug("Cache: {Key}: {Value}", item.Key, item.Value);
             }
         }
 
     }
+
 }

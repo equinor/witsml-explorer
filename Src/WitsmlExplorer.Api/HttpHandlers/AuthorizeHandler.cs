@@ -27,20 +27,23 @@ namespace WitsmlExplorer.Api.HttpHandlers
             }
             else
             {
-                string guid = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : Guid.NewGuid().ToString();
+                string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : Guid.NewGuid().ToString();
+                string cacheId = $"{cacheClientId}@{creds.Host.Host}";
                 CacheItemPolicy cachePolicy = keep ?
                     new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(24.0) } :
                     new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1.0) };
                 string encryptedCredentials = await credentialsService.ProtectBasicAuthorization(basicAuth);
-                CookieOptions cookieOptions = new()
+                if (!useOAuth2)
                 {
-                    SameSite = SameSiteMode.Strict,
-                    MaxAge = keep ? TimeSpan.FromDays(1) : TimeSpan.FromHours(1),
-                    Secure = true,
-                    HttpOnly = true
-                };
-                httpContext?.Response.Cookies.Append(Uri.EscapeDataString(creds.Host.ToString()), encryptedCredentials, cookieOptions);
-                credentialsCache.Set(guid, encryptedCredentials, cachePolicy);
+                    CookieOptions cookieOptions = new()
+                    {
+                        SameSite = SameSiteMode.Strict,
+                        Secure = true,
+                        HttpOnly = true
+                    };
+                    httpContext?.Response.Cookies.Append(EssentialHeaders.CookieName, cacheClientId, cookieOptions);
+                }
+                credentialsCache.Set(cacheId, encryptedCredentials, cachePolicy);
                 return Results.Ok();
             }
         }
@@ -49,6 +52,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             foreach (KeyValuePair<string, string> cookie in httpContextAccessor.HttpContext.Request.Cookies)
             {
                 httpContextAccessor.HttpContext.Response.Cookies.Delete(cookie.Key);
+                //@todo delete all keys
             }
             return Results.Ok();
         }

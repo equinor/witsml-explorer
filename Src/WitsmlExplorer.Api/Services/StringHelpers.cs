@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -83,6 +85,21 @@ namespace WitsmlExplorer.Api.Services
             bool isDouble = double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value);
 
             return isDouble ? value : throw new ArgumentException($"Input is not compatible to be parsed to a double value: {input}");
+        }
+
+        public static string CreateMD55(string input)
+        {
+            // deepcode ignore InsecureHash: md5 used only as a lookupvalue
+            using MD5 md5 = MD5.Create();
+            byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("X2"));
+            }
+            return sb.ToString();
         }
 
     }

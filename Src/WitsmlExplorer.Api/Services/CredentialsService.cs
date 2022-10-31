@@ -28,6 +28,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly WitsmlClientCapabilities _clientCapabilities;
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
+        private readonly ICredentialsCache _credentialsCache;
         private readonly Task<IEnumerable<Server>> _allServers;
 
         public CredentialsService(
@@ -35,6 +36,7 @@ namespace WitsmlExplorer.Api.Services
             IOptions<WitsmlClientCapabilities> clientCapabilities,
             IWitsmlSystemCredentials witsmlServerCredentials,
             IDocumentRepository<Server, Guid> witsmlServerRepository,
+            ICredentialsCache credentialsCache,
             ILogger<CredentialsService> logger)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
@@ -42,6 +44,7 @@ namespace WitsmlExplorer.Api.Services
             _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
             _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
+            _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
             _allServers = _witsmlServerRepository.GetDocumentsAsync();
         }
 
@@ -55,10 +58,17 @@ namespace WitsmlExplorer.Api.Services
         public async Task<ServerCredentials> GetCredentialsCookieFirst(IEssentialHeaders headers, string server)
         {
             ServerCredentials result;
-            if (headers.HasCookieCredentials(server))
+            if (!string.IsNullOrEmpty(headers.GetCookie()))
             {
-                string[] cred = Decrypt(headers.GetCookie(server)).Split(":");
-                result = new ServerCredentials(headers.GetHeaderValue(server), cred[0], cred[1]);
+                string host = new Uri(headers.GetHeaderValue(server)).Host;
+                string cacheId = $"{headers.GetCookie()}@{host}";
+                string[] cacheCreds = Decrypt(_credentialsCache.Get(cacheId)).Split('@');
+                result = new ServerCredentials()
+                {
+                    Host = new Uri(headers.GetHeaderValue(server)),
+                    UserId = cacheCreds[0],
+                    Password = cacheCreds[1]
+                };
             }
             else
             {
@@ -108,10 +118,10 @@ namespace WitsmlExplorer.Api.Services
             }
             catch
             {
-                return null;
+                return inputString?.Length > 0 ? inputString : null;
             }
         }
-        private async Task<ServerCredentials> GetSystemCredentialsWithToken(string token, Uri server)
+        public async Task<ServerCredentials> GetSystemCredentialsWithToken(string token, Uri server)
         {
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
@@ -123,7 +133,23 @@ namespace WitsmlExplorer.Api.Services
             }
             return new ServerCredentials();
         }
-        public string GetClaimFromToken(EssentialHeaders headers, string claim)
+        public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server)
+        {
+            string cacheClientId = useOauth ? GetClaimFromToken(headers, "sub") : headers.GetCookie();
+            string cacheId = $"{cacheClientId}@{new Uri(headers.GetHeaderValue(server)).Host}";
+            string cacheContents = Decrypt(_credentialsCache.Get(cacheId));
+
+            return cacheContents?.Split(":").Length == 2 ?
+                new ServerCredentials()
+                {
+                    Host = new Uri(headers.GetHeaderValue(server)),
+                    UserId = cacheContents.Split(":")[0],
+                    Password = cacheContents.Split(":")[1]
+                } :
+                null;
+        }
+
+        public string GetClaimFromToken(IEssentialHeaders headers, string claim)
         {
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(headers.GetBearerToken());
@@ -147,7 +173,7 @@ namespace WitsmlExplorer.Api.Services
             return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
         }
 
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCookieAndToken(EssentialHeaders headers)
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCacheAndToken(IEssentialHeaders headers)
         {
             ServerCredentials witsmlCredentials = GetCredentialsCookieFirst(headers, EssentialHeaders.WitsmlTargetServer).Result;
             return (GetTokenUserPrincipalName(headers.Authorization), witsmlCredentials.UserId);

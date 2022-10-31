@@ -29,11 +29,11 @@ namespace WitsmlExplorer.Api.Workers
         }
         protected IWitsmlClient GetTargetWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetClient().Result ?? throw new ArgumentException($"Missing Target WitsmlClient for {typeof(T)}");
+            return WitsmlClientProvider.GetClient() ?? throw new ArgumentException($"Missing Target WitsmlClient for {typeof(T)}");
         }
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetSourceClient().Result ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
+            return WitsmlClientProvider.GetSourceClient() ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)
