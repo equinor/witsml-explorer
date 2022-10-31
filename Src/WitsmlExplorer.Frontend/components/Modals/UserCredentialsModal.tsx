@@ -27,24 +27,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState(CredentialsService.keepLoggedInToServer(server.url));
   const shouldFocusPasswordInput = !!username;
-
-  const authorizeWithCookie = async () => {
-    try {
-      setIsLoading(true);
-      const creds = await CredentialsService.verifyCredentialsWithCookie({ server });
-      CredentialsService.saveCredentials(creds);
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (CredentialsService.hasValidCookieForServer(server.url)) {
-      authorizeWithCookie();
-    }
-  }, []);
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.keepLoggedInToServer(server.url));
 
   useEffect(() => {
     if (serverCredentials) {
@@ -69,11 +53,9 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const encryptedPassword = keepLoggedIn ? await CredentialsService.verifyCredentialsAndSetCookie(credentials) : await CredentialsService.verifyCredentials(credentials);
-      CredentialsService.saveCredentials({ ...credentials, password: encryptedPassword });
-      if (!keepLoggedIn) {
-        localStorage.removeItem(credentials.server.url);
-      }
+      const blank = "blank";
+      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      CredentialsService.saveCredentials({ ...credentials, password: blank });
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);
@@ -89,8 +71,9 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const encryptedPassword = await CredentialsService.verifyCredentials(credentials);
-      props.onConnectionVerified({ ...credentials, password: encryptedPassword });
+      const blank = "";
+      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      props.onConnectionVerified({ ...credentials, password: blank });
     } catch (error) {
       setErrorMessage(error.message);
     }

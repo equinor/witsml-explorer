@@ -10,7 +10,8 @@ const Snackbar = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe((notification) => {
-      const shouldNotify = CredentialsService.hasPasswordForUrl(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldNotify =
+        CredentialsService.hasValidCookieForServer(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (shouldNotify) {
         enqueueSnackbar(notification.message, {
           variant: notification.isSuccess ? "success" : "error"

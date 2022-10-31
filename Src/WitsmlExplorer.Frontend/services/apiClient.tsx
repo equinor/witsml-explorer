@@ -1,29 +1,28 @@
-import { getAccessToken, msalEnabled, SecurityScheme } from "../msal/MsalAuthProvider";
+import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
 import CredentialsService, { BasicServerCredentials } from "./credentialsService";
 
 export class ApiClient {
-  static async getCommonHeaders(credentials: BasicServerCredentials[]): Promise<HeadersInit> {
+  static async getCommonHeaders(credentials: BasicServerCredentials[], serverOnly: boolean): Promise<HeadersInit> {
     const authorizationHeader = await this.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "WitsmlTargetServer": this.getServerHeader(credentials[0]),
-      "WitsmlSourceServer": this.getServerHeader(credentials[1])
+      "WitsmlTargetServer": this.getServerHeader(credentials[0], serverOnly),
+      "WitsmlSourceServer": this.getServerHeader(credentials[1], serverOnly)
     };
   }
 
-  private static getServerHeader(credentials: BasicServerCredentials | undefined): string {
+  private static getServerHeader(credentials: BasicServerCredentials | undefined, serverOnly: boolean): string {
+    let result = "";
     if (!credentials) {
-      return "";
+      return result;
     }
-    if (credentials?.server?.securityscheme == SecurityScheme.Basic || credentials?.password) {
-      // send the basic creds if we have the password as a fallback for oauth
-      const creds = btoa(credentials.username + ":" + credentials.password);
-      return creds + "@" + credentials.server.url.toString();
-    } else {
-      return credentials.server.url.toString();
+    if (!serverOnly) {
+      result = btoa(credentials.username + ":" + credentials.password) + "@";
     }
+    result += credentials.server.url.toString();
+    return result;
   }
 
   private static async getAuthorizationHeader(): Promise<string | null> {
@@ -38,12 +37,12 @@ export class ApiClient {
     pathName: string,
     abortSignal: AbortSignal | null = null,
     currentCredentials = CredentialsService.getCredentials(),
-    includeCredentials = false
+    serverHeaderOnly = true
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: await ApiClient.getCommonHeaders(currentCredentials),
-      ...(includeCredentials ? { credentials: "include" } : {})
+      headers: await ApiClient.getCommonHeaders(currentCredentials, serverHeaderOnly),
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
@@ -55,22 +54,24 @@ export class ApiClient {
     abortSignal: AbortSignal | null = null,
     currentCredentials: BasicServerCredentials[] = CredentialsService.getCredentials()
   ): Promise<Response> {
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "POST",
       body: body,
-      headers: await ApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: await ApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
@@ -78,16 +79,18 @@ export class ApiClient {
 
   public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
     const currentCredentials = CredentialsService.getCredentials();
-    const requestInit = {
+    const requestInit: RequestInit = {
       signal: abortSignal,
       method: "DELETE",
-      headers: await ApiClient.getCommonHeaders(currentCredentials)
+      headers: await ApiClient.getCommonHeaders(currentCredentials, true),
+      ...{ credentials: "include" }
     };
 
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
   private static runHttpRequest(pathName: string, requestInit: RequestInit) {
+    CredentialsService.refreshLocalstorageSessions();
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled) {

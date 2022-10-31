@@ -14,6 +14,7 @@ using Moq;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -69,7 +70,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_BasicCreds_ReturnBasicCreds()
+        public void GetCredentialsFromHeaderValue_BasicCreds_ReturnBasicCreds()
         {
             string token = null;
             string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
@@ -79,7 +80,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_BasicNoCreds_ReturnEmpty()
+        public void GetCredentialsFromHeaderValue_BasicNoCreds_ReturnEmpty()
         {
             string token = null;
             string basicHeader = "http://some.url.com";
@@ -89,7 +90,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_BasicNoHeader_ReturnEmpty()
+        public void GetCredentialsFromHeaderValue_BasicNoHeader_ReturnEmpty()
         {
             string token = null;
             string basicHeader = null;
@@ -98,7 +99,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.True(creds.IsCredsNullOrEmpty());
         }
         [Fact]
-        public void GetCreds_BasicAndTokenValidRolesHeaderValidURL_ReturnBasicCreds()
+        public void GetCredentialsFromHeaderValue_BasicAndTokenValidRolesHeaderValidURL_ReturnBasicCreds()
         {
             // WHEN
             //  Valid Basic credentials and Valid Bearer token are present along with Valid URL
@@ -112,7 +113,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_ValidTokenValidRolesValidURLBasicHeader_ReturnSystemCreds()
+        public void GetCredentialsFromHeaderValue_ValidTokenValidRolesValidURLBasicHeader_ReturnSystemCreds()
         {
             // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.com" and role: ["user"]
             // 2. CONFIG:   There exist system credentials in keyvault for server with URL: "http://some.url.com"
@@ -127,7 +128,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_ValidTokenValidRolesInvalidURLBasicHeader_ReturnEmpty()
+        public void GetCredentialsFromHeaderValue_ValidTokenValidRolesInvalidURLBasicHeader_ReturnEmpty()
         {
             string basicHeader = "http://some.invalidurl.com";
             string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
@@ -137,7 +138,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCreds_InvalidTokenRolesURLOnlyBasicHeader_ReturnEmpty()
+        public void GetCredentialsFromHeaderValue_InvalidTokenRolesURLOnlyBasicHeader_ReturnEmpty()
         {
             string basicHeader = "http://some.url.com";
             string token = CreateJwtToken(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
@@ -147,25 +148,40 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetUsernames_ValidTokenValidRole_ReturnUPNFromToken()
+        public void GetCredentialsCookieFirst_ValidCookie_ReturnCookieCreds()
         {
-            string upn = "tokenuser@arpa.net";
-            string basicHeader = "http://some.url.com";
-            string token = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
+            string host = "http://some.targeturl.com/";
+            ServerCredentials scTarget = new() { UserId = "cookieuser", Password = "cookiepass", Host = new Uri(host) };
+            IEssentialHeaders essentialHeaders = CreateEssentialHeaders(scTarget, null);
+            ServerCredentials serverCreds = _credentialsService.GetCredentialsCookieFirst(essentialHeaders, EssentialHeaders.WitsmlTargetServer).Result;
 
-            (string tokenUser, _) = _credentialsService.GetUsernamesFromHeaderValues(token, basicHeader);
-            Assert.Equal(upn, tokenUser);
+            Assert.True(serverCreds.UserId == "cookieuser");
+            Assert.True(serverCreds.Password == "cookiepass");
+            Assert.True(serverCreds.Host.ToString() == host);
         }
 
-        [Fact]
-        public void GetUsernames_ValidTokenUserValidBasicUserValidRole_ReturnUsernames()
+        private static IEssentialHeaders CreateEssentialHeaders(ServerCredentials targetCreds, ServerCredentials sourceCreds)
         {
-            string upn = "tokenuser@arpa.net";
-            string witsmlServerHeaderValue = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
-            string authorizationHeader = $"Bearer {CreateJwtToken(new string[] { "validrole" }, false, upn)}";
+            Mock<IEssentialHeaders> essentialHeaders = new();
+            string targetCookie = CreateCookie(targetCreds, n => n);
+            string sourceCookie = CreateCookie(sourceCreds, n => n);
+            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer)).Returns(!string.IsNullOrEmpty(targetCookie));
+            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer)).Returns(!string.IsNullOrEmpty(sourceCookie));
+            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlTargetServer)).Returns(targetCreds?.Host?.ToString());
+            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCreds?.Host?.ToString());
+            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlTargetServer)).Returns(targetCookie);
+            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCookie);
+            return essentialHeaders.Object;
+        }
 
-            (string tokenUser, string basicUser) = _credentialsService.GetUsernamesFromHeaderValues(authorizationHeader, witsmlServerHeaderValue);
-            Assert.Equal((upn, "basicuser"), (tokenUser, basicUser));
+        private static string CreateCookie(ServerCredentials creds, Func<string, string> encrypt)
+        {
+            if (creds == null)
+            {
+                return null;
+            }
+
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(encrypt(creds.UserId + ":" + creds.Password)));
         }
 
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)

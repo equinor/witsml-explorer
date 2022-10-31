@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Principal;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -16,6 +13,7 @@ using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
+using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
@@ -51,7 +49,22 @@ namespace WitsmlExplorer.Api.Services
         {
             ServerCredentials credentials = GetBasicCredentialsFromHeaderValue(headerValue);
             await VerifyCredentials(credentials);
-            return Encrypt(credentials.Password);
+            return Encrypt($"{credentials.UserId}:{credentials.Password}");
+        }
+
+        public async Task<ServerCredentials> GetCredentialsCookieFirst(IEssentialHeaders headers, string server)
+        {
+            ServerCredentials result;
+            if (headers.HasCookieCredentials(server))
+            {
+                string[] cred = Decrypt(headers.GetCookie(server)).Split(":");
+                result = new ServerCredentials(headers.GetHost(server), cred[0], cred[1]);
+            }
+            else
+            {
+                result = await GetSystemCredentialsWithToken(headers.GetBearerToken(), new Uri(headers.GetHost(server)));
+            }
+            return result;
         }
 
         public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null)
@@ -63,6 +76,7 @@ namespace WitsmlExplorer.Api.Services
             }
             return result;
         }
+
         private async Task VerifyCredentials(ServerCredentials serverCreds)
         {
             WitsmlClient witsmlClient = new(serverCreds.Host.ToString(), serverCreds.UserId, serverCreds.Password, _clientCapabilities);
@@ -123,15 +137,11 @@ namespace WitsmlExplorer.Api.Services
             return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
         }
 
-        public bool ValidEncryptedBasicCredentials(string headerValue)
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCookieAndToken(EssentialHeaders headers)
         {
-            return GetBasicCredentialsFromHeaderValue(headerValue) != null;
+            ServerCredentials witsmlCredentials = GetCredentialsCookieFirst(headers, EssentialHeaders.WitsmlTargetServer).Result;
+            return (GetTokenUserPrincipalName(headers.Authorization), witsmlCredentials.UserId);
         }
 
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromHeaderValues(string authorization, string witsmlServerHeaderValue)
-        {
-            ServerCredentials witsmlCredentials = GetBasicCredentialsFromHeaderValue(witsmlServerHeaderValue);
-            return (GetTokenUserPrincipalName(authorization), witsmlCredentials.UserId);
-        }
     }
 }

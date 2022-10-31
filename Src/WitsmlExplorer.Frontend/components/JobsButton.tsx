@@ -15,8 +15,8 @@ const JobsButton = (): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectJobs, payload: {} });
   };
 
-  const currentPassword = CredentialsService.getCredentials().find((cred) => cred.server.id == selectedServer?.id)?.password;
-  const disabled = !selectedServer || (!msalEnabled && !currentPassword);
+  const access = CredentialsService.hasValidCookieForServer(selectedServer?.url);
+  const disabled = !selectedServer || (!msalEnabled && !access);
 
   return (
     <Button variant="ghost" onClick={onClick} disabled={disabled}>
