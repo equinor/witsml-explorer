@@ -18,6 +18,7 @@ import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataIm
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
+import { onClickCompareLogToServer } from "./CompareLogToServer";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
@@ -110,6 +111,20 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "log", [])} to server`} disabled={checkedLogObjectRows.length != 1}>
+          {servers.map(
+            (server: Server) =>
+              server.id !== selectedServer.id && (
+                <MenuItem
+                  key={server.name}
+                  onClick={() => onClickCompareLogToServer(server, selectedServer, checkedLogObjectRows[0], dispatchOperation)}
+                  disabled={checkedLogObjectRows.length != 1}
+                >
+                  <Typography color={"primary"}>{server.name}</Typography>
+                </MenuItem>
+              )
+          )}
+        </NestedMenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedLogObjectRows.length !== 1}>
           <ListItemIcon>
             <Icon name="formatLine" color={colors.interactive.primaryResting} />
