@@ -34,6 +34,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IOptions<WitsmlClientCapabilities>> clientCapabilities = new();
             Mock<IWitsmlSystemCredentials> witsmlServerCredentials = new();
             Mock<IDocumentRepository<Server, Guid>> witsmlServerRepository = new();
+            Mock<ICredentialsCache> credentialsCache = new();
 
             dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
             dataProtector.Setup(p => p.Unprotect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
@@ -65,6 +66,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 clientCapabilities.Object,
                 witsmlServerCredentials.Object,
                 witsmlServerRepository.Object,
+                credentialsCache.Object,
                 logger.Object
             );
         }
@@ -145,33 +147,6 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
-        }
-
-        [Fact]
-        public void GetCredentialsCookieFirst_ValidCookie_ReturnCookieCreds()
-        {
-            string host = "http://some.targeturl.com/";
-            ServerCredentials scTarget = new() { UserId = "cookieuser", Password = "cookiepass", Host = new Uri(host) };
-            IEssentialHeaders essentialHeaders = CreateEssentialHeaders(scTarget, null);
-            ServerCredentials serverCreds = _credentialsService.GetCredentialsCookieFirst(essentialHeaders, EssentialHeaders.WitsmlTargetServer).Result;
-
-            Assert.True(serverCreds.UserId == "cookieuser");
-            Assert.True(serverCreds.Password == "cookiepass");
-            Assert.True(serverCreds.Host.ToString() == host);
-        }
-
-        private static IEssentialHeaders CreateEssentialHeaders(ServerCredentials targetCreds, ServerCredentials sourceCreds)
-        {
-            Mock<IEssentialHeaders> essentialHeaders = new();
-            string targetCookie = CreateCookie(targetCreds, n => n);
-            string sourceCookie = CreateCookie(sourceCreds, n => n);
-            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer)).Returns(!string.IsNullOrEmpty(targetCookie));
-            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer)).Returns(!string.IsNullOrEmpty(sourceCookie));
-            essentialHeaders.Setup(eh => eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)).Returns(targetCreds?.Host?.ToString());
-            essentialHeaders.Setup(eh => eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCreds?.Host?.ToString());
-            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlTargetServer)).Returns(targetCookie);
-            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCookie);
-            return essentialHeaders.Object;
         }
 
         private static string CreateCookie(ServerCredentials creds, Func<string, string> encrypt)

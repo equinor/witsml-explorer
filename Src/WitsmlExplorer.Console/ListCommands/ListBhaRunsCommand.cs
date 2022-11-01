@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public ListBhaRunsCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient().Result;
+            _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, ListBhaRunsSettings settings)
