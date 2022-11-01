@@ -1,9 +1,9 @@
 export default interface LogCurveInfo {
   uid: string;
   mnemonic: string;
-  minDateTimeIndex?: Date;
+  minDateTimeIndex?: string;
   minDepthIndex?: number;
-  maxDateTimeIndex?: Date;
+  maxDateTimeIndex?: string;
   maxDepthIndex?: number;
   classWitsml: string;
   unit: string;

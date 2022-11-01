@@ -1,9 +1,14 @@
 import { Table, Typography } from "@equinor/eds-core-react";
+import { useEffect, useState } from "react";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { Server } from "../../models/server";
+import CredentialsService from "../../services/credentialsService";
+import LogObjectService from "../../services/logObjectService";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
+import { displayMissingLogModal } from "../Modals/MissingObjectModals";
+import ProgressSpinner from "../ProgressSpinner";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 
 interface Indexes {
@@ -52,64 +57,117 @@ function getEndIndex(logCurveInfo?: LogCurveInfo): string {
 
 function areMismatched(sourceLogCurveInfo: LogCurveInfo, targetLogCurveInfo: LogCurveInfo): boolean {
   return (
-    sourceLogCurveInfo.minDateTimeIndex?.getTime() != targetLogCurveInfo.minDateTimeIndex?.getTime() ||
-    sourceLogCurveInfo.maxDateTimeIndex?.getTime() != targetLogCurveInfo.maxDateTimeIndex?.getTime() ||
+    sourceLogCurveInfo.minDateTimeIndex != targetLogCurveInfo.minDateTimeIndex ||
+    sourceLogCurveInfo.maxDateTimeIndex != targetLogCurveInfo.maxDateTimeIndex ||
     sourceLogCurveInfo.minDepthIndex != targetLogCurveInfo.minDepthIndex ||
     sourceLogCurveInfo.maxDepthIndex != targetLogCurveInfo.maxDepthIndex
   );
 }
 
-export function displayLogComparisonModal(
-  sourceLog: LogObject,
-  sourceLogCurveInfo: LogCurveInfo[],
-  targetLogCurveInfo: LogCurveInfo[],
-  sourceServer: Server,
-  targetServer: Server,
-  dispatchOperation: DispatchOperation
-) {
-  const sourceType = sourceLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
-  const targetType = targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
-  const indexTypesMatch = sourceType == targetType;
+export interface LogComparisonModalProps {
+  sourceLog: LogObject;
+  sourceServer: Server;
+  targetServer: Server;
+  dispatchOperation: DispatchOperation;
+}
 
-  const mismatchedIndexes = [];
-  if (indexTypesMatch) {
-    for (const sourceCurve of sourceLogCurveInfo) {
-      const targetCurve = targetLogCurveInfo.find((targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic);
-      if (!targetCurve || areMismatched(sourceCurve, targetCurve)) {
-        mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
+const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
+  const { sourceLog, sourceServer, targetServer, dispatchOperation } = props;
+  const [sourceLogCurveInfo, setSourceLogCurveInfo] = useState<LogCurveInfo[]>(null);
+  const [targetLogCurveInfo, setTargetLogCurveInfo] = useState<LogCurveInfo[]>(null);
+  const [indexesToShow, setIndexesToShow] = useState<Indexes[]>(null);
+  const [sourceType, setSourceType] = useState<string>();
+  const [targetType, setTargetType] = useState<string>();
+  const [indexTypesMatch, setIndexTypesMatch] = useState<boolean>();
+
+  useEffect(() => {
+    const setCurves = async () => {
+      const wellUid = sourceLog.wellUid;
+      const wellboreUid = sourceLog.wellboreUid;
+      const fetchCurves = async () => {
+        const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
+        const fetchSource = LogObjectService.getLogCurveInfo(wellUid, wellboreUid, sourceLog.uid);
+        const fetchTarget = LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, sourceLog.uid, targetCredentials);
+        return {
+          sourceLogCurveInfo: await fetchSource,
+          targetLogCurveInfo: await fetchTarget
+        };
+      };
+      const { sourceLogCurveInfo, targetLogCurveInfo } = await fetchCurves();
+      if (sourceLogCurveInfo.length == 0) {
+        dispatchOperation({ type: OperationType.HideModal });
+        const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
+        displayMissingLogModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource);
+        return;
+      } else if (targetLogCurveInfo.length == 0) {
+        dispatchOperation({ type: OperationType.HideModal });
+        const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
+        displayMissingLogModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget);
+        return;
+      } else {
+        setSourceLogCurveInfo(sourceLogCurveInfo);
+        setTargetLogCurveInfo(targetLogCurveInfo);
+      }
+    };
+    setCurves();
+  }, []);
+
+  useEffect(() => {
+    if (indexesToShow !== null || sourceLogCurveInfo === null || targetLogCurveInfo === null) {
+      return;
+    }
+    const sourceType = sourceLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
+    const targetType = targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
+    const indexTypesMatch = sourceType == targetType;
+
+    const mismatchedIndexes = [];
+    if (indexTypesMatch) {
+      for (const sourceCurve of sourceLogCurveInfo) {
+        const targetCurve = targetLogCurveInfo.find((targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic);
+        if (!targetCurve || areMismatched(sourceCurve, targetCurve)) {
+          mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
+        }
+      }
+      for (const targetCurve of targetLogCurveInfo) {
+        const sourceCurve = sourceLogCurveInfo.find((sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic);
+        if (!sourceCurve) {
+          mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
+        }
       }
     }
-    for (const targetCurve of targetLogCurveInfo) {
-      const sourceCurve = sourceLogCurveInfo.find((sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic);
-      if (!sourceCurve) {
-        mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
-      }
-    }
-  }
+    setSourceType(sourceType);
+    setTargetType(targetType);
+    setIndexTypesMatch(indexTypesMatch);
+    setIndexesToShow(mismatchedIndexes);
+  }, [sourceLogCurveInfo, targetLogCurveInfo]);
 
-  const confirmation = (
+  return (
     <ModalDialog
       heading={`Log comparison`}
       content={
         <>
-          <span>
-            <p>Source well name: {sourceLog.wellName}</p>
-            <p>Source wellbore name: {sourceLog.wellboreName}</p>
-            <p>Source log name: {sourceLog.name}</p>
-            <p>Source server: {sourceServer.name}</p>
-            <p>Target server: {targetServer.name}</p>
-          </span>
-          {!indexTypesMatch && (
-            <span>
-              Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
-            </span>
-          )}
-          {mismatchedIndexes.length != 0 && mismatchTable(mismatchedIndexes)}
-          {mismatchedIndexes.length == 0 && indexTypesMatch && (
-            <span>
-              All the {sourceLogCurveInfo.length} source mnemonics match the {targetLogCurveInfo.length} target mnemonics.
-            </span>
-          )}
+          {(indexesToShow && (
+            <>
+              <span>
+                <p>Source well name: {sourceLog.wellName}</p>
+                <p>Source wellbore name: {sourceLog.wellboreName}</p>
+                <p>Source log name: {sourceLog.name}</p>
+                <p>Source server: {sourceServer.name}</p>
+                <p>Target server: {targetServer.name}</p>
+              </span>
+              {!indexTypesMatch && (
+                <span>
+                  Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
+                </span>
+              )}
+              {indexesToShow.length != 0 && mismatchTable(indexesToShow)}
+              {indexesToShow.length == 0 && indexTypesMatch && (
+                <span>
+                  All the {sourceLogCurveInfo.length} source mnemonics match the {targetLogCurveInfo.length} target mnemonics.
+                </span>
+              )}
+            </>
+          )) || <ProgressSpinner message="Fetching source and target log curve infos." />}
         </>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
@@ -120,8 +178,7 @@ export function displayLogComparisonModal(
       isLoading={false}
     />
   );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
-}
+};
 
 function mismatchTable(mismatchedIndexes: Indexes[]) {
   return (
@@ -163,3 +220,5 @@ function mismatchTable(mismatchedIndexes: Indexes[]) {
     </>
   );
 }
+
+export default LogComparisonModal;
