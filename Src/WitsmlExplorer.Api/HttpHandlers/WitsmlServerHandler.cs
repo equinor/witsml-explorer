@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -18,7 +19,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Server>))]
         public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, IConfiguration configuration, HttpContext httpContext)
         {
-            _ = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            bool useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            if (!useOAuth)
+            {
+                httpContext.GetOrCreateWitsmlExplorerCookie();
+            }
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
 
             return Results.Ok(servers);

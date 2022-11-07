@@ -14,7 +14,6 @@ using Moq;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
-using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -147,16 +146,6 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
             Assert.True(creds.IsCredsNullOrEmpty());
-        }
-
-        private static string CreateCookie(ServerCredentials creds, Func<string, string> encrypt)
-        {
-            if (creds == null)
-            {
-                return null;
-            }
-
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(encrypt(creds.UserId + ":" + creds.Password)));
         }
 
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
