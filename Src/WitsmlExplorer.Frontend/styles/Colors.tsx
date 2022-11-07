@@ -1,5 +1,4 @@
-// @ts-ignore
-import { tokens } from "@equinor/eds-tokens/commonjs";
+import { tokens } from "@equinor/eds-tokens";
 
 export const colors = {
   infographic: {
