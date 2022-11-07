@@ -283,12 +283,13 @@ it("Should update logs for selected wellbore", () => {
 });
 
 it("Should update trajectories for selected wellbore", () => {
+  const updatedTrajectory = { ...TRAJECTORY_1, name: "Updated" };
   const updateTrajectoryOnWellbore = {
     type: ModificationType.UpdateTrajectoriesOnWellbore,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      trajectories: [{ ...TRAJECTORY_1, name: "Updated" }]
+      trajectories: [updatedTrajectory]
     }
   };
   const initialState = {
@@ -298,17 +299,51 @@ it("Should update trajectories for selected wellbore", () => {
     selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
     selectedTrajectory: { ...TRAJECTORY_1 }
   };
-  const updatedWellbore = { ...WELLBORE_1, trajectories: [{ ...TRAJECTORY_1, name: "Updated" }] };
+  const updatedWellbore = { ...WELLBORE_1, trajectories: [updatedTrajectory] };
   const actual = reducer(initialState, updateTrajectoryOnWellbore);
 
   const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
-  const selectedTrajectory: Trajectory = null;
   expect(actual).toStrictEqual({
     ...getInitialState(),
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
     selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
-    selectedTrajectory,
+    selectedTrajectory: updatedTrajectory,
+    wells: [updatedWell, WELL_2, WELL_3],
+    filteredWells: [updatedWell, WELL_2, WELL_3]
+  });
+});
+
+it("Should update currentSelected if deleted", () => {
+  const newTrajectories: Trajectory[] = [];
+  const trajectoryGroup = calculateTrajectoryGroupId(WELLBORE_1);
+  const updateTrajectoryOnWellbore = {
+    type: ModificationType.UpdateTrajectoriesOnWellbore,
+    payload: {
+      wellUid: WELL_1.uid,
+      wellboreUid: WELLBORE_1.uid,
+      trajectories: newTrajectories
+    }
+  };
+  const initialState = {
+    ...getInitialState(),
+    selectedWell: { ...WELL_1 },
+    selectedWellbore: { ...WELLBORE_1 },
+    selectedTrajectoryGroup: trajectoryGroup,
+    selectedTrajectory: TRAJECTORY_1,
+    currentSelected: TRAJECTORY_1
+  };
+  const updatedWellbore = { ...WELLBORE_1, trajectories: newTrajectories };
+  const actual = reducer(initialState, updateTrajectoryOnWellbore);
+
+  const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
+  expect(actual).toStrictEqual({
+    ...getInitialState(),
+    selectedWell: updatedWell,
+    selectedWellbore: updatedWellbore,
+    selectedTrajectoryGroup: trajectoryGroup,
+    selectedTrajectory: null,
+    currentSelected: trajectoryGroup,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
   });
