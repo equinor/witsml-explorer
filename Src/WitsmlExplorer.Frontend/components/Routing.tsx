@@ -12,7 +12,7 @@ import {
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTubularAction,
-  SelectWbGeometryGroupAction,
+  SelectWbGeometryAction,
   SelectWellAction,
   SelectWellboreAction,
   SetFilterAction
@@ -263,9 +263,9 @@ const Routing = (): React.ReactElement => {
       const wbGeometryUid = router.query.wbGeometryUid?.toString();
       if (selectedWellbore && wbGeometryUid && !selectedWbGeometryGroup) {
         const wbGeometry = selectedWellbore.wbGeometrys.find((object: WbGeometryObject) => object.uid === wbGeometryUid);
-        const action: SelectWbGeometryGroupAction = {
-          type: NavigationType.SelectWbGeometryGroup,
-          payload: { wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+        const action: SelectWbGeometryAction = {
+          type: NavigationType.SelectWbGeometry,
+          payload: { wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore, wbGeometry }
         };
         dispatch(wbGeometry, action);
       }
@@ -297,7 +297,7 @@ const getQueryParamsFromState = (state: NavigationState): QueryParams => {
     ...(state.selectedRiskGroup && { riskUid: state.selectedRiskGroup }),
     ...(state.selectedTrajectory && { trajectoryUid: state.selectedTrajectory.uid }),
     ...(state.selectedTubular && { tubularUid: state.selectedTubular.uid }),
-    ...(state.selectedWbGeometryGroup && { wbGeometryUid: state.selectedWbGeometryGroup })
+    ...(state.selectedWbGeometry && { wbGeometryUid: state.selectedWbGeometry.uid })
   };
 };
 

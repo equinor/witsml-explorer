@@ -20,7 +20,7 @@ const RefreshHandler = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
 
   useEffect(() => {
-    const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction) => {
+    const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction: RefreshAction) => {
       const loggedIn = CredentialsService.isAuthorizedForServer(navigationState.selectedServer);
       const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url && loggedIn;
       if (!shouldTryRefresh) {
@@ -62,6 +62,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.Rigs:
             await refreshRigs(refreshAction, ModificationType.UpdateRigsOnWellbore);
+            break;
+          case EntityType.WbGeometry:
+            await refreshWbGeometry(refreshAction, ModificationType.UpdateWbGeometryOnWellbore);
             break;
           case EntityType.WbGeometryObjects:
             await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
@@ -202,6 +205,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (trajectories) {
         dispatchNavigation({ type: modificationType, payload: { trajectories, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshWbGeometry(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateWbGeometryOnWellbore) {
+      const wbGeometry = await WbGeometryObjectService.getWbGeometry(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.wbGeometryUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (wbGeometry) {
+        dispatchNavigation({ type: modificationType, payload: { wbGeometry, wellUid, wellboreUid } });
       }
     }
   }

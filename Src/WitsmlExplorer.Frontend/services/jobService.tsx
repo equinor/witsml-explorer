@@ -82,6 +82,7 @@ export enum JobType {
   ModifyTubular = "ModifyTubular",
   ModifyTubularComponent = "ModifyTubularComponent",
   ModifyWbGeometry = "ModifyWbGeometry",
+  ModifyWbGeometrySection = "ModifyWbGeometrySection",
   ModifyWell = "ModifyWell",
   ModifyWellbore = "ModifyWellbore",
   TrimLogObject = "TrimLogObject",

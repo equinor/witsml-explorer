@@ -11,6 +11,7 @@ enum EntityType {
   Trajectory = "Trajectory",
   Trajectories = "Trajectories",
   TrajectoryStation = "TrajectoryStation",
+  WbGeometry = "WbGeometry",
   WbGeometryObjects = "WbGeometryObjects"
 }
 

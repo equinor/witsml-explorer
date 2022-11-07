@@ -35,6 +35,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyTubular,
         ModifyTubularComponent,
         ModifyWbGeometry,
+        ModifyWbGeometrySection,
         ModifyWell,
         ModifyWellbore,
         ModifyMudLog,

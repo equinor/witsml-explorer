@@ -18,6 +18,7 @@ import {
   SelectTrajectoryGroupAction,
   SelectTubularAction,
   SelectTubularGroupAction,
+  SelectWbGeometryAction,
   SelectWbGeometryGroupAction,
   SelectWellAction,
   SelectWellboreAction
@@ -28,8 +29,9 @@ import MessageObject from "../models/messageObject";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
+import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId, calculateWbGeometryGroupId } from "../models/wellbore";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
@@ -51,6 +53,7 @@ const Nav = (): React.ReactElement => {
     selectedTubularGroup,
     selectedTubular,
     selectedWbGeometryGroup,
+    selectedWbGeometry,
     currentSelected
   } = navigationState;
 
@@ -73,7 +76,8 @@ const Nav = (): React.ReactElement => {
       getTrajectoryCrumb(selectedTrajectory, selectedWell, selectedWellbore, dispatchNavigation),
       getTubularGroupCrumb(selectedTubularGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTubularCrumb(selectedTubular, selectedWell, selectedWellbore, dispatchNavigation),
-      getWbGeometryGroupCrumb(selectedWbGeometryGroup, selectedWell, selectedWellbore, dispatchNavigation)
+      getWbGeometryGroupCrumb(selectedWbGeometryGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getWbGeometryCrumb(selectedWbGeometry, selectedWell, selectedWellbore, dispatchNavigation)
     ].filter((item) => item.name);
   };
 
@@ -195,19 +199,6 @@ const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, select
     : {};
 };
 
-const getWbGeometryGroupCrumb = (selectedWbGeometryGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectWbGeometryGroupAction) => void) => {
-  return selectedWbGeometryGroup
-    ? {
-        name: "WbGeometries",
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWbGeometryGroup,
-            payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: selectedWbGeometryGroup }
-          })
-      }
-    : {};
-};
-
 const getLogGroupCrumb = (selectedLogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectLogGroupAction) => void) => {
   return selectedLogGroup
     ? {
@@ -311,6 +302,32 @@ const getTubularCrumb = (selectedTubular: Tubular, selectedWell: Well, selectedW
           dispatch({
             type: NavigationType.SelectTubular,
             payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular: selectedTubular }
+          })
+      }
+    : {};
+};
+
+const getWbGeometryGroupCrumb = (selectedWbGeometryGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectWbGeometryGroupAction) => void) => {
+  return selectedWbGeometryGroup
+    ? {
+        name: "WbGeometries",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectWbGeometryGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: selectedWbGeometryGroup }
+          })
+      }
+    : {};
+};
+
+const getWbGeometryCrumb = (selectedWbGeometry: WbGeometryObject, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectWbGeometryAction) => void) => {
+  return selectedWbGeometry?.name
+    ? {
+        name: selectedWbGeometry.name,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectWbGeometry,
+            payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore), wbGeometry: selectedWbGeometry }
           })
       }
     : {};
