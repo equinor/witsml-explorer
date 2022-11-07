@@ -74,7 +74,7 @@ export const JobsView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "startTime", label: "Start time", type: ContentType.String },
+    { property: "startTime", label: "Start time", type: ContentType.DateTime },
     { property: "jobType", label: "Job Type", type: ContentType.String },
     { property: "wellName", label: "Well Name", type: ContentType.String },
     { property: "wellboreName", label: "Wellbore Name", type: ContentType.String },
@@ -83,7 +83,7 @@ export const JobsView = (): React.ReactElement => {
     { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
-    { property: "endTime", label: "Finish time", type: ContentType.String },
+    { property: "endTime", label: "Finish time", type: ContentType.DateTime },
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
@@ -94,8 +94,8 @@ export const JobsView = (): React.ReactElement => {
       wellName: clipLongString(jobInfo.wellName, 20),
       wellboreName: clipLongString(jobInfo.wellboreName, 20),
       objectName: clipLongString(jobInfo.objectName, 30),
-      startTime: jobInfo.startTime ? new Date(jobInfo.startTime).toLocaleString() : "-",
-      endTime: jobInfo.endTime ? new Date(jobInfo.endTime).toLocaleString() : "-",
+      startTime: jobInfo.startTime ? new Date(jobInfo.startTime) : null,
+      endTime: jobInfo.endTime ? new Date(jobInfo.endTime) : null,
       targetServer: serverUrlToName(servers, jobInfo.targetServer),
       sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
       jobInfo: jobInfo
