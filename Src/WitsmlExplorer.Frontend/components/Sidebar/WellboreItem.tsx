@@ -49,7 +49,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedTrajectory, selectedTubular, servers } = navigationState;
+  const { selectedTrajectory, selectedTubular, selectedWbGeometry, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -298,7 +298,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               well={well}
               wellbore={wellbore}
               nodeId={calculateObjectNodeId(wbGeometry)}
-              selected={selectedTrajectory && selectedTrajectory.uid === wbGeometry.uid ? true : undefined}
+              selected={selectedWbGeometry && selectedWbGeometry.uid === wbGeometry.uid ? true : undefined}
             />
           ))}
       </TreeItem>

@@ -9,14 +9,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, { WbGeometrySectionContextMenuProps } from "../ContextMenus/WbGeometrySectionContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface WbGeometrySectionRow extends ContentTableRow {
-  uid: string;
-  md: number;
-  tvd: number;
-  incl: number;
-  azi: number;
-  dTimStn: Date;
-  typeTrajStation: string;
+interface WbGeometrySectionRow extends ContentTableRow {
   wbGeometrySection: WbGeometrySection;
 }
 
@@ -49,7 +42,7 @@ export const WbGeometryView = (): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometrySections: WbGeometrySectionRow[]) => {
     const contextMenuProps: WbGeometrySectionContextMenuProps = {
-      checkedWbGeometrySections,
+      checkedWbGeometrySections: checkedWbGeometrySections.map((row) => row.wbGeometrySection),
       dispatchOperation,
       wbGeometry: selectedWbGeometry
     };

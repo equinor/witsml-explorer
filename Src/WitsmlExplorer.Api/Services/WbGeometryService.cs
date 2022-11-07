@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid)
         {
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryById(wellUid, wellboreUid, wbGeometryUid);
-            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
             return result.WbGeometrys.Any() ? FromWitsml(result.WbGeometrys.First()) : null;
         }
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
         {
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
-            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
             return result.WbGeometrys.Select(wbGeometry => FromWitsml(wbGeometry)).OrderBy(wbGeometry => wbGeometry.DTimReport);
         }

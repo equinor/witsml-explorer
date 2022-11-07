@@ -4,14 +4,14 @@ import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import WbGeometry from "../../models/wbGeometry";
+import WbGeometrySection from "../../models/wbGeometrySection";
 import { colors } from "../../styles/Colors";
-import { WbGeometrySectionRow } from "../ContentViews/WbGeometryView";
 import WbGeometrySectionPropertiesModal from "../Modals/WbGeometrySectionPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface WbGeometrySectionContextMenuProps {
-  checkedWbGeometrySections: WbGeometrySectionRow[];
+  checkedWbGeometrySections: WbGeometrySection[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   wbGeometry: WbGeometry;
 }
@@ -20,7 +20,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
   const { checkedWbGeometrySections, dispatchOperation, wbGeometry } = props;
 
   const onClickProperties = async () => {
-    const wbGeometrySectionPropertiesModalProps = { wbGeometrySection: checkedWbGeometrySections[0].wbGeometrySection, wbGeometry, dispatchOperation };
+    const wbGeometrySectionPropertiesModalProps = { wbGeometrySection: checkedWbGeometrySections[0], wbGeometry, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WbGeometrySectionPropertiesModal {...wbGeometrySectionPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
