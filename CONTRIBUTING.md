@@ -79,10 +79,7 @@ Change the configuration in `mysettings.json` to the following, so that the back
 ```
 `<username>` and `<password>` is what was configured in the docker-compose.yml file.
 
-### Swashbuckle 
-In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
 
-The generated document at `/swagger/v1/swagger.json` describing the endpoints appears as shown in OpenAPI specification [openapi.json](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-6.0#openapi-specification-openapijson).
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
@@ -106,6 +103,11 @@ yarn
 yarn dev
 ```
 You should now find WitsmlExplorer running on `localhost:3000` in your browser. Ensure that frontend, backend and database are running. 
+
+### Swashbuckle 
+In developer environment, [Swashbuckle](https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-6.0&tabs=visual-studio-code) should make `SwaggerUI` available at the local url: `http(s)://localhost:<port>/swagger`. 
+
+The generated document at `/swagger/v1/swagger.json` describing the endpoints appears as shown in OpenAPI specification [openapi.json](https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-6.0#openapi-specification-openapijson).
 
 ## Testing
 
@@ -212,8 +214,11 @@ This solution consists of 3 projects:
   * Contains domain objects which maps to the XML structure from a Witsml server. It also contains functionality to build queries for a set of Witsml objects (well, wellbore, rig, log).
 * WitsmlExplorer.Api
   * Api used by the frontend application. Every request from the frontend will be handled here. Receive job descriptions and spawn workers for every writing operations done on a witsml server.
+* WitsmlExplorer.Api
+  * Console application to be used without web GUI
 * WitsmlExplorer.Frontend
   * Frontend web application which is what the user sees and interacts with.
+
 
 ### Simplified flow
 This diagram gives a quick overview over the application components and flows.
