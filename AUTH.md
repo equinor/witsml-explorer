@@ -18,7 +18,7 @@ This is how the flow is when a user has selected a server and will need to authe
 
 ```mermaid
 sequenceDiagram
-    Note left of Frontend: User Select  WITSML <br> server for the first <br> time in current session
+    Note left of Frontend: User selects WITSML <br> server for the first <br> time in current session
     Frontend->>+Frontend: No credentials exist,<br/> display credentials <br/> dialog
     Note left of Frontend: Enter and submit <br> credentials for <br> WITSML server
     Frontend->>+Api: Verify credentials using <br/> basic auth /api/credentials/authorize
