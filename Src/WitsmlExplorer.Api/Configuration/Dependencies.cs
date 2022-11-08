@@ -38,7 +38,6 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
-
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>
