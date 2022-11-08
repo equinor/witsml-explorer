@@ -18,7 +18,7 @@ This is how the flow is when a user has selected a server and will need to authe
 
 ```mermaid
 sequenceDiagram
-    Note left of Frontend: User selects  WITSML <br> server for the first <br> time in current session
+    Note left of Frontend: User Select  WITSML <br> server for the first <br> time in current session
     Frontend->>+Frontend: No credentials exist,<br/> display credentials <br/> dialog
     Note left of Frontend: Enter and submit <br> credentials for <br> WITSML server
     Frontend->>+Api: Verify credentials using <br/> basic auth /api/credentials/authorize
@@ -29,9 +29,9 @@ sequenceDiagram
     Api->>-Frontend: If not valid, return error and <br> display credentials dialog
     activate Api
     Api->>Api: If valid, encrypt password <br> and store it in memory <br> using DataProtection library
-    Api->>Frontend: Return encrypted password
+    Api->>Frontend: Return 200 OK + cookie
     activate Frontend
-    Frontend->>-Frontend: Store encrypted <br> password in memory <br> for x minutes
+    Frontend->>-Frontend: Store login expiration  <br> in local storage
     Frontend->>-Api: Fetch wells using basic <br>auth with encrypted password
     Api->>-Api: Decrypt password using <br> Data Protection Libary
     activate Api
