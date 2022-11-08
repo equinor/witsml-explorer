@@ -223,6 +223,27 @@ This solution consists of 3 projects:
 ### Simplified flow
 This diagram gives a quick overview over the application components and flows.
 
+Get data
+```mermaid
+graph LR
+    A[Client] -->|Navigate| B(WITSML Explorer <br> Web Application)
+    B ---> |GET <br><br>api/wells/ <br> api/wellsbores/ <br> api/logs/ <br> <br> REST| C[WITSML Explorer <br>Web Api]
+    C ---> |JSON Response| B
+    C ----> |GET <br><br>WMLSGetFromStore <br><br> SOAP| D(Witsml Server)
+    D ---> |Xml Response| C
+```
+
+Worker / jobs
+```mermaid
+sequenceDiagram
+    WITSML Explorer Web Appliction->>+WebApi - Worker: POST <br> api/jobs/<jobType>
+    WebApi - Worker->>WITSML Explorer Web Appliction: Worker accepts 200 OK
+    WebApi - Worker->>+Witsml Server: WMLS_GetFromStore <br> WMLS_AddToStore <br> WMLS_UpdateInStore <br> WMLS_DeleteFromStore
+    Witsml Server ->>- WebApi - Worker: XML Response
+    WebApi - Worker->>-WITSML Explorer Web Appliction: Send notification
+```
+
+Old Chart:
 <img src="./flow-chart.svg" alt="Diagram showing the application components and flows">
 
 * When the user navigates in the web application, WITSML data is retrieved.
