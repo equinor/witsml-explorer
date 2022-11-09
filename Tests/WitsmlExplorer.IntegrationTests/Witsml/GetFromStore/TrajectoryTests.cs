@@ -23,7 +23,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
         private static partial Regex DTimLastChangeRegex();
         [GeneratedRegex(">\\s+<")]
-        private static partial Regex FileTrajectoryRegex();
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public TrajectoryTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             string fileTrajectoryXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/trajectory.xml"));
             //handle whitespace
-            fileTrajectoryXml = FileTrajectoryRegex().Replace(fileTrajectoryXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileTrajectoryXml = WhitespaceBetweenElementsRegex().Replace(fileTrajectoryXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTrajectoryXml, serverTrajectoryXml);
         }
     }

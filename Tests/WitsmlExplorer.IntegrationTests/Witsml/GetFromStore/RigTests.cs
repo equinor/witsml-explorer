@@ -24,7 +24,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
         private static partial Regex DTimLastChangeRegex();
         [GeneratedRegex(">\\s+<")]
-        private static partial Regex FileTrajectoryRegex();
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public RigTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -48,7 +48,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             string fileRigXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/rig.xml"));
             //handle whitespace
-            fileRigXml = FileTrajectoryRegex().Replace(fileRigXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileRigXml = WhitespaceBetweenElementsRegex().Replace(fileRigXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileRigXml, serverRigXml);
         }
     }

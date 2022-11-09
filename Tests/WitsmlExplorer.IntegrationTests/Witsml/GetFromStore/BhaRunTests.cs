@@ -23,7 +23,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         [GeneratedRegex("<dTimCreation>.+?<\\/dTimCreation>")]
         private static partial Regex DTimCreationRegex();
         [GeneratedRegex(">\\s+<")]
-        private static partial Regex FileTrajectoryRegex();
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public BhaRunTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             string fileBhaRunXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/bhaRun.xml"));
             //handle whitespace
-            fileBhaRunXml = FileTrajectoryRegex().Replace(fileBhaRunXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileBhaRunXml = WhitespaceBetweenElementsRegex().Replace(fileBhaRunXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileBhaRunXml, serverBhaRunXml);
         }
     }

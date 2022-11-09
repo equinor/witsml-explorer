@@ -24,7 +24,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
         private static partial Regex DTimLastChangeRegex();
         [GeneratedRegex(">\\s+<")]
-        private static partial Regex FileTrajectoryRegex();
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public TubularTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -48,7 +48,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 
             string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/tubular.xml"));
             //handle whitespace
-            fileTubularXml = FileTrajectoryRegex().Replace(fileTubularXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileTubularXml = WhitespaceBetweenElementsRegex().Replace(fileTubularXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTubularXml, serverTubularXml);
         }
     }
