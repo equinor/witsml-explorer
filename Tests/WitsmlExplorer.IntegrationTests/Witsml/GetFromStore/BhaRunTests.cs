@@ -13,11 +13,17 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class BhaRunTests
+    public partial class BhaRunTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
+        [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
+        private static partial Regex DTimLastChangeRegex();
+        [GeneratedRegex("<dTimCreation>.+?<\\/dTimCreation>")]
+        private static partial Regex DTimCreationRegex();
+        [GeneratedRegex(">\\s+<")]
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public BhaRunTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -36,14 +42,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlBhaRuns serverBhaRun = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverBhaRunXml = XmlHelper.Serialize(serverBhaRun);
             //disregard commonData times as they are handled by the Witsml Server
-            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
-            serverBhaRunXml = Regex.Replace(serverBhaRunXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
+            serverBhaRunXml = DTimCreationRegex().Replace(serverBhaRunXml, "");
+            serverBhaRunXml = DTimLastChangeRegex().Replace(serverBhaRunXml, "");
 
             string fileBhaRunXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/bhaRun.xml"));
             //handle whitespace
-            fileBhaRunXml = Regex.Replace(fileBhaRunXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileBhaRunXml = WhitespaceBetweenElementsRegex().Replace(fileBhaRunXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileBhaRunXml, serverBhaRunXml);
         }
-
     }
 }

@@ -13,11 +13,17 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class TrajectoryTests
+    public partial class TrajectoryTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
+        [GeneratedRegex("<dTimCreation>.+?<\\/dTimCreation>")]
+        private static partial Regex DTimCreationRegex();
+        [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
+        private static partial Regex DTimLastChangeRegex();
+        [GeneratedRegex(">\\s+<")]
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public TrajectoryTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -36,14 +42,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlTrajectories serverTrajectory = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverTrajectoryXml = XmlHelper.Serialize(serverTrajectory);
             //disregard commonData times as they are handled by the Witsml Server
-            serverTrajectoryXml = Regex.Replace(serverTrajectoryXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
-            serverTrajectoryXml = Regex.Replace(serverTrajectoryXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
+            serverTrajectoryXml = DTimCreationRegex().Replace(serverTrajectoryXml, "");
+            serverTrajectoryXml = DTimLastChangeRegex().Replace(serverTrajectoryXml, "");
 
             string fileTrajectoryXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/trajectory.xml"));
             //handle whitespace
-            fileTrajectoryXml = Regex.Replace(fileTrajectoryXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileTrajectoryXml = WhitespaceBetweenElementsRegex().Replace(fileTrajectoryXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTrajectoryXml, serverTrajectoryXml);
         }
-
     }
 }
