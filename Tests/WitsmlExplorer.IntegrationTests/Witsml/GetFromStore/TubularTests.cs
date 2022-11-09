@@ -14,11 +14,17 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class TubularTests
+    public partial class TubularTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
+        [GeneratedRegex("<dTimCreation>.+?<\\/dTimCreation>")]
+        private static partial Regex DTimCreationRegex();
+        [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
+        private static partial Regex DTimLastChangeRegex();
+        [GeneratedRegex(">\\s+<")]
+        private static partial Regex FileTrajectoryRegex();
         public TubularTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -37,14 +43,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlTubulars serverTubular = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverTubularXml = XmlHelper.Serialize(serverTubular);
             //disregard commonData times as they are handled by the Witsml Server
-            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
-            serverTubularXml = Regex.Replace(serverTubularXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
+            serverTubularXml = DTimCreationRegex().Replace(serverTubularXml, "");
+            serverTubularXml = DTimLastChangeRegex().Replace(serverTubularXml, "");
 
             string fileTubularXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/tubular.xml"));
             //handle whitespace
-            fileTubularXml = Regex.Replace(fileTubularXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileTubularXml = FileTrajectoryRegex().Replace(fileTubularXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileTubularXml, serverTubularXml);
         }
-
     }
 }

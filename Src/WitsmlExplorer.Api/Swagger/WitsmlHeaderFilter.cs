@@ -17,10 +17,7 @@ namespace WitsmlExplorer.Api.Swagger
         {
             List<string> emptyHeader = new() { typeof(WitsmlServerHandler).ToString() };
             List<string> witsmlSourceHeader = new() { typeof(JobHandler).ToString() };
-            if (operation.Parameters == null)
-            {
-                operation.Parameters = new List<OpenApiParameter>();
-            }
+            operation.Parameters ??= new List<OpenApiParameter>();
             bool noHeader = emptyHeader.Contains(context.MethodInfo.DeclaringType.FullName);
             bool sourceServerHeader = witsmlSourceHeader.Contains(context.MethodInfo.DeclaringType.FullName);
             if (!noHeader)
