@@ -1,5 +1,7 @@
 using System.Globalization;
 
+using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Models.Measure
 {
     public class MeasureWithDatum : Measure
@@ -7,7 +9,7 @@ namespace WitsmlExplorer.Api.Models.Measure
         public double Value { get; set; }
         public string Datum { get; set; }
 
-        public Witsml.Data.Measures.WitsmlMeasureWithDatum ToWitsml()
+        public T ToWitsml<T>() where T : Witsml.Data.Measures.WitsmlMeasureWithDatum, new()
         {
             return new()
             {
@@ -16,5 +18,30 @@ namespace WitsmlExplorer.Api.Models.Measure
                 Datum = Datum
             };
         }
+
+        public static T ToEmptyWitsml<T>() where T : Witsml.Data.Measures.WitsmlMeasureWithDatum, new()
+        {
+            return new()
+            {
+                Uom = "",
+                Value = "",
+                Datum = ""
+            };
+        }
+
+        public static MeasureWithDatum FromWitsml(Witsml.Data.Measures.WitsmlMeasureWithDatum witsmlMeasure)
+        {
+            if (witsmlMeasure == null)
+            {
+                return null;
+            }
+            return new()
+            {
+                Uom = witsmlMeasure.Uom,
+                Value = StringHelpers.ToDouble(witsmlMeasure.Value),
+                Datum = witsmlMeasure.Datum,
+            };
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 export enum ComponentType {
-  TubularComponent = "Tubular Component",
+  Mnemonic = "Mnemonic",
   TrajectoryStation = "Trajectory Station",
-  Mnemonic = "Mnemonic"
+  TubularComponent = "Tubular Component",
+  WbGeometrySection = "WbGeometry Section"
 }

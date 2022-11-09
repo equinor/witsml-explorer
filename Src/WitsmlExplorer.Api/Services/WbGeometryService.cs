@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +14,8 @@ namespace WitsmlExplorer.Api.Services
     public interface IWbGeometryService
     {
         Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid);
+        Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid);
+        Task<List<WbGeometrySection>> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid);
 
     }
 
@@ -23,33 +24,68 @@ namespace WitsmlExplorer.Api.Services
     {
         public WbGeometryService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
+        public async Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid)
+        {
+            WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryById(wellUid, wellboreUid, wbGeometryUid);
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+
+            return result.WbGeometrys.Any() ? FromWitsml(result.WbGeometrys.First()) : null;
+        }
+
         public async Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
         {
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
-            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
-            return result.WbGeometrys.Select(wbGeometry =>
-                new WbGeometry
+            return result.WbGeometrys.Select(wbGeometry => FromWitsml(wbGeometry)).OrderBy(wbGeometry => wbGeometry.DTimReport);
+        }
+
+        private static WbGeometry FromWitsml(WitsmlWbGeometry wbGeometry)
+        {
+            return new WbGeometry
+            {
+                WellUid = wbGeometry.UidWell,
+                Uid = wbGeometry.Uid,
+                WellboreUid = wbGeometry.UidWellbore,
+                Name = wbGeometry.Name,
+                WellName = wbGeometry.NameWell,
+                WellboreName = wbGeometry.NameWellbore,
+                DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
+                MdBottom = MeasureWithDatum.FromWitsml(wbGeometry.MdBottom),
+                GapAir = LengthMeasure.FromWitsml(wbGeometry.GapAir),
+                DepthWaterMean = LengthMeasure.FromWitsml(wbGeometry.DepthWaterMean),
+                CommonData = new CommonData()
                 {
-                    WellUid = wbGeometry.UidWell,
-                    Uid = wbGeometry.Uid,
-                    WellboreUid = wbGeometry.UidWellbore,
-                    Name = wbGeometry.Name,
-                    WellName = wbGeometry.NameWell,
-                    WellboreName = wbGeometry.NameWellbore,
-                    DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
-                    MdBottom = (wbGeometry.MdBottom == null) ? null : new MeasureWithDatum { Uom = wbGeometry.MdBottom.Uom, Value = double.Parse(wbGeometry.MdBottom.Value, CultureInfo.InvariantCulture) },
-                    GapAir = (wbGeometry.GapAir == null) ? null : new LengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = StringHelpers.ToDecimal(wbGeometry.GapAir.Value) },
-                    DepthWaterMean = (wbGeometry.DepthWaterMean == null) ? null : new LengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = StringHelpers.ToDecimal(wbGeometry.DepthWaterMean.Value) },
-                    CommonData = new CommonData()
-                    {
-                        SourceName = wbGeometry.CommonData.SourceName,
-                        ItemState = wbGeometry.CommonData.ItemState,
-                        Comments = wbGeometry.CommonData.Comments,
-                        DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
-                        DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
-                    }
-                }).OrderBy(wbGeometry => wbGeometry.DTimReport);
+                    SourceName = wbGeometry.CommonData.SourceName,
+                    ItemState = wbGeometry.CommonData.ItemState,
+                    Comments = wbGeometry.CommonData.Comments,
+                    DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
+                    DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
+                }
+            };
+        }
+
+        public async Task<List<WbGeometrySection>> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid)
+        {
+            WitsmlWbGeometrys query = WbGeometryQueries.GetSectionsByWbGeometryId(wellUid, wellboreUid, wbGeometryUid);
+            WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlWbGeometry witsmlWbGeometry = result.WbGeometrys.FirstOrDefault();
+            return witsmlWbGeometry?.WbGeometrySections.Select(section => new WbGeometrySection
+            {
+                Uid = section.Uid,
+                TypeHoleCasing = section.TypeHoleCasing,
+                MdTop = MeasureWithDatum.FromWitsml(section.MdTop),
+                MdBottom = MeasureWithDatum.FromWitsml(section.MdBottom),
+                TvdTop = MeasureWithDatum.FromWitsml(section.TvdTop),
+                TvdBottom = MeasureWithDatum.FromWitsml(section.TvdBottom),
+                IdSection = LengthMeasure.FromWitsml(section.IdSection),
+                OdSection = LengthMeasure.FromWitsml(section.OdSection),
+                WtPerLen = LengthMeasure.FromWitsml(section.WtPerLen),
+                Grade = section.Grade,
+                CurveConductor = StringHelpers.ToNullableBoolean(section.CurveConductor),
+                DiaDrift = LengthMeasure.FromWitsml(section.DiaDrift),
+                FactFric = string.IsNullOrEmpty(section.FactFric) ? null : StringHelpers.ToDouble(section.FactFric)
+            }).ToList();
         }
     }
 }

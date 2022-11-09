@@ -37,6 +37,7 @@ import LogTypeItem from "./LogTypeItem";
 import TrajectoryItem from "./TrajectoryItem";
 import TreeItem from "./TreeItem";
 import TubularItem from "./TubularItem";
+import WbGeometryItem from "./WbGeometryItem";
 
 interface WellboreItemProps {
   well: Well;
@@ -48,7 +49,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedTrajectory, selectedTubular, servers } = navigationState;
+  const { selectedTrajectory, selectedTubular, selectedWbGeometry, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -286,7 +287,21 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         labelText={"WbGeometries"}
         onLabelClick={() => onSelectWbGeometryGroup(well, wellbore, wbGeometryGroupId)}
         onContextMenu={preventContextMenuPropagation}
-      />
+      >
+        {wellbore &&
+          wellbore.wbGeometrys &&
+          wellbore.wbGeometrys.map((wbGeometry) => (
+            <WbGeometryItem
+              key={calculateObjectNodeId(wbGeometry)}
+              wbGeometryGroup={wbGeometryGroupId}
+              wbGeometry={wbGeometry}
+              well={well}
+              wellbore={wellbore}
+              nodeId={calculateObjectNodeId(wbGeometry)}
+              selected={selectedWbGeometry && selectedWbGeometry.uid === wbGeometry.uid ? true : undefined}
+            />
+          ))}
+      </TreeItem>
     </TreeItem>
   );
 };

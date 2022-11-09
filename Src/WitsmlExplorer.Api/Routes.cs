@@ -25,8 +25,6 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
 
-            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/wbGeometrys", WbGeometryHandler.GetWbGeometries, useOAuth2);
-
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/risks", RiskHandler.GetRisks, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/tubulars", TubularHandler.GetTubulars, useOAuth2);
@@ -53,6 +51,10 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations, useOAuth2);
+
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/wbgeometrys", WbGeometryHandler.GetWbGeometries, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/wbgeometrys/{wbGeometryUid}", WbGeometryHandler.GetWbGeometry, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/wbgeometrys/{wbGeometryUid}/wbgeometrysections", WbGeometryHandler.GetWbGeometrySections, useOAuth2);
 
             app.MapPost("/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
             app.MapGet("/jobs/jobinfos", JobHandler.GetJobInfosByAuthorizedUser, useOAuth2);

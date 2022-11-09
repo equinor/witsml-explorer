@@ -34,6 +34,27 @@ namespace WitsmlExplorer.Api.Services
             return ToBooleanSafe(input);
         }
 
+        public static bool? ToNullableBoolean(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return null;
+            }
+
+            if (input == "1")
+            {
+                return true;
+            }
+            if (input == "0")
+            {
+                return false;
+            }
+
+            bool isBoolean = bool.TryParse(input, out bool value);
+
+            return isBoolean ? value : throw new ArgumentException($"Input is not compatible to be parsed to a bool value: {input}");
+        }
+
         /// <summary>
         /// Converts a nullable boolean to either "true" or "false", or null if input is null.
         /// WITSML does not allow the default bool.ToString() values of "True" and "False".
