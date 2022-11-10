@@ -9,7 +9,7 @@ interface ModalDialogProps {
   content: ReactElement;
   onSubmit: () => void;
   isLoading: boolean;
-  confirmColor?: "default" | "inherit" | "primary" | "secodary" | "danger";
+  confirmColor?: "default" | "inherit" | "primary" | "secondary" | "danger";
   confirmText?: string;
   confirmDisabled?: boolean;
   switchButtonPlaces?: boolean;
