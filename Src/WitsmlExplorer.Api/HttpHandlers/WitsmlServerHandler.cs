@@ -16,7 +16,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
-            return Results.Ok(servers);
+            return TypedResults.Ok(servers);
         }
         [Produces(typeof(Server))]
         public static async Task<IResult> CreateWitsmlServer(Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
