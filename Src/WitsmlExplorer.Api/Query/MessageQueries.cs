@@ -36,7 +36,15 @@ namespace WitsmlExplorer.Api.Query
                     Uid = "",
                     Name = "",
                     MessageText = "",
+                    TypeMessage = "",
+                    DTim = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        SourceName = "",
+                        DTimCreation = "",
+                        DTimLastChange = "",
+                        Comments = ""
+                    }
                 }.AsSingletonList()
             };
         }

@@ -47,8 +47,8 @@ export function emptyRig(): Rig {
     yearEntService: "",
     commonData: {
       sourceName: "",
-      dTimCreation: null,
-      dTimLastChange: null,
+      dTimCreation: "",
+      dTimLastChange: "",
       itemState: ""
     }
   };

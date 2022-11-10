@@ -19,8 +19,8 @@ export function emptyWbGeometryObject(): WbGeometryObject {
     depthWaterMean: null,
     commonData: {
       sourceName: "",
-      dTimCreation: null,
-      dTimLastChange: null,
+      dTimCreation: "",
+      dTimLastChange: "",
       itemState: "",
       comments: ""
     }

@@ -30,20 +30,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlMessages witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
             WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
             WitsmlMessage messageObject = result.Messages.FirstOrDefault();
-            return messageObject == null
-                ? null
-                : new MessageObject
-                {
-                    WellboreUid = messageObject.UidWellbore,
-                    WellboreName = messageObject.NameWellbore,
-                    WellUid = messageObject.UidWell,
-                    WellName = messageObject.NameWell,
-                    Uid = messageObject.Uid,
-                    Name = messageObject.Name,
-                    MessageText = messageObject.MessageText,
-                    DateTimeCreation = StringHelpers.ToDateTime(messageObject.CommonData.DTimCreation),
-                    DateTimeLastChange = StringHelpers.ToDateTime(messageObject.CommonData.DTimLastChange)
-                };
+            return messageObject == null ? null : FromWitsml(messageObject);
         }
 
         public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
@@ -52,23 +39,33 @@ namespace WitsmlExplorer.Api.Services
             WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
             WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
             List<MessageObject> messageObjects = result.Messages
-                .Select(message =>
-                    new MessageObject
-                    {
-                        Uid = message.Uid,
-                        Name = message.Name,
-                        WellboreUid = message.UidWellbore,
-                        WellboreName = message.NameWellbore,
-                        WellUid = message.UidWell,
-                        WellName = message.NameWell,
-                        MessageText = message.MessageText,
-                        DateTimeLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange),
-                        DateTimeCreation = StringHelpers.ToDateTime(message.CommonData.DTimCreation)
-                    })
-                .OrderBy(message => message.WellboreName).ToList();
+                .Select(FromWitsml).OrderBy((m) => m.DTim).ToList();
             double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
             Log.Debug("Fetched {Count} messageobjects from {WellboreName} in {Elapsed} seconds", messageObjects.Count, messageObjects.FirstOrDefault()?.WellboreName, elapsed);
             return messageObjects;
+        }
+
+        private static MessageObject FromWitsml(WitsmlMessage message)
+        {
+            return new MessageObject
+            {
+                WellboreUid = message.UidWellbore,
+                WellboreName = message.NameWellbore,
+                WellUid = message.UidWell,
+                WellName = message.NameWell,
+                Uid = message.Uid,
+                Name = message.Name,
+                MessageText = message.MessageText,
+                TypeMessage = message.TypeMessage,
+                DTim = StringHelpers.ToDateTimeOffset(message.DTim),
+                CommonData = new()
+                {
+                    SourceName = message.CommonData.SourceName,
+                    Comments = message.CommonData.Comments,
+                    DTimCreation = StringHelpers.ToDateTime(message.CommonData.DTimCreation),
+                    DTimLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange)
+                }
+            };
         }
     }
 }

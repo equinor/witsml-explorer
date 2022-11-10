@@ -40,8 +40,8 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
           heading={editMode ? `Edit properties for ${editableMessageObject.name}` : `New Log`}
           content={
             <>
-              <TextField disabled id="dateTimeCreation" label="created" defaultValue={editableMessageObject.dateTimeCreation} fullWidth />
-              <TextField disabled id="dateTimeLastChange" label="last changed" defaultValue={editableMessageObject.dateTimeLastChange} fullWidth />
+              <TextField disabled id="dateTimeCreation" label="created" defaultValue={editableMessageObject.commonData.dTimCreation} fullWidth />
+              <TextField disabled id="dateTimeLastChange" label="last changed" defaultValue={editableMessageObject.commonData.dTimLastChange} fullWidth />
               <TextField disabled id="uid" label="message uid" defaultValue={editableMessageObject.uid} fullWidth />
               <TextField
                 id="name"
