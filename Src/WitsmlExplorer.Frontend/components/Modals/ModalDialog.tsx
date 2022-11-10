@@ -82,7 +82,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ) : (
       <></>
     ),
-    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"danger"} variant="outlined" align={"right"} style={{ marginLeft: "auto", margin: "0.5em", float: "right" }}>
+    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"danger"} variant="contained" align={"right"} style={{ marginLeft: "auto", margin: "0.5em", float: "right" }}>
       Delete
     </StyledButton>
   ];

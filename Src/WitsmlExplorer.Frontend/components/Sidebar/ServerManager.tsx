@@ -105,7 +105,9 @@ const ServerManager = (): React.ReactElement => {
 
   const onEditItem = (server: Server) => {
     const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
+
     dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+    setIsOpen(false);
   };
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
@@ -144,7 +146,7 @@ const ServerManager = (): React.ReactElement => {
     <>
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
-        <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
+        <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)} open={isOpen}>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
