@@ -80,7 +80,15 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ) : (
       <></>
     ),
-    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"danger"} variant="contained" align={"right"} style={{ marginLeft: "auto", margin: "0.5em", float: "right" }}>
+    <StyledButton
+      key={"delete"}
+      disabled={isLoading}
+      onClick={onDelete}
+      color={"danger"}
+      variant="contained"
+      align={"right"}
+      style={{ marginLeft: "auto", margin: "0.5em", float: "right" }}
+    >
       Delete
     </StyledButton>
   ];
@@ -94,30 +102,27 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-
       </Content>
-      <Dialog.Actions style={{ width: "100%" }} >
-        {isLoading ?
+      <Dialog.Actions style={{ width: "100%" }}>
+        {isLoading ? (
           <StyledButton>
             <Progress.Dots />
           </StyledButton>
-          :
+        ) : (
           buttons[switchButtonPlaces ? 1 : 0]
-        }
+        )}
         {buttons[switchButtonPlaces ? 0 : 1]}
         {onDelete && buttons[2]}
       </Dialog.Actions>
     </Dialog>
-
   );
 };
 
 export enum ModalWidth {
-  SMALL = "444px", // xs 
+  SMALL = "444px", // xs
   MEDIUM = "600px", // sm
   LARGE = "960px" // md
 }
-
 
 const ErrorMessage = styled.div`
   margin-top: 0.5em;
@@ -129,7 +134,7 @@ const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
 `;
 
-const StyledButton = styled(Button) <{ align?: string }>`
+const StyledButton = styled(Button)<{ align?: string }>`
   &&& {
     ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
   }
