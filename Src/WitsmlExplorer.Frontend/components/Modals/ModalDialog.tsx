@@ -1,17 +1,15 @@
-import { Button, Dialog } from "@equinor/eds-core-react";
-import { CircularProgress as MuiCircularProgress, PropTypes } from "@material-ui/core";
+import { Button, Dialog, Progress } from "@equinor/eds-core-react";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { colors } from "../../styles/Colors";
 
 interface ModalDialogProps {
   heading: string;
   content: ReactElement;
   onSubmit: () => void;
   isLoading: boolean;
-  confirmColor?: PropTypes.Color;
+  confirmColor?: "default" | "inherit" | "primary" | "secodary" | "danger";
   confirmText?: string;
   confirmDisabled?: boolean;
   switchButtonPlaces?: boolean;
@@ -90,7 +88,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   return (
     <Dialog onKeyDown={onKeyPress} open={displayModal} style={{ width: width }}>
       <Dialog.Header>
-        <Title>{heading}</Title>
+        <Dialog.Title>{heading}</Dialog.Title>
       </Dialog.Header>
 
       <Content>
@@ -99,9 +97,14 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
 
       </Content>
       <Dialog.Actions style={{ width: "100%" }} >
-        {buttons[switchButtonPlaces ? 1 : 0]}
+        {isLoading ?
+          <StyledButton>
+            <Progress.Dots />
+          </StyledButton>
+          :
+          buttons[switchButtonPlaces ? 1 : 0]
+        }
         {buttons[switchButtonPlaces ? 0 : 1]}
-        {isLoading && <CircularProgress size="1.5rem" />}
         {onDelete && buttons[2]}
       </Dialog.Actions>
     </Dialog>
@@ -115,9 +118,6 @@ export enum ModalWidth {
   LARGE = "960px" // md
 }
 
-const Title = styled(Dialog.Title)`
-  border-bottom: 2px solid ${colors.interactive.disabledBorder};
-`;
 
 const ErrorMessage = styled.div`
   margin-top: 0.5em;
@@ -133,10 +133,6 @@ const StyledButton = styled(Button) <{ align?: string }>`
   &&& {
     ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
   }
-`;
-
-const CircularProgress = styled(MuiCircularProgress)`
-  vertical-align: middle;
 `;
 
 export default ModalDialog;
