@@ -184,6 +184,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onOptionsChange={({ selectedItems }) => {
               setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
             }}
+            hideClearButton={true}
           />
           <TextField
             id="role"
