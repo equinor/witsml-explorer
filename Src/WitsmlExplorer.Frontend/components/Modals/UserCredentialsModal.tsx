@@ -1,5 +1,4 @@
-import { Checkbox } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
+import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
@@ -82,33 +81,33 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
 
   return (
     <ModalDialog
-      heading={`Access server "${server.name}"`}
+      heading={`Access server`}
       content={
         <>
+          <Typography style={{ marginBottom: 20 }}>{server.name}</Typography>
           <TextField
             autoFocus={!shouldFocusPasswordInput}
             id={"username"}
             label={"Username"}
             defaultValue={username}
             required
-            fullWidth
-            error={!validText(username)}
+            variant={username?.length === 0 ? "error" : undefined}
             helperText={username?.length === 0 ? "Username must be 1-7936 characters" : ""}
-            inputProps={{ minLength: 1, maxLength: 7936 }}
-            onChange={(e) => setUsername(e.target.value)}
+            //inputProps={{ minLength: 1, maxLength: 7936 }} Do we need this? I see it runs som checks on Change?
+            onChange={(e: any) => setUsername(e.target.value)}
+            style={{ marginBottom: 15 }}
           />
           <TextField
             autoFocus={shouldFocusPasswordInput}
             id={"password"}
             label={"Password"}
             defaultValue={password}
-            error={!validText(password)}
+            variant={password?.length === 0 ? "error" : undefined}
             helperText={password?.length === 0 ? "Password must be 1-7936 characters" : ""}
-            fullWidth
             type="password"
             autoComplete="current-password"
-            inputProps={{ minLength: 1, maxLength: 7936 }}
-            onChange={(e) => setPassword(e.target.value)}
+            //inputProps={{ minLength: 1, maxLength: 7936 }} Do we need this? I see it runs som checks on Change?
+            onChange={(e: any) => setPassword(e.target.value)}
           />
           <Checkbox
             label={`Keep me logged in to ${server.name} for 24 hours`}
