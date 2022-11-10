@@ -1,6 +1,6 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, MenuList, Select } from "@material-ui/core";
+import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
@@ -29,7 +29,6 @@ const ServerManager = (): React.ReactElement => {
   const [isOpen, setIsOpen] = useState<boolean>();
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
@@ -154,36 +153,29 @@ const ServerManager = (): React.ReactElement => {
             setIsOpen(true);
           }}
           onClose={() => setIsOpen(false)}
-          open={isOpen}
-          ref={anchorRef}
-          id="select-server"
-          aria-controls={open ? "server-menu" : undefined}
-          aria-expanded={open ? "true" : undefined}
-          aria-haspopup="true"
+          MenuProps={{ open: isOpen }}
         >
-          <MenuList id="server-menu" aria-labelledby="select-server">
-            {servers
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((server: Server) => (
-                <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-                  <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
-                    {server.name}
-                  </Typography>
-                  {isOpen && (
-                    <ListItemSecondaryAction onClick={() => onEditItem(server)}>
-                      <Icon name="edit" color={colors.interactive.primaryResting} />
-                    </ListItemSecondaryAction>
-                  )}
-                </MenuItem>
-              ))}
-            <Divider />
-            <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
-              <ListItemIcon>
-                <Icon name="add" color={colors.interactive.primaryResting} />
-              </ListItemIcon>
-              <Typography color={"initial"}>Add server</Typography>
-            </MenuItem>
-          </MenuList>
+          {servers
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((server: Server) => (
+              <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
+                <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
+                  {server.name}
+                </Typography>
+                {isOpen && (
+                  <ListItemSecondaryAction onClick={() => onEditItem(server)}>
+                    <Icon name="edit" color={colors.interactive.primaryResting} />
+                  </ListItemSecondaryAction>
+                )}
+              </MenuItem>
+            ))}
+          <Divider />
+          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
+            <ListItemIcon>
+              <Icon name="add" color={colors.interactive.primaryResting} />
+            </ListItemIcon>
+            <Typography color={"initial"}>Add server</Typography>
+          </MenuItem>
         </Select>
 
         <AuthenticationState />
