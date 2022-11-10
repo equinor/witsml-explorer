@@ -9,6 +9,7 @@
 .vscode/*
 **/.vscode/*
 !.vscode/settings.json
+.eslintcache
 
 # User-specific files
 *.rsuser

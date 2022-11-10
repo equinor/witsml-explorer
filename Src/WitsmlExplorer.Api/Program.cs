@@ -31,7 +31,7 @@ if (StringHelpers.ToBoolean(builder.Configuration[ConfigConstants.OAuth2Enabled]
 {
     builder.Configuration.AddAzureWitsmlServerCreds();
 }
-builder.Host.ConfigureLogging(logging => logging.ClearProviders());
+builder.Logging.ClearProviders();
 builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
 Startup startup = new(builder.Configuration);

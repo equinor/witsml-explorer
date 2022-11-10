@@ -16,7 +16,34 @@ Whenever a request is run towards a WITSML server, the backend will decrypt the 
 This is how the flow is when a user has selected a server and will need to authenticate against it. After this is done, a fresh list of wells is fetched.  
 
 
-<img src="./credentials-flow.svg">
+```mermaid
+sequenceDiagram
+    Note left of Frontend: User selects WITSML <br> server for the first <br> time in current session
+    Frontend->>+Frontend: No credentials exist,<br/> display credentials <br/> dialog
+    Note left of Frontend: Enter and submit <br> credentials for <br> WITSML server
+    Frontend->>+Api: Verify credentials using <br/> basic auth /api/credentials/authorize
+    Api->>-Witsml Server: Verify credentials by <br/> querying for server capabilities <br/> using basic auth
+    activate Witsml Server
+    Witsml Server ->>- Api: Ok / No access 
+    activate Api
+    Api->>-Frontend: If not valid, return error and <br> display credentials dialog
+    activate Api
+    Api->>Api: If valid, encrypt password <br> and store it in memory <br> using DataProtection library
+    Api->>Frontend: Return 200 OK + cookie
+    activate Frontend
+    Frontend->>-Frontend: Store login expiration  <br> in local storage
+    Frontend->>-Api: Fetch wells using basic <br>auth with encrypted password
+    Api->>-Api: Decrypt password using <br> Data Protection Libary
+    activate Api
+    Api->>-Frontend: If not able to decrypt, <br> send back error messge
+    activate Api
+    Api->>-Witsml Server: If able to decrypt, fetch wells <br> using basic auth
+    activate Witsml Server
+    Witsml Server->>-Api: Wells
+    activate Api
+    Api->>-Frontend: Wells
+```
+
 
 ## OAuth2
 OAuth2 authorization code flow and system credentials fetched from keyvault can also be used for a simplified end user experience. Examples are outlined below for Azure AD and Azure keyvault.

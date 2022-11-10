@@ -14,11 +14,17 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
 {
-    public class RigTests
+    public partial class RigTests
     {
         private readonly WitsmlClient _client;
         private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
+        [GeneratedRegex("<dTimCreation>.+?<\\/dTimCreation>")]
+        private static partial Regex DTimCreationRegex();
+        [GeneratedRegex("<dTimLastChange>.+?<\\/dTimLastChange>")]
+        private static partial Regex DTimLastChangeRegex();
+        [GeneratedRegex(">\\s+<")]
+        private static partial Regex WhitespaceBetweenElementsRegex();
         public RigTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
@@ -37,14 +43,13 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             WitsmlRigs serverRig = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string serverRigXml = XmlHelper.Serialize(serverRig);
             //disregard commonData times as they are handled by the Witsml Server
-            serverRigXml = Regex.Replace(serverRigXml, "<dTimCreation>.+?<\\/dTimCreation>", "");
-            serverRigXml = Regex.Replace(serverRigXml, "<dTimLastChange>.+?<\\/dTimLastChange>", "");
+            serverRigXml = DTimCreationRegex().Replace(serverRigXml, "");
+            serverRigXml = DTimLastChangeRegex().Replace(serverRigXml, "");
 
             string fileRigXml = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "../../../Resources/rig.xml"));
             //handle whitespace
-            fileRigXml = Regex.Replace(fileRigXml, ">\\s+<", "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
+            fileRigXml = WhitespaceBetweenElementsRegex().Replace(fileRigXml, "><").Replace("\t", " ").Replace("\n", "").Replace("\r", "");
             Assert.Equal(fileRigXml, serverRigXml);
         }
-
     }
 }

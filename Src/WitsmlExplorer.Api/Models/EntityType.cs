@@ -17,6 +17,7 @@ namespace WitsmlExplorer.Api.Models
         Trajectories,
         Trajectory,
         TrajectoryStation,
-        WbGeometryObjects
+        WbGeometry,
+        WbGeometryObjects,
     }
 }

@@ -18,6 +18,7 @@ enum NavigationType {
   SelectTubularGroup = "SelectTubularGroup",
   SelectTubular = "SelectTubular",
   SelectWbGeometryGroup = "SelectWbGeometryGroup",
+  SelectWbGeometry = "SelectWbGeometry",
   SetFilter = "SetFilter",
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues"
