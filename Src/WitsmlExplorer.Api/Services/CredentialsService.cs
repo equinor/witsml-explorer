@@ -76,7 +76,23 @@ namespace WitsmlExplorer.Api.Services
             }
             return result;
         }
-
+        public Task<ServerCredentials> GetWitsmlCredentialsCookieCache(IEssentialHeaders headers, string server)
+        {
+            ServerCredentials result = new();
+            if (!string.IsNullOrEmpty(headers.GetCookie()))
+            {
+                string host = new Uri(headers.GetHeaderValue(server)).Host;
+                string cacheId = $"{headers.GetCookie()}@{host}";
+                string[] cacheCreds = Decrypt(_credentialsCache.Get(cacheId)).Split('@');
+                result = new ServerCredentials()
+                {
+                    Host = new Uri(headers.GetHeaderValue(server)),
+                    UserId = cacheCreds[0],
+                    Password = cacheCreds[1]
+                };
+            }
+            return Task.FromResult(result);
+        }
         public async Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null)
         {
             ServerCredentials result = GetBasicCredentialsFromHeaderValue(headerValue);
@@ -173,11 +189,16 @@ namespace WitsmlExplorer.Api.Services
             return HttpRequestExtensions.ParseServerHttpHeader(headerValue, Decrypt);
         }
 
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCacheAndToken(IEssentialHeaders headers)
+        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCacheAndToken(IEssentialHeaders headers, string server)
         {
-            ServerCredentials witsmlCredentials = GetCredentialsCookieFirst(headers, EssentialHeaders.WitsmlTargetServer).Result;
+            ServerCredentials witsmlCredentials = GetCredentialsCookieFirst(headers, server).Result;
             return (GetTokenUserPrincipalName(headers.Authorization), witsmlCredentials.UserId);
         }
-
+        public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers)
+        {
+            ServerCredentials witsmlTargetCredentials = GetWitsmlCredentialsCookieCache(headers, EssentialHeaders.WitsmlTargetServer).Result;
+            ServerCredentials witsmlSourceCredentials = GetWitsmlCredentialsCookieCache(headers, EssentialHeaders.WitsmlSourceServer).Result;
+            return (witsmlTargetCredentials, witsmlSourceCredentials);
+        }
     }
 }

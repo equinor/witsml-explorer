@@ -21,7 +21,8 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string Username { get; set; }
 
-        public string WitsmlUsername { get; set; }
+        public string WitsmlSourceUsername { get; set; }
+        public string WitsmlTargetUsername { get; set; }
 
         public string SourceServer { get; set; }
 
