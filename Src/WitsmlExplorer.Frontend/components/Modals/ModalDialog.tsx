@@ -82,7 +82,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ) : (
       <></>
     ),
-    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"secondary"} variant="outlined" align={"right"} style={{ right: 1 }}>
+    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"danger"} variant="outlined" align={"right"} style={{ marginLeft: "auto", margin: "0.5em", float: "right" }}>
       Delete
     </StyledButton>
   ];
@@ -98,7 +98,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
       </Content>
-      <Dialog.Actions>
+      <Dialog.Actions style={{ width: "100%" }} >
         {buttons[switchButtonPlaces ? 1 : 0]}
         {buttons[switchButtonPlaces ? 0 : 1]}
         {isLoading && <CircularProgress size="1.5rem" />}
