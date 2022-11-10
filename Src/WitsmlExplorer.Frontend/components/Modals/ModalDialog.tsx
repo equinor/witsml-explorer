@@ -1,4 +1,5 @@
-import { Button as MuiButton, CircularProgress as MuiCircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, PropTypes } from "@material-ui/core";
+import { Button, Dialog } from "@equinor/eds-core-react";
+import { CircularProgress as MuiCircularProgress, PropTypes } from "@material-ui/core";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
@@ -60,7 +61,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
 
   const buttons = [
     showConfirmButton ? (
-      <Button
+      <StyledButton
         key={"confirm"}
         onFocus={() => setConfirmButtonIsFocused(true)}
         onBlur={() => setConfirmButtonIsFocused(false)}
@@ -70,46 +71,51 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
         variant="contained"
       >
         {confirmText ?? "Save"}
-      </Button>
+      </StyledButton>
     ) : (
       <></>
     ),
     showCancelButton ? (
-      <Button key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+      <StyledButton key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
         Cancel
-      </Button>
+      </StyledButton>
     ) : (
       <></>
     ),
-    <Button key={"delete"} disabled={isLoading} onClick={onDelete} color={"secondary"} variant="outlined" align={"right"}>
+    <StyledButton key={"delete"} disabled={isLoading} onClick={onDelete} color={"secondary"} variant="outlined" align={"right"} style={{ right: 1 }}>
       Delete
-    </Button>
+    </StyledButton>
   ];
 
   return (
-    <Dialog onKeyDown={onKeyPress} open={displayModal} fullWidth maxWidth={width}>
-      <Title>{heading}</Title>
+    <Dialog onKeyDown={onKeyPress} open={displayModal} style={{ width: width }}>
+      <Dialog.Header>
+        <Title>{heading}</Title>
+      </Dialog.Header>
+
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        <DialogActions>
-          {buttons[switchButtonPlaces ? 1 : 0]}
-          {buttons[switchButtonPlaces ? 0 : 1]}
-          {isLoading && <CircularProgress size="1.5rem" />}
-          {onDelete && buttons[2]}
-        </DialogActions>
+
       </Content>
+      <Dialog.Actions>
+        {buttons[switchButtonPlaces ? 1 : 0]}
+        {buttons[switchButtonPlaces ? 0 : 1]}
+        {isLoading && <CircularProgress size="1.5rem" />}
+        {onDelete && buttons[2]}
+      </Dialog.Actions>
     </Dialog>
+
   );
 };
 
 export enum ModalWidth {
-  SMALL = "xs",
-  MEDIUM = "sm",
-  LARGE = "md"
+  SMALL = "444px", // xs 
+  MEDIUM = "600px", // sm
+  LARGE = "960px" // md
 }
 
-const Title = styled(DialogTitle)`
+const Title = styled(Dialog.Title)`
   border-bottom: 2px solid ${colors.interactive.disabledBorder};
 `;
 
@@ -119,11 +125,11 @@ const ErrorMessage = styled.div`
   line-break: auto;
 `;
 
-const Content = styled(DialogContent)`
+const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
 `;
 
-const Button = styled(MuiButton)<{ align?: string }>`
+const StyledButton = styled(Button) <{ align?: string }>`
   &&& {
     ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
   }
