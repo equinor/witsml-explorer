@@ -21,10 +21,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             (ServerCredentials sourceCreds, ServerCredentials targetCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
-            _ = credentialsService.GetClaimFromToken(eh.GetBearerToken());
+            string upn = credentialsService.GetClaimFromToken(eh, "upn");
             JobInfo jobInfo = new()
             {
-                Username = useOAuth2 ? "userPrincipalName" : targetCreds.UserId,
+                Username = useOAuth2 ? upn : targetCreds.UserId,
                 WitsmlTargetUsername = targetCreds.UserId,
                 WitsmlSourceUsername = sourceCreds.UserId,
                 SourceServer = eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer),
