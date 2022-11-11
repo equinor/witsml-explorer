@@ -110,13 +110,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
       <Dialog.Actions style={{ width: "100%" }}>
-        {isLoading ? (
-          <StyledButton>
-            <Progress.Dots />
-          </StyledButton>
-        ) : (
-          buttons[switchButtonPlaces ? 1 : 0]
-        )}
+        {buttons[switchButtonPlaces ? 1 : 0]}
         {buttons[switchButtonPlaces ? 0 : 1]}
         {onDelete && buttons[2]}
       </Dialog.Actions>
