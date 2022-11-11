@@ -60,7 +60,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   const buttons = [
     showConfirmButton ? (
       isLoading ? (
-        <StyledButton>
+        <StyledButton style={{ cursor: "not-allowed" }}>
           <Progress.Dots />
         </StyledButton>
       ) : (
