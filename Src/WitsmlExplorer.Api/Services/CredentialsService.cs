@@ -149,6 +149,15 @@ namespace WitsmlExplorer.Api.Services
             }
             return new ServerCredentials();
         }
+        public string GetUserNameFromToken(string token)
+        {
+            JwtSecurityTokenHandler handler = new();
+            _ = handler.ReadJwtToken(token);
+
+            string res = "";
+
+            return res;
+        }
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server)
         {
             string cacheClientId = useOauth ? GetClaimFromToken(headers, "sub") : headers.GetCookie();

@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Services
         public Task<ServerCredentials> GetCredentialsCookieFirst(IEssentialHeaders headers, string server);
         public Task<ServerCredentials> GetSystemCredentialsWithToken(string token, Uri server);
         public Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null);
+        public string GetUserNameFromToken(string token);
         public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCacheAndToken(IEssentialHeaders headers, string server);
         public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers);
     }

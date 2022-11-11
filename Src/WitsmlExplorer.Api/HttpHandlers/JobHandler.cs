@@ -21,10 +21,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             (ServerCredentials sourceCreds, ServerCredentials targetCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
-
+            _ = credentialsService.GetClaimFromToken(eh.GetBearerToken());
             JobInfo jobInfo = new()
             {
-                Username = useOAuth2 ? userPrincipalName : targetCreds.UserId,
+                Username = useOAuth2 ? "userPrincipalName" : targetCreds.UserId,
                 WitsmlTargetUsername = targetCreds.UserId,
                 WitsmlSourceUsername = sourceCreds.UserId,
                 SourceServer = eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer),
@@ -36,16 +36,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static IResult GetJobInfosByAuthorizedUser(IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
         {
-            EssentialHeaders eh = new(httpRequest);
-            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            (string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromCacheAndToken(eh);
+            // EssentialHeaders eh = new(httpRequest);
+            // bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            //(string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromCacheAndToken(eh);
 
-            if ((useOAuth2 && string.IsNullOrEmpty(userPrincipalName)) ||
-            (!useOAuth2 && string.IsNullOrEmpty(witsmlUserName)))
-            {
-                return Results.Unauthorized();
-            }
-            return useOAuth2 ? Results.Ok(jobCache.GetJobInfosByUser(userPrincipalName)) : Results.Ok(jobCache.GetJobInfosByUser(witsmlUserName));
+            // if ((useOAuth2 && string.IsNullOrEmpty(userPrincipalName)) ||
+            // (!useOAuth2 && string.IsNullOrEmpty(witsmlUserName)))
+            // {
+            //     return Results.Unauthorized();
+            // }
+            // return useOAuth2 ? Results.Ok(jobCache.GetJobInfosByUser(userPrincipalName)) : Results.Ok(jobCache.GetJobInfosByUser(witsmlUserName));
+            return Results.Unauthorized();
         }
     }
 }
