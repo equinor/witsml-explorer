@@ -88,7 +88,7 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
           }
           onSubmit={() => onSubmit(log)}
           isLoading={isLoading}
-          confirmColor={"secondary"}
+          confirmColor={"danger"}
           confirmText={"Adjust"}
           confirmDisabled={confirmDisabled}
           switchButtonPlaces

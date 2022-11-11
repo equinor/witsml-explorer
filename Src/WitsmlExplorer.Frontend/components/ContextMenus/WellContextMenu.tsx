@@ -82,7 +82,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           </span>
         }
         onConfirm={deleteWell}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         confirmText={"Delete well"}
         switchButtonPlaces={true}
       />
