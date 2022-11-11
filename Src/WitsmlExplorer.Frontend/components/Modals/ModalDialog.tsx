@@ -59,17 +59,23 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
 
   const buttons = [
     showConfirmButton ? (
-      <StyledButton
-        key={"confirm"}
-        onFocus={() => setConfirmButtonIsFocused(true)}
-        onBlur={() => setConfirmButtonIsFocused(false)}
-        disabled={confirmButtonIsDisabled}
-        onClick={onSubmit}
-        color={confirmColor ?? "primary"}
-        variant="contained"
-      >
-        {confirmText ?? "Save"}
-      </StyledButton>
+      isLoading ? (
+        <StyledButton>
+          <Progress.Dots />
+        </StyledButton>
+      ) : (
+        <StyledButton
+          key={"confirm"}
+          onFocus={() => setConfirmButtonIsFocused(true)}
+          onBlur={() => setConfirmButtonIsFocused(false)}
+          disabled={confirmButtonIsDisabled}
+          onClick={onSubmit}
+          color={confirmColor ?? "primary"}
+          variant="contained"
+        >
+          {confirmText ?? "Save"}
+        </StyledButton>
+      )
     ) : (
       <></>
     ),
@@ -124,12 +130,6 @@ export enum ModalWidth {
   LARGE = "960px" // md
 }
 
-const ErrorMessage = styled.div`
-  margin-top: 0.5em;
-  color: red;
-  line-break: auto;
-`;
-
 const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
 `;
@@ -138,6 +138,12 @@ const StyledButton = styled(Button)<{ align?: string }>`
   &&& {
     ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
   }
+`;
+
+const ErrorMessage = styled.div`
+  margin-top: 0.5em;
+  color: red;
+  line-break: auto;
 `;
 
 export default ModalDialog;
