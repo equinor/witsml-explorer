@@ -94,7 +94,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       <ModalDialog
         heading={`Remove the server "${server.name}"?`}
         content={<>Removing a server will permanently remove it from the list.</>}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         confirmText={"Remove server"}
         onCancel={onCancel}
         onSubmit={onConfirm}

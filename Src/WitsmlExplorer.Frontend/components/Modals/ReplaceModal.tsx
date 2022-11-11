@@ -33,7 +33,7 @@ export function displayReplaceModal(
       heading={`Replace ${toCopyType}${existingObjects.length > 1 ? "s" : ""}?`}
       content={content}
       onConfirm={onConfirm}
-      confirmColor={"secondary"}
+      confirmColor={"danger"}
       confirmText={`Replace ${toCopyType}${existingObjects.length > 1 ? "s" : ""}`}
       switchButtonPlaces={true}
     />
