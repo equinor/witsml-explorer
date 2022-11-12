@@ -10,7 +10,7 @@ namespace WitsmlExplorer.Api.Extensions
         public static string GetOrCreateWitsmlExplorerCookie(this HttpContext httpContext, string environment)
         {
             EssentialHeaders eh = new(httpContext.Request, environment);
-            string cookieValue = eh.GetCookie();
+            string cookieValue = eh.GetCookieValue();
             if (string.IsNullOrEmpty(cookieValue))
             {
                 CookieOptions cookieOptions = new()

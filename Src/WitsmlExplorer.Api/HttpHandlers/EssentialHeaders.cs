@@ -5,7 +5,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     {
 
         public string Authorization { get; }
-        public string GetCookie();
+        public string GetCookieValue();
         public string GetHeaderValue(string witsmlServer);
         public string GetBearerToken();
     }
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         private string WitsmlExplorerCookie { get; init; }
 
 
-        public string GetCookie()
+        public string GetCookieValue()
         {
             return WitsmlExplorerCookie;
         }

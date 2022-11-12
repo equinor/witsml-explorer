@@ -96,6 +96,10 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
+        public void RemoveCachedCredentials(string clientId)
+        {
+            _credentialsCache.RemoveAllClientCredentials(clientId);
+        }
 
         public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl)
         {
@@ -125,7 +129,7 @@ namespace WitsmlExplorer.Api.Services
 
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server)
         {
-            string cacheClientId = useOauth ? GetClaimFromToken(headers, SUBJECT) : headers.GetCookie();
+            string cacheClientId = useOauth ? GetClaimFromToken(headers, SUBJECT) : headers.GetCookieValue();
             string cacheId = $"{cacheClientId}@{new Uri(headers.GetHeaderValue(server)).Host}";
             string cacheContents = Decrypt(_credentialsCache.Get(cacheId));
 
@@ -159,7 +163,7 @@ namespace WitsmlExplorer.Api.Services
         public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers)
         {
             (ServerCredentials witsmlTargetCredentials, ServerCredentials witsmlSourceCredentials) result;
-            if (headers.GetCookie() != null)
+            if (headers.GetCookieValue() != null)
             {
                 ServerCredentials target = GetWitsmlCredentialsByCookie(headers, EssentialHeaders.WitsmlTargetServer).Result;
                 ServerCredentials source = GetWitsmlCredentialsByCookie(headers, EssentialHeaders.WitsmlSourceServer).Result;
@@ -176,14 +180,14 @@ namespace WitsmlExplorer.Api.Services
         private Task<ServerCredentials> GetWitsmlCredentialsByCookie(IEssentialHeaders headers, string server)
         {
             ServerCredentials result;
-            if (string.IsNullOrEmpty(headers.GetCookie()) || string.IsNullOrEmpty(headers.GetHeaderValue(server)))
+            if (string.IsNullOrEmpty(headers.GetCookieValue()) || string.IsNullOrEmpty(headers.GetHeaderValue(server)))
             {
                 result = new ServerCredentials();
             }
             else
             {
                 string host = new Uri(headers.GetHeaderValue(server)).Host;
-                string cacheId = $"{headers.GetCookie()}@{host}";
+                string cacheId = $"{headers.GetCookieValue()}@{host}";
                 string[] cacheCreds = Decrypt(_credentialsCache.Get(cacheId)).Split(':');
                 result = new ServerCredentials()
                 {

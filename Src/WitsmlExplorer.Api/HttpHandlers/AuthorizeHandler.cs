@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -27,20 +26,25 @@ namespace WitsmlExplorer.Api.HttpHandlers
             }
             else
             {
-                string cookieId = eh.GetCookie() ?? Guid.NewGuid().ToString();
+                string cookieId = eh.GetCookieValue() ?? Guid.NewGuid().ToString();
                 string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : cookieId;
                 double ttl = keep ? 24.0 : 1.0; // hours
                 credentialsService.CacheCredentials(cacheClientId, creds, ttl);
                 return Results.Ok();
             }
         }
-        public static IResult Deauthorize(IHttpContextAccessor httpContextAccessor)
+        public static IResult Deauthorize(IConfiguration configuration, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
-            foreach (KeyValuePair<string, string> cookie in httpContextAccessor.HttpContext.Request.Cookies)
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
+            EssentialHeaders eh = new(httpContext?.Request, environment);
+            string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : eh.GetCookieValue();
+            if (!useOAuth2)
             {
-                httpContextAccessor.HttpContext.Response.Cookies.Delete(cookie.Key);
-                //@todo delete all keys
+                httpContext.Response.Cookies.Delete($"{EssentialHeaders.CookieName}-{environment}");
             }
+            credentialsService.RemoveCachedCredentials(cacheClientId);
+
             return Results.Ok();
         }
     }

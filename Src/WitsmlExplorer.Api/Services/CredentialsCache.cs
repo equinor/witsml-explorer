@@ -8,9 +8,10 @@ namespace WitsmlExplorer.Api.Services
 
     public interface ICredentialsCache
     {
-        void Set(string id, string credentials, CacheItemPolicy policy);
-        public string Get(string id);
-        public void RefreshSession(string id, string credentials);
+        void Set(string cacheId, string encryptedCredentials, CacheItemPolicy policy);
+        public string Get(string cacheId);
+        public void RefreshSession(string cacheId, string encryptedCredentials);
+        public void RemoveAllClientCredentials(string clientId);
     }
 
     public class CredentialsCache : ICredentialsCache
@@ -23,30 +24,40 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public void Set(string id, string credentials, CacheItemPolicy policy)
+        public void Set(string cacheId, string encryptedCredentials, CacheItemPolicy policy)
         {
-            _cache.Set(id, credentials, policy);
-            LogCache();
+            _cache.Set(cacheId, encryptedCredentials, policy);
         }
 
-        public string Get(string id)
+        public string Get(string cacheId)
         {
-            return _cache.Get(id) as string;
+            return _cache.Get(cacheId) as string;
         }
 
-        public void RefreshSession(string id, string credentials)
+        public void RefreshSession(string cacheId, string encryptedCredentials)
         {
-            Set(id, credentials, new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1.0) });
+            Set(cacheId, encryptedCredentials, new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1.0) });
+        }
+
+        public void RemoveAllClientCredentials(string clientId)
+        {
+            _logger.LogInformation("{count} items in cache before removing client: {client}", _cache.GetCount(), clientId);
+            foreach (KeyValuePair<string, object> item in _cache)
+            {
+                if (item.Key.StartsWith(clientId))
+                {
+                    _cache.Remove(item.Key);
+                }
+            }
+            _logger.LogInformation("{count} items in cache after", _cache.GetCount());
         }
 
         public void LogCache()
         {
             foreach (KeyValuePair<string, object> item in _cache)
             {
-                _logger.LogWarning("\nCACHE: {Key}: {Value}", item.Key, item.Value);
+                _logger.LogInformation("\nCACHE: {Key}: {Value}", item.Key, item.Value);
             }
         }
-
     }
-
 }
