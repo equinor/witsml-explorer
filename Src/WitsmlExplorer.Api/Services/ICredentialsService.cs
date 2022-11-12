@@ -8,15 +8,12 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface ICredentialsService
     {
-        public Task<string> ProtectBasicAuthorization(string headerValue);
+        public Task VerifyCredentials(ServerCredentials serverCreds);
         public string GetClaimFromToken(IEssentialHeaders headers, string claim);
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server);
-
-        public Task<ServerCredentials> GetCredentialsCookieFirst(IEssentialHeaders headers, string server);
-        public Task<ServerCredentials> GetSystemCredentialsWithToken(string token, Uri server);
+        public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl);
+        public Task<ServerCredentials> GetSystemCredentialsByToken(string token, Uri server);
         public Task<ServerCredentials> GetCredentialsFromHeaderValue(string headerValue, string token = null);
-        public string GetUserNameFromToken(string token);
-        public (string userPrincipalName, string witsmlUserName) GetUsernamesFromCacheAndToken(IEssentialHeaders headers, string server);
         public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers);
     }
 }

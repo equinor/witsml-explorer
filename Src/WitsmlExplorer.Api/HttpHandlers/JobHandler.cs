@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
-            (ServerCredentials sourceCreds, ServerCredentials targetCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
+            (ServerCredentials targetCreds, ServerCredentials sourceCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
             string upn = credentialsService.GetClaimFromToken(eh, "upn");
             JobInfo jobInfo = new()
             {

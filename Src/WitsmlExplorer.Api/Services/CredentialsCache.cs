@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Services
         {
             foreach (KeyValuePair<string, object> item in _cache)
             {
-                _logger.LogDebug("Cache: {Key}: {Value}", item.Key, item.Value);
+                _logger.LogWarning("\nCACHE: {Key}: {Value}", item.Key, item.Value);
             }
         }
 
