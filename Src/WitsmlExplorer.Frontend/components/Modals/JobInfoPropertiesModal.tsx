@@ -27,6 +27,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
             <TextField InputProps={{ readOnly: true }} id="wellName" label="Well Name" defaultValue={jobInfo.wellName} fullWidth />
             <TextField InputProps={{ readOnly: true }} multiline id="description" label="Description" defaultValue={description.substring(0, description.length - 1)} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="targetServer" label="Target Server Url" defaultValue={jobInfo.targetServer} fullWidth />
+            <TextField InputProps={{ readOnly: true }} id="witsmlTargetUsername" label="Target Username" defaultValue={jobInfo.witsmlTargetUsername} fullWidth />
             <TextField
               InputProps={{ readOnly: true }}
               id="sourceServer"
@@ -34,6 +35,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
               defaultValue={jobInfo.sourceServer == "" ? "-" : jobInfo.sourceServer}
               fullWidth
             />
+            <TextField InputProps={{ readOnly: true }} id="witsmlSourceUsername" label="Source Username" defaultValue={jobInfo.witsmlSourceUsername} fullWidth />
             <TextField
               InputProps={{ readOnly: true }}
               id="startTime"
@@ -56,7 +58,6 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
               fullWidth
             />
             <TextField InputProps={{ readOnly: true }} id="username" label="Username" defaultValue={jobInfo.username} fullWidth />
-            <TextField InputProps={{ readOnly: true }} id="witsmlUsername" label="WITSML Username" defaultValue={jobInfo.witsmlUsername} fullWidth />
           </>
         }
         onSubmit={() => {

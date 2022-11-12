@@ -3,7 +3,8 @@ export default interface JobInfo {
   description: string;
   id: string;
   username: string;
-  witsmlUsername: string;
+  witsmlTargetUsername: string;
+  witsmlSourceUsername: string;
   sourceServer: string;
   targetServer: string;
   wellName: string;

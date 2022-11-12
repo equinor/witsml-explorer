@@ -117,7 +117,7 @@ namespace WitsmlExplorer.Api.Services
                 result = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
                 if (!result.IsCredsNullOrEmpty())
                 {
-                    CacheCredentials(GetClaimFromTokenValue(token, "sub"), result, 1.0);
+                    CacheCredentials(GetClaimFromTokenValue(token, SUBJECT), result, 1.0);
                 }
             }
             return result;
@@ -125,7 +125,7 @@ namespace WitsmlExplorer.Api.Services
 
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server)
         {
-            string cacheClientId = useOauth ? GetClaimFromToken(headers, "sub") : headers.GetCookie();
+            string cacheClientId = useOauth ? GetClaimFromToken(headers, SUBJECT) : headers.GetCookie();
             string cacheId = $"{cacheClientId}@{new Uri(headers.GetHeaderValue(server)).Host}";
             string cacheContents = Decrypt(_credentialsCache.Get(cacheId));
 
@@ -175,8 +175,12 @@ namespace WitsmlExplorer.Api.Services
         }
         private Task<ServerCredentials> GetWitsmlCredentialsByCookie(IEssentialHeaders headers, string server)
         {
-            ServerCredentials result = new();
-            if (!string.IsNullOrEmpty(headers.GetCookie()))
+            ServerCredentials result;
+            if (string.IsNullOrEmpty(headers.GetCookie()) || string.IsNullOrEmpty(headers.GetHeaderValue(server)))
+            {
+                result = new ServerCredentials();
+            }
+            else
             {
                 string host = new Uri(headers.GetHeaderValue(server)).Host;
                 string cacheId = $"{headers.GetCookie()}@{host}";

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-
 namespace WitsmlExplorer.Api.HttpHandlers
 {
     public interface IEssentialHeaders
@@ -18,13 +17,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static readonly string WitsmlSourceServer = "WitsmlSourceServer";
 
         public EssentialHeaders() { }
-        public EssentialHeaders(HttpRequest httpRequest)
+        public EssentialHeaders(HttpRequest httpRequest, string environment)
         {
 
             Authorization = httpRequest?.Headers["Authorization"];
             TargetServer = httpRequest?.Headers[WitsmlTargetServer];
             SourceServer = httpRequest?.Headers[WitsmlSourceServer];
-            WitsmlExplorerCookie = httpRequest?.Cookies[CookieName];
+            WitsmlExplorerCookie = httpRequest?.Cookies[$"{CookieName}-{environment}"];
         }
         public string Authorization { get; init; }
         private string TargetServer { get; init; }
