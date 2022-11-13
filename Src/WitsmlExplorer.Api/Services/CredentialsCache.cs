@@ -46,7 +46,6 @@ namespace WitsmlExplorer.Api.Services
 
         public void RemoveAllClientCredentials(string clientId)
         {
-            _logger.LogInformation("{count} items in cache before removing client: {client}", _cache.GetCount(), clientId);
             foreach (KeyValuePair<string, object> item in _cache)
             {
                 if (item.Key.StartsWith(clientId))
@@ -54,7 +53,6 @@ namespace WitsmlExplorer.Api.Services
                     _cache.Remove(item.Key);
                 }
             }
-            _logger.LogInformation("{count} items in cache after", _cache.GetCount());
         }
 
         public void LogCache()
