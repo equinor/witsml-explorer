@@ -64,5 +64,12 @@ namespace WitsmlExplorer.Api.Services
                 _logger.LogInformation("\nCACHE: {Key}: {Value}", item.Key, item.Value);
             }
         }
+        public void PrintCache(string header)
+        {
+            foreach (KeyValuePair<string, object> item in _cache)
+            {
+                Console.WriteLine($"{header}: {item.Key}: {item.Value}");
+            }
+        }
     }
 }
