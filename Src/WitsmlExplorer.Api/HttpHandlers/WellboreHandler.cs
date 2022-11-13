@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetWellbore(string wellUid, string wellboreUid, IWellboreService wellboreService)
         {
             return wellboreService.HasClient() ?
-                Results.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid)) :
+                TypedResults.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid)) :
                 TypedResults.Unauthorized();
         }
     }
