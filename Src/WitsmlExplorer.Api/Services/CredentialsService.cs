@@ -101,11 +101,12 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache.RemoveAllClientCredentials(clientId);
         }
 
-        public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl)
+        public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl, Func<string, string> delEncrypt = null)
         {
+            delEncrypt ??= Encrypt;
             CacheItemPolicy cacheItemPolicy = new() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(ttl) };
             string cacheId = $"{clientId}@{credentials.Host.Host}";
-            string encryptedCredentials = Encrypt($"{credentials.UserId}:{credentials.Password}");
+            string encryptedCredentials = delEncrypt($"{credentials.UserId}:{credentials.Password}");
             _credentialsCache.Set(cacheId, encryptedCredentials, cacheItemPolicy);
         }
 
@@ -127,11 +128,12 @@ namespace WitsmlExplorer.Api.Services
             return result;
         }
 
-        public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server)
+        public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string server, Func<string, string> delDecrypt = null)
         {
+            delDecrypt ??= Decrypt;
             string cacheClientId = useOauth ? GetClaimFromToken(headers, SUBJECT) : headers.GetCookieValue();
             string cacheId = $"{cacheClientId}@{new Uri(headers.GetHeaderValue(server)).Host}";
-            string cacheContents = Decrypt(_credentialsCache.Get(cacheId));
+            string cacheContents = delDecrypt(_credentialsCache.Get(cacheId));
 
             return cacheContents?.Split(":").Length == 2 ?
                 new ServerCredentials()

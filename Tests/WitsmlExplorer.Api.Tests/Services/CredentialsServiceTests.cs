@@ -14,6 +14,7 @@ using Moq;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -33,7 +34,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IOptions<WitsmlClientCapabilities>> clientCapabilities = new();
             Mock<IWitsmlSystemCredentials> witsmlServerCredentials = new();
             Mock<IDocumentRepository<Server, Guid>> witsmlServerRepository = new();
-            Mock<ICredentialsCache> credentialsCache = new();
+            CredentialsCache credentialsCache = new(new Mock<ILogger<CredentialsCache>>().Object);
 
             dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
             dataProtector.Setup(p => p.Unprotect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
@@ -65,7 +66,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 clientCapabilities.Object,
                 witsmlServerCredentials.Object,
                 witsmlServerRepository.Object,
-                credentialsCache.Object,
+                credentialsCache,
                 logger.Object
             );
         }
@@ -148,12 +149,30 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.True(creds.IsCredsNullOrEmpty());
         }
 
+        [Fact]
+        public void CacheCredentials_InsertOne_GetCredentialsFromCache()
+        {
+
+            string clientId = Guid.NewGuid().ToString();
+            ServerCredentials sc = new() { UserId = "username", Password = "dummypassword", Host = new Uri("https://somehost.url") };
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
+            string headerValue = b64Creds + "@" + sc.Host;
+
+            Mock<IEssentialHeaders> headersMock = new();
+            headersMock.Setup(x => x.GetCookieValue()).Returns(clientId);
+            headersMock.Setup(x => x.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)).Returns(sc.Host.ToString());
+
+            _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
+            ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, EssentialHeaders.WitsmlTargetServer);
+            Assert.Equal(sc, fromCache);
+        }
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
         {
             ServerCredentials sc = new() { UserId = username, Password = dummypassword, Host = new Uri(host) };
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
             return b64Creds + "@" + sc.Host.ToString();
         }
+
         private static string CreateJwtToken(string[] appRoles, bool signed, string upn)
         {
             SecurityTokenDescriptor tokenDescriptor = new()
@@ -161,7 +180,8 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Expires = DateTime.UtcNow.AddSeconds(60),
                 Claims = new Dictionary<string, object>() {
                     { "roles", new List<string>(appRoles) },
-                    { "upn", upn }
+                    { "upn", upn },
+                    { "sub", Guid.NewGuid().ToString() }
                 }
             };
             if (signed)

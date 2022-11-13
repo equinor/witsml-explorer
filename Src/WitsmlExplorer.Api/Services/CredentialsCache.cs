@@ -10,6 +10,7 @@ namespace WitsmlExplorer.Api.Services
     {
         void Set(string cacheId, string encryptedCredentials, CacheItemPolicy policy);
         public string Get(string cacheId);
+        public long Count();
         public void RefreshSession(string cacheId, string encryptedCredentials);
         public void RemoveAllClientCredentials(string clientId);
     }
@@ -32,6 +33,10 @@ namespace WitsmlExplorer.Api.Services
         public string Get(string cacheId)
         {
             return _cache.Get(cacheId) as string;
+        }
+        public long Count()
+        {
+            return _cache.GetCount();
         }
 
         public void RefreshSession(string cacheId, string encryptedCredentials)

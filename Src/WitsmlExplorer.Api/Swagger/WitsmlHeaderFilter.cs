@@ -14,8 +14,8 @@ namespace WitsmlExplorer.Api.Swagger
     public class WitsmlHeaderFilter : IOperationFilter
     {
         private static readonly string DESCRIPTION = """
-            When using Basic Auth, use the following format to include credentials: btoa(username:password)@https://serverhost.url
-            For OAuth2, use full url to host.e.g: https://serverhost.url
+            When using Basic Auth, include b64 encoded credentials.Example: 'dXNlcm5hbWU6cHNzd29yZA==@https://serverhost.url'
+            For OAuth2, only use host url. Example: 'https://witsml-explorer.equinor.com/Store/WITSML'
         """;
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
