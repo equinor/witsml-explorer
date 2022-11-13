@@ -17,11 +17,6 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(string))]
         public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IConfiguration configuration, IJobService jobService, ICredentialsService credentialsService)
         {
-            if (!jobService.HasClient())
-            {
-                return TypedResults.Unauthorized();
-            }
-
             string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
             EssentialHeaders eh = new(httpRequest, environment);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
