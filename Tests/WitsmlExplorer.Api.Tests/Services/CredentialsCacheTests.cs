@@ -33,12 +33,12 @@ namespace WitsmlExplorer.Api.Tests.Services
             _credentialsCache.Set($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
             _credentialsCache.Set($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
             _credentialsCache.Set($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
-            _credentialsCache.PrintCache($"Before client {clientId} logout ");
+
+            long before = _credentialsCache.Count();
             _credentialsCache.RemoveAllClientCredentials(clientId);
-            _credentialsCache.PrintCache("After ");
-            Assert.Equal(1, _credentialsCache.Count());
+            long after = _credentialsCache.Count();
+            Assert.Equal(3, before);
+            Assert.Equal(1, after);
         }
-
-
     }
 }
