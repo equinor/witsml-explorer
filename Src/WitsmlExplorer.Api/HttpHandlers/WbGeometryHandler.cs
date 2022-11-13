@@ -14,19 +14,25 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<WbGeometry>))]
         public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
+            return wbGeometryService.HasClient() ?
+                TypedResults.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid)) :
+                TypedResults.Unauthorized();
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid));
+            return wbGeometryService.HasClient() ?
+                TypedResults.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid)) :
+                TypedResults.Unauthorized();
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid));
+            return wbGeometryService.HasClient() ?
+                TypedResults.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid)) :
+                TypedResults.Unauthorized();
         }
     }
 }

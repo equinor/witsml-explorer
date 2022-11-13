@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             await credentialsService.VerifyCredentials(creds);
             if (creds.IsCredsNullOrEmpty())
             {
-                return Results.Unauthorized();
+                return TypedResults.Unauthorized();
             }
             else
             {
@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : cookieId;
                 double ttl = keep ? 24.0 : 1.0; // hours
                 credentialsService.CacheCredentials(cacheClientId, creds, ttl);
-                return Results.Ok();
+                return TypedResults.Ok();
             }
         }
         public static IResult Deauthorize(IConfiguration configuration, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             }
             credentialsService.RemoveCachedCredentials(cacheClientId);
 
-            return Results.Ok();
+            return TypedResults.Ok();
         }
     }
 }

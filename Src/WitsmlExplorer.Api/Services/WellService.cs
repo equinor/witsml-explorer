@@ -19,6 +19,7 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<IEnumerable<Well>> GetWells();
         Task<Well> GetWell(string wellUid);
+        bool HasClient();
     }
 
     // ReSharper disable once UnusedMember.Global

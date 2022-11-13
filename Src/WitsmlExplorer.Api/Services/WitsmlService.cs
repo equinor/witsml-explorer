@@ -10,5 +10,9 @@ namespace WitsmlExplorer.Api.Services
         {
             _witsmlClient = witsmlClientProvider.GetClient();
         }
+        public bool HasClient()
+        {
+            return _witsmlClient != null;
+        }
     }
 }

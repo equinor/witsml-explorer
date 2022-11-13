@@ -15,12 +15,16 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<MessageObject>))]
         public static async Task<IResult> GetMessages(string wellUid, string wellboreUid, IMessageObjectService messageService)
         {
-            return Results.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
+            return messageService.HasClient() ?
+                TypedResults.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(MessageObject))]
         public static async Task<IResult> GetMessage(string wellUid, string wellboreUid, string messageUid, IMessageObjectService messageService)
         {
-            return Results.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
+            return messageService.HasClient() ?
+                TypedResults.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid)) :
+                TypedResults.Unauthorized();
         }
     }
 }

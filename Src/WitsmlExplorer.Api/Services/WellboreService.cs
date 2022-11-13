@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<Wellbore> GetWellbore(string wellUid, string wellboreUid);
         Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null);
+        bool HasClient();
     }
 
     // ReSharper disable once UnusedMember.Global

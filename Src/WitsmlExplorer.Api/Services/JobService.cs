@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IJobService
     {
         Task<string> CreateJob(JobType jobType, JobInfo jobInfo, Stream jobStream);
+        bool HasClient();
     }
 
     public class JobService : IJobService
@@ -44,5 +45,9 @@ namespace WitsmlExplorer.Api.Services
             return job.JobInfo.Id;
         }
 
+        public bool HasClient()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

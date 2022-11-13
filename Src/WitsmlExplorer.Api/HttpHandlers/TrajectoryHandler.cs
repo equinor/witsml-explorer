@@ -13,18 +13,24 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Trajectory>))]
         public static async Task<IResult> GetTrajectories(string wellUid, string wellboreUid, ITrajectoryService trajectoryService)
         {
-            return Results.Ok(await trajectoryService.GetTrajectories(wellUid, wellboreUid));
+            return trajectoryService.HasClient() ?
+                TypedResults.Ok(await trajectoryService.GetTrajectories(wellUid, wellboreUid)) :
+                TypedResults.Unauthorized();
 
         }
         [Produces(typeof(Trajectory))]
         public static async Task<IResult> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid, ITrajectoryService trajectoryService)
         {
-            return Results.Ok(await trajectoryService.GetTrajectory(wellUid, wellboreUid, trajectoryUid));
+            return trajectoryService.HasClient() ?
+                TypedResults.Ok(await trajectoryService.GetTrajectory(wellUid, wellboreUid, trajectoryUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(IEnumerable<TrajectoryStation>))]
         public static async Task<IResult> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid, ITrajectoryService trajectoryService)
         {
-            return Results.Ok(await trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid));
+            return trajectoryService.HasClient() ?
+                TypedResults.Ok(await trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid)) :
+                TypedResults.Unauthorized();
         }
     }
 }

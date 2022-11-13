@@ -17,6 +17,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(string))]
         public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IConfiguration configuration, IJobService jobService, ICredentialsService credentialsService)
         {
+            if (!jobService.HasClient())
+            {
+                return TypedResults.Unauthorized();
+            }
+
             string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
             EssentialHeaders eh = new(httpRequest, environment);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
@@ -30,7 +35,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 SourceServer = eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer),
                 TargetServer = eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)
             };
-            return Results.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
+            return TypedResults.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
@@ -41,7 +46,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             (ServerCredentials targetCreds, _) = credentialsService.GetWitsmlUsernamesFromCache(eh);
             string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId;
-            return Results.Ok(jobCache.GetJobInfosByUser(userName));
+            return TypedResults.Ok(jobCache.GetJobInfosByUser(userName));
         }
     }
 }

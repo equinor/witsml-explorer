@@ -14,17 +14,23 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Tubular>))]
         public static async Task<IResult> GetTubulars(string wellUid, string wellboreUid, ITubularService tubularService)
         {
-            return Results.Ok(await tubularService.GetTubulars(wellUid, wellboreUid));
+            return tubularService.HasClient() ?
+                TypedResults.Ok(await tubularService.GetTubulars(wellUid, wellboreUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(IEnumerable<Tubular>))]
         public static async Task<IResult> GetTubular(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
         {
-            return Results.Ok(await tubularService.GetTubular(wellUid, wellboreUid, tubularUid));
+            return tubularService.HasClient() ?
+                TypedResults.Ok(await tubularService.GetTubular(wellUid, wellboreUid, tubularUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(IEnumerable<TubularComponent>))]
         public static async Task<IResult> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
         {
-            return Results.Ok(await tubularService.GetTubularComponents(wellUid, wellboreUid, tubularUid));
+            return tubularService.HasClient() ?
+                TypedResults.Ok(await tubularService.GetTubularComponents(wellUid, wellboreUid, tubularUid)) :
+                TypedResults.Unauthorized();
         }
     }
 }

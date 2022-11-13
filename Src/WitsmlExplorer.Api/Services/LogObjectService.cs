@@ -22,6 +22,7 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<IEnumerable<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
         Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end);
+        bool HasClient();
     }
 
     // ReSharper disable once UnusedMember.Global

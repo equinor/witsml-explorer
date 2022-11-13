@@ -15,17 +15,23 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<LogObject>))]
         public static async Task<IResult> GetLogs(string wellUid, string wellboreUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLogs(wellUid, wellboreUid));
+            return logObjectService.HasClient() ?
+                TypedResults.Ok(await logObjectService.GetLogs(wellUid, wellboreUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(LogObject))]
         public static async Task<IResult> GetLog(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLog(wellUid, wellboreUid, logUid));
+            return logObjectService.HasClient() ?
+                TypedResults.Ok(await logObjectService.GetLog(wellUid, wellboreUid, logUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(IEnumerable<LogCurveInfo>))]
         public static async Task<IResult> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid));
+            return logObjectService.HasClient() ?
+                TypedResults.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid)) :
+                TypedResults.Unauthorized();
         }
         [Produces(typeof(LogData))]
         public static async Task<IResult> GetLogData(
@@ -38,14 +44,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService)
         {
+            if (!logObjectService.HasClient())
+            {
+                return TypedResults.Unauthorized();
+            }
+
             if (mnemonics.Any())
             {
                 LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
-                return Results.Ok(logData);
+                return TypedResults.Ok(logData);
             }
             else
             {
-                return Results.BadRequest("Missing list of mnemonics");
+                return TypedResults.BadRequest("Missing list of mnemonics");
             }
         }
     }
