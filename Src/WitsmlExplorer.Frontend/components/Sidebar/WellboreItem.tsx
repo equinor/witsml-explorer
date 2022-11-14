@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
-import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";

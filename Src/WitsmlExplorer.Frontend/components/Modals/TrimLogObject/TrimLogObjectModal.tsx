@@ -1,8 +1,8 @@
 import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { UpdateWellboreLogsAction } from "../../../contexts/modificationActions";
 import ModificationType from "../../../contexts/modificationType";
-import { UpdateWellboreLogsAction } from "../../../contexts/navigationStateReducer";
 import { HideModalAction } from "../../../contexts/operationStateReducer";
 import OperationType from "../../../contexts/operationType";
 import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";

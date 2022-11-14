@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
+import { RemoveWellboreAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
-import { RemoveWellboreAction } from "../contexts/navigationStateReducer";
 import EntityType from "../models/entityType";
 import BhaRunService from "../services/bhaRunService";
 import CredentialsService from "../services/credentialsService";
