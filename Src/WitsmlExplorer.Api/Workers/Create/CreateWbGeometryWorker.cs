@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Workers.Create
         private async Task WaitUntilWbGeometryHasBeenCreated(WbGeometry wbGeometry)
         {
             bool isCreated = false;
-            WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryById(wbGeometry.WellUid, wbGeometry.WellboreUid, wbGeometry.Uid);
+            WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryIdOnly(wbGeometry.WellUid, wbGeometry.WellboreUid, wbGeometry.Uid);
             int maxRetries = 30;
             while (!isCreated)
             {

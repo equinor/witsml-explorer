@@ -1,4 +1,4 @@
-import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { isInteger } from "lodash";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
@@ -50,89 +50,72 @@ const TubularComponentPropertiesModal = (props: TubularComponentPropertiesModalI
           heading={`Edit properties for Sequence ${tubularComponent.sequence} - ${tubularComponent.typeTubularComponent} - ${tubularComponent.uid}`}
           content={
             <>
-              <TextField disabled id="uid" label="uid" defaultValue={editableTubularComponent.uid} fullWidth />
+              <TextField disabled id="uid" label="uid" defaultValue={editableTubularComponent.uid} />
               <TextField
                 id={"sequence"}
                 label={"Sequence"}
                 type="number"
-                fullWidth
-                value={editableTubularComponent.sequence}
-                onChange={(e) =>
+                defaultValue={editableTubularComponent.sequence}
+                onChange={(e: any) =>
                   setEditableTubularComponent({
                     ...editableTubularComponent,
                     sequence: parseFloat(e.target.value)
                   })
                 }
-                error={isInvalidSequence(editableTubularComponent.sequence)}
+                variant={isInvalidSequence(editableTubularComponent.sequence) ? "error" : undefined}
                 helperText={isInvalidSequence(editableTubularComponent.sequence) && "Sequence must be a positive non-zero integer"}
               />
-              <FormControl fullWidth>
-                <InputLabel id="tubularComponent-type">typeTubularComponent</InputLabel>
-                <Select
-                  labelId="tubularComponent-type"
-                  value={editableTubularComponent.typeTubularComponent}
-                  onChange={(e) => {
-                    if (typeof e.target.value === "string") setEditableTubularComponent({ ...editableTubularComponent, typeTubularComponent: e.target.value });
-                  }}
-                >
-                  {tubularComponentTypes.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      <Typography color={"initial"}>{type}</Typography>
-                    </MenuItem>
-                  ))}
-                </Select>
-                <TextField
-                  id={"id"}
-                  label={"id"}
-                  type="number"
-                  fullWidth
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">{editableTubularComponent.id ? editableTubularComponent.id.uom : ""}</InputAdornment>
-                  }}
-                  disabled={!editableTubularComponent.id}
-                  value={editableTubularComponent.id?.value}
-                  onChange={(e) =>
-                    setEditableTubularComponent({
-                      ...editableTubularComponent,
-                      id: { value: parseFloat(e.target.value), uom: editableTubularComponent.id.uom }
-                    })
-                  }
-                />
-                <TextField
-                  id={"od"}
-                  label={"od"}
-                  type="number"
-                  fullWidth
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">{editableTubularComponent.od ? editableTubularComponent.od.uom : ""}</InputAdornment>
-                  }}
-                  disabled={!editableTubularComponent.od}
-                  value={editableTubularComponent.od?.value}
-                  onChange={(e) =>
-                    setEditableTubularComponent({
-                      ...editableTubularComponent,
-                      od: { value: parseFloat(e.target.value), uom: editableTubularComponent.od.uom }
-                    })
-                  }
-                />
-                <TextField
-                  id={"len"}
-                  label={"len"}
-                  type="number"
-                  fullWidth
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">{editableTubularComponent.len ? editableTubularComponent.len.uom : ""}</InputAdornment>
-                  }}
-                  disabled={!editableTubularComponent.len}
-                  value={editableTubularComponent.len?.value}
-                  onChange={(e) =>
-                    setEditableTubularComponent({
-                      ...editableTubularComponent,
-                      len: { value: parseFloat(e.target.value), uom: editableTubularComponent.len.uom }
-                    })
-                  }
-                />
-              </FormControl>
+              <Autocomplete
+                label="typeTubularComp"
+                initialSelectedOptions={[editableTubularComponent.typeTubularComponent]}
+                options={tubularComponentTypes}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableTubularComponent({ ...editableTubularComponent, typeTubularComponent: selectedItems[0] });
+                }}
+                hideClearButton={!!editableTubularComponent.typeTubularComponent}
+              />
+              <TextField
+                id={"id"}
+                label={"id"}
+                type="number"
+                unit={editableTubularComponent.id ? editableTubularComponent.id.uom : ""}
+                disabled={!editableTubularComponent.id}
+                defaultValue={editableTubularComponent.id?.value}
+                onChange={(e: any) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    id: { value: parseFloat(e.target.value), uom: editableTubularComponent.id.uom }
+                  })
+                }
+              />
+              <TextField
+                id={"od"}
+                label={"od"}
+                type="number"
+                unit={editableTubularComponent.od ? editableTubularComponent.od.uom : ""}
+                disabled={!editableTubularComponent.od}
+                defaultValue={editableTubularComponent.od?.value}
+                onChange={(e: any) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    od: { value: parseFloat(e.target.value), uom: editableTubularComponent.od.uom }
+                  })
+                }
+              />
+              <TextField
+                id={"len"}
+                label={"len"}
+                type="number"
+                unit={editableTubularComponent.len ? editableTubularComponent.len.uom : ""}
+                disabled={!editableTubularComponent.len}
+                defaultValue={editableTubularComponent.len?.value}
+                onChange={(e: any) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    len: { value: parseFloat(e.target.value), uom: editableTubularComponent.len.uom }
+                  })
+                }
+              />
             </>
           }
           confirmDisabled={

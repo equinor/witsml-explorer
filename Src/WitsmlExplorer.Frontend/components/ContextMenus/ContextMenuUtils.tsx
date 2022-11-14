@@ -102,7 +102,7 @@ const displayDeleteModal = (toDeleteTypeName: string, toDeleteNames: string[], o
         </span>
       }
       onConfirm={onDelete}
-      confirmColor={"secondary"}
+      confirmColor={"danger"}
       switchButtonPlaces={true}
     />
   );

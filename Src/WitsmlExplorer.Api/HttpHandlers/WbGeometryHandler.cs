@@ -16,5 +16,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
         }
+
+        [Produces(typeof(IEnumerable<WbGeometrySection>))]
+        public static async Task<IResult> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
+        {
+            return Results.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid));
+        }
+
+        [Produces(typeof(IEnumerable<WbGeometrySection>))]
+        public static async Task<IResult> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
+        {
+            return Results.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid));
+        }
     }
 }

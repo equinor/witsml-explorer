@@ -89,7 +89,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           </span>
         }
         onConfirm={deleteWellbore}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         confirmText={"Delete wellbore"}
         switchButtonPlaces={true}
       />

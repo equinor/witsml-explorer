@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import WbGeometryObject from "../../models/wbGeometry";
@@ -12,8 +13,8 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
 }
 
 export const WbGeometrysListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedWellbore, selectedWell, selectedServer, selectedWbGeometryGroup, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
 
@@ -34,17 +35,33 @@ export const WbGeometrysListView = (): React.ReactElement => {
     });
   };
 
+  const onSelect = (wbGeometry: any) => {
+    dispatchNavigation({
+      type: NavigationType.SelectWbGeometry,
+      payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: selectedWbGeometryGroup, wbGeometry }
+    });
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },
     { property: "uid", label: "Uid", type: ContentType.String },
     { property: "itemState", label: "Item State", type: ContentType.String }
   ];
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
-    const contextProps: WbGeometryObjectContextMenuProps = { checkedWbGeometryObjectRows, dispatchOperation, selectedServer, servers };
+    const contextProps: WbGeometryObjectContextMenuProps = {
+      checkedWbGeometryObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry),
+      dispatchOperation,
+      selectedServer,
+      servers
+    };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometryObjectContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore?.wbGeometrys, wbGeometrys) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    Object.is(selectedWellbore?.wbGeometrys, wbGeometrys) && (
+      <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows />
+    )
+  );
 };
 export default WbGeometrysListView;

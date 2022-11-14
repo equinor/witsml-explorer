@@ -1,4 +1,3 @@
-import { PropTypes } from "@material-ui/core";
 import React, { ReactElement } from "react";
 import ModalDialog from "./ModalDialog";
 
@@ -6,7 +5,7 @@ interface ConfirmProps {
   heading: string;
   content: ReactElement;
   onConfirm: () => void;
-  confirmColor?: PropTypes.Color;
+  confirmColor?: "default" | "inherit" | "primary" | "secondary" | "danger";
   confirmText?: string;
   switchButtonPlaces?: boolean;
   showCancelButton?: boolean;

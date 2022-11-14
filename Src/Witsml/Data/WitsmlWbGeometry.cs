@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -27,6 +28,9 @@ namespace Witsml.Data
 
         [XmlElement("depthWaterMean")]
         public WitsmlLengthMeasure DepthWaterMean { get; set; }
+
+        [XmlElement("wbGeometrySection")]
+        public List<WitsmlWbGeometrySection> WbGeometrySections { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }

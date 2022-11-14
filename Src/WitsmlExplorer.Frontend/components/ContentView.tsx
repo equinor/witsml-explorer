@@ -16,6 +16,7 @@ import TrajectoryView from "./ContentViews/TrajectoryView";
 import TubularsListView from "./ContentViews/TubularsListView";
 import TubularView from "./ContentViews/TubularView";
 import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
+import WbGeometryView from "./ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
@@ -38,6 +39,7 @@ const ContentView = (): React.ReactElement => {
     selectedTubularGroup,
     selectedTubular,
     selectedWbGeometryGroup,
+    selectedWbGeometry,
     selectedServer,
     currentSelected
   } = navigationState;
@@ -79,6 +81,8 @@ const ContentView = (): React.ReactElement => {
         setView(<TubularView />);
       } else if (currentSelected === selectedWbGeometryGroup) {
         setView(<WbGeometrysListView />);
+      } else if (currentSelected === selectedWbGeometry) {
+        setView(<WbGeometryView />);
       } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
       } else {

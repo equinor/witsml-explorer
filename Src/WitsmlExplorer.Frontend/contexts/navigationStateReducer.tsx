@@ -148,6 +148,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectTubular(state, action);
     case NavigationType.SelectWbGeometryGroup:
       return selectWbGeometryGroup(state, action);
+    case NavigationType.SelectWbGeometry:
+      return selectWbGeometry(state, action);
     case NavigationType.SetFilter:
       return setFilter(state, action);
     case NavigationType.SetCurveThreshold:
@@ -201,6 +203,8 @@ const performModificationAction = (state: NavigationState, action: Action) => {
       return updateWellboreTubular(state, action);
     case ModificationType.UpdateTubularsOnWellbore:
       return updateWellboreTubulars(state, action);
+    case ModificationType.UpdateWbGeometryOnWellbore:
+      return updateWellboreWbGeometry(state, action);
     case ModificationType.UpdateWbGeometryObjects:
       return updateWellboreWbGeometrys(state, action);
     case ModificationType.UpdateServerList:
@@ -576,6 +580,26 @@ const updateWellboreWbGeometrys = (state: NavigationState, { payload }: UpdateWe
   };
 };
 
+const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWellboreWbGeometryAction) => {
+  const { wells } = state;
+  const { wbGeometry, wellUid, wellboreUid } = payload;
+  const freshWells = [...wells];
+  const wellIndex = getWellIndex(freshWells, wellUid);
+  const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
+  const freshWbGeometries = [...wells[wellIndex].wellbores[wellboreIndex].wbGeometrys];
+  const wbGeometryIndex = freshWbGeometries.findIndex((wbg) => wbg.uid === wbGeometry.uid);
+  let selectedWbGeometry = null;
+  freshWbGeometries[wbGeometryIndex] = wbGeometry;
+  selectedWbGeometry = state.selectedWbGeometry?.uid === wbGeometry.uid ? wbGeometry : state.selectedWbGeometry;
+  wells[wellIndex].wellbores[wellboreIndex].wbGeometrys = freshWbGeometries;
+  return {
+    ...state,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter),
+    selectedWbGeometry: selectedWbGeometry
+  };
+};
+
 //update the current selected object if the current selected object was deleted
 const getCurrentSelectedObjectIfRemoved = (
   state: NavigationState,
@@ -890,22 +914,6 @@ const selectRiskGroup = (state: NavigationState, { payload }: SelectRiskGroupAct
   };
 };
 
-const selectWbGeometryGroup = (state: NavigationState, { payload }: SelectWbGeometryGroupAction) => {
-  const { well, wellbore, wbGeometryGroup } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore), calculateWellboreNodeId(wellbore));
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
-    selectedWbGeometryGroup: wbGeometryGroup,
-    currentSelected: wbGeometryGroup,
-    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore)) : state.expandedTreeNodes,
-    currentProperties: getWellboreProperties(wellbore)
-  };
-};
-
 const selectTrajectoriesGroup = (state: NavigationState, { payload }: SelectTrajectoryGroupAction) => {
   const { well, wellbore, trajectoryGroup } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateTrajectoryGroupId(wellbore), calculateWellboreNodeId(wellbore));
@@ -969,6 +977,39 @@ const selectTubular = (state: NavigationState, { payload }: SelectTubularAction)
     currentSelected: tubular,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateTubularGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getObjectOnWellboreProperties(tubular, ObjectType.Tubular)
+  };
+};
+
+const selectWbGeometryGroup = (state: NavigationState, { payload }: SelectWbGeometryGroupAction) => {
+  const { well, wellbore, wbGeometryGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedWbGeometryGroup: wbGeometryGroup,
+    currentSelected: wbGeometryGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectWbGeometry = (state: NavigationState, { payload }: SelectWbGeometryAction) => {
+  const { well, wellbore, wbGeometry, wbGeometryGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedWbGeometryGroup: wbGeometryGroup,
+    selectedWbGeometry: wbGeometry,
+    currentSelected: wbGeometry,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWbGeometryGroupId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getObjectOnWellboreProperties(wbGeometry, ObjectType.WbGeometry)
   };
 };
 
@@ -1100,6 +1141,16 @@ export interface UpdateWellboreLogAction extends Action {
   payload: { log: LogObject };
 }
 
+export interface UpdateWellboreMessagesAction extends Action {
+  type: ModificationType.UpdateMessageObjects;
+  payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreMessageAction extends Action {
+  type: ModificationType.UpdateMessageObject;
+  payload: { message: MessageObject };
+}
+
 export interface UpdateWellboreRigsAction extends Action {
   type: ModificationType.UpdateRigsOnWellbore;
   payload: { rigs: Rig[]; wellUid: string; wellboreUid: string };
@@ -1135,19 +1186,14 @@ export interface UpdateWellboreTubularAction extends Action {
   payload: { tubular: Tubular; exists: boolean };
 }
 
-export interface UpdateWellboreMessagesAction extends Action {
-  type: ModificationType.UpdateMessageObjects;
-  payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
-}
-
-export interface UpdateWellboreMessageAction extends Action {
-  type: ModificationType.UpdateMessageObject;
-  payload: { message: MessageObject };
-}
-
 export interface UpdateWellboreWbGeometrysAction extends Action {
   type: ModificationType.UpdateWbGeometryObjects;
   payload: { wbGeometrys: WbGeometryObject[]; wellUid: string; wellboreUid: string };
+}
+
+export interface UpdateWellboreWbGeometryAction extends Action {
+  type: ModificationType.UpdateWbGeometryOnWellbore;
+  payload: { wbGeometry: WbGeometryObject; wellUid: string; wellboreUid: string };
 }
 
 export interface UpdateServerListAction extends Action {
@@ -1249,6 +1295,11 @@ export interface SelectWbGeometryGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; wbGeometryGroup: any };
 }
 
+export interface SelectWbGeometryAction extends Action {
+  type: NavigationType.SelectWbGeometry;
+  payload: { well: Well; wellbore: Wellbore; wbGeometry: WbGeometryObject; wbGeometryGroup: any };
+}
+
 export interface SetFilterAction extends Action {
   type: NavigationType.SetFilter;
   payload: { filter: Filter };
@@ -1282,6 +1333,7 @@ export type NavigationAction =
   | UpdateWellboreTrajectoriesAction
   | UpdateWellboreTubularAction
   | UpdateWellboreTubularsAction
+  | UpdateWellboreWbGeometryAction
   | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
   | SelectJobsAction
@@ -1302,5 +1354,6 @@ export type NavigationAction =
   | SelectTubularAction
   | SelectTubularGroupAction
   | SelectWbGeometryGroupAction
+  | SelectWbGeometryAction
   | SetFilterAction
   | SetCurveThresholdAction;
