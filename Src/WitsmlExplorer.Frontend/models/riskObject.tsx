@@ -37,8 +37,8 @@ export function emptyRiskObject(): RiskObject {
     details: "",
     commonData: {
       sourceName: "",
-      dTimCreation: null,
-      dTimLastChange: null,
+      dTimCreation: "",
+      dTimLastChange: "",
       itemState: ""
     }
   };

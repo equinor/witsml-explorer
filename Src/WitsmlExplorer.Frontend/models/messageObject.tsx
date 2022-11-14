@@ -1,16 +1,19 @@
+import CommonData, { emptyCommonData } from "./commonData";
 import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
 export default interface MessageObject extends ObjectOnWellbore {
   messageText: string;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
+  dTim: string;
+  typeMessage: string;
+  commonData: CommonData;
 }
 
 export function emptyMessageObject(): MessageObject {
   return {
     ...emptyObjectOnWellbore(),
     messageText: "",
-    dateTimeCreation: null,
-    dateTimeLastChange: null
+    dTim: "",
+    typeMessage: "",
+    commonData: emptyCommonData()
   };
 }
