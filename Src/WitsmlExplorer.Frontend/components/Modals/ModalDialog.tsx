@@ -117,7 +117,6 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     </Dialog>
   );
 };
-
 export enum ModalWidth {
   SMALL = "444px", // xs
   MEDIUM = "600px", // sm
@@ -126,6 +125,8 @@ export enum ModalWidth {
 
 const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
+  max-height: 75vh;
+  overflow-y: auto;
 `;
 
 const StyledButton = styled(Button)<{ align?: string }>`

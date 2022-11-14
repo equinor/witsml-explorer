@@ -1,5 +1,6 @@
 import { Table, Typography } from "@equinor/eds-core-react";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
@@ -192,33 +193,39 @@ function mismatchTable(mismatchedIndexes: Indexes[]) {
           "Mnemonics that have equal index values are not shown. " +
           "Differing index values are shown in bold."}
       </p>
-      <Table>
-        <Table.Caption>
-          <Typography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</Typography>
-        </Table.Caption>
-        <Table.Head>
-          <Table.Row>
-            <Table.Cell>Curve mnemonic</Table.Cell>
-            <Table.Cell>Source start</Table.Cell>
-            <Table.Cell>Target start</Table.Cell>
-            <Table.Cell>Source end</Table.Cell>
-            <Table.Cell>Target end</Table.Cell>
-          </Table.Row>
-        </Table.Head>
-        <Table.Body>
-          {mismatchedIndexes.map((indexes, i) => (
-            <Table.Row key={i}>
-              <Table.Cell>{indexes.mnemonic}</Table.Cell>
-              <Table.Cell>{(indexes.sourceStart != indexes.targetStart && <b>{indexes.sourceStart}</b>) || indexes.sourceStart}</Table.Cell>
-              <Table.Cell>{(indexes.sourceStart != indexes.targetStart && <b>{indexes.targetStart}</b>) || indexes.targetStart}</Table.Cell>
-              <Table.Cell>{(indexes.sourceEnd != indexes.targetEnd && <b>{indexes.sourceEnd}</b>) || indexes.sourceEnd}</Table.Cell>
-              <Table.Cell>{(indexes.sourceEnd != indexes.targetEnd && <b>{indexes.targetEnd}</b>) || indexes.targetEnd}</Table.Cell>
+      <TableLayout>
+        <Table>
+          <Table.Caption>
+            <Typography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</Typography>
+          </Table.Caption>
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell>Curve mnemonic</Table.Cell>
+              <Table.Cell>Source start</Table.Cell>
+              <Table.Cell>Target start</Table.Cell>
+              <Table.Cell>Source end</Table.Cell>
+              <Table.Cell>Target end</Table.Cell>
             </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+          </Table.Head>
+          <Table.Body>
+            {mismatchedIndexes.map((indexes, i) => (
+              <Table.Row key={i}>
+                <Table.Cell>{indexes.mnemonic}</Table.Cell>
+                <Table.Cell>{(indexes.sourceStart != indexes.targetStart && <b>{indexes.sourceStart}</b>) || indexes.sourceStart}</Table.Cell>
+                <Table.Cell>{(indexes.sourceStart != indexes.targetStart && <b>{indexes.targetStart}</b>) || indexes.targetStart}</Table.Cell>
+                <Table.Cell>{(indexes.sourceEnd != indexes.targetEnd && <b>{indexes.sourceEnd}</b>) || indexes.sourceEnd}</Table.Cell>
+                <Table.Cell>{(indexes.sourceEnd != indexes.targetEnd && <b>{indexes.targetEnd}</b>) || indexes.targetEnd}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </TableLayout>
     </>
   );
 }
+const TableLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 export default LogComparisonModal;
