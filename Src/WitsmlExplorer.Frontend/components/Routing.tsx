@@ -1,9 +1,7 @@
 import { NextRouter, useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../contexts/navigationContext";
+import { NavigationAction } from "../contexts/navigationAction";
 import {
-  NavigationAction,
-  NavigationState,
   SelectBhaRunGroupAction,
   SelectLogObjectAction,
   SelectMessageGroupAction,
@@ -16,7 +14,8 @@ import {
   SelectWellAction,
   SelectWellboreAction,
   SetFilterAction
-} from "../contexts/navigationStateReducer";
+} from "../contexts/navigationActions";
+import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";

@@ -1,11 +1,8 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
 import {
-  Selectable,
   SelectBhaRunGroupAction,
-  selectedJobsFlag,
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
@@ -22,7 +19,8 @@ import {
   SelectWbGeometryGroupAction,
   SelectWellAction,
   SelectWellboreAction
-} from "../contexts/navigationStateReducer";
+} from "../contexts/navigationActions";
+import NavigationContext, { Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";

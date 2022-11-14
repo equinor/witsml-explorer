@@ -1,5 +1,5 @@
+import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
-import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
 import OperationType from "../../contexts/operationType";
 import Tubular from "../../models/tubular";
 import TubularService from "../../services/tubularService";

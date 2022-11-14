@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationStateReducer";
+import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
 import NavigationType from "../../contexts/navigationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
