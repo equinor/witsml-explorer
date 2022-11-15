@@ -58,7 +58,22 @@ Using [CosmosDB](Scripts/Azure/README.md)
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
 
-### Backend
+### Backend WitsmlExplorer.Api
+
+Change the configuration in `mysettings.json` to the following, so that the backend will be able to connect to our new database:
+```
+{
+  "LogQueries": false,
+  "AllowedHosts": "*",
+  "Host": "http://localhost",
+  "MongoDb": {
+    "Name": "witsml-explorer-db",
+    "ConnectionString": "mongodb://<username>:<password>@localhost"
+  }
+},
+```
+`<username>` and `<password>` is what was configured in the docker-compose.yml file.
+
 ```
 cd Src/WitsmlExplorer.Api/
 # Download dependencies and build project
@@ -68,7 +83,7 @@ dotnet run
 ```
 In folder `Src/WitsmlExplorer.Api/` run `dotnet build`  and `dotnet run`
 
-### Frontend
+### Frontend WitsmlExplorer.Frontend
 ```
 cd Src/WitsmlExplorer.Frontend/
 # Download dependencies
@@ -171,7 +186,7 @@ In our frontend project we use the opinionated code formatter [Prettier](https:/
 Most IDEs have plugins that support Prettier. This will make the result of formatting code in your IDE be consistent with running prettier manually. 
 
 ### ESLint
-For linting our frontend code we use [ESLint](https://github.com/typescript-eslint/typescript-eslint).
+For linting our frontend code we use [ESLint](https://github.com/typescript-eslint/typescript-eslint). and Prettier as a husky trigger.
 
 ### dotnet-format
 For our non frontend code, we use [dotnet-format](https://github.com/dotnet/format) for validating and fixing code that does not follow the project rules. They can be found in `.editorconfig` at the project root.
