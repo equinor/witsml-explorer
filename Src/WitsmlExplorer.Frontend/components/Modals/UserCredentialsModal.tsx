@@ -110,7 +110,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             onChange={(e: any) => setPassword(e.target.value)}
           />
           <Checkbox
-            label={`Keep me logged in to ${server.name} for 24 hours`}
+            label={`Keep me logged in to this server for 24 hours`}
             defaultChecked={keepLoggedIn}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setKeepLoggedIn(e.target.checked);
