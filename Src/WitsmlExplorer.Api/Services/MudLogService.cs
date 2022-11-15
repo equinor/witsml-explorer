@@ -14,7 +14,6 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<IEnumerable<MudLog>> GetMudLogs(string wellUid, string wellboreUid);
         Task<MudLog> GetMudLog(string wellUid, string wellboreUid, string mudlogUid);
-        bool HasClient();
     }
     // ReSharper disable once UnusedMember.Global
     public class MudLogService : WitsmlService, IMudLogService

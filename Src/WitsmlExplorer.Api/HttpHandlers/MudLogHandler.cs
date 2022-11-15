@@ -13,16 +13,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<MudLog>))]
         public static async Task<IResult> GetMudLogs(string wellUid, string wellboreUid, IMudLogService mudLogService)
         {
-            return mudLogService.HasClient() ?
-                TypedResults.Ok(await mudLogService.GetMudLogs(wellUid, wellboreUid)) :
-                TypedResults.Unauthorized();
+            return TypedResults.Ok(await mudLogService.GetMudLogs(wellUid, wellboreUid));
         }
         [Produces(typeof(MudLog))]
         public static async Task<IResult> GetMudLog(string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService)
         {
-            return mudLogService.HasClient() ?
-                TypedResults.Ok(await mudLogService.GetMudLog(wellUid, wellboreUid, mudlogUid)) :
-                TypedResults.Unauthorized();
+            return TypedResults.Ok(await mudLogService.GetMudLog(wellUid, wellboreUid, mudlogUid));
         }
     }
 }

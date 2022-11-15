@@ -17,7 +17,6 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid);
         Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
-        bool HasClient();
     }
 
     public class MessageObjectService : WitsmlService, IMessageObjectService

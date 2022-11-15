@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Services
                 _targetCreds ??= _useOAuth ? _credentialsService.GetSystemCredentialsByToken(_httpHeaders.GetBearerToken(), new Uri(_httpHeaders.TargetServer)).Result : null;
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
                     ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries)
-                    : null; ;
+                    : null;
             }
             return _witsmlClient;
         }

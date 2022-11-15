@@ -16,7 +16,6 @@ namespace WitsmlExplorer.Api.Services
         Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid);
         Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid);
         Task<List<WbGeometrySection>> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid);
-        bool HasClient();
     }
 
     // ReSharper disable once UnusedMember.Global

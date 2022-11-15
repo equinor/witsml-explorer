@@ -16,7 +16,6 @@ namespace WitsmlExplorer.Api.Services
         Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid);
         Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid);
         Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid);
-        bool HasClient();
     }
 
     // ReSharper disable once UnusedMember.Global

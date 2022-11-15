@@ -17,7 +17,6 @@ namespace WitsmlExplorer.Api.Services
         Task<IEnumerable<Tubular>> GetTubulars(string wellUid, string wellboreUid);
         Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid);
         Task<IEnumerable<TubularComponent>> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid);
-        bool HasClient();
     }
 
     public class TubularService : WitsmlService, ITubularService

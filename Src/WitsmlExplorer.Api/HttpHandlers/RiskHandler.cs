@@ -13,9 +13,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Risk>))]
         public static async Task<IResult> GetRisks(string wellUid, string wellboreUid, IRiskService riskService)
         {
-            return riskService.HasClient() ?
-                TypedResults.Ok(await riskService.GetRisks(wellUid, wellboreUid)) :
-                TypedResults.Unauthorized();
+            return TypedResults.Ok(await riskService.GetRisks(wellUid, wellboreUid));
         }
     }
 }

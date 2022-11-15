@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -29,11 +30,11 @@ namespace WitsmlExplorer.Api.Workers
         }
         protected IWitsmlClient GetTargetWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetClient() ?? throw new ArgumentException($"Missing Target WitsmlClient for {typeof(T)}");
+            return WitsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"Missing Target WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized);
         }
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetSourceClient() ?? throw new ArgumentException($"Missing Source WitsmlClient for {typeof(T)}");
+            return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized);
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)

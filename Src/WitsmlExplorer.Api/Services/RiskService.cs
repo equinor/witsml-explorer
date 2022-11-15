@@ -14,7 +14,6 @@ namespace WitsmlExplorer.Api.Services
     public interface IRiskService
     {
         Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid);
-        bool HasClient();
     }
 
     public class RiskService : WitsmlService, IRiskService

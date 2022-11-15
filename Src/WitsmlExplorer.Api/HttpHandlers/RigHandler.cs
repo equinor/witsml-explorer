@@ -14,16 +14,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Rig>))]
         public static async Task<IResult> GetRigs(string wellUid, string wellboreUid, IRigService rigService)
         {
-            return rigService.HasClient() ?
-                TypedResults.Ok(await rigService.GetRigs(wellUid, wellboreUid)) :
-                TypedResults.Unauthorized();
+            return TypedResults.Ok(await rigService.GetRigs(wellUid, wellboreUid));
         }
         [Produces(typeof(Rig))]
         public static async Task<IResult> GetRig(string wellUid, string wellboreUid, string rigUid, IRigService rigService)
         {
-            return rigService.HasClient() ?
-                TypedResults.Ok(await rigService.GetRig(wellUid, wellboreUid, rigUid)) :
-                TypedResults.Unauthorized();
+            return TypedResults.Ok(await rigService.GetRig(wellUid, wellboreUid, rigUid));
         }
     }
 }

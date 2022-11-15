@@ -15,7 +15,6 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid);
         Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
-        bool HasClient();
     }
 
     public class BhaRunService : WitsmlService, IBhaRunService

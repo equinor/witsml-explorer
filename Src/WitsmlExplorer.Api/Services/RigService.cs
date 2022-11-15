@@ -15,7 +15,6 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<IEnumerable<Rig>> GetRigs(string wellUid, string wellboreUid);
         Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid);
-        bool HasClient();
     }
 
     public class RigService : WitsmlService, IRigService
