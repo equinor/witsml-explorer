@@ -93,7 +93,6 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             required
             variant={username?.length === 0 ? "error" : undefined}
             helperText={username?.length === 0 ? "Username must be 1-7936 characters" : ""}
-            //inputProps={{ minLength: 1, maxLength: 7936 }} Do we need this? I see it runs som checks on Change?
             onChange={(e: any) => setUsername(e.target.value)}
             style={{ marginBottom: 15 }}
           />
@@ -106,7 +105,6 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             helperText={password?.length === 0 ? "Password must be 1-7936 characters" : ""}
             type="password"
             autoComplete="current-password"
-            //inputProps={{ minLength: 1, maxLength: 7936 }} Do we need this? I see it runs som checks on Change?
             onChange={(e: any) => setPassword(e.target.value)}
           />
           <Checkbox
