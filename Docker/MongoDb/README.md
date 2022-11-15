@@ -1,0 +1,30 @@
+# MongoDB
+
+## Setup locally
+
+To create and setup mongodb locally, you can use the included `docker-compose.yml` after customising it.
+
+```yml
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo:4.4.1
+    container_name: witsml-explorer-db
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db     #Location for data folder can be changed.
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=<insert username>
+      - MONGO_INITDB_ROOT_PASSWORD=<insert password>
+```
+
+Change the username and password and where to put your data (now `./data` folder in current directory)
+The data folder will be created when you run `docker compose up` for the first time
+
+```sh
+
+
+```
