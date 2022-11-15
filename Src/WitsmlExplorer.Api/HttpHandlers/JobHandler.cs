@@ -17,8 +17,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(string))]
         public static async Task<IResult> CreateJob(JobType jobType, HttpRequest httpRequest, IConfiguration configuration, IJobService jobService, ICredentialsService credentialsService)
         {
-            string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
-            EssentialHeaders eh = new(httpRequest, environment);
+            EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             (ServerCredentials targetCreds, ServerCredentials sourceCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
@@ -27,8 +26,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 Username = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId,
                 WitsmlTargetUsername = targetCreds.UserId,
                 WitsmlSourceUsername = sourceCreds.UserId,
-                SourceServer = eh.GetHeaderValue(EssentialHeaders.WitsmlSourceServer),
-                TargetServer = eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)
+                SourceServer = eh.SourceServer,
+                TargetServer = eh.TargetServer
             };
             return TypedResults.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }
@@ -36,8 +35,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<JobInfo>))]
         public static IResult GetJobInfosByAuthorizedUser(IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
         {
-            string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
-            EssentialHeaders eh = new(httpRequest, environment);
+            EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             (ServerCredentials targetCreds, _) = credentialsService.GetWitsmlUsernamesFromCache(eh);
             string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId;

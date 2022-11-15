@@ -22,8 +22,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             bool useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             if (!useOAuth)
             {
-                string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
-                httpContext.GetOrCreateWitsmlExplorerCookie(environment);
+                httpContext.GetOrCreateWitsmlExplorerCookie();
             }
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
 

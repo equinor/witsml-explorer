@@ -7,9 +7,9 @@ namespace WitsmlExplorer.Api.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static string GetOrCreateWitsmlExplorerCookie(this HttpContext httpContext, string environment)
+        public static string GetOrCreateWitsmlExplorerCookie(this HttpContext httpContext)
         {
-            EssentialHeaders eh = new(httpContext.Request, environment);
+            EssentialHeaders eh = new(httpContext.Request);
             string cookieValue = eh.GetCookieValue();
             if (string.IsNullOrEmpty(cookieValue))
             {
@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Extensions
                     HttpOnly = true
                 };
                 cookieValue = Guid.NewGuid().ToString();
-                httpContext?.Response.Cookies.Append($"{EssentialHeaders.CookieName}-{environment}", cookieValue, cookieOptions);
+                httpContext?.Response.Cookies.Append(EssentialHeaders.CookieName, cookieValue, cookieOptions);
             }
             return cookieValue;
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Caching;
 
 using Microsoft.Extensions.Logging;
 
@@ -28,11 +27,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             string clientId = Guid.NewGuid().ToString();
             string url = "https://somehost";
 
-            CacheItemPolicy cacheItemPolicy = new() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
-
-            _credentialsCache.Set($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
-            _credentialsCache.Set($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
-            _credentialsCache.Set($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", cacheItemPolicy);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
+            _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
 
             long before = _credentialsCache.Count();
             _credentialsCache.RemoveAllClientCredentials(clientId);

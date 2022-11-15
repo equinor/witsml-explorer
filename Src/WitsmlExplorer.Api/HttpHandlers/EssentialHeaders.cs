@@ -5,9 +5,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
     {
 
         public string Authorization { get; }
+        public string TargetServer { get; }
+        public string SourceServer { get; }
         public string GetCookieValue();
-        public string GetHeaderValue(string witsmlServer);
         public string GetBearerToken();
+
     }
 
     public class EssentialHeaders : IEssentialHeaders
@@ -17,17 +19,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static readonly string WitsmlSourceServer = "WitsmlSourceServer";
 
         public EssentialHeaders() { }
-        public EssentialHeaders(HttpRequest httpRequest, string environment)
+        public EssentialHeaders(HttpRequest httpRequest)
         {
 
             Authorization = httpRequest?.Headers["Authorization"];
             TargetServer = httpRequest?.Headers[WitsmlTargetServer];
             SourceServer = httpRequest?.Headers[WitsmlSourceServer];
-            WitsmlExplorerCookie = httpRequest?.Cookies[$"{CookieName}-{environment}"];
+            WitsmlExplorerCookie = httpRequest?.Cookies[CookieName];
         }
         public string Authorization { get; init; }
-        private string TargetServer { get; init; }
-        private string SourceServer { get; init; }
+        public string TargetServer { get; init; }
+        public string SourceServer { get; init; }
         private string WitsmlExplorerCookie { get; init; }
 
 
@@ -35,10 +37,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return WitsmlExplorerCookie;
         }
-        public string GetHeaderValue(string witsmlServer)
-        {
-            return (witsmlServer == WitsmlTargetServer) ? TargetServer : SourceServer;
-        }
+
         public string GetBearerToken()
         {
             return Authorization?.Split()[1];

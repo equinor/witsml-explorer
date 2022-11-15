@@ -8,10 +8,9 @@ namespace WitsmlExplorer.Api.Services
 
     public interface ICredentialsCache
     {
-        void Set(string cacheId, string encryptedCredentials, CacheItemPolicy policy);
-        public string Get(string cacheId);
+        void SetItem(string cacheId, string encryptedCredentials, double ttl);
+        public string GetItem(string cacheId);
         public long Count();
-        public void RefreshSession(string cacheId, string encryptedCredentials);
         public void RemoveAllClientCredentials(string clientId);
     }
 
@@ -25,23 +24,19 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public void Set(string cacheId, string encryptedCredentials, CacheItemPolicy policy)
+        public void SetItem(string cacheId, string encryptedCredentials, double ttl)
         {
-            _cache.Set(cacheId, encryptedCredentials, policy);
+            CacheItemPolicy cacheItemPolicy = new() { SlidingExpiration = TimeSpan.FromHours(ttl) };
+            _cache.Set(cacheId, encryptedCredentials, cacheItemPolicy);
         }
 
-        public string Get(string cacheId)
+        public string GetItem(string cacheId)
         {
             return _cache.Get(cacheId) as string;
         }
         public long Count()
         {
             return _cache.GetCount();
-        }
-
-        public void RefreshSession(string cacheId, string encryptedCredentials)
-        {
-            Set(cacheId, encryptedCredentials, new CacheItemPolicy() { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1.0) });
         }
 
         public void RemoveAllClientCredentials(string clientId)

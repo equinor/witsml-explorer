@@ -15,9 +15,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> Authorize([FromQuery(Name = "keep")] bool keep, [FromServices] ICredentialsService credentialsService, IConfiguration configuration, HttpContext httpContext)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
-            EssentialHeaders eh = new(httpContext?.Request, environment);
-            string basicAuth = eh.GetHeaderValue(EssentialHeaders.WitsmlTargetServer);
+            EssentialHeaders eh = new(httpContext?.Request);
+            string basicAuth = eh.TargetServer;
             ServerCredentials creds = await credentialsService.GetCredentialsFromHeaderValue(basicAuth);
             await credentialsService.VerifyCredentials(creds);
             if (creds.IsCredsNullOrEmpty())
@@ -36,12 +35,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static IResult Deauthorize(IConfiguration configuration, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            string environment = configuration["ENVIRONMENT"].ToLower(System.Globalization.CultureInfo.CurrentCulture);
-            EssentialHeaders eh = new(httpContext?.Request, environment);
+            EssentialHeaders eh = new(httpContext?.Request);
             string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : eh.GetCookieValue();
             if (!useOAuth2)
             {
-                httpContext.Response.Cookies.Delete($"{EssentialHeaders.CookieName}-{environment}");
+                httpContext.Response.Cookies.Delete(EssentialHeaders.CookieName);
             }
             credentialsService.RemoveCachedCredentials(cacheClientId);
 

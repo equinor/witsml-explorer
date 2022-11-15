@@ -160,10 +160,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             Mock<IEssentialHeaders> headersMock = new();
             headersMock.Setup(x => x.GetCookieValue()).Returns(clientId);
-            headersMock.Setup(x => x.GetHeaderValue(EssentialHeaders.WitsmlTargetServer)).Returns(sc.Host.ToString());
+            headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
 
             _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
-            ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, EssentialHeaders.WitsmlTargetServer);
+            ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, headersMock.Object.TargetServer);
             Assert.Equal(sc, fromCache);
         }
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
