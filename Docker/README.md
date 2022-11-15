@@ -27,7 +27,14 @@ witsmlexplorer-api                                      latest          2f1eb2b0
 
 ```
 
+## `config.json`
+
 create a `config.json` file containing the mongodb or cosmosdb credentials you created in the first steps.
+
+`Host` should be set to the domain where the application will be available. For locally run applications, this should be set to `http://localhost` (this is also the default value).
+
+This value is used for setting up the notifications feed from the backend/api to the frontend application. 
+
 
 ### **mongodb**
 ```json
