@@ -50,36 +50,10 @@ cd Src/WitsmlExplorer.Api/
 cp appsettings.json mysettings.json
 ```
 
-### Using MongoDB for storing urls to WitsmlServers
-_Note: WE also supports Cosmos DB, but that requires a little more setup, see the [CosmosDB setup guide](#Cosmos-database)._
+### Database for storing urls to WitsmlServers
 
-To quickly get a development database up and running, a MongoDB docker image can be used. 
-```
-# From the project root, cd to
-cd Docker/MongoDb
-```
-Add an initial db username and password by editing the `docker-compose.yml` file and setting `MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD` (no space after `=`).
-```
-# Pull and run a default MongoDB locally
-docker-compose up -d
-```
-The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. After execution `docker-compose up -d `, once, you can reset docker-compose.yml as the environment settings only is required the first time you run your mongoDb.
-
-Change the configuration in `mysettings.json` to the following, so that the backend will be able to connect to our new database:
-```
-{
-  "LogQueries": false,
-  "AllowedHosts": "*",
-  "Host": "http://localhost",
-  "MongoDb": {
-    "Name": "witsml-explorer-db",
-    "ConnectionString": "mongodb://<username>:<password>@localhost"
-  }
-},
-```
-`<username>` and `<password>` is what was configured in the docker-compose.yml file.
-
-
+Using [MongoDB](Docker/MongoDb/README.md)
+Using [CosmosDB](Scripts/Azure/README.md)
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
@@ -203,18 +177,18 @@ For linting our frontend code we use [ESLint](https://github.com/typescript-esli
 For our non frontend code, we use [dotnet-format](https://github.com/dotnet/format) for validating and fixing code that does not follow the project rules. They can be found in `.editorconfig` at the project root.
 
 ### Run checks as a pre-commit hook
-We use [Husky](https://github.com/typicode/husky) to run `ESLint` and `dotnet-format` as pre commit hooks. This will give errors when creating commits that causes checks to fail.
+We use [Husky](https://github.com/typicode/husky) to run `ESLint` `Prettier` and `dotnet-format` as pre commit hooks. This will give errors when creating commits that causes checks to fail.
 
 ## Project overview
 Here you will get a brief overview of the system flow and project structure.
 
 ### Project structure summary
-This solution consists of 3 projects:
+This solution consists of 4 projects:
 * Witsml
   * Contains domain objects which maps to the XML structure from a Witsml server. It also contains functionality to build queries for a set of Witsml objects (well, wellbore, rig, log).
 * WitsmlExplorer.Api
   * Api used by the frontend application. Every request from the frontend will be handled here. Receive job descriptions and spawn workers for every writing operations done on a witsml server.
-* WitsmlExplorer.Api
+* WitsmlExplorer.Console
   * Console application to be used without web GUI
 * WitsmlExplorer.Frontend
   * Frontend web application which is what the user sees and interacts with.
@@ -250,47 +224,13 @@ Old Chart:
 * When the user adds/updates/deletes, a job is made and a worker is triggered asynchronously on the backend.
 * After a worker has finished, the result message will be pushed to the client, and a refresh is triggered if necessary.
 
-## Additional information 
-### Cosmos database
-Witsml Explorer requires a database to store application data. One option is to use a Cosmos database in Azure.
-
-#### Setting up a database in Azure 
-1) If not already installed, install Azure CLI on your computer [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest), and then login `az login`
-2) Copy `config-example.cfg` into a new file `config.cfg` in folder `Scripts/Azure` and fill in `subscriptionId` and `resourceGroupName` from your Azure subscription and resourcegroup.
-3) There exist some scripts  that may simplify setting up the necessary infrastructure for this project in folder `Scripts/Azure`. 
-<br>Script to create Cosmos DB: ```./create-cosmos-db.sh```
-<br>Script to run all together: ```./run-azure-scripts.sh```
-4) In file `config.cfg` enter `databaseAccountName` and a name (container) for your database in `databaseName`.  
-5) Run ```./create-cosmos-db.sh``` (prerequisite azure cli installed, and that your are logged in)
-
-#### Configure backend to use CosmosDB
-If you have a CosmosDB setup and ready, follow these steps to configure the backend properly.
-```
-#From project root.
-cd Src/WitsmlExplorer.Api
-# If you do not have a mysettings.json file, create it:
-cp appsettings.json mysettings.json 
-``` 
-Add the following `"CosmosDb"` configuration to `mysettings.json`
-```
-{
-  {...},
-  "CosmosDb": {
-    "Uri": "<...>", (Uri from relevant Azure Database => Overview => Uri )
-    "Name": "<...>", (Container name from relevant Azure Database => DataExplorer || databaseName from config.cfg)
-    "AuthKey": "<...>" (PrimaryKey from relevant Azure Database => Setting => Keys )
-  },
-  {...}
-}
-```
-
 ### Generating service references
 _Note that this only documents how it was done. It is not necessary to repeat this until incorporating changes to wsdl_.
 Install `dotnet-svcutil`: `dotnet tool install --global dotnet-svcutil`
 
 `ServiceReference` is generated by executing (in project folder): `dotnet-svcutil ../../Resources/Wsdl/witsml_v1.4.0_api.wsdl --namespace "*,Witsml.ServiceReference" --outputFile WitsmlService`
 
-### Deploy WitsmlExplorer in local IIS
+### IIS Deploy WitsmlExplorer
 Assuming, we are planning deploy frontend at https://localhost/witsmlexplorer and backend at https://localhost/witsmlexplorerbackend
 
 #### Deploy Backend

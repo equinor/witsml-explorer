@@ -1,15 +1,18 @@
 version: '3.7'
 services:
   api:
-    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-api:latest
+    image: witsmlexplorer-api:latest
     container_name: witsmlexplorer-api-dev
     ports:
-      - 5000:80
+      - 5000:5000
     volumes:
-      - ../../config.json:/app/config.json:ro
+      - ./config.json:/app/config.json:ro
+      - ./ca-bundle.crt:/etc/ssl/certs/ca-bundle.crt:ro
+    environment:
+      - SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt      
 
   web:
-    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-frontend:latest
+    image: witsmlexplorer-frontend:latest
     container_name: witsmlexplorer-frontend-dev
     ports:
       - 3000:3000

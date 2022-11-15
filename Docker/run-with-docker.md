@@ -1,16 +1,3 @@
-# Access to prebuilt images
-
-Access to prebuilt docker images is restricted to users within the Equinor organization.
-
-To access these images with docker, you need to create a personal access token in Github with scope
-set to "read:packages". Users who should manage images should additionally have "repo, write:packages".
-
-This token must be authorized with the Equinor organization. After creating the access token, select "Enable SSO" to authorize the token.
-
-After creating and configuring the access token, login with docker: 
-
-`docker login -u USERNAME -p ACCESS_TOKEN docker.pkg.github.com`
-
 # Configuration
 
 ## `config.json`
