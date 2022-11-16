@@ -14,12 +14,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<BhaRun>))]
         public static async Task<IResult> GetBhaRuns(string wellUid, string wellboreUid, IBhaRunService bhaRunService)
         {
-            return Results.Ok(await bhaRunService.GetBhaRuns(wellUid, wellboreUid));
+            return TypedResults.Ok(await bhaRunService.GetBhaRuns(wellUid, wellboreUid));
+
         }
         [Produces(typeof(BhaRun))]
         public static async Task<IResult> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid, IBhaRunService bhaRunService)
         {
-            return Results.Ok(await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid));
+            return TypedResults.Ok(await bhaRunService.GetBhaRun(wellUid, wellboreUid, bhaRunUid));
         }
     }
 }

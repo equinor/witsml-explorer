@@ -24,15 +24,20 @@ namespace WitsmlExplorer.Api.Configuration
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
                 .IgnoreThisInterface<ICredentials>()
+                .IgnoreThisInterface<ICredentialsService>()
+                .IgnoreThisInterface<IJobCache>()
+                .IgnoreThisInterface<IJobQueue>()
+                .IgnoreThisInterface<IWitsmlSystemCredentials>()
+                .IgnoreThisInterface<IWitsmlClientProvider>()
+                .IgnoreThisInterface<ICredentialsCache>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
-            services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
-
+            services.AddSingleton<ICredentialsCache, CredentialsCache>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

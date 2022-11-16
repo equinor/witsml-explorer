@@ -14,19 +14,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<WbGeometry>))]
         public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid));
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return Results.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid));
         }
     }
 }

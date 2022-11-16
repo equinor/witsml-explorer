@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlTubulars witsmlTubular = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid);
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(witsmlTubular, new OptionsIn(ReturnElements.Requested));
 
-            return result.Tubulars.Select(tubular => WitsmlToTubular(tubular)).OrderBy(tubular => tubular.Name);
+            return result.Tubulars.Select(WitsmlToTubular).OrderBy(tubular => tubular.Name);
         }
 
         public async Task<Tubular> GetTubular(string wellUid, string wellboreUid, string tubularUid)

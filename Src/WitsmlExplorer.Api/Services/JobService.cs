@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IJobService
     {
         Task<string> CreateJob(JobType jobType, JobInfo jobInfo, Stream jobStream);
+
     }
 
     public class JobService : IJobService
@@ -35,7 +36,6 @@ namespace WitsmlExplorer.Api.Services
             {
                 throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType}");
             }
-
             (Task<(WorkerResult, RefreshAction)> task, Job job) = await worker.SetupWorker(jobStream);
             job.JobInfo = jobInfo;
             _jobQueue.Enqueue(task);
@@ -43,6 +43,5 @@ namespace WitsmlExplorer.Api.Services
 
             return job.JobInfo.Id;
         }
-
     }
 }

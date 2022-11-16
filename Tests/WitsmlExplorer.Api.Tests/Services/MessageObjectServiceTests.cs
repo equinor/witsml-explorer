@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             _service = new MessageObjectService(witsmlClientProvider.Object);
         }
 

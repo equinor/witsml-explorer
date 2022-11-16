@@ -1,23 +1,23 @@
-
-using System;
-
 using Microsoft.AspNetCore.Http;
-
 namespace WitsmlExplorer.Api.HttpHandlers
 {
     public interface IEssentialHeaders
     {
+
         public string Authorization { get; }
-        public bool HasCookieCredentials(string server);
-        public string GetCookie(string server);
-        public string GetHost(string server);
+        public string TargetServer { get; }
+        public string SourceServer { get; }
+        public string GetCookieValue();
         public string GetBearerToken();
+
     }
 
     public class EssentialHeaders : IEssentialHeaders
     {
+        public static readonly string CookieName = "witsmlexplorer";
         public static readonly string WitsmlTargetServer = "WitsmlTargetServer";
         public static readonly string WitsmlSourceServer = "WitsmlSourceServer";
+
         public EssentialHeaders() { }
         public EssentialHeaders(HttpRequest httpRequest)
         {
@@ -25,27 +25,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
             Authorization = httpRequest?.Headers["Authorization"];
             TargetServer = httpRequest?.Headers[WitsmlTargetServer];
             SourceServer = httpRequest?.Headers[WitsmlSourceServer];
-            TargetServerCookie = httpRequest?.Cookies[Uri.EscapeDataString(TargetServer)];
-            SourceServerCookie = httpRequest?.Cookies[Uri.EscapeDataString(SourceServer)];
+            WitsmlExplorerCookie = httpRequest?.Cookies[CookieName];
         }
         public string Authorization { get; init; }
-        private string TargetServer { get; init; }
-        private string SourceServer { get; init; }
-        private string TargetServerCookie { get; init; }
-        private string SourceServerCookie { get; init; }
+        public string TargetServer { get; init; }
+        public string SourceServer { get; init; }
+        private string WitsmlExplorerCookie { get; init; }
 
-        public bool HasCookieCredentials(string server)
+
+        public string GetCookieValue()
         {
-            return (server == WitsmlTargetServer) ? !string.IsNullOrEmpty(TargetServerCookie) : !string.IsNullOrEmpty(SourceServerCookie);
+            return WitsmlExplorerCookie;
         }
-        public string GetCookie(string server)
-        {
-            return (server == WitsmlTargetServer) ? TargetServerCookie : SourceServerCookie;
-        }
-        public string GetHost(string server)
-        {
-            return (server == WitsmlTargetServer) ? TargetServer : SourceServer;
-        }
+
         public string GetBearerToken()
         {
             return Authorization?.Split()[1];

@@ -31,8 +31,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRun(wellUid, wellboreUid);
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
-            return result.BhaRuns.Select(bhaRun =>
-                    WitsmlToBhaRun(bhaRun)
+            return result.BhaRuns.Select(WitsmlToBhaRun
                 ).OrderBy(bhaRun => bhaRun.Name);
         }
 

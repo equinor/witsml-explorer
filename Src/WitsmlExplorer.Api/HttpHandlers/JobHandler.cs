@@ -20,15 +20,16 @@ namespace WitsmlExplorer.Api.HttpHandlers
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
-            (string userPrincipalName, string witsmlUsername) = credentialsService.GetUsernamesFromCookieAndToken(eh);
+            (ServerCredentials targetCreds, ServerCredentials sourceCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
             JobInfo jobInfo = new()
             {
-                Username = useOAuth2 ? userPrincipalName : witsmlUsername,
-                WitsmlUsername = witsmlUsername,
-                SourceServer = eh.GetHost(EssentialHeaders.WitsmlSourceServer),
-                TargetServer = eh.GetHost(EssentialHeaders.WitsmlTargetServer)
+                Username = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId,
+                WitsmlTargetUsername = targetCreds.UserId,
+                WitsmlSourceUsername = sourceCreds.UserId,
+                SourceServer = eh.SourceServer,
+                TargetServer = eh.TargetServer
             };
-            return Results.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
+            return TypedResults.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
@@ -36,14 +37,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            (string userPrincipalName, string witsmlUserName) = credentialsService.GetUsernamesFromCookieAndToken(eh);
-
-            if ((useOAuth2 && string.IsNullOrEmpty(userPrincipalName)) ||
-            (!useOAuth2 && string.IsNullOrEmpty(witsmlUserName)))
-            {
-                return Results.Unauthorized();
-            }
-            return useOAuth2 ? Results.Ok(jobCache.GetJobInfosByUser(userPrincipalName)) : Results.Ok(jobCache.GetJobInfosByUser(witsmlUserName));
+            (ServerCredentials targetCreds, _) = credentialsService.GetWitsmlUsernamesFromCache(eh);
+            string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId;
+            return TypedResults.Ok(jobCache.GetJobInfosByUser(userName));
         }
     }
 }

@@ -15,18 +15,6 @@ namespace WitsmlExplorer.Api.Swagger
             services.AddSwaggerGen(options =>
                 {
                     options.OperationFilter<WitsmlHeaderFilter>();
-
-                    OpenApiSecurityScheme basicSecurityScheme = new()
-                    {
-                        Type = SecuritySchemeType.Http,
-                        Scheme = "Basic",
-                        Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme }
-                    };
-                    options.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
-                    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                    {
-                    {basicSecurityScheme, Array.Empty<string>()}
-                    });
                     if (configuration["OAuth2Enabled"] == "True")
                     {
                         OpenApiSecurityScheme oAuth2scheme = new()

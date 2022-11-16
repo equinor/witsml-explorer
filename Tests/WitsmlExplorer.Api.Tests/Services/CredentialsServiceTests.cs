@@ -34,6 +34,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IOptions<WitsmlClientCapabilities>> clientCapabilities = new();
             Mock<IWitsmlSystemCredentials> witsmlServerCredentials = new();
             Mock<IDocumentRepository<Server, Guid>> witsmlServerRepository = new();
+            CredentialsCache credentialsCache = new(new Mock<ILogger<CredentialsCache>>().Object);
 
             dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
             dataProtector.Setup(p => p.Unprotect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
@@ -65,6 +66,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 clientCapabilities.Object,
                 witsmlServerCredentials.Object,
                 witsmlServerRepository.Object,
+                credentialsCache,
                 logger.Object
             );
         }
@@ -148,48 +150,29 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCredentialsCookieFirst_ValidCookie_ReturnCookieCreds()
+        public void CacheCredentials_InsertOne_GetCredentialsFromCache()
         {
-            string host = "http://some.targeturl.com/";
-            ServerCredentials scTarget = new() { UserId = "cookieuser", Password = "cookiepass", Host = new Uri(host) };
-            IEssentialHeaders essentialHeaders = CreateEssentialHeaders(scTarget, null);
-            ServerCredentials serverCreds = _credentialsService.GetCredentialsCookieFirst(essentialHeaders, EssentialHeaders.WitsmlTargetServer).Result;
 
-            Assert.True(serverCreds.UserId == "cookieuser");
-            Assert.True(serverCreds.Password == "cookiepass");
-            Assert.True(serverCreds.Host.ToString() == host);
+            string clientId = Guid.NewGuid().ToString();
+            ServerCredentials sc = new() { UserId = "username", Password = "dummypassword", Host = new Uri("https://somehost.url") };
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
+            string headerValue = b64Creds + "@" + sc.Host;
+
+            Mock<IEssentialHeaders> headersMock = new();
+            headersMock.Setup(x => x.GetCookieValue()).Returns(clientId);
+            headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
+
+            _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
+            ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, headersMock.Object.TargetServer);
+            Assert.Equal(sc, fromCache);
         }
-
-        private static IEssentialHeaders CreateEssentialHeaders(ServerCredentials targetCreds, ServerCredentials sourceCreds)
-        {
-            Mock<IEssentialHeaders> essentialHeaders = new();
-            string targetCookie = CreateCookie(targetCreds, n => n);
-            string sourceCookie = CreateCookie(sourceCreds, n => n);
-            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlTargetServer)).Returns(!string.IsNullOrEmpty(targetCookie));
-            essentialHeaders.Setup(eh => eh.HasCookieCredentials(EssentialHeaders.WitsmlSourceServer)).Returns(!string.IsNullOrEmpty(sourceCookie));
-            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlTargetServer)).Returns(targetCreds?.Host?.ToString());
-            essentialHeaders.Setup(eh => eh.GetHost(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCreds?.Host?.ToString());
-            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlTargetServer)).Returns(targetCookie);
-            essentialHeaders.Setup(eh => eh.GetCookie(EssentialHeaders.WitsmlSourceServer)).Returns(sourceCookie);
-            return essentialHeaders.Object;
-        }
-
-        private static string CreateCookie(ServerCredentials creds, Func<string, string> encrypt)
-        {
-            if (creds == null)
-            {
-                return null;
-            }
-
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(encrypt(creds.UserId + ":" + creds.Password)));
-        }
-
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
         {
             ServerCredentials sc = new() { UserId = username, Password = dummypassword, Host = new Uri(host) };
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
             return b64Creds + "@" + sc.Host.ToString();
         }
+
         private static string CreateJwtToken(string[] appRoles, bool signed, string upn)
         {
             SecurityTokenDescriptor tokenDescriptor = new()
@@ -197,7 +180,8 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Expires = DateTime.UtcNow.AddSeconds(60),
                 Claims = new Dictionary<string, object>() {
                     { "roles", new List<string>(appRoles) },
-                    { "upn", upn }
+                    { "upn", upn },
+                    { "sub", Guid.NewGuid().ToString() }
                 }
             };
             if (signed)

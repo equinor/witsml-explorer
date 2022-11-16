@@ -2,6 +2,7 @@
 **/.dccache
 # Rider settings
 .idea/
+.eslintcache
 
 # VS Code settings
 .vs/

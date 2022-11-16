@@ -16,7 +16,6 @@ namespace WitsmlExplorer.Api.Services
         Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid);
         Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid);
         Task<List<WbGeometrySection>> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid);
-
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -37,7 +36,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
             WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
-            return result.WbGeometrys.Select(wbGeometry => FromWitsml(wbGeometry)).OrderBy(wbGeometry => wbGeometry.DTimReport);
+            return result.WbGeometrys.Select(FromWitsml).OrderBy(wbGeometry => wbGeometry.DTimReport);
         }
 
         private static WbGeometry FromWitsml(WitsmlWbGeometry wbGeometry)

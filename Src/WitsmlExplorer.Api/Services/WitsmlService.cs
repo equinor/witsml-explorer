@@ -1,3 +1,5 @@
+using System.Net;
+
 using Witsml;
 
 namespace WitsmlExplorer.Api.Services
@@ -8,7 +10,7 @@ namespace WitsmlExplorer.Api.Services
 
         protected WitsmlService(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider.GetClient().Result;
+            _witsmlClient = witsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"No WITSML access", (int)HttpStatusCode.Unauthorized);
         }
     }
 }

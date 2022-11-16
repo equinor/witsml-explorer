@@ -14,13 +14,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Well>))]
         public static async Task<IResult> GetAllWells(IWellService wellService)
         {
-            return Results.Ok(await wellService.GetWells());
+            return TypedResults.Ok(await wellService.GetWells());
         }
 
         [Produces(typeof(Well))]
         public static async Task<IResult> GetWell(string wellUid, IWellService wellService)
         {
-            return Results.Ok(await wellService.GetWell(wellUid));
+            return TypedResults.Ok(await wellService.GetWell(wellUid));
         }
     }
 }

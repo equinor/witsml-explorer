@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(Task.FromResult(_witsmlClient.Object));
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<ModifyWellJob> logger = loggerFactory.CreateLogger<ModifyWellJob>();

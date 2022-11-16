@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Console.ListCommands
 
         public ListWellboresCommand(IWitsmlClientProvider witsmlClientProvider)
         {
-            _witsmlClient = witsmlClientProvider?.GetClient().Result ?? throw new ArgumentNullException(nameof(witsmlClientProvider));
+            _witsmlClient = witsmlClientProvider?.GetClient() ?? throw new ArgumentNullException(nameof(witsmlClientProvider));
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context)

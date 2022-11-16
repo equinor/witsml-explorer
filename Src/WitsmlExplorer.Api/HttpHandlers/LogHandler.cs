@@ -15,17 +15,18 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<LogObject>))]
         public static async Task<IResult> GetLogs(string wellUid, string wellboreUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLogs(wellUid, wellboreUid));
+            return TypedResults.Ok(await logObjectService.GetLogs(wellUid, wellboreUid));
         }
         [Produces(typeof(LogObject))]
         public static async Task<IResult> GetLog(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLog(wellUid, wellboreUid, logUid));
+            return TypedResults.Ok(await logObjectService.GetLog(wellUid, wellboreUid, logUid));
+
         }
         [Produces(typeof(IEnumerable<LogCurveInfo>))]
         public static async Task<IResult> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid, ILogObjectService logObjectService)
         {
-            return Results.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid));
+            return TypedResults.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid));
         }
         [Produces(typeof(LogData))]
         public static async Task<IResult> GetLogData(
@@ -41,11 +42,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
             if (mnemonics.Any())
             {
                 LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
-                return Results.Ok(logData);
+                return TypedResults.Ok(logData);
             }
             else
             {
-                return Results.BadRequest("Missing list of mnemonics");
+                return TypedResults.BadRequest("Missing list of mnemonics");
             }
         }
     }

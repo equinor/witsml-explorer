@@ -15,7 +15,6 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid);
         Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid);
-
         Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid);
     }
 
@@ -30,8 +29,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
             WitsmlTrajectories result = await _witsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.Requested));
-            return result.Trajectories.Select(trajectory =>
-                WitsmlToTrajectory(trajectory)
+            return result.Trajectories.Select(WitsmlToTrajectory
                 ).OrderBy(trajectory => trajectory.Name);
         }
 

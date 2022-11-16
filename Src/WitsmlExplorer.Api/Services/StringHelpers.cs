@@ -115,6 +115,5 @@ namespace WitsmlExplorer.Api.Services
 
             return isDouble ? value : throw new ArgumentException($"Input is not compatible to be parsed to a double value: {input}");
         }
-
     }
 }

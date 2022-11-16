@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlRigs witsmlRigs = RigQueries.GetWitsmlRigByWellbore(wellUid, wellboreUid);
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.All));
-            return result.Rigs.Select(rig => WitsmlRigToRig(rig)).OrderBy(rig => rig.Name);
+            return result.Rigs.Select(WitsmlRigToRig).OrderBy(rig => rig.Name);
         }
 
         public async Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid)

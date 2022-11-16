@@ -22,4 +22,4 @@ jobs:
       - name: Build
         run: dotnet build /warnaserror --configuration Release
       - name: Test
-        run: dotnet test --configuration Release
+        run: dotnet test --configuration Release --logger "console;verbosity=detailed"
