@@ -38,13 +38,13 @@ This value is used for setting up the notifications feed from the backend/api to
 
 ### **mongodb**
 ```json
-}
+{
   "MongoDb": {
     "Name": "witsml-explorer-db",
     "ConnectionString": "mongodb://user:password@host.docker.internal"
   },
   "Host": "http[s]://<domain-where-witsml-explorer-is-hosted>",
-  "OAuth2Enabled": false,
+  "OAuth2Enabled": false
 }
 ```
 
@@ -57,7 +57,7 @@ This value is used for setting up the notifications feed from the backend/api to
     "AuthKey": "<...>" (PrimaryKey from relevant Azure Database => Setting => Keys )
   },
   "Host": "http[s]://<domain-where-witsml-explorer-is-hosted>",
-  "OAuth2Enabled": false,
+  "OAuth2Enabled": false
 }
 ```
 
