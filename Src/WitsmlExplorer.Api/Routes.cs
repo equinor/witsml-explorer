@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
@@ -17,7 +16,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/witsml-servers", WitsmlServerHandler.GetWitsmlServers, useOAuth2);
             app.MapPost("/witsml-servers", WitsmlServerHandler.CreateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
-            app.MapMethods("/witsml-servers/{witsmlServerId}", new[] { HttpMethods.Patch }, WitsmlServerHandler.UpdateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapPatch("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.UpdateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
             app.MapDelete("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
 
             app.MapGet("/wells", WellHandler.GetAllWells, useOAuth2);

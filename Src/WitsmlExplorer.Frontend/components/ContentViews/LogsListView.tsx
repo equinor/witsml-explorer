@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
@@ -12,7 +13,8 @@ export interface LogObjectRow extends ContentTableRow, LogObject {}
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedLogTypeGroup, selectedServer, servers } = navigationState;
+  const { selectedWellbore, selectedWell, selectedLogTypeGroup, selectedServer, servers } = navigationState;
+
   const { dispatchOperation } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
@@ -48,6 +50,13 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
+  const onSelect = (log: any) => {
+    dispatchNavigation({
+      type: NavigationType.SelectLogObject,
+      payload: { log, well: selectedWell, wellbore: selectedWellbore }
+    });
+  };
+
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
@@ -58,7 +67,7 @@ export const LogsListView = (): React.ReactElement => {
     setResetCheckedItems(true);
   }, [selectedWellbore, selectedLogTypeGroup]);
 
-  return selectedWellbore && !resetCheckedItems ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedWellbore && !resetCheckedItems ? <ContentTable columns={columns} onSelect={onSelect} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default LogsListView;

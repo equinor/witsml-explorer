@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreTubularsAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreTubularsAction } from "../../contexts/modificationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";

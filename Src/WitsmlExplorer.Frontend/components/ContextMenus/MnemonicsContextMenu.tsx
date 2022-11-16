@@ -29,7 +29,7 @@ const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElem
         heading={"Delete values for logcurve?"}
         content={getContentMessage(deleteLogCurveValuesJob)}
         onConfirm={deleteLogCurveValues}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         switchButtonPlaces={true}
       />
     );

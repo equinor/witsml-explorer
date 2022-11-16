@@ -3,9 +3,10 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { UpdateServerListAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
+import { SelectServerAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
-import { SelectServerAction, UpdateServerListAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -105,6 +106,7 @@ const ServerManager = (): React.ReactElement => {
 
   const onEditItem = (server: Server) => {
     const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
+    setIsOpen(false);
     dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
   };
 
@@ -144,7 +146,16 @@ const ServerManager = (): React.ReactElement => {
     <>
       <FormControl>
         <InputLabel id="servers-label">Server</InputLabel>
-        <Select labelId="servers-label" value={selectedServer?.id ?? ""} onOpen={() => setIsOpen(true)} onClose={() => setIsOpen(false)}>
+
+        <Select
+          labelId="servers-label"
+          value={selectedServer?.id ?? ""}
+          onOpen={() => {
+            setIsOpen(true);
+          }}
+          onClose={() => setIsOpen(false)}
+          MenuProps={{ open: isOpen }}
+        >
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
@@ -167,6 +178,7 @@ const ServerManager = (): React.ReactElement => {
             <Typography color={"initial"}>Add server</Typography>
           </MenuItem>
         </Select>
+
         <AuthenticationState />
       </FormControl>
     </>

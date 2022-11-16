@@ -3,8 +3,8 @@ import { Button, TextField } from "@material-ui/core";
 import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
+import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
-import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
@@ -94,7 +94,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       <ModalDialog
         heading={`Remove the server "${server.name}"?`}
         content={<>Removing a server will permanently remove it from the list.</>}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         confirmText={"Remove server"}
         onCancel={onCancel}
         onSubmit={onConfirm}
@@ -184,6 +184,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onOptionsChange={({ selectedItems }) => {
               setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
             }}
+            hideClearButton={true}
           />
           <TextField
             id="role"

@@ -2,8 +2,8 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
+import { UpdateWellboreAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
-import { UpdateWellboreAction } from "../../contexts/navigationStateReducer";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
@@ -89,7 +89,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           </span>
         }
         onConfirm={deleteWellbore}
-        confirmColor={"secondary"}
+        confirmColor={"danger"}
         confirmText={"Delete wellbore"}
         switchButtonPlaces={true}
       />

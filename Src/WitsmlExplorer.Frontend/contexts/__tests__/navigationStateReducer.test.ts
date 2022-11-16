@@ -5,11 +5,10 @@ import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
 import RiskObject from "../../models/riskObject";
-import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Tubular from "../../models/tubular";
 import WbGeometryObject from "../../models/wbGeometry";
-import Well, { emptyWell, getWellProperties } from "../../models/well";
+import { emptyWell, getWellProperties } from "../../models/well";
 import Wellbore, {
   calculateLogGroupId,
   calculateLogTypeTimeId,
@@ -18,21 +17,34 @@ import Wellbore, {
   calculateWellboreNodeId,
   getWellboreProperties
 } from "../../models/wellbore";
-import Filter, { EMPTY_FILTER } from "../filter";
-import ModificationType from "../modificationType";
-import {
-  EMPTY_NAVIGATION_STATE,
-  NavigationState,
-  reducer,
-  RemoveWellAction,
-  RemoveWellboreAction,
-  RemoveWitsmlServerAction,
-  Selectable,
-  SelectServerAction,
-  sortList,
-  ToggleTreeNodeAction
-} from "../navigationStateReducer";
+import { EMPTY_FILTER } from "../filter";
+import { sortList } from "../modificationStateReducer";
+import { SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
+import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
+import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
+import {
+  BHARUN_1,
+  FILTER_1,
+  getInitialState,
+  LOG_1,
+  MESSAGE_1,
+  RIG_1,
+  RISK_1,
+  SERVER_1,
+  SERVER_2,
+  TRAJECTORY_1,
+  TRAJECTORY_GROUP_1,
+  TUBULAR_1,
+  WBGEOMETRY_1,
+  WELLBORE_1,
+  WELLBORE_2,
+  WELLBORE_3,
+  WELLS,
+  WELL_1,
+  WELL_2,
+  WELL_3
+} from "../stateReducerTestUtils";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -66,53 +78,6 @@ it("Should update state when selecting another server", () => {
     currentSelected: SERVER_2,
     wells: [],
     filteredWells: []
-  });
-});
-
-it("Should only update list of servers if no server selected", () => {
-  const editedServer: Server = { ...SERVER_1, description: "Another description" };
-  const updateServerAction = { type: ModificationType.UpdateServer, payload: { server: editedServer } };
-  const initialState = {
-    ...EMPTY_NAVIGATION_STATE,
-    servers: [SERVER_1]
-  };
-  const actual = reducer(initialState, updateServerAction);
-  expect(actual).toStrictEqual({
-    ...EMPTY_NAVIGATION_STATE,
-    servers: [editedServer]
-  });
-});
-
-it("Should update list of servers, and current selected, if editing current selected server", () => {
-  const editedServer: Server = { ...SERVER_1, description: "Another description" };
-  const selectServerAction = { type: ModificationType.UpdateServer, payload: { server: editedServer } };
-  const initialState = {
-    ...getInitialState(),
-    selectedServer: SERVER_1,
-    currentSelected: SERVER_1,
-    servers: [SERVER_1]
-  };
-  const actual = reducer(initialState, selectServerAction);
-  expect(actual).toStrictEqual({
-    ...EMPTY_NAVIGATION_STATE,
-    wells: WELLS,
-    filteredWells: WELLS,
-    currentSelected: editedServer,
-    selectedServer: editedServer,
-    servers: [editedServer]
-  });
-});
-
-it("Should update list of servers when adding a server", () => {
-  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", securityscheme: "", roles: [] };
-  const selectServerAction = { type: ModificationType.AddServer, payload: { server: newServer } };
-  const actual = reducer({ ...getInitialState() }, selectServerAction);
-  expect(actual).toStrictEqual({
-    ...EMPTY_NAVIGATION_STATE,
-    wells: WELLS,
-    filteredWells: WELLS,
-    selectedServer: SERVER_1,
-    servers: [SERVER_1, newServer]
   });
 });
 
@@ -251,102 +216,6 @@ it("Should not reset selected wellbore if it is included in filter", () => {
   };
   const filtered = reducer(unfiltered, setFilterAction);
   expect(filtered.selectedWell.uid).toStrictEqual(WELL_3.uid);
-});
-
-it("Should update logs for selected wellbore", () => {
-  const updateLogOnWellbore = {
-    type: ModificationType.UpdateLogObjects,
-    payload: {
-      wellUid: WELL_1.uid,
-      wellboreUid: WELLBORE_1.uid,
-      logs: [{ ...LOG_1, name: "Updated" }]
-    }
-  };
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: { ...WELL_1 },
-    selectedWellbore: { ...WELLBORE_1 }
-  };
-
-  const updatedWellbore = { ...WELLBORE_1, logs: [{ ...LOG_1, name: "Updated" }] };
-  const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
-
-  const actual = reducer(initialState, updateLogOnWellbore);
-  const expected = {
-    ...getInitialState(),
-    selectedWell: updatedWell,
-    selectedWellbore: updatedWellbore,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
-  };
-  expect(actual).toStrictEqual(expected);
-});
-
-it("Should update trajectories for selected wellbore", () => {
-  const updatedTrajectory = { ...TRAJECTORY_1, name: "Updated" };
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
-    payload: {
-      wellUid: WELL_1.uid,
-      wellboreUid: WELLBORE_1.uid,
-      trajectories: [updatedTrajectory]
-    }
-  };
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: { ...WELL_1 },
-    selectedWellbore: { ...WELLBORE_1 },
-    selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
-    selectedTrajectory: { ...TRAJECTORY_1 }
-  };
-  const updatedWellbore = { ...WELLBORE_1, trajectories: [updatedTrajectory] };
-  const actual = reducer(initialState, updateTrajectoryOnWellbore);
-
-  const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
-  expect(actual).toStrictEqual({
-    ...getInitialState(),
-    selectedWell: updatedWell,
-    selectedWellbore: updatedWellbore,
-    selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
-    selectedTrajectory: updatedTrajectory,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
-  });
-});
-
-it("Should update currentSelected if deleted", () => {
-  const newTrajectories: Trajectory[] = [];
-  const trajectoryGroup = calculateTrajectoryGroupId(WELLBORE_1);
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
-    payload: {
-      wellUid: WELL_1.uid,
-      wellboreUid: WELLBORE_1.uid,
-      trajectories: newTrajectories
-    }
-  };
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: { ...WELL_1 },
-    selectedWellbore: { ...WELLBORE_1 },
-    selectedTrajectoryGroup: trajectoryGroup,
-    selectedTrajectory: TRAJECTORY_1,
-    currentSelected: TRAJECTORY_1
-  };
-  const updatedWellbore = { ...WELLBORE_1, trajectories: newTrajectories };
-  const actual = reducer(initialState, updateTrajectoryOnWellbore);
-
-  const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
-  expect(actual).toStrictEqual({
-    ...getInitialState(),
-    selectedWell: updatedWell,
-    selectedWellbore: updatedWellbore,
-    selectedTrajectoryGroup: trajectoryGroup,
-    selectedTrajectory: null,
-    currentSelected: trajectoryGroup,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
-  });
 });
 
 it("Selecting a well node twice should not change anything", () => {
@@ -502,198 +371,6 @@ it("Selecting a trajectory group node twice should change nothing", () => {
   expect(afterTrajectoryGroupSelect).toStrictEqual(expected);
 });
 
-it("Should update refreshed well", () => {
-  const WELLBORE_1_WITH_LOGS = { ...WELLBORE_1, logs: [LOG_1] };
-  const WELL_1_WITH_LOGS = { ...WELL_1, wellbores: [WELLBORE_1_WITH_LOGS] };
-  const wells = [WELL_1_WITH_LOGS, WELL_2, WELL_3];
-  const initialState = {
-    ...getInitialState(),
-    wells,
-    selectedWell: WELL_1_WITH_LOGS
-  };
-  const refreshedWell = { ...WELL_1, name: "well1_renamed" };
-  const refreshWellAction = {
-    type: ModificationType.UpdateWell,
-    payload: { well: refreshedWell }
-  };
-  const afterRefreshWell = reducer(initialState, refreshWellAction);
-  const refreshedWellWithLogs = { ...refreshedWell, wellbores: [{ ...WELLBORE_1_WITH_LOGS, logs: [LOG_1] }] };
-  const expectedListOfWells = [refreshedWellWithLogs, WELL_2, WELL_3];
-  const expectedState = {
-    ...getInitialState(),
-    wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
-    selectedWell: refreshedWellWithLogs
-  };
-
-  expect(afterRefreshWell).toStrictEqual(expectedState);
-});
-
-it("Should update added well", () => {
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: WELL_1
-  };
-  const wellbores: Wellbore[] = [];
-  const well1b = { uid: "well1b", name: "Well 1B", wellbores };
-  const addWellAction = {
-    type: ModificationType.AddWell,
-    payload: { well: well1b }
-  };
-  const afterRefreshWell = reducer(initialState, addWellAction);
-
-  const expectedListOfWells = [WELL_1, well1b, WELL_2, WELL_3];
-  const expectedState = {
-    ...getInitialState(),
-    wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
-    selectedWell: WELL_1
-  };
-  expect(afterRefreshWell).toStrictEqual(expectedState);
-});
-
-it("Should update refreshed wellbore", () => {
-  const WELLBORE_1_WITH_LOGS = { ...WELLBORE_1, logs: [LOG_1] };
-  const wells = [{ ...WELL_1, wellbores: [WELLBORE_1_WITH_LOGS] }, WELL_2, WELL_3];
-  const initialState = {
-    ...getInitialState(),
-    wells,
-    selectedWellbore: WELLBORE_1_WITH_LOGS
-  };
-
-  const refreshedWellbore = { ...WELLBORE_1, name: "wellbore1_renamed", logs: [LOG_1] };
-  const refreshWellboreAction = {
-    type: ModificationType.UpdateWellbore,
-    payload: { wellbore: refreshedWellbore }
-  };
-  const afterRefreshWellbore = reducer(initialState, refreshWellboreAction);
-  const refreshedWellboreWithLogs = { ...refreshedWellbore, logs: [LOG_1] };
-  const expectedListOfWells = [{ ...WELL_1, wellbores: [refreshedWellboreWithLogs] }, WELL_2, WELL_3];
-  const expectedState = {
-    ...getInitialState(),
-    wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
-    selectedWellbore: refreshedWellboreWithLogs
-  };
-  expect(afterRefreshWellbore).toStrictEqual(expectedState);
-});
-
-it("Should update refreshed log object", () => {
-  const wells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [LOG_1] }] }, WELL_2, WELL_3];
-  const initialState = {
-    ...getInitialState(),
-    selectedLog: LOG_1,
-    wells,
-    filteredWells: wells
-  };
-  const refreshedLog = { ...LOG_1, name: "renamed log" };
-  const refreshLogAction = {
-    type: ModificationType.UpdateLogObject,
-    payload: { log: refreshedLog }
-  };
-  const afterRefreshLog = reducer(initialState, refreshLogAction);
-  const expectedListOfWells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [refreshedLog] }] }, WELL_2, WELL_3];
-  const expectedState = {
-    ...getInitialState(),
-    wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
-    selectedLog: refreshedLog
-  };
-  expect(afterRefreshLog).toStrictEqual(expectedState);
-});
-
-it("Should update wells", () => {
-  const newWells = [WELL_2];
-  const initialState = {
-    ...getInitialState()
-  };
-  const updateWellsAction = {
-    type: ModificationType.UpdateWells,
-    payload: { wells: newWells }
-  };
-  const afterUpdateWells = reducer(initialState, updateWellsAction);
-
-  const expectedState = {
-    ...getInitialState(),
-    wells: newWells,
-    filteredWells: newWells
-  };
-  expect(afterUpdateWells).toStrictEqual(expectedState);
-});
-
-it("Should remove wellbore from list of wellbores and update selected items", () => {
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: WELL_2,
-    selectedWellbore: WELLBORE_2
-  };
-  const removeWellboreAction: RemoveWellboreAction = {
-    type: ModificationType.RemoveWellbore,
-    payload: { wellUid: WELL_2.uid, wellboreUid: WELLBORE_2.uid }
-  };
-  const afterRemoveWellbore = reducer(initialState, removeWellboreAction);
-
-  const expectedWellsList = [WELL_1, { ...WELL_2, wellbores: [] }, WELL_3];
-  const expectedState = {
-    ...getInitialState(),
-    wells: expectedWellsList,
-    filteredWells: expectedWellsList,
-    selectedWell: WELL_2
-  };
-  expect(afterRemoveWellbore).toStrictEqual(expectedState);
-});
-
-it("Should remove well from list of wells and update selected items", () => {
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: WELL_2,
-    selectedWellbore: WELLBORE_2,
-    currentSelected: WELLBORE_2
-  };
-  const removeWellAction: RemoveWellAction = {
-    type: ModificationType.RemoveWell,
-    payload: { wellUid: WELL_2.uid }
-  };
-  const afterRemoveWell = reducer(initialState, removeWellAction);
-
-  const expectedWellsList = [WELL_1, WELL_3];
-  const selectedWell: Well = null;
-  const selectedWellbore: Wellbore = null;
-  const currentSelected: Selectable = null;
-  const expectedState: NavigationState = {
-    ...getInitialState(),
-    wells: expectedWellsList,
-    filteredWells: expectedWellsList,
-    selectedWell,
-    selectedWellbore,
-    currentSelected
-  };
-  expect(afterRemoveWell).toStrictEqual(expectedState);
-});
-
-it("Should remove server from list of servers and update selected items", () => {
-  const initialState = {
-    ...getInitialState(),
-    selectedServer: SERVER_1,
-    selectedWell: WELL_2,
-    selectedWellbore: WELLBORE_2,
-    currentSelected: WELLBORE_2
-  };
-  const removeServerAction: RemoveWitsmlServerAction = {
-    type: ModificationType.RemoveServer,
-    payload: { serverUid: SERVER_1.id }
-  };
-  const afterRemoveServer = reducer(initialState, removeServerAction);
-
-  const selectedServer: Server = null;
-  const expectedState: NavigationState = {
-    ...getInitialState(),
-    servers: [],
-    selectedServer
-  };
-  expect(afterRemoveServer).toStrictEqual(expectedState);
-});
-
 it("Should expand (not select) a collapsed node when toggled", () => {
   const initialState = {
     ...getInitialState(),
@@ -750,150 +427,3 @@ it("Should collapse child nodes when toggling an expanded parent node", () => {
   };
   expect(afterRemoveServer).toStrictEqual(expectedState);
 });
-
-const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", roles: [] };
-const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", roles: [] };
-const WELLBORE_1: Wellbore = {
-  uid: "wellbore1",
-  wellUid: "well1",
-  name: "Wellbore 1",
-  bhaRuns: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
-  wellStatus: "",
-  wellType: "",
-  isActive: false
-};
-const WELLBORE_2: Wellbore = {
-  uid: "wellbore2",
-  wellUid: "well2",
-  name: "Wellbore 2",
-  bhaRuns: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
-  wellStatus: "",
-  wellType: "",
-  isActive: false
-};
-const WELLBORE_3: Wellbore = {
-  uid: "wellbore3",
-  wellUid: "well3",
-  name: "Wellbore 3",
-  bhaRuns: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
-  wellStatus: "",
-  wellType: "",
-  isActive: false
-};
-const WELL_1: Well = { uid: "well1", name: "Well 1", wellbores: [WELLBORE_1], field: "", operator: "", country: "" };
-const WELL_2: Well = { uid: "well2", name: "Well 2", wellbores: [WELLBORE_2], field: "", operator: "", country: "" };
-const WELL_3: Well = { uid: "well3", name: "Well 3", wellbores: [WELLBORE_3], field: "", operator: "", country: "" };
-const WELLS = [WELL_1, WELL_2, WELL_3];
-const BHARUN_1: BhaRun = {
-  uid: "bharun",
-  name: "bharun 1",
-  wellUid: WELL_1.uid,
-  wellboreUid: WELLBORE_1.uid,
-  wellboreName: "",
-  wellName: "",
-  numStringRun: "",
-  tubular: "",
-  dTimStart: null,
-  dTimStop: null,
-  dTimStartDrilling: null,
-  dTimStopDrilling: null,
-  planDogleg: null,
-  actDogleg: null,
-  actDoglegMx: null,
-  statusBha: "",
-  numBitRun: "",
-  reasonTrip: "",
-  objectiveBha: "",
-  commonData: null,
-  tubularUidRef: ""
-};
-const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "", wellName: "" };
-const RIG_1 = { uid: "rig1", name: "Rig 1" };
-const TRAJECTORY_1: Trajectory = {
-  uid: "trajectory1",
-  name: "Trajectory 1",
-  wellUid: "",
-  wellboreUid: "",
-  wellboreName: "",
-  wellName: "",
-  aziRef: "",
-  mdMax: 0,
-  mdMin: 0,
-  trajectoryStations: [],
-  dTimTrajEnd: null,
-  dTimTrajStart: null
-};
-const MESSAGE_1 = {
-  dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",
-  messageText: "Fill Brine Storage 2 with drillwater",
-  name: "Surface Logging Data - Message - MSG1",
-  uid: "MSG1",
-  wellName: "",
-  wellUid: "",
-  wellboreName: "",
-  wellboreUid: ""
-};
-const RISK_1 = {
-  dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",
-  name: "Dangerous risk",
-  uid: "MSG1",
-  wellName: "",
-  wellUid: "",
-  wellboreName: "",
-  wellboreUid: ""
-};
-const TUBULAR_1 = {
-  uid: "TUB1",
-  wellUid: "",
-  wellboreUid: "",
-  name: "tubby",
-  typeTubularAssy: "drilling"
-};
-
-const WBGEOMETRY_1 = {
-  dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",
-  uid: "WBG1",
-  wellName: "",
-  wellUid: "",
-  wellboreName: "",
-  wellboreUid: ""
-};
-
-const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
-const TRAJECTORY_GROUP_1 = "TrajectoryGroup";
-
-const getInitialState = (): NavigationState => {
-  const well1 = { ...WELL_1, wellbores: [{ ...WELLBORE_1 }] };
-  const well2 = { ...WELL_2, wellbores: [{ ...WELLBORE_2 }] };
-  const well3 = { ...WELL_3, wellbores: [{ ...WELLBORE_3 }] };
-  const wells = [well1, well2, well3];
-  const servers = [SERVER_1];
-  return {
-    ...EMPTY_NAVIGATION_STATE,
-    selectedServer: SERVER_1,
-    wells,
-    filteredWells: wells,
-    servers
-  };
-};

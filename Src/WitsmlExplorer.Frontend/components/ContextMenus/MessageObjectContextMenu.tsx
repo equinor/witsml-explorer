@@ -1,13 +1,12 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/navigationStateReducer";
+import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/modificationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
-import MessageObjectService from "../../services/messageObjectService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
@@ -28,9 +27,8 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
   const { checkedMessageObjectRows, dispatchOperation, servers } = props;
 
   const onClickModify = async () => {
-    const messageObject = await MessageObjectService.getMessage(checkedMessageObjectRows[0].wellUid, checkedMessageObjectRows[0].wellboreUid, checkedMessageObjectRows[0].uid);
     const mode = PropertiesModalMode.Edit;
-    const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject, dispatchOperation };
+    const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject: checkedMessageObjectRows[0].message, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <MessagePropertiesModal {...modifyMessageObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -40,7 +38,14 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
       menuItems={[
         <MenuItem
           key={"delete"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedMessageObjectRows, ObjectType.Message, JobType.DeleteMessageObjects)}
+          onClick={() =>
+            onClickDeleteObjects(
+              dispatchOperation,
+              checkedMessageObjectRows.map((row) => row.message),
+              ObjectType.Message,
+              JobType.DeleteMessageObjects
+            )
+          }
           disabled={checkedMessageObjectRows.length === 0}
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
@@ -50,7 +55,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedMessageObjectRows[0], "messageUid")}
+              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedMessageObjectRows[0].message, "messageUid")}
               disabled={checkedMessageObjectRows.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

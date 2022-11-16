@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -67,15 +66,15 @@ namespace WitsmlExplorer.Api.Extensions
             }
         }
 
-        public static void MapMethods(this IEndpointRouteBuilder endpoints, string pattern, IEnumerable<string> httpMethods, Delegate handler, bool useOAuth2, params string[] policyNames)
+        public static void MapPatch(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler, bool useOAuth2, params string[] policyNames)
         {
             if (useOAuth2)
             {
-                endpoints.MapMethods(ApiPath + pattern, httpMethods, handler).RequireAuthorization(policyNames);
+                endpoints.MapPatch(ApiPath + pattern, handler).RequireAuthorization(policyNames);
             }
             else
             {
-                endpoints.MapMethods(ApiPath + pattern, httpMethods, handler);
+                endpoints.MapPatch(ApiPath + pattern, handler);
             }
         }
     }

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
+import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
-import { SelectLogTypeAction } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
