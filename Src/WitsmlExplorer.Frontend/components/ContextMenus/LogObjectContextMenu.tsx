@@ -111,7 +111,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "log", [])} to server`} disabled={checkedLogObjectRows.length != 1}>
+        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "log", [])} to server`} disabled={checkedLogObjectRows.length != 1} icon="compare">
           {servers.map(
             (server: Server) =>
               server.id !== selectedServer.id && (

@@ -1,5 +1,5 @@
-import { Table, Typography } from "@equinor/eds-core-react";
-import { useEffect, useState } from "react";
+import { Button, Popover, Table, TextField, Typography } from "@equinor/eds-core-react";
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -7,10 +7,11 @@ import LogObject from "../../models/logObject";
 import { Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
+import Icon from "../../styles/Icons";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import { displayMissingLogModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
+import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 interface Indexes {
   mnemonic: string;
@@ -80,6 +81,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   const [sourceType, setSourceType] = useState<string>();
   const [targetType, setTargetType] = useState<string>();
   const [indexTypesMatch, setIndexTypesMatch] = useState<boolean>();
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  const popoverAnchorRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const setCurves = async () => {
@@ -146,22 +149,20 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     <ModalDialog
       heading={`Log comparison`}
       content={
-        <>
+        <ModalContentLayout>
           {(indexesToShow && (
             <>
-              <span>
-                <p>Source well name: {sourceLog.wellName}</p>
-                <p>Source wellbore name: {sourceLog.wellboreName}</p>
-                <p>Source log name: {sourceLog.name}</p>
-                <p>Source server: {sourceServer.name}</p>
-                <p>Target server: {targetServer.name}</p>
-              </span>
+              <TextField readOnly id="wellName" label="Well Name" defaultValue={sourceLog.wellName} />
+              <TextField readOnly id="wellboreName" label="Wellbore Name" defaultValue={sourceLog.wellboreName} />
+              <TextField readOnly id="name" label="Log Name" defaultValue={sourceLog.name} />
+              <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
+              <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
               {!indexTypesMatch && (
                 <span>
                   Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
                 </span>
               )}
-              {indexesToShow.length != 0 && mismatchTable(indexesToShow)}
+              {indexesToShow.length != 0 && mismatchTable(indexesToShow, isPopoverOpen, setIsPopoverOpen, popoverAnchorRef)}
               {indexesToShow.length == 0 && indexTypesMatch && (
                 <span>
                   All the {sourceLogCurveInfo.length} source mnemonics match the {targetLogCurveInfo.length} target mnemonics.
@@ -169,7 +170,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
               )}
             </>
           )) || <ProgressSpinner message="Fetching source and target log curve infos." />}
-        </>
+        </ModalContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
       confirmColor={"primary"}
@@ -181,22 +182,31 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   );
 };
 
-function mismatchTable(mismatchedIndexes: Indexes[]) {
+function mismatchTable(mismatchedIndexes: Indexes[], isPopoverOpen: boolean, setIsPopoverOpen: Dispatch<SetStateAction<boolean>>, anchorRef: MutableRefObject<HTMLButtonElement>) {
   return (
     <>
-      <p>
-        {"The following comparison is based on the logCurveInfo elements and does not look at the logData element itself. " +
-          "The table shows only the mnemonics where the indexes do not match. " +
-          "Mnemonics that are found in only one of the logs are also included. " +
-          "Missing mnemonics are indicated by dashes as their index values. " +
-          "Mnemonics that have a logCurveInfo element but have empty indexes are specifed as undefined. " +
-          "Mnemonics that have equal index values are not shown. " +
-          "Differing index values are shown in bold."}
-      </p>
       <TableLayout>
         <Table>
           <Table.Caption>
-            <Typography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</Typography>
+            <StyledTypography variant="h5">
+              <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
+              <Popover anchorEl={anchorRef.current} onClose={() => setIsPopoverOpen(false)} open={isPopoverOpen} placement="top">
+                <Popover.Content>
+                  <Typography variant="body_short">
+                    {"The following comparison is based on the logCurveInfo elements and does not look at the logData element itself. " +
+                      "The table shows only the mnemonics where the indexes do not match. " +
+                      "Mnemonics that are found in only one of the logs are also included. " +
+                      "Missing mnemonics are indicated by dashes as their index values. " +
+                      "Mnemonics that have a logCurveInfo element but have empty indexes are specifed as undefined. " +
+                      "Mnemonics that have equal index values are not shown. " +
+                      "Differing index values are shown in bold."}
+                  </Typography>
+                </Popover.Content>
+              </Popover>
+              <Button variant="ghost_icon" onClick={() => setIsPopoverOpen(true)} ref={anchorRef}>
+                <Icon name="infoCircle" />
+              </Button>
+            </StyledTypography>
           </Table.Caption>
           <Table.Head>
             <Table.Row>
@@ -226,6 +236,12 @@ function mismatchTable(mismatchedIndexes: Indexes[]) {
 const TableLayout = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const StyledTypography = styled(Typography)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 export default LogComparisonModal;

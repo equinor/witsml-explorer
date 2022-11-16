@@ -117,11 +117,18 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     </Dialog>
   );
 };
+
 export enum ModalWidth {
   SMALL = "444px", // xs
   MEDIUM = "600px", // sm
   LARGE = "960px" // md
 }
+
+export const ModalContentLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
 
 const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;

@@ -1,22 +1,22 @@
+import { TextField, Typography } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import ConfirmModal from "./ConfirmModal";
+import { ModalContentLayout } from "./ModalDialog";
 
 export function displayMissingWellboreModal(targetServer: Server, wellUid: string, wellboreUid: string, dispatchOperation: DispatchOperation, message = "") {
   const confirmation = (
     <ConfirmModal
       heading={`Wellbore not found`}
       content={
-        <span>
-          Unable to find wellbore on {targetServer.name}
-          <br />
-          with well UID {wellUid}
-          <br />
-          and wellbore UID {wellboreUid}
-          <br />
-          {message}
-        </span>
+        <ModalContentLayout>
+          <Typography>Unable to find wellbore</Typography>
+          <TextField readOnly id="targetServer" label="Target Server Name" defaultValue={targetServer.name} />
+          <TextField readOnly id="wellUid" label="Well UID" defaultValue={wellUid} />
+          <TextField readOnly id="wellboreUid" label="Wellbore UID" defaultValue={wellboreUid} />
+          <Typography>{message}</Typography>
+        </ModalContentLayout>
       }
       onConfirm={() => dispatchOperation({ type: OperationType.HideModal })}
       confirmColor={"primary"}
@@ -32,17 +32,14 @@ export function displayMissingLogModal(targetServer: Server, wellUid: string, we
     <ConfirmModal
       heading={`Log not found`}
       content={
-        <span>
-          Unable to find log on {targetServer.name}
-          <br />
-          with well UID {wellUid}
-          <br />
-          wellbore UID {wellboreUid}
-          <br />
-          and log UID {logUid}
-          <br />
-          {message}
-        </span>
+        <ModalContentLayout>
+          <Typography>Unable to find log</Typography>
+          <TextField readOnly id="targetServer" label="Target Server Name" defaultValue={targetServer.name} />
+          <TextField readOnly id="wellUid" label="Well UID" defaultValue={wellUid} />
+          <TextField readOnly id="wellboreUid" label="Wellbore UID" defaultValue={wellboreUid} />
+          <TextField readOnly id="logUid" label="Log UID" defaultValue={logUid} />
+          <Typography>{message}</Typography>
+        </ModalContentLayout>
       }
       onConfirm={() => dispatchOperation({ type: OperationType.HideModal })}
       confirmColor={"primary"}
