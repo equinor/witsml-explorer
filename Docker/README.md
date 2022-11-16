@@ -1,14 +1,14 @@
 # Deploy and run Witsml-Explorer
 
 ## MongoDB
-See [Setup MongoDB locally](./MongoDb)
+See [setting up MongoDB locally](./MongoDb)
 
 ## Azure CosmosDB
-See []()
+See [setting up a database in Azure](../Scripts/Azure)
 
 ## Run locally with docker
 
-Build dockerfiles for frontend and backend (see [build_docker_images.sh](../build_docker_images.sh), [Dockerfile-api](../Dockerfile-api) and [Dockerfile-frontend](../Dockerfile-frontend))
+Build dockerfiles for frontend and backend (see [build_docker_images.sh](../build_docker_images.sh), [Dockerfile-api](../Dockerfile-api) and [Dockerfile-frontend](../Dockerfile-frontend)).
 
 ### **Build api and backend images**
 ```sh
@@ -29,7 +29,7 @@ witsmlexplorer-api                                      latest          2f1eb2b0
 
 ## `config.json`
 
-create a `config.json` file containing the mongodb or cosmosdb credentials you created in the first steps.
+Create a `config.json` file containing the mongodb or cosmosdb credentials you created in the first steps.
 
 `Host` should be set to the domain where the application will be available. For locally run applications, this should be set to `http://localhost` (this is also the default value).
 

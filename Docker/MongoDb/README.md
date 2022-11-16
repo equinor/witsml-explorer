@@ -26,6 +26,6 @@ Add an initial db username and password by editing the `docker-compose.yml` file
 # Pull and run a default MongoDB locally
 docker-compose up -d
 ```
-The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. After execution `docker-compose up -d `, once, you can reset docker-compose.yml as the environment settings only is required the first time you run your mongoDb.
+The default is to mount a volume in the same directory, but that can be changed in the `docker-compose.yml` file based on your preference. After executing `docker-compose up -d ` once, you can reset docker-compose.yml, as the environment settings are only required the first time you run your mongoDb.
 
-When mongodb is running, you are ready to proceed with [Run locally with docker](../README.md)
+When mongodb is running, you are ready to proceed with [Run locally with docker](../README.md).
