@@ -19,7 +19,7 @@ ENV NEXT_PUBLIC_AZURE_AD_SCOPE_API=${AZURE_AD_SCOPE_API}
 
 RUN yarn test && yarn build && yarn export
 
-FROM nginx:1.22.1-alpine AS final
+FROM nginx:1.23.2-alpine AS final
 ARG EXPOSE_PORT=3000
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*

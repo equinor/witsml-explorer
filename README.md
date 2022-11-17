@@ -25,6 +25,15 @@ Please see our [contributing.md](/CONTRIBUTING.md).
 ## AuthN/Z
 Please see our [auth.md](/AUTH.md).
 
+## Database
+Please see [mongoDb](Docker/MongoDb/README.md) or [cosmosDb](Scripts/Azure/README.md) readme.
+
+## Run locally
+Please see our [docker setup](/Docker/README.md).
+
+## Deploy on server
+Please see our [server readme](./Docker/Server/README.md).
+
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 

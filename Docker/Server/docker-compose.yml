@@ -1,13 +1,13 @@
 version: '3.7'
 services:
   api:
-    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-api:latest
+    image: witsmlexplorer-api:latest
     container_name: witsmlexplorer-api
     volumes:
-      - ../../config.json:/app/config.json:ro #May be changed
+      - ./config.json:/app/config.json:ro #May be changed
 
   web:
-    image: docker.pkg.github.com/equinor/witsml-explorer/witsmlexplorer-frontend:latest
+    image: witsmlexplorer-frontend:latest
     container_name: witsmlexplorer-frontend
 
   nginx:
