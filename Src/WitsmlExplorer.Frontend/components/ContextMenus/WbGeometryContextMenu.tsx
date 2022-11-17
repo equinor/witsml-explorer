@@ -3,6 +3,7 @@ import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import WbGeometryObject from "../../models/wbGeometry";
@@ -11,8 +12,10 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface WbGeometryObjectContextMenuProps {
   checkedWbGeometryObjects: WbGeometryObject[];
@@ -23,6 +26,7 @@ export interface WbGeometryObjectContextMenuProps {
 
 const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): React.ReactElement => {
   const { checkedWbGeometryObjects, dispatchOperation, servers } = props;
+  const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(ComponentType.WbGeometrySection);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -34,6 +38,14 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem
+          key={"paste"}
+          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedWbGeometryObjects[0], JobType.CopyWbGeometrySections)}
+          disabled={wbGeometrySectionReferences === null || checkedWbGeometryObjects.length !== 1}
+        >
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("paste", "wbGeometry section", wbGeometrySectionReferences?.componentUids)}</Typography>
+        </MenuItem>,
         <MenuItem
           key={"delete"}
           onClick={() => onClickDeleteObjects(dispatchOperation, checkedWbGeometryObjects, ObjectType.WbGeometry, JobType.DeleteWbGeometrys)}

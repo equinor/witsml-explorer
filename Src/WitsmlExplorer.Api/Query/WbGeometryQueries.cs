@@ -166,5 +166,21 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
+        public static WitsmlWbGeometrys CopyWbGeometrySections(WitsmlWbGeometry targetWbGeometry, IEnumerable<WitsmlWbGeometrySection> componentsToCopy)
+        {
+            return new()
+            {
+                WbGeometrys = new List<WitsmlWbGeometry> {
+                    new WitsmlWbGeometry
+                    {
+                        UidWell = targetWbGeometry.UidWell,
+                        UidWellbore = targetWbGeometry.UidWellbore,
+                        Uid = targetWbGeometry.Uid,
+                        WbGeometrySections = componentsToCopy.ToList()
+                    }
+                }
+            };
+        }
+
     }
 }

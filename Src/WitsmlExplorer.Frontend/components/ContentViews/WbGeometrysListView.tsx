@@ -22,7 +22,7 @@ export const WbGeometrysListView = (): React.ReactElement => {
     if (selectedWellbore && selectedWellbore.wbGeometrys) {
       setWbGeometrys(selectedWellbore.wbGeometrys);
     }
-  }, [selectedWellbore]);
+  }, [selectedWellbore, selectedWellbore?.wbGeometrys]);
 
   const getTableData = () => {
     return wbGeometrys.map((wbGeometry) => {
