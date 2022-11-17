@@ -13,7 +13,7 @@ import CredentialsService, { BasicServerCredentials } from "../../services/crede
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
-import ConfirmModal from "../Modals/ConfirmModal";
+import { displayMissingWellboreModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
 
@@ -27,7 +27,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
     const wellbore = await WellboreService.getWellboreFromServer(wellUid, wellboreUid, targetCredentials);
     if (wellbore.uid !== wellboreUid) {
-      displayFailureModal(targetServer, wellUid, wellboreUid, dispatchOperation);
+      displayMissingWellboreModal(targetServer, wellUid, wellboreUid, dispatchOperation, "No logs will be copied.");
       return;
     }
 
@@ -101,28 +101,4 @@ function printLog(log: LogObject): JSX.Element {
       End index: {log.endIndex}
     </>
   );
-}
-
-function displayFailureModal(targetServer: Server, wellUid: string, wellboreUid: string, dispatchOperation: DispatchOperation) {
-  const confirmation = (
-    <ConfirmModal
-      heading={`Wellbore not found`}
-      content={
-        <span>
-          Unable to find wellbore on {targetServer.name}
-          <br />
-          with well UID {wellUid}
-          <br />
-          and wellbore UID {wellboreUid}
-          <br />
-          No logs will be copied.
-        </span>
-      }
-      onConfirm={() => dispatchOperation({ type: OperationType.HideModal })}
-      confirmColor={"primary"}
-      confirmText={`OK`}
-      showCancelButton={false}
-    />
-  );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 }

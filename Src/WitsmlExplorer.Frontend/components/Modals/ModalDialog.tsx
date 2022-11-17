@@ -124,8 +124,16 @@ export enum ModalWidth {
   LARGE = "960px" // md
 }
 
+export const ModalContentLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
 const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
+  max-height: 75vh;
+  overflow-y: auto;
 `;
 
 const StyledButton = styled(Button)<{ align?: string }>`

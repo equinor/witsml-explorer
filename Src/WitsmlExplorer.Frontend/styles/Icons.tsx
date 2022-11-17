@@ -7,11 +7,13 @@ import {
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
+  compare,
   copy,
   delete_to_trash as deleteToTrash,
   edit,
   folder_open as folderOpen,
   format_line_spacing as formatLine,
+  info_circle as infoCircle,
   launch,
   more_vertical as moreVertical,
   paste,
@@ -37,7 +39,9 @@ const icons = {
   folderOpen,
   deleteToTrash,
   moreVertical,
-  assignment
+  assignment,
+  infoCircle,
+  compare
 };
 
 Icon.add(icons);

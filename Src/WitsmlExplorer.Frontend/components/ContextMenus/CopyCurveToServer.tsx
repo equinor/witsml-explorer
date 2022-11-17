@@ -13,7 +13,7 @@ import CredentialsService, { BasicServerCredentials } from "../../services/crede
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ConfirmModal from "../Modals/ConfirmModal";
+import { displayMissingLogModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
 
@@ -37,7 +37,7 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
     const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
     const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetCredentials);
     if (targetLog.uid !== logUid) {
-      displayFailureModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation);
+      displayMissingLogModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.");
       return;
     }
 
@@ -109,30 +109,4 @@ function printCurveInfo(curve: LogCurveInfo): JSX.Element {
       End index: {isDepthIndex ? curve.maxDepthIndex : curve.maxDateTimeIndex}
     </>
   );
-}
-
-function displayFailureModal(targetServer: Server, wellUid: string, wellboreUid: string, logUid: string, dispatchOperation: DispatchOperation) {
-  const confirmation = (
-    <ConfirmModal
-      heading={`Log not found`}
-      content={
-        <span>
-          Unable to find log on {targetServer.name}
-          <br />
-          with well UID {wellUid}
-          <br />
-          wellbore UID {wellboreUid}
-          <br />
-          and log UID {logUid}
-          <br />
-          No curves will be copied.
-        </span>
-      }
-      onConfirm={() => dispatchOperation({ type: OperationType.HideModal })}
-      confirmColor={"primary"}
-      confirmText={`OK`}
-      showCancelButton={false}
-    />
-  );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 }

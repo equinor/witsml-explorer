@@ -1,4 +1,4 @@
-import { Typography } from "@equinor/eds-core-react";
+import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
@@ -106,6 +106,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
             </MenuItem>
           ))}
         </NestedMenuItem>,
+        <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
