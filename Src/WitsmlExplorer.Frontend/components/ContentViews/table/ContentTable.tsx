@@ -172,7 +172,7 @@ const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: str
   ${({ type }) =>
     type === ContentType.String &&
     `
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
   `};
