@@ -47,24 +47,52 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyWbGeometrySection_TwoComponentsToCopy_TwoInQuery()
         {
-            CopyWbGeometrySectionsJob copyWbGeometrySectionJob = CreateJobTemplate();
-            _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == SourceWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
-                .ReturnsAsync(GetSourceWbGeometrys());
-            _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == TargetWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
-                .ReturnsAsync(GetTargetWbGeometrys());
+            CopyWbGeometrySectionsJob copyWbGeometrySectionJob = CreateJobTemplate(new string[] { Uid2, Uid3 });
+            SetupGetFromStoreAsync(new string[] { Uid1, Uid2, Uid3 }, new string[] { Uid4 });
             List<WitsmlWbGeometrys> copyWbGeometrySectionQuery = SetupUpdateInStoreAsync();
 
-            (WorkerResult, RefreshAction) result = await _copyWbGeometrySectionWorker.Execute(copyWbGeometrySectionJob);
+            (WorkerResult result, RefreshAction _) = await _copyWbGeometrySectionWorker.Execute(copyWbGeometrySectionJob);
             WitsmlWbGeometry updatedWbGeometry = copyWbGeometrySectionQuery.First().WbGeometrys.First();
-            Assert.True(result.Item1.IsSuccess);
+
+            Assert.True(result.IsSuccess);
             Assert.Equal(TargetWbGeometryUid, updatedWbGeometry.Uid);
             Assert.Empty(updatedWbGeometry.WbGeometrySections.FindAll((wbs) => wbs.Uid == Uid1));
             Assert.Single(updatedWbGeometry.WbGeometrySections.FindAll((wbs) => wbs.Uid == Uid2));
             Assert.Single(updatedWbGeometry.WbGeometrySections.FindAll((wbs) => wbs.Uid == Uid3));
             Assert.Empty(updatedWbGeometry.WbGeometrySections.FindAll((wbs) => wbs.Uid == Uid4));
             Assert.Equal(2, updatedWbGeometry.WbGeometrySections.Count);
+        }
+
+        [Fact]
+        public async Task CopyWbGeometrySection_UidToCopyExistsInTarget_JobFails()
+        {
+            CopyWbGeometrySectionsJob copyWbGeometrySectionJob = CreateJobTemplate(new string[] { Uid1 });
+            SetupGetFromStoreAsync(new string[] { Uid1 }, new string[] { Uid1, Uid2 });
+
+            (WorkerResult result, RefreshAction _) = await _copyWbGeometrySectionWorker.Execute(copyWbGeometrySectionJob);
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Failed to copy wbGeometrySections.", result.Message);
+        }
+
+        [Fact]
+        public async Task CopyWbGeometrySection_UidToCopyDoesNotExistInSource_JobFails()
+        {
+            CopyWbGeometrySectionsJob copyWbGeometrySectionJob = CreateJobTemplate(new string[] { Uid1 });
+            SetupGetFromStoreAsync(new string[] { Uid2 }, new string[] { Uid3 });
+
+            (WorkerResult result, RefreshAction _) = await _copyWbGeometrySectionWorker.Execute(copyWbGeometrySectionJob);
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Failed to copy wbGeometrySections.", result.Message);
+        }
+
+        private void SetupGetFromStoreAsync(string[] sourceSectionUids, string[] targetSectionUids)
+        {
+            _witsmlClient.Setup(client =>
+                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == SourceWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
+                .ReturnsAsync(GetSourceWbGeometrys(sourceSectionUids));
+            _witsmlClient.Setup(client =>
+                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == TargetWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
+                .ReturnsAsync(GetTargetWbGeometrys(targetSectionUids));
         }
 
         private List<WitsmlWbGeometrys> SetupUpdateInStoreAsync()
@@ -76,7 +104,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return updatedWbGeometrys;
         }
 
-        private static CopyWbGeometrySectionsJob CreateJobTemplate()
+        private static CopyWbGeometrySectionsJob CreateJobTemplate(string[] toCopyUids)
         {
             return new CopyWbGeometrySectionsJob
             {
@@ -88,7 +116,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         WellboreUid = WellboreUid,
                         WellUid = WellUid
                     },
-                    ComponentUids = new string[] { Uid2, Uid3 }
+                    ComponentUids = toCopyUids
                 },
                 Target = new ObjectReference
                 {
@@ -99,25 +127,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private static WitsmlWbGeometrys GetSourceWbGeometrys()
+        private static WitsmlWbGeometrys GetSourceWbGeometrys(string[] sectionUids)
         {
             WitsmlWbGeometry witsmlWbGeometry = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = SourceWbGeometryUid,
-                WbGeometrySections = new List<WitsmlWbGeometrySection>
+                WbGeometrySections = sectionUids.Select((uid) => new WitsmlWbGeometrySection()
                 {
-                    new WitsmlWbGeometrySection(){
-                        Uid = Uid1,
-                    },
-                    new WitsmlWbGeometrySection(){
-                        Uid = Uid2,
-                    },
-                    new WitsmlWbGeometrySection(){
-                        Uid = Uid3,
-                    }
-                },
+                    Uid = uid,
+                }).ToList()
             };
             return new WitsmlWbGeometrys
             {
@@ -125,19 +145,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private static WitsmlWbGeometrys GetTargetWbGeometrys()
+        private static WitsmlWbGeometrys GetTargetWbGeometrys(string[] sectionUids)
         {
             WitsmlWbGeometry witsmlWbGeometry = new()
             {
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = TargetWbGeometryUid,
-                WbGeometrySections = new List<WitsmlWbGeometrySection>
+                WbGeometrySections = sectionUids.Select((uid) => new WitsmlWbGeometrySection()
                 {
-                    new WitsmlWbGeometrySection(){
-                        Uid = Uid4,
-                    }
-                },
+                    Uid = uid,
+                }).ToList()
             };
             return new WitsmlWbGeometrys
             {
