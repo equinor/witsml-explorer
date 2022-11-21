@@ -117,7 +117,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlRigs CreateRig(Rig rig)
         {
-            return new WitsmlRigs
+            return new()
             {
                 Rigs = new WitsmlRig
                 {
@@ -132,8 +132,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = rig.WellboreUid,
                     Approvals = rig.Approvals,
                     ClassRig = rig.ClassRig,
-                    DTimStartOp = rig.DTimStartOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    DTimEndOp = rig.DTimEndOp?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimStartOp = StringHelpers.ToUniversalDateTimeString(rig.DTimStartOp),
+                    DTimEndOp = StringHelpers.ToUniversalDateTimeString(rig.DTimEndOp),
                     EmailAddress = rig.EmailAddress,
                     FaxNumber = rig.FaxNumber,
                     IsOffshore = StringHelpers.OptionalBooleanToString(rig.IsOffshore),

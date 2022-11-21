@@ -7,6 +7,7 @@ using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -93,14 +94,10 @@ namespace WitsmlExplorer.Api.Query
                     PlanDogleg = bhaRun.PlanDogleg != null ? new WitsmlAnglePerLengthMeasure { Uom = bhaRun.PlanDogleg.Uom, Value = bhaRun.PlanDogleg.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     ActDogleg = bhaRun.ActDogleg != null ? new WitsmlAnglePerLengthMeasure { Uom = bhaRun.ActDogleg.Uom, Value = bhaRun.ActDogleg.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     ActDoglegMx = bhaRun.ActDoglegMx != null ? new WitsmlAnglePerLengthMeasure { Uom = bhaRun.ActDoglegMx.Uom, Value = bhaRun.ActDoglegMx.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    DTimStart = bhaRun.DTimStart?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    DTimStop = bhaRun.DTimStop?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    DTimStartDrilling = bhaRun.DTimStartDrilling?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    DTimStopDrilling = bhaRun.DTimStopDrilling?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimStart = StringHelpers.ToUniversalDateTimeString(bhaRun.DTimStart),
+                    DTimStop = StringHelpers.ToUniversalDateTimeString(bhaRun.DTimStop),
+                    DTimStartDrilling = StringHelpers.ToUniversalDateTimeString(bhaRun.DTimStartDrilling),
+                    DTimStopDrilling = StringHelpers.ToUniversalDateTimeString(bhaRun.DTimStopDrilling),
                     CommonData = new WitsmlCommonData()
                     {
                         ItemState = bhaRun.CommonData.ItemState,

@@ -44,8 +44,8 @@ namespace WitsmlExplorer.Api.Services
                 AirGap = witsmlRig.AirGap == null ? null : new LengthMeasure { Uom = witsmlRig.AirGap.Uom, Value = StringHelpers.ToDecimal(witsmlRig.AirGap.Value) },
                 Approvals = witsmlRig.Approvals,
                 ClassRig = witsmlRig.ClassRig,
-                DTimStartOp = StringHelpers.ToDateTime(witsmlRig.DTimStartOp),
-                DTimEndOp = StringHelpers.ToDateTime(witsmlRig.DTimEndOp),
+                DTimStartOp = witsmlRig.DTimStartOp,
+                DTimEndOp = witsmlRig.DTimEndOp,
                 EmailAddress = witsmlRig.EmailAddress,
                 FaxNumber = witsmlRig.FaxNumber,
                 IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBooleanSafe(witsmlRig.IsOffshore),
@@ -68,8 +68,8 @@ namespace WitsmlExplorer.Api.Services
                 {
                     ItemState = witsmlRig.CommonData.ItemState,
                     SourceName = witsmlRig.CommonData.SourceName,
-                    DTimLastChange = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimLastChange),
-                    DTimCreation = StringHelpers.ToDateTime(witsmlRig.CommonData.DTimCreation),
+                    DTimLastChange = witsmlRig.CommonData.DTimLastChange,
+                    DTimCreation = witsmlRig.CommonData.DTimCreation,
                 }
             };
         }

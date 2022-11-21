@@ -5,6 +5,7 @@ import OperationType from "../../contexts/operationType";
 import Rig from "../../models/rig";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import RigContextMenu, { RigContextMenuProps } from "../ContextMenus/RigContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface RigRow extends ContentTableRow, Rig {
@@ -13,6 +14,9 @@ export interface RigRow extends ContentTableRow, Rig {
 
 export const RigsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [rigs, setRigs] = useState<Rig[]>([]);
@@ -32,7 +36,9 @@ export const RigsListView = (): React.ReactElement => {
         ratingWaterDepth: `${rig.ratingWaterDepth?.value ?? ""} ${rig.ratingWaterDepth?.uom ?? ""}`,
         airGap: `${rig.airGap?.value ?? ""} ${rig.airGap?.uom ?? ""}`,
         rig: rig,
-        isOffshore: `${rig.isOffshore ?? ""}`
+        isOffshore: `${rig.isOffshore ?? ""}`,
+        dTimStartOp: formatDateString(rig.dTimStartOp, timeZone),
+        dTimEndOp: formatDateString(rig.dTimEndOp, timeZone)
       };
     });
   };

@@ -6,6 +6,7 @@ import TrajectoryStation from "../../models/trajectoryStation";
 import TrajectoryService from "../../services/trajectoryService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface TrajectoryStationRow extends ContentTableRow {
@@ -21,6 +22,9 @@ export interface TrajectoryStationRow extends ContentTableRow {
 
 export const TrajectoryView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedServer, selectedTrajectory, servers } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
@@ -73,7 +77,7 @@ export const TrajectoryView = (): React.ReactElement => {
     return {
       id: trajectoryStation.uid,
       uid: trajectoryStation.uid,
-      dTimStn: trajectoryStation.dTimStn,
+      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone),
       typeTrajStation: trajectoryStation.typeTrajStation,
       md: `${trajectoryStation.md.value?.toFixed(4)} ${trajectoryStation.md?.uom}`,
       incl: `${trajectoryStation.incl?.value?.toFixed(4)} ${trajectoryStation.incl?.uom}`,

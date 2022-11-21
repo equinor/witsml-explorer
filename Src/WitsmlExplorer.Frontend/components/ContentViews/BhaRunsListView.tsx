@@ -5,6 +5,7 @@ import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import BhaRunContextMenu, { BhaRunContextMenuProps } from "../ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface BhaRunRow extends ContentTableRow, BhaRun {
@@ -13,6 +14,9 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
 
 export const BhaRunsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [bhaRuns, setBhaRuns] = useState<BhaRun[]>([]);
@@ -29,7 +33,13 @@ export const BhaRunsListView = (): React.ReactElement => {
         ...bhaRun,
         ...bhaRun.commonData,
         id: bhaRun.uid,
-        bhaRun: bhaRun
+        bhaRun: bhaRun,
+        dTimStart: formatDateString(bhaRun.dTimStart, timeZone),
+        dTimStop: formatDateString(bhaRun.dTimStop, timeZone),
+        dTimStartDrilling: formatDateString(bhaRun.dTimStartDrilling, timeZone),
+        dTimStopDrilling: formatDateString(bhaRun.dTimStopDrilling, timeZone),
+        dTimCreation: formatDateString(bhaRun.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(bhaRun.commonData.dTimLastChange, timeZone)
       };
     });
   };

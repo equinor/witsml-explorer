@@ -8,6 +8,7 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, { LogCurveInfoContextMenuProps } from "../ContextMenus/LogCurveInfoContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface LogCurveInfoRow extends ContentTableRow {
@@ -28,6 +29,9 @@ export interface LogCurveInfoRow extends ContentTableRow {
 
 export const LogCurveInfoListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedServer, selectedWell, selectedWellbore, selectedLog, selectedCurveThreshold, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
@@ -68,7 +72,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     }
   };
 
-  const getTableDate = () => {
+  const getTableData = () => {
     const maxDepth = Math.max(...logCurveInfoList.map((x) => x.maxDepthIndex));
 
     return logCurveInfoList.map((logCurveInfo) => {
@@ -77,8 +81,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
         uid: logCurveInfo.uid,
         mnemonic: logCurveInfo.mnemonic,
-        minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : logCurveInfo.minDateTimeIndex,
-        maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : logCurveInfo.maxDateTimeIndex,
+        minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
+        maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
         classWitsml: logCurveInfo.classWitsml,
         unit: logCurveInfo.unit,
         mnemAlias: logCurveInfo.mnemAlias,
@@ -111,7 +115,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  return selectedLog && !isFetchingData ? <ContentTable columns={columns} data={getTableDate()} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedLog && !isFetchingData ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default LogCurveInfoListView;

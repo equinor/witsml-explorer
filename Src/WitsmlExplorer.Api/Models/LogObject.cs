@@ -1,5 +1,3 @@
-using System;
-
 namespace WitsmlExplorer.Api.Models
 {
     public class LogObject : ObjectOnWellbore
@@ -10,8 +8,8 @@ namespace WitsmlExplorer.Api.Models
         public bool ObjectGrowing { get; set; }
         public string ServiceCompany { get; set; }
         public string RunNumber { get; set; }
-        public DateTime DateTimeCreation { get; set; }
-        public DateTime? DateTimeLastChange { get; set; }
+        public string DateTimeCreation { get; set; }
+        public string DateTimeLastChange { get; set; }
         public string IndexCurve { get; set; }
     }
 }

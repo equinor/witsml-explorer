@@ -6,6 +6,19 @@ export enum UserTheme {
   Comfortable = "comfortable"
 }
 
+//https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+//tz database time zone for each city was found through https://www.zeitverschiebung.net/en/
+// "Brasilia" is the "Brasília" one where the first i is "i-acute"
+export enum TimeZone {
+  Raw = "Original Timezone",
+  Local = "Local Time",
+  Brasilia = "America/Sao_Paulo",
+  Berlin = "Europe/Berlin",
+  London = "Europe/London",
+  NewDelhi = "Asia/Kolkata",
+  Houston = "America/Chicago"
+}
+
 interface Action {
   type: OperationType;
 }
@@ -37,12 +50,18 @@ export interface SetThemeAction extends PayloadAction {
   payload: UserTheme;
 }
 
+export interface SetTimeZoneAction extends PayloadAction {
+  type: OperationType.SetTimeZone;
+  payload: TimeZone;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   displayModal: boolean;
   progressIndicatorValue: number;
   modal: ReactElement;
   theme: UserTheme;
+  timeZone: TimeZone;
 }
 
 export interface MousePosition {
@@ -63,7 +82,8 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     displayModal: false,
     progressIndicatorValue: 0,
     modal: null,
-    theme: UserTheme.Compact
+    theme: UserTheme.Compact,
+    timeZone: TimeZone.Raw
   };
   return useReducer(reducer, initialState);
 };
@@ -80,6 +100,8 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return hideModal(state);
     case OperationType.SetTheme:
       return setTheme(state, action as SetThemeAction);
+    case OperationType.SetTimeZone:
+      return setTimeZone(state, action as SetTimeZoneAction);
     default:
       throw new Error();
   }
@@ -125,4 +147,11 @@ const setTheme = (state: OperationState, { payload }: SetThemeAction) => {
   };
 };
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction;
+const setTimeZone = (state: OperationState, { payload }: SetTimeZoneAction) => {
+  return {
+    ...state,
+    timeZone: payload
+  };
+};
+
+export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction;

@@ -1,5 +1,3 @@
-using System;
-
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -9,10 +7,10 @@ namespace WitsmlExplorer.Api.Models
         public string NumStringRun { get; set; }
         public string Tubular { get; set; }
         public string TubularUidRef { get; set; }
-        public DateTime? DTimStart { get; set; }
-        public DateTime? DTimStop { get; set; }
-        public DateTime? DTimStartDrilling { get; set; }
-        public DateTime? DTimStopDrilling { get; set; }
+        public string DTimStart { get; set; }
+        public string DTimStop { get; set; }
+        public string DTimStartDrilling { get; set; }
+        public string DTimStopDrilling { get; set; }
         public LengthMeasure PlanDogleg { get; set; }
         public LengthMeasure ActDogleg { get; set; }
         public LengthMeasure ActDoglegMx { get; set; }

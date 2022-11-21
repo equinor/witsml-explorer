@@ -1,5 +1,3 @@
-using System;
-
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -11,8 +9,8 @@ namespace WitsmlExplorer.Api.Models
         public string SubCategory { get; set; }
         public string ExtendCategory { get; set; }
         public string AffectedPersonnel { get; set; }
-        public DateTime? DTimStart { get; set; }
-        public DateTime? DTimEnd { get; set; }
+        public string DTimStart { get; set; }
+        public string DTimEnd { get; set; }
         public MeasureWithDatum MdHoleStart { get; set; }
         public MeasureWithDatum MdHoleEnd { get; set; }
         public MeasureWithDatum TvdHoleStart { get; set; }

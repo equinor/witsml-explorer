@@ -102,7 +102,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 }}
                 disabled={!editableBhaRun.dTimStart}
                 value={editableBhaRun.dTimStart ? moment(editableBhaRun.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStart: new Date(e.target.value) })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStart: e.target.value })}
               />
               <TextField
                 id={"dTimStop"}
@@ -114,7 +114,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 }}
                 disabled={!editableBhaRun.dTimStop}
                 value={editableBhaRun.dTimStop ? moment(editableBhaRun.dTimStop).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStop: new Date(e.target.value) })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStop: e.target.value })}
               />
               <TextField
                 id="dTimStartDrilling"
@@ -126,7 +126,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 }}
                 disabled={!editableBhaRun.dTimStartDrilling}
                 value={editableBhaRun.dTimStartDrilling ? moment(editableBhaRun.dTimStartDrilling).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: new Date(e.target.value) })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: e.target.value })}
               />
               <TextField
                 id={"dTimStopDrilling"}
@@ -138,7 +138,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 }}
                 disabled={!editableBhaRun.dTimStopDrilling}
                 value={editableBhaRun.dTimStopDrilling ? moment(editableBhaRun.dTimStopDrilling).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: new Date(e.target.value) })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: e.target.value })}
               />
               <TextField
                 id={"planDogleg"}

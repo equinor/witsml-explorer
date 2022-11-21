@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                     Name = wbGeometry.Name,
                     NameWell = wbGeometry.WellName,
                     NameWellbore = wbGeometry.WellboreName,
-                    DTimReport = wbGeometry.DTimReport?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
+                    DTimReport = wbGeometry.DTimReport,
                     MdBottom = wbGeometry.MdBottom != null ? new WitsmlMeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = wbGeometry.MdBottom.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     GapAir = wbGeometry.GapAir != null ? new WitsmlLengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = wbGeometry.GapAir.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     DepthWaterMean = wbGeometry.DepthWaterMean != null ? new WitsmlLengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = wbGeometry.DepthWaterMean.Value.ToString(CultureInfo.InvariantCulture) } : null,
@@ -86,8 +86,6 @@ namespace WitsmlExplorer.Api.Workers.Create
                         ItemState = wbGeometry.CommonData.ItemState,
                         SourceName = wbGeometry.CommonData.SourceName,
                         Comments = wbGeometry.CommonData.Comments,
-                        DTimCreation = wbGeometry.CommonData.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                        DTimLastChange = wbGeometry.CommonData.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                     },
                 }.AsSingletonList()
             };
