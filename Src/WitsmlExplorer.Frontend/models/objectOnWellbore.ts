@@ -24,7 +24,12 @@ export function emptyObjectOnWellbore(): ObjectOnWellbore {
 
 export function toObjectReference(objectOnWellbore: ObjectOnWellbore): ObjectReference {
   return {
-    ...objectOnWellbore
+    uid: objectOnWellbore.uid,
+    wellboreUid: objectOnWellbore.wellboreUid,
+    wellUid: objectOnWellbore.wellUid,
+    name: objectOnWellbore.name,
+    wellboreName: objectOnWellbore.wellboreName,
+    wellName: objectOnWellbore.wellName
   };
 }
 export function toObjectReferences(objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, serverUrl: string = null): ObjectReferences {

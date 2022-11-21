@@ -62,24 +62,24 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<Tuple<WitsmlWbGeometry, IEnumerable<WitsmlWbGeometrySection>>> FetchData(CopyWbGeometrySectionsJob job)
         {
-            Task<WitsmlWbGeometry> targetWbGeometryQuery = GetWbGeometry(job.Target);
-            Task<IEnumerable<WitsmlWbGeometrySection>> sourceWbGeometrySectionsQuery = GetWbGeometrySections(job.Source.Parent, job.Source.ComponentUids);
+            Task<WitsmlWbGeometry> targetWbGeometryQuery = GetWbGeometry(job.Target, GetTargetWitsmlClientOrThrow());
+            Task<IEnumerable<WitsmlWbGeometrySection>> sourceWbGeometrySectionsQuery = GetSourceWbGeometrySections(job.Source.Parent, job.Source.ComponentUids);
             await Task.WhenAll(targetWbGeometryQuery, sourceWbGeometrySectionsQuery);
             WitsmlWbGeometry targetWbGeometry = targetWbGeometryQuery.Result;
             IEnumerable<WitsmlWbGeometrySection> sourceWbGeometrySections = sourceWbGeometrySectionsQuery.Result;
             return Tuple.Create(targetWbGeometry, sourceWbGeometrySections);
         }
 
-        private async Task<WitsmlWbGeometry> GetWbGeometry(ObjectReference wbGeometryReference)
+        private static async Task<WitsmlWbGeometry> GetWbGeometry(ObjectReference wbGeometryReference, IWitsmlClient client)
         {
             WitsmlWbGeometrys witsmlWbGeometry = WbGeometryQueries.GetWitsmlWbGeometryById(wbGeometryReference.WellUid, wbGeometryReference.WellboreUid, wbGeometryReference.Uid);
-            WitsmlWbGeometrys result = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlWbGeometry, new OptionsIn(ReturnElements.All));
+            WitsmlWbGeometrys result = await client.GetFromStoreAsync(witsmlWbGeometry, new OptionsIn(ReturnElements.All));
             return !result.WbGeometrys.Any() ? null : result.WbGeometrys.First();
         }
 
-        private async Task<IEnumerable<WitsmlWbGeometrySection>> GetWbGeometrySections(ObjectReference wbGeometryReference, IEnumerable<string> wbGeometrySectionsUids)
+        private async Task<IEnumerable<WitsmlWbGeometrySection>> GetSourceWbGeometrySections(ObjectReference wbGeometryReference, IEnumerable<string> wbGeometrySectionsUids)
         {
-            WitsmlWbGeometry witsmlWbGeometry = await GetWbGeometry(wbGeometryReference);
+            WitsmlWbGeometry witsmlWbGeometry = await GetWbGeometry(wbGeometryReference, GetSourceWitsmlClientOrThrow());
             return witsmlWbGeometry?.WbGeometrySections.FindAll((WitsmlWbGeometrySection wbs) => wbGeometrySectionsUids.Contains(wbs.Uid));
         }
     }
