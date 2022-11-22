@@ -1,5 +1,5 @@
 import LogCurveInfo from "../../../models/logCurveInfo";
-import { calculateMismatchedIndexes } from "../LogComparisonModal";
+import { calculateMismatchedIndexes } from "../LogComparisonUtils";
 
 const irrelevantProperties = {
   uid: "",

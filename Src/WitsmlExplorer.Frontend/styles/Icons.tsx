@@ -3,6 +3,8 @@ import {
   accessible,
   account_circle as accountCircle,
   add,
+  arrow_down as arrowDown,
+  arrow_up as arrowUp,
   assignment,
   check,
   chevron_down as chevronDown,
@@ -43,7 +45,9 @@ const icons = {
   assignment,
   infoCircle,
   compare,
-  world
+  world,
+  arrowUp,
+  arrowDown
 };
 
 Icon.add(icons);
