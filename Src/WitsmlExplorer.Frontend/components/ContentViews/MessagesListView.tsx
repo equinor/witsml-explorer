@@ -56,7 +56,7 @@ export const MessagesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedMessageObjectRows: MessageObjectRow[]) => {
-    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };

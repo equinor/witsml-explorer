@@ -13,7 +13,7 @@ import { colors } from "../../styles/Colors";
 import { TubularComponentRow } from "../ContentViews/TubularView";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { onClickRefresh } from "./TubularContextMenuUtils";
@@ -84,7 +84,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular, "tubularUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubular, "tubularUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

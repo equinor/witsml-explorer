@@ -12,7 +12,7 @@ import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import WbGeometrySectionPropertiesModal from "../Modals/WbGeometrySectionPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -77,7 +77,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, wbGeometry, "wbGeometryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, wbGeometry, "wbGeometryUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

@@ -252,12 +252,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           wellbore.trajectories &&
           wellbore.trajectories.map((trajectory) => (
             <TrajectoryItem
-              key={calculateObjectNodeId(trajectory)}
+              key={calculateObjectNodeId(trajectory, ObjectType.Trajectory)}
               trajectoryGroup={trajectoryGroupId}
               trajectory={trajectory}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateObjectNodeId(trajectory)}
+              nodeId={calculateObjectNodeId(trajectory, ObjectType.Trajectory)}
               selected={selectedTrajectory && selectedTrajectory.uid === trajectory.uid ? true : undefined}
             />
           ))}
@@ -272,12 +272,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           wellbore.tubulars &&
           wellbore.tubulars.map((tubular) => (
             <TubularItem
-              key={calculateObjectNodeId(tubular)}
+              key={calculateObjectNodeId(tubular, ObjectType.Tubular)}
               tubularGroup={tubularGroupId}
               tubular={tubular}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateObjectNodeId(tubular)}
+              nodeId={calculateObjectNodeId(tubular, ObjectType.Tubular)}
               selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
             />
           ))}
@@ -292,12 +292,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           wellbore.wbGeometrys &&
           wellbore.wbGeometrys.map((wbGeometry) => (
             <WbGeometryItem
-              key={calculateObjectNodeId(wbGeometry)}
+              key={calculateObjectNodeId(wbGeometry, ObjectType.WbGeometry)}
               wbGeometryGroup={wbGeometryGroupId}
               wbGeometry={wbGeometry}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateObjectNodeId(wbGeometry)}
+              nodeId={calculateObjectNodeId(wbGeometry, ObjectType.WbGeometry)}
               selected={selectedWbGeometry && selectedWbGeometry.uid === wbGeometry.uid ? true : undefined}
             />
           ))}

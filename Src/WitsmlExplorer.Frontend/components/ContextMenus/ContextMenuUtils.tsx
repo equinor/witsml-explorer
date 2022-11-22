@@ -6,6 +6,7 @@ import { DeleteComponentsJob, DeleteObjectsJob } from "../../models/jobs/deleteJ
 import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
@@ -54,9 +55,16 @@ export const showCredentialsModal = (server: Server, dispatchOperation: Dispatch
   dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };
 
-export const onClickShowOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, paramName: keyof QueryParams) => {
+export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, paramName: keyof QueryParams) => {
   const host = `${window.location.protocol}//${window.location.host}`;
   const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&${paramName}=${objectOnWellbore.uid}`;
+  window.open(logUrl);
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
+export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, paramName: keyof QueryParams) => {
+  const host = `${window.location.protocol}//${window.location.host}`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&${paramName}=group`;
   window.open(logUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
