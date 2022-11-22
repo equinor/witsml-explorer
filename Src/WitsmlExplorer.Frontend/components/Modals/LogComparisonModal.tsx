@@ -66,6 +66,24 @@ function areMismatched(sourceLogCurveInfo: LogCurveInfo, targetLogCurveInfo: Log
   );
 }
 
+export function calculateMismatchedIndexes(sourceLogCurveInfo: LogCurveInfo[], targetLogCurveInfo: LogCurveInfo[]): Indexes[] {
+  const mismatchedIndexes = [];
+
+  for (const sourceCurve of sourceLogCurveInfo) {
+    const targetCurve = targetLogCurveInfo.find((targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic);
+    if (!targetCurve || areMismatched(sourceCurve, targetCurve)) {
+      mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
+    }
+  }
+  for (const targetCurve of targetLogCurveInfo) {
+    const sourceCurve = sourceLogCurveInfo.find((sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic);
+    if (!sourceCurve) {
+      mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
+    }
+  }
+  return mismatchedIndexes;
+}
+
 export interface LogComparisonModalProps {
   sourceLog: LogObject;
   sourceServer: Server;
@@ -124,21 +142,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     const targetType = targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
     const indexTypesMatch = sourceType == targetType;
 
-    const mismatchedIndexes = [];
-    if (indexTypesMatch) {
-      for (const sourceCurve of sourceLogCurveInfo) {
-        const targetCurve = targetLogCurveInfo.find((targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic);
-        if (!targetCurve || areMismatched(sourceCurve, targetCurve)) {
-          mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
-        }
-      }
-      for (const targetCurve of targetLogCurveInfo) {
-        const sourceCurve = sourceLogCurveInfo.find((sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic);
-        if (!sourceCurve) {
-          mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
-        }
-      }
-    }
+    const mismatchedIndexes = indexTypesMatch ? calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo) : [];
+
     setSourceType(sourceType);
     setTargetType(targetType);
     setIndexTypesMatch(indexTypesMatch);
