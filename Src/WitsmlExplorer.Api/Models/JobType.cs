@@ -11,6 +11,7 @@ namespace WitsmlExplorer.Api.Models
         CopyTrajectoryStations,
         CopyTubular,
         CopyTubularComponents,
+        CopyWbGeometrySections,
         ModifyBhaRun,
         TrimLogObject,
         ModifyLogObject,

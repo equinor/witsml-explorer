@@ -15,7 +15,7 @@ interface WbGeometrySectionRow extends ContentTableRow {
 
 export const WbGeometryView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWbGeometry } = navigationState;
+  const { selectedWbGeometry, selectedServer, servers } = navigationState;
   const [wbGeometrySections, setWbGeometrySections] = useState<WbGeometrySection[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
@@ -44,7 +44,9 @@ export const WbGeometryView = (): React.ReactElement => {
     const contextMenuProps: WbGeometrySectionContextMenuProps = {
       checkedWbGeometrySections: checkedWbGeometrySections.map((row) => row.wbGeometrySection),
       dispatchOperation,
-      wbGeometry: selectedWbGeometry
+      wbGeometry: selectedWbGeometry,
+      selectedServer,
+      servers
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometrySectionContextMenu {...contextMenuProps} />, position } });

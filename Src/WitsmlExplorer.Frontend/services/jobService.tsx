@@ -56,6 +56,7 @@ export enum JobType {
   CopyTrajectoryStations = "CopyTrajectoryStations",
   CopyTubular = "CopyTubular",
   CopyTubularComponents = "CopyTubularComponents",
+  CopyWbGeometrySections = "CopyWbGeometrySections",
   CreateWellbore = "CreateWellbore",
   CreateLogObject = "CreateLogObject",
   DeleteBhaRuns = "DeleteBhaRuns",
