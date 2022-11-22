@@ -55,7 +55,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
                 }}
                 disabled={!editableTrajectoryStation.dTimStn}
                 value={editableTrajectoryStation.dTimStn ? moment(editableTrajectoryStation.dTimStn).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableTrajectoryStation({ ...editableTrajectoryStation, dTimStn: new Date(e.target.value) })}
+                onChange={(e) => setEditableTrajectoryStation({ ...editableTrajectoryStation, dTimStn: e.target.value })}
               />
               <TextField
                 id={"md"}

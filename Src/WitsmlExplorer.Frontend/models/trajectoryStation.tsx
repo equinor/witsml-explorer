@@ -6,6 +6,6 @@ export default interface TrajectoryStation {
   tvd?: Measure;
   incl?: Measure;
   azi?: Measure;
-  dTimStn?: Date;
+  dTimStn?: string;
   typeTrajStation: string;
 }

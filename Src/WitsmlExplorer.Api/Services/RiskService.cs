@@ -41,8 +41,8 @@ namespace WitsmlExplorer.Api.Services
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
                     AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
-                    DTimStart = StringHelpers.ToDateTime(risk.DTimStart),
-                    DTimEnd = StringHelpers.ToDateTime(risk.DTimEnd),
+                    DTimStart = risk.DTimStart,
+                    DTimEnd = risk.DTimEnd,
                     MdBitStart = (risk.MdBitStart == null) ? null : new MeasureWithDatum { Uom = risk.MdBitStart.Uom, Value = StringHelpers.ToDouble(risk.MdBitStart.Value) },
                     MdBitEnd = (risk.MdBitEnd == null) ? null : new MeasureWithDatum { Uom = risk.MdBitEnd.Uom, Value = StringHelpers.ToDouble(risk.MdBitEnd.Value) },
                     SeverityLevel = risk.SeverityLevel,
@@ -54,8 +54,8 @@ namespace WitsmlExplorer.Api.Services
                     {
                         ItemState = risk.CommonData.ItemState,
                         SourceName = risk.CommonData.SourceName,
-                        DTimLastChange = StringHelpers.ToDateTime(risk.CommonData.DTimLastChange),
-                        DTimCreation = StringHelpers.ToDateTime(risk.CommonData.DTimCreation),
+                        DTimLastChange = risk.CommonData.DTimLastChange,
+                        DTimCreation = risk.CommonData.DTimCreation,
                     }
                 }).OrderBy(risk => risk.Name);
         }

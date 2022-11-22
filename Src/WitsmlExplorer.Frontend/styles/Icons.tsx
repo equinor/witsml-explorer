@@ -19,7 +19,8 @@ import {
   paste,
   refresh,
   settings,
-  trending_up as isActive
+  trending_up as isActive,
+  world
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
@@ -41,7 +42,8 @@ const icons = {
   moreVertical,
   assignment,
   infoCircle,
-  compare
+  compare,
+  world
 };
 
 Icon.add(icons);

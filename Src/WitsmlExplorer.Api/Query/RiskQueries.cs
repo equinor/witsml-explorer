@@ -7,6 +7,7 @@ using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -126,10 +127,8 @@ namespace WitsmlExplorer.Api.Query
                     SubCategory = risk.SubCategory,
                     ExtendCategory = risk.ExtendCategory,
                     AffectedPersonnel = risk.AffectedPersonnel?.Length == 0 ? null : risk.AffectedPersonnel?.Split(", "),
-                    DTimStart = risk.DTimStart?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
-                    DTimEnd = risk.DTimEnd?.ToUniversalTime
-                    ().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimStart = StringHelpers.ToUniversalDateTimeString(risk.DTimStart),
+                    DTimEnd = StringHelpers.ToUniversalDateTimeString(risk.DTimEnd),
                     MdHoleStart = risk.MdHoleStart?.ToWitsml<WitsmlMeasureWithDatum>(),
                     MdHoleEnd = risk.MdHoleEnd?.ToWitsml<WitsmlMeasureWithDatum>(),
                     MdBitStart = risk.MdBitStart?.ToWitsml<WitsmlMeasureWithDatum>(),

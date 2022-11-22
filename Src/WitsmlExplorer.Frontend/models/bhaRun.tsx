@@ -6,10 +6,10 @@ export default interface BhaRun extends ObjectOnWellbore {
   numStringRun: string;
   tubular: string;
   tubularUidRef: string;
-  dTimStart: Date;
-  dTimStop: Date;
-  dTimStartDrilling: Date;
-  dTimStopDrilling: Date;
+  dTimStart: string;
+  dTimStop: string;
+  dTimStartDrilling: string;
+  dTimStopDrilling: string;
   planDogleg: Measure;
   actDogleg: Measure;
   actDoglegMx: Measure;

@@ -5,9 +5,9 @@ export default interface Trajectory extends ObjectOnWellbore {
   mdMin: number;
   mdMax: number;
   aziRef: string;
-  dTimTrajStart: Date;
-  dTimTrajEnd: Date;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
+  dTimTrajStart: string;
+  dTimTrajEnd: string;
+  dateTimeCreation?: string;
+  dateTimeLastChange?: string;
   trajectoryStations: TrajectoryStation[];
 }

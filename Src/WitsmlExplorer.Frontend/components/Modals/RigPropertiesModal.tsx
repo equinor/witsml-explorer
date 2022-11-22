@@ -80,7 +80,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 }}
                 disabled={!editableRig.dTimStartOp}
                 value={editableRig.dTimStartOp ? moment(editableRig.dTimStartOp).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRig({ ...editableRig, dTimStartOp: new Date(e.target.value) })}
+                onChange={(e) => setEditableRig({ ...editableRig, dTimStartOp: e.target.value })}
               />
               <TextField
                 id={"dTimEnd"}
@@ -92,7 +92,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 }}
                 disabled={!editableRig.dTimEndOp}
                 value={editableRig.dTimEndOp ? moment(editableRig.dTimEndOp).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRig({ ...editableRig, dTimEndOp: new Date(e.target.value) })}
+                onChange={(e) => setEditableRig({ ...editableRig, dTimEndOp: e.target.value })}
               />
               <TextField
                 id={"yearEntService"}

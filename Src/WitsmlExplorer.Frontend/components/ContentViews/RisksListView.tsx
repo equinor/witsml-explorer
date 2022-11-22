@@ -5,6 +5,7 @@ import OperationType from "../../contexts/operationType";
 import RiskObject from "../../models/riskObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import RiskObjectContextMenu, { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
@@ -13,6 +14,9 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
 
 export const RisksListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [risks, setRisks] = useState<RiskObject[]>([]);
@@ -31,6 +35,10 @@ export const RisksListView = (): React.ReactElement => {
         id: risk.uid,
         mdBitStart: `${risk.mdBitStart?.value?.toFixed(4) ?? ""} ${risk.mdBitStart?.uom ?? ""}`,
         mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
+        dTimStart: formatDateString(risk.dTimStart, timeZone),
+        dTimEnd: formatDateString(risk.dTimEnd, timeZone),
+        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
         risk: risk
       };
     });

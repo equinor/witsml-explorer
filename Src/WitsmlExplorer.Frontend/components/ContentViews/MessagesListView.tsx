@@ -5,6 +5,7 @@ import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MessageObjectContextMenu, { MessageObjectContextMenuProps } from "../ContextMenus/MessageObjectContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MessageObjectRow extends ContentTableRow {
@@ -13,6 +14,9 @@ export interface MessageObjectRow extends ContentTableRow {
 
 export const MessagesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [messages, setMessages] = useState<MessageObject[]>([]);
@@ -28,14 +32,14 @@ export const MessagesListView = (): React.ReactElement => {
       return {
         id: msg.uid,
         index: index + 1,
-        dTim: new Date(msg.dTim),
+        dTim: formatDateString(msg.dTim, timeZone),
         messageText: msg.messageText,
         uid: msg.uid,
         name: msg.name,
         typeMessage: msg.typeMessage,
         sourceName: msg.commonData.sourceName,
-        dTimCreation: new Date(msg.commonData.dTimCreation),
-        dTimLastChange: new Date(msg.commonData.dTimLastChange),
+        dTimCreation: formatDateString(msg.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(msg.commonData.dTimLastChange, timeZone),
         comments: msg.commonData.comments,
         message: msg
       };

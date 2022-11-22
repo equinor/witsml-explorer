@@ -6,7 +6,8 @@ enum OperationType {
   SetCheckedContentItems,
   AddToClipboard,
   ClearClipboard,
-  SetTheme
+  SetTheme,
+  SetTimeZone
 }
 
 export default OperationType;

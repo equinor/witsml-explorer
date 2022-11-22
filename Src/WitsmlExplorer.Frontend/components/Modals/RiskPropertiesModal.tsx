@@ -121,7 +121,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 }}
                 disabled={!editableRiskObject.dTimStart}
                 value={editableRiskObject.dTimStart ? moment(editableRiskObject.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimStart: new Date(e.target.value) })}
+                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimStart: e.target.value })}
               />
               <TextField
                 id={"dTimEnd"}
@@ -133,7 +133,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 }}
                 disabled={!editableRiskObject.dTimEnd}
                 value={editableRiskObject.dTimEnd ? moment(editableRiskObject.dTimEnd).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimEnd: new Date(e.target.value) })}
+                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimEnd: e.target.value })}
               />
               <TextField
                 id={"mdBitStart"}

@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Services
                     RunNumber = log.RunNumber,
                     StartIndex = log.GetStartIndexAsString(),
                     EndIndex = log.GetEndIndexAsString(),
-                    DateTimeLastChange = StringHelpers.ToDateTime(log.CommonData.DTimLastChange),
+                    DateTimeLastChange = log.CommonData.DTimLastChange,
                     IndexCurve = log.IndexCurve.Value
                 }).OrderBy(log => log.Name);
         }
@@ -111,9 +111,9 @@ namespace WitsmlExplorer.Api.Services
                     Uid = logCurveInfo.Uid,
                     Mnemonic = logCurveInfo.Mnemonic,
                     ClassWitsml = logCurveInfo.ClassWitsml,
-                    MaxDateTimeIndex = StringHelpers.ToDateTime(logCurveInfo.MaxDateTimeIndex),
+                    MaxDateTimeIndex = logCurveInfo.MaxDateTimeIndex,
                     MaxDepthIndex = logCurveInfo.MaxIndex?.Value,
-                    MinDateTimeIndex = StringHelpers.ToDateTime(logCurveInfo.MinDateTimeIndex),
+                    MinDateTimeIndex = logCurveInfo.MinDateTimeIndex,
                     MinDepthIndex = logCurveInfo.MinIndex?.Value,
                     MnemAlias = logCurveInfo.MnemAlias,
                     Unit = logCurveInfo.Unit

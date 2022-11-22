@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Services
                 Name = wbGeometry.Name,
                 WellName = wbGeometry.NameWell,
                 WellboreName = wbGeometry.NameWellbore,
-                DTimReport = StringHelpers.ToDateTime(wbGeometry.DTimReport),
+                DTimReport = wbGeometry.DTimReport,
                 MdBottom = MeasureWithDatum.FromWitsml(wbGeometry.MdBottom),
                 GapAir = LengthMeasure.FromWitsml(wbGeometry.GapAir),
                 DepthWaterMean = LengthMeasure.FromWitsml(wbGeometry.DepthWaterMean),
@@ -58,8 +58,8 @@ namespace WitsmlExplorer.Api.Services
                     SourceName = wbGeometry.CommonData.SourceName,
                     ItemState = wbGeometry.CommonData.ItemState,
                     Comments = wbGeometry.CommonData.Comments,
-                    DTimCreation = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimCreation),
-                    DTimLastChange = StringHelpers.ToDateTime(wbGeometry.CommonData.DTimLastChange),
+                    DTimCreation = wbGeometry.CommonData.DTimCreation,
+                    DTimLastChange = wbGeometry.CommonData.DTimLastChange,
                 }
             };
         }

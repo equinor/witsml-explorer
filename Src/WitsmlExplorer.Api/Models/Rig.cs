@@ -1,5 +1,3 @@
-using System;
-
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -9,8 +7,8 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure AirGap { get; set; }
         public string Approvals { get; set; }
         public string ClassRig { get; set; }
-        public DateTime? DTimStartOp { get; set; }
-        public DateTime? DTimEndOp { get; set; }
+        public string DTimStartOp { get; set; }
+        public string DTimEndOp { get; set; }
         public string EmailAddress { get; set; }
         public string FaxNumber { get; set; }
         public bool? IsOffshore { get; set; }
