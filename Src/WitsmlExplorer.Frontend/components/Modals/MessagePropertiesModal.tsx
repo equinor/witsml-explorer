@@ -59,6 +59,7 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
                 label="messageText"
                 value={editableMessageObject.messageText}
                 fullWidth
+                multiline
                 required
                 error={!validText(editableMessageObject.messageText)}
                 helperText={editableMessageObject.messageText.length === 0 ? "The message text must be 1-64 characters" : ""}

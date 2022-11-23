@@ -12,6 +12,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
+import { clipLongString } from "./ViewUtils";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -94,10 +95,10 @@ export const JobsView = (): React.ReactElement => {
   const jobInfoRows = jobInfos.map((jobInfo) => {
     return {
       ...jobInfo,
-      failedReason: clipLongString(jobInfo.failedReason, 20),
-      wellName: clipLongString(jobInfo.wellName, 20),
-      wellboreName: clipLongString(jobInfo.wellboreName, 20),
-      objectName: clipLongString(jobInfo.objectName, 30),
+      failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
+      wellName: clipLongString(jobInfo.wellName, 20, "-"),
+      wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
+      objectName: clipLongString(jobInfo.objectName, 30, "-"),
       startTime: formatDateString(jobInfo.startTime, timeZone),
       endTime: formatDateString(jobInfo.endTime, timeZone),
       targetServer: serverUrlToName(servers, jobInfo.targetServer),
@@ -107,13 +108,6 @@ export const JobsView = (): React.ReactElement => {
   });
 
   return <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />;
-};
-
-const clipLongString = (toClip: string, length: number): string => {
-  if (!toClip) {
-    return "-";
-  }
-  return toClip.length > length ? `${toClip.substring(0, length).trim()}…` : toClip;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {

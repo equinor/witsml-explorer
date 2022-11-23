@@ -7,6 +7,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MessageObjectContextMenu, { MessageObjectContextMenuProps } from "../ContextMenus/MessageObjectContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import { clipLongString } from "./ViewUtils";
 
 export interface MessageObjectRow extends ContentTableRow {
   message: MessageObject;
@@ -33,7 +34,7 @@ export const MessagesListView = (): React.ReactElement => {
         id: msg.uid,
         index: index + 1,
         dTim: formatDateString(msg.dTim, timeZone),
-        messageText: msg.messageText,
+        messageText: clipLongString(msg.messageText, 30),
         uid: msg.uid,
         name: msg.name,
         typeMessage: msg.typeMessage,
