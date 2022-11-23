@@ -149,10 +149,10 @@ it("Should detect mismatched maxDepthIndex", () => {
   ];
   const result = calculateMismatchedIndexes(source, target);
   expect(result[0].mnemonic).toEqual(mnemonic);
-  expect(result[0].sourceStart).toEqual(matchingMinDepthIndex.toString());
-  expect(result[0].sourceEnd).toEqual(matchingMaxDepthIndex.toString());
-  expect(result[0].targetStart).toEqual(matchingMinDepthIndex.toString());
-  expect(result[0].targetEnd).toEqual(mismatchedDepth.toString());
+  expect(result[0].sourceStart).toEqual(matchingMinDepthIndex);
+  expect(result[0].sourceEnd).toEqual(matchingMaxDepthIndex);
+  expect(result[0].targetStart).toEqual(matchingMinDepthIndex);
+  expect(result[0].targetEnd).toEqual(mismatchedDepth);
 });
 
 it("Should detect mismatched minDepthIndex", () => {
@@ -169,10 +169,10 @@ it("Should detect mismatched minDepthIndex", () => {
   ];
   const result = calculateMismatchedIndexes(source, target);
   expect(result[0].mnemonic).toEqual(mnemonic);
-  expect(result[0].sourceStart).toEqual(matchingMinDepthIndex.toString());
-  expect(result[0].sourceEnd).toEqual(matchingMaxDepthIndex.toString());
-  expect(result[0].targetStart).toEqual(mismatchedDepth.toString());
-  expect(result[0].targetEnd).toEqual(matchingMaxDepthIndex.toString());
+  expect(result[0].sourceStart).toEqual(matchingMinDepthIndex);
+  expect(result[0].sourceEnd).toEqual(matchingMaxDepthIndex);
+  expect(result[0].targetStart).toEqual(mismatchedDepth);
+  expect(result[0].targetEnd).toEqual(matchingMaxDepthIndex);
 });
 
 it("Should disregard matching dateTime indexes", () => {
