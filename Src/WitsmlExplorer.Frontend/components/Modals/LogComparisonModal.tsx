@@ -81,7 +81,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
   const data = useMemo(
     () =>
-      indexesToShow.map((indexes) => {
+      indexesToShow?.map((indexes) => {
         const startDifferent = indexes.sourceStart != indexes.targetStart;
         const endDifferent = indexes.sourceEnd != indexes.targetEnd;
         return {
@@ -112,7 +112,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
                 </span>
               )}
-              {indexesToShow.length != 0 && (
+              {indexesToShow.length != 0 && data && (
                 <TableLayout>
                   <SortableEdsTable caption={<Caption />} columns={columns} data={data} />
                 </TableLayout>
