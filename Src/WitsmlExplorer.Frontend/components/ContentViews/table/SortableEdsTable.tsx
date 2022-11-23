@@ -23,7 +23,14 @@ export interface SortableEdsTableProps {
   caption: React.ReactNode;
 }
 
-//Source: equinor/design-system/packages/eds-core-react/src/components/Table/Table.stories.tsx v0.27.0 bde787d
+/**
+Source: github.com/equinor/design-system/packages/eds-core-react/src/components/Table/Table.stories.tsx v0.27.0 bde787d
+@param columns An array of columns including at least the name shown in the header and an accessor corresponding to the respective propert name in the data paremeter.
+Can optionally include sortDirection to pick a default column to sort on.
+@param data An array of data rows with property names matching accessors found in columns. The object in the array can optionally include [accessor]+'Value' properties,
+which will be displayed in the table without affecting sorting.
+@param caption A string or a ReactNode element representing the caption above the table.
+*/
 const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
   const { columns, data, caption } = props;
 
@@ -31,8 +38,7 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
     columns.map((col) => {
       return {
         ...col,
-        ...(col.isSorted === undefined ? { isSorted: false } : { isSorted: col.isSorted }),
-        ...(col.sortDirection === undefined ? { sortDirection: "none" } : { sortDirection: col.sortDirection })
+        ...(col.sortDirection === undefined ? { sortDirection: "none", isSorted: false } : { sortDirection: col.sortDirection, isSorted: true })
       };
     });
   const [state, setState] = useState<State>({ columns: initColumns() });
@@ -74,10 +80,10 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
         }
         const { sortDirection, accessor } = sortedCol;
         if (sortDirection === "ascending") {
-          return left[accessor] > right[accessor] ? 1 : -1;
+          return left[accessor] > right[accessor] ? 1 : left[accessor] < right[accessor] ? -1 : 0;
         }
         if (sortDirection === "descending") {
-          return left[accessor] < right[accessor] ? 1 : -1;
+          return left[accessor] < right[accessor] ? 1 : left[accessor] > right[accessor] ? -1 : 0;
         }
       }),
     [state.columns]
@@ -118,7 +124,15 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
 };
 
 const toCellValues = (data: Record<string, any>[], columns: Column[]): string[][] =>
-  data.map((item) => columns.map((column) => (typeof item[column.accessor] !== "undefined" ? (item[column.accessor] as string) : "")));
+  data.map((item) =>
+    columns.map((column) =>
+      typeof item[column.accessor + "Value"] !== "undefined"
+        ? (item[column.accessor + "Value"] as string)
+        : typeof item[column.accessor] !== "undefined"
+        ? (item[column.accessor] as string)
+        : ""
+    )
+  );
 
 const SortCell = styled(Table.Cell)<{ isSorted: boolean } & CellProps>`
   svg {

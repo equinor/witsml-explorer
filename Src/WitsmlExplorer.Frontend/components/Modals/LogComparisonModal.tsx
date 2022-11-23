@@ -85,11 +85,11 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
         const startDifferent = indexes.sourceStart != indexes.targetStart;
         const endDifferent = indexes.sourceEnd != indexes.targetEnd;
         return {
-          mnemonic: indexes.mnemonic,
-          sourceStart: startDifferent ? <b>{indexes.sourceStart}</b> : indexes.sourceStart,
-          targetStart: startDifferent ? <b>{indexes.targetStart}</b> : indexes.targetStart,
-          sourceEnd: endDifferent ? <b>{indexes.sourceEnd} </b> : indexes.sourceEnd,
-          targetEnd: endDifferent ? <b>{indexes.targetEnd}</b> : indexes.targetEnd
+          ...indexes,
+          sourceStartValue: startDifferent ? <b>{indexes.sourceStart}</b> : indexes.sourceStart,
+          targetStartValue: startDifferent ? <b>{indexes.targetStart}</b> : indexes.targetStart,
+          sourceEndValue: endDifferent ? <b>{indexes.sourceEnd} </b> : indexes.sourceEnd,
+          targetEndValue: endDifferent ? <b>{indexes.targetEnd}</b> : indexes.targetEnd
         };
       }),
     [indexesToShow]
@@ -137,7 +137,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 };
 
 const columns: Column[] = [
-  { name: "Curve mnemonic", accessor: "mnemonic", sortDirection: "ascending", isSorted: true },
+  { name: "Curve mnemonic", accessor: "mnemonic", sortDirection: "ascending" },
   { name: "Source start", accessor: "sourceStart" },
   { name: "Target start", accessor: "targetStart" },
   { name: "Source end", accessor: "sourceEnd" },
