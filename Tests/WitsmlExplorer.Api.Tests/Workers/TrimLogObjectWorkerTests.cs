@@ -117,7 +117,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -144,7 +144,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -169,7 +169,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -196,7 +196,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -222,7 +222,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -255,7 +255,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             List<WitsmlLogs> deleteQueries = new();
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => deleteQueries.Add(logs))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -274,7 +274,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupLog(string indexType, Index startIndex, Index endIndex)
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly, null)))
+                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null)))
                 .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
         }
 

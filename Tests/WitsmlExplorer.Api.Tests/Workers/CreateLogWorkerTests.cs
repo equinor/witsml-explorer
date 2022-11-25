@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
+                .Callback<WitsmlLogs>(createdLogs.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
+                .Callback<WitsmlLogs>(createdLogs.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -105,7 +105,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                     client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(logs => createdLogs.Add(logs))
+                .Callback<WitsmlLogs>(createdLogs.Add)
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -133,7 +133,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null)))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>
