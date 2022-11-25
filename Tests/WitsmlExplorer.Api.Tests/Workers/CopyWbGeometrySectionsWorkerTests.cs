@@ -88,10 +88,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetFromStoreAsync(string[] sourceSectionUids, string[] targetSectionUids)
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == SourceWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
+                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == SourceWbGeometryUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceWbGeometrys(sourceSectionUids));
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == TargetWbGeometryUid), new OptionsIn(ReturnElements.All, null)))
+                    client.GetFromStoreAsync(It.Is<WitsmlWbGeometrys>(witsmlWbGeometrys => witsmlWbGeometrys.WbGeometrys.First().Uid == TargetWbGeometryUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetTargetWbGeometrys(targetSectionUids));
         }
 
