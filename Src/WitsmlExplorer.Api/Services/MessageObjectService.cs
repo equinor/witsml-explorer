@@ -57,13 +57,13 @@ namespace WitsmlExplorer.Api.Services
                 Name = message.Name,
                 MessageText = message.MessageText,
                 TypeMessage = message.TypeMessage,
-                DTim = StringHelpers.ToDateTimeOffset(message.DTim),
+                DTim = message.DTim,
                 CommonData = new()
                 {
                     SourceName = message.CommonData.SourceName,
                     Comments = message.CommonData.Comments,
-                    DTimCreation = StringHelpers.ToDateTime(message.CommonData.DTimCreation),
-                    DTimLastChange = StringHelpers.ToDateTime(message.CommonData.DTimLastChange)
+                    DTimCreation = message.CommonData.DTimCreation,
+                    DTimLastChange = message.CommonData.DTimLastChange
                 }
             };
         }

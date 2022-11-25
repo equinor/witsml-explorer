@@ -10,11 +10,15 @@ import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedServer, servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
@@ -94,8 +98,8 @@ export const JobsView = (): React.ReactElement => {
       wellName: clipLongString(jobInfo.wellName, 20),
       wellboreName: clipLongString(jobInfo.wellboreName, 20),
       objectName: clipLongString(jobInfo.objectName, 30),
-      startTime: jobInfo.startTime ? new Date(jobInfo.startTime) : null,
-      endTime: jobInfo.endTime ? new Date(jobInfo.endTime) : null,
+      startTime: formatDateString(jobInfo.startTime, timeZone),
+      endTime: formatDateString(jobInfo.endTime, timeZone),
       targetServer: serverUrlToName(servers, jobInfo.targetServer),
       sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
       jobInfo: jobInfo

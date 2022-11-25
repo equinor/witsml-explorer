@@ -83,14 +83,10 @@ namespace WitsmlExplorer.Api.Services
             return isDateTime ? value : throw new ArgumentException($"Input is not compatible to be parsed to a DateTime value: {input}");
         }
 
-        public static DateTimeOffset ToDateTimeOffset(string input)
+        public static string ToUniversalDateTimeString(string input)
         {
-            bool isDateTime = DateTimeOffset.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset dateTime);
-            if (!isDateTime)
-            {
-                throw new ArgumentException($"Input is not compatible to be parsed to a DateTimeOffset value: {input}");
-            }
-            return dateTime;
+            DateTime? dateTime = ToDateTime(input);
+            return dateTime.HasValue ? dateTime.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") : null;
         }
 
         public static decimal ToDecimal(string input)

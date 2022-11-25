@@ -108,7 +108,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                           align={column.type === ContentType.Number ? "right" : "left"}
                           onClick={(event) => selectRow(event, item)}
                         >
-                          {format(column.type, item[column.property])}
+                          {formatCell(column.type, item[column.property])}
                         </TableDataCell>
                       )
                   )}
@@ -121,10 +121,8 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   );
 };
 
-const format = (type: ContentType, data: string | boolean) => {
+export const formatCell = (type: ContentType, data: string | boolean) => {
   switch (type) {
-    case ContentType.DateTime:
-      return formatDate(data as unknown as Date, DateFormat.DATETIME_S);
     case ContentType.Date:
       return formatDate(data as unknown as Date, DateFormat.DATE);
     case ContentType.Icon:
@@ -180,6 +178,11 @@ const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: str
     type === ContentType.Number &&
     `
     font-feature-settings: "tnum";
+  `};
+  ${({ type }) =>
+    type === ContentType.DateTime &&
+    `
+    white-space: nowrap;
   `};
 `;
 

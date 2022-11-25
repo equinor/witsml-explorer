@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,6 +8,7 @@ using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -135,7 +135,7 @@ namespace WitsmlExplorer.Api.Query
 
             if (trajectoryStation.DTimStn != null)
             {
-                ts.DTimStn = ((DateTime)trajectoryStation.DTimStn).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                ts.DTimStn = StringHelpers.ToUniversalDateTimeString(trajectoryStation.DTimStn);
             }
 
             return new WitsmlTrajectories

@@ -119,7 +119,7 @@ namespace WitsmlExplorer.Api.Query
                     Name = wbGeometry.Name,
                     NameWell = wbGeometry.WellName,
                     NameWellbore = wbGeometry.WellboreName,
-                    DTimReport = wbGeometry.DTimReport?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    DTimReport = StringHelpers.ToUniversalDateTimeString(wbGeometry.DTimReport),
                     MdBottom = wbGeometry.MdBottom != null ? new WitsmlMeasuredDepthCoord { Uom = wbGeometry.MdBottom.Uom, Value = wbGeometry.MdBottom.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     GapAir = wbGeometry.GapAir != null ? new WitsmlLengthMeasure { Uom = wbGeometry.GapAir.Uom, Value = wbGeometry.GapAir.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     DepthWaterMean = wbGeometry.DepthWaterMean != null ? new WitsmlLengthMeasure { Uom = wbGeometry.DepthWaterMean.Uom, Value = wbGeometry.DepthWaterMean.Value.ToString(CultureInfo.InvariantCulture) } : null,

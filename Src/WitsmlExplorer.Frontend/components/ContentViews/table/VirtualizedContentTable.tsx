@@ -2,15 +2,14 @@ import { Checkbox, TableCell as MuiTableCell, TableSortLabel } from "@material-u
 import { useTheme } from "@material-ui/core/styles";
 import orderBy from "lodash/orderBy";
 import memoizeOne from "memoize-one";
-import React, { forwardRef, memo, ReactElement, useCallback, useContext, useEffect, useState } from "react";
-import Moment from "react-moment";
+import React, { forwardRef, memo, useCallback, useContext, useEffect, useState } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
-import { DateFormat } from "../../Constants";
+import { formatCell } from "./ContentTable";
 import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./tableParts";
 
 interface RowProps {
@@ -72,7 +71,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
               type={column.type}
               align={column.type === ContentType.Number ? "right" : "left"}
             >
-              {format(column.type, item[column.property])}
+              {formatCell(column.type, item[column.property])}
             </TableDataCell>
           ))}
       </TableRow>
@@ -276,25 +275,6 @@ export const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedL
 };
 
 const flipOrder = (order: Order) => (order === Order.Ascending ? Order.Descending : Order.Ascending);
-
-const format = (type: ContentType, data: string | Date): string | ReactElement => {
-  switch (type) {
-    case ContentType.DateTime:
-      return formatDate(data as Date, DateFormat.DATETIME_MS);
-    case ContentType.Date:
-      return formatDate(data as Date, DateFormat.DATE);
-    default:
-      return data as string;
-  }
-};
-
-const formatDate = (date: Date, format: string): string | ReactElement => {
-  if (date) {
-    return <Moment format={format} date={date} />;
-  } else {
-    return "";
-  }
-};
 
 const configureTemplateColumns = memoizeOne((checkableRows: boolean, isHeader: boolean, columns: ContentTableColumn[]) => {
   let templateColumns = [];

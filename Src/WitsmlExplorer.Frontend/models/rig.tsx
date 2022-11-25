@@ -7,8 +7,8 @@ export default interface Rig extends ObjectOnWellbore {
   approvals: string;
   commonData: CommonData;
   classRig: string;
-  dTimEndOp: Date;
-  dTimStartOp: Date;
+  dTimEndOp: string;
+  dTimStartOp: string;
   emailAddress: string;
   faxNumber: string;
   itemState?: string;

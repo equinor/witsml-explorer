@@ -8,8 +8,8 @@ export default interface RiskObject extends ObjectOnWellbore {
   subCategory: string;
   extendCategory: string;
   affectedPersonnel: string;
-  dTimEnd?: Date;
-  dTimStart?: Date;
+  dTimEnd?: string;
+  dTimStart?: string;
   mdBitStart: Measure;
   mdBitEnd: Measure;
   severityLevel: string;

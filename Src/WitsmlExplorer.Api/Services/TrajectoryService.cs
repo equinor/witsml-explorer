@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Services
             return witsmlTrajectory?.TrajectoryStations.Select(tStation => new TrajectoryStation
             {
                 Uid = tStation.Uid,
-                DTimStn = StringHelpers.ToDateTime(tStation.DTimStn),
+                DTimStn = tStation.DTimStn,
                 TypeTrajStation = tStation.TypeTrajStation,
                 Md = (tStation.Md == null) ? null : new LengthMeasure { Uom = tStation.Md.Uom, Value = StringHelpers.ToDecimal(tStation.Md.Value) },
                 Tvd = (tStation.Tvd == null) ? null : new LengthMeasure { Uom = tStation.Tvd.Uom, Value = StringHelpers.ToDecimal(tStation.Tvd?.Value) },
@@ -72,10 +72,10 @@ namespace WitsmlExplorer.Api.Services
                 MdMin = (trajectory.MdMin == null) ? null : StringHelpers.ToDecimal(trajectory.MdMin.Value),
                 MdMax = (trajectory.MdMax == null) ? null : StringHelpers.ToDecimal(trajectory.MdMax.Value),
                 AziRef = trajectory.AziRef,
-                DTimTrajStart = StringHelpers.ToDateTime(trajectory.DTimTrajStart),
-                DTimTrajEnd = StringHelpers.ToDateTime(trajectory.DTimTrajEnd),
-                DateTimeCreation = StringHelpers.ToDateTime(trajectory.CommonData?.DTimCreation),
-                DateTimeLastChange = StringHelpers.ToDateTime(trajectory.CommonData?.DTimLastChange)
+                DTimTrajStart = trajectory.DTimTrajStart,
+                DTimTrajEnd = trajectory.DTimTrajEnd,
+                DateTimeCreation = trajectory.CommonData?.DTimCreation,
+                DateTimeLastChange = trajectory.CommonData?.DTimLastChange
             };
         }
     }

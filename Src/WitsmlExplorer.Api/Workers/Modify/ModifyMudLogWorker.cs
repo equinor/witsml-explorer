@@ -81,8 +81,6 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     GeologyInterval = geologyIntervals,
                     CommonData = new WitsmlCommonData
                     {
-                        DTimCreation = mudLog.CommonData.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                        DTimLastChange = mudLog.CommonData.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
                         ItemState = mudLog.CommonData.ItemState,
                         SourceName = mudLog.CommonData.SourceName
                     }
