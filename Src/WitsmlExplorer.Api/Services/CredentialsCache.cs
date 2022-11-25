@@ -35,14 +35,15 @@ namespace WitsmlExplorer.Api.Services
         {
             return _cache.Get(cacheId) as string;
         }
+
         public long Count()
         {
             return _cache.GetCount();
         }
+
         public void Clear()
         {
             ((MemoryCache)_cache).Trim(100);
-
         }
 
         public void RemoveAllClientCredentials(string clientId)
