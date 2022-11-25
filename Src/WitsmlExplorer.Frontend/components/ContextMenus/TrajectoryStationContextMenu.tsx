@@ -13,7 +13,7 @@ import { colors } from "../../styles/Colors";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -78,7 +78,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

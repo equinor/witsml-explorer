@@ -6,13 +6,14 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface MessageObjectContextMenuProps {
@@ -21,10 +22,11 @@ export interface MessageObjectContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreMessagesAction | UpdateWellboreMessageAction) => void;
   servers: Server[];
   selectedServer: Server;
+  wellbore: Wellbore;
 }
 
 const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.ReactElement => {
-  const { checkedMessageObjectRows, dispatchOperation, servers } = props;
+  const { checkedMessageObjectRows, dispatchOperation, servers, wellbore } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -51,13 +53,9 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "message", checkedMessageObjectRows)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedMessageObjectRows.length !== 1}>
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedMessageObjectRows[0].message, "messageUid")}
-              disabled={checkedMessageObjectRows.length !== 1}
-            >
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "messageGroupUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

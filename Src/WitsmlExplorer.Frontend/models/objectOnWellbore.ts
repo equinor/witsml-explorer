@@ -45,8 +45,8 @@ export function toObjectReferences(objectsOnWellbore: ObjectOnWellbore[], object
   };
 }
 
-export const calculateObjectNodeId = (objectOnWellbore: ObjectOnWellbore): string => {
-  return objectOnWellbore.wellUid + objectOnWellbore.wellboreUid + objectOnWellbore.uid;
+export const calculateObjectNodeId = (objectOnWellbore: ObjectOnWellbore, objectType: ObjectType): string => {
+  return objectOnWellbore.wellUid + objectOnWellbore.wellboreUid + objectType + objectOnWellbore.uid;
 };
 
 export const getObjectOnWellboreProperties = (objectOnWellbore: ObjectOnWellbore, objectType: ObjectType): Map<string, string> => {

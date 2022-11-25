@@ -9,7 +9,7 @@ import Trajectory from "../../models/trajectory";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -45,7 +45,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

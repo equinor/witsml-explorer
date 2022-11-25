@@ -13,7 +13,7 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { onClickRefresh } from "./TubularContextMenuUtils";
@@ -62,7 +62,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, tubular, "tubularUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubular, "tubularUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

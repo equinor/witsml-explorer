@@ -6,6 +6,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import { calculateObjectNodeId } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
@@ -74,13 +75,13 @@ const filterLogsByType = (wellbore: Wellbore, logType: string) => {
 const listLogItemsByType = (logObjects: LogObject[], logType: string, well: Well, wellbore: Wellbore, logGroup: string, selectedLog: LogObject) => {
   return logObjects.map((log) => (
     <LogItem
-      key={calculateObjectNodeId(log)}
+      key={calculateObjectNodeId(log, ObjectType.Log)}
       log={log}
       well={well}
       wellbore={wellbore}
       logGroup={logGroup}
       logTypeGroup={calculateLogTypeId(wellbore, logType)}
-      nodeId={calculateObjectNodeId(log)}
+      nodeId={calculateObjectNodeId(log, ObjectType.Log)}
       selected={selectedLog?.uid === log.uid ? true : undefined}
       objectGrowing={log.objectGrowing}
     />

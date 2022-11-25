@@ -9,7 +9,7 @@ import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -51,7 +51,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={trajectories.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, trajectories[0], "trajectoryUid")} disabled={trajectories.length !== 1}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectories[0], "trajectoryUid")} disabled={trajectories.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

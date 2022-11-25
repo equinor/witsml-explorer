@@ -14,7 +14,7 @@ import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { onClickCopyCurveToServer } from "./CopyCurveToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -101,7 +101,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, selectedLog, "logObjectUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, selectedLog, "logObjectUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
