@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Jobs
     public record DeleteTubularComponentsJob : IDeleteJob<ComponentReferences> { }
     public record DeleteTubularsJob : IDeleteJob<ObjectReferences> { }
     public record DeleteWbGeometryJob : IDeleteJob<ObjectReferences> { }
+    public record DeleteWbGeometrySectionsJob : IDeleteJob<ComponentReferences> { }
     public record DeleteWellboreJob : IDeleteJob<WellboreReference> { }
     public record DeleteWellJob : IDeleteJob<WellReference> { }
 

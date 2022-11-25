@@ -182,5 +182,22 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
+        public static WitsmlWbGeometrys DeleteWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid, IEnumerable<string> wbGeometrySectionUids)
+        {
+            return new WitsmlWbGeometrys
+            {
+                WbGeometrys = new WitsmlWbGeometry
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = wbGeometryUid,
+                    WbGeometrySections = wbGeometrySectionUids.Select(uid => new WitsmlWbGeometrySection
+                    {
+                        Uid = uid
+                    }).ToList()
+                }.AsSingletonList()
+            };
+        }
+
     }
 }

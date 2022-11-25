@@ -26,6 +26,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteTubular,
         DeleteTubularComponents,
         DeleteWbGeometrys,
+        DeleteWbGeometrySections,
         DeleteWell,
         DeleteWellbore,
         DeleteRigs,

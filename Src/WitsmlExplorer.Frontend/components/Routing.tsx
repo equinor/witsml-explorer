@@ -62,7 +62,7 @@ const Routing = (): React.ReactElement => {
     selectedRigGroup,
     selectedRiskGroup,
     selectedTrajectory,
-    selectedWbGeometryGroup
+    selectedWbGeometry
   } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
@@ -92,7 +92,7 @@ const Routing = (): React.ReactElement => {
     selectedRigGroup,
     selectedRiskGroup,
     selectedTrajectory,
-    selectedWbGeometryGroup
+    selectedWbGeometry
   ]);
 
   useEffect(() => {
@@ -260,7 +260,7 @@ const Routing = (): React.ReactElement => {
       }
 
       const wbGeometryUid = router.query.wbGeometryUid?.toString();
-      if (selectedWellbore && wbGeometryUid && !selectedWbGeometryGroup) {
+      if (selectedWellbore && wbGeometryUid && !selectedWbGeometry) {
         const wbGeometry = selectedWellbore.wbGeometrys.find((object: WbGeometryObject) => object.uid === wbGeometryUid);
         const action: SelectWbGeometryAction = {
           type: NavigationType.SelectWbGeometry,
