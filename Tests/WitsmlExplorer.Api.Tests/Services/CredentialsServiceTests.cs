@@ -165,6 +165,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
             ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, headersMock.Object.TargetServer);
             Assert.Equal(sc, fromCache);
+            _credentialsService.RemoveAllCachedCredentials();
         }
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
         {

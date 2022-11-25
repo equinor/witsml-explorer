@@ -99,6 +99,11 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache.RemoveAllClientCredentials(clientId);
         }
 
+        public void RemoveAllCachedCredentials()
+        {
+            _credentialsCache.Clear();
+        }
+
         public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl, Func<string, string> delEncrypt = null)
         {
             delEncrypt ??= Encrypt;
