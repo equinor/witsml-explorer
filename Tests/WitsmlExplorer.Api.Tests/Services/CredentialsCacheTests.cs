@@ -27,6 +27,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             string clientId = Guid.NewGuid().ToString();
             string url = "https://somehost";
 
+            _credentialsCache.Clear();
             _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
             _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
             _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
