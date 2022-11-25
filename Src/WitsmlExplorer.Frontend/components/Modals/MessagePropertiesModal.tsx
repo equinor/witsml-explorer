@@ -59,10 +59,11 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
                 label="messageText"
                 value={editableMessageObject.messageText}
                 fullWidth
+                multiline
                 required
                 error={!validText(editableMessageObject.messageText)}
-                helperText={editableMessageObject.messageText.length === 0 ? "The message text must be 1-64 characters" : ""}
-                inputProps={{ minLength: 1, maxLength: 64 }}
+                helperText={editableMessageObject.messageText.length === 0 ? "The message text must be 1-4000 characters" : ""}
+                inputProps={{ minLength: 1, maxLength: 4000 }}
                 onChange={(e) => setEditableMessageObject({ ...editableMessageObject, messageText: e.target.value })}
               />
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableMessageObject.wellUid} fullWidth />

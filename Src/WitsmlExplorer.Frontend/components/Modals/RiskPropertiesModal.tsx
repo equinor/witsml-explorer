@@ -205,9 +205,10 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                 label="details"
                 value={editableRiskObject.details ? editableRiskObject.details : ""}
                 error={editableRiskObject.details?.length === 0}
-                helperText={editableRiskObject.details?.length === 0 ? "The risk details must be at least 1 character" : ""}
+                multiline
+                helperText={editableRiskObject.details?.length === 0 ? "The risk details must be between 1 and 256 characters" : ""}
                 fullWidth
-                inputProps={{ minLength: 1 }}
+                inputProps={{ minLength: 1, maxLength: 256 }}
                 onChange={(e) => setEditableRiskObject({ ...editableRiskObject, details: e.target.value })}
               />
               <TextField

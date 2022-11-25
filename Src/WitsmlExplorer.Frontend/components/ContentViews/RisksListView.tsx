@@ -7,6 +7,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import RiskObjectContextMenu, { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import { clipLongString } from "./ViewUtils";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
   risk: RiskObject;
@@ -39,6 +40,7 @@ export const RisksListView = (): React.ReactElement => {
         dTimEnd: formatDateString(risk.dTimEnd, timeZone),
         dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
         dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
+        details: clipLongString(risk.details, 30),
         risk: risk
       };
     });
