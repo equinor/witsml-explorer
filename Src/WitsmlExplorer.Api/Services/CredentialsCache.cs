@@ -11,6 +11,7 @@ namespace WitsmlExplorer.Api.Services
         void SetItem(string cacheId, string encryptedCredentials, double ttl);
         public string GetItem(string cacheId);
         public long Count();
+        public void Clear();
         public void RemoveAllClientCredentials(string clientId);
     }
 
@@ -34,9 +35,15 @@ namespace WitsmlExplorer.Api.Services
         {
             return _cache.Get(cacheId) as string;
         }
+
         public long Count()
         {
             return _cache.GetCount();
+        }
+
+        public void Clear()
+        {
+            ((MemoryCache)_cache).Trim(100);
         }
 
         public void RemoveAllClientCredentials(string clientId)
