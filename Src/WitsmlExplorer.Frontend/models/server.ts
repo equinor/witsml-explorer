@@ -5,6 +5,7 @@ export interface Server {
   url: string;
   securityscheme: string;
   roles: string[];
+  port: string | number
 }
 
 export function emptyServer(): Server {
@@ -14,6 +15,7 @@ export function emptyServer(): Server {
     description: "",
     url: "",
     securityscheme: "Basic",
-    roles: []
+    roles: [],
+    port: "",
   };
 }

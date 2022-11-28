@@ -4,6 +4,8 @@ import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { colors } from "../../styles/Colors";
+import  {Typography} from '@equinor/eds-core-react';
+import Icons from "../../styles/Icons"
 
 interface ModalDialogProps {
   heading: string;
@@ -20,6 +22,8 @@ interface ModalDialogProps {
   onDelete?: () => void;
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
+  confirmIcon?:string;
+  ButtonPosition?:controlButtonPosition;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -34,9 +38,10 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     confirmDisabled,
     errorMessage,
     switchButtonPlaces,
-    width = ModalWidth.MEDIUM,
+    width = ModalWidth.LARGE,
     showConfirmButton = true,
-    showCancelButton = true
+    showCancelButton = true,
+    ButtonPosition = props.ButtonPosition ?? (controlButtonPosition.BOTTOM)
   } = props;
   const context = React.useContext(OperationContext);
   const { displayModal } = context.operationState;
@@ -69,14 +74,16 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
         color={confirmColor ?? "primary"}
         variant="contained"
       >
+        {ButtonPosition == controlButtonPosition.TOP ? <Icons name = "save"/> : ""}
         {confirmText ?? "Save"}
       </Button>
     ) : (
       <></>
     ),
     showCancelButton ? (
-      <Button key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
-        Cancel
+      <Button key={"close"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+      <Icons name="close" />
+        Close
       </Button>
     ) : (
       <></>
@@ -85,20 +92,40 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       Delete
     </Button>
   ];
+  
+  const top =
+    <HeadTitle>
+      <Typography color="primary" token={{
+        fontSize: '1.5rem',
+        fontWeight: 600,
+      }}>
+        {heading}
+      </Typography>
+      <Typography> {buttons[switchButtonPlaces ? 1 : 0]}
+        {buttons[switchButtonPlaces ? 0 : 1]}
+        {isLoading && <CircularProgress size="1.5rem" />}
+        {ButtonPosition ? <></> : onDelete && buttons[2]}
+      </Typography>
+    </HeadTitle>;
 
+  const bottom =
+    <DialogAction>
+      {buttons[switchButtonPlaces ? 1 : 0]}
+      {buttons[switchButtonPlaces ? 0 : 1]}
+      {isLoading && <CircularProgress size="1.5rem" />}
+      {ButtonPosition ? <></> : onDelete && buttons[2]}
+    </DialogAction>
+
+  const header =
+    <Title>{heading}</Title>
   return (
     <Dialog onKeyDown={onKeyPress} open={displayModal} fullWidth maxWidth={width}>
-      <Title>{heading}</Title>
+      {ButtonPosition == controlButtonPosition.TOP ? top: header}
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-        <DialogActions>
-          {buttons[switchButtonPlaces ? 1 : 0]}
-          {buttons[switchButtonPlaces ? 0 : 1]}
-          {isLoading && <CircularProgress size="1.5rem" />}
-          {onDelete && buttons[2]}
-        </DialogActions>
       </Content>
+      { ButtonPosition == controlButtonPosition.BOTTOM ? bottom:<></> }
     </Dialog>
   );
 };
@@ -108,6 +135,22 @@ export enum ModalWidth {
   MEDIUM = "sm",
   LARGE = "md"
 }
+ export enum controlButtonPosition {
+  TOP = "top",
+  BOTTOM = "bottom"
+}
+const HeadTitle = styled.div`
+  margin-top: 0.5rem;
+  display:flex;
+  padding: 0.5rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${colors.interactive.disabledBorder};
+`;
+const DialogAction = styled(DialogActions)`
+  padding: 0 0.5rem 0.5rem 0.5rem !important;
+  margin-top: 0! important;
+ `
 
 const Title = styled(DialogTitle)`
   border-bottom: 2px solid ${colors.interactive.disabledBorder};
@@ -120,7 +163,7 @@ const ErrorMessage = styled.div`
 `;
 
 const Content = styled(DialogContent)`
-  margin-top: 0.5em;
+  margin-top: 0.5em; 
 `;
 
 const Button = styled(MuiButton)<{ align?: string }>`

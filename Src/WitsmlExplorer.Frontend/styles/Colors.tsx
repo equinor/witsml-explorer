@@ -12,7 +12,8 @@ export const colors = {
     primaryHover: tokens.colors.interactive.primary__hover.hex,
     primaryResting: tokens.colors.interactive.primary__resting.hex,
     successResting: tokens.colors.interactive.success__resting.hex,
-    tableHeaderFillResting: tokens.colors.interactive.table__header__fill_resting.hex
+    tableHeaderFillResting: tokens.colors.interactive.table__header__fill_resting.hex,
+    successHover: tokens.colors.interactive.success__hover.hex,
   },
   text: {
     staticIconsDefault: tokens.colors.text.static_icons__default.hex,

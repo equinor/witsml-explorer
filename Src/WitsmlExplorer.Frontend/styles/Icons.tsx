@@ -17,7 +17,16 @@ import {
   paste,
   refresh,
   settings,
-  trending_up as isActive
+  trending_up as isActive,
+  filter_alt as filter,
+  save,
+  close,
+  cloud_download as cloudDownload,
+  person,
+  new_alert,
+  filter_alt_active as activeFilter,
+  done
+  
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
@@ -37,7 +46,15 @@ const icons = {
   folderOpen,
   deleteToTrash,
   moreVertical,
-  assignment
+  assignment,
+  filter,
+  save,
+  close,
+  cloudDownload,
+  person,
+  new_alert,
+  activeFilter,
+  done
 };
 
 Icon.add(icons);

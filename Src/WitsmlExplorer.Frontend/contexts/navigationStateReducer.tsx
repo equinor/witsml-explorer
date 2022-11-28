@@ -64,6 +64,8 @@ export interface NavigationState {
 export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
 export const selectedJobsFlag = "jobs";
+export const selectedManageServerFlag = "manageServer";
+export const listWellsFlag = "listWells";
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
@@ -154,6 +156,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return setCurveThreshold(state, action);
     case NavigationType.ShowCurveValues:
       return selectLogCurveInfo(state, action);
+    case NavigationType.SelectManageServer:
+      return selectManageServer(state);
     default:
       throw new Error();
   }
@@ -255,7 +259,9 @@ const addServer = (state: NavigationState, { payload }: AddServerAction) => {
   const { server } = payload;
   return {
     ...state,
-    servers: state.servers.concat([server])
+    servers: state.servers.concat([server]),
+    currentSelected:listWellsFlag,
+    selectedServer: server
   };
 };
 
@@ -648,12 +654,12 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
 
 const selectServer = (state: NavigationState, { payload }: SelectServerAction) => {
   const { server } = payload;
-  const alreadySelected = server.id === state.selectedServer?.id;
+  const alreadySelected = server ? server.id === state.selectedServer?.id : null;
   const expandedTreeNodes: string[] = [];
   return {
     ...state,
     ...allDeselected,
-    currentSelected: server,
+    currentSelected: alreadySelected ? listWellsFlag : server,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],
@@ -672,6 +678,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   const { wells } = payload;
   return {
     ...state,
+    currentSelected: listWellsFlag,
     wells: wells,
     filteredWells: filterWells(wells, state.selectedFilter)
   };
@@ -737,6 +744,16 @@ const selectJobs = (state: NavigationState) => {
     currentSelected: selectedJobsFlag
   };
 };
+
+const selectManageServer = (state: NavigationState) => {
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    currentSelected: selectedManageServerFlag
+  };
+};
+
 
 const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
   const { well, wellbore, bhaRunGroup } = payload;
@@ -987,7 +1004,7 @@ const setFilter = (state: NavigationState, { payload }: SetFilterAction) => {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
-    currentSelected: state.selectedServer,
+    currentSelected: listWellsFlag, //TODO while clicking active well checkbox shows manager server screen
     selectedFilter: filter,
     filteredWells
   };
@@ -1027,7 +1044,7 @@ interface Action {
 
 export interface SelectServerAction extends Action {
   type: NavigationType.SelectServer;
-  payload: { server: Server };
+  payload: { server: Server | null };
 }
 
 export interface AddServerAction extends Action {
@@ -1259,6 +1276,10 @@ export interface SetCurveThresholdAction extends Action {
   payload: { curveThreshold: CurveThreshold };
 }
 
+export interface SelectManageServerAction extends Action {
+  type: NavigationType.SelectManageServer;
+}
+
 export type NavigationAction =
   | AddServerAction
   | AddWellAction
@@ -1303,4 +1324,5 @@ export type NavigationAction =
   | SelectTubularGroupAction
   | SelectWbGeometryGroupAction
   | SetFilterAction
-  | SetCurveThresholdAction;
+  | SetCurveThresholdAction
+  | SelectManageServerAction;

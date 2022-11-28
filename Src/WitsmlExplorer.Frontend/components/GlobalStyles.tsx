@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import { AssetsLoader } from "./AssetsLoader";
+import { colors } from "../styles/Colors";
 
 const GlobalStyles = createGlobalStyle`
   @font-face {
@@ -32,6 +33,20 @@ const GlobalStyles = createGlobalStyle`
 *:after {
   box-sizing: border-box;
 }
+
+  ::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: ${colors.interactive.disabledBorder};
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 
   body {
     font-family: EquinorRegular, sans-serif;
@@ -70,7 +85,7 @@ const GlobalStyles = createGlobalStyle`
     font-family: EquinorRegular, sans-serif;
     font-size: 1em;
   }
-
+  
   .MuiListItem-container {
     .MuiListItemSecondaryAction-root {
       display: none;
@@ -82,6 +97,41 @@ const GlobalStyles = createGlobalStyle`
       }
     }
   }
+
+  //over riding  input numbers padding from mterial ui
+  .MuiFormControlLabel-label {
+    font-size: 0.9rem !important;
+    font-family: EquinorMedium  !important;
+  }
+
+  .MuiInputBase-input.MuiInput-input {
+    padding-bottom:0px;
+    border-bottom:2px solid #999999;
+  }
+
+  //overriding input checkbox default color
+  .MuiButtonBase-root.MuiIconButton-root{
+    color:#AAAAAA ;
+  }
+
+  // overriding treeview hover style from material ui
+  .MuiTreeItem-root.Mui-selected > .MuiTreeItem-content .MuiTreeItem-label {
+    background-color:transparent !important;
+  }
+
+  .MuiTreeItem-label:hover{
+    background-color:transparent !important;
+  }
+
+  .ListWells {
+    &:hover{
+       background-color:${colors.ui.backgroundLight}
+    }
+   
+  }
+  //text field global
+  .MuiTextField-root {
+    margin:1rem;
 `;
 
 export default GlobalStyles;

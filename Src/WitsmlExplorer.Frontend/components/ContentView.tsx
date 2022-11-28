@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
-import { selectedJobsFlag } from "../contexts/navigationStateReducer";
+import { listWellsFlag, selectedJobsFlag , selectedManageServerFlag} from "../contexts/navigationStateReducer";
+import OperationContext from "../contexts/operationContext";
+import { emptyServer, Server } from "../models/server";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import JobsView from "./ContentViews/JobsView";
@@ -19,9 +21,12 @@ import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
+import ServerModal, { ServerModalProps } from "./Modals/ServerModal";
+import ServerManager from "./Sidebar/ServerManager";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
   const {
     selectedWell,
     selectedWellbore,
@@ -42,13 +47,18 @@ const ContentView = (): React.ReactElement => {
     currentSelected
   } = navigationState;
   const [view, setView] = useState(<WellsListView />);
-
+  const { dispatchOperation } = useContext(OperationContext);
   useEffect(() => {
     if (currentSelected === null) {
-      setView(<></>);
+      const server: Server = emptyServer()
+      const standalone: boolean = true;
+      const props: ServerModalProps = { server, dispatchNavigation, dispatchOperation , standalone }
+      setView(<ServerModal {...props}/>)
     } else {
-      if (currentSelected === selectedServer) {
-        setView(<WellsListView />);
+      if(currentSelected == listWellsFlag) {
+        setView(<WellsListView />)
+      } else if (currentSelected === selectedServer) {
+        setView(<ServerManager />);
       } else if (currentSelected === selectedWell) {
         setView(<WellboresListView />);
       } else if (currentSelected === selectedWellbore) {
@@ -81,6 +91,8 @@ const ContentView = (): React.ReactElement => {
         setView(<WbGeometrysListView />);
       } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
+      } else if (currentSelected === selectedManageServerFlag) {
+        setView(<ServerManager />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

@@ -1,6 +1,6 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { UserTheme } from "../contexts/operationStateReducer";
@@ -10,8 +10,12 @@ import CredentialsService from "../services/credentialsService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import JobsButton from "./JobsButton";
+import { colors } from "../styles/Colors";
+import { Server } from "../models/server";
+import ManageServerButton from "./ManageServerButton";
 
 const TopRightCornerMenu = (): React.ReactElement => {
+  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
   const {
     operationState: { theme },
     dispatchOperation
@@ -23,6 +27,15 @@ const TopRightCornerMenu = (): React.ReactElement => {
       localStorageTheme = (localStorage.getItem("selectedTheme") as UserTheme) ?? theme;
       dispatchOperation({ type: OperationType.SetTheme, payload: localStorageTheme });
     }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
+      setLoginState({ isLoggedIn: credentialState.hasPassword, username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    });
+    return () => {
+      unsubscribeFromCredentialsEvents();
+    };
   }, []);
 
   const onSelectTheme = (selectedTheme: UserTheme) => {
@@ -74,6 +87,13 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
+      { currentWitsmlLoginState.username && 
+      <Button variant="ghost">
+        <Icon name="person" color={colors.text.staticIconsTertiary}/>
+        { currentWitsmlLoginState.username } 
+      </Button> 
+      }
+      <ManageServerButton />
       <JobsButton />
       <Button variant="ghost" onClick={(event) => onOpenMenu(event, themeMenu)}>
         <Icon name="accessible" />
@@ -94,7 +114,7 @@ const Layout = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   padding-right: 1rem;
-  width: 20rem;
+  width: auto;
 `;
 
 const SelectTypography = styled(Typography)<{ selected: boolean }>`

@@ -20,7 +20,8 @@ enum NavigationType {
   SelectWbGeometryGroup = "SelectWbGeometryGroup",
   SetFilter = "SetFilter",
   SetCurveThreshold = "SetCurveThreshold",
-  ShowCurveValues = "ShowCurveValues"
+  ShowCurveValues = "ShowCurveValues",
+  SelectManageServer = "SelectManageServer"
 }
 
 export default NavigationType;
