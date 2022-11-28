@@ -1,15 +1,17 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UpdateWellboreBhaRunsAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import BhaRunService from "../../services/bhaRunService";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -24,12 +26,26 @@ export interface BhaRunPropertiesModalProps {
 
 const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactElement => {
   const { mode, bhaRun, dispatchOperation, dispatchNavigation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
-    setEditableBhaRun(bhaRun);
+    setEditableBhaRun({
+      ...bhaRun,
+      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone) : null,
+      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone) : null,
+      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone) : null,
+      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone) : null,
+      commonData: {
+        ...bhaRun.commonData,
+        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone) : null,
+        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone) : null
+      }
+    });
   }, [bhaRun]);
 
   const onSubmit = async (updatedBhaRun: BhaRun) => {
@@ -92,53 +108,29 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 fullWidth
                 onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubularUidRef: e.target.value })}
               />
-              <TextField
-                id="dTimStart"
+              <DateTimeField
+                value={editableBhaRun.dTimStart}
                 label="dTimStart"
-                type="datetime-local"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true
-                }}
-                disabled={!editableBhaRun.dTimStart}
-                value={editableBhaRun.dTimStart ? moment(editableBhaRun.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStart: e.target.value })}
+                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStart: dateTime })}
+                timeZone={timeZone}
               />
-              <TextField
-                id={"dTimStop"}
-                label={"dTimStop"}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                disabled={!editableBhaRun.dTimStop}
-                value={editableBhaRun.dTimStop ? moment(editableBhaRun.dTimStop).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStop: e.target.value })}
+              <DateTimeField
+                value={editableBhaRun.dTimStop}
+                label="dTimStop"
+                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStop: dateTime })}
+                timeZone={timeZone}
               />
-              <TextField
-                id="dTimStartDrilling"
+              <DateTimeField
+                value={editableBhaRun.dTimStartDrilling}
                 label="dTimStartDrilling"
-                type="datetime-local"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true
-                }}
-                disabled={!editableBhaRun.dTimStartDrilling}
-                value={editableBhaRun.dTimStartDrilling ? moment(editableBhaRun.dTimStartDrilling).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: e.target.value })}
+                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: dateTime })}
+                timeZone={timeZone}
               />
-              <TextField
-                id={"dTimStopDrilling"}
-                label={"dTimStopDrilling"}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                disabled={!editableBhaRun.dTimStopDrilling}
-                value={editableBhaRun.dTimStopDrilling ? moment(editableBhaRun.dTimStopDrilling).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: e.target.value })}
+              <DateTimeField
+                value={editableBhaRun.dTimStopDrilling}
+                label="dTimStopDrilling"
+                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: dateTime })}
+                timeZone={timeZone}
               />
               <TextField
                 id={"planDogleg"}
