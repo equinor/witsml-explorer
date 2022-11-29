@@ -61,6 +61,16 @@ it("Should invalidate bad days", () => {
   expect(actual).toEqual(false);
 });
 
+it("Should invalidate bad leap year", () => {
+  const actual = validateIsoDateString("2022-02-29T00:00:00.000+02:00");
+  expect(actual).toEqual(false);
+});
+
+it("Should validate good leap year", () => {
+  const actual = validateIsoDateString("2020-02-29T00:00:00.000+02:00");
+  expect(actual).toEqual(true);
+});
+
 it("Should invalidate bad month", () => {
   const actual = validateIsoDateString("2022-13-01T01:00:00.000+02:00");
   expect(actual).toEqual(false);
@@ -74,4 +84,14 @@ it("Should validate string with Z", () => {
 it("Should validate string with +00:00", () => {
   const actual = validateIsoDateString("2022-12-01T01:00:00.000+00:00");
   expect(actual).toEqual(true);
+});
+
+it("Should invalidate a string with bad negative offset", () => {
+  const actual = validateIsoDateString("2022-11-17T13:54:17.000-25:00");
+  expect(actual).toEqual(false);
+});
+
+it("Should invalidate a string with bad positive offset", () => {
+  const actual = validateIsoDateString("2022-11-17T13:54:17.000+25:00");
+  expect(actual).toEqual(false);
 });

@@ -25,6 +25,7 @@ interface DateTimeFieldProps {
 export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => {
   const { value, label, updateObject, timeZone } = props;
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
+  const isFirefox = navigator.userAgent.includes("Firefox");
 
   useEffect(() => {
     setInitiallyEmpty(value == null || value === "");
@@ -59,12 +60,13 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
         id={label + "picker"}
         placeholder=""
         label=""
-        type="datetime-local"
+        value=""
+        type={isFirefox ? "date" : "datetime-local"}
         style={{ width: "44px" }}
         tabIndex={-1} //disable tab focus due to the native datepicker including multiple invisible fields that are not to be used
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-          // preserve the :mm:ss.SSSXXX part of the original value that the datepicker does not set
-          const slice = value.slice(16);
+          // preserve the ss.SSSXXX (and also HH:mm for Firefox) part of the original value that the datepicker does not set
+          const slice = isFirefox ? value.slice(10) : value.slice(16);
           const toFormat = e.target.value + slice;
           const formatted = formatDateString(toFormat, timeZone);
           updateObject(formatted);
