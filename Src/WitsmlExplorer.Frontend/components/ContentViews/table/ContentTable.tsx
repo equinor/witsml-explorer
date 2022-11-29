@@ -182,6 +182,7 @@ const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: str
   ${({ type }) =>
     type === ContentType.DateTime &&
     `
+    font-feature-settings: "tnum";
     white-space: nowrap;
   `};
 `;

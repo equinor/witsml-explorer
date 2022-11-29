@@ -7,8 +7,8 @@ export default interface Well {
   operator: string;
   country: string;
   timeZone?: string;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
+  dateTimeCreation?: string;
+  dateTimeLastChange?: string;
   itemState?: string;
   wellbores?: Wellbore[];
 }
@@ -21,8 +21,8 @@ export function emptyWell(): Well {
     operator: "",
     country: "",
     timeZone: "",
-    dateTimeCreation: null,
-    dateTimeLastChange: null,
+    dateTimeCreation: "",
+    dateTimeLastChange: "",
     itemState: "",
     wellbores: []
   };
