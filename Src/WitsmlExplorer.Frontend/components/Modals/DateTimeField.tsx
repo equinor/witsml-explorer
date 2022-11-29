@@ -65,9 +65,12 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
         style={{ width: "44px" }}
         tabIndex={-1} //disable tab focus due to the native datepicker including multiple invisible fields that are not to be used
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-          // preserve the ss.SSSXXX (and also HH:mm for Firefox) part of the original value that the datepicker does not set
-          const slice = isFirefox ? value.slice(10) : value.slice(16);
-          const toFormat = e.target.value + slice;
+          let toFormat = e.target.value;
+          if (validateIsoDateString(value)) {
+            // preserve the ss.SSSXXX (and also HH:mm for Firefox) part of the original value that the datepicker does not set
+            const slice = isFirefox ? value.slice(10) : value.slice(16);
+            toFormat += slice;
+          }
           const formatted = formatDateString(toFormat, timeZone);
           updateObject(formatted);
         }}
