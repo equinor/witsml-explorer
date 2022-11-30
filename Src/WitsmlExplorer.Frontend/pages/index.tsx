@@ -31,7 +31,7 @@ const Home = (): React.ReactElement => {
         console.log("Service Worker Registered");
       });
     }
-  });
+  }, []);
 
   return (
     <MsalProvider instance={msalInstance}>

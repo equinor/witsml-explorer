@@ -1,7 +1,7 @@
 const CACHE_NAME = "WITSMLPWA";
 
 // Add whichever assets you want to precache here:
-const PRECACHE_ASSETS = ["/favicon.ico"];
+const PRECACHE_ASSETS = ["/favicon.ico", "/"];
 
 // Listener for the install event - precaches our assets list on service worker install.
 self.addEventListener("install", (event) => {
