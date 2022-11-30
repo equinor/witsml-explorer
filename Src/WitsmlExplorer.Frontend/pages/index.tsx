@@ -35,6 +35,7 @@ const Home = (): React.ReactElement => {
             <Head>
               <title>WITSML Explorer</title>
               <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+              <link rel="manifest" href={AssetsLoader.getAssetsRoot() + "/manifest.webmanifest"} />
             </Head>
             <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
               <Routing />
