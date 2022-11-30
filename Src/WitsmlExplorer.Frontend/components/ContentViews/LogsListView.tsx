@@ -10,7 +10,9 @@ import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface LogObjectRow extends ContentTableRow, LogObject {}
+export interface LogObjectRow extends ContentTableRow, LogObject {
+  logObject: LogObject;
+}
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -34,7 +36,13 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogObjectRows: LogObjectRow[]) => {
-    const contextProps: LogObjectContextMenuProps = { checkedLogObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: LogObjectContextMenuProps = {
+      checkedLogObjects: checkedLogObjectRows.map((row) => row.logObject),
+      dispatchNavigation,
+      dispatchOperation,
+      selectedServer,
+      servers
+    };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
@@ -45,7 +53,8 @@ export const LogsListView = (): React.ReactElement => {
         ...log,
         id: log.uid,
         startIndex: selectedWellbore && getType() == ContentType.DateTime ? formatDateString(log.startIndex, timeZone) : log.startIndex,
-        endIndex: selectedWellbore && getType() == ContentType.DateTime ? formatDateString(log.endIndex, timeZone) : log.endIndex
+        endIndex: selectedWellbore && getType() == ContentType.DateTime ? formatDateString(log.endIndex, timeZone) : log.endIndex,
+        log: log
       };
     });
   };
@@ -59,10 +68,10 @@ export const LogsListView = (): React.ReactElement => {
     { property: "uid", label: "UID", type: ContentType.String }
   ];
 
-  const onSelect = (log: any) => {
+  const onSelect = (log: LogObjectRow) => {
     dispatchNavigation({
       type: NavigationType.SelectLogObject,
-      payload: { log, well: selectedWell, wellbore: selectedWellbore }
+      payload: { log: log.logObject, well: selectedWell, wellbore: selectedWellbore }
     });
   };
 
