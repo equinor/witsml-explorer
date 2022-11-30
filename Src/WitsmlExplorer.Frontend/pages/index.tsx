@@ -25,6 +25,14 @@ const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
+  React.useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then(() => {
+        console.log("Service Worker Registered");
+      });
+    }
+  });
+
   return (
     <MsalProvider instance={msalInstance}>
       {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}

@@ -4,5 +4,15 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#fff",
-  "description": "Witsml Explorer data management tool."
+  "description": "Witsml Explorer data management tool.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48"
+    },
+    {
+      "src": "pwa-images/144.png",
+      "sizes": "144x144"
+    }
+  ]
 }
