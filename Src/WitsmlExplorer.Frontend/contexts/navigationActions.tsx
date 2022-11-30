@@ -78,10 +78,6 @@ export interface SelectMessageGroupAction extends Action {
   payload: { well: Well; wellbore: Wellbore; messageGroup: any };
 }
 
-export interface SelectMessageObjectAction extends Action {
-  type: NavigationType.SelectMessageObject;
-  payload: { message: MessageObject; well: Well; wellbore: Wellbore };
-}
 export interface SelectRiskGroupAction extends Action {
   type: NavigationType.SelectRiskGroup;
   payload: { well: Well; wellbore: Wellbore; riskGroup: any };

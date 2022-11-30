@@ -279,12 +279,10 @@ const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellbo
   const { wells } = state;
   const { message } = payload;
   const updatedWells = insertLogIntoWellsStructure(wells, message);
-  const selectedMessage = state.selectedMessage?.uid === message.uid ? message : state.selectedMessage;
   return {
     ...state,
     wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedMessage
+    filteredWells: filterWells(updatedWells, state.selectedFilter)
   };
 };
 

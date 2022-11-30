@@ -12,7 +12,7 @@ import { RigRow } from "../ContentViews/RigsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -54,9 +54,9 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           </ListItemIcon>
           <Typography color="primary">{menuItemText("delete", "rig", rigs)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedRigRows.length !== 1}>
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, checkedRigRows[0], "rigUid")} disabled={checkedRigRows.length !== 1}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "rigGroupUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

@@ -5,7 +5,8 @@ namespace Witsml.ServiceReference
 {
     public record OptionsIn(
         ReturnElements ReturnElements,
-        int? MaxReturnNodes = null)
+        int? MaxReturnNodes = null,
+        int? RequestLatestValues = null)
     {
         public string GetKeywords()
         {
@@ -14,6 +15,10 @@ namespace Witsml.ServiceReference
             if (MaxReturnNodes is > 0)
             {
                 keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+            }
+            if (RequestLatestValues is > 0)
+            {
+                keywords.Append($";requestLatestValues={RequestLatestValues.Value}");
             }
 
             return keywords.ToString();

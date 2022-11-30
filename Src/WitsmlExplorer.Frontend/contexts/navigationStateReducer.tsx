@@ -26,7 +26,6 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
-  SelectMessageObjectAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -81,8 +80,6 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectLogObject(state, action);
     case NavigationType.SelectMessageGroup:
       return selectMessageGroup(state, action);
-    case NavigationType.SelectMessageObject:
-      return selectMessageObject(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
     case NavigationType.SelectRigGroup:
@@ -305,27 +302,6 @@ const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGr
     currentSelected: messageGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMessageGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
-  };
-};
-
-const selectMessageObject = (state: NavigationState, { payload }: SelectMessageObjectAction) => {
-  const { message, well, wellbore } = payload;
-  let expandedTreeNodes = state.expandedTreeNodes;
-
-  const messageGroup = calculateMessageGroupId(wellbore);
-  const shouldExpandLogGroup = shouldExpand(expandedTreeNodes, messageGroup, calculateWellboreNodeId(wellbore));
-  expandedTreeNodes = shouldExpandLogGroup ? toggleTreeNode(expandedTreeNodes, messageGroup) : expandedTreeNodes;
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
-    selectedMessageGroup: messageGroup,
-    selectedMessage: message,
-    currentSelected: message,
-    currentProperties: getObjectOnWellboreProperties(message, ObjectType.Message),
-    expandedTreeNodes
   };
 };
 

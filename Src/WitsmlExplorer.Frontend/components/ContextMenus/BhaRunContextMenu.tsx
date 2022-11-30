@@ -13,7 +13,7 @@ import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -79,9 +79,9 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedBhaRunRows.length !== 1}>
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(dispatchOperation, server, checkedBhaRunRows[0], "bhaRunUid")} disabled={checkedBhaRunRows.length !== 1}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "bhaRunGroupUid")}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

@@ -12,7 +12,7 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -58,7 +58,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedWbGeometryObjects[0], "wbGeometryUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedWbGeometryObjects[0], "wbGeometryUid")}
               disabled={checkedWbGeometryObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

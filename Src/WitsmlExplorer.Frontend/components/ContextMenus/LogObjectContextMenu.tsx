@@ -20,7 +20,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import { onClickCompareLogToServer } from "./CompareLogToServer";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowOnServer } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
 import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -151,7 +151,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowOnServer(dispatchOperation, server, checkedLogObjects[0], "logObjectUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], "logObjectUid")}
               disabled={checkedLogObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

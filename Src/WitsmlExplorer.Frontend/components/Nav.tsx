@@ -7,7 +7,6 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
-  SelectMessageObjectAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -23,7 +22,6 @@ import {
 import NavigationContext, { Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
-import MessageObject from "../models/messageObject";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
@@ -42,7 +40,6 @@ const Nav = (): React.ReactElement => {
     selectedLogGroup,
     selectedLogTypeGroup,
     selectedLog,
-    selectedMessage,
     selectedMessageGroup,
     selectedRiskGroup,
     selectedRigGroup,
@@ -67,7 +64,6 @@ const Nav = (): React.ReactElement => {
       getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
-      getMessageCrumbs(selectedMessage, selectedWell, selectedWellbore, dispatchNavigation),
       getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
@@ -168,22 +164,6 @@ const getMessageGroupCrumb = (selectedMessageGroup: string, selectedWell: Well, 
     : {};
 };
 
-const getMessageCrumbs = (selectedMessage: MessageObject, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMessageObjectAction) => void) => {
-  return selectedMessage?.name
-    ? {
-        name: selectedMessage.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectMessageObject,
-            payload: {
-              well: selectedWell,
-              wellbore: selectedWellbore,
-              message: selectedMessage
-            }
-          })
-      }
-    : {};
-};
 const getRiskGroupCrumb = (selectedRiskGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectRiskGroupAction) => void) => {
   return selectedRiskGroup
     ? {
