@@ -1,13 +1,14 @@
 import { TextField } from "@material-ui/core";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import MenuItem from "@material-ui/core/MenuItem";
-import moment from "moment";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -21,9 +22,13 @@ const purposeValues = ["appraisal", "development", "exploration", "fluid storage
 
 const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.ReactElement => {
   const { mode, wellbore, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableWellbore, setEditableWellbore] = useState<Wellbore>(null);
   const [pristineWellbore, setPristineWellbore] = useState<Wellbore>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dTimeKickoffValid, setDTimeKickoffValid] = useState<boolean>(true);
   const editMode = mode === PropertiesModalMode.Edit;
 
   const onSubmit = async (updatedWellbore: Wellbore) => {
@@ -103,27 +108,22 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       onChange={(e) => setEditableWellbore({ ...editableWellbore, suffixAPI: e.target.value })}
                     />
                   </Container>
-                  <Container>
-                    <TextField
-                      id={"numGovt"}
-                      label={"num govt"}
-                      value={editableWellbore.numGovt}
-                      fullWidth
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore, numGovt: e.target.value })}
-                    />
-                    <TextField
-                      id={"dTimeKickoff"}
-                      label={"datetime kickoff"}
-                      fullWidth
-                      type="datetime-local"
-                      InputLabelProps={{
-                        shrink: true
-                      }}
-                      disabled={!editableWellbore.dTimeKickoff}
-                      value={editableWellbore.dTimeKickoff ? moment(editableWellbore.dTimeKickoff).format("YYYY-MM-DDTHH:MM") : undefined}
-                      onChange={(e) => setEditableWellbore({ ...editableWellbore, dTimeKickoff: new Date(e.target.value) })}
-                    />
-                  </Container>
+                  <TextField
+                    id={"numGovt"}
+                    label={"num govt"}
+                    value={editableWellbore.numGovt}
+                    fullWidth
+                    onChange={(e) => setEditableWellbore({ ...editableWellbore, numGovt: e.target.value })}
+                  />
+                  <DateTimeField
+                    value={editableWellbore.dTimeKickoff}
+                    label="dTimeKickoff"
+                    updateObject={(dateTime: string, valid: boolean) => {
+                      setEditableWellbore({ ...editableWellbore, dTimeKickoff: dateTime });
+                      setDTimeKickoffValid(valid);
+                    }}
+                    timeZone={timeZone}
+                  />
                   <Container>
                     <TextField
                       id={"md"}
@@ -289,7 +289,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
               )}
             </>
           }
-          confirmDisabled={!validText(editableWellbore.uid) || !validText(editableWellbore.name) || !wellboreHasChanges(pristineWellbore, editableWellbore)}
+          confirmDisabled={!validText(editableWellbore.uid) || !validText(editableWellbore.name) || !dTimeKickoffValid || !wellboreHasChanges(pristineWellbore, editableWellbore)}
           onSubmit={() => onSubmit(editableWellbore)}
           isLoading={isLoading}
         />
