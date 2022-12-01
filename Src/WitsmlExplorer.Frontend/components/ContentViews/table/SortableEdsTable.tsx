@@ -100,7 +100,7 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
   return (
     <Table>
       <Table.Caption>{caption}</Table.Caption>
-      <Table.Head>
+      <Table.Head sticky>
         <Table.Row>
           {state.columns.map((col) => (
             <SortCell sort={col.sortDirection} key={`head-${col.accessor}`} onClick={col.sortDirection ? () => onSortClick(col) : undefined} isSorted={col.isSorted}>
@@ -111,8 +111,8 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
         </Table.Row>
       </Table.Head>
       <Table.Body>
-        {state.cellValues?.map((row) => (
-          <Table.Row key={row.toString()}>
+        {state.cellValues?.map((row, index) => (
+          <Table.Row key={index}>
             {row.map((cellValue, i) => (
               <Table.Cell key={i}>{cellValue}</Table.Cell>
             ))}

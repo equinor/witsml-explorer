@@ -1,5 +1,5 @@
-import { Button, Popover, TextField, Typography } from "@equinor/eds-core-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Accordion, List, TextField, Typography } from "@equinor/eds-core-react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -7,12 +7,11 @@ import LogObject from "../../models/logObject";
 import { Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
-import Icon from "../../styles/Icons";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import { displayMissingLogModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import { calculateMismatchedIndexes, Indexes } from "./LogComparisonUtils";
+import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface LogComparisonModalProps {
@@ -82,14 +81,31 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   const data = useMemo(
     () =>
       indexesToShow?.map((indexes) => {
-        const startDifferent = indexes.sourceStart != indexes.targetStart;
-        const endDifferent = indexes.sourceEnd != indexes.targetEnd;
+        const [markedSourceStart, markedTargetStart] =
+          sourceType == "depth"
+            ? markNumberDifferences(Number(indexes.sourceStart).toFixed(4), Number(indexes.targetStart).toFixed(4))
+            : markDateTimeStringDifferences(indexes.sourceStart as string, indexes.targetStart as string);
+        const [markedSourceEnd, markedTargetEnd] =
+          sourceType == "depth"
+            ? markNumberDifferences(Number(indexes.sourceEnd).toFixed(4), Number(indexes.targetEnd).toFixed(4))
+            : markDateTimeStringDifferences(indexes.sourceEnd as string, indexes.targetEnd as string);
         return {
-          ...indexes,
-          sourceStartValue: startDifferent ? <b>{indexes.sourceStart}</b> : indexes.sourceStart,
-          targetStartValue: startDifferent ? <b>{indexes.targetStart}</b> : indexes.targetStart,
-          sourceEndValue: endDifferent ? <b>{indexes.sourceEnd} </b> : indexes.sourceEnd,
-          targetEndValue: endDifferent ? <b>{indexes.targetEnd}</b> : indexes.targetEnd
+          mnemonic: indexes.mnemonic,
+          startIndexes: indexes.sourceStart,
+          endIndexes: indexes.sourceEnd,
+          mnemonicValue: <Typography>{indexes.mnemonic}</Typography>,
+          startIndexesValue: (
+            <TableCell type={sourceType}>
+              <Typography>{markedSourceStart}</Typography>
+              <Typography>{markedTargetStart}</Typography>
+            </TableCell>
+          ),
+          endIndexesValue: (
+            <TableCell type={sourceType}>
+              <Typography>{markedSourceEnd}</Typography>
+              <Typography>{markedTargetEnd}</Typography>
+            </TableCell>
+          )
         };
       }),
     [indexesToShow]
@@ -98,15 +114,47 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   return (
     <ModalDialog
       heading={`Log comparison`}
+      onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
+      confirmColor={"primary"}
+      confirmText={`OK`}
+      showCancelButton={false}
+      width={ModalWidth.LARGE}
+      isLoading={false}
       content={
         <ModalContentLayout>
           {(indexesToShow && (
             <>
-              <TextField readOnly id="wellName" label="Well Name" defaultValue={sourceLog.wellName} />
-              <TextField readOnly id="wellboreName" label="Wellbore Name" defaultValue={sourceLog.wellboreName} />
-              <TextField readOnly id="name" label="Log Name" defaultValue={sourceLog.name} />
-              <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
-              <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
+              <LabelsLayout>
+                <TextField readOnly id="wellName" label="Well Name" defaultValue={sourceLog.wellName} />
+                <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
+                <TextField readOnly id="wellboreName" label="Wellbore Name" defaultValue={sourceLog.wellboreName} />
+                <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
+                <TextField readOnly id="name" label="Log" defaultValue={sourceLog.name + (sourceLog.runNumber == null ? "" : ` (${sourceLog.runNumber})`)} />
+              </LabelsLayout>
+              <Accordion>
+                <Accordion.Item>
+                  <Accordion.Header>How are the logs compared?</Accordion.Header>
+                  <Accordion.Panel>
+                    <List>
+                      <List.Item>
+                        The logs are compared based on the <b>logCurveInfo</b> elements, and does not check the actual <b>logData</b> element.
+                      </List.Item>
+                      <List.Item>The table shows only the mnemonics where the indexes do not match, mnemonics that have equal index values are not shown.</List.Item>
+                      <List.Item>Mnemonics that are found in only one of the logs are also included.</List.Item>
+                      <List.Item>
+                        Some mnemonics are shown with a dash (“-”) index value, this is caused by one of two reasons:
+                        <List>
+                          <List.Item>The mnemonic is missing</List.Item>
+                          <List.Item>
+                            The mnemonic has a <b>logCurveInfo</b> element, but the index is empty.
+                          </List.Item>
+                        </List>
+                      </List.Item>
+                      <List.Item>Differing index values are highlighted with bold text.</List.Item>
+                    </List>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Accordion>
               {!indexTypesMatch && (
                 <span>
                   Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
@@ -114,7 +162,15 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
               )}
               {indexesToShow.length != 0 && data && (
                 <TableLayout>
-                  <SortableEdsTable caption={<Caption />} columns={columns} data={data} />
+                  <SortableEdsTable
+                    columns={columns}
+                    data={data}
+                    caption={
+                      <StyledTypography variant="h5">
+                        <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
+                      </StyledTypography>
+                    }
+                  />
                 </TableLayout>
               )}
               {indexesToShow.length == 0 && indexTypesMatch && (
@@ -126,50 +182,33 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
           )) || <ProgressSpinner message="Fetching source and target log curve infos." />}
         </ModalContentLayout>
       }
-      onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
-      confirmColor={"primary"}
-      confirmText={`OK`}
-      showCancelButton={false}
-      width={ModalWidth.LARGE}
-      isLoading={false}
     />
   );
 };
 
 const columns: Column[] = [
   { name: "Curve mnemonic", accessor: "mnemonic", sortDirection: "ascending" },
-  { name: "Source start", accessor: "sourceStart" },
-  { name: "Target start", accessor: "targetStart" },
-  { name: "Source end", accessor: "sourceEnd" },
-  { name: "Target end", accessor: "targetEnd" }
+  { name: "Source/target start", accessor: "startIndexes" },
+  { name: "Source/target end", accessor: "endIndexes" }
 ];
 
-const Caption = (): React.ReactElement => {
-  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
-  const anchorRef = useRef<HTMLButtonElement>(null);
+const LabelsLayout = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.8rem;
+`;
 
-  return (
-    <StyledTypography variant="h5">
-      <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
-      <Popover anchorEl={anchorRef.current} onClose={() => setIsPopoverOpen(false)} open={isPopoverOpen} placement="top">
-        <Popover.Content>
-          <Typography variant="body_short">
-            {"The following comparison is based on the logCurveInfo elements and does not look at the logData element itself. " +
-              "The table shows only the mnemonics where the indexes do not match. " +
-              "Mnemonics that are found in only one of the logs are also included. " +
-              "Missing mnemonics are indicated by dashes as their index values. " +
-              "Mnemonics that have a logCurveInfo element but have empty indexes are specifed as undefined. " +
-              "Mnemonics that have equal index values are not shown. " +
-              "Differing index values are shown in bold."}
-          </Typography>
-        </Popover.Content>
-      </Popover>
-      <Button variant="ghost_icon" onClick={() => setIsPopoverOpen(true)} ref={anchorRef}>
-        <Icon name="infoCircle" />
-      </Button>
-    </StyledTypography>
-  );
-};
+const TableCell = styled.div<{ type?: string }>`
+  font-feature-settings: "tnum";
+  p {
+    text-align: ${({ type }) => (type == "depth" ? "right" : "left")};
+  }
+  mark {
+    background: #e6faec;
+    background-blend-mode: darken;
+    font-weight: 600;
+  }
+`;
 
 const TableLayout = styled.div`
   display: flex;
@@ -177,9 +216,6 @@ const TableLayout = styled.div`
 `;
 
 const StyledTypography = styled(Typography)`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  padding: 1rem 0 1rem 0;
 `;
-
 export default LogComparisonModal;
