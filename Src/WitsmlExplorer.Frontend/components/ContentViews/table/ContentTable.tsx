@@ -1,11 +1,9 @@
 import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
-import Moment from "react-moment";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
-import { DateFormat } from "../../Constants";
 import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
@@ -123,20 +121,10 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
 
 export const formatCell = (type: ContentType, data: string | boolean) => {
   switch (type) {
-    case ContentType.Date:
-      return formatDate(data as unknown as Date, DateFormat.DATE);
     case ContentType.Icon:
       return data && <Icon name="isActive" />;
     default:
       return data;
-  }
-};
-
-const formatDate = (date: Date, format: string) => {
-  if (date) {
-    return <Moment format={format} date={date} />;
-  } else {
-    return "";
   }
 };
 
