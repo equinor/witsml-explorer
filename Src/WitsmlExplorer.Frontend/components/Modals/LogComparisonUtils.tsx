@@ -133,5 +133,5 @@ export function markDateTimeStringDifferences(string1: string, string2: string):
 function splitDateTimeString(dateTime: string) {
   //split an ISO 8601 string into groups that should be marked together
   //the regex includes separators in the result to simplify putting the string back together
-  return dateTime.split(/(?=[:T.-Z])|(?<=[:T.-Z])/g);
+  return dateTime.split(/(?=[:T.\-Z])|(?<=[:T.\-Z])/g);
 }
