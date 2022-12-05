@@ -3,6 +3,7 @@ import { TimeZone } from "../contexts/operationStateReducer";
 
 //https://date-fns.org/v2.29.3/docs/format
 const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
 // Minus character U+2212 is preferred by ISO 8601 over hyphen minus '-' so we check both
 // date-fns-tz behaves weirdly with minus so we replace it
@@ -36,7 +37,7 @@ export function getOffsetFromTimeZone(timeZone: TimeZone): string {
   return formatInTimeZone(new Date(), timeZone, "xxx");
 }
 
-function getOffset(dateString: string): string | null {
+export function getOffset(dateString: string): string | null {
   if (dateString.indexOf("Z") == dateString.length - 1) {
     return "Z";
   }
@@ -69,6 +70,16 @@ export function validateIsoDateString(dateString: string): boolean {
     const parsed = toDate(replaced);
     const formatted = formatInTimeZone(parsed, offset, dateTimeFormat);
     return replaced == formatted;
+  } catch {
+    return false;
+  }
+}
+
+export function validateIsoDateStringNoOffset(dateString: string, offset: string): boolean {
+  try {
+    const parsed = toDate(dateString + offset);
+    const formatted = formatInTimeZone(parsed, offset, dateTimeFormatNoOffset);
+    return dateString == formatted;
   } catch {
     return false;
   }

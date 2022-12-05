@@ -1,4 +1,3 @@
-import moment, { Moment } from "moment";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { UpdateWellboreLogsAction } from "../../../contexts/modificationActions";
@@ -26,8 +25,8 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
   const { dispatchNavigation, dispatchOperation, logObject } = props;
   const [log] = useState<LogObject>(logObject);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [startIndex, setStartIndex] = useState<Moment | number>();
-  const [endIndex, setEndIndex] = useState<Moment | number>();
+  const [startIndex, setStartIndex] = useState<string | number>();
+  const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
 
   const onSubmit = async (updatedLog: LogObject) => {
@@ -65,8 +64,8 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
             <>
               {log.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
                 <AdjustDateTimeModal
-                  minDate={moment(log.startIndex)}
-                  maxDate={moment(log.endIndex)}
+                  minDate={log.startIndex}
+                  maxDate={log.endIndex}
                   onStartDateChanged={setStartIndex}
                   onEndDateChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
@@ -101,13 +100,6 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
 const indexToNumber = (index: string): number => {
   return Number(index.replace(/[^\d.-]/g, ""));
 };
-
-export interface TrimProps {
-  logObject: LogObject;
-  onStartIndexChanged: (value: Moment | string) => void;
-  onEndIndexChanged: (value: Moment | string) => void;
-  onValidChange: (isValid: boolean) => void;
-}
 
 const Warning = styled.div`
   border: 1px solid ${colors.interactive.dangerResting};
