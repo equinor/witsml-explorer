@@ -30,6 +30,10 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
+  const [dTimStartValid, setDTimStartValid] = useState<boolean>(true);
+  const [dTimStopValid, setDTimStopValid] = useState<boolean>(true);
+  const [dTimStartDrillingValid, setDTimStartDrillingValid] = useState<boolean>(true);
+  const [dTimStopDrillingValid, setDTimStopDrillingValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
 
@@ -111,25 +115,37 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               <DateTimeField
                 value={editableBhaRun.dTimStart}
                 label="dTimStart"
-                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStart: dateTime })}
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableBhaRun({ ...editableBhaRun, dTimStart: dateTime });
+                  setDTimStartValid(valid);
+                }}
                 timeZone={timeZone}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStop}
                 label="dTimStop"
-                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStop: dateTime })}
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableBhaRun({ ...editableBhaRun, dTimStop: dateTime });
+                  setDTimStopValid(valid);
+                }}
                 timeZone={timeZone}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStartDrilling}
                 label="dTimStartDrilling"
-                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: dateTime })}
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableBhaRun({ ...editableBhaRun, dTimStartDrilling: dateTime });
+                  setDTimStartDrillingValid(valid);
+                }}
                 timeZone={timeZone}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStopDrilling}
                 label="dTimStopDrilling"
-                updateObject={(dateTime: string) => setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: dateTime })}
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableBhaRun({ ...editableBhaRun, dTimStopDrilling: dateTime });
+                  setDTimStopDrillingValid(valid);
+                }}
                 timeZone={timeZone}
               />
               <TextField
@@ -275,7 +291,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
               />
             </>
           }
-          confirmDisabled={!validText(editableBhaRun.name)}
+          confirmDisabled={!validText(editableBhaRun.name) || !dTimStopValid || !dTimStartValid || !dTimStartDrillingValid || !dTimStopDrillingValid}
           onSubmit={() => onSubmit(editableBhaRun)}
           isLoading={isLoading}
         />

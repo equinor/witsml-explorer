@@ -8,7 +8,7 @@ import formatDateString, { validateIsoDateString } from "../DateFormatter";
 interface DateTimeFieldProps {
   value: string;
   label: string;
-  updateObject: (dateTime: string) => void;
+  updateObject: (dateTime: string, valid: boolean) => void;
   timeZone: TimeZone;
 }
 
@@ -40,8 +40,8 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
     }
     return "";
   };
-
-  const isValid = validateIsoDateString(value) || (initiallyEmpty && (value == null || value === ""));
+  const validate = (current: string) => validateIsoDateString(current) || (initiallyEmpty && (current == null || current === ""));
+  const isValid = validate(value);
   return (
     <Layout>
       <TextField
@@ -49,10 +49,10 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
         label={label}
         value={value}
         helperText={getHelperText()}
-        variant={isValid ? undefined : "error"}
+        variant={validate(value) ? undefined : "error"}
         autoComplete="off"
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-          updateObject(e.target.value);
+          updateObject(e.target.value, validate(e.target.value));
         }}
       />
       <PickerIcon name="calendar" />
@@ -72,7 +72,7 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
             toFormat += slice;
           }
           const formatted = formatDateString(toFormat, timeZone);
-          updateObject(formatted);
+          updateObject(formatted, validate(formatted));
         }}
       />
     </Layout>

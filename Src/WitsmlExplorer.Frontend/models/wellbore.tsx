@@ -21,7 +21,7 @@ export interface WellboreProperties {
   suffixAPI?: string;
   numGovt?: string;
   shape?: string;
-  dTimeKickoff?: Date;
+  dTimeKickoff?: string;
   md?: Measure;
   tvd?: Measure;
   mdKickoff?: Measure;
