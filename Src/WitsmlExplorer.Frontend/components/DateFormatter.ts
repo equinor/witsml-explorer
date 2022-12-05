@@ -9,22 +9,26 @@ const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 const unicodeMinus = "\u2212";
 
 function formatDateString(dateString: string, timeZone: TimeZone) {
-  if (dateString == null) {
-    return null;
-  }
+  try {
+    if (dateString == null) {
+      return null;
+    }
 
-  const replaced = dateString.replace(unicodeMinus, "-");
-  const parsed = toDate(replaced);
+    const replaced = dateString.replace(unicodeMinus, "-");
+    const parsed = toDate(replaced);
 
-  if (timeZone == TimeZone.Raw) {
-    const offset = getOffset(replaced) ?? "Z";
-    return formatInTimeZone(parsed, offset, dateTimeFormat);
-  }
+    if (timeZone == TimeZone.Raw) {
+      const offset = getOffset(replaced) ?? "Z";
+      return formatInTimeZone(parsed, offset, dateTimeFormat);
+    }
 
-  if (timeZone == TimeZone.Local) {
-    return format(parsed, dateTimeFormat);
+    if (timeZone == TimeZone.Local) {
+      return format(parsed, dateTimeFormat);
+    }
+    return formatInTimeZone(parsed, timeZone, dateTimeFormat);
+  } catch (e) {
+    return "Invalid date";
   }
-  return formatInTimeZone(parsed, timeZone, dateTimeFormat);
 }
 export default formatDateString;
 
