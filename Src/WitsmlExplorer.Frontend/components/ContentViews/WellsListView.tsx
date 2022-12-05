@@ -6,6 +6,7 @@ import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
+import formatDateString from "../DateFormatter";
 import WellProgress from "../WellProgress";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -14,7 +15,10 @@ export interface WellRow extends ContentTableRow, Well {}
 export const WellsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers, filteredWells, wells } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },
@@ -22,8 +26,8 @@ export const WellsListView = (): React.ReactElement => {
     { property: "operator", label: "Operator", type: ContentType.String },
     { property: "timeZone", label: "Time zone", type: ContentType.String },
     { property: "uid", label: "UID Well", type: ContentType.String },
-    { property: "dateTimeCreation", label: "Creation date", type: ContentType.Date },
-    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.Date }
+    { property: "dateTimeCreation", label: "Creation date", type: ContentType.DateTime },
+    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime }
   ];
 
   const onSelect = (well: any) => {
@@ -38,7 +42,12 @@ export const WellsListView = (): React.ReactElement => {
 
   const getTableData = () => {
     return filteredWells.map((well) => {
-      return { id: well.uid, ...well };
+      return {
+        ...well,
+        id: well.uid,
+        dateTimeCreation: formatDateString(well.dateTimeCreation, timeZone),
+        dateTimeLastChange: formatDateString(well.dateTimeLastChange, timeZone)
+      };
     });
   };
 
