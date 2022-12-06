@@ -1,6 +1,7 @@
 import { Accordion, List, TextField, Typography } from "@equinor/eds-core-react";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
@@ -9,6 +10,7 @@ import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
+import formatDateString from "../DateFormatter";
 import { displayMissingLogModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
 import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
@@ -23,6 +25,9 @@ export interface LogComparisonModalProps {
 
 const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
   const { sourceLog, sourceServer, targetServer, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [sourceLogCurveInfo, setSourceLogCurveInfo] = useState<LogCurveInfo[]>(null);
   const [targetLogCurveInfo, setTargetLogCurveInfo] = useState<LogCurveInfo[]>(null);
   const [indexesToShow, setIndexesToShow] = useState<Indexes[]>(null);
@@ -70,12 +75,21 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     const targetType = targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
     const indexTypesMatch = sourceType == targetType;
 
-    const mismatchedIndexes = indexTypesMatch ? calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo) : [];
+    if (indexTypesMatch) {
+      if (sourceType == "time") {
+        for (const curve of sourceLogCurveInfo.concat(targetLogCurveInfo)) {
+          curve.minDateTimeIndex = formatDateString(curve.minDateTimeIndex, timeZone);
+          curve.maxDateTimeIndex = formatDateString(curve.maxDateTimeIndex, timeZone);
+        }
+      }
+      setIndexesToShow(calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo));
+    } else {
+      setIndexesToShow([]);
+    }
 
     setSourceType(sourceType);
     setTargetType(targetType);
     setIndexTypesMatch(indexTypesMatch);
-    setIndexesToShow(mismatchedIndexes);
   }, [sourceLogCurveInfo, targetLogCurveInfo]);
 
   const data = useMemo(
