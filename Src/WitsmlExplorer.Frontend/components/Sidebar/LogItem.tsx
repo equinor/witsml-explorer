@@ -31,7 +31,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
-    const contextProps: LogObjectContextMenuProps = { checkedLogObjectRows: [].concat(log), dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: LogObjectContextMenuProps = { checkedLogObjects: [log], dispatchNavigation, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };

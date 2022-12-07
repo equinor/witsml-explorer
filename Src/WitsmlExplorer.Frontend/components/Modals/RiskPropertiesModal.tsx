@@ -1,7 +1,7 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
@@ -11,6 +11,7 @@ import RiskObject from "../../models/riskObject";
 import { riskSubCategory } from "../../models/riskSubCategory";
 import { riskType } from "../../models/riskType";
 import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -22,8 +23,13 @@ export interface RiskPropertiesModalProps {
 
 const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElement => {
   const { mode, riskObject, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableRiskObject, setEditableRiskObject] = useState<RiskObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dTimStartValid, setDTimStartValid] = useState<boolean>(true);
+  const [dTimEndValid, setDTimEndValid] = useState<boolean>(true);
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
@@ -111,29 +117,23 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                   setEditableRiskObject({ ...editableRiskObject, affectedPersonnel: selectedItems.join(", ") });
                 }}
               />
-              <TextField
-                id="dTimStart"
+              <DateTimeField
+                value={editableRiskObject.dTimStart}
                 label="dTimStart"
-                type="datetime-local"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableRiskObject({ ...editableRiskObject, dTimStart: dateTime });
+                  setDTimStartValid(valid);
                 }}
-                disabled={!editableRiskObject.dTimStart}
-                value={editableRiskObject.dTimStart ? moment(editableRiskObject.dTimStart).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimStart: e.target.value })}
+                timeZone={timeZone}
               />
-              <TextField
-                id={"dTimEnd"}
-                label={"dTimEnd"}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
+              <DateTimeField
+                value={editableRiskObject.dTimEnd}
+                label="dTimEnd"
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableRiskObject({ ...editableRiskObject, dTimEnd: dateTime });
+                  setDTimEndValid(valid);
                 }}
-                disabled={!editableRiskObject.dTimEnd}
-                value={editableRiskObject.dTimEnd ? moment(editableRiskObject.dTimEnd).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRiskObject({ ...editableRiskObject, dTimEnd: e.target.value })}
+                timeZone={timeZone}
               />
               <TextField
                 id={"mdBitStart"}
@@ -233,7 +233,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
               />
             </>
           }
-          confirmDisabled={!validText(editableRiskObject.name)}
+          confirmDisabled={!validText(editableRiskObject.name) || !dTimStartValid || !dTimEndValid}
           onSubmit={() => onSubmit(editableRiskObject)}
           isLoading={isLoading}
         />

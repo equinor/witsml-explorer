@@ -35,7 +35,6 @@ export enum Order {
 export enum ContentType {
   String,
   Number,
-  Date,
   DateTime,
   Icon
 }
@@ -45,10 +44,6 @@ export const getComparatorByColumn = (column: ContentTableColumn): [(row: any) =
   switch (column.type) {
     case ContentType.Number:
       comparator = (row: any): number => Number(row[column.property]);
-      break;
-    case ContentType.Date:
-    case ContentType.DateTime:
-      comparator = (row: any): Date => new Date(row[column.property]);
       break;
     default:
       comparator = (row: any): string => row[column.property];

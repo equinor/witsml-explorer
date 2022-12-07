@@ -6,6 +6,7 @@ import {
   arrow_down as arrowDown,
   arrow_up as arrowUp,
   assignment,
+  calendar,
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
@@ -47,7 +48,8 @@ const icons = {
   compare,
   world,
   arrowUp,
-  arrowDown
+  arrowDown,
+  calendar
 };
 
 Icon.add(icons);

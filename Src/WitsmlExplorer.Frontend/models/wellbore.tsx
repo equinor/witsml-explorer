@@ -21,7 +21,7 @@ export interface WellboreProperties {
   suffixAPI?: string;
   numGovt?: string;
   shape?: string;
-  dTimeKickoff?: Date;
+  dTimeKickoff?: string;
   md?: Measure;
   tvd?: Measure;
   mdKickoff?: Measure;
@@ -34,8 +34,8 @@ export interface WellboreProperties {
   wellboreParentUid?: string;
   wellboreParentName?: string;
   wellborePurpose?: string;
-  dateTimeCreation?: Date;
-  dateTimeLastChange?: Date;
+  dateTimeCreation?: string;
+  dateTimeLastChange?: string;
   itemState?: string;
 }
 
@@ -62,8 +62,8 @@ export function emptyWellbore(): Wellbore {
     wellboreParentUid: "",
     wellboreParentName: "",
     wellborePurpose: "unknown",
-    dateTimeCreation: null,
-    dateTimeLastChange: null,
+    dateTimeCreation: "",
+    dateTimeLastChange: "",
     itemState: "",
     bhaRuns: [],
     logs: [],

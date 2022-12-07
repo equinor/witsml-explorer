@@ -1,13 +1,14 @@
 ﻿import { Autocomplete } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import Rig from "../../models/rig";
 import { rigType } from "../../models/rigType";
 import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validPhoneNumber, validText } from "./ModalParts";
 
@@ -19,8 +20,13 @@ export interface RigPropertiesModalProps {
 
 const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement => {
   const { mode, rig, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableRig, setEditableRig] = useState<Rig>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dTimStartOpValid, setDTimStartOpValid] = useState<boolean>(true);
+  const [dTimEndOpValid, setDTimEndOpValid] = useState<boolean>(true);
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
@@ -69,30 +75,23 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setEditableRig({ ...editableRig, typeRig: selectedItems[0] });
                 }}
               />
-
-              <TextField
-                id="dTimStart"
-                label="dTimStart"
-                type="datetime-local"
-                fullWidth
-                InputLabelProps={{
-                  shrink: true
+              <DateTimeField
+                value={editableRig.dTimStartOp}
+                label="dTimStartOp"
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableRig({ ...editableRig, dTimStartOp: dateTime });
+                  setDTimStartOpValid(valid);
                 }}
-                disabled={!editableRig.dTimStartOp}
-                value={editableRig.dTimStartOp ? moment(editableRig.dTimStartOp).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRig({ ...editableRig, dTimStartOp: e.target.value })}
+                timeZone={timeZone}
               />
-              <TextField
-                id={"dTimEnd"}
-                label={"dTimEnd"}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
+              <DateTimeField
+                value={editableRig.dTimEndOp}
+                label="dTimEndOp"
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableRig({ ...editableRig, dTimEndOp: dateTime });
+                  setDTimEndOpValid(valid);
                 }}
-                disabled={!editableRig.dTimEndOp}
-                value={editableRig.dTimEndOp ? moment(editableRig.dTimEndOp).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableRig({ ...editableRig, dTimEndOp: e.target.value })}
+                timeZone={timeZone}
               />
               <TextField
                 id={"yearEntService"}
@@ -200,7 +199,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
               />
             </>
           }
-          confirmDisabled={!validText(editableRig.name)}
+          confirmDisabled={!validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid}
           onSubmit={() => onSubmit(editableRig)}
           isLoading={isLoading}
         />

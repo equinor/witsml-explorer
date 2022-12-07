@@ -134,6 +134,28 @@ const Content = styled(Dialog.CustomContent)`
   margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
+
+  --track-color: #dddddd;
+  --thumb-color: #bbbbbb;
+  scrollbar-color: var(--track-color) var(--thumb-color);
+
+  //For firefox
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+
+  // For Google Chrome/Safari/Edge
+  & ::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    background: var(--thumb-color);
+    border-radius: 8px;
+  }
+
+  & ::-webkit-scrollbar-track {
+    background: var(--track-color);
+  }
 `;
 
 const StyledButton = styled(Button)<{ align?: string }>`
