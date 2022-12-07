@@ -25,18 +25,20 @@ const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("/sw.js").then(
-        function (registration) {
-          console.log("Service Worker registration successful with scope: ", registration.scope);
-        },
-        function (err) {
-          console.log("Service Worker registration failed: ", err);
-        }
-      );
-    });
-  }
+  React.useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").then(
+          function (registration) {
+            console.log("Service Worker registration successful with scope: ", registration.scope);
+          },
+          function (err) {
+            console.log("Service Worker registration failed: ", err);
+          }
+        );
+      });
+    }
+  }, []);
 
   return (
     <MsalProvider instance={msalInstance}>
