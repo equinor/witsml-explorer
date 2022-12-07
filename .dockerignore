@@ -8,3 +8,8 @@ Dockerfile
 **/node_modules
 
 .DS_Store
+
+**/secrets.json
+**/config.json
+**/mysettings.*
+**/.env*

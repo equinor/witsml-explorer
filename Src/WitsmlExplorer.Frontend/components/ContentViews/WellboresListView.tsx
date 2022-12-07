@@ -14,26 +14,41 @@ import TubularService from "../../services/tubularService";
 import WbGeometryObjectService from "../../services/wbGeometryService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, servers } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String },
     { property: "wellType", label: "Well Type", type: ContentType.String },
     { property: "wellStatus", label: "Well Status", type: ContentType.String },
     { property: "uid", label: "UID Wellbore", type: ContentType.String },
-    { property: "dateTimeCreation", label: "Creation date", type: ContentType.Date },
-    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.Date }
+    { property: "dateTimeCreation", label: "Creation date", type: ContentType.DateTime },
+    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     const contextMenuProps: WellboreContextMenuProps = { dispatchNavigation, dispatchOperation, servers, wellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const getTableData = () => {
+    return selectedWell.wellbores.map((wellbore) => {
+      return {
+        ...wellbore,
+        id: wellbore.uid,
+        dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone),
+        dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone)
+      };
+    });
   };
 
   const onSelect = async (wellbore: any) => {
@@ -54,7 +69,7 @@ export const WellboresListView = (): React.ReactElement => {
     });
   };
 
-  return selectedWell && <ContentTable columns={columns} data={[...selectedWell.wellbores]} onSelect={onSelect} onContextMenu={onContextMenu} />;
+  return selectedWell && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} />;
 };
 
 export default WellboresListView;

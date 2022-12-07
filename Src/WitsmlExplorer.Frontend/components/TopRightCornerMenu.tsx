@@ -1,5 +1,6 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { format } from "date-fns-tz";
 import React, { ReactElement, useContext, useEffect } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
@@ -9,16 +10,17 @@ import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import CredentialsService from "../services/credentialsService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
+import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Raw]: "Original Time",
-  [TimeZone.Local]: "Local Time",
-  [TimeZone.Brasilia]: "Brazil/Brasilia",
-  [TimeZone.Berlin]: "Europe/Berlin",
-  [TimeZone.London]: "Europe/London",
-  [TimeZone.NewDelhi]: "India/New Delhi",
-  [TimeZone.Houston]: "US/Houston"
+  [TimeZone.Local]: `${format(new Date(), "xxx")} Local Time`,
+  [TimeZone.Brasilia]: `${getOffsetFromTimeZone(TimeZone.Brasilia)} Brazil/Brasilia`,
+  [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
+  [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
+  [TimeZone.NewDelhi]: `${getOffsetFromTimeZone(TimeZone.NewDelhi)} India/New Delhi`,
+  [TimeZone.Houston]: `${getOffsetFromTimeZone(TimeZone.Houston)} US/Houston`
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {

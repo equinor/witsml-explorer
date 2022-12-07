@@ -1,6 +1,6 @@
 import { InputAdornment, TextField } from "@material-ui/core";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import ObjectReference from "../../models/jobs/objectReference";
@@ -8,6 +8,7 @@ import { toObjectReference } from "../../models/objectOnWellbore";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 
 export interface TrajectoryStationPropertiesModalInterface {
@@ -18,8 +19,12 @@ export interface TrajectoryStationPropertiesModalInterface {
 
 const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModalInterface): React.ReactElement => {
   const { trajectoryStation, trajectory, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableTrajectoryStation, setEditableTrajectoryStation] = useState<TrajectoryStation>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dTimStnValid, setDTimStnValid] = useState<boolean>(true);
 
   const onSubmit = async (updatedTrajectoryStation: TrajectoryStation) => {
     setIsLoading(true);
@@ -45,17 +50,14 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
             <>
               <TextField disabled id="uid" label="uid" defaultValue={editableTrajectoryStation.uid} fullWidth />
               <TextField disabled id="typeTrajStation" label="type trajectory station" defaultValue={editableTrajectoryStation.typeTrajStation} fullWidth />
-              <TextField
-                id={"dTimStn"}
-                label={"datetime kickoff"}
-                fullWidth
-                type="datetime-local"
-                InputLabelProps={{
-                  shrink: true
+              <DateTimeField
+                value={editableTrajectoryStation.dTimStn}
+                label="dTimStn"
+                updateObject={(dateTime: string, valid: boolean) => {
+                  setEditableTrajectoryStation({ ...editableTrajectoryStation, dTimStn: dateTime });
+                  setDTimStnValid(valid);
                 }}
-                disabled={!editableTrajectoryStation.dTimStn}
-                value={editableTrajectoryStation.dTimStn ? moment(editableTrajectoryStation.dTimStn).format("YYYY-MM-DDTHH:MM") : undefined}
-                onChange={(e) => setEditableTrajectoryStation({ ...editableTrajectoryStation, dTimStn: e.target.value })}
+                timeZone={timeZone}
               />
               <TextField
                 id={"md"}
@@ -127,6 +129,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
               />
             </>
           }
+          confirmDisabled={!dTimStnValid}
           onSubmit={() => onSubmit(editableTrajectoryStation)}
           isLoading={isLoading}
         />
