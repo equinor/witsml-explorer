@@ -4,7 +4,7 @@ try {
 
   // A list of local resources we always want to be cached.
   const PRECACHE_URLS = [
-    `/` // Alias for index.html
+    `/` // Alias for index.html/build file
   ];
 
   // The install handler takes care of precaching the resources we always need.
@@ -43,7 +43,7 @@ try {
   // If no response is found, it populates the runtime cache with the response
   // from the network before returning it to the page.
   self.addEventListener("fetch", (event) => {
-    // Skip cross-origin requests, like those for Google Analytics.
+    // Skip cross-origin requests
     if (event.request.url.startsWith(self.location.origin)) {
       event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
