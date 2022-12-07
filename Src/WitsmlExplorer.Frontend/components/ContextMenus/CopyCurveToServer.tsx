@@ -8,12 +8,13 @@ import { ReplaceLogDataJob } from "../../models/jobs/replaceLogDataJob";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import { displayMissingLogModal } from "../Modals/MissingObjectModals";
+import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
 
@@ -37,7 +38,7 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
     const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
     const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetCredentials);
     if (targetLog.uid !== logUid) {
-      displayMissingLogModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.");
+      displayMissingObjectModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.", ObjectType.Log);
       return;
     }
 
