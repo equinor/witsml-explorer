@@ -1,14 +1,15 @@
 import { Button, ButtonGroup } from "@material-ui/core";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import moment, { Moment } from "moment";
+import { addMilliseconds } from "date-fns";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
-import { DateFormat } from "../../Constants";
+import { dateTimeFormatNoOffset, getOffset } from "../../DateFormatter";
+import { LogHeaderDateTimeField } from "../LogHeaderDateTimeField";
 
 export interface AdjustDateTimeModelProps {
-  minDate: Moment;
-  maxDate: Moment;
-  onStartDateChanged: (value: Moment) => void;
-  onEndDateChanged: (value: Moment) => void;
+  minDate: string;
+  maxDate: string;
+  onStartDateChanged: (value: string) => void;
+  onEndDateChanged: (value: string) => void;
   onValidChange: (isValid: boolean) => void;
 }
 
@@ -19,41 +20,28 @@ interface SetRangeButton {
 
 const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElement => {
   const { minDate, maxDate, onStartDateChanged, onEndDateChanged, onValidChange } = props;
-  const [startIndex, setStartIndex] = useState<Moment>(minDate);
-  const [endIndex, setEndIndex] = useState<Moment>(maxDate);
-  const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
-  const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>();
+  const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>(true);
+  const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>(true);
+  const [startOffset] = useState<string>(getOffset(minDate));
+  const [endOffset] = useState<string>(getOffset(maxDate));
+  const [startIndex, setStartIndex] = useState<string>(formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset));
+  const [endIndex, setEndIndex] = useState<string>(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
   const setRangeButtons: SetRangeButton[] = [
     { timeInMilliseconds: 3600000, displayText: "hour" },
     { timeInMilliseconds: 21600000, displayText: "6 hours" },
     { timeInMilliseconds: 86400000, displayText: "day" },
     { timeInMilliseconds: 604800000, displayText: "week" }
   ];
-  const totalTimeSpan = Number(maxDate) - Number(minDate);
+  const totalTimeSpan = toDate(maxDate).getTime() - toDate(minDate).getTime();
 
   useEffect(() => {
-    onStartDateChanged(startIndex);
-    onEndDateChanged(endIndex);
+    onStartDateChanged(startIndex + startOffset);
+    onEndDateChanged(endIndex + endOffset);
   }, [startIndex, endIndex]);
 
   useEffect(() => {
-    if (startIndex && endIndex) {
-      setStartIndexIsValid(startIndex.milliseconds(0) < endIndex.milliseconds(0));
-      setEndIndexIsValid(endIndex.milliseconds(0) > startIndex.milliseconds(0));
-    }
-  }, [startIndex, endIndex]);
-
-  useEffect(() => {
-    onValidChange(startIndexIsValid && endIndexIsValid);
-  }, [startIndexIsValid, endIndexIsValid]);
-
-  const handleStartIndexChanged = (value: Moment) => {
-    setStartIndex(value);
-  };
-
-  const handleEndIndexChanged = (value: Moment) => {
-    setEndIndex(value);
-  };
+    onValidChange(startIndexIsValid && endIndexIsValid && startIndex < endIndex);
+  }, [startIndexIsValid, endIndexIsValid, startIndex, endIndex]);
 
   return (
     <>
@@ -64,8 +52,9 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
               <Button
                 key={"last" + buttonValue.displayText}
                 onClick={() => {
-                  setStartIndex(endIndex.clone().subtract(buttonValue.timeInMilliseconds, "millisecond"));
-                  setEndIndex(maxDate);
+                  const newStartIndex = addMilliseconds(toDate(endIndex + endOffset), -buttonValue.timeInMilliseconds);
+                  setStartIndex(formatInTimeZone(newStartIndex, startOffset, dateTimeFormatNoOffset));
+                  setEndIndex(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
                 }}
               >
                 {"Last " + buttonValue.displayText}
@@ -76,39 +65,33 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
         <Button
           key={"resetRangeValues"}
           onClick={() => {
-            setStartIndex(minDate);
-            setEndIndex(maxDate);
+            setStartIndex(formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset));
+            setEndIndex(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
           }}
         >
           Reset
         </Button>
       </ButtonGroup>
 
-      <KeyboardDateTimePicker
-        fullWidth
-        disableToolbar
-        variant={"inline"}
-        format={DateFormat.DATETIME_S}
-        margin={"normal"}
-        label={"Start index"}
+      <LogHeaderDateTimeField
         value={startIndex}
-        ampm={false}
-        error={!startIndexIsValid}
-        helperText={startIndexIsValid ? "" : `Must be lower than ${moment(endIndex).format(DateFormat.DATETIME_S)}`}
-        onChange={handleStartIndexChanged}
+        label="Start index"
+        updateObject={(dateTime: string, valid: boolean) => {
+          setStartIndex(dateTime);
+          setEndIndexIsValid(valid);
+        }}
+        offset={startOffset}
+        maxValue={endIndex}
       />
-      <KeyboardDateTimePicker
-        fullWidth
-        disableToolbar
-        variant={"inline"}
-        format={DateFormat.DATETIME_S}
-        margin={"normal"}
-        label={"End index"}
+      <LogHeaderDateTimeField
         value={endIndex}
-        ampm={false}
-        error={!endIndexIsValid}
-        helperText={endIndexIsValid ? "" : `Must be higher than ${moment(startIndex).format(DateFormat.DATETIME_S)}`}
-        onChange={handleEndIndexChanged}
+        label="End index"
+        updateObject={(dateTime: string, valid: boolean) => {
+          setEndIndex(dateTime);
+          setStartIndexIsValid(valid);
+        }}
+        offset={endOffset}
+        minValue={startIndex}
       />
     </>
   );

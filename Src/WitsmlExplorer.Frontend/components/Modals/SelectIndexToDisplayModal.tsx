@@ -1,4 +1,3 @@
-import moment, { Moment } from "moment";
 import React, { useEffect, useState } from "react";
 import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
 import NavigationType from "../../contexts/navigationType";
@@ -23,8 +22,8 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
   const isTimeIndexed = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   const [log, setLog] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [startIndex, setStartIndex] = useState<Moment | number>(isTimeIndexed ? moment(selectedLog.startIndex) : indexToNumber(selectedLog.startIndex));
-  const [endIndex, setEndIndex] = useState<Moment | number>(isTimeIndexed ? moment(selectedLog.endIndex) : indexToNumber(selectedLog.endIndex));
+  const [startIndex, setStartIndex] = useState<string | number>(isTimeIndexed ? selectedLog.startIndex : indexToNumber(selectedLog.startIndex));
+  const [endIndex, setEndIndex] = useState<string | number>(isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex));
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
 
   useEffect(() => {
@@ -61,8 +60,8 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
               {isTimeIndexed ? (
                 <>
                   <AdjustDateTimeModal
-                    minDate={moment(log.startIndex)}
-                    maxDate={moment(log.endIndex)}
+                    minDate={log.startIndex}
+                    maxDate={log.endIndex}
                     onStartDateChanged={setStartIndex}
                     onEndDateChanged={setEndIndex}
                     onValidChange={toggleConfirmDisabled}
@@ -94,8 +93,8 @@ const indexToNumber = (index: string): number => {
   return Number(index.replace(/[^\d.-]/g, ""));
 };
 
-const formatIndexValue = (value: Moment | number): string => {
-  return typeof value === "number" ? String(value) : (value as Moment).toDate().toISOString();
+const formatIndexValue = (value: string | number): string => {
+  return typeof value === "number" ? String(value) : value;
 };
 
 export default SelectIndexToDisplayModal;
