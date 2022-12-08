@@ -62,7 +62,11 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
       element: "dTim",
       source: sourceDTimDiff,
       target: targetDTimDiff,
-      elementValue: <Typography>dTim</Typography>,
+      elementValue: (
+        <TableCell>
+          <Typography>{sourceDTim != targetDTim ? <mark>dTim</mark> : "dTim"}</Typography>
+        </TableCell>
+      ),
       sourceValue: (
         <TableCell>
           <Typography>{sourceDTimDiff}</Typography>
@@ -124,9 +128,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
                   data={data}
                   caption={
                     <StyledTypography variant="h5">
-                      <span style={{ paddingTop: "0.2rem" }}>
-                        {differenceFound ? "Listing of message properties with differing elements marked." : "All the shown fields are equal."}
-                      </span>
+                      {differenceFound ? "Listing of message properties with differing elements marked." : "All the shown fields are equal."}
                     </StyledTypography>
                   }
                 />

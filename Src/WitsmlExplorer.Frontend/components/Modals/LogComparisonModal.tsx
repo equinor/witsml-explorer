@@ -180,11 +180,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <SortableEdsTable
                     columns={columns}
                     data={data}
-                    caption={
-                      <StyledTypography variant="h5">
-                        <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
-                      </StyledTypography>
-                    }
+                    caption={<StyledTypography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</StyledTypography>}
                   />
                 </TableLayout>
               )}
