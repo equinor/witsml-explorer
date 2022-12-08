@@ -49,7 +49,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   for (const key in timeZoneLabels) {
     timeZoneMenuItems.push(
       <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)}>
-        <SelectTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</SelectTypography>
+        <TimeZoneTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</TimeZoneTypography>
         {timeZone === key && <Icon name="check" />}
       </StyledMenuItem>
     );
@@ -140,6 +140,12 @@ const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
     font-family: ${(props) => (props.selected ? "EquinorBold" : "EquinorRegular")};
     white-space: nowrap;
+  }
+`;
+
+const TimeZoneTypography = styled(SelectTypography)<{ selected: boolean }>`
+  && {
+    font-feature-settings: "tnum";
   }
 `;
 
