@@ -29,6 +29,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [targetMessage, setTargetMessage] = useState<MessageObject>(null);
+  const [differenceFound, setDifferenceFound] = useState(false);
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
     const rows = [];
     const sourceDTim = formatDateString(sourceMessage.dTim, timeZone);
     const targetDTim = formatDateString(targetMessage.dTim, timeZone);
+    let areDifferent = sourceDTim != targetDTim;
     const [sourceDTimDiff, targetDTimDiff] = markDateTimeStringDifferences(sourceDTim, targetDTim);
     rows.push({
       element: "dTim",
@@ -74,21 +76,18 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
     });
     const pushRow = (element: string, source: string, target: string) => {
       const diff = source != target;
+      areDifferent = areDifferent || diff;
       rows.push({
         element,
         source,
         target,
-        elementValue: <Typography>{element}</Typography>,
-        sourceValue: (
+        elementValue: (
           <TableCell>
-            <Typography>{diff ? <mark>{source}</mark> : source}</Typography>
+            <Typography>{diff ? <mark>{element}</mark> : element}</Typography>
           </TableCell>
         ),
-        targetValue: (
-          <TableCell>
-            <Typography>{diff ? <mark>{target}</mark> : target}</Typography>
-          </TableCell>
-        )
+        sourceValue: <Typography>{source}</Typography>,
+        targetValue: <Typography>{target}</Typography>
       });
     };
     pushRow("messageText", sourceMessage.messageText, targetMessage.messageText);
@@ -96,6 +95,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
     pushRow("typeMessage", sourceMessage.typeMessage, targetMessage.typeMessage);
     pushRow("commonData.sourceName", sourceMessage.commonData.sourceName, targetMessage.commonData.sourceName);
     setData(rows);
+    setDifferenceFound(areDifferent);
   }, [targetMessage]);
 
   return (
@@ -124,7 +124,9 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
                   data={data}
                   caption={
                     <StyledTypography variant="h5">
-                      <span style={{ paddingTop: "0.2rem" }}>Listing of message elements with differences marked.</span>
+                      <span style={{ paddingTop: "0.2rem" }}>
+                        {differenceFound ? "Listing of message properties with differing elements marked." : "All the shown fields are equal."}
+                      </span>
                     </StyledTypography>
                   }
                 />
