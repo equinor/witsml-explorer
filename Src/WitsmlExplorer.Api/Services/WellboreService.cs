@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Services
                     WellboreParentName = witsmlWellbore.ParentWellbore?.Value,
                     WellType = witsmlWellbore.TypeWellbore,
                     Shape = witsmlWellbore.Shape,
-                    DTimeKickoff = string.IsNullOrEmpty(witsmlWellbore.DTimKickoff) ? null : StringHelpers.ToDateTime(witsmlWellbore.DTimKickoff),
+                    DTimeKickoff = witsmlWellbore.DTimKickoff,
                     Md = (witsmlWellbore.Md == null) ? null : new LengthMeasure { Uom = witsmlWellbore.Md.Uom, Value = StringHelpers.ToDecimal(witsmlWellbore.Md.Value) },
                     Tvd = (witsmlWellbore.Tvd == null) ? null : new LengthMeasure { Uom = witsmlWellbore.Tvd.Uom, Value = StringHelpers.ToDecimal(witsmlWellbore.Tvd.Value) },
                     MdKickoff = (witsmlWellbore.MdKickoff == null) ? null : new LengthMeasure { Uom = witsmlWellbore.MdKickoff.Uom, Value = StringHelpers.ToDecimal(witsmlWellbore.MdKickoff.Value) },
@@ -57,8 +57,8 @@ namespace WitsmlExplorer.Api.Services
                     MdSubSeaPlanned = (witsmlWellbore.MdSubSeaPlanned == null) ? null : new LengthMeasure { Uom = witsmlWellbore.MdSubSeaPlanned.Uom, Value = StringHelpers.ToDecimal(witsmlWellbore.MdSubSeaPlanned.Value) },
                     TvdSubSeaPlanned = (witsmlWellbore.TvdSubSeaPlanned == null) ? null : new LengthMeasure { Uom = witsmlWellbore.TvdSubSeaPlanned.Uom, Value = StringHelpers.ToDecimal(witsmlWellbore.TvdSubSeaPlanned.Value) },
                     DayTarget = (witsmlWellbore.DayTarget == null) ? null : new DayMeasure { Uom = witsmlWellbore.DayTarget.Uom, Value = int.Parse(witsmlWellbore.DayTarget.Value) },
-                    DateTimeCreation = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimCreation),
-                    DateTimeLastChange = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimLastChange),
+                    DateTimeCreation = witsmlWellbore.CommonData.DTimCreation,
+                    DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
                     ItemState = witsmlWellbore.CommonData.ItemState
                 };
         }
@@ -80,7 +80,7 @@ namespace WitsmlExplorer.Api.Services
                         WellStatus = witsmlWellbore.StatusWellbore,
                         WellType = witsmlWellbore.TypeWellbore,
                         IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
-                        DateTimeLastChange = StringHelpers.ToDateTime(witsmlWellbore.CommonData.DTimLastChange)
+                        DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange
                     })
                 .OrderBy(wellbore => wellbore.Name).ToList();
             double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;

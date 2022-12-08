@@ -1,6 +1,5 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import { format } from "date-fns-tz";
 import React, { ReactElement, useContext, useEffect } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
@@ -15,7 +14,8 @@ import JobsButton from "./JobsButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Raw]: "Original Time",
-  [TimeZone.Local]: `${format(new Date(), "xxx")} Local Time`,
+  [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
+  [TimeZone.Utc]: `${getOffsetFromTimeZone(TimeZone.Utc)} UTC`,
   [TimeZone.Brasilia]: `${getOffsetFromTimeZone(TimeZone.Brasilia)} Brazil/Brasilia`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,

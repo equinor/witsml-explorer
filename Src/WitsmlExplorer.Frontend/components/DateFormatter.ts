@@ -17,16 +17,15 @@ function formatDateString(dateString: string, timeZone: TimeZone) {
 
     const replaced = dateString.replace(unicodeMinus, "-");
     const parsed = toDate(replaced);
-
     if (timeZone == TimeZone.Raw) {
       const offset = getOffset(replaced) ?? "Z";
       return formatInTimeZone(parsed, offset, dateTimeFormat);
     }
 
-    if (timeZone == TimeZone.Local) {
-      return format(parsed, dateTimeFormat);
-    }
-    return formatInTimeZone(parsed, timeZone, dateTimeFormat);
+    //we get the offset from the time zone for the current day to
+    //use the same offset regardless of daylight saving time
+    const offset = getOffsetFromTimeZone(timeZone);
+    return formatInTimeZone(parsed, offset, dateTimeFormat);
   } catch (e) {
     return "Invalid date";
   }
@@ -34,6 +33,11 @@ function formatDateString(dateString: string, timeZone: TimeZone) {
 export default formatDateString;
 
 export function getOffsetFromTimeZone(timeZone: TimeZone): string {
+  if (timeZone == TimeZone.Local) {
+    return format(new Date(), "xxx");
+  } else if (timeZone == TimeZone.Utc) {
+    return "+00:00";
+  }
   return formatInTimeZone(new Date(), timeZone, "xxx");
 }
 
