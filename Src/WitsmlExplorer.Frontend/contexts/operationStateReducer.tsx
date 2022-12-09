@@ -12,6 +12,7 @@ export enum UserTheme {
 export enum TimeZone {
   Raw = "Original Timezone",
   Local = "Local Time",
+  Utc = "UTC",
   Brasilia = "America/Sao_Paulo",
   Berlin = "Europe/Berlin",
   London = "Europe/London",

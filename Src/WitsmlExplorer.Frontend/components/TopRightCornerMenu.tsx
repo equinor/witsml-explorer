@@ -1,6 +1,5 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import { format } from "date-fns-tz";
 import React, { ReactElement, useContext, useEffect } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
@@ -15,7 +14,8 @@ import JobsButton from "./JobsButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Raw]: "Original Time",
-  [TimeZone.Local]: `${format(new Date(), "xxx")} Local Time`,
+  [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
+  [TimeZone.Utc]: `${getOffsetFromTimeZone(TimeZone.Utc)} UTC`,
   [TimeZone.Brasilia]: `${getOffsetFromTimeZone(TimeZone.Brasilia)} Brazil/Brasilia`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
@@ -49,7 +49,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   for (const key in timeZoneLabels) {
     timeZoneMenuItems.push(
       <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)}>
-        <SelectTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</SelectTypography>
+        <TimeZoneTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</TimeZoneTypography>
         {timeZone === key && <Icon name="check" />}
       </StyledMenuItem>
     );
@@ -140,6 +140,12 @@ const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
     font-family: ${(props) => (props.selected ? "EquinorBold" : "EquinorRegular")};
     white-space: nowrap;
+  }
+`;
+
+const TimeZoneTypography = styled(SelectTypography)<{ selected: boolean }>`
+  && {
+    font-feature-settings: "tnum";
   }
 `;
 
