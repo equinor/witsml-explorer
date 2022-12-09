@@ -4,16 +4,19 @@ import React from "react";
 import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/modificationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
+import CredentialsService from "../../services/credentialsService";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
+import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/MessageComparisonModal";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
+import { DispatchOperation, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, showCredentialsModal, StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface MessageObjectContextMenuProps {
@@ -26,13 +29,31 @@ export interface MessageObjectContextMenuProps {
 }
 
 const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.ReactElement => {
-  const { checkedMessageObjectRows, dispatchOperation, servers, wellbore } = props;
+  const { checkedMessageObjectRows, dispatchOperation, servers, wellbore, selectedServer } = props;
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
     const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject: checkedMessageObjectRows[0].message, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <MessagePropertiesModal {...modifyMessageObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
+  const onClickCompareMessageToServer = async (targetServer: Server, sourceServer: Server, messageToCompare: MessageObject, dispatchOperation: DispatchOperation) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const onCredentials = async () => {
+      const props: MessageComparisonModalProps = { sourceMessage: messageToCompare, sourceServer, targetServer, dispatchOperation };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <MessageComparisonModal {...props} />
+      });
+    };
+    const isAuthorized = CredentialsService.isAuthorizedForServer(targetServer);
+    if (!isAuthorized) {
+      const message = `You are trying to compare a message with a server that you are not logged in to. Please provide username and password for ${targetServer.name}.`;
+      showCredentialsModal(targetServer, dispatchOperation, () => onCredentials(), message);
+    } else {
+      onCredentials();
+    }
   };
 
   return (
@@ -53,6 +74,20 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "message", checkedMessageObjectRows)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "message", [])} to server`} disabled={checkedMessageObjectRows.length != 1} icon="compare">
+          {servers.map(
+            (server: Server) =>
+              server.id !== selectedServer.id && (
+                <MenuItem
+                  key={server.name}
+                  onClick={() => onClickCompareMessageToServer(server, selectedServer, checkedMessageObjectRows[0].message, dispatchOperation)}
+                  disabled={checkedMessageObjectRows.length != 1}
+                >
+                  <Typography color={"primary"}>{server.name}</Typography>
+                </MenuItem>
+              )
+          )}
+        </NestedMenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
             <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "messageGroupUid")}>

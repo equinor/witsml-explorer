@@ -1,5 +1,6 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import ConfirmModal from "./ConfirmModal";
@@ -27,17 +28,25 @@ export function displayMissingWellboreModal(targetServer: Server, wellUid: strin
   dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 }
 
-export function displayMissingLogModal(targetServer: Server, wellUid: string, wellboreUid: string, logUid: string, dispatchOperation: DispatchOperation, message = "") {
+export function displayMissingObjectModal(
+  targetServer: Server,
+  wellUid: string,
+  wellboreUid: string,
+  logUid: string,
+  dispatchOperation: DispatchOperation,
+  message = "",
+  objectType: ObjectType
+) {
   const confirmation = (
     <ConfirmModal
-      heading={`Log not found`}
+      heading={`${objectType} not found`}
       content={
         <ModalContentLayout>
-          <Typography>Unable to find log</Typography>
+          <Typography>Unable to find {objectType}</Typography>
           <TextField readOnly id="targetServer" label="Target Server Name" defaultValue={targetServer.name} />
           <TextField readOnly id="wellUid" label="Well UID" defaultValue={wellUid} />
           <TextField readOnly id="wellboreUid" label="Wellbore UID" defaultValue={wellboreUid} />
-          <TextField readOnly id="logUid" label="Log UID" defaultValue={logUid} />
+          <TextField readOnly id="objectUid" label={`${objectType} UID`} defaultValue={logUid} />
           <Typography>{message}</Typography>
         </ModalContentLayout>
       }
