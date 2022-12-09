@@ -5,13 +5,14 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
-import { displayMissingLogModal } from "../Modals/MissingObjectModals";
+import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
 import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
@@ -52,12 +53,12 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
       if (sourceLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
-        displayMissingLogModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource);
+        displayMissingObjectModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
         return;
       } else if (targetLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
-        displayMissingLogModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget);
+        displayMissingObjectModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
         return;
       } else {
         setSourceLogCurveInfo(sourceLogCurveInfo);
@@ -179,11 +180,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <SortableEdsTable
                     columns={columns}
                     data={data}
-                    caption={
-                      <StyledTypography variant="h5">
-                        <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
-                      </StyledTypography>
-                    }
+                    caption={<StyledTypography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</StyledTypography>}
                   />
                 </TableLayout>
               )}
