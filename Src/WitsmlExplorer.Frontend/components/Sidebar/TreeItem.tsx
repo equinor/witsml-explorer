@@ -8,7 +8,6 @@ import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
@@ -32,7 +31,6 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
-          {isActive && <Icon name="isActive" color={colors.interactive.primaryResting} />}
           <NavigationDrawer selected={selected} compactMode={isCompactMode}>
             {labelText} {isLoading && <DotProgress color={"primary"} size={32} />}
           </NavigationDrawer>
@@ -48,7 +46,7 @@ const Label = styled.div`
 `;
 
 const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean }>`
-  color: ${(props) => (props.selected ? colors.interactive.primaryResting : colors.text.staticIconsDefault)};
+  color: ${ colors.interactive.primaryResting};
   font-family: EquinorMedium, sans-serif;
   font-size: 0.75rem;
   line-height: 1rem;

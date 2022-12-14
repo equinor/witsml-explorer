@@ -38,6 +38,7 @@ import {
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
 import { allDeselected, NavigationState } from "./navigationContext";
+import { listWellsFlag } from "./navigationStateReducer";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -112,7 +113,10 @@ const addServer = (state: NavigationState, { payload }: AddServerAction) => {
   const { server } = payload;
   return {
     ...state,
-    servers: state.servers.concat([server])
+    servers: state.servers.concat([server]),
+    currentSelected: state.selectedServer == null ? listWellsFlag : state.currentSelected,
+    selectedServer: state.selectedServer
+
   };
 };
 
@@ -525,6 +529,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   const { wells } = payload;
   return {
     ...state,
+    currentSelected: listWellsFlag,
     wells: wells,
     filteredWells: filterWells(wells, state.selectedFilter)
   };

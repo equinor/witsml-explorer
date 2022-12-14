@@ -1,8 +1,12 @@
-import { Button, Dialog, Progress } from "@equinor/eds-core-react";
+import { Button, Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import { DialogActions, DialogTitle } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { colors } from "../../styles/Colors";
+import Icons from "../../styles/Icons";
 
 interface ModalDialogProps {
   heading: string;
@@ -19,6 +23,8 @@ interface ModalDialogProps {
   onDelete?: () => void;
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
+  confirmIcon?:string;
+  ButtonPosition?:controlButtonPosition;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -35,7 +41,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     switchButtonPlaces,
     width = ModalWidth.MEDIUM,
     showConfirmButton = true,
-    showCancelButton = true
+    showCancelButton = true,
+    ButtonPosition = props.ButtonPosition ?? (controlButtonPosition.BOTTOM)
   } = props;
   const context = React.useContext(OperationContext);
   const { displayModal } = context.operationState;
@@ -73,6 +80,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           color={confirmColor ?? "primary"}
           variant="contained"
         >
+        {ButtonPosition == controlButtonPosition.TOP ? <Icons name = "save"/> : ""}
           {confirmText ?? "Save"}
         </StyledButton>
       )
@@ -80,8 +88,9 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       <></>
     ),
     showCancelButton ? (
-      <StyledButton key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
-        Cancel
+      <StyledButton key={"close"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+      <Icons name="close" />
+        Close
       </StyledButton>
     ) : (
       <></>
@@ -98,22 +107,40 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       Delete
     </StyledButton>
   ];
+  
+  const top =
+    <HeadTitle>
+      <Typography color="primary" token={{
+        fontSize: '1.5rem',
+        fontWeight: 600,
+      }}>
+        {heading}
+      </Typography>
+      <Typography> {buttons[switchButtonPlaces ? 1 : 0]}
+        {buttons[switchButtonPlaces ? 0 : 1]}
+        {isLoading && <CircularProgress size="1.5rem" />}
+        {ButtonPosition ? <></> : onDelete && buttons[2]}
+      </Typography>
+    </HeadTitle>;
 
+  const bottom =
+    <DialogAction>
+      {buttons[switchButtonPlaces ? 1 : 0]}
+      {buttons[switchButtonPlaces ? 0 : 1]}
+      {isLoading && <CircularProgress size="1.5rem" />}
+      {ButtonPosition ? <></> : onDelete && buttons[2]}
+    </DialogAction>
+
+  const header =
+    <Title>{heading}</Title>
   return (
     <Dialog onKeyDown={onKeyPress} open={displayModal} style={{ width: width }}>
-      <Dialog.Header>
-        <Dialog.Title>{heading}</Dialog.Title>
-      </Dialog.Header>
-
+      {ButtonPosition == controlButtonPosition.TOP ? top: header}
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
-      <Dialog.Actions style={{ width: "100%" }}>
-        {buttons[switchButtonPlaces ? 1 : 0]}
-        {buttons[switchButtonPlaces ? 0 : 1]}
-        {onDelete && buttons[2]}
-      </Dialog.Actions>
+      { ButtonPosition == controlButtonPosition.BOTTOM ? bottom:<></> }
     </Dialog>
   );
 };
@@ -123,6 +150,26 @@ export enum ModalWidth {
   MEDIUM = "600px", // sm
   LARGE = "960px" // md
 }
+ export enum controlButtonPosition {
+  TOP = "top",
+  BOTTOM = "bottom"
+}
+const HeadTitle = styled.div`
+  margin-top: 0.5rem;
+  display:flex;
+  padding: 0.5rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid ${colors.interactive.disabledBorder};
+`;
+const DialogAction = styled(DialogActions)`
+  padding: 0 0.5rem 0.5rem 0.5rem !important;
+  margin-top: 0! important;
+ `;
+ 
+const Title = styled(DialogTitle)`
+  border-bottom: 2px solid ${colors.interactive.disabledBorder};
+`;
 
 export const ModalContentLayout = styled.div`
   display: flex;
@@ -131,7 +178,7 @@ export const ModalContentLayout = styled.div`
 `;
 
 const Content = styled(Dialog.CustomContent)`
-  margin-top: 0.5em;
+  margin-top: 0.5em; 
   max-height: 75vh;
   overflow-y: auto;
 

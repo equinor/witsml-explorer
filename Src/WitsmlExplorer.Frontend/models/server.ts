@@ -13,7 +13,7 @@ export function emptyServer(): Server {
     name: "",
     description: "",
     url: "",
-    securityscheme: "Basic",
+    securityscheme: "OAuth2",
     roles: []
   };
 }

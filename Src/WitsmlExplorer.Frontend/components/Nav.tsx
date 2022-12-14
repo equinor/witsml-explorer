@@ -29,6 +29,8 @@ import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId, calculateWbGeometryGroupId } from "../models/wellbore";
 import TopRightCornerMenu from "./TopRightCornerMenu";
+import { colors } from "../styles/Colors";
+import Icon from "../styles/Icons";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -77,19 +79,26 @@ const Nav = (): React.ReactElement => {
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected]);
+  }, [currentSelected, selectedServer]);
 
   return (
     <nav>
       <Layout>
-        <Title>WITSML Explorer</Title>
-        <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
-          {breadcrumbContent.map((breadCrumb, index) => (
-            <Breadcrumbs.Breadcrumb key={index} href="#" onClick={breadCrumb.onClick}>
-              {breadCrumb.name}
-            </Breadcrumbs.Breadcrumb>
-          ))}
-        </StyledBreadcrumbs>
+          <NavContainer>
+          <Title>WITSML Explorer</Title>
+          {breadcrumbContent.length ? <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} /> : ''}
+          <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
+            {breadcrumbContent.map((breadCrumb, index: number) => (
+              <Breadcrumbs.Breadcrumb maxWidth={100} key={index} href="#" onClick={breadCrumb.onClick}
+                style={{
+                  "fontFamily": breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
+                  "color": `${colors.interactive.primaryResting}`
+                }}>
+                {breadCrumb.name}
+              </Breadcrumbs.Breadcrumb>
+            ))}
+          </StyledBreadcrumbs>
+        </NavContainer>
         <TopRightCornerMenu />
       </Layout>
     </nav>
@@ -328,13 +337,21 @@ const Layout = styled.div`
 
 const Title = styled.p`
   line-height: 1rem;
-  padding-left: 2rem;
-  width: 12%;
+  padding-left: 1rem;
+  color:${colors.interactive.primaryResting};
+  font-size:1rem;
+  font-family:'EquinorBold';
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
-  padding-left: 1rem;
+  padding-top: 0.2em;
   width: 60%;
 `;
+const NavContainer = styled.div`{
+  display:flex;
+  width:100%;
+  align-items: center;
+  height:2.5rem;
+}`
 
 export default Nav;

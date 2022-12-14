@@ -44,6 +44,8 @@ import {
 import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
 
+export const selectedManageServerFlag = "manageServer";
+export const listWellsFlag = "listWells";
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
 };
@@ -102,6 +104,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return setCurveThreshold(state, action);
     case NavigationType.ShowCurveValues:
       return selectLogCurveInfo(state, action);
+    case NavigationType.SelectManageServer:
+      return selectManageServer(state);
     default:
       throw new Error();
   }
@@ -116,12 +120,12 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
 
 const selectServer = (state: NavigationState, { payload }: SelectServerAction) => {
   const { server } = payload;
-  const alreadySelected = server.id === state.selectedServer?.id;
+  const alreadySelected = server ? server.id === state.selectedServer?.id : null;
   const expandedTreeNodes: string[] = [];
   return {
     ...state,
     ...allDeselected,
-    currentSelected: server,
+    currentSelected: state.selectedServer == null? selectedManageServerFlag : server,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],
@@ -189,6 +193,16 @@ const selectJobs = (state: NavigationState) => {
     currentSelected: selectedJobsFlag
   };
 };
+
+const selectManageServer = (state: NavigationState) => {
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    currentSelected: selectedManageServerFlag
+  };
+};
+
 
 const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
   const { well, wellbore, bhaRunGroup } = payload;
@@ -467,3 +481,9 @@ const toggleTreeNode = (expandedTreeNodes: string[], nodeId: string) => {
     return expandedTreeNodes.filter((expandedNode) => !expandedNode.includes(nodeId));
   }
 };
+
+export interface SelectManageServerAction extends Action {
+  type: NavigationType.SelectManageServer;
+}
+export { selectedJobsFlag };
+

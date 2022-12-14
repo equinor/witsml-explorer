@@ -47,6 +47,7 @@ import {
   SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
+import { SelectManageServerAction } from "./navigationStateReducer";
 
 export type NavigationAction =
   | AddServerAction
@@ -93,4 +94,5 @@ export type NavigationAction =
   | SelectWbGeometryGroupAction
   | SelectWbGeometryAction
   | SetFilterAction
-  | SetCurveThresholdAction;
+  | SetCurveThresholdAction
+  | SelectManageServerAction;
