@@ -123,7 +123,7 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction) =
   return {
     ...state,
     ...allDeselected,
-    currentSelected: state.selectedServer == null? selectedManageServerFlag : server,
+    currentSelected: state.selectedServer == null ? selectedManageServerFlag : server,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],
@@ -200,7 +200,6 @@ const selectManageServer = (state: NavigationState) => {
     currentSelected: selectedManageServerFlag
   };
 };
-
 
 const selectBhaRunGroup = (state: NavigationState, { payload }: SelectBhaRunGroupAction) => {
   const { well, wellbore, bhaRunGroup } = payload;
@@ -479,4 +478,3 @@ const toggleTreeNode = (expandedTreeNodes: string[], nodeId: string) => {
     return expandedTreeNodes.filter((expandedNode) => !expandedNode.includes(nodeId));
   }
 };
-

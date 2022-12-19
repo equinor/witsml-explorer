@@ -69,17 +69,16 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     }
   }, [isAuthenticated]);
 
-
   const Styles = {
     feildname: { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" },
     noServer: { alignItems: "center", display: "flex", fontSize: "1.4rem", color: "colors.interactive.primaryResting", gap: "4px" },
     noserverHeading: { marginLeft: "0.25rem", fontSize: "1.4rem", position: "relative" },
     testConnectnBtn: { gridColumn: "2/3", display: "flex", alignItems: "end", justifyContent: "flex-end" },
     noServerText: { position: "relative", display: "flex", justifyContent: "center", paddingTop: "3rem", paddingBottom: "3rem", alignItems: "center" },
-    errorText: { position: "absolute" as 'absolute', right: "10.5rem", top: "6.5rem" },
+    errorText: { position: "absolute" as "absolute", right: "10.5rem", top: "6.5rem" },
     noServerContent: { margin: "0 10rem 1rem 7rem" },
     authentication: { gridColumn: "2/3", paddingLeft: "0" }
-  }
+  };
 
   const onSubmit = async () => {
     const abortController = new AbortController();
@@ -93,11 +92,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     if (isAddingNewServer || standAlone) {
       try {
         const blank = "blank";
-        isconnected(true)
+        isconnected(true);
         await CredentialsService.verifyCredentials(credentials, false);
         CredentialsService.saveCredentials({ ...credentials, password: blank });
         const freshServer = await ServerService.addServer(server, abortController.signal);
-        isconnected(false)
+        isconnected(false);
         dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: freshServer } };
         dispatchNavigation(action);
@@ -106,7 +105,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       } catch (error) {
         setErrorMessage(error.message);
         setIsLoading(false);
-        isconnected(false)
+        isconnected(false);
       }
     } else {
       try {

@@ -23,8 +23,8 @@ interface ModalDialogProps {
   onDelete?: () => void;
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
-  confirmIcon?:string;
-  ButtonPosition?:controlButtonPosition;
+  confirmIcon?: string;
+  ButtonPosition?: controlButtonPosition;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -80,7 +80,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           color={confirmColor ?? "primary"}
           variant="contained"
         >
-        {ButtonPosition == controlButtonPosition.TOP ? <Icons name = "save"/> : ""}
+          {ButtonPosition == controlButtonPosition.TOP ? <Icons name="save" /> : ""}
           {confirmText ?? "Save"}
         </StyledButton>
       )
@@ -89,7 +89,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ),
     showCancelButton ? (
       <StyledButton key={"close"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
-      <Icons name="close" />
+        <Icons name="close" />
         Close
       </StyledButton>
     ) : (
@@ -107,40 +107,46 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       Delete
     </StyledButton>
   ];
-  
-  const top =
+
+  const top = (
     <HeadTitle>
-      <Typography color="primary" token={{
-        fontSize: '1.5rem',
-        fontWeight: 600,
-      }}>
+      <Typography
+        color="primary"
+        token={{
+          fontSize: "1.5rem",
+          fontWeight: 600
+        }}
+      >
         {heading}
       </Typography>
-      <Typography> {buttons[switchButtonPlaces ? 1 : 0]}
+      <Typography>
+        {" "}
+        {buttons[switchButtonPlaces ? 1 : 0]}
         {buttons[switchButtonPlaces ? 0 : 1]}
         {isLoading && <CircularProgress size="1.5rem" />}
         {ButtonPosition ? <></> : onDelete && buttons[2]}
       </Typography>
-    </HeadTitle>;
+    </HeadTitle>
+  );
 
-  const bottom =
+  const bottom = (
     <DialogAction>
       {buttons[switchButtonPlaces ? 1 : 0]}
       {buttons[switchButtonPlaces ? 0 : 1]}
       {isLoading && <CircularProgress size="1.5rem" />}
       {ButtonPosition ? <></> : onDelete && buttons[2]}
     </DialogAction>
+  );
 
-  const header =
-    <Title>{heading}</Title>
+  const header = <Title>{heading}</Title>;
   return (
     <Dialog onKeyDown={onKeyPress} open={displayModal} style={{ width: width }}>
-      {ButtonPosition == controlButtonPosition.TOP ? top: header}
+      {ButtonPosition == controlButtonPosition.TOP ? top : header}
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
-      { ButtonPosition == controlButtonPosition.BOTTOM ? bottom:<></> }
+      {ButtonPosition == controlButtonPosition.BOTTOM ? bottom : <></>}
     </Dialog>
   );
 };
@@ -151,14 +157,14 @@ export enum ModalWidth {
   LARGE = "960px" // md
 }
 
- export enum controlButtonPosition {
+export enum controlButtonPosition {
   TOP = "top",
   BOTTOM = "bottom"
 }
 
 const HeadTitle = styled.div`
   margin-top: 0.5rem;
-  display:flex;
+  display: flex;
   padding: 0.5rem 2rem;
   align-items: center;
   justify-content: space-between;
@@ -166,9 +172,9 @@ const HeadTitle = styled.div`
 `;
 const DialogAction = styled(DialogActions)`
   padding: 0 0.5rem 0.5rem 0.5rem !important;
-  margin-top: 0! important;
- `;
- 
+  margin-top: 0 !important;
+`;
+
 const Title = styled(DialogTitle)`
   border-bottom: 2px solid ${colors.interactive.disabledBorder};
 `;
@@ -180,7 +186,7 @@ export const ModalContentLayout = styled.div`
 `;
 
 const Content = styled(Dialog.CustomContent)`
-  margin-top: 0.5em; 
+  margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
 

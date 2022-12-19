@@ -65,7 +65,7 @@ const PageLayout = (): ReactElement => {
       <SidebarLayout ref={sidebarRef} style={{ width: sidebarWidth }}>
         <Sidebar />
       </SidebarLayout>
-      {selectedServer ? < Divider onMouseDown={startResizing} /> : <></>}
+      {selectedServer ? <Divider onMouseDown={startResizing} /> : <></>}
       <ContentViewLayout style={{ width: contentWidth }}>
         <Alerts />
         <ContentView />
@@ -84,7 +84,7 @@ const Layout = styled.div`
   grid-template-areas:
     "header header header"
     "sidebar divider content"
-     "footer footer footer";
+    "footer footer footer";
   height: 100vh;
   grid-template-rows: 40px 1fr 40px;
 `;
@@ -92,7 +92,7 @@ const Layout = styled.div`
 const NavLayout = styled.div`
   grid-area: header;
   height: 40px;
-  border-bottom:1px solid ${colors.interactive.disabledBorder};
+  border-bottom: 1px solid ${colors.interactive.disabledBorder};
 `;
 
 const SidebarLayout = styled.div`
@@ -113,7 +113,7 @@ const Divider = styled.div`
   background: ${colors.interactive.primaryResting};
   border-radius: 0px 5px 5px 0px;
   &:hover {
-    background:${colors.interactive.primaryHover};
+    background: ${colors.interactive.primaryHover};
     width: 0.6rem;
     margin-right: 0.2rem;
   }
@@ -123,16 +123,18 @@ const ContentViewLayout = styled.div`
   grid-area: content;
   overflow-y: auto;
   overflow-x: auto;
-  word-wrap: wrap;;
+  word-wrap: wrap;
   padding-right: 0.2rem;
 `;
-const PropertyBar = styled.div`{
-  width:100vw;
-  height:40px;
-  background-color: ${colors.ui.backgroundLight};
-  grid-area:footer;
-  display:flex;
-  align-items: center;
-  padding-left:1.6rem;
-}`
+const PropertyBar = styled.div`
+   {
+    width: 100vw;
+    height: 40px;
+    background-color: ${colors.ui.backgroundLight};
+    grid-area: footer;
+    display: flex;
+    align-items: center;
+    padding-left: 1.6rem;
+  }
+`;
 export default PageLayout;

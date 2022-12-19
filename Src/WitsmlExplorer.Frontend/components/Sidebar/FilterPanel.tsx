@@ -1,4 +1,4 @@
-﻿import { Divider} from "@material-ui/core";
+﻿import { Divider } from "@material-ui/core";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "../../contexts/curveThreshold";
 import Filter, { EMPTY_FILTER } from "../../contexts/filter";
@@ -27,7 +27,7 @@ const FilterPanel = (): React.ReactElement => {
     overflowY: "scroll",
     paddingTop: "1rem"
   } as CSSProperties;
-  
+
   const WellboreObject = {
     display: "grid",
     gridTemplateColumns: "1fr 80px",
@@ -49,7 +49,7 @@ const FilterPanel = (): React.ReactElement => {
 
   const wellObjectList = Object.keys(WellboreObjects).map((wellObj: string, index: number) => {
     return (
-      <EdsProvider  key={index}>
+      <EdsProvider key={index}>
         <Checkbox label={wellObj} style={{ height: "0.75rem" }} defaultChecked key={index} />
       </EdsProvider>
     );
@@ -159,7 +159,5 @@ const Container = styled.div`
   background-color: ${colors.ui.backgroundLight};
   padding-bottom: 0.5em;
 `;
-
-
 
 export default FilterPanel;

@@ -2,7 +2,7 @@ import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
-import ModalDialog, {  ModalWidth } from "./ModalDialog";
+import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
 export interface UserCredentialsModalProps {

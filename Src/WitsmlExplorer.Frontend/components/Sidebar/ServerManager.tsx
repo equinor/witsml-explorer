@@ -101,7 +101,7 @@ const ServerManager = (): React.ReactElement => {
   }, [isAuthenticated]);
 
   const onSelectItem = async (server: Server) => {
-    if(server.id === selectedServer?.id) {
+    if (server.id === selectedServer?.id) {
       await CredentialsService.deauthorize();
       signOut();
       CredentialsService.setSelectedServer(null);
@@ -176,50 +176,50 @@ const ServerManager = (): React.ReactElement => {
   const CellHeaderStyle = {
     color: colors.interactive.primaryResting,
     padding: isCompactMode ? "" : "1.5rem"
-  }
-  
+  };
+
   const CellHeader = {
     color: colors.interactive.primaryResting,
     display: "flex",
     justifyContent: "center",
     padding: isCompactMode ? "" : "1.5rem",
-    height:"100%"
+    height: "100%"
   };
 
   return (
     <>
       <Header>
-        <Typography color={"primary"} bold={true}>Manage Connections</Typography>
+        <Typography color={"primary"} bold={true}>
+          Manage Connections
+        </Typography>
         <Button variant="outlined" value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
           <Icon name="cloudDownload" />
           New server
         </Button>
       </Header>
-      <Table style={{width: "100%"}}>
-          <Table.Head >
-              <Table.Row>
-                  <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
-                  <Table.Cell style={CellHeader}>Test Connection</Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
-                  <Table.Cell></Table.Cell>
-                  <Table.Cell></Table.Cell>
-              </Table.Row>
-          </Table.Head>
-          <Table.Body>
-
-            {servers
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((server: Server) => (
-
-                <Table.Row id={server.id} key={server.id}>
-                  <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
-                  <Table.Cell style={{ textAlign: "center" }}>
-                    <Icon color={selectedServer?.id == server.id ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <EdsProvider density={"compact"}>
+      <Table style={{ width: "100%" }}>
+        <Table.Head>
+          <Table.Row>
+            <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
+            <Table.Cell style={CellHeader}>Test Connection</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
+            <Table.Cell></Table.Cell>
+            <Table.Cell></Table.Cell>
+          </Table.Row>
+        </Table.Head>
+        <Table.Body>
+          {servers
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((server: Server) => (
+              <Table.Row id={server.id} key={server.id}>
+                <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>
+                  <Icon color={selectedServer?.id == server.id ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <EdsProvider density={"compact"}>
                     <CustomButton
                       variant="outlined"
                       onClick={() => onSelectItem(server)}
@@ -230,23 +230,21 @@ const ServerManager = (): React.ReactElement => {
                     >
                       {selectedServer?.id == server.id ? "Connected" : "Connect"}
                     </CustomButton>
-                    </EdsProvider>
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <Icon name="edit" size={24} onClick={() => onEditItem(server)}/>
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <Icon name="deleteToTrash" size={24} onClick={() => showDeleteModal(server)}/>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-          </Table.Body>
-        </Table>
-
+                  </EdsProvider>
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Icon name="edit" size={24} onClick={() => onEditItem(server)} />
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Icon name="deleteToTrash" size={24} onClick={() => showDeleteModal(server)} />
+                </Table.Cell>
+              </Table.Row>
+            ))}
+        </Table.Body>
+      </Table>
     </>
   );
 };
-
 
 const Header = styled.div`
   display: flex;

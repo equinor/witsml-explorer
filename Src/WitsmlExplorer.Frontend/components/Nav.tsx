@@ -84,16 +84,21 @@ const Nav = (): React.ReactElement => {
   return (
     <nav>
       <Layout>
-          <NavContainer>
+        <NavContainer>
           <Title>WITSML Explorer</Title>
-          {breadcrumbContent.length ? <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} /> : ''}
+          {breadcrumbContent.length ? <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} /> : ""}
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
-              <Breadcrumbs.Breadcrumb maxWidth={130} key={index} href="#" onClick={breadCrumb.onClick}
+              <Breadcrumbs.Breadcrumb
+                maxWidth={130}
+                key={index}
+                href="#"
+                onClick={breadCrumb.onClick}
                 style={{
-                  "fontFamily": breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
-                  "color": `${colors.interactive.primaryResting}`
-                }}>
+                  fontFamily: breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
+                  color: `${colors.interactive.primaryResting}`
+                }}
+              >
                 {breadCrumb.name}
               </Breadcrumbs.Breadcrumb>
             ))}
@@ -338,20 +343,22 @@ const Layout = styled.div`
 const Title = styled.p`
   line-height: 1rem;
   padding-left: 1rem;
-  color:${colors.interactive.primaryResting};
-  font-size:1rem;
-  font-family:'EquinorBold';
+  color: ${colors.interactive.primaryResting};
+  font-size: 1rem;
+  font-family: "EquinorBold";
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-top: 0.2em;
   width: auto;
 `;
-const NavContainer = styled.div`{
-  display:flex;
-  width:100%;
-  align-items: center;
-  height:2.5rem;
-}`
+const NavContainer = styled.div`
+   {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    height: 2.5rem;
+  }
+`;
 
 export default Nav;

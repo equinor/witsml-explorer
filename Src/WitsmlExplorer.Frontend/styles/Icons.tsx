@@ -32,7 +32,6 @@ import {
   new_alert as alert,
   filter_alt_active as activeFilter,
   done
-  
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,

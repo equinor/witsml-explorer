@@ -15,36 +15,39 @@ import { Divider } from "@equinor/eds-core-react";
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { filteredWells, expandedTreeNodes } = navigationState;
-  const WellListing: CSSProp = { display: 'grid', gridTemplateColumns: '1fr 25px', justifyContent: 'center', alignContent: 'stretch' }
+  const WellListing: CSSProp = { display: "grid", gridTemplateColumns: "1fr 25px", justifyContent: "center", alignContent: "stretch" };
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
   return (
-    <React.Fragment >
+    <React.Fragment>
       <SearchFilter />
-          <SidebarTreeView>
-            <WellProgress>
-              {filteredWells && filteredWells.length > 0 && (
-                <TreeView
-                  defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}
-                  defaultExpandIcon={<Icon name="chevronRight" color={colors.interactive.primaryResting} />}
-                  defaultEndIcon={<div style={{ width: 24 }} />}
-                  expanded={expandedTreeNodes}
-                >
-                  {
-                    filteredWells.map((well: Well, index: number) => (
-                      <React.Fragment key={index}>
-                        <div style={WellListing} className='ListWells'>
-                          <WellItem key={well.uid} well={well} />
-                          {well.wellbores.some((wellbores: Wellbore) => wellbores.isActive) ? <ActiveWellIndicator compactMode={isCompactMode}/> : <InactiveWellInidcator compactMode={isCompactMode}/>}
-                        </div>
-                        <Divider style={{ margin: '0px' }} key={index} />
-                      </React.Fragment>
-                    ))
-                  }
-                </TreeView>
-              )}
-            </WellProgress>
-          </SidebarTreeView> : <></>
+      <SidebarTreeView>
+        <WellProgress>
+          {filteredWells && filteredWells.length > 0 && (
+            <TreeView
+              defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}
+              defaultExpandIcon={<Icon name="chevronRight" color={colors.interactive.primaryResting} />}
+              defaultEndIcon={<div style={{ width: 24 }} />}
+              expanded={expandedTreeNodes}
+            >
+              {filteredWells.map((well: Well, index: number) => (
+                <React.Fragment key={index}>
+                  <div style={WellListing} className="ListWells">
+                    <WellItem key={well.uid} well={well} />
+                    {well.wellbores.some((wellbores: Wellbore) => wellbores.isActive) ? (
+                      <ActiveWellIndicator compactMode={isCompactMode} />
+                    ) : (
+                      <InactiveWellInidcator compactMode={isCompactMode} />
+                    )}
+                  </div>
+                  <Divider style={{ margin: "0px" }} key={index} />
+                </React.Fragment>
+              ))}
+            </TreeView>
+          )}
+        </WellProgress>
+      </SidebarTreeView>{" "}
+      : <></>
     </React.Fragment>
   );
 };
@@ -63,12 +66,12 @@ const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
   background-color:${colors.interactive.successHover};
   border-radius: 50%;
   margin-top:${(props) => (props.compactMode ? "0.5rem" : "1rem")};
-}`
+}`;
 const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
   width: 10px;
   height: 10px;
   background-color:${colors.interactive.disabledBorder};
   border-radius: 50%;
   margin-top:${(props) => (props.compactMode ? "0.5rem" : "1rem")};
-}`
+}`;
 export default Sidebar;

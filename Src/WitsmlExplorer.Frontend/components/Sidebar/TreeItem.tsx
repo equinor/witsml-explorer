@@ -46,7 +46,7 @@ const Label = styled.div`
 `;
 
 const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean }>`
-  color: ${ colors.interactive.primaryResting};
+  color: ${colors.interactive.primaryResting};
   font-family: EquinorMedium, sans-serif;
   font-size: 0.75rem;
   line-height: 1rem;

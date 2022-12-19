@@ -115,7 +115,6 @@ const addServer = (state: NavigationState, { payload }: AddServerAction) => {
     servers: state.servers.concat([server]),
     currentSelected: state.selectedServer == null ? listWellsFlag : state.currentSelected,
     selectedServer: state.selectedServer
-
   };
 };
 
