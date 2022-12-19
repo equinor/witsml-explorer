@@ -19,6 +19,7 @@ import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction, UpdateWe
 import { SelectServerAction } from "../../contexts/navigationActions";
 import { msalEnabled } from "../../msal/MsalAuthProvider";
 import { useIsAuthenticated } from "@azure/msal-react";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 export interface ServerModalProps {
   server: Server;
@@ -78,7 +79,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     errorText: { position: "absolute" as "absolute", right: "10.5rem", top: "6.5rem" },
     noServerContent: { margin: "0 10rem 1rem 7rem" },
     authentication: { gridColumn: "2/3", paddingLeft: "0" }
-  };
+  } as CSSProperties;
 
   const onSubmit = async () => {
     const abortController = new AbortController();
