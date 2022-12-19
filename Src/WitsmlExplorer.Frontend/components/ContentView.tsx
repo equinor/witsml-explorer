@@ -52,11 +52,11 @@ const ContentView = (): React.ReactElement => {
   useEffect(() => {
     if (currentSelected === null) {
       const server: Server = emptyServer()
-      const standalone: boolean = true;
-      const props: ServerModalProps = { server, dispatchNavigation, dispatchOperation , standalone }
-      setView(<ServerModal {...props}/>)
+      const standalone = true;
+      const props: ServerModalProps = { server, dispatchNavigation, dispatchOperation, standalone }
+      setView(<ServerModal {...props} />)
     } else {
-      if(currentSelected == listWellsFlag) {
+      if (currentSelected == listWellsFlag) {
         setView(<WellsListView />)
       } else if (currentSelected === selectedServer) {
         setView(<WellsListView />);

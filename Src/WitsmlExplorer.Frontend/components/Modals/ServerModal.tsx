@@ -1,5 +1,5 @@
 import { Autocomplete, Typography, Label, Button, TextField } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useContext, useEffect, useState, ReactElement, CSSProperties } from "react";
+import React, { ChangeEvent, useEffect, useState, ReactElement } from "react";
 import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
@@ -44,6 +44,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [standAlone] = useState<boolean>(props.standalone ?? false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
+  const [connected, isconnected] = useState(false);
 
   useEffect(() => {
     if (props.errorMessage !== "") {
@@ -68,9 +69,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     }
   }, [isAuthenticated]);
 
-  interface cssProp extends CSSProperties {
-    [key: string]: {} ;
-  }
 
   const Styles = {
     feildname: { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" },
@@ -78,13 +76,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     noserverHeading: { marginLeft: "0.25rem", fontSize: "1.4rem", position: "relative" },
     testConnectnBtn: { gridColumn: "2/3", display: "flex", alignItems: "end", justifyContent: "flex-end" },
     noServerText: { position: "relative", display: "flex", justifyContent: "center", paddingTop: "3rem", paddingBottom: "3rem", alignItems: "center" },
-    errorText: { position: "absolute", right: "10.5rem", top: "6.5rem" },
+    errorText: { position: "absolute" as 'absolute', right: "10.5rem", top: "6.5rem" },
     noServerContent: { margin: "0 10rem 1rem 7rem" },
     authentication: { gridColumn: "2/3", paddingLeft: "0" }
-  } as cssProp;
+  }
 
   const onSubmit = async () => {
-    const abortController = new AbortController();      
+    const abortController = new AbortController();
 
     setIsLoading(true);
     const credentials = {
@@ -95,9 +93,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     if (isAddingNewServer || standAlone) {
       try {
         const blank = "blank";
+        isconnected(true)
         await CredentialsService.verifyCredentials(credentials, false);
         CredentialsService.saveCredentials({ ...credentials, password: blank });
         const freshServer = await ServerService.addServer(server, abortController.signal);
+        isconnected(false)
         dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: freshServer } };
         dispatchNavigation(action);
@@ -106,6 +106,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       } catch (error) {
         setErrorMessage(error.message);
         setIsLoading(false);
+        isconnected(false)
       }
     } else {
       try {
@@ -214,7 +215,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const setStandAlonePopup: ReactElement = (
     <React.Fragment key={"standalone"}>
       {standAlone ? (
-        <div style={standAlone ? Styles.noServerText : <></>}>
+        <div style={{ position: "relative", display: "flex", justifyContent: "center", paddingTop: "3rem", paddingBottom: "3rem", alignItems: "center" }}>
           <Typography
             style={Styles.noServer}
             token={{
@@ -298,7 +299,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               <Icons name="done" /> {"Test connection"}
             </TestServerButton>
             {standAlone && (
-              <TestServerButton disabled={!validateForm() || !validText(username) || !validText(password)} color={"primary"} variant="outlined" onClick={onSubmit}>
+              <TestServerButton disabled={!validateForm() || !validText(username) || !validText(password) || connected} color={"primary"} variant="outlined" onClick={onSubmit}>
                 <Icons name="save" size={24} />
                 {"Connect & Save"}
               </TestServerButton>

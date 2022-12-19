@@ -14,7 +14,7 @@ import { Divider } from "@equinor/eds-core-react";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { filteredWells, expandedTreeNodes,selectedServer } = navigationState;
+  const { filteredWells, expandedTreeNodes } = navigationState;
   const WellListing: CSSProp = { display: 'grid', gridTemplateColumns: '1fr 25px', justifyContent: 'center', alignContent: 'stretch' }
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 

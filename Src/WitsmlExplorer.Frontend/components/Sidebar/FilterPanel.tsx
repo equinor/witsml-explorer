@@ -8,6 +8,7 @@ import NavigationType from "../../contexts/navigationType";
 import { colors } from "../../styles/Colors";
 import { Checkbox, EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
 import { WellboreObjects } from "../../contexts/wellboreObjects";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -17,9 +18,26 @@ const FilterPanel = (): React.ReactElement => {
   const [curveThreshold, setCurveThreshold] = useState<CurveThreshold>(DEFAULT_CURVE_THRESHOLD);
 
   const [showMore, setShowmore] = useState<boolean>(false);
-  const Styles = {
-    ListWellborObj: { display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "1.2rem", height: "calc(100vh - 388px)", overflowY: "scroll" as "scroll", paddingTop: "1rem" },
-    WellboreObject: { display: "grid", gridTemplateColumns: "1fr 80px",alignItems: "baseline", userSelect: "none" as "none", color: "{colors.interactive.primaryResting}", paddingLeft: "0.8rem", paddingRight: "0.5rem", paddingBottom: "0.5rem" } };
+
+  const ListWellborObj = {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, auto)",
+    gap: "1.2rem",
+    height: "calc(100vh - 388px)",
+    overflowY: "scroll",
+    paddingTop: "1rem"
+  } as CSSProperties;
+  
+  const WellboreObject = {
+    display: "grid",
+    gridTemplateColumns: "1fr 80px",
+    alignItems: "baseline",
+    userSelect: "none",
+    color: "{colors.interactive.primaryResting}",
+    paddingLeft: "0.8rem",
+    paddingRight: "0.5rem",
+    paddingBottom: "0.5rem"
+  } as CSSProperties;
 
   useEffect(() => {
     setFilter(selectedFilter);
@@ -40,7 +58,7 @@ const FilterPanel = (): React.ReactElement => {
     <Container style={{ boxShadow: !showMore ? "1px 4px 5px 0px #8888" : "none" }}>
       {
         <>
-          <div style={Styles.WellboreObject}>
+          <div style={WellboreObject}>
             <span style={{ display: "flex", gap: "7px" }}>
               <Typography token={{ fontFamily: "EquinorMedium", fontSize: "0.875rem", color: colors.interactive.primaryResting }}>Limit number of wells</Typography>
               <Typography token={{ fontStyle: "italic", fontFamily: "EquinorRegular", fontSize: "0.75rem", color: colors.text.staticIconsTertiary }}>(0 for no limit)</Typography>
@@ -128,7 +146,7 @@ const FilterPanel = (): React.ReactElement => {
           <Typography style={{ paddingLeft: "0.8rem", paddingTop: "1em" }} token={{ fontSize: "1rem", fontFamily: "EquinorMedium", color: colors.interactive.primaryResting }}>
             Well Objects
           </Typography>
-          <span style={Styles.ListWellborObj}> {wellObjectList} </span>
+          <span style={ListWellborObj}> {wellObjectList} </span>
         </>
       ) : (
         ""
