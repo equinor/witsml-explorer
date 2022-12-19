@@ -76,7 +76,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     noserverHeading: { marginLeft: "0.25rem", fontSize: "1.4rem", position: "relative" },
     testConnectnBtn: { gridColumn: "2/3", display: "flex", alignItems: "end", justifyContent: "flex-end" },
     noServerText: { position: "relative", display: "flex", justifyContent: "center", paddingTop: "3rem", paddingBottom: "3rem", alignItems: "center" },
-    errorText: { position: "absolute" as "absolute", right: "10.5rem", top: "6.5rem" },
+    errorText: { position: "absolute", right: "10.5rem", top: "6.5rem" },
     noServerContent: { margin: "0 10rem 1rem 7rem" },
     authentication: { gridColumn: "2/3", paddingLeft: "0" }
   };
