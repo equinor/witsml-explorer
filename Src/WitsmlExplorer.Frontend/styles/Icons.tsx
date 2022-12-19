@@ -29,7 +29,7 @@ import {
   close,
   cloud_download as cloudDownload,
   person,
-  new_alert,
+  new_alert as alert,
   filter_alt_active as activeFilter,
   done
   
@@ -64,7 +64,7 @@ const icons = {
   close,
   cloudDownload,
   person,
-  new_alert,
+  alert,
   activeFilter,
   done
 };

@@ -79,7 +79,7 @@ const Nav = (): React.ReactElement => {
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected, selectedServer]);
+  }, [currentSelected]);
 
   return (
     <nav>
@@ -89,7 +89,7 @@ const Nav = (): React.ReactElement => {
           {breadcrumbContent.length ? <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} /> : ''}
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
-              <Breadcrumbs.Breadcrumb maxWidth={100} key={index} href="#" onClick={breadCrumb.onClick}
+              <Breadcrumbs.Breadcrumb maxWidth={130} key={index} href="#" onClick={breadCrumb.onClick}
                 style={{
                   "fontFamily": breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
                   "color": `${colors.interactive.primaryResting}`
@@ -345,7 +345,7 @@ const Title = styled.p`
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-top: 0.2em;
-  width: 60%;
+  width: auto;
 `;
 const NavContainer = styled.div`{
   display:flex;

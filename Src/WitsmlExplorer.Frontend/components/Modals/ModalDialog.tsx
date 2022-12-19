@@ -42,7 +42,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     width = ModalWidth.MEDIUM,
     showConfirmButton = true,
     showCancelButton = true,
-    ButtonPosition = props.ButtonPosition ?? (controlButtonPosition.BOTTOM)
+    ButtonPosition = controlButtonPosition.BOTTOM
   } = props;
   const context = React.useContext(OperationContext);
   const { displayModal } = context.operationState;
@@ -150,10 +150,12 @@ export enum ModalWidth {
   MEDIUM = "600px", // sm
   LARGE = "960px" // md
 }
+
  export enum controlButtonPosition {
   TOP = "top",
   BOTTOM = "bottom"
 }
+
 const HeadTitle = styled.div`
   margin-top: 0.5rem;
   display:flex;

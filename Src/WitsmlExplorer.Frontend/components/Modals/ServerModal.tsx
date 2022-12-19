@@ -12,7 +12,6 @@ import ModalDialog, { controlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
 import { validText } from "./ModalParts";
 import WellService from "../../services/wellService";
-import NavigationContext from "../../contexts/navigationContext";
 import Icons from "../../styles/Icons";
 import NavigationType from "../../contexts/navigationType";
 import { useTheme } from "@material-ui/core/styles";
@@ -32,7 +31,7 @@ export interface ServerModalProps {
 }
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
-  const { dispatchOperation, serverCredentials } = props;
+  const { dispatchOperation, dispatchNavigation } = props;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(props.connectionVerified ?? true);
   const [displayUrlError, setDisplayUrlError] = useState<boolean>(false);
@@ -43,7 +42,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [standAlone] = useState<boolean>(props.standalone ?? false);
-  const { dispatchNavigation } = props ?? useContext(NavigationContext);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
 
@@ -71,7 +69,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   }, [isAuthenticated]);
 
   interface cssProp extends CSSProperties {
-    [key: string]: {};
+    [key: string]: {} ;
   }
 
   const Styles = {
@@ -86,7 +84,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   } as cssProp;
 
   const onSubmit = async () => {
-    const abortController = new AbortController();
+    const abortController = new AbortController();      
 
     setIsLoading(true);
     const credentials = {
@@ -124,7 +122,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
         setIsLoading(false);
       }
     }
-    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const showCredentialsModal = () => {
@@ -180,7 +177,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
         onSubmit={onConfirm}
         isLoading={isLoading}
         switchButtonPlaces={true}
-        ButtonPosition={controlButtonPosition.BOTTOM}
       />
     );
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
@@ -226,7 +222,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               fontWeight: 500
             }}
           >
-            <Icons name="new_alert" size={32} />
+            <Icons name="alert" size={32} />
             No server Connected!
           </Typography>
           {standAlone && (
@@ -302,7 +298,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               <Icons name="done" /> {"Test connection"}
             </TestServerButton>
             {standAlone && (
-              <TestServerButton disabled={displayUrlError || connectionVerified} color={"primary"} variant="outlined" onClick={onSubmit}>
+              <TestServerButton disabled={!validateForm() || !validText(username) || !validText(password)} color={"primary"} variant="outlined" onClick={onSubmit}>
                 <Icons name="save" size={24} />
                 {"Connect & Save"}
               </TestServerButton>
@@ -354,9 +350,4 @@ const TestServerButton = styled(Button)`
   flex: initial;
 `;
 
-const Container = styled.div<{ expanded: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-`;
 export default ServerModal;

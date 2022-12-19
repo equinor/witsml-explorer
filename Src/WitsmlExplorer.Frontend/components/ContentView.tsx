@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { selectedJobsFlag } from "../contexts/navigationContext";
-import { listWellsFlag , selectedManageServerFlag} from "../contexts/navigationStateReducer";
+import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedManageServerFlag } from "../contexts/navigationContext";
 import OperationContext from "../contexts/operationContext";
 import { emptyServer, Server } from "../models/server";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";

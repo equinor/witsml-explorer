@@ -31,6 +31,7 @@ import {
   SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
+  SelectManageServerAction,
   SelectMessageGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
@@ -47,7 +48,6 @@ import {
   SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
-import { SelectManageServerAction } from "./navigationStateReducer";
 
 export type NavigationAction =
   | AddServerAction

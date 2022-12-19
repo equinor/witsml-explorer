@@ -37,8 +37,7 @@ import {
 } from "./modificationActions";
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
-import { allDeselected, NavigationState } from "./navigationContext";
-import { listWellsFlag } from "./navigationStateReducer";
+import { allDeselected, listWellsFlag, NavigationState } from "./navigationContext";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {

@@ -41,11 +41,9 @@ import {
   SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
-import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag } from "./navigationContext";
+import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag, selectedManageServerFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
 
-export const selectedManageServerFlag = "manageServer";
-export const listWellsFlag = "listWells";
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
   return useReducer(reducer, EMPTY_NAVIGATION_STATE);
 };
@@ -481,9 +479,4 @@ const toggleTreeNode = (expandedTreeNodes: string[], nodeId: string) => {
     return expandedTreeNodes.filter((expandedNode) => !expandedNode.includes(nodeId));
   }
 };
-
-export interface SelectManageServerAction extends Action {
-  type: NavigationType.SelectManageServer;
-}
-export { selectedJobsFlag };
 

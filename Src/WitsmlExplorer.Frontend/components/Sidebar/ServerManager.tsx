@@ -20,7 +20,7 @@ import Icon from "../../styles/Icons";
 import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import ModalDialog from "../Modals/ModalDialog";
-import { Select, useTheme } from "@material-ui/core";
+import { useTheme } from "@material-ui/core";
 
 const NEW_SERVER_ID = "1";
 
@@ -71,6 +71,8 @@ const ServerManager = (): React.ReactElement => {
           }
         } else {
           showCredentialsModal(currentWitsmlLoginState.server);
+          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentWitsmlLoginState.server } };
+          dispatchNavigation(action);
         }
       }
     };
@@ -102,15 +104,17 @@ const ServerManager = (): React.ReactElement => {
   const onSelectItem = async (server: Server) => {
     if(server.id === selectedServer?.id) {
       await CredentialsService.deauthorize();
+      signOut();
       CredentialsService.setSelectedServer(null);
       const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
       dispatchNavigation(action);
-      signOut();
     } else {
       const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
       dispatchNavigation(action);
       CredentialsService.setSelectedServer(server);
     }
+    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+    dispatchNavigation(action);
   };
 
   const onEditItem = (server: Server) => {
@@ -144,8 +148,8 @@ const ServerManager = (): React.ReactElement => {
           await CredentialsService.deauthorize();
           const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
           dispatchNavigation(action);
+          CredentialsService.setSelectedServer(null);
           signOut();
-          CredentialsService.setSelectedServer(server);
         }
       } catch (error) {
         //TODO Add a commmon way to handle such errors.

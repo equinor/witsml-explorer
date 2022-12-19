@@ -1,4 +1,4 @@
-﻿import { Divider, FormControlLabel as MuiFormControlLabel } from "@material-ui/core";
+﻿import { Divider} from "@material-ui/core";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "../../contexts/curveThreshold";
 import Filter, { EMPTY_FILTER } from "../../contexts/filter";
