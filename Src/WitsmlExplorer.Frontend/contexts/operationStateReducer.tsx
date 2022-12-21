@@ -10,8 +10,8 @@ export enum UserTheme {
 //tz database time zone for each city was found through https://www.zeitverschiebung.net/en/
 // "Brasilia" is the "Brasília" one where the first i is "i-acute"
 export enum TimeZone {
-  Raw = "Original Timezone",
   Local = "Local Time",
+  Raw = "Original Timezone",
   Utc = "UTC",
   Brasilia = "America/Sao_Paulo",
   Berlin = "Europe/Berlin",
@@ -84,7 +84,7 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     progressIndicatorValue: 0,
     modal: null,
     theme: UserTheme.Compact,
-    timeZone: TimeZone.Raw
+    timeZone: TimeZone.Local
   };
   return useReducer(reducer, initialState);
 };
