@@ -4,6 +4,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
+import { measureToString } from "../../models/measure";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -85,6 +86,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
         classWitsml: logCurveInfo.classWitsml,
         unit: logCurveInfo.unit,
+        sensorOffset: measureToString(logCurveInfo.sensorOffset),
         mnemAlias: logCurveInfo.mnemAlias,
         logUid: selectedLog.uid,
         wellUid: selectedWell.uid,
@@ -111,6 +113,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "maxIndex", label: "MaxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
     { property: "classWitsml", label: "ClassWitsml", type: ContentType.String },
     { property: "unit", label: "Unit", type: ContentType.String },
+    { property: "sensorOffset", label: "sensorOffset", type: ContentType.Number },
     { property: "mnemAlias", label: "MnemAlias", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
