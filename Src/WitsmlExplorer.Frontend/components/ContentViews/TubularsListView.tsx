@@ -27,9 +27,9 @@ export const TubularsListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Tubular name", type: ContentType.String },
+    { property: "name", label: "name", type: ContentType.String },
     { property: "typeTubularAssy", label: "typeTubularAssy", type: ContentType.String },
-    { property: "uid", label: "UID", type: ContentType.String }
+    { property: "uid", label: "uid", type: ContentType.String }
   ];
 
   const onSelect = (tubular: any) => {

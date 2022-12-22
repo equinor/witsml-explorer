@@ -60,12 +60,12 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "runNumber", label: "Run Number", type: ContentType.String },
-    { property: "startIndex", label: "StartIndex", type: selectedWellbore ? getType() : ContentType.String },
-    { property: "endIndex", label: "EndIndex", type: selectedWellbore ? getType() : ContentType.String },
-    { property: "indexType", label: "IndexType", type: ContentType.String },
-    { property: "uid", label: "UID", type: ContentType.String }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "runNumber", label: "runNumber", type: ContentType.String },
+    { property: "startIndex", label: "startIndex", type: selectedWellbore ? getType() : ContentType.String },
+    { property: "endIndex", label: "endIndex", type: selectedWellbore ? getType() : ContentType.String },
+    { property: "indexType", label: "indexType", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String }
   ];
 
   const onSelect = (log: LogObjectRow) => {
