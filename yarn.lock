@@ -507,22 +507,22 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@equinor/eds-core-react@^0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.26.0.tgz#4ef8fe9997901140f53de69f29fa5ce420f41316"
-  integrity sha512-LHzZ6KACh/M2PM6w8OjcohKN77xEtyOb5bpxzMuLPcM7hUK3F0WIdLCBTrwhaz8c/HuzvwqAsX1yLPufw+qRpA==
+"@equinor/eds-core-react@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.27.0.tgz#b5d4894bed3dc03f636a2d9de19c7e631abde185"
+  integrity sha512-mbcc0B7fZLxWT0De6bI+DFUQUJ+y1M8zEtVFQDwLu9++n8+8odwNbTN/TsT/97VP5cea0xmtZpHRFA6ix4oCnw==
   dependencies:
     "@babel/runtime" "^7.19.0"
-    "@equinor/eds-icons" "0.15.0"
+    "@equinor/eds-icons" "0.16.0"
     "@equinor/eds-tokens" "0.9.0"
     "@equinor/eds-utils" "0.7.0"
     "@floating-ui/react-dom-interactions" "^0.10.1"
-    downshift "^6.1.12"
+    downshift "^7.0.1"
 
-"@equinor/eds-icons@0.15.0":
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.15.0.tgz#73969d20bc2ddb08b9d53947d392c63352012d02"
-  integrity sha512-4vGsMHB6+RXvJjVka+dbWLr+0q5tLSlhBSrtstsj1Q0bgQPmj6hIMF+eHK5brkZGJ6d1K1RXYgiUOP2LguGL4Q==
+"@equinor/eds-icons@0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.16.0.tgz#af0c2b384171424958530508de6161dfa79574c6"
+  integrity sha512-ByEJLYaTMAoxRGpiyB/pSY/cfsXdiQ4TvQR0H4jaiWeDat/wYSZPWkA0tImo80As9iczTV8uC7iXCF7ZrY4KQA==
 
 "@equinor/eds-tokens@0.9.0", "@equinor/eds-tokens@^0.9.0":
   version "0.9.0"
@@ -2149,10 +2149,10 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-downshift@^6.1.12:
-  version "6.1.12"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-6.1.12.tgz#f14476b41a6f6fd080c340bad1ddf449f7143f6f"
-  integrity sha512-7XB/iaSJVS4T8wGFT3WRXmSF1UlBHAA40DshZtkrIscIN+VC+Lh363skLxFTvJwtNgHxAMDGEHT4xsyQFWL+UA==
+downshift@^7.0.1:
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-7.0.5.tgz#78e5e5d4a63a401869c01bbeb785431e7a5740ce"
+  integrity sha512-q52vBjtRkt4PLD0xQDUf3lM+uaUOpc5m0L8YfE9oPtn4RJLu5YITB/G4mr9OyPYwWIBe/h9g3RX6mggMVaBIDw==
   dependencies:
     "@babel/runtime" "^7.14.8"
     compute-scroll-into-view "^1.0.17"
