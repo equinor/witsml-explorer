@@ -41,5 +41,16 @@ namespace WitsmlExplorer.Api.HttpHandlers
             string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId;
             return TypedResults.Ok(jobCache.GetJobInfosByUser(userName));
         }
+
+        [Produces(typeof(IEnumerable<JobInfo>))]
+        public static IResult GetJobInfosOfAllUsers(IJobCache jobCache, IConfiguration configuration)
+        {
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            if (!useOAuth2)
+            {
+                return TypedResults.Unauthorized();
+            }
+            return TypedResults.Ok(jobCache.GetAllJobInfos());
+        }
     }
 }
