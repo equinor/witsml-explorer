@@ -1,6 +1,6 @@
 import { createGlobalStyle } from "styled-components";
-import { AssetsLoader } from "./AssetsLoader";
 import { colors } from "../styles/Colors";
+import { AssetsLoader } from "./AssetsLoader";
 
 const GlobalStyles = createGlobalStyle`
   @font-face {
@@ -37,7 +37,7 @@ const GlobalStyles = createGlobalStyle`
   ::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
-    height: 3px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-thumb {
