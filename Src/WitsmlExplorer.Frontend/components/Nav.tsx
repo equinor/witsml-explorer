@@ -28,9 +28,9 @@ import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId, calculateWbGeometryGroupId } from "../models/wellbore";
-import TopRightCornerMenu from "./TopRightCornerMenu";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
+import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -90,7 +90,6 @@ const Nav = (): React.ReactElement => {
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
-                maxWidth={130}
                 key={index}
                 href="#"
                 onClick={breadCrumb.onClick}
