@@ -13,6 +13,7 @@ import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
 import Routing from "../components/Routing";
+import AuthorizationManager from "../components/Sidebar/AuthorizationManager";
 import Snackbar from "../components/Snackbar";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
@@ -38,6 +39,7 @@ const Home = (): React.ReactElement => {
             </Head>
             <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
               <Routing />
+              <AuthorizationManager />
               <RefreshHandler />
               <SnackbarProvider>
                 <Snackbar />

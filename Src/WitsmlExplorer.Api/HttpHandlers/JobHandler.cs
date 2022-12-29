@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
@@ -21,6 +23,14 @@ namespace WitsmlExplorer.Api.HttpHandlers
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
             (ServerCredentials targetCreds, ServerCredentials sourceCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
+            if (!string.IsNullOrEmpty(eh.TargetServer) && string.IsNullOrEmpty(targetCreds?.UserId))
+            {
+                throw new WitsmlClientProviderException($"Missing target server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Target);
+            }
+            if (!string.IsNullOrEmpty(eh.SourceServer) && string.IsNullOrEmpty(sourceCreds?.UserId))
+            {
+                throw new WitsmlClientProviderException($"Missing source server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Source);
+            }
             JobInfo jobInfo = new()
             {
                 Username = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId,

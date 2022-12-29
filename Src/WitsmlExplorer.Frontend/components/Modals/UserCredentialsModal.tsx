@@ -1,7 +1,7 @@
 import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
@@ -27,7 +27,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const shouldFocusPasswordInput = !!username;
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.keepLoggedInToServer(server.url));
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.getKeepLoggedInToServer(server.url));
 
   useEffect(() => {
     if (serverCredentials) {
@@ -52,9 +52,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const blank = "blank";
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      CredentialsService.saveCredentials({ ...credentials, password: blank });
+      CredentialsService.saveCredentials({ ...credentials, password: "" });
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);
@@ -70,9 +69,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const blank = "";
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      props.onConnectionVerified({ ...credentials, password: blank });
+      props.onConnectionVerified({ ...credentials, password: "" });
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -119,7 +117,12 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       confirmDisabled={!validText(username) || !validText(password)}
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
-      onCancel={props.onCancel}
+      onCancel={() => {
+        CredentialsService.onAuthorizationChanged.dispatch({ server, status: AuthorizationStatus.Cancel });
+        if (props.onCancel) {
+          props.onCancel();
+        }
+      }}
       isLoading={isLoading}
       errorMessage={errorMessage}
       width={ModalWidth.SMALL}

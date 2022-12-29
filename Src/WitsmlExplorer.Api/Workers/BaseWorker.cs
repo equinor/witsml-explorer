@@ -10,6 +10,7 @@ using Witsml;
 
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 namespace WitsmlExplorer.Api.Workers
@@ -30,11 +31,11 @@ namespace WitsmlExplorer.Api.Workers
         }
         protected IWitsmlClient GetTargetWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"Missing Target WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized);
+            return WitsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"Missing Target WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Target);
         }
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
-            return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized);
+            return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)

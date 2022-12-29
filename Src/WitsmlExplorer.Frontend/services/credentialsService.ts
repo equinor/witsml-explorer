@@ -1,7 +1,6 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
-import { getUserAppRoles, msalEnabled, SecurityScheme } from "../msal/MsalAuthProvider";
 import { ApiClient } from "./apiClient";
 
 export interface BasicServerCredentials {
@@ -10,21 +9,28 @@ export interface BasicServerCredentials {
   password?: string;
 }
 
-type CookieInfo = {
-  type: "WExSession" | "WExPersistent" | "WExInvalid";
-  url: string;
-  expiry: string;
-};
+export enum AuthorizationStatus {
+  Unauthorized,
+  Authorized,
+  Cancel
+}
+
+export interface AuthorizationState {
+  server: Server;
+  status: AuthorizationStatus;
+}
+
 class CredentialsService {
   private static _instance: CredentialsService;
-  private _onCredentialStateChanged = new SimpleEventDispatcher<{ server: Server; hasPassword: boolean }>();
+  private _onServerChanged = new SimpleEventDispatcher<{ server: Server }>();
+  private _onAuthorizationChange = new SimpleEventDispatcher<AuthorizationState>();
   private credentials: BasicServerCredentials[] = [];
   private server?: Server;
   private sourceServer?: Server;
 
   public setSelectedServer(server: Server) {
     this.server = server;
-    this._onCredentialStateChanged.dispatch({ server: server, hasPassword: this.isAuthorizedForServer(server) });
+    this._onServerChanged.dispatch({ server: server });
   }
 
   public setSourceServer(server: Server) {
@@ -66,7 +72,8 @@ class CredentialsService {
     } else {
       this.credentials[index] = serverCredentials;
     }
-    this._onCredentialStateChanged.dispatch({ server: serverCredentials.server, hasPassword: Boolean(serverCredentials.password) });
+    this._onServerChanged.dispatch({ server: serverCredentials.server });
+    this._onAuthorizationChange.dispatch({ server: serverCredentials.server, status: AuthorizationStatus.Authorized });
   }
 
   public getCredentials(): BasicServerCredentials[] {
@@ -83,78 +90,18 @@ class CredentialsService {
     return this.credentials.find((c) => c.server.id === this.sourceServer?.id);
   }
 
-  public isAuthorizedForServer(server: Server): boolean {
-    if (msalEnabled && server?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => server.roles.includes(x))) {
-      return true;
-    }
-    return this.hasValidCookieForServer(server?.url);
-  }
-
-  public hasValidCookieForServer(serverUrl: string): boolean {
-    //use local storage to check whether the cookie is valid, because the cookie is httpOnly
-    const cookieInfo = localStorage.getItem(serverUrl);
-    if (this.isJsonString(cookieInfo)) {
-      const cInfo: CookieInfo = JSON.parse(cookieInfo);
-      return new Date().getTime() < new Date(cInfo.expiry).getTime();
-    }
-    return false;
-  }
-
-  public keepLoggedInToServer(serverUrl: string): boolean {
-    const item = localStorage.getItem(serverUrl);
-    if (this.isJsonString(item)) {
-      const cookie: CookieInfo = JSON.parse(item);
-      return cookie.type === "WExPersistent";
-    }
-    return false;
-  }
-
-  private isJsonString(str: string) {
-    if (str === null) return false;
-    try {
-      JSON.parse(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
-
-  private allLocalStorage() {
-    const values = [];
-    const keys = Object.keys(localStorage);
-    let i = keys.length;
-    while (i--) {
-      if (keys[i].startsWith("http") && this.isJsonString(localStorage.getItem(keys[i]))) {
-        values.push(localStorage.getItem(keys[i]));
-      }
-    }
-    return values;
-  }
-
-  // refresh timestamp for all "session" entries in localstorage, to match session cookies
-  public refreshLocalstorageSessions() {
-    const expirationTime = new Date();
-    expirationTime.setHours(expirationTime.getHours() + 1);
-    const cookies: CookieInfo[] = this.allLocalStorage()
-      .map((n) => JSON.parse(n))
-      .filter((n) => n.type == "WExSession");
-    cookies.forEach((element) => {
-      const refreshedCookie = { type: "WExSession", url: element.url, expiry: expirationTime };
-      localStorage.setItem(element.url, JSON.stringify(refreshedCookie));
-    });
+  public getKeepLoggedInToServer(serverUrl: string): boolean {
+    return localStorage.getItem(serverUrl) == "keep";
   }
 
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlTargetServer
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
+    if (keep) {
+      localStorage.setItem(credentials.server.url, "keep");
+    }
     const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], false);
-    if (response.ok) {
-      const offset = keep ? 24 : 1;
-      const expirationTime = new Date();
-      expirationTime.setHours(expirationTime.getHours() + offset);
-      const cookieInfo = { type: keep ? "WExPersistent" : "WExSession", url: credentials.server.url, expiry: expirationTime };
-      localStorage.setItem(credentials.server.url, JSON.stringify(cookieInfo));
-    } else {
+    if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
     }
@@ -162,16 +109,7 @@ class CredentialsService {
 
   public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
     const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal, undefined, true);
-    if (response.ok) {
-      // set times on all existing local storage server values to indicate that the respective cookies are no longer valid
-      this.credentials.forEach((creds) => {
-        if (localStorage.getItem(creds.server.url)) {
-          const cInfo: CookieInfo = { type: "WExInvalid", url: creds.server.url, expiry: new Date().toJSON() };
-          localStorage.setItem(creds.server.url, JSON.stringify(cInfo));
-        }
-      });
-      return;
-    } else {
+    if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
     }
@@ -188,8 +126,12 @@ class CredentialsService {
     }
   }
 
-  public get onCredentialStateChanged() {
-    return this._onCredentialStateChanged.asEvent();
+  public get onServerChanged() {
+    return this._onServerChanged.asEvent();
+  }
+
+  public get onAuthorizationChanged() {
+    return this._onAuthorizationChange;
   }
 
   public static get Instance() {

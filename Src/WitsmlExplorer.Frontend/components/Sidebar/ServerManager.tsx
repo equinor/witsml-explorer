@@ -29,11 +29,11 @@ const ServerManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isOpen, setIsOpen] = useState<boolean>();
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
-  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const [currentWitsmlLoginState, setLoginState] = useState<{ username?: string; server?: Server }>({});
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
-      setLoginState({ isLoggedIn: credentialState.hasPassword, username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async (credentialState) => {
+      setLoginState({ username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
     });
     return () => {
       unsubscribeFromCredentialsEvents();
@@ -43,11 +43,12 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const abortController = new AbortController();
     const onCurrentLoginStateChange = async () => {
+      if (wells.length !== 0) {
+        return;
+      }
       const fetchWells = async () => {
-        if (wells.length === 0) {
-          const wells = await WellService.getWells(abortController.signal);
-          dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
-        }
+        const wells = await WellService.getWells(abortController.signal);
+        dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
       };
       const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
       if (useOauth) {
@@ -61,15 +62,13 @@ const ServerManager = (): React.ReactElement => {
           });
         }
       } else if (currentWitsmlLoginState.server) {
-        if (CredentialsService.isAuthorizedForServer(selectedServer)) {
-          try {
-            await fetchWells();
-            dispatchOperation({ type: OperationType.HideModal });
-          } catch (error) {
+        try {
+          await fetchWells();
+          dispatchOperation({ type: OperationType.HideModal });
+        } catch (error) {
+          if (error) {
             showCredentialsModal(currentWitsmlLoginState.server, error.message);
           }
-        } else {
-          showCredentialsModal(currentWitsmlLoginState.server);
         }
       }
     };
@@ -125,20 +124,18 @@ const ServerManager = (): React.ReactElement => {
     if (msalEnabled) return;
     if (!selectedServer?.id) {
       return <FormHelperText>No server selected</FormHelperText>;
+    } else if (currentWitsmlLoginState.username) {
+      return (
+        <FormHelperText>
+          Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentWitsmlLoginState.username}</LinkButton>
+        </FormHelperText>
+      );
     } else {
-      if (currentWitsmlLoginState.isLoggedIn) {
-        return (
-          <FormHelperText>
-            Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentWitsmlLoginState.username}</LinkButton>
-          </FormHelperText>
-        );
-      } else {
-        return (
-          <FormHelperText>
-            <LinkButton onClick={() => showCredentialsModal(selectedServer)}>Not logged in</LinkButton>
-          </FormHelperText>
-        );
-      }
+      return (
+        <FormHelperText>
+          <LinkButton onClick={() => showCredentialsModal(selectedServer)}>Not logged in</LinkButton>
+        </FormHelperText>
+      );
     }
   };
 

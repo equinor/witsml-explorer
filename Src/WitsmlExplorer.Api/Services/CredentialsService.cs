@@ -150,20 +150,10 @@ namespace WitsmlExplorer.Api.Services
 
         public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers)
         {
-            (ServerCredentials witsmlTargetCredentials, ServerCredentials witsmlSourceCredentials) result;
-            if (headers.GetCookieValue() != null)
-            {
-                ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(false, headers, headers.TargetServer);
-                ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(false, headers, headers.SourceServer);
-                result = (target, source);
-            }
-            else
-            {
-                ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(true, headers, headers.TargetServer);
-                ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(true, headers, headers.SourceServer);
-                result = (target, source);
-            }
-            return result;
+            bool useOauth = headers.GetCookieValue() == null;
+            ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.TargetServer);
+            ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.SourceServer);
+            return (target, source);
         }
 
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string serverUrl, Func<string, string> delDecrypt = null)
