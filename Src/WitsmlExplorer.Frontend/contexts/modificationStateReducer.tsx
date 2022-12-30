@@ -527,6 +527,6 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
     ...state,
     wells: wells,
     filteredWells: filterWells(wells, state.selectedFilter),
-    currentSelected:listWellsFlag
+    currentSelected: listWellsFlag
   };
 };

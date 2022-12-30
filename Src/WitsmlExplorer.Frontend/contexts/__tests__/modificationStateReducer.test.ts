@@ -266,7 +266,7 @@ it("Should update wells", () => {
     ...getInitialState(),
     wells: newWells,
     filteredWells: newWells,
-    currentSelected:listWellsFlag
+    currentSelected: listWellsFlag
   };
   expect(afterUpdateWells).toStrictEqual(expectedState);
 });

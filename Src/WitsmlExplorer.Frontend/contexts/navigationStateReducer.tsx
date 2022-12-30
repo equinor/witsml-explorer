@@ -123,7 +123,7 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction) =
   return {
     ...state,
     ...allDeselected,
-    currentSelected: alreadySelected ?  server : selectedManageServerFlag,
+    currentSelected: alreadySelected ? server : selectedManageServerFlag,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],
