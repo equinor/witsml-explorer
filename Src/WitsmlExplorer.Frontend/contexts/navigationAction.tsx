@@ -45,7 +45,8 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction
+  ToggleTreeNodeAction,
+  SelectManageServerAction
 } from "./navigationActions";
 
 export type NavigationAction =
@@ -93,4 +94,5 @@ export type NavigationAction =
   | SelectWbGeometryGroupAction
   | SelectWbGeometryAction
   | SetFilterAction
-  | SetCurveThresholdAction;
+  | SetCurveThresholdAction
+  | SelectManageServerAction;

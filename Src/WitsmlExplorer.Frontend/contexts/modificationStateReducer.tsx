@@ -37,7 +37,7 @@ import {
 } from "./modificationActions";
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
-import { allDeselected, NavigationState } from "./navigationContext";
+import { allDeselected, listWellsFlag, NavigationState } from "./navigationContext";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -526,6 +526,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   return {
     ...state,
     wells: wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    filteredWells: filterWells(wells, state.selectedFilter),
+    currentSelected:listWellsFlag
   };
 };

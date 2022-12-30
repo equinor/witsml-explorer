@@ -23,7 +23,11 @@ import {
   refresh,
   settings,
   trending_up as isActive,
-  world
+  world,
+  cloud_download as cloudDownload,
+  person,
+  save,
+  done
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
@@ -49,7 +53,11 @@ const icons = {
   world,
   arrowUp,
   arrowDown,
-  calendar
+  calendar,
+  cloudDownload,
+  person,
+  save,
+  done
 };
 
 Icon.add(icons);

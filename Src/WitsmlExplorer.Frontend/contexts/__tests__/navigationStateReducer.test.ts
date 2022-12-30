@@ -20,7 +20,7 @@ import Wellbore, {
 import { EMPTY_FILTER } from "../filter";
 import { sortList } from "../modificationStateReducer";
 import { SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
-import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
+import { EMPTY_NAVIGATION_STATE, NavigationState, selectedManageServerFlag } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
 import {
@@ -75,7 +75,7 @@ it("Should update state when selecting another server", () => {
   expect(actual).toStrictEqual({
     ...initialState,
     selectedServer: SERVER_2,
-    currentSelected: SERVER_2,
+    currentSelected: selectedManageServerFlag,
     wells: [],
     filteredWells: []
   });

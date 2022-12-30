@@ -1,6 +1,6 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
@@ -11,6 +11,9 @@ import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
+import { colors } from "../styles/Colors";
+import { Server } from "../models/server";
+import ManageServerButton from "./ManageServerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Raw]: "Original Time",
@@ -24,6 +27,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
+  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
   const {
     operationState: { theme, timeZone },
     dispatchOperation
@@ -37,6 +41,15 @@ const TopRightCornerMenu = (): React.ReactElement => {
       const storedTimeZone = (localStorage.getItem("selectedTimeZone") as TimeZone) ?? timeZone;
       dispatchOperation({ type: OperationType.SetTimeZone, payload: storedTimeZone });
     }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
+      setLoginState({ isLoggedIn: credentialState.hasPassword, username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    });
+    return () => {
+      unsubscribeFromCredentialsEvents();
+    };
   }, []);
 
   const onSelectTimeZone = (selectedTimeZone: TimeZone) => {
@@ -105,6 +118,13 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
+      {currentWitsmlLoginState.username && (
+        <StyledButton variant="ghost">
+          <Icon name="person" color={colors.text.staticIconsTertiary} />
+          {currentWitsmlLoginState.username}
+        </StyledButton>
+      )}
+      <ManageServerButton />
       <JobsButton />
       <StyledButton variant="ghost" onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
         <Icon name="world" />
@@ -129,7 +149,7 @@ const Layout = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   padding-right: 1rem;
-  width: 20rem;
+  width: auto;
 `;
 
 const StyledButton = styled(Button)`
