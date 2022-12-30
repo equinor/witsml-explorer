@@ -35,8 +35,8 @@ export default class JobService {
     }
   }
 
-  public static async getUsersJobInfos(abortSignal?: AbortSignal): Promise<JobInfo[]> {
-    const response = await ApiClient.get(`/api/jobs/jobinfos`, abortSignal);
+  public static async getUserJobInfos(abortSignal?: AbortSignal): Promise<JobInfo[]> {
+    const response = await ApiClient.get(`/api/jobs/userjobinfos`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -45,7 +45,7 @@ export default class JobService {
   }
 
   public static async getAllJobInfos(abortSignal?: AbortSignal): Promise<JobInfo[]> {
-    const response = await ApiClient.get(`/api/jobs/jobinfosallusers`, abortSignal);
+    const response = await ApiClient.get(`/api/jobs/alljobinfos`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {

@@ -5,7 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
-import { adminRole, getUserAppRoles, getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
+import { adminRole, developerRole, getUserAppRoles, getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
@@ -32,7 +32,7 @@ export const JobsView = (): React.ReactElement => {
   const fetchJobs = () => {
     const abortController = new AbortController();
     const getJobInfos = async () => {
-      const jobInfos = showAll ? JobService.getAllJobInfos(abortController.signal) : JobService.getUsersJobInfos(abortController.signal);
+      const jobInfos = showAll ? JobService.getAllJobInfos(abortController.signal) : JobService.getUserJobInfos(abortController.signal);
       setJobInfos(await jobInfos);
     };
 
@@ -112,7 +112,7 @@ export const JobsView = (): React.ReactElement => {
 
   return (
     <>
-      {msalEnabled && getUserAppRoles().includes(adminRole) && (
+      {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
         <Switch
           label="Show all users' jobs"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {

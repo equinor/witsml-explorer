@@ -56,8 +56,8 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/wbgeometrys/{wbGeometryUid}/wbgeometrysections", WbGeometryHandler.GetWbGeometrySections, useOAuth2);
 
             app.MapPost("/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
-            app.MapGet("/jobs/jobinfos", JobHandler.GetJobInfosByAuthorizedUser, useOAuth2);
-            app.MapGet("/jobs/jobinfosallusers", JobHandler.GetJobInfosOfAllUsers, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapGet("/jobs/userjobinfos", JobHandler.GetUserJobInfos, useOAuth2);
+            app.MapGet("/jobs/alljobinfos", JobHandler.GetAllJobInfos, useOAuth2, AuthorizationPolicyRoles.ADMINORDEVELOPER);
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);

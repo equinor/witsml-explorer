@@ -13,6 +13,7 @@ export enum SecurityScheme {
 }
 
 export const adminRole = "admin";
+export const developerRole = "developer";
 
 const msalConfig: Configuration = {
   auth: {

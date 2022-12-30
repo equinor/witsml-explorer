@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
-        public static IResult GetJobInfosByAuthorizedUser(IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
+        public static IResult GetUserJobInfos(IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]
-        public static IResult GetJobInfosOfAllUsers(IJobCache jobCache, IConfiguration configuration)
+        public static IResult GetAllJobInfos(IJobCache jobCache, IConfiguration configuration)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             if (!useOAuth2)
