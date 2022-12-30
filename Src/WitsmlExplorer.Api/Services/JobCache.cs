@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Services
     {
         void CacheJob(JobInfo jobInfo);
         IEnumerable<JobInfo> GetJobInfosByUser(string username);
+        IEnumerable<JobInfo> GetAllJobInfos();
     }
 
     public class JobCache : IJobCache
@@ -48,6 +49,11 @@ namespace WitsmlExplorer.Api.Services
         public IEnumerable<JobInfo> GetJobInfosByUser(string username)
         {
             return _jobs.Values.Where(job => job.Username == username);
+        }
+
+        public IEnumerable<JobInfo> GetAllJobInfos()
+        {
+            return _jobs.Values;
         }
 
         private void Cleanup()
