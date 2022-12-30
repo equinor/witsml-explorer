@@ -1,11 +1,16 @@
-import React from "react";
+import { Fragment, ReactElement, useContext } from "react";
 import OperationContext from "../../contexts/operationContext";
 
-const ModalPresenter = (): React.ReactElement => {
-  const { operationState } = React.useContext(OperationContext);
-  const { modal } = operationState;
-
-  return <>{modal}</>;
+const ModalPresenter = (): ReactElement => {
+  const { operationState } = useContext(OperationContext);
+  const { modals } = operationState;
+  return (
+    <>
+      {modals.map((modal, index) => {
+        return <Fragment key={index}>{modal}</Fragment>;
+      })}
+    </>
+  );
 };
 
 export default ModalPresenter;

@@ -99,28 +99,39 @@ export class ApiClient {
       }
 
       const url = new URL(getBasePathName() + pathName, getBaseUrl());
-      fetch(url.toString(), requestInit)
-        .then((response) => {
-          if (response.status == 401 && rerun) {
-            return response.json();
-          }
-          resolve(response);
-          return null;
-        })
-        .then((data) => {
-          if (data) {
-            this.rerunHttpRequest(url, requestInit, currentCredentials, data.server, resolve, reject);
-          }
-        })
-        .catch((error) => {
-          if (error.name === "AbortError") {
-            return;
-          } else if (error.name === "Cancelled") {
-            return;
-          }
-          reject(error);
-        });
+      this.fetch(url, requestInit, currentCredentials, rerun, resolve, reject);
     });
+  }
+
+  private static fetch(
+    url: URL,
+    requestInit: RequestInit,
+    currentCredentials: BasicServerCredentials[],
+    rerun: boolean,
+    resolve: (value: Response | PromiseLike<Response>) => void,
+    reject: (reason?: any) => void
+  ) {
+    fetch(url.toString(), requestInit)
+      .then((response) => {
+        if (response.status == 401 && rerun) {
+          return response.json();
+        }
+        resolve(response);
+        return null;
+      })
+      .then((data) => {
+        if (data) {
+          this.rerunHttpRequest(url, requestInit, currentCredentials, data.server, resolve, reject);
+        }
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") {
+          return;
+        } else if (error.name === "Cancelled") {
+          return;
+        }
+        reject(error);
+      });
   }
 
   private static rerunHttpRequest(
@@ -131,28 +142,16 @@ export class ApiClient {
     resolve: (value: Response | PromiseLike<Response>) => void,
     reject: (reason?: any) => void
   ) {
+    const serverToAuthorize = server == "Source" ? currentCredentials[1].server : currentCredentials[0].server;
     const unsub = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Cancel) {
         unsub();
-        reject({ name: "Cancelled" });
-      } else if (authorizationState.status == AuthorizationStatus.Authorized) {
-        // TODO we do not check whether we were authorized to the correct server
-        // in what case would we have to consider it?
-        // for example if the user orders a job on server A that is missing authorization,
-        //    and manages to switch to a different server before we receive 401
+        reject({ name: "Cancelled" }); //TODO results in "Uncaught (in promise) {name: 'Cancelled'}" in the console
+      } else if (authorizationState.status == AuthorizationStatus.Authorized && authorizationState.server.id == serverToAuthorize.id) {
         unsub();
-        fetch(url.toString(), requestInit)
-          //TODO rerun will fail if we reauthorize be get a different error
-          .then((response) => resolve(response))
-          .catch((error) => {
-            if (error.name === "AbortError") {
-              return;
-            }
-            reject(error);
-          });
+        this.fetch(url, requestInit, currentCredentials, true, resolve, reject);
       }
     });
-    const serverToAuthorize = server == "Source" ? currentCredentials[1].server : currentCredentials[0].server;
     CredentialsService.onAuthorizationChanged.dispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
   }
 }

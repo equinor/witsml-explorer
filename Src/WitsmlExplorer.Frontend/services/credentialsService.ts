@@ -91,14 +91,25 @@ class CredentialsService {
   }
 
   public getKeepLoggedInToServer(serverUrl: string): boolean {
-    return localStorage.getItem(serverUrl) == "keep";
+    try {
+      return localStorage.getItem(serverUrl) == "keep";
+    } catch {
+      // ignore unavailable local storage
+    }
+    return false;
   }
 
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlTargetServer
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
-    if (keep) {
-      localStorage.setItem(credentials.server.url, "keep");
+    try {
+      if (keep) {
+        localStorage.setItem(credentials.server.url, "keep");
+      } else {
+        localStorage.removeItem(credentials.server.url);
+      }
+    } catch {
+      // ignore unavailable local storage
     }
     const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], false);
     if (!response.ok) {
