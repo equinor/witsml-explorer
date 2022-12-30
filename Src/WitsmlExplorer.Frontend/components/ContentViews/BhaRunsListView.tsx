@@ -45,16 +45,16 @@ export const BhaRunsListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "tubular", label: "Tubular", type: ContentType.String },
-    { property: "dTimStart", label: "Date Time start", type: ContentType.DateTime },
-    { property: "dTimStop", label: "Date Time stop", type: ContentType.DateTime },
-    { property: "dTimStartDrilling", label: "Date Time start drilling", type: ContentType.DateTime },
-    { property: "dTimStopDrilling", label: "Date Time stop drilling", type: ContentType.DateTime },
-    { property: "itemState", label: "Item State", type: ContentType.String },
-    { property: "sourceName", label: "Source Name", type: ContentType.String },
-    { property: "dTimCreation", label: "Created", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "Last changed", type: ContentType.DateTime }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "tubular", label: "tubular", type: ContentType.String },
+    { property: "dTimStart", label: "dTimStart", type: ContentType.DateTime },
+    { property: "dTimStop", label: "dTimStop", type: ContentType.DateTime },
+    { property: "dTimStartDrilling", label: "dTimStartDrilling", type: ContentType.DateTime },
+    { property: "dTimStopDrilling", label: "dTimStopDrilling", type: ContentType.DateTime },
+    { property: "itemState", label: "itemState", type: ContentType.String },
+    { property: "sourceName", label: "commonData.sourceName", type: ContentType.String },
+    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedBhaRunRows: BhaRunRow[]) => {

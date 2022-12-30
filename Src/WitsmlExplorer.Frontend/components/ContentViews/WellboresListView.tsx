@@ -26,12 +26,12 @@ export const WellboresListView = (): React.ReactElement => {
   } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "wellType", label: "Well Type", type: ContentType.String },
-    { property: "wellStatus", label: "Well Status", type: ContentType.String },
-    { property: "uid", label: "UID Wellbore", type: ContentType.String },
-    { property: "dateTimeCreation", label: "Creation date", type: ContentType.DateTime },
-    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "wellType", label: "typeWellbore", type: ContentType.String },
+    { property: "wellStatus", label: "statusWellbore", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
