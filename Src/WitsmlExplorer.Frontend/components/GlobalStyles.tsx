@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { colors } from "../styles/Colors";
 import { AssetsLoader } from "./AssetsLoader";
 
 const GlobalStyles = createGlobalStyle`
@@ -32,6 +33,20 @@ const GlobalStyles = createGlobalStyle`
 *:after {
   box-sizing: border-box;
 }
+
+  ::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: ${colors.interactive.disabledBorder};
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 
   body {
     font-family: EquinorRegular, sans-serif;

@@ -21,13 +21,13 @@ export const WellsListView = (): React.ReactElement => {
   } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "field", label: "Field", type: ContentType.String },
-    { property: "operator", label: "Operator", type: ContentType.String },
-    { property: "timeZone", label: "Time zone", type: ContentType.String },
-    { property: "uid", label: "UID Well", type: ContentType.String },
-    { property: "dateTimeCreation", label: "Creation date", type: ContentType.DateTime },
-    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "field", label: "field", type: ContentType.String },
+    { property: "operator", label: "operator", type: ContentType.String },
+    { property: "timeZone", label: "timeZone", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onSelect = (well: any) => {

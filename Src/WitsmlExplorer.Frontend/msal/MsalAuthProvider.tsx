@@ -12,6 +12,9 @@ export enum SecurityScheme {
   Basic = "Basic"
 }
 
+export const adminRole = "admin";
+export const developerRole = "developer";
+
 const msalConfig: Configuration = {
   auth: {
     authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`,
