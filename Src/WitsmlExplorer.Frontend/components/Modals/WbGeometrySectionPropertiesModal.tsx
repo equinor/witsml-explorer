@@ -40,14 +40,14 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
   }, [wbGeometrySection]);
 
   const invalidGrade = errorOnDeletion(wbGeometrySection.grade, editableWbgs?.grade) || editableWbgs?.grade?.length > 32;
-  const invalidMdTop = wbGeometrySection.mdTop && !editableWbgs?.mdTop.value;
-  const invalidMdBottom = wbGeometrySection.mdBottom && !editableWbgs?.mdBottom.value;
-  const invalidTvdTop = wbGeometrySection.tvdTop && !editableWbgs?.tvdTop.value;
-  const invalidTvdBottom = wbGeometrySection.tvdBottom && !editableWbgs?.tvdBottom.value;
-  const invalidIdSection = wbGeometrySection.idSection && !editableWbgs?.idSection.value;
-  const invalidOdSection = wbGeometrySection.odSection && !editableWbgs?.odSection.value;
-  const invalidWtPerLen = wbGeometrySection.wtPerLen && !editableWbgs?.wtPerLen.value;
-  const invalidDiaDrift = wbGeometrySection.diaDrift && !editableWbgs?.diaDrift.value;
+  const invalidMdTop = wbGeometrySection.mdTop && editableWbgs?.mdTop.value == undefined;
+  const invalidMdBottom = wbGeometrySection.mdBottom && editableWbgs?.mdBottom.value == undefined;
+  const invalidTvdTop = wbGeometrySection.tvdTop && editableWbgs?.tvdTop.value == undefined;
+  const invalidTvdBottom = wbGeometrySection.tvdBottom && editableWbgs?.tvdBottom.value == undefined;
+  const invalidIdSection = wbGeometrySection.idSection && editableWbgs?.idSection.value == undefined;
+  const invalidOdSection = wbGeometrySection.odSection && editableWbgs?.odSection.value == undefined;
+  const invalidWtPerLen = wbGeometrySection.wtPerLen && editableWbgs?.wtPerLen.value == undefined;
+  const invalidDiaDrift = wbGeometrySection.diaDrift && editableWbgs?.diaDrift.value == undefined;
   const invalidFactFric = wbGeometrySection.factFric != null && editableWbgs?.factFric == undefined;
   return (
     <>
@@ -66,6 +66,7 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
                   setEditableWbGeometrySection({ ...editableWbgs, typeHoleCasing: selectedItems[0] });
                 }}
                 hideClearButton={!!wbGeometrySection.typeHoleCasing}
+                onFocus={(e) => e.preventDefault()}
               />
               <MeasureField measure={editableWbgs.mdTop} editableWbgs={editableWbgs} invalid={invalidMdTop} name="mdTop" setResult={setEditableWbGeometrySection} />
               <MeasureField measure={editableWbgs.mdBottom} editableWbgs={editableWbgs} invalid={invalidMdBottom} name="mdBottom" setResult={setEditableWbGeometrySection} />
@@ -163,7 +164,7 @@ const errorOnDeletion = (original?: string, edited?: string): boolean => {
   if (!original) {
     return false;
   }
-  return !edited || edited.length == 0;
+  return edited == null || edited.length == 0;
 };
 
 const Layout = styled.div`
