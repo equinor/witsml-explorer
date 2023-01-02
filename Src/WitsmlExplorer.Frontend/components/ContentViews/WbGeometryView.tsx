@@ -53,7 +53,7 @@ export const WbGeometryView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "uid", label: "Uid", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
     { property: "typeHoleCasing", label: "typeHoleCasing", type: ContentType.String },
     { property: "mdTop", label: "mdTop", type: ContentType.String },
     { property: "mdBottom", label: "mdBottom", type: ContentType.String },
