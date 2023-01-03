@@ -1,3 +1,5 @@
+using WitsmlExplorer.Api.Models.Measure;
+
 namespace WitsmlExplorer.Api.Models
 {
     public class LogCurveInfo
@@ -10,6 +12,7 @@ namespace WitsmlExplorer.Api.Models
         public string MaxDepthIndex { get; internal set; }
         public string ClassWitsml { get; internal set; }
         public string Unit { get; internal set; }
+        public LengthMeasure SensorOffset { get; internal set; }
         public string MnemAlias { get; internal set; }
     }
 }

@@ -1,5 +1,7 @@
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
+
 namespace Witsml.Data
 {
     public class WitsmlLogCurveInfo : IWitsmlQueryType
@@ -50,7 +52,7 @@ namespace Witsml.Data
         public string CurveDescription { get; set; }
 
         [XmlElement("sensorOffset")]
-        public string SensorOffset { get; set; }
+        public WitsmlLengthMeasure SensorOffset { get; set; }
 
         [XmlElement("dataSource")]
         public string DataSource { get; set; }
