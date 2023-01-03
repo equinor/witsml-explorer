@@ -66,7 +66,7 @@ export const MessagesListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore?.messages, messages) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default MessagesListView;
