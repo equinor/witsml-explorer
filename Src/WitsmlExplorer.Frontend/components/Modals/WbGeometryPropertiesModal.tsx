@@ -1,11 +1,13 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import WbGeometryObject from "../../models/wbGeometry";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -17,12 +19,23 @@ export interface WbGeometryPropertiesModalProps {
 
 const WbGeometryPropertiesModal = (props: WbGeometryPropertiesModalProps): React.ReactElement => {
   const { mode, wbGeometryObject, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableWbGeometryObject, setEditableWbGeometryObject] = useState<WbGeometryObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
-    setEditableWbGeometryObject(wbGeometryObject);
+    setEditableWbGeometryObject({
+      ...wbGeometryObject,
+      dTimReport: formatDateString(wbGeometryObject.dTimReport, timeZone),
+      commonData: {
+        ...wbGeometryObject.commonData,
+        dTimCreation: formatDateString(wbGeometryObject.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(wbGeometryObject.commonData.dTimLastChange, timeZone)
+      }
+    });
   }, [wbGeometryObject]);
 
   const onSubmit = async (updatedWbGeometry: WbGeometryObject) => {
