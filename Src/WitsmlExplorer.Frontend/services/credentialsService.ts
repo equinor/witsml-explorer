@@ -27,6 +27,22 @@ class CredentialsService {
   private credentials: BasicServerCredentials[] = [];
   private server?: Server;
   private sourceServer?: Server;
+  private serversAwaitingAuthorization: Server[] = [];
+
+  public awaitServerAuthorization(server: Server) {
+    this.serversAwaitingAuthorization.push(server);
+  }
+
+  public finishServerAuthorization(server: Server) {
+    const index = this.serversAwaitingAuthorization.findIndex((waitingServer) => waitingServer.id == server.id);
+    if (index != -1) {
+      this.serversAwaitingAuthorization.splice(index, 1);
+    }
+  }
+
+  public serverIsAwaitingAuthorization(server: Server) {
+    return this.serversAwaitingAuthorization.find((waitingServer) => waitingServer.id == server.id) != undefined;
+  }
 
   public setSelectedServer(server: Server) {
     this.server = server;

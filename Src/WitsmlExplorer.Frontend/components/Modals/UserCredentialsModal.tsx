@@ -88,7 +88,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
           <Typography style={{ marginBottom: 20 }}>{server.name}</Typography>
           <TextField
             autoFocus={!shouldFocusPasswordInput}
-            id={"username"}
+            id={"username" + server.id}
             label={"Username"}
             defaultValue={username}
             required
@@ -99,7 +99,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
           />
           <TextField
             autoFocus={shouldFocusPasswordInput}
-            id={"password"}
+            id={"password" + server.id}
             label={"Password"}
             defaultValue={password}
             variant={password?.length === 0 ? "error" : undefined}

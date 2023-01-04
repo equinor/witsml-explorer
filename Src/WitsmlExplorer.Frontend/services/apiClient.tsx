@@ -99,11 +99,11 @@ export class ApiClient {
       }
 
       const url = new URL(getBasePathName() + pathName, getBaseUrl());
-      this.fetch(url, requestInit, currentCredentials, rerun, resolve, reject);
+      this.fetchWithRerun(url, requestInit, currentCredentials, rerun, resolve, reject);
     });
   }
 
-  private static fetch(
+  private static fetchWithRerun(
     url: URL,
     requestInit: RequestInit,
     currentCredentials: BasicServerCredentials[],
@@ -114,42 +114,38 @@ export class ApiClient {
     fetch(url.toString(), requestInit)
       .then((response) => {
         if (response.status == 401 && rerun) {
-          return response.json();
-        }
-        resolve(response);
-        return null;
-      })
-      .then((data) => {
-        if (data) {
-          this.rerunHttpRequest(url, requestInit, currentCredentials, data.server, resolve, reject);
+          this.handleUnauthorized(url, requestInit, currentCredentials, response.json(), response, resolve, reject);
+        } else {
+          resolve(response);
         }
       })
       .catch((error) => {
         if (error.name === "AbortError") {
-          return;
-        } else if (error.name === "Cancelled") {
           return;
         }
         reject(error);
       });
   }
 
-  private static rerunHttpRequest(
+  private static async handleUnauthorized(
     url: URL,
     requestInit: RequestInit,
     currentCredentials: BasicServerCredentials[],
-    server: "Target" | "Source" | undefined,
+    responseBody: Promise<any>,
+    originalResponse: Response,
     resolve: (value: Response | PromiseLike<Response>) => void,
     reject: (reason?: any) => void
   ) {
+    const result = await responseBody;
+    const server: "Target" | "Source" | undefined = result.server;
     const serverToAuthorize = server == "Source" ? currentCredentials[1].server : currentCredentials[0].server;
     const unsub = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Cancel) {
         unsub();
-        reject({ name: "Cancelled" }); //TODO results in "Uncaught (in promise) {name: 'Cancelled'}" in the console
+        resolve(originalResponse);
       } else if (authorizationState.status == AuthorizationStatus.Authorized && authorizationState.server.id == serverToAuthorize.id) {
         unsub();
-        this.fetch(url, requestInit, currentCredentials, true, resolve, reject);
+        this.fetchWithRerun(url, requestInit, currentCredentials, true, resolve, reject);
       }
     });
     CredentialsService.onAuthorizationChanged.dispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
