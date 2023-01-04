@@ -8,6 +8,7 @@ import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
@@ -46,7 +47,10 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
   };
 
   useEffect(() => {
-    setEditableWellbore(wellbore);
+    setEditableWellbore({
+      ...wellbore,
+      dTimeKickoff: formatDateString(wellbore.dTimeKickoff, timeZone)
+    });
     setPristineWellbore(wellbore);
   }, [wellbore]);
 

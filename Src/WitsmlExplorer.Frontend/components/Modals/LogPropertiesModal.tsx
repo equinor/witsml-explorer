@@ -1,9 +1,12 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -20,6 +23,9 @@ export interface LogPropertiesModalInterface {
 
 const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElement => {
   const { mode, logObject, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableLogObject, setEditableLogObject] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
@@ -41,7 +47,12 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
   };
 
   useEffect(() => {
-    setEditableLogObject(logObject);
+    const isTimeIndexed = logObject.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+    setEditableLogObject({
+      ...logObject,
+      startIndex: isTimeIndexed ? formatDateString(logObject.startIndex, timeZone) : logObject.startIndex,
+      endIndex: isTimeIndexed ? formatDateString(logObject.endIndex, timeZone) : logObject.endIndex
+    });
   }, [logObject]);
 
   return (

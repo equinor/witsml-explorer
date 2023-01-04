@@ -47,14 +47,14 @@ export const LogsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
 
-  const getTableData = () => {
-    return logs.map((log) => {
+  const getTableData = (): LogObjectRow[] => {
+    return logs.map((log, index) => {
       return {
         ...log,
-        id: log.uid,
+        id: index,
         startIndex: selectedWellbore && getType() == ContentType.DateTime ? formatDateString(log.startIndex, timeZone) : log.startIndex,
         endIndex: selectedWellbore && getType() == ContentType.DateTime ? formatDateString(log.endIndex, timeZone) : log.endIndex,
-        log: log
+        logObject: log
       };
     });
   };
