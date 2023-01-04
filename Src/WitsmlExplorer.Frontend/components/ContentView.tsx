@@ -19,7 +19,7 @@ import WbGeometryView from "./ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
-import ServerManager from "./Sidebar/ServerManager";
+import ServerManager from "./ContentViews/ServerManager";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);

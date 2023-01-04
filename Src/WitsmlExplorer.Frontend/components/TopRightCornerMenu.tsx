@@ -12,7 +12,6 @@ import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
 import { colors } from "../styles/Colors";
-import { Server } from "../models/server";
 import ManageServerButton from "./ManageServerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
@@ -27,7 +26,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
-  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const [currentWitsmlLoginState, setLoginState] = useState<{ username: string; }>();
   const {
     operationState: { theme, timeZone },
     dispatchOperation
@@ -44,8 +43,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
-      setLoginState({ isLoggedIn: credentialState.hasPassword, username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async () => {
+      setLoginState({ username: CredentialsService.getCredentials()[0]?.username });
     });
     return () => {
       unsubscribeFromCredentialsEvents();
@@ -118,10 +117,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
-      {currentWitsmlLoginState.username && (
+      {currentWitsmlLoginState?.username && (
         <StyledButton variant="ghost">
           <Icon name="person" color={colors.text.staticIconsTertiary} />
-          {currentWitsmlLoginState.username}
+          {currentWitsmlLoginState?.username}
         </StyledButton>
       )}
       <ManageServerButton />

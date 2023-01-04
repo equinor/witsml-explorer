@@ -1,5 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Button, Typography, Table, EdsProvider } from "@equinor/eds-core-react";
+import { Button, Table, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
@@ -9,26 +9,23 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { emptyServer, Server } from "../../models/server";
-import { getUserAppRoles, msalEnabled, SecurityScheme, signOut } from "../../msal/MsalAuthProvider";
+import { Server, emptyServer } from "../../models/server";
+import { SecurityScheme, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
+import ModalDialog from "../Modals/ModalDialog";
 import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
-import ModalDialog from "../Modals/ModalDialog";
 const NEW_SERVER_ID = "1";
 
 const ServerManager = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, servers, wells } = navigationState;
-  const {
-    dispatchOperation,
-    operationState: { theme }
-  } = useContext(OperationContext);
+  const { dispatchOperation, } = useContext(OperationContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
 
@@ -104,7 +101,6 @@ const ServerManager = (): React.ReactElement => {
   const onSelectItem = async (server: Server) => {
     if (server.id === selectedServer?.id) {
       await CredentialsService.deauthorize();
-      signOut();
       CredentialsService.setSelectedServer(null);
       setHasFetchedServers(false);
       const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
@@ -148,7 +144,6 @@ const ServerManager = (): React.ReactElement => {
           const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
           dispatchNavigation(action);
           CredentialsService.setSelectedServer(null);
-          signOut();
         }
       } catch (error) {
         //TODO Add a commmon way to handle such errors.
@@ -192,53 +187,53 @@ const ServerManager = (): React.ReactElement => {
           New server
         </Button>
       </Header>
-      <EdsProvider density={theme}>
-        <Table style={{ width: "100%" }} className="serversList">
-          <Table.Head>
-            <Table.Row>
-              <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
-              <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
-              <Table.Cell style={CellHeader}>Test Connection</Table.Cell>
-              <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
-              <Table.Cell></Table.Cell>
-              <Table.Cell></Table.Cell>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {servers
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((server: Server) => (
-                <Table.Row id={server.id} key={server.id}>
-                  <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
-                  <Table.Cell style={{ textAlign: "center" }}>
-                    <Icon color={selectedServer?.id == server.id ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <EdsProvider density={"compact"}>
-                      <CustomButton
-                        variant="outlined"
-                        onClick={() => onSelectItem(server)}
-                        style={{
-                          color: selectedServer?.id == server.id && wells.length ? colors.interactive.primaryResting : colors.text.staticIconsDefault,
-                          borderColor: selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsDefault
-                        }}
-                      >
-                        {selectedServer?.id == server.id && wells.length ? "Connected" : "Connect"}
-                      </CustomButton>
-                    </EdsProvider>
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <Icon name="edit" size={24} onClick={() => onEditItem(server)} />
-                  </Table.Cell>
-                  <Table.Cell style={CellHeaderStyle}>
-                    <Icon name="deleteToTrash" size={24} onClick={() => showDeleteModal(server)} />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-          </Table.Body>
-        </Table>
-      </EdsProvider>
+      <Table style={{ width: "100%" }} className="serversList">
+        <Table.Head>
+          <Table.Row>
+            <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
+            <Table.Cell style={CellHeader}>Test Connection</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
+            <Table.Cell></Table.Cell>
+            <Table.Cell></Table.Cell>
+          </Table.Row>
+        </Table.Head>
+        <Table.Body>
+          {servers
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((server: Server) => (
+              <Table.Row id={server.id} key={server.id}>
+                <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>
+                  <Icon color={selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <CustomButton
+                    variant="outlined"
+                    onClick={() => onSelectItem(server)}
+                    style={{
+                      color: selectedServer?.id == server.id && wells.length ? colors.interactive.primaryResting : colors.text.staticIconsDefault,
+                      borderColor: selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsDefault
+                    }}
+                  >
+                    {selectedServer?.id == server.id && wells.length ? "Connected" : "Connect"}
+                  </CustomButton>
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Button variant="ghost" onClick={() => onEditItem(server)}>
+                    <Icon name="edit" size={24} />
+                  </Button>
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Button variant="ghost" onClick={() => showDeleteModal(server)}>
+                    <Icon name="deleteToTrash" size={24} />
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+        </Table.Body>
+      </Table>
     </>
   );
 };
@@ -250,7 +245,8 @@ const Header = styled.div`
 `;
 const CustomButton = styled(Button)`
   border-radius: 20px;
-  width: 6.2rem;
+  width: 5.75rem;
+  height: 1.5rem;
   border-color: ${colors.interactive.successResting};
   &:hover {
     border-radius: 20px;
