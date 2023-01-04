@@ -25,7 +25,7 @@ const NEW_SERVER_ID = "1";
 const ServerManager = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, servers, wells } = navigationState;
-  const { dispatchOperation, } = useContext(OperationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
 

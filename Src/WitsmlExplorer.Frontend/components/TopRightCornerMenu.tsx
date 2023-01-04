@@ -26,7 +26,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
-  const [currentWitsmlLoginState, setLoginState] = useState<{ username: string; }>();
+  const [currentWitsmlLoginState, setLoginState] = useState<{ username: string }>();
   const {
     operationState: { theme, timeZone },
     dispatchOperation

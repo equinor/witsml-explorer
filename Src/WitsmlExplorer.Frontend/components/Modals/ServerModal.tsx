@@ -223,7 +223,7 @@ const TestServerButton = styled(Button)`
   flex: 1 0 auto;
 `;
 
-const ThumbUpOutlinedIcon = styled(MuiThumbUpOutlinedIcon) <{ variant: string }>`
+const ThumbUpOutlinedIcon = styled(MuiThumbUpOutlinedIcon)<{ variant: string }>`
   && {
     height: 1.5em;
   }
