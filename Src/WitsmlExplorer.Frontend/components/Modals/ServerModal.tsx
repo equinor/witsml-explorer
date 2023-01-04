@@ -48,14 +48,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   const showCredentialsModal = () => {
-    const onCancel = () => {
-      const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
-    };
-
     const onVerifyConnection = () => {
-      const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation, connectionVerified: true };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+      setConnectionVerified(true);
+      dispatchOperation({ type: OperationType.HideModal });
     };
 
     const serverCredentials: BasicServerCredentials = { username: "", password: "", server };
@@ -64,7 +59,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       serverCredentials,
       mode: CredentialsMode.TEST,
       errorMessage: "",
-      onCancel: onCancel,
       onConnectionVerified: onVerifyConnection
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
@@ -73,8 +67,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   // Uncomment to enable user edit of server list
   const showDeleteModal = () => {
     const onCancel = () => {
-      const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+      dispatchOperation({ type: OperationType.HideModal });
     };
 
     const onConfirm = async () => {
@@ -102,6 +95,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
         switchButtonPlaces={true}
       />
     );
+    dispatchOperation({ type: OperationType.HideModal });
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
   };
 

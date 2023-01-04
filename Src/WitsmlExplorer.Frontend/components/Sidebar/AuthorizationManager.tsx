@@ -7,12 +7,23 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 
 const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
-  const [currentAuthorization, setAuthorization] = useState<AuthorizationState>();
+  const [unauthorizedQueue, setUnauthorizedQueue] = useState<AuthorizationState[]>([]);
+  const [shownModalQueue, setShownModalQueue] = useState<Server[]>([]);
 
   useEffect(() => {
     const unsubscribe = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Unauthorized) {
-        setAuthorization(authorizationState);
+        const inUnauthorizedQueue = unauthorizedQueue.find((state) => state.server.id == authorizationState.server.id) != undefined;
+        const inShownModalQueue = shownModalQueue.find((server) => server.id == authorizationState.server.id) != undefined;
+        if (!inUnauthorizedQueue && !inShownModalQueue) {
+          setUnauthorizedQueue(unauthorizedQueue.concat(authorizationState));
+        }
+      } else {
+        const existingIndex = shownModalQueue.findIndex((server) => server.id == authorizationState.server.id);
+        if (existingIndex !== -1) {
+          shownModalQueue.splice(existingIndex, 1);
+          setShownModalQueue([...shownModalQueue]);
+        }
       }
     });
     return () => {
@@ -21,10 +32,20 @@ const AuthorizationManager = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    if (currentAuthorization?.status == AuthorizationStatus.Unauthorized && currentAuthorization?.server) {
-      showCredentialsModal(currentAuthorization.server);
+    if (unauthorizedQueue.length == 0) {
+      return;
     }
-  }, [currentAuthorization]);
+    unauthorizedQueue.forEach((state) => {
+      const inShownModalQueue = shownModalQueue.find((server) => server.id == state.server.id) != undefined;
+      if (inShownModalQueue) {
+        return;
+      }
+      showCredentialsModal(state.server);
+      shownModalQueue.push(state.server);
+    });
+    setShownModalQueue([...shownModalQueue]);
+    setUnauthorizedQueue([]);
+  }, [unauthorizedQueue]);
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
     const currentCredentials = CredentialsService.getCredentialsForServer(server);
@@ -37,7 +58,6 @@ const AuthorizationManager = (): React.ReactElement => {
         dispatchOperation({ type: OperationType.HideModal });
         CredentialsService.saveCredentials({ ...credentials, password: "" });
       },
-      onCancel: () => dispatchOperation({ type: OperationType.HideModal }),
       errorMessage
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });

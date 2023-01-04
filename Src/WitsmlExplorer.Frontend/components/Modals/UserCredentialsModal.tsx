@@ -1,5 +1,7 @@
 import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
 import CredentialsService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
@@ -22,6 +24,7 @@ export enum CredentialsMode {
 
 const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElement => {
   const { mode, server, serverCredentials, confirmText } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
@@ -119,6 +122,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={() => {
         CredentialsService.onAuthorizationChanged.dispatch({ server, status: AuthorizationStatus.Cancel });
+        dispatchOperation({ type: OperationType.HideModal });
         if (props.onCancel) {
           props.onCancel();
         }
