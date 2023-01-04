@@ -64,7 +64,7 @@ export const TrajectoryView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "uid", label: "Uid", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimStn", label: "dTimStn", type: ContentType.DateTime },
     { property: "typeTrajStation", label: "typeTrajStation", type: ContentType.String },
     { property: "md", label: "md", type: ContentType.Number },

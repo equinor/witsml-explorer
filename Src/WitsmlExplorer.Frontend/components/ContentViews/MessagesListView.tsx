@@ -51,7 +51,7 @@ export const MessagesListView = (): React.ReactElement => {
     { property: "index", label: "#", type: ContentType.Number },
     { property: "dTim", label: "dTim", type: ContentType.DateTime },
     { property: "messageText", label: "messageText", type: ContentType.String },
-    { property: "uid", label: "UID", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
     { property: "name", label: "name", type: ContentType.String },
     { property: "typeMessage", label: "typeMessage", type: ContentType.String },
     { property: "sourceName", label: "commonData.sourceName", type: ContentType.String },
@@ -66,7 +66,7 @@ export const MessagesListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };
 
-  return <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return Object.is(selectedWellbore?.messages, messages) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default MessagesListView;

@@ -1,8 +1,6 @@
 import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
-import MomentUtils from "@date-io/moment";
 import { ThemeProvider } from "@material-ui/core";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React from "react";
@@ -28,27 +26,25 @@ const Home = (): React.ReactElement => {
   return (
     <MsalProvider instance={msalInstance}>
       {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-        <OperationContext.Provider value={{ operationState, dispatchOperation }}>
-          <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles />
-            <Head>
-              <title>WITSML Explorer</title>
-              <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
-            </Head>
-            <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
-              <Routing />
-              <RefreshHandler />
-              <SnackbarProvider>
-                <Snackbar />
-              </SnackbarProvider>
-              <PageLayout />
-            </NavigationContext.Provider>
-            <ContextMenuPresenter />
-            <ModalPresenter />
-          </ThemeProvider>
-        </OperationContext.Provider>
-      </MuiPickersUtilsProvider>
+      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        <ThemeProvider theme={getTheme(operationState.theme)}>
+          <GlobalStyles />
+          <Head>
+            <title>WITSML Explorer</title>
+            <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+          </Head>
+          <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+            <Routing />
+            <RefreshHandler />
+            <SnackbarProvider>
+              <Snackbar />
+            </SnackbarProvider>
+            <PageLayout />
+          </NavigationContext.Provider>
+          <ContextMenuPresenter />
+          <ModalPresenter />
+        </ThemeProvider>
+      </OperationContext.Provider>
     </MsalProvider>
   );
 };

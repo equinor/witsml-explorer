@@ -1,3 +1,5 @@
+import Measure from "./measure";
+
 export default interface LogCurveInfo {
   uid: string;
   mnemonic: string;
@@ -7,5 +9,6 @@ export default interface LogCurveInfo {
   maxDepthIndex?: number;
   classWitsml: string;
   unit: string;
+  sensorOffset: Measure;
   mnemAlias: string;
 }

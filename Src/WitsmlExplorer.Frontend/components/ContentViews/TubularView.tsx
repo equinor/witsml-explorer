@@ -59,14 +59,14 @@ export const TubularView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "sequence", label: "Sequence", type: ContentType.Number },
-    { property: "typeTubularComponent", label: "typeTubularComponent", type: ContentType.String },
+    { property: "sequence", label: "sequence", type: ContentType.Number },
+    { property: "typeTubularComponent", label: "typeTubularComp", type: ContentType.String },
     { property: "innerDiameter", label: "id", type: ContentType.String },
     { property: "od", label: "od", type: ContentType.String },
     { property: "len", label: "len", type: ContentType.String },
-    { property: "tubularName", label: "tubularName", type: ContentType.String },
-    { property: "typeTubularAssy", label: "typeTubularAssy", type: ContentType.String },
-    { property: "uid", label: "Uid", type: ContentType.String }
+    { property: "tubularName", label: "tubular.name", type: ContentType.String },
+    { property: "typeTubularAssy", label: "tubular.typeTubularAssy", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String }
   ];
 
   const tubularComponentRows = tubularComponents.map((tubularComponent) => {

@@ -15,8 +15,8 @@ import { colors } from "../styles/Colors";
 import ManageServerButton from "./ManageServerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
-  [TimeZone.Raw]: "Original Time",
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
+  [TimeZone.Raw]: "Original Time",
   [TimeZone.Utc]: `${getOffsetFromTimeZone(TimeZone.Utc)} UTC`,
   [TimeZone.Brasilia]: `${getOffsetFromTimeZone(TimeZone.Brasilia)} Brazil/Brasilia`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
@@ -60,7 +60,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   const timeZoneMenuItems = [];
   for (const key in timeZoneLabels) {
     timeZoneMenuItems.push(
-      <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)}>
+      <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)} style={{ width: "250px" }}>
         <TimeZoneTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</TimeZoneTypography>
         {timeZone === key && <Icon name="check" />}
       </StyledMenuItem>
