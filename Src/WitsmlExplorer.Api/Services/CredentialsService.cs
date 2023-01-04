@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
@@ -14,6 +15,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
@@ -153,6 +155,14 @@ namespace WitsmlExplorer.Api.Services
             bool useOauth = headers.GetCookieValue() == null;
             ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.TargetServer);
             ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.SourceServer);
+            if (!string.IsNullOrEmpty(headers.TargetServer) && string.IsNullOrEmpty(target?.UserId))
+            {
+                throw new WitsmlClientProviderException($"Missing target server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Target);
+            }
+            if (!string.IsNullOrEmpty(headers.SourceServer) && string.IsNullOrEmpty(source?.UserId))
+            {
+                throw new WitsmlClientProviderException($"Missing source server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Source);
+            }
             return (target, source);
         }
 

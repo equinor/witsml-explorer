@@ -32,7 +32,6 @@ export const JobsView = (): React.ReactElement => {
   const fetchJobs = () => {
     const abortController = new AbortController();
     const getJobInfos = async () => {
-      //TODO make sure this does not crash on unauthorized or other errors
       const jobInfos = showAll ? JobService.getAllJobInfos(abortController.signal) : JobService.getUserJobInfos(abortController.signal);
       setJobInfos(await jobInfos);
     };
@@ -46,7 +45,6 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      //TODO should fetch if the socket user is equal to the current user or if admin view is enabled
       const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (shouldFetch) {
         setShouldRefresh(true);

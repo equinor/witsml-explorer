@@ -9,7 +9,6 @@ const Snackbar = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe((notification) => {
-      //TODO should notify if the user is equal to the socket user
       const shouldNotify = notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (shouldNotify) {
         enqueueSnackbar(notification.message, {
