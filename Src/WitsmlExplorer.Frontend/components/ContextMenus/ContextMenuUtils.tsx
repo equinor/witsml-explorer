@@ -9,6 +9,7 @@ import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellb
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
+import CredentialsService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
