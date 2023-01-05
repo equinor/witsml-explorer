@@ -90,12 +90,11 @@ When developing, visit `https://localhost:5001/swagger/index.html` to examine en
 ### Basic authentication
 The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a list of witsml servers in json format without any credentials.
 
-`Basic` authentication is available by default and `username`/`password` should first be used to get an encrypted password from the `AuthorizationHandler` `/api/authorize` endpoint along with information about the server as json in the body.
+Steps to use endpoints with `Basic` authentication
+1. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlTargetServer`. 
+2. Now visit any endpoint, e.g. `/api/wells` and provide the same Url in the header `AuthorizationHandler` (now without credentials)
 
-After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`encrypted password`. The encrypted password received from the authorizationhandler.
-
-Entering this in swagger the Authorization/BasicAuth fields will make sure to include the `Authorization: Basic ...` header in your successive calls to other endpoints. The header value `WitsmlTargetServer` for the same server you got the token also needs to be filled out as the credentials are valid only for a specific server.
-
+Further information about the header format is given on the swagger page/endpoint. 
 ### OAuth2 authentication
 `OAuth2` authentication is turned off by default both in backend and frontend through the appsettings property `OAuth2Enabled`. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 
@@ -133,7 +132,7 @@ All endpoints will now need a logged in user, authenticated by your tenant.
 
 ### System credentials
 
-System credentials for a server can be included through a `secrets.json` file or in Azure keyvault:
+System credentials for a server can be included through a `secrets.json` file, or in Azure keyvault:
 
 **secrets.json format**
 ```json
