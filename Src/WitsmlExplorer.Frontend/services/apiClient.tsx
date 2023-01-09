@@ -1,6 +1,6 @@
 import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
-import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import CredentialsService, { AuthorizationStatus, BasicServerCredentials } from "./credentialsService";
 
 export class ApiClient {
   static async getCommonHeaders(credentials: BasicServerCredentials[], serverOnly: boolean): Promise<HeadersInit> {
@@ -37,7 +37,8 @@ export class ApiClient {
     pathName: string,
     abortSignal: AbortSignal | null = null,
     currentCredentials = CredentialsService.getCredentials(),
-    serverHeaderOnly = true
+    serverHeaderOnly = true,
+    rerun = true
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
@@ -45,7 +46,7 @@ export class ApiClient {
       ...{ credentials: "include" }
     };
 
-    return ApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClient.runHttpRequest(pathName, requestInit, currentCredentials, serverHeaderOnly && rerun);
   }
 
   public static async post(
@@ -61,7 +62,7 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(currentCredentials, true),
       ...{ credentials: "include" }
     };
-    return ApiClient.runHttpRequest(pathName, requestInit);
+    return ApiClient.runHttpRequest(pathName, requestInit, currentCredentials);
   }
 
   public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
@@ -89,8 +90,7 @@ export class ApiClient {
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  private static runHttpRequest(pathName: string, requestInit: RequestInit) {
-    CredentialsService.refreshLocalstorageSessions();
+  private static runHttpRequest(pathName: string, requestInit: RequestInit, currentCredentials = CredentialsService.getCredentials(), rerun = true) {
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled) {
@@ -99,16 +99,56 @@ export class ApiClient {
       }
 
       const url = new URL(getBasePathName() + pathName, getBaseUrl());
-
-      fetch(url.toString(), requestInit)
-        .then((response) => resolve(response))
-        .catch((error) => {
-          if (error.name === "AbortError") {
-            return;
-          }
-          reject(error);
-        });
+      this.fetchWithRerun(url, requestInit, currentCredentials, rerun, resolve, reject);
     });
+  }
+
+  private static fetchWithRerun(
+    url: URL,
+    requestInit: RequestInit,
+    currentCredentials: BasicServerCredentials[],
+    rerun: boolean,
+    resolve: (value: Response | PromiseLike<Response>) => void,
+    reject: (reason?: any) => void
+  ) {
+    fetch(url.toString(), requestInit)
+      .then((response) => {
+        if (response.status == 401 && rerun) {
+          this.handleUnauthorized(url, requestInit, currentCredentials, response.json(), response, resolve, reject);
+        } else {
+          resolve(response);
+        }
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") {
+          return;
+        }
+        reject(error);
+      });
+  }
+
+  private static async handleUnauthorized(
+    url: URL,
+    requestInit: RequestInit,
+    currentCredentials: BasicServerCredentials[],
+    responseBody: Promise<any>,
+    originalResponse: Response,
+    resolve: (value: Response | PromiseLike<Response>) => void,
+    reject: (reason?: any) => void
+  ) {
+    const result = await responseBody;
+    const server: "Target" | "Source" | undefined = result.server;
+    const serverToAuthorize = server == "Source" ? currentCredentials[1].server : currentCredentials[0].server;
+    const unsub = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState) => {
+      if (authorizationState.status == AuthorizationStatus.Cancel) {
+        unsub();
+        resolve(originalResponse);
+      } else if (authorizationState.status == AuthorizationStatus.Authorized && authorizationState.server.id == serverToAuthorize.id) {
+        unsub();
+        this.fetchWithRerun(url, requestInit, currentCredentials, true, resolve, reject);
+      }
+    });
+    CredentialsService.onAuthorizationChanged.dispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
   }
 }
 

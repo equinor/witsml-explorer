@@ -12,7 +12,6 @@ using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Repositories;
-using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Middleware
 {
@@ -61,8 +60,9 @@ namespace WitsmlExplorer.Api.Middleware
             }
             catch (WitsmlClientProviderException ex)
             {
-                Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
-                await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
+                Log.Information($"Got status code: {ex.StatusCode}, for server: {ex.Server} and message: {ex.Message}");
+                WitsmlClientProviderExceptionDetails errorDetails = new() { StatusCode = ex.StatusCode, Message = ex.Message, Server = ex.Server };
+                await HandleExceptionAsync(httpContext, errorDetails);
             }
             catch (WitsmlResultParsingException ex)
             {

@@ -15,46 +15,36 @@ import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
 import { displayMissingWellboreModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const onClickCopyLogToServer = async (targetServer: Server, sourceServer: Server, logsToCopy: LogObject[], dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellUid = logsToCopy[0].wellUid;
   const wellboreUid = logsToCopy[0].wellboreUid;
 
-  const onCredentials = async () => {
-    const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
-    const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
-    const wellbore = await WellboreService.getWellboreFromServer(wellUid, wellboreUid, targetCredentials);
-    if (wellbore.uid !== wellboreUid) {
-      displayMissingWellboreModal(targetServer, wellUid, wellboreUid, dispatchOperation, "No logs will be copied.");
-      return;
-    }
+  const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
+  const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
+  const wellbore = await WellboreService.getWellboreFromServer(wellUid, wellboreUid, targetCredentials);
+  if (wellbore.uid !== wellboreUid) {
+    displayMissingWellboreModal(targetServer, wellUid, wellboreUid, dispatchOperation, "No logs will be copied.");
+    return;
+  }
 
-    const logQueries = logsToCopy.map((log) => LogObjectService.getLogFromServer(wellUid, wellboreUid, log.uid, targetCredentials));
-    const existingLogs: LogObject[] = [];
-    for (const logQuery of logQueries) {
-      const receivedLog = await logQuery;
-      if (logsToCopy.find((log) => receivedLog.uid === log.uid)) {
-        existingLogs.push(receivedLog);
-      }
+  const logQueries = logsToCopy.map((log) => LogObjectService.getLogFromServer(wellUid, wellboreUid, log.uid, targetCredentials));
+  const existingLogs: LogObject[] = [];
+  for (const logQuery of logQueries) {
+    const receivedLog = await logQuery;
+    if (logsToCopy.find((log) => receivedLog.uid === log.uid)) {
+      existingLogs.push(receivedLog);
     }
-    if (existingLogs.length > 0) {
-      const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, wellbore, dispatchOperation);
-      displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
-    } else {
-      const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
-      CredentialsService.setSourceServer(sourceServer);
-      JobService.orderJobAtServer(JobType.CopyLog, copyJob, [targetCredentials, sourceCredentials]);
-    }
-  };
-
-  const isAuthorized = CredentialsService.isAuthorizedForServer(targetServer);
-  if (!isAuthorized) {
-    const message = `You are trying to copy an object to a server that you are not logged in to. Please provide username and password for ${targetServer.name}.`;
-    showCredentialsModal(targetServer, dispatchOperation, () => onCredentials(), message);
+  }
+  if (existingLogs.length > 0) {
+    const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, wellbore, dispatchOperation);
+    displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
   } else {
-    onCredentials();
+    const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
+    CredentialsService.setSourceServer(sourceServer);
+    JobService.orderJobAtServer(JobType.CopyLog, copyJob, [targetCredentials, sourceCredentials]);
   }
 };
 

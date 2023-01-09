@@ -1,25 +1,25 @@
 # Authentication and Authorization in WITSML Explorer
 ## WITSML server credentials flow (Basic)
 Every request run against a WITSML server is run from the backend and needs to be authenticated.
-Basic auth is required for a lot of WITSML servers, so that is currently the main way WE authenticate against them.
+Basic auth is required for a lot of WITSML servers, so that is currently the main way WE authenticates against them.
 
 Most actions done by the user in WE involves fetching or writing data to external WITSML servers. All these requests require credentials to be provided to the `authorization` endpoint in advance.
 
 It would be a very bad user experience if the user would have to provide credentials for every request to the API. 
-Therefore an encrypted version of the passwords is saved in memory-cache on the backend. The backend only stores them for a limited amount of time, and will provide them for every request involving WITSML servers. 
+Therefore an encrypted version of the passwords is saved in a memory-cache on the backend. The backend only stores them for a limited amount of time, and will provide them for every request involving WITSML servers. 
 
 The backend has a [Data Protection](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/introduction) storage running in memory, which is used for encrypting the passwords as well as decrypting them (only possible on the running instance).
 
-When a request is forwarded to the WITSML server, the backend will decrypt the password from cache, and use it when running the request.
+When a request is forwarded to the WITSML server, the backend will decrypt the password from the cache, and use it when running the request.
 
-__To use the API without the frontend, the user need to provide credentials in the header for `WitsmlTargetServer`. The format is Basic Authorization format Base64 encoded along with server URL. See Swagger for description for more information on Header information__
+__To use the API without the frontend, the user needs to provide credentials in the header for `WitsmlTargetServer` on the `/credentials/authorize` route. The format is Basic Authorization format Base64 encoded along with server URL. See Swagger for more information on Header information. Subsequent requests will automatically reuse the credentials that were saved to the cache when calling the `/credentials/authorize` route. Examples are provided in the [API Access without frontend](#api-access-without-frontend) section of this document.__
 
 This is a description of the flow:
 ### 1. When the user connects to a server for the first time
   - frontend contacts `authorize` endpoint with entered credentials along with server url
   - if this is a new client without any cookie and id, generate an id for this client
-  - backend verify credentials with the WITSML server, if OK, encrypts credentials, add to cache and generates an unique cacheId based on client-id and server host
-  - `TTL` before credentials are invalidated will be given by the query param keep
+  - backend verifies credentials with the WITSML server, if OK, encrypts credentials, adds them to the cache and generates an unique cacheId based on client-id and server host
+  - `TTL` before credentials are invalidated will be given by the query param `keep`
     - keep=true => 24 hours
     - keep=false or missing  => 1 hour
   - `[secure ,samesite=strict, httponly]` cookie is added to the response with uuid as value
@@ -46,8 +46,6 @@ sequenceDiagram
     activate Api
     Api->>Api: If valid, encrypt password <br> and store it in memory <br> using DataProtection library
     Api->>Frontend: Return 200 OK + cookie
-    activate Frontend
-    Frontend->>-Frontend: Store login expiration  <br> in local storage
     Frontend->>-Api: Fetch wells using cookie <br>fetching encrypted password from cache
     Api->>-Api: Decrypt password using <br> Data Protection Libary
     activate Api
@@ -70,8 +68,8 @@ User will log in by Equinor tenant.
 
 #### OAuth mode with system credentials access based on app role assignment
   - backend uses claim sub in Bearer token for user-to-app identification
-  - backend fetches credentials from keyvault, encrypts and store the credentials in backend cache identified by information in id_token (sub)
-  - **TTL** before credentials are invalidated will be given by the query param keep
+  - backend fetches credentials from keyvault, encrypts and stores the credentials in the backend cache identified by information in id_token (sub)
+  - **TTL** before credentials are invalidated will be given by the query param `keep`
     - keep=true => 24 hours
     - keep=false or missing  => 1 hour
   - **no cookies involved**
@@ -83,22 +81,21 @@ User will log in by Equinor tenant.
 ### 2. Successive connections to API
   - frontend calls API with WitsmlTargetServer and (in copy-jobs) WitsmlSourceServer information
   - backend uses sub from Bearer token to lookup encrypted credentials in CredentialsCache
-    - if no credentials exists, send response 401
+    - if no credentials exists, send response 401 and display the credentials modal
   - **no cookies involved**
 
 ## Swagger
 When developing, visit `https://localhost:5001/swagger/index.html` to examine endpoints and authentication schemes. Setup will be outlined below.
 
-## Basic authentication
+### Basic authentication
 The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a list of witsml servers in json format without any credentials.
 
-`Basic` authentication is available by default and `username`/`password` should first be used to get an encrypted password from the `AuthorizationHandler` `/api/authorize` endpoint along with information about the server as json in the body.
+Steps to use endpoints with `Basic` authentication
+1. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlTargetServer`. 
+2. Now visit any endpoint, e.g. `/api/wells` and provide the same Url in the header `AuthorizationHandler` (now without credentials)
 
-After aquiring this token, you should use the authorize button again (Basic), but this time with your `username`/`encrypted password`. The encrypted password received from the authorizationhandler.
-
-Entering this in swagger the Authorization/BasicAuth fields will make sure to include the `Authorization: Basic ...` header in your successive calls to other endpoints. The header value `WitsmlTargetServer` for the same server you got the token also needs to be filled out as the credentials are valid only for a specific server.
-
-## OAuth2 authentication
+Further information about the header format is given on the swagger page/endpoint. 
+### OAuth2 authentication
 `OAuth2` authentication is turned off by default both in backend and frontend through the appsettings property `OAuth2Enabled`. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 
 If you want to add this flow to SwaggerUI, you need to customize the following info matching your own Azure app registration in the `mysettings.json` file. For information about app registrations and app roles setup see []()
@@ -135,7 +132,7 @@ All endpoints will now need a logged in user, authenticated by your tenant.
 
 ### System credentials
 
-System credentials for a server can be included through a `secrets.json` file or in Azure keyvault:
+System credentials for a server can be included through a `secrets.json` file, or in Azure keyvault:
 
 **secrets.json format**
 ```json
@@ -160,7 +157,7 @@ To use Azure keyvault, create your keyvault (above named `witsmlexp-servers-kv`)
 | witsmlcreds--test--userid | My server2 test [CRUD]      |         ||
 
  
-### Serverlist
+## Serverlist
 
 Credentials will be mapped on URL from secrets with the serverlist. `Server` entry in MongoDB or CosmosDB will have property `securityscheme` that can be `Basic` or `OAuth2`
 
@@ -188,7 +185,7 @@ For more info on app roles, see: [app roles](https://learn.microsoft.com/en-us/a
   ]
 ```
 
-### MSAL Frontend
+## MSAL Frontend
 To enable Oauth2 with MSAL in frontend, the following environment settings can be set:
 ```bash
 # To disable MSAL, leave NEXT_PUBLIC_MSALENABLED empty
@@ -229,7 +226,7 @@ graph TD
     J[6. WITSML Server]  ---> |wells| H[4. WitsmlExplorer API]
 ```
 
-1. End user visit Witsml-Explorer.
+1. End user visits Witsml-Explorer.
 2. The end user will be redirected to login with the configured OAuth2 Authorization server (Azure AD).
 3. Witsml-Explorer will fetch the initial Serverlist from DB. When OAuth2 is enabled both in the frontend and backend, retrieving the serverlist will only be available for logged in users. Similarly Create, Update and Delete will be reserved for users with role `admin`. All servers in the list now include two properties: `securityscheme` and `role`.
 4. If the user through the frontend chooses to query a server with a `securityscheme` set to `OAuth2`, the backend will check the received `Bearer` JWT token for `app-roles`. This in turn will be checked against the configured `roles` for the server.
@@ -313,9 +310,9 @@ Transfer-Encoding: chunked
 
 `witsml-explorer` is in `OAuth2` mode. (Started with `OAuth2Enabled=true` in appsettings).
 
-No cookie involved. But you will still need to authorize for servers configured as `Basic`
+No cookie involved. But you will still need to authorize for servers configured as `Basic`.
 
-**prerequisite**: a valid `Bearer` token with app-roles and server configuration in place.
+**Prerequisite**: a valid `Bearer` token with app-roles and server configuration in place.
 
 __1. witsml-server configuration list__ (and other endpoints)
 ```http
