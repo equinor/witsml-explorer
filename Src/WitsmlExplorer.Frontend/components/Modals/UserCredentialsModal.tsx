@@ -1,7 +1,9 @@
 import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
@@ -22,12 +24,13 @@ export enum CredentialsMode {
 
 const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElement => {
   const { mode, server, serverCredentials, confirmText } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const shouldFocusPasswordInput = !!username;
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.keepLoggedInToServer(server.url));
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.getKeepLoggedInToServer(server.url));
 
   useEffect(() => {
     if (serverCredentials) {
@@ -52,9 +55,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const blank = "blank";
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      CredentialsService.saveCredentials({ ...credentials, password: blank });
+      CredentialsService.saveCredentials({ ...credentials, password: "" });
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);
@@ -70,9 +72,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      const blank = "";
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      props.onConnectionVerified({ ...credentials, password: blank });
+      props.onConnectionVerified({ ...credentials, password: "" });
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -87,7 +88,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
           <Typography style={{ marginBottom: 20 }}>{server.name}</Typography>
           <TextField
             autoFocus={!shouldFocusPasswordInput}
-            id={"username"}
+            id={"username" + server.id}
             label={"Username"}
             defaultValue={username}
             required
@@ -98,7 +99,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
           />
           <TextField
             autoFocus={shouldFocusPasswordInput}
-            id={"password"}
+            id={"password" + server.id}
             label={"Password"}
             defaultValue={password}
             variant={password?.length === 0 ? "error" : undefined}
@@ -119,7 +120,13 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       confirmDisabled={!validText(username) || !validText(password)}
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
-      onCancel={props.onCancel}
+      onCancel={() => {
+        CredentialsService.onAuthorizationChanged.dispatch({ server, status: AuthorizationStatus.Cancel });
+        dispatchOperation({ type: OperationType.HideModal });
+        if (props.onCancel) {
+          props.onCancel();
+        }
+      }}
       isLoading={isLoading}
       errorMessage={errorMessage}
       width={ModalWidth.SMALL}

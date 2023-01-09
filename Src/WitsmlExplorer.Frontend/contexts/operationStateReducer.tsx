@@ -58,9 +58,8 @@ export interface SetTimeZoneAction extends PayloadAction {
 
 export interface OperationState {
   contextMenu: ContextMenu;
-  displayModal: boolean;
   progressIndicatorValue: number;
-  modal: ReactElement;
+  modals: ReactElement[];
   theme: UserTheme;
   timeZone: TimeZone;
 }
@@ -80,9 +79,8 @@ const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: n
 export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
   const initialState: OperationState = {
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: false,
     progressIndicatorValue: 0,
-    modal: null,
+    modals: [],
     theme: UserTheme.Compact,
     timeZone: TimeZone.Local
   };
@@ -109,21 +107,21 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
 };
 
 const hideModal = (state: OperationState) => {
-  const modal: ReactElement = null;
+  const modals = [...state.modals];
+  modals.pop();
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: false,
-    modal
+    modals
   };
 };
 
 const displayModal = (state: OperationState, { payload }: DisplayModalAction) => {
+  const modals = state.modals.concat(payload);
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: true,
-    modal: payload
+    modals
   };
 };
 

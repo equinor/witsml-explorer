@@ -86,6 +86,14 @@ const GlobalStyles = createGlobalStyle`
     font-size: 1em;
   }
 
+  #eds-dialog-container>div {
+    visibility: hidden;
+  }
+
+  #eds-dialog-container>div:last-of-type {
+    visibility: visible;
+  }
+
   .MuiListItem-container {
     .MuiListItemSecondaryAction-root {
       display: none;

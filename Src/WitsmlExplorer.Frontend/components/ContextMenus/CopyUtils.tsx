@@ -11,19 +11,13 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import CredentialsService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
-import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export const onClickPaste = async (servers: Server[], sourceServerUrl: string, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === sourceServerUrl);
   if (sourceServer !== null) {
     CredentialsService.setSourceServer(sourceServer);
-    const isAuthorized = CredentialsService.isAuthorizedForServer(sourceServer);
-    if (!isAuthorized) {
-      const message = `You are trying to paste an object from a server that you are not logged in to. Please provide username and password for ${sourceServer.name}.`;
-      showCredentialsModal(sourceServer, dispatchOperation, () => orderCopyJob(), message);
-    } else {
-      orderCopyJob();
-    }
+    orderCopyJob();
   }
 };
 

@@ -9,17 +9,17 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { Server, emptyServer } from "../../models/server";
-import { SecurityScheme, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
+import { emptyServer, Server } from "../../models/server";
+import { getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import ModalDialog from "../Modals/ModalDialog";
-import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
+import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+
 const NEW_SERVER_ID = "1";
 
 const ServerManager = (): React.ReactElement => {
@@ -27,11 +27,11 @@ const ServerManager = (): React.ReactElement => {
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
-  const [currentWitsmlLoginState, setLoginState] = useState<{ isLoggedIn: boolean; username?: string; server?: Server }>({ isLoggedIn: false });
+  const [currentWitsmlLoginState, setLoginState] = useState<{ username?: string; server?: Server }>({});
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async (credentialState) => {
-      setLoginState({ isLoggedIn: credentialState.hasPassword, username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async (credentialState) => {
+      setLoginState({ username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
     });
     return () => {
       unsubscribeFromCredentialsEvents();
@@ -41,11 +41,12 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const abortController = new AbortController();
     const onCurrentLoginStateChange = async () => {
+      if (wells.length !== 0) {
+        return;
+      }
       const fetchWells = async () => {
-        if (wells.length === 0) {
-          const wells = await WellService.getWells();
-          dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
-        }
+        const wells = await WellService.getWells();
+        dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
       };
       const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
       if (useOauth) {
@@ -59,17 +60,11 @@ const ServerManager = (): React.ReactElement => {
           });
         }
       } else if (currentWitsmlLoginState.server) {
-        if (CredentialsService.isAuthorizedForServer(selectedServer)) {
-          try {
-            await fetchWells();
-            dispatchOperation({ type: OperationType.HideModal });
-          } catch (error) {
-            showCredentialsModal(currentWitsmlLoginState.server, error.message);
-          }
-        } else {
-          showCredentialsModal(currentWitsmlLoginState.server);
-          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentWitsmlLoginState.server } };
-          dispatchNavigation(action);
+        try {
+          await fetchWells();
+          dispatchOperation({ type: OperationType.HideModal });
+        } catch (error) {
+          showCredentialsModal(currentWitsmlLoginState.server, error.message);
         }
       }
     };
@@ -99,24 +94,14 @@ const ServerManager = (): React.ReactElement => {
   }, [isAuthenticated, hasFetchedServers]);
 
   const onSelectItem = async (server: Server) => {
-    if (server.id === selectedServer?.id) {
-      await CredentialsService.deauthorize();
-      CredentialsService.setSelectedServer(null);
-      setHasFetchedServers(false);
-      const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
-      dispatchNavigation(action);
-    } else {
-      const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
-      dispatchNavigation(action);
-      CredentialsService.setSelectedServer(server);
-    }
-    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+    const currentServer = server.id === selectedServer?.id ? null : server;
+    CredentialsService.setSelectedServer(currentServer);
+    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentServer } };
     dispatchNavigation(action);
   };
 
   const onEditItem = (server: Server) => {
-    const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal server={server} /> });
   };
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
@@ -130,41 +115,6 @@ const ServerManager = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
-  const showDeleteModal = (server: Server) => {
-    const onCancel = () => {
-      dispatchOperation({ type: OperationType.HideModal });
-    };
-    const onConfirm = async () => {
-      const abortController = new AbortController();
-      try {
-        await ServerService.removeServer(server.id, abortController.signal);
-        dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
-        if (server.id === selectedServer?.id) {
-          await CredentialsService.deauthorize();
-          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
-          dispatchNavigation(action);
-          CredentialsService.setSelectedServer(null);
-        }
-      } catch (error) {
-        //TODO Add a commmon way to handle such errors.
-      } finally {
-        dispatchOperation({ type: OperationType.HideModal });
-      }
-    };
-    const confirmModal = (
-      <ModalDialog
-        heading={`Remove the server "${server.name}"?`}
-        content={<>Removing a server will permanently remove it from the list.</>}
-        confirmColor={"danger"}
-        confirmText={"Remove server"}
-        onCancel={onCancel}
-        onSubmit={onConfirm}
-        isLoading={false}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
-  };
   const CellHeaderStyle = {
     color: colors.interactive.primaryResting,
     padding: "0.3rem"
@@ -226,7 +176,7 @@ const ServerManager = (): React.ReactElement => {
                   </Button>
                 </Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>
-                  <Button variant="ghost" onClick={() => showDeleteModal(server)}>
+                  <Button variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
                     <Icon name="deleteToTrash" size={24} />
                   </Button>
                 </Table.Cell>

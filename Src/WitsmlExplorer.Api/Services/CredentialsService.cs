@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
@@ -14,6 +15,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
@@ -150,20 +152,18 @@ namespace WitsmlExplorer.Api.Services
 
         public (ServerCredentials targetServer, ServerCredentials sourceServer) GetWitsmlUsernamesFromCache(IEssentialHeaders headers)
         {
-            (ServerCredentials witsmlTargetCredentials, ServerCredentials witsmlSourceCredentials) result;
-            if (headers.GetCookieValue() != null)
+            bool useOauth = headers.GetCookieValue() == null;
+            ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.TargetServer);
+            ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(useOauth, headers, headers.SourceServer);
+            if (!string.IsNullOrEmpty(headers.TargetServer) && string.IsNullOrEmpty(target?.UserId))
             {
-                ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(false, headers, headers.TargetServer);
-                ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(false, headers, headers.SourceServer);
-                result = (target, source);
+                throw new WitsmlClientProviderException($"Missing target server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Target);
             }
-            else
+            if (!string.IsNullOrEmpty(headers.SourceServer) && string.IsNullOrEmpty(source?.UserId))
             {
-                ServerCredentials target = string.IsNullOrEmpty(headers.TargetServer) ? new ServerCredentials() : GetCredentialsFromCache(true, headers, headers.TargetServer);
-                ServerCredentials source = string.IsNullOrEmpty(headers.SourceServer) ? new ServerCredentials() : GetCredentialsFromCache(true, headers, headers.SourceServer);
-                result = (target, source);
+                throw new WitsmlClientProviderException($"Missing source server credentials", (int)HttpStatusCode.Unauthorized, ServerType.Source);
             }
-            return result;
+            return (target, source);
         }
 
         public ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders headers, string serverUrl, Func<string, string> delDecrypt = null)

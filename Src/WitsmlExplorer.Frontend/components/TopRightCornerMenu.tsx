@@ -7,11 +7,11 @@ import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import CredentialsService from "../services/credentialsService";
+import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
-import { colors } from "../styles/Colors";
 import ManageServerButton from "./ManageServerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
@@ -43,7 +43,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onCredentialStateChanged.subscribe(async () => {
+    const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async () => {
       setLoginState({ username: CredentialsService.getCredentials()[0]?.username });
     });
     return () => {

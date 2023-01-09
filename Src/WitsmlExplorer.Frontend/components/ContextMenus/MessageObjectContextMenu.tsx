@@ -8,7 +8,6 @@ import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService from "../../services/credentialsService";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
@@ -16,7 +15,7 @@ import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/M
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { DispatchOperation, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, showCredentialsModal, StyledIcon } from "./ContextMenuUtils";
+import { DispatchOperation, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface MessageObjectContextMenuProps {
@@ -40,20 +39,11 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
 
   const onClickCompareMessageToServer = async (targetServer: Server, sourceServer: Server, messageToCompare: MessageObject, dispatchOperation: DispatchOperation) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const onCredentials = async () => {
-      const props: MessageComparisonModalProps = { sourceMessage: messageToCompare, sourceServer, targetServer, dispatchOperation };
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <MessageComparisonModal {...props} />
-      });
-    };
-    const isAuthorized = CredentialsService.isAuthorizedForServer(targetServer);
-    if (!isAuthorized) {
-      const message = `You are trying to compare a message with a server that you are not logged in to. Please provide username and password for ${targetServer.name}.`;
-      showCredentialsModal(targetServer, dispatchOperation, () => onCredentials(), message);
-    } else {
-      onCredentials();
-    }
+    const props: MessageComparisonModalProps = { sourceMessage: messageToCompare, sourceServer, targetServer, dispatchOperation };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <MessageComparisonModal {...props} />
+    });
   };
 
   return (
