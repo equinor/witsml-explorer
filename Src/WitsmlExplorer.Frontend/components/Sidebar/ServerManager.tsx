@@ -66,9 +66,7 @@ const ServerManager = (): React.ReactElement => {
           await fetchWells();
           dispatchOperation({ type: OperationType.HideModal });
         } catch (error) {
-          if (error) {
-            showCredentialsModal(currentWitsmlLoginState.server, error.message);
-          }
+          showCredentialsModal(currentWitsmlLoginState.server, error.message);
         }
       }
     };
