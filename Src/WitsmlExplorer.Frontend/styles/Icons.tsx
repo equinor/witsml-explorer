@@ -10,9 +10,12 @@ import {
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
+  cloud_download as cloudDownload,
+  cloud_off as cloudOff,
   compare,
   copy,
   delete_to_trash as deleteToTrash,
+  done,
   edit,
   folder_open as folderOpen,
   format_line_spacing as formatLine,
@@ -20,14 +23,12 @@ import {
   launch,
   more_vertical as moreVertical,
   paste,
+  person,
   refresh,
+  save,
   settings,
   trending_up as isActive,
-  world,
-  cloud_download as cloudDownload,
-  person,
-  save,
-  done
+  world
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
@@ -57,7 +58,8 @@ const icons = {
   cloudDownload,
   person,
   save,
-  done
+  done,
+  cloudOff
 };
 
 Icon.add(icons);

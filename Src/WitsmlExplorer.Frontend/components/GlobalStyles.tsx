@@ -105,12 +105,6 @@ const GlobalStyles = createGlobalStyle`
       }
     }
   }
-
-  .serversList {
-    tr:nth-child(odd) {
-       background-color: ${colors.interactive.tableHeaderFillResting};
-    }
- }
 `;
 
 export default GlobalStyles;

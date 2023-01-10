@@ -42,9 +42,9 @@ const Home = (): React.ReactElement => {
               <Snackbar />
             </SnackbarProvider>
             <PageLayout />
+            <ContextMenuPresenter />
+            <ModalPresenter />
           </NavigationContext.Provider>
-          <ContextMenuPresenter />
-          <ModalPresenter />
         </ThemeProvider>
       </OperationContext.Provider>
     </MsalProvider>

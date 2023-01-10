@@ -142,13 +142,13 @@ const ServerManager = (): React.ReactElement => {
           <Table.Row>
             <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
             <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
-            <Table.Cell style={CellHeader}>Test Connection</Table.Cell>
+            <Table.Cell style={CellHeader}></Table.Cell>
             <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
             <Table.Cell></Table.Cell>
             <Table.Cell></Table.Cell>
           </Table.Row>
         </Table.Head>
-        <Table.Body>
+        <StyledTableBody>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
@@ -182,17 +182,19 @@ const ServerManager = (): React.ReactElement => {
                 </Table.Cell>
               </Table.Row>
             ))}
-        </Table.Body>
+        </StyledTableBody>
       </Table>
     </>
   );
 };
+
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 0.9rem;
   align-items: center;
 `;
+
 const CustomButton = styled(Button)`
   border-radius: 20px;
   width: 5.75rem;
@@ -200,6 +202,16 @@ const CustomButton = styled(Button)`
   border-color: ${colors.interactive.successResting};
   &:hover {
     border-radius: 20px;
+  }
+`;
+
+const StyledTableBody = styled(Table.Body)`
+  tr:nth-child(even) {
+    background-color: ${colors.interactive.tableHeaderFillResting};
+  }
+
+  tr:nth-child(odd) {
+    background-color: white;
   }
 `;
 

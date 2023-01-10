@@ -1,10 +1,9 @@
-import { Button, Typography } from "@equinor/eds-core-react";
+import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
+import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Icon from "../styles/Icons";
-import { colors } from "../styles/Colors";
-import styled from "styled-components";
 
 const ManageServerButton = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -14,12 +13,11 @@ const ManageServerButton = (): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectManageServer, payload: {} });
   };
 
+  const connected = selectedServer && wells.length;
   return (
-    <StyledButton variant="ghost" onClick={onClick} style={{ width: "150px" }}>
-      <Icon name="cloudDownload" color={selectedServer?.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsTertiary} />
-      <Typography lines={1} style={{ fontSize: "0.75rem" }} color={selectedServer?.id ? colors.interactive.primaryResting : colors.text.staticIconsTertiary}>
-        {selectedServer && wells.length ? selectedServer.name : "No Connection"}{" "}
-      </Typography>
+    <StyledButton variant="ghost" onClick={onClick}>
+      <Icon name={connected ? "cloudDownload" : "cloudOff"} />
+      {connected ? "Server Connections" : "No Connection"}
     </StyledButton>
   );
 };

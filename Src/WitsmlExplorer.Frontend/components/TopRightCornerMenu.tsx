@@ -7,7 +7,6 @@ import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import CredentialsService from "../services/credentialsService";
-import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
@@ -26,7 +25,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
-  const [currentWitsmlLoginState, setLoginState] = useState<{ username: string }>();
+  const [username, setUsername] = useState<string>("");
   const {
     operationState: { theme, timeZone },
     dispatchOperation
@@ -43,8 +42,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async () => {
-      setLoginState({ username: CredentialsService.getCredentials()[0]?.username });
+    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChanged.subscribe(() => {
+      setUsername(CredentialsService.getCredentials()[0]?.username);
     });
     return () => {
       unsubscribeFromCredentialsEvents();
@@ -92,7 +91,9 @@ const TopRightCornerMenu = (): React.ReactElement => {
   const accountMenu = (
     <ContextMenu
       menuItems={[
-        <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>,
+        <StyledMenuItem key={"account"}>
+          <Typography style={{ overflow: "clip", textOverflow: "ellipsis" }}>{getAccountInfo()?.name}</Typography>
+        </StyledMenuItem>,
         <StyledMenuItem
           key={"signout"}
           onClick={() => {
@@ -117,10 +118,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
-      {currentWitsmlLoginState?.username && (
-        <StyledButton variant="ghost">
-          <Icon name="person" color={colors.text.staticIconsTertiary} />
-          {currentWitsmlLoginState?.username}
+      {username && (
+        <StyledButton variant="ghost" disabled>
+          <Icon name="person" />
+          {username}
         </StyledButton>
       )}
       <ManageServerButton />
