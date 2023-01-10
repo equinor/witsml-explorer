@@ -10,7 +10,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
-import { getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
+import { adminRole, getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
@@ -28,6 +28,7 @@ const ServerManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ username?: string; server?: Server }>({});
+  const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async (credentialState) => {
@@ -101,7 +102,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const onEditItem = (server: Server) => {
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal server={server} /> });
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled server={server} /> });
   };
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
@@ -137,7 +138,7 @@ const ServerManager = (): React.ReactElement => {
         <Typography color={"primary"} bold={true}>
           Manage Connections
         </Typography>
-        <Button variant="outlined" value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
+        <Button variant="outlined" value={NEW_SERVER_ID} key={NEW_SERVER_ID} disabled={editDisabled} onClick={() => onEditItem(emptyServer())}>
           <Icon name="cloudDownload" />
           New server
         </Button>
@@ -181,7 +182,7 @@ const ServerManager = (): React.ReactElement => {
                   </Button>
                 </Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>
-                  <Button variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
+                  <Button disabled={editDisabled} variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
                     <Icon name="deleteToTrash" size={24} />
                   </Button>
                 </Table.Cell>

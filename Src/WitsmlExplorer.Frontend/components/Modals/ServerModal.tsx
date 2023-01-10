@@ -21,6 +21,7 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 
 export interface ServerModalProps {
   server: Server;
+  editDisabled: boolean;
 }
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
@@ -120,6 +121,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               onChange={onChangeUrl}
               onBlur={runUrlValidation}
               required
+              disabled={props.editDisabled}
             />
             {connectionVerified && <ThumbUpOutlinedIcon style={{ color: colors.interactive.successResting }} variant={"outlined"} fontSize={"large"} />}
             <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
@@ -137,6 +139,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onBlur={runServerNameValidation}
             onChange={onChangeName}
             required
+            disabled={props.editDisabled}
           />
           <TextField
             id="description"
@@ -145,6 +148,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             fullWidth
             inputProps={{ maxLength: 64 }}
             onChange={(e) => setServer({ ...server, description: e.target.value })}
+            disabled={props.editDisabled}
           />
           <Autocomplete
             id="securityScheme"
@@ -155,6 +159,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
             }}
             hideClearButton={true}
+            disabled={props.editDisabled}
           />
           <TextField
             id="role"
@@ -163,13 +168,14 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             fullWidth
             inputProps={{ maxLength: 64 }}
             onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
+            disabled={props.editDisabled}
           />
         </>
       }
       onSubmit={onSubmit}
       isLoading={isLoading}
-      onDelete={server.id ? showDeleteModal : null}
-      confirmDisabled={!validateForm()}
+      onDelete={server.id && !props.editDisabled ? showDeleteModal : null}
+      confirmDisabled={props.editDisabled || !validateForm()}
     />
   );
 };
