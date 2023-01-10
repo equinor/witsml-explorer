@@ -110,7 +110,12 @@ const ServerManager = (): React.ReactElement => {
       server: server,
       serverCredentials: currentCredentials,
       mode: CredentialsMode.SAVE,
-      errorMessage
+      errorMessage,
+      onCancel: () => {
+        CredentialsService.setSelectedServer(null);
+        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+        dispatchNavigation(action);
+      }
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
