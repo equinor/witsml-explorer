@@ -24,7 +24,6 @@ function getStartIndex(logCurveInfo?: LogCurveInfo): string | number {
   if (!logCurveInfo) {
     return missingIndex;
   }
-  console.log(logCurveInfo.minDepthIndex);
   if (logCurveInfo.minDepthIndex != null) {
     return logCurveInfo.minDepthIndex;
   }
