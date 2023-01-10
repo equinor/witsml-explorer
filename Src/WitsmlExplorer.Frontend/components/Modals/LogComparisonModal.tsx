@@ -14,7 +14,7 @@ import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
+import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences, missingIndex } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface LogComparisonModalProps {
@@ -93,16 +93,24 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     setIndexTypesMatch(indexTypesMatch);
   }, [sourceLogCurveInfo, targetLogCurveInfo]);
 
+  const toFixed = (value: string | number): string => {
+    const number = Number(value);
+    if (isNaN(number)) {
+      return missingIndex;
+    }
+    return number.toFixed(4);
+  };
+
   const data = useMemo(
     () =>
       indexesToShow?.map((indexes) => {
         const [markedSourceStart, markedTargetStart] =
           sourceType == "depth"
-            ? markNumberDifferences(Number(indexes.sourceStart).toFixed(4), Number(indexes.targetStart).toFixed(4))
+            ? markNumberDifferences(toFixed(indexes.sourceStart), toFixed(indexes.targetStart))
             : markDateTimeStringDifferences(indexes.sourceStart as string, indexes.targetStart as string);
         const [markedSourceEnd, markedTargetEnd] =
           sourceType == "depth"
-            ? markNumberDifferences(Number(indexes.sourceEnd).toFixed(4), Number(indexes.targetEnd).toFixed(4))
+            ? markNumberDifferences(toFixed(indexes.sourceEnd), toFixed(indexes.targetEnd))
             : markDateTimeStringDifferences(indexes.sourceEnd as string, indexes.targetEnd as string);
         return {
           mnemonic: indexes.mnemonic,
