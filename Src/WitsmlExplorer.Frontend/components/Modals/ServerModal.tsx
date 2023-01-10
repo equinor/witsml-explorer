@@ -1,14 +1,19 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { Button, TextField } from "@material-ui/core";
 import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
-import { AddServerAction, RemoveWitsmlServerAction, UpdateServerAction } from "../../contexts/modificationActions";
+import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
+import { SelectServerAction } from "../../contexts/navigationActions";
+import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
+import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import { BasicServerCredentials } from "../../services/credentialsService";
+import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
 import ModalDialog from "./ModalDialog";
@@ -16,15 +21,16 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 
 export interface ServerModalProps {
   server: Server;
-  dispatchNavigation: (action: AddServerAction | UpdateServerAction | RemoveWitsmlServerAction) => void;
-  dispatchOperation: (action: HideModalAction | DisplayModalAction) => void;
-  connectionVerified?: boolean;
 }
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation } = props;
+  const {
+    navigationState: { selectedServer },
+    dispatchNavigation
+  } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const [server, setServer] = useState<Server>(props.server);
-  const [connectionVerified, setConnectionVerified] = useState<boolean>(props.connectionVerified ?? false);
+  const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
   const [displayUrlError, setDisplayUrlError] = useState<boolean>(false);
   const [displayNameError, setDisplayServerNameError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,39 +70,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
-  // Uncomment to enable user edit of server list
   const showDeleteModal = () => {
-    const onCancel = () => {
-      dispatchOperation({ type: OperationType.HideModal });
-    };
-
-    const onConfirm = async () => {
-      const abortController = new AbortController();
-
-      try {
-        await ServerService.removeServer(server.id, abortController.signal);
-        dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
-      } catch (error) {
-        //TODO Add a commmon way to handle such errors.
-      } finally {
-        dispatchOperation({ type: OperationType.HideModal });
-      }
-    };
-
-    const confirmModal = (
-      <ModalDialog
-        heading={`Remove the server "${server.name}"?`}
-        content={<>Removing a server will permanently remove it from the list.</>}
-        confirmColor={"danger"}
-        confirmText={"Remove server"}
-        onCancel={onCancel}
-        onSubmit={onConfirm}
-        isLoading={isLoading}
-        switchButtonPlaces={true}
-      />
-    );
     dispatchOperation({ type: OperationType.HideModal });
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
+    showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer);
   };
 
   const runServerNameValidation = () => {
@@ -196,6 +172,50 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       confirmDisabled={!validateForm()}
     />
   );
+};
+
+export const showDeleteServerModal = (
+  server: Server,
+  dispatchOperation: (action: HideModalAction | DisplayModalAction) => void,
+  dispatchNavigation: (action: SelectServerAction | RemoveWitsmlServerAction) => void,
+  selectedServer: Server
+) => {
+  const onCancel = () => {
+    dispatchOperation({ type: OperationType.HideModal });
+  };
+  const onConfirm = async () => {
+    const abortController = new AbortController();
+    try {
+      await ServerService.removeServer(server.id, abortController.signal);
+      dispatchNavigation({ type: ModificationType.RemoveServer, payload: { serverUid: server.id } });
+      if (server.id === selectedServer?.id) {
+        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+        dispatchNavigation(action);
+        CredentialsService.setSelectedServer(null);
+      }
+    } catch (error) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: new URL(server.url),
+        message: error.message,
+        isSuccess: false
+      });
+    } finally {
+      dispatchOperation({ type: OperationType.HideModal });
+    }
+  };
+  const confirmModal = (
+    <ModalDialog
+      heading={`Remove the server "${server.name}"?`}
+      content={<>Removing a server will permanently remove it from the list.</>}
+      confirmColor={"danger"}
+      confirmText={"Remove server"}
+      onCancel={onCancel}
+      onSubmit={onConfirm}
+      isLoading={false}
+      switchButtonPlaces={true}
+    />
+  );
+  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmModal });
 };
 
 const isUrlValid = (url: string) => {

@@ -1,6 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Typography } from "@equinor/eds-core-react";
-import { Divider, FormControl as MuiFormControl, FormHelperText, InputLabel, Link, ListItemIcon, ListItemSecondaryAction, MenuItem, Select } from "@material-ui/core";
+import { Button, Table, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
@@ -18,7 +17,7 @@ import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import ServerModal, { ServerModalProps } from "../Modals/ServerModal";
+import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 const NEW_SERVER_ID = "1";
@@ -27,7 +26,6 @@ const ServerManager = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const [isOpen, setIsOpen] = useState<boolean>();
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const [currentWitsmlLoginState, setLoginState] = useState<{ username?: string; server?: Server }>({});
 
@@ -47,7 +45,7 @@ const ServerManager = (): React.ReactElement => {
         return;
       }
       const fetchWells = async () => {
-        const wells = await WellService.getWells(abortController.signal);
+        const wells = await WellService.getWells();
         dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
       };
       const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
@@ -93,18 +91,17 @@ const ServerManager = (): React.ReactElement => {
         abortController.abort();
       };
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hasFetchedServers]);
 
   const onSelectItem = async (server: Server) => {
-    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
+    const currentServer = server.id === selectedServer?.id ? null : server;
+    CredentialsService.setSelectedServer(currentServer);
+    const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentServer } };
     dispatchNavigation(action);
-    CredentialsService.setSelectedServer(server);
   };
 
   const onEditItem = (server: Server) => {
-    const modalProps: ServerModalProps = { server, dispatchNavigation, dispatchOperation };
-    setIsOpen(false);
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal {...modalProps} /> });
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal server={server} /> });
   };
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
@@ -113,82 +110,113 @@ const ServerManager = (): React.ReactElement => {
       server: server,
       serverCredentials: currentCredentials,
       mode: CredentialsMode.SAVE,
-      errorMessage
+      errorMessage,
+      onCancel: () => {
+        CredentialsService.setSelectedServer(null);
+        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+        dispatchNavigation(action);
+      }
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
-  const AuthenticationState = () => {
-    if (msalEnabled) return;
-    if (!selectedServer?.id) {
-      return <FormHelperText>No server selected</FormHelperText>;
-    } else if (currentWitsmlLoginState.username) {
-      return (
-        <FormHelperText>
-          Connected user: <LinkButton onClick={() => showCredentialsModal(selectedServer)}>{currentWitsmlLoginState.username}</LinkButton>
-        </FormHelperText>
-      );
-    } else {
-      return (
-        <FormHelperText>
-          <LinkButton onClick={() => showCredentialsModal(selectedServer)}>Not logged in</LinkButton>
-        </FormHelperText>
-      );
-    }
+  const CellHeaderStyle = {
+    color: colors.interactive.primaryResting,
+    padding: "0.3rem"
   };
-
+  const CellHeader = {
+    color: colors.interactive.primaryResting,
+    display: "flex",
+    justifyContent: "center",
+    height: "100%",
+    padding: "0.3rem"
+  };
   return (
     <>
-      <FormControl>
-        <InputLabel id="servers-label">Server</InputLabel>
-
-        <Select
-          labelId="servers-label"
-          value={selectedServer?.id ?? ""}
-          onOpen={() => {
-            setIsOpen(true);
-          }}
-          onClose={() => setIsOpen(false)}
-          MenuProps={{ open: isOpen }}
-        >
+      <Header>
+        <Typography color={"primary"} bold={true}>
+          Manage Connections
+        </Typography>
+        <Button variant="outlined" value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
+          <Icon name="cloudDownload" />
+          New server
+        </Button>
+      </Header>
+      <Table style={{ width: "100%" }} className="serversList">
+        <Table.Head>
+          <Table.Row>
+            <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
+            <Table.Cell style={CellHeader}></Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
+            <Table.Cell></Table.Cell>
+            <Table.Cell></Table.Cell>
+          </Table.Row>
+        </Table.Head>
+        <StyledTableBody>
           {servers
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
-              <MenuItem value={server.id} key={server.id} onClick={() => onSelectItem(server)}>
-                <Typography style={{ marginRight: 20 * +isOpen, overflow: "hidden" }} color={"initial"}>
-                  {server.name}
-                </Typography>
-                {isOpen && (
-                  <ListItemSecondaryAction onClick={() => onEditItem(server)}>
-                    <Icon name="edit" color={colors.interactive.primaryResting} />
-                  </ListItemSecondaryAction>
-                )}
-              </MenuItem>
+              <Table.Row id={server.id} key={server.id}>
+                <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>
+                  <Icon color={selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <CustomButton
+                    variant="outlined"
+                    onClick={() => onSelectItem(server)}
+                    style={{
+                      color: selectedServer?.id == server.id && wells.length ? colors.interactive.primaryResting : colors.text.staticIconsDefault,
+                      borderColor: selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsDefault
+                    }}
+                  >
+                    {selectedServer?.id == server.id && wells.length ? "Connected" : "Connect"}
+                  </CustomButton>
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Button variant="ghost" onClick={() => onEditItem(server)}>
+                    <Icon name="edit" size={24} />
+                  </Button>
+                </Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  <Button variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
+                    <Icon name="deleteToTrash" size={24} />
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
             ))}
-          <Divider />
-          <MenuItem value={NEW_SERVER_ID} key={NEW_SERVER_ID} onClick={() => onEditItem(emptyServer())}>
-            <ListItemIcon>
-              <Icon name="add" color={colors.interactive.primaryResting} />
-            </ListItemIcon>
-            <Typography color={"initial"}>Add server</Typography>
-          </MenuItem>
-        </Select>
-
-        <AuthenticationState />
-      </FormControl>
+        </StyledTableBody>
+      </Table>
     </>
   );
 };
 
-const FormControl = styled(MuiFormControl)`
-  && {
-    margin-left: 0.5rem;
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0.9rem;
+  align-items: center;
+`;
+
+const CustomButton = styled(Button)`
+  border-radius: 20px;
+  width: 5.75rem;
+  height: 1.5rem;
+  border-color: ${colors.interactive.successResting};
+  &:hover {
+    border-radius: 20px;
   }
 `;
 
-const LinkButton = styled(Link)`
-  & {
-    cursor: pointer;
+const StyledTableBody = styled(Table.Body)`
+  tr:nth-child(even) {
+    background-color: ${colors.interactive.tableHeaderFillResting};
+  }
+
+  tr:nth-child(odd) {
+    background-color: white;
   }
 `;
 

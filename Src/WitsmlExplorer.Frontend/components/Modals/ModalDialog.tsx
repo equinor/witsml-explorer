@@ -99,7 +99,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   ];
 
   return (
-    <Dialog onKeyDown={onKeyPress} style={{ width: width }} open={true}>
+    <Dialog onKeyDown={onKeyPress} open={true} style={{ width: width }}>
       <Dialog.Header>
         <Dialog.Title>{heading}</Dialog.Title>
       </Dialog.Header>

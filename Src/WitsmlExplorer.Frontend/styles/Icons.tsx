@@ -10,9 +10,12 @@ import {
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
+  cloud_download as cloudDownload,
+  cloud_off as cloudOff,
   compare,
   copy,
   delete_to_trash as deleteToTrash,
+  done,
   edit,
   folder_open as folderOpen,
   format_line_spacing as formatLine,
@@ -20,7 +23,9 @@ import {
   launch,
   more_vertical as moreVertical,
   paste,
+  person,
   refresh,
+  save,
   settings,
   trending_up as isActive,
   world
@@ -49,7 +54,12 @@ const icons = {
   world,
   arrowUp,
   arrowDown,
-  calendar
+  calendar,
+  cloudDownload,
+  person,
+  save,
+  done,
+  cloudOff
 };
 
 Icon.add(icons);

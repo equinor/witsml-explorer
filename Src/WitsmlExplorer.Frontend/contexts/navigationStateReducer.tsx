@@ -41,7 +41,7 @@ import {
   SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
-import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag } from "./navigationContext";
+import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
@@ -102,6 +102,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return setCurveThreshold(state, action);
     case NavigationType.ShowCurveValues:
       return selectLogCurveInfo(state, action);
+    case NavigationType.SelectServerManager:
+      return selectServerManager(state);
     default:
       throw new Error();
   }
@@ -116,12 +118,12 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
 
 const selectServer = (state: NavigationState, { payload }: SelectServerAction) => {
   const { server } = payload;
-  const alreadySelected = server.id === state.selectedServer?.id;
+  const alreadySelected = server != null && server.id === state.selectedServer?.id;
   const expandedTreeNodes: string[] = [];
   return {
     ...state,
     ...allDeselected,
-    currentSelected: server,
+    currentSelected: alreadySelected ? server : selectedServerManagerFlag,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],
@@ -187,6 +189,15 @@ const selectJobs = (state: NavigationState) => {
     ...allDeselected,
     selectedServer: state.selectedServer,
     currentSelected: selectedJobsFlag
+  };
+};
+
+const selectServerManager = (state: NavigationState) => {
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    currentSelected: selectedServerManagerFlag
   };
 };
 

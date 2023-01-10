@@ -6,7 +6,6 @@ import Well from "../../models/well";
 import Icon from "../../styles/Icons";
 import WellProgress from "../WellProgress";
 import FilterPanel from "./FilterPanel";
-import ServerManager from "./ServerManager";
 import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
@@ -15,7 +14,6 @@ const Sidebar = (): React.ReactElement => {
 
   return (
     <>
-      <ServerManager />
       <FilterPanel />
       <SidebarTreeView>
         <WellProgress>

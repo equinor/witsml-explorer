@@ -79,7 +79,7 @@ const Nav = (): React.ReactElement => {
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected]);
+  }, [currentSelected, selectedServer]);
 
   return (
     <nav>
