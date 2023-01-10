@@ -5,12 +5,12 @@ import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Icon from "../styles/Icons";
 
-const ManageServerButton = (): React.ReactElement => {
+const ServerManagerButton = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, wells } = navigationState;
 
   const onClick = () => {
-    dispatchNavigation({ type: NavigationType.SelectManageServer, payload: {} });
+    dispatchNavigation({ type: NavigationType.SelectServerManager, payload: {} });
   };
 
   const connected = selectedServer && wells.length;
@@ -25,4 +25,4 @@ const ManageServerButton = (): React.ReactElement => {
 const StyledButton = styled(Button)`
   white-space: nowrap;
 `;
-export default ManageServerButton;
+export default ServerManagerButton;

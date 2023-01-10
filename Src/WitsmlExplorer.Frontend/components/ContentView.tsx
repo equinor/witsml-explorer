@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedManageServerFlag } from "../contexts/navigationContext";
+import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import JobsView from "./ContentViews/JobsView";
@@ -10,6 +10,7 @@ import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
+import ServerManager from "./ContentViews/ServerManager";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
 import TrajectoryView from "./ContentViews/TrajectoryView";
 import TubularsListView from "./ContentViews/TubularsListView";
@@ -19,7 +20,6 @@ import WbGeometryView from "./ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
-import ServerManager from "./ContentViews/ServerManager";
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -85,7 +85,7 @@ const ContentView = (): React.ReactElement => {
         setView(<WbGeometryView />);
       } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
-      } else if (currentSelected === selectedManageServerFlag) {
+      } else if (currentSelected === selectedServerManagerFlag) {
         setView(<ServerManager />);
       } else if (currentSelected === listWellsFlag) {
         setView(<WellsListView />);

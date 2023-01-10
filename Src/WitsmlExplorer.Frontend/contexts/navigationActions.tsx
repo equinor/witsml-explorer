@@ -133,6 +133,6 @@ export interface SetCurveThresholdAction extends Action {
   payload: { curveThreshold: CurveThreshold };
 }
 
-export interface SelectManageServerAction extends Action {
-  type: NavigationType.SelectManageServer;
+export interface SelectServerManagerAction extends Action {
+  type: NavigationType.SelectServerManager;
 }

@@ -35,6 +35,7 @@ import {
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
+  SelectServerManagerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
   SelectTubularAction,
@@ -45,8 +46,7 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction,
-  SelectManageServerAction
+  ToggleTreeNodeAction
 } from "./navigationActions";
 
 export type NavigationAction =
@@ -95,4 +95,4 @@ export type NavigationAction =
   | SelectWbGeometryAction
   | SetFilterAction
   | SetCurveThresholdAction
-  | SelectManageServerAction;
+  | SelectServerManagerAction;

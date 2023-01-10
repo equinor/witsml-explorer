@@ -21,7 +21,7 @@ enum NavigationType {
   SetFilter = "SetFilter",
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues",
-  SelectManageServer = "SelectManageServer"
+  SelectServerManager = "SelectServerManager"
 }
 
 export default NavigationType;

@@ -11,7 +11,7 @@ import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
-import ManageServerButton from "./ManageServerButton";
+import ServerManagerButton from "./ServerManagerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
@@ -124,7 +124,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
           {username}
         </StyledButton>
       )}
-      <ManageServerButton />
+      <ServerManagerButton />
       <JobsButton />
       <StyledButton variant="ghost" onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
         <Icon name="world" />
