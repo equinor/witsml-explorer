@@ -38,8 +38,6 @@ export const RisksListView = (): React.ReactElement => {
         mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
         dTimStart: formatDateString(risk.dTimStart, timeZone),
         dTimEnd: formatDateString(risk.dTimEnd, timeZone),
-        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
         details: clipLongString(risk.details, 30),
         summary: clipLongString(risk.summary, 40),
         risk: risk
