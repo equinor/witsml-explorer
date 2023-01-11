@@ -26,16 +26,14 @@ const Home = (): React.ReactElement => {
 
   React.useEffect(() => {
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("/sw.js").then(
-          function (registration) {
-            console.log("Service Worker registration successful with scope: ", registration.scope);
-          },
-          function (err) {
-            console.log("Service Worker registration failed: ", err);
-          }
-        );
-      });
+      navigator.serviceWorker.register("/sw.js").then(
+        function (registration) {
+          console.log("Service Worker registration successful with scope: ", registration.scope);
+        },
+        function (err) {
+          console.log("Service Worker registration failed: ", err);
+        }
+      );
     }
   }, []);
 
@@ -48,6 +46,7 @@ const Home = (): React.ReactElement => {
           <Head>
             <title>WITSML Explorer</title>
             <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+            <link rel="manifest" href={AssetsLoader.getAssetsRoot() + "/manifest.webmanifest"} />
           </Head>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
             <Routing />

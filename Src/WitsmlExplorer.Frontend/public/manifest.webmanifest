@@ -1,7 +1,7 @@
 {
   "name": "WITSML Explorer",
   "short_name": "WITSMLExplorer",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fff",
   "description": "Witsml Explorer data management tool.",
