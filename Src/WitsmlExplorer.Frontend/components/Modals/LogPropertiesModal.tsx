@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -36,7 +36,7 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
   };
 
   const onChangeCurve = async (event: any) => {
-    const indexCurve = event.target.value === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth;
+    const indexCurve = event[0] === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth;
     setEditableLogObject({ ...editableLogObject, indexCurve });
   };
 
@@ -55,41 +55,32 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 id="uid"
                 label="uid"
                 value={editableLogObject.uid}
-                fullWidth
                 disabled={editMode}
                 required
-                error={!validText(editableLogObject.uid)}
                 helperText={editableLogObject.uid.length === 0 ? "A wellbore uid must be 1-64 characters" : ""}
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableLogObject({ ...editableLogObject, uid: e.target.value })}
+                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, uid: e.target.value })}
               />
               <TextField
                 id="name"
                 label="name"
                 defaultValue={editableLogObject.name}
-                error={editableLogObject.name.length === 0}
                 helperText={editableLogObject.name.length === 0 ? "A log name must be 1-64 characters" : ""}
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
+                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
               />
-              <TextField disabled id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} fullWidth />
-              <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} fullWidth />
-              <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} fullWidth />
-              <TextField disabled id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} fullWidth />
-              <TextField disabled id="wellName" label="well name" defaultValue={editableLogObject.wellName} fullWidth />
-              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableLogObject.wellboreUid} fullWidth />
-              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableLogObject.wellboreName} fullWidth />
-              <FormControl fullWidth>
-                <InputLabel id="curve-label">index curve</InputLabel>
-                <Select labelId="index-curve" value={editableLogObject.indexCurve} onChange={onChangeCurve} disabled={editMode}>
-                  {validIndexCurves.map((curve: IndexCurve) => (
-                    <MenuItem value={curve} key={curve}>
-                      <Typography color={"initial"}>{curve}</Typography>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField disabled id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} />
+              <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
+              <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
+              <TextField disabled id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} />
+              <TextField disabled id="wellName" label="well name" defaultValue={editableLogObject.wellName} />
+              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableLogObject.wellboreUid} />
+              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableLogObject.wellboreName} />
+              <Autocomplete
+                label="index curve"
+                initialSelectedOptions={[editableLogObject.indexCurve]}
+                options={validIndexCurves}
+                onOptionsChange={onChangeCurve}
+                hideClearButton={true}
+              />
             </>
           }
           confirmDisabled={!validText(editableLogObject.uid) || !validText(editableLogObject.name) || !validText(editableLogObject.indexCurve)}
