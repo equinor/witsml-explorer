@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, TextField, Typography } from "@material-ui/core";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -55,33 +55,23 @@ const TubularPropertiesModal = (props: TubularPropertiesModalInterface): React.R
           heading={`Edit properties for ${editableTubular.name}`}
           content={
             <>
-              <TextField disabled id="uid" label="uid" defaultValue={editableTubular.uid} fullWidth />
+              <TextField disabled id="uid" label="uid" defaultValue={editableTubular.uid} />
               <TextField
                 id="name"
                 label="name"
                 defaultValue={editableTubular.name}
-                error={editableTubular.name.length === 0}
                 helperText={editableTubular.name.length === 0 ? "A tubular name must be 1-64 characters" : ""}
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableTubular({ ...editableTubular, name: e.target.value })}
+                onChange={(e: any) => setEditableTubular({ ...editableTubular, name: e.target.value })}
               />
-              <FormControl fullWidth>
-                <InputLabel id="tubular-type">typeTubularAssy</InputLabel>
-                <Select
-                  labelId="tubular-type"
-                  value={editableTubular.typeTubularAssy}
-                  onChange={(e) => {
-                    if (typeof e.target.value === "string") setEditableTubular({ ...editableTubular, typeTubularAssy: e.target.value });
-                  }}
-                >
-                  {typeTubularAssy.map((type) => (
-                    <MenuItem value={type} key={type}>
-                      <Typography color={"initial"}>{type}</Typography>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Autocomplete
+                label="typeTubularAssy"
+                initialSelectedOptions={[editableTubular.typeTubularAssy]}
+                options={typeTubularAssy}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableTubular({ ...editableTubular, typeTubularAssy: selectedItems[0] });
+                }}
+                hideClearButton={true}
+              />
             </>
           }
           confirmDisabled={!validText(editableTubular.uid) || !validText(editableTubular.name) || !validText(editableTubular.typeTubularAssy)}
