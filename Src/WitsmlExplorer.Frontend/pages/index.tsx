@@ -34,8 +34,6 @@ const Home = (): React.ReactElement => {
           console.log("[Service Worker] Registration failed: ", err);
         }
       );
-    }
-    if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           for (const registration of registrations) {
