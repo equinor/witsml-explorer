@@ -28,10 +28,10 @@ const Home = (): React.ReactElement => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js", { scope: "./" }).then(
         function (registration) {
-          console.log("Service Worker registration successful with scope: ", registration.scope);
+          console.log("[Service Worker] Registration successful with scope: ", registration.scope);
         },
         function (err) {
-          console.log("Service Worker registration failed: ", err);
+          console.log("[Service Worker] Registration failed: ", err);
         }
       );
     }
@@ -40,7 +40,7 @@ const Home = (): React.ReactElement => {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           for (const registration of registrations) {
             registration.unregister().then((bool) => {
-              console.log("unregister: ", bool);
+              console.log("[Service Worker] Unregister: ", bool);
             });
           }
           window.location.reload();

@@ -6,7 +6,7 @@ try {
 
   // The install handler takes care of precaching the resources we always need.
   self.addEventListener("install", (event) => {
-    console.log("installing sw");
+    console.log("[Service Worker] Installing");
     event.waitUntil(
       caches
         .open(PRECACHE)
@@ -17,7 +17,7 @@ try {
   // The activate handler takes care of cleaning up old caches.
   self.addEventListener("activate", (event) => {
     const currentCaches = [PRECACHE, RUNTIME];
-    console.log("activate cache");
+    console.log("[Service Worker] Activate cache");
     event.waitUntil(
       caches
         .keys()
@@ -25,7 +25,7 @@ try {
           return cacheNames.filter((cacheName) => !currentCaches.includes(cacheName));
         })
         .then((cachesToDelete) => {
-          console.log("Cache is deleting");
+          console.log("[Service Worker] Cache is deleting");
           return Promise.all(
             cachesToDelete.map((cacheToDelete) => {
               return caches.delete(cacheToDelete);
