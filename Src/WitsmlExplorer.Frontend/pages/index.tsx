@@ -26,7 +26,7 @@ const Home = (): React.ReactElement => {
 
   React.useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").then(
+      navigator.serviceWorker.register("/sw.js", { scope: "./" }).then(
         function (registration) {
           console.log("Service Worker registration successful with scope: ", registration.scope);
         },
@@ -34,6 +34,18 @@ const Home = (): React.ReactElement => {
           console.log("Service Worker registration failed: ", err);
         }
       );
+    }
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister().then((bool) => {
+              console.log("unregister: ", bool);
+            });
+          }
+          window.location.reload();
+        });
+      });
     }
   }, []);
 
