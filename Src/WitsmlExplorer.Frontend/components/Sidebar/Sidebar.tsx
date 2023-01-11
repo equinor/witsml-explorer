@@ -6,17 +6,14 @@ import Well from "../../models/well";
 import Icon from "../../styles/Icons";
 import WellProgress from "../WellProgress";
 import FilterPanel from "./FilterPanel";
-import PropertiesPanel from "./PropertiesPanel";
-import ServerManager from "./ServerManager";
 import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { filteredWells, expandedTreeNodes, currentProperties } = navigationState;
+  const { filteredWells, expandedTreeNodes } = navigationState;
 
   return (
     <>
-      <ServerManager />
       <FilterPanel />
       <SidebarTreeView>
         <WellProgress>
@@ -34,7 +31,6 @@ const Sidebar = (): React.ReactElement => {
           )}
         </WellProgress>
       </SidebarTreeView>
-      <PropertiesPanel properties={currentProperties} />
     </>
   );
 };

@@ -38,7 +38,6 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     showCancelButton = true
   } = props;
   const context = React.useContext(OperationContext);
-  const { displayModal } = context.operationState;
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] = useState<boolean>(false);
   const confirmButtonIsDisabled = isLoading || confirmDisabled;
 
@@ -100,7 +99,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   ];
 
   return (
-    <Dialog onKeyDown={onKeyPress} open={displayModal} style={{ width: width }}>
+    <Dialog onKeyDown={onKeyPress} open={true} style={{ width: width }}>
       <Dialog.Header>
         <Dialog.Title>{heading}</Dialog.Title>
       </Dialog.Header>

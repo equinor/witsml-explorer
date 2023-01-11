@@ -1,4 +1,4 @@
-import { ContextMenu, OperationState, reducer, UserTheme } from "../operationStateReducer";
+import { ContextMenu, OperationState, reducer, TimeZone, UserTheme } from "../operationStateReducer";
 import OperationType from "../operationType";
 
 it("Should set context menu", () => {
@@ -35,15 +35,13 @@ it("Should display properties modal and hide context menu", () => {
   };
   const openContextMenu = {
     ...getEmptyState(),
-    contextMenu: { component: <></>, position: { mouseX: 0, mouseY: 0 } },
-    displayModal: false
+    contextMenu: { component: <></>, position: { mouseX: 0, mouseY: 0 } }
   };
   const actual = reducer(openContextMenu, displayModal);
   expect(actual).toStrictEqual({
     ...getEmptyState(),
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: true,
-    modal: <></>
+    modals: [<></>]
   });
 });
 
@@ -51,9 +49,9 @@ const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: n
 const getEmptyState = (): OperationState => {
   return {
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: false,
     progressIndicatorValue: 0,
     theme: UserTheme.Compact,
-    modal: null
+    modals: [],
+    timeZone: TimeZone.Local
   };
 };

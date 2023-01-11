@@ -37,7 +37,7 @@ import {
 } from "./modificationActions";
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
-import { allDeselected, NavigationState } from "./navigationContext";
+import { allDeselected, listWellsFlag, NavigationState } from "./navigationContext";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -462,8 +462,8 @@ const getCurrentSelectedObjectIfRemoved = (
 ) => {
   const fetchedSelectedObject = objects.find((value) => value.uid === selectedObject?.uid);
   const isCurrentlySelectedObjectRemoved =
-    state.selectedWell.uid == updatedWellUid &&
-    state.selectedWellbore.uid == updatedWellboreUid && // the update happened on the wellbore that is currently being browsed
+    state.selectedWell?.uid == updatedWellUid &&
+    state.selectedWellbore?.uid == updatedWellboreUid && // the update happened on the wellbore that is currently being browsed
     selectedObject && // there exists a selected object of the same type as the object type that was updated
     !fetchedSelectedObject && // the selected object does not exist among the objects fetched from the server, implying deletion
     state.currentSelected == selectedObject; // the object that is currently selected was deleted, requiring update of currently selected object
@@ -526,6 +526,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   return {
     ...state,
     wells: wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    filteredWells: filterWells(wells, state.selectedFilter),
+    currentSelected: listWellsFlag
   };
 };

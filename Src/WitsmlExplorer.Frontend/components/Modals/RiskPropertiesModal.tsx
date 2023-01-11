@@ -11,6 +11,7 @@ import RiskObject from "../../models/riskObject";
 import { riskSubCategory } from "../../models/riskSubCategory";
 import { riskType } from "../../models/riskType";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
@@ -33,7 +34,16 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
-    setEditableRiskObject(riskObject);
+    setEditableRiskObject({
+      ...riskObject,
+      dTimStart: formatDateString(riskObject.dTimStart, timeZone),
+      dTimEnd: formatDateString(riskObject.dTimEnd, timeZone),
+      commonData: {
+        ...riskObject.commonData,
+        dTimCreation: formatDateString(riskObject.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(riskObject.commonData.dTimLastChange, timeZone)
+      }
+    });
   }, [riskObject]);
 
   const onSubmit = async (updatedRisk: RiskObject) => {

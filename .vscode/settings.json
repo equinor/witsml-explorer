@@ -34,6 +34,8 @@
     "scss.validate": false,
     "json.format.enable": false,
     "json.schemaDownload.enable": false,
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
     "[csharp]": {
       "editor.defaultFormatter": "ms-dotnettools.csharp",
       "editor.formatOnSave": true

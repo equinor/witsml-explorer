@@ -1,9 +1,11 @@
 import { TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
 
@@ -15,12 +17,22 @@ export interface MessagePropertiesModalProps {
 
 const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.ReactElement => {
   const { mode, messageObject, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableMessageObject, setEditableMessageObject] = useState<MessageObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
-    setEditableMessageObject(messageObject);
+    setEditableMessageObject({
+      ...messageObject,
+      commonData: {
+        ...messageObject.commonData,
+        dTimCreation: formatDateString(messageObject.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(messageObject.commonData.dTimLastChange, timeZone)
+      }
+    });
   }, [messageObject]);
 
   const onSubmit = async (updatedMessage: MessageObject) => {

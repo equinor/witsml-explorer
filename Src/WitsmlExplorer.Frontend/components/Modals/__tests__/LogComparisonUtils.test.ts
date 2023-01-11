@@ -5,7 +5,11 @@ const irrelevantProperties = {
   uid: "",
   classWitsml: "",
   unit: "",
-  mnemAlias: ""
+  mnemAlias: "",
+  sensorOffset: {
+    value: 0,
+    uom: ""
+  }
 };
 
 const mnemonic = "mnemonic";

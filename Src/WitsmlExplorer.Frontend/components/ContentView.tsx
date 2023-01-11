@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { selectedJobsFlag } from "../contexts/navigationContext";
+import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import JobsView from "./ContentViews/JobsView";
@@ -10,6 +10,7 @@ import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
+import ServerManager from "./ContentViews/ServerManager";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
 import TrajectoryView from "./ContentViews/TrajectoryView";
 import TubularsListView from "./ContentViews/TubularsListView";
@@ -46,7 +47,7 @@ const ContentView = (): React.ReactElement => {
 
   useEffect(() => {
     if (currentSelected === null) {
-      setView(<></>);
+      setView(<ServerManager />);
     } else {
       if (currentSelected === selectedServer) {
         setView(<WellsListView />);
@@ -84,6 +85,10 @@ const ContentView = (): React.ReactElement => {
         setView(<WbGeometryView />);
       } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
+      } else if (currentSelected === selectedServerManagerFlag) {
+        setView(<ServerManager />);
+      } else if (currentSelected === listWellsFlag) {
+        setView(<WellsListView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

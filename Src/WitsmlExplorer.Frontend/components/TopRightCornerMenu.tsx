@@ -1,7 +1,6 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import { format } from "date-fns-tz";
-import React, { ReactElement, useContext, useEffect } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
@@ -12,10 +11,12 @@ import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
+import ServerManagerButton from "./ServerManagerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
+  [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
   [TimeZone.Raw]: "Original Time",
-  [TimeZone.Local]: `${format(new Date(), "xxx")} Local Time`,
+  [TimeZone.Utc]: `${getOffsetFromTimeZone(TimeZone.Utc)} UTC`,
   [TimeZone.Brasilia]: `${getOffsetFromTimeZone(TimeZone.Brasilia)} Brazil/Brasilia`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
@@ -24,6 +25,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
+  const [username, setUsername] = useState<string>("");
   const {
     operationState: { theme, timeZone },
     dispatchOperation
@@ -39,6 +41,15 @@ const TopRightCornerMenu = (): React.ReactElement => {
     }
   }, []);
 
+  useEffect(() => {
+    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChanged.subscribe(() => {
+      setUsername(CredentialsService.getCredentials()[0]?.username);
+    });
+    return () => {
+      unsubscribeFromCredentialsEvents();
+    };
+  }, []);
+
   const onSelectTimeZone = (selectedTimeZone: TimeZone) => {
     localStorage.setItem("selectedTimeZone", selectedTimeZone);
     dispatchOperation({ type: OperationType.SetTimeZone, payload: selectedTimeZone });
@@ -48,8 +59,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
   const timeZoneMenuItems = [];
   for (const key in timeZoneLabels) {
     timeZoneMenuItems.push(
-      <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)}>
-        <SelectTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</SelectTypography>
+      <StyledMenuItem key={key} onClick={() => onSelectTimeZone(key as TimeZone)} style={{ width: "250px" }}>
+        <TimeZoneTypography selected={timeZone === (key as TimeZone)}>{timeZoneLabels[key as TimeZone]}</TimeZoneTypography>
         {timeZone === key && <Icon name="check" />}
       </StyledMenuItem>
     );
@@ -80,7 +91,9 @@ const TopRightCornerMenu = (): React.ReactElement => {
   const accountMenu = (
     <ContextMenu
       menuItems={[
-        <StyledMenuItem key={"account"}>{getAccountInfo()?.name}</StyledMenuItem>,
+        <StyledMenuItem key={"account"}>
+          <Typography style={{ overflow: "clip", textOverflow: "ellipsis" }}>{getAccountInfo()?.name}</Typography>
+        </StyledMenuItem>,
         <StyledMenuItem
           key={"signout"}
           onClick={() => {
@@ -105,6 +118,13 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
+      {username && (
+        <StyledButton variant="ghost" disabled>
+          <Icon name="person" />
+          {username}
+        </StyledButton>
+      )}
+      <ServerManagerButton />
       <JobsButton />
       <StyledButton variant="ghost" onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
         <Icon name="world" />
@@ -129,7 +149,7 @@ const Layout = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   padding-right: 1rem;
-  width: 20rem;
+  width: auto;
 `;
 
 const StyledButton = styled(Button)`
@@ -140,6 +160,12 @@ const SelectTypography = styled(Typography)<{ selected: boolean }>`
   && {
     font-family: ${(props) => (props.selected ? "EquinorBold" : "EquinorRegular")};
     white-space: nowrap;
+  }
+`;
+
+const TimeZoneTypography = styled(SelectTypography)<{ selected: boolean }>`
+  && {
+    font-feature-settings: "tnum";
   }
 `;
 

@@ -43,9 +43,9 @@ export const WbGeometrysListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "uid", label: "Uid", type: ContentType.String },
-    { property: "itemState", label: "Item State", type: ContentType.String }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "itemState", label: "commonData.itemState", type: ContentType.String }
   ];
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
     const contextProps: WbGeometryObjectContextMenuProps = {

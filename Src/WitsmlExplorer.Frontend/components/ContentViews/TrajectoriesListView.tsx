@@ -31,15 +31,15 @@ export const TrajectoriesListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
+    { property: "name", label: "name", type: ContentType.String },
     { property: "mdMin", label: "mdMin", type: ContentType.Number },
     { property: "mdMax", label: "mdMax", type: ContentType.Number },
     { property: "aziRef", label: "aziRef", type: ContentType.String },
     { property: "dTimTrajStart", label: "dTimTrajStart", type: ContentType.DateTime },
     { property: "dTimTrajEnd", label: "dTimTrajEnd", type: ContentType.DateTime },
-    { property: "uid", label: "UID", type: ContentType.String },
-    { property: "dateTimeCreation", label: "Creation date", type: ContentType.DateTime },
-    { property: "dateTimeLastChange", label: "Last changed", type: ContentType.DateTime }
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onSelect = (trajectory: any) => {
