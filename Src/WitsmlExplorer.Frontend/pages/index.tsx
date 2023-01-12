@@ -24,29 +24,6 @@ const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
-  React.useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js", { scope: "./" }).then(
-        function (registration) {
-          console.log("[Service Worker] Registration successful with scope: ", registration.scope);
-        },
-        function (err) {
-          console.log("[Service Worker] Registration failed: ", err);
-        }
-      );
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          for (const registration of registrations) {
-            registration.unregister().then((bool) => {
-              console.log("[Service Worker] Unregister: ", bool);
-            });
-          }
-          window.location.reload();
-        });
-      });
-    }
-  }, []);
-
   return (
     <MsalProvider instance={msalInstance}>
       {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
@@ -56,7 +33,6 @@ const Home = (): React.ReactElement => {
           <Head>
             <title>WITSML Explorer</title>
             <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
-            <link rel="manifest" href={AssetsLoader.getAssetsRoot() + "/manifest.webmanifest"} />
           </Head>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
             <Routing />
