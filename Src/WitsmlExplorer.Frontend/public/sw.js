@@ -2,7 +2,7 @@ try {
   const PRECACHE = "precache-v2";
   const RUNTIME = "runtime";
 
-  const PRECACHE_URLS = ["/", "/manifest.webmanifest", "/favicon.ico"];
+  const PRECACHE_URLS = ["/"];
 
   // The install handler takes care of precaching the resources we always need.
   self.addEventListener("install", (event) => {
@@ -43,7 +43,7 @@ try {
     // Skip cross-origin requests
     if (event.request.url.startsWith(self.location.origin)) {
       event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
+        caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
           }

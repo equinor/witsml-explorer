@@ -25,26 +25,18 @@ const Home = (): React.ReactElement => {
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
   React.useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js", { scope: "./" }).then(
-        function (registration) {
-          console.log("[Service Worker] Registration successful with scope: ", registration.scope);
-        },
-        function (err) {
-          console.log("[Service Worker] Registration failed: ", err);
-        }
-      );
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          for (const registration of registrations) {
-            registration.unregister().then((bool) => {
-              console.log("[Service Worker] Unregister: ", bool);
-            });
+    window.addEventListener("load", function () {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").then(
+          function (registration) {
+            console.log("[Service Worker] Registration successful with scope: ", registration.scope);
+          },
+          function (err) {
+            console.log("[Service Worker] Registration failed: ", err);
           }
-          window.location.reload();
-        });
-      });
-    }
+        );
+      }
+    });
   }, []);
 
   return (
