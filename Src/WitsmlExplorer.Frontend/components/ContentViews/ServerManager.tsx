@@ -102,7 +102,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const onEditItem = (server: Server) => {
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled server={server} /> });
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled={editDisabled} server={server} /> });
   };
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
