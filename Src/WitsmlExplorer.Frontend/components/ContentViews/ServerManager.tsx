@@ -10,15 +10,14 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
-import { adminRole, getUserAppRoles, msalEnabled, SecurityScheme } from "../../msal/MsalAuthProvider";
-import CredentialsService from "../../services/credentialsService";
+import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
+import CredentialsService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 const NEW_SERVER_ID = "1";
 
@@ -27,12 +26,12 @@ const ServerManager = (): React.ReactElement => {
   const { selectedServer, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
-  const [currentWitsmlLoginState, setLoginState] = useState<{ username?: string; server?: Server }>({});
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
+  const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onServerChanged.subscribe(async (credentialState) => {
-      setLoginState({ username: CredentialsService.getCredentials()[0]?.username, server: credentialState.server });
+    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
+      setAuthorizationState(authorizationState);
     });
     return () => {
       unsubscribeFromCredentialsEvents();
@@ -42,38 +41,25 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const abortController = new AbortController();
     const onCurrentLoginStateChange = async () => {
-      if (wells.length !== 0) {
+      if (selectedServer == null || wells.length !== 0 || (authorizationState && authorizationState.status != AuthorizationStatus.Authorized)) {
         return;
       }
-      const fetchWells = async () => {
+      try {
         const wells = await WellService.getWells();
         dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
-      };
-      const useOauth = msalEnabled && selectedServer?.securityscheme == SecurityScheme.OAuth2 && getUserAppRoles().some((x) => selectedServer.roles.includes(x));
-      if (useOauth) {
-        try {
-          await fetchWells();
-        } catch (error) {
-          NotificationService.Instance.alertDispatcher.dispatch({
-            serverUrl: new URL(selectedServer.url),
-            message: error.message,
-            isSuccess: false
-          });
-        }
-      } else if (currentWitsmlLoginState.server) {
-        try {
-          await fetchWells();
-          dispatchOperation({ type: OperationType.HideModal });
-        } catch (error) {
-          showCredentialsModal(currentWitsmlLoginState.server, error.message);
-        }
+      } catch (error) {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(selectedServer.url),
+          message: error.message,
+          isSuccess: false
+        });
       }
     };
     onCurrentLoginStateChange();
     return () => {
       abortController.abort();
     };
-  }, [msalEnabled, currentWitsmlLoginState]);
+  }, [msalEnabled, selectedServer, authorizationState]);
 
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   useEffect(() => {
@@ -105,33 +91,11 @@ const ServerManager = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled={editDisabled} server={server} /> });
   };
 
-  const showCredentialsModal = (server: Server, errorMessage = "") => {
-    const currentCredentials = CredentialsService.getCredentials()[0];
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: server,
-      serverCredentials: currentCredentials,
-      mode: CredentialsMode.SAVE,
-      errorMessage,
-      onCancel: () => {
-        CredentialsService.setSelectedServer(null);
-        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
-        dispatchNavigation(action);
-      }
-    };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
-  };
-
   const CellHeaderStyle = {
     color: colors.interactive.primaryResting,
     padding: "0.3rem"
   };
-  const CellHeader = {
-    color: colors.interactive.primaryResting,
-    display: "flex",
-    justifyContent: "center",
-    height: "100%",
-    padding: "0.3rem"
-  };
+
   return (
     <>
       <Header>
@@ -148,7 +112,8 @@ const ServerManager = (): React.ReactElement => {
           <Table.Row>
             <Table.Cell style={CellHeaderStyle}>Server Name</Table.Cell>
             <Table.Cell style={CellHeaderStyle}>Server</Table.Cell>
-            <Table.Cell style={CellHeader}></Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Username</Table.Cell>
+            <Table.Cell />
             <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
             <Table.Cell></Table.Cell>
             <Table.Cell></Table.Cell>
@@ -161,6 +126,7 @@ const ServerManager = (): React.ReactElement => {
               <Table.Row id={server.id} key={server.id}>
                 <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>{server.username}</Table.Cell>
                 <Table.Cell style={{ textAlign: "center" }}>
                   <Icon color={selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
                 </Table.Cell>

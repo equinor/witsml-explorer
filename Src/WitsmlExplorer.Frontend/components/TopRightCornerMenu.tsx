@@ -42,7 +42,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChanged.subscribe(() => {
+    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChangeEvent.subscribe(() => {
       setUsername(CredentialsService.getCredentials()[0]?.username);
     });
     return () => {
@@ -163,7 +163,7 @@ const SelectTypography = styled(Typography)<{ selected: boolean }>`
   }
 `;
 
-const TimeZoneTypography = styled(SelectTypography)<{ selected: boolean }>`
+const TimeZoneTypography = styled(SelectTypography)`
   && {
     font-feature-settings: "tnum";
   }

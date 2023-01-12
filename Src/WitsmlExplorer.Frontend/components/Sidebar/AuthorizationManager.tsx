@@ -9,7 +9,7 @@ const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
 
   useEffect(() => {
-    const unsubscribe = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState: AuthorizationState) => {
+    const unsubscribe = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState: AuthorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Unauthorized && !CredentialsService.serverIsAwaitingAuthorization(authorizationState.server)) {
         showCredentialsModal(authorizationState.server);
         CredentialsService.awaitServerAuthorization(authorizationState.server);
