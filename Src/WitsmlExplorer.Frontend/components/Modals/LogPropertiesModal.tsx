@@ -80,13 +80,13 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 variant={editableLogObject.name.length === 0 ? "error" : undefined}
                 onChange={(e: any) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
               />
-              <TextField disabled id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} />
-              <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
-              <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
-              <TextField disabled id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} />
-              <TextField disabled id="wellName" label="well name" defaultValue={editableLogObject.wellName} />
-              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableLogObject.wellboreUid} />
-              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableLogObject.wellboreName} />
+              <TextField disabled={editMode} id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} />
+              <TextField disabled={editMode} id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
+              <TextField disabled={editMode} id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
+              <TextField disabled={editMode} id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} />
+              <TextField disabled={editMode} id="wellName" label="well name" defaultValue={editableLogObject.wellName} />
+              <TextField disabled={editMode} id="wellboreUid" label="wellbore uid" defaultValue={editableLogObject.wellboreUid} />
+              <TextField disabled={editMode} id="wellboreName" label="wellbore name" defaultValue={editableLogObject.wellboreName} />
               <Autocomplete
                 label="index curve"
                 initialSelectedOptions={[editableLogObject.indexCurve]}
