@@ -42,7 +42,7 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
   };
 
   const onChangeCurve = async (event: any) => {
-    const indexCurve = event[0] === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth;
+    const indexCurve = event.selectedItems[0] === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth;
     setEditableLogObject({ ...editableLogObject, indexCurve });
   };
 
