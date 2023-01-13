@@ -10,8 +10,9 @@ export enum UserTheme {
 //tz database time zone for each city was found through https://www.zeitverschiebung.net/en/
 // "Brasilia" is the "Brasília" one where the first i is "i-acute"
 export enum TimeZone {
-  Raw = "Original Timezone",
   Local = "Local Time",
+  Raw = "Original Timezone",
+  Utc = "UTC",
   Brasilia = "America/Sao_Paulo",
   Berlin = "Europe/Berlin",
   London = "Europe/London",
@@ -57,9 +58,8 @@ export interface SetTimeZoneAction extends PayloadAction {
 
 export interface OperationState {
   contextMenu: ContextMenu;
-  displayModal: boolean;
   progressIndicatorValue: number;
-  modal: ReactElement;
+  modals: ReactElement[];
   theme: UserTheme;
   timeZone: TimeZone;
 }
@@ -79,11 +79,10 @@ const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: n
 export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
   const initialState: OperationState = {
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: false,
     progressIndicatorValue: 0,
-    modal: null,
+    modals: [],
     theme: UserTheme.Compact,
-    timeZone: TimeZone.Raw
+    timeZone: TimeZone.Local
   };
   return useReducer(reducer, initialState);
 };
@@ -108,21 +107,21 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
 };
 
 const hideModal = (state: OperationState) => {
-  const modal: ReactElement = null;
+  const modals = [...state.modals];
+  modals.pop();
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: false,
-    modal
+    modals
   };
 };
 
 const displayModal = (state: OperationState, { payload }: DisplayModalAction) => {
+  const modals = state.modals.concat(payload);
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,
-    displayModal: true,
-    modal: payload
+    modals
   };
 };
 

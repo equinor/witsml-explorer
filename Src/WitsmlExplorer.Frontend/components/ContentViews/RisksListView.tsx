@@ -38,33 +38,27 @@ export const RisksListView = (): React.ReactElement => {
         mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
         dTimStart: formatDateString(risk.dTimStart, timeZone),
         dTimEnd: formatDateString(risk.dTimEnd, timeZone),
-        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
         details: clipLongString(risk.details, 30),
+        summary: clipLongString(risk.summary, 40),
         risk: risk
       };
     });
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "dTimCreation", label: "Created", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "Last changed", type: ContentType.DateTime },
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "type", label: "Type", type: ContentType.String },
-    { property: "category", label: "Category", type: ContentType.String },
-    { property: "subCategory", label: "Sub Category", type: ContentType.String },
-    { property: "extendCategory", label: "Extend Category", type: ContentType.String },
-    { property: "affectedPersonnel", label: "Affected Personnel", type: ContentType.String },
-    { property: "dTimStart", label: "Date Time start", type: ContentType.DateTime },
-    { property: "dTimEnd", label: "Date Time end", type: ContentType.DateTime },
+    { property: "type", label: "type", type: ContentType.String },
+    { property: "sourceName", label: "commonData.sourceName", type: ContentType.String },
     { property: "mdBitStart", label: "mdBitStart", type: ContentType.String },
     { property: "mdBitEnd", label: "mdBitEnd", type: ContentType.String },
-    { property: "severityLevel", label: "Severity Level", type: ContentType.String },
-    { property: "probabilityLevel", label: "Probability Level", type: ContentType.String },
-    { property: "summary", label: "Summary", type: ContentType.String },
-    { property: "details", label: "Details", type: ContentType.String },
-    { property: "itemState", label: "Item State", type: ContentType.String },
-    { property: "sourceName", label: "Source Name", type: ContentType.String }
+    { property: "dTimStart", label: "dTimStart", type: ContentType.DateTime },
+    { property: "dTimEnd", label: "dTimEnd", type: ContentType.DateTime },
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "summary", label: "summary", type: ContentType.String },
+    { property: "severityLevel", label: "severityLevel", type: ContentType.String },
+    { property: "category", label: "category", type: ContentType.String },
+    { property: "subCategory", label: "subCategory", type: ContentType.String },
+    { property: "affectedPersonnel", label: "affectedPersonnel", type: ContentType.String },
+    { property: "details", label: "details", type: ContentType.String }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {

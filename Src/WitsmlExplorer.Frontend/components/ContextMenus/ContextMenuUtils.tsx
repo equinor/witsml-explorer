@@ -1,17 +1,18 @@
+import { TextField } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
 import { DeleteComponentsJob, DeleteObjectsJob } from "../../models/jobs/deleteJobs";
 import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import CredentialsService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 import { QueryParams } from "../Routing";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -34,25 +35,6 @@ export const menuItemText = (operation: string, object: string, array: any[] | n
   const objectPlural = pluralizeIfMultiple(object, array);
   const count = array?.length > 0 ? ` ${array.length} ` : " ";
   return `${operationUpperCase}${count}${objectPlural}`;
-};
-
-export const showCredentialsModal = (server: Server, dispatchOperation: DispatchOperation, onSuccess: () => void, message: string) => {
-  const onConnectionVerified = async (credentials: BasicServerCredentials) => {
-    CredentialsService.saveCredentials(credentials);
-    onSuccess();
-    dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const currentCredentials = CredentialsService.getSourceServerCredentials();
-  const userCredentialsModalProps: UserCredentialsModalProps = {
-    server: server,
-    serverCredentials: currentCredentials,
-    mode: CredentialsMode.TEST,
-    errorMessage: message,
-    onConnectionVerified,
-    confirmText: "Save"
-  };
-  dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
 };
 
 export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, paramName: keyof QueryParams) => {
@@ -83,7 +65,9 @@ export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation,
     pluralizedName,
     objectsOnWellbore.map((item) => item.name),
     orderDeleteJob,
-    dispatchOperation
+    dispatchOperation,
+    CredentialsService.getCredentials()[0].server.name,
+    objectsOnWellbore[0].wellboreName
   );
 };
 
@@ -97,17 +81,50 @@ export const onClickDeleteComponents = async (dispatchOperation: DispatchOperati
     await JobService.orderJob(jobType, job);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
-  displayDeleteModal(pluralizedName, componentReferences.componentUids, orderDeleteJob, dispatchOperation);
+  displayDeleteModal(
+    pluralizedName,
+    componentReferences.componentUids,
+    orderDeleteJob,
+    dispatchOperation,
+    CredentialsService.getCredentials()[0].server.name,
+    componentReferences.parent.wellboreName,
+    componentReferences.parent.name,
+    getParentType(componentReferences.componentType)
+  );
 };
 
-const displayDeleteModal = (toDeleteTypeName: string, toDeleteNames: string[], onDelete: () => void, dispatchOperation: DispatchOperation) => {
+const displayDeleteModal = (
+  toDeleteTypeName: string,
+  toDeleteNames: string[],
+  onDelete: () => void,
+  dispatchOperation: DispatchOperation,
+  server: string,
+  wellbore: string,
+  parent?: string,
+  parentType?: string
+) => {
   const confirmation = (
     <ConfirmModal
       heading={`Delete ${toDeleteTypeName}?`}
       content={
-        <span>
-          This will permanently delete {toDeleteTypeName}: <strong>{toDeleteNames.join(", ")}</strong>
-        </span>
+        <Layout>
+          <TextField readOnly id="server" label="Server" defaultValue={server} tabIndex={-1} />
+          <TextField readOnly id="wellbore" label="Wellbore" defaultValue={wellbore} tabIndex={-1} />
+          {parent != null && <TextField readOnly id="parent_object" label={parentType} defaultValue={parent} tabIndex={-1} />}
+          <span>
+            This will permanently delete {toDeleteNames.length} {toDeleteTypeName}:
+            <strong>
+              {toDeleteNames.map((name) => {
+                return (
+                  <>
+                    <br />
+                    {name}
+                  </>
+                );
+              })}
+            </strong>
+          </span>
+        </Layout>
       }
       onConfirm={onDelete}
       confirmColor={"danger"}
@@ -116,3 +133,9 @@ const displayDeleteModal = (toDeleteTypeName: string, toDeleteNames: string[], o
   );
   dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 };
+
+const Layout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;

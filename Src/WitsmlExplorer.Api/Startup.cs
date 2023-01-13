@@ -14,6 +14,7 @@ using Serilog;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Swagger;
@@ -72,6 +73,11 @@ namespace WitsmlExplorer.Api
                 {
                     services.AddAuthorization(options => options.AddPolicy(policyRole, authBuilder => authBuilder.RequireRole(policyRole)));
                 }
+                services.AddAuthorization(options =>
+                    options.AddPolicy(AuthorizationPolicyRoles.ADMINORDEVELOPER, authBuilder =>
+                        authBuilder.RequireRole(new string[] { AuthorizationPolicyRoles.ADMIN, AuthorizationPolicyRoles.DEVELOPER })
+                    )
+                );
             }
 
         }

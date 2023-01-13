@@ -9,6 +9,7 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 using Index = Witsml.Data.Curves.Index;
@@ -116,6 +117,7 @@ namespace WitsmlExplorer.Api.Services
                     MinDateTimeIndex = logCurveInfo.MinDateTimeIndex,
                     MinDepthIndex = logCurveInfo.MinIndex?.Value,
                     MnemAlias = logCurveInfo.MnemAlias,
+                    SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
                     Unit = logCurveInfo.Unit
                 });
         }

@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import { Switch } from "@equinor/eds-core-react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
-import { getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
+import { adminRole, developerRole, getUserAppRoles, getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
 import CredentialsService from "../../services/credentialsService";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
@@ -23,6 +24,7 @@ export const JobsView = (): React.ReactElement => {
   const { selectedServer, servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
+  const [showAll, setShowAll] = useState(false);
 
   const credentials = CredentialsService.getCredentials();
   const username = msalEnabled ? getUsername() : credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
@@ -30,7 +32,8 @@ export const JobsView = (): React.ReactElement => {
   const fetchJobs = () => {
     const abortController = new AbortController();
     const getJobInfos = async () => {
-      setJobInfos(await JobService.getJobInfos(abortController.signal));
+      const jobInfos = showAll ? JobService.getAllJobInfos(abortController.signal) : JobService.getUserJobInfos(abortController.signal);
+      setJobInfos(await jobInfos);
     };
 
     getJobInfos();
@@ -42,8 +45,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      const shouldFetch =
-        CredentialsService.hasValidCookieForServer(notification.serverUrl.toString()) || notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -59,7 +61,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [username]);
+  }, [username, showAll]);
 
   useEffect(() => {
     if (shouldRefresh) {
@@ -107,7 +109,19 @@ export const JobsView = (): React.ReactElement => {
     };
   });
 
-  return <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />;
+  return (
+    <>
+      {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
+        <Switch
+          label="Show all users' jobs"
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            setShowAll(e.target.checked);
+          }}
+        />
+      )}
+      <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />
+    </>
+  );
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {

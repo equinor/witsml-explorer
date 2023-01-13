@@ -4,7 +4,6 @@ import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
 import BhaRunService from "../services/bhaRunService";
-import CredentialsService from "../services/credentialsService";
 import LogObjectService from "../services/logObjectService";
 import MessageObjectService from "../services/messageObjectService";
 import NotificationService, { RefreshAction } from "../services/notificationService";
@@ -21,8 +20,7 @@ const RefreshHandler = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction: RefreshAction) => {
-      const loggedIn = CredentialsService.isAuthorizedForServer(navigationState.selectedServer);
-      const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url && loggedIn;
+      const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url;
       if (!shouldTryRefresh) {
         return;
       }

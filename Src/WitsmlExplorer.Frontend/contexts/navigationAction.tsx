@@ -35,6 +35,7 @@ import {
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
+  SelectServerManagerAction,
   SelectTrajectoryAction,
   SelectTrajectoryGroupAction,
   SelectTubularAction,
@@ -93,4 +94,5 @@ export type NavigationAction =
   | SelectWbGeometryGroupAction
   | SelectWbGeometryAction
   | SetFilterAction
-  | SetCurveThresholdAction;
+  | SetCurveThresholdAction
+  | SelectServerManagerAction;

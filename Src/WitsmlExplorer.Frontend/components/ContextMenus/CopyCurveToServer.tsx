@@ -8,14 +8,15 @@ import { ReplaceLogDataJob } from "../../models/jobs/replaceLogDataJob";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import { displayMissingLogModal } from "../Modals/MissingObjectModals";
+import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { DispatchOperation, showCredentialsModal } from "./ContextMenuUtils";
+import { DispatchOperation } from "./ContextMenuUtils";
 
 export interface OnClickCopyCurveToServerProps {
   targetServer: Server;
@@ -32,33 +33,23 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
   const wellboreUid = curvesToCopy[0].wellboreUid;
   const logUid = curvesToCopy[0].logUid;
 
-  const onCredentials = async () => {
-    const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
-    const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
-    const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetCredentials);
-    if (targetLog.uid !== logUid) {
-      displayMissingLogModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.");
-      return;
-    }
+  const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
+  const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
+  const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetCredentials);
+  if (targetLog.uid !== logUid) {
+    displayMissingObjectModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.", ObjectType.Log);
+    return;
+  }
 
-    const allCurves = await LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, targetLog.uid, targetCredentials);
-    const existingCurves: LogCurveInfo[] = allCurves.filter((curve) => curvesToCopy.find((curveToCopy) => curveToCopy.uid === curve.uid));
-    if (existingCurves.length > 0) {
-      const onConfirm = () => replaceCurves(sourceServer, [targetCredentials, sourceCredentials], curvesToCopy, existingCurves, dispatchOperation, targetLog, sourceLog);
-      displayReplaceModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
-    } else {
-      const copyJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
-      CredentialsService.setSourceServer(sourceServer);
-      JobService.orderJobAtServer(JobType.CopyLogData, copyJob, [targetCredentials, sourceCredentials]);
-    }
-  };
-
-  const isAuthorized = CredentialsService.isAuthorizedForServer(targetServer);
-  if (!isAuthorized) {
-    const message = `You are trying to copy an object to a server that you are not logged in to. Please provide username and password for ${targetServer.name}.`;
-    showCredentialsModal(targetServer, dispatchOperation, () => onCredentials(), message);
+  const allCurves = await LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, targetLog.uid, targetCredentials);
+  const existingCurves: LogCurveInfo[] = allCurves.filter((curve) => curvesToCopy.find((curveToCopy) => curveToCopy.uid === curve.uid));
+  if (existingCurves.length > 0) {
+    const onConfirm = () => replaceCurves(sourceServer, [targetCredentials, sourceCredentials], curvesToCopy, existingCurves, dispatchOperation, targetLog, sourceLog);
+    displayReplaceModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
   } else {
-    onCredentials();
+    const copyJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
+    CredentialsService.setSourceServer(sourceServer);
+    JobService.orderJobAtServer(JobType.CopyLogData, copyJob, [targetCredentials, sourceCredentials]);
   }
 };
 

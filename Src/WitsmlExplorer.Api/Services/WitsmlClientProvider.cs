@@ -92,14 +92,4 @@ namespace WitsmlExplorer.Api.Services
         }
     }
 
-    public class WitsmlClientProviderException : Exception
-    {
-        public WitsmlClientProviderException(string message, int statusCode) : base(message)
-        {
-            StatusCode = statusCode;
-        }
-        public int StatusCode { get; private set; }
-    }
-
-
 }

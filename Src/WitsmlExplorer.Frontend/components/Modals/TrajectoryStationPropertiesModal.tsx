@@ -8,6 +8,7 @@ import { toObjectReference } from "../../models/objectOnWellbore";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 
@@ -39,7 +40,10 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
   };
 
   useEffect(() => {
-    setEditableTrajectoryStation(trajectoryStation);
+    setEditableTrajectoryStation({
+      ...trajectoryStation,
+      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone)
+    });
   }, [trajectoryStation]);
   return (
     <>

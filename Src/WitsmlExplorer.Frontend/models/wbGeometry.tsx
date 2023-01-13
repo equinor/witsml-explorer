@@ -3,7 +3,7 @@ import Measure from "./measure";
 import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
 export default interface WbGeometryObject extends ObjectOnWellbore {
-  dTimReport?: Date;
+  dTimReport?: string;
   mdBottom?: Measure;
   gapAir?: Measure;
   depthWaterMean?: Measure;

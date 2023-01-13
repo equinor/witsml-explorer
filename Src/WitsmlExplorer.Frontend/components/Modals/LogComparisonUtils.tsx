@@ -74,7 +74,7 @@ export function calculateMismatchedIndexes(sourceLogCurveInfo: LogCurveInfo[], t
 }
 
 export function markNumberDifferences(string1: string, string2: string): (string | JSX.Element)[][] {
-  if (string1 == "-" || string2 == "-") {
+  if (string1 == missingIndex || string2 == missingIndex) {
     return [[<mark key="1">{string1}</mark>], [<mark key="2">{string2}</mark>]];
   }
   const string1Inverse = string1.split("").reverse();
@@ -111,7 +111,7 @@ export function markNumberDifferences(string1: string, string2: string): (string
 }
 
 export function markDateTimeStringDifferences(string1: string, string2: string): (string | JSX.Element)[][] {
-  if (string1 == "-" || string2 == "-") {
+  if (string1 == missingIndex || string2 == missingIndex) {
     return [[<mark key="1">{string1}</mark>], [<mark key="2">{string2}</mark>]];
   }
   const parts1 = splitDateTimeString(string1);

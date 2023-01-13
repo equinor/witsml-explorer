@@ -44,25 +44,25 @@ export const RigsListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "name", label: "Name", type: ContentType.String },
-    { property: "uid", label: "Uid", type: ContentType.String },
-    { property: "owner", label: "Owner", type: ContentType.String },
-    { property: "typeRig", label: "TypeRig", type: ContentType.String },
-    { property: "manufacturer", label: "Manufacturer", type: ContentType.String },
-    { property: "yearEntService", label: "YearEntService", type: ContentType.String },
-    { property: "classRig", label: "ClassRig", type: ContentType.String },
-    { property: "approvals", label: "Approvals", type: ContentType.String },
-    { property: "registration", label: "Registration", type: ContentType.String },
-    { property: "telNumber", label: "TelNumber", type: ContentType.String },
-    { property: "faxNumber", label: "FaxNumber", type: ContentType.String },
-    { property: "emailAddress", label: "EmailAddress", type: ContentType.String },
-    { property: "nameContact", label: "NameContact", type: ContentType.String },
-    { property: "ratingDrillDepth", label: "RatingDrillDepth", type: ContentType.String },
-    { property: "ratingWaterDepth", label: "RatingWaterDepth", type: ContentType.String },
-    { property: "isOffshore", label: "IsOffshore", type: ContentType.String },
-    { property: "airGap", label: "AirGap", type: ContentType.String },
-    { property: "dTimStartOp", label: "DateTimeStartOperating", type: ContentType.DateTime },
-    { property: "dTimEndOp", label: "DateTimeEndOperating", type: ContentType.DateTime }
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "owner", label: "owner", type: ContentType.String },
+    { property: "typeRig", label: "typeRig", type: ContentType.String },
+    { property: "manufacturer", label: "manufacturer", type: ContentType.String },
+    { property: "yearEntService", label: "yearEntService", type: ContentType.String },
+    { property: "classRig", label: "classRig", type: ContentType.String },
+    { property: "approvals", label: "approvals", type: ContentType.String },
+    { property: "registration", label: "registration", type: ContentType.String },
+    { property: "telNumber", label: "telNumber", type: ContentType.String },
+    { property: "faxNumber", label: "faxNumber", type: ContentType.String },
+    { property: "emailAddress", label: "emailAddress", type: ContentType.String },
+    { property: "nameContact", label: "nameContact", type: ContentType.String },
+    { property: "ratingDrillDepth", label: "ratingDrillDepth", type: ContentType.String },
+    { property: "ratingWaterDepth", label: "ratingWaterDepth", type: ContentType.String },
+    { property: "isOffshore", label: "isOffshore", type: ContentType.String },
+    { property: "airGap", label: "airGap", type: ContentType.String },
+    { property: "dTimStartOp", label: "dTimStartOp", type: ContentType.DateTime },
+    { property: "dTimEndOp", label: "dTimEndOp", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRigRows: RigRow[]) => {

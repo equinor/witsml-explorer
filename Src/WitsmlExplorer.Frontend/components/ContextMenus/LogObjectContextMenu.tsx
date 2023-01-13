@@ -14,11 +14,11 @@ import { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
+import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
-import { onClickCompareLogToServer } from "./CompareLogToServer";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
@@ -68,6 +68,15 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const onClickCompareLogToServer = async (targetServer: Server) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const props: LogComparisonModalProps = { sourceLog: checkedLogObjects[0], sourceServer: selectedServer, targetServer, dispatchOperation };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogComparisonModal {...props} />
+    });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -115,11 +124,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           {servers.map(
             (server: Server) =>
               server.id !== selectedServer.id && (
-                <MenuItem
-                  key={server.name}
-                  onClick={() => onClickCompareLogToServer(server, selectedServer, checkedLogObjects[0], dispatchOperation)}
-                  disabled={checkedLogObjects.length != 1}
-                >
+                <MenuItem key={server.name} onClick={() => onClickCompareLogToServer(server)} disabled={checkedLogObjects.length != 1}>
                   <Typography color={"primary"}>{server.name}</Typography>
                 </MenuItem>
               )

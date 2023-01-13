@@ -271,6 +271,39 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Null(trimEndQuery.Logs.First().EndDateTimeIndex);
         }
 
+        [Fact]
+        public async Task JobWithNonUtcDateTimeString_Execute_TimeParsedCorrectly()
+        {
+            DateTime logStart = new(2000, 1, 1);
+            DateTime logEnd = new(2000, 1, 10);
+            string newLogStart = "2000-01-02T12:00:00.000+02:00";
+            string newLogEnd = "2000-01-09T12:00:00.000+02:00";
+
+            SetupLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, new DateTimeIndex(logStart), new DateTimeIndex(logEnd));
+            TrimLogDataJob job = CreateJobTemplate() with
+            {
+                StartIndex = newLogStart,
+                EndIndex = newLogEnd
+            };
+
+            List<WitsmlLogs> deleteQueries = new();
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+                .Callback<WitsmlLogs>(deleteQueries.Add)
+                .ReturnsAsync(new QueryResult(true));
+
+            await _worker.Execute(job);
+
+            Assert.Equal(2, deleteQueries.Count);
+
+            WitsmlLogs trimStartQuery = deleteQueries.First();
+            Assert.Null(trimStartQuery.Logs.First().StartDateTimeIndex);
+            Assert.Equal("2000-01-02T10:00:00.000Z", trimStartQuery.Logs.First().EndDateTimeIndex);
+
+            WitsmlLogs trimEndQuery = deleteQueries.Last();
+            Assert.Null(trimEndQuery.Logs.First().EndDateTimeIndex);
+            Assert.Equal("2000-01-09T10:00:00.000Z", trimEndQuery.Logs.First().StartDateTimeIndex);
+        }
+
         private void SetupLog(string indexType, Index startIndex, Index endIndex)
         {
             _witsmlClient.Setup(client =>

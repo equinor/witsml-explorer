@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 
 using Witsml.Data;
@@ -86,7 +85,7 @@ namespace WitsmlExplorer.Api.Query
 
             if (wellbore.DTimeKickoff != null)
             {
-                witsmlWellbore.DTimKickoff = ((DateTime)wellbore.DTimeKickoff).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                witsmlWellbore.DTimKickoff = wellbore.DTimeKickoff;
             }
 
             if (wellbore.Md != null)

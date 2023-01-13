@@ -5,15 +5,16 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
-import { displayMissingLogModal } from "../Modals/MissingObjectModals";
+import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
+import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences, missingIndex } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface LogComparisonModalProps {
@@ -52,12 +53,12 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
       if (sourceLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
-        displayMissingLogModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource);
+        displayMissingObjectModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
         return;
       } else if (targetLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
-        displayMissingLogModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget);
+        displayMissingObjectModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
         return;
       } else {
         setSourceLogCurveInfo(sourceLogCurveInfo);
@@ -92,16 +93,24 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     setIndexTypesMatch(indexTypesMatch);
   }, [sourceLogCurveInfo, targetLogCurveInfo]);
 
+  const toFixed = (value: string | number): string => {
+    const number = Number(value);
+    if (isNaN(number)) {
+      return missingIndex;
+    }
+    return number.toFixed(4);
+  };
+
   const data = useMemo(
     () =>
       indexesToShow?.map((indexes) => {
         const [markedSourceStart, markedTargetStart] =
           sourceType == "depth"
-            ? markNumberDifferences(Number(indexes.sourceStart).toFixed(4), Number(indexes.targetStart).toFixed(4))
+            ? markNumberDifferences(toFixed(indexes.sourceStart), toFixed(indexes.targetStart))
             : markDateTimeStringDifferences(indexes.sourceStart as string, indexes.targetStart as string);
         const [markedSourceEnd, markedTargetEnd] =
           sourceType == "depth"
-            ? markNumberDifferences(Number(indexes.sourceEnd).toFixed(4), Number(indexes.targetEnd).toFixed(4))
+            ? markNumberDifferences(toFixed(indexes.sourceEnd), toFixed(indexes.targetEnd))
             : markDateTimeStringDifferences(indexes.sourceEnd as string, indexes.targetEnd as string);
         return {
           mnemonic: indexes.mnemonic,
@@ -179,11 +188,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <SortableEdsTable
                     columns={columns}
                     data={data}
-                    caption={
-                      <StyledTypography variant="h5">
-                        <span style={{ paddingTop: "0.2rem" }}>Listing of Log Curves where the source indexes and end indexes do not match</span>
-                      </StyledTypography>
-                    }
+                    caption={<StyledTypography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</StyledTypography>}
                   />
                 </TableLayout>
               )}
