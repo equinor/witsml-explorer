@@ -47,6 +47,10 @@ class CredentialsService {
     this.server = server;
   }
 
+  public get selectedServer(): Server {
+    return this.server;
+  }
+
   public setSourceServer(server: Server) {
     this.sourceServer = server;
   }
@@ -80,6 +84,9 @@ class CredentialsService {
   }
 
   public saveCredentials(serverCredentials: BasicServerCredentials) {
+    // TODO: username will be set on the server properly as part of WE-744
+    // username on first login with system user is not set yet, will be fixed as part of WE-749
+    serverCredentials.server.username = serverCredentials.username;
     const index = this.credentials.findIndex((c) => c.server.id === serverCredentials.server.id);
     if (index === -1) {
       this.credentials.push(serverCredentials);
