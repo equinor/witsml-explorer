@@ -61,6 +61,7 @@ const TubularPropertiesModal = (props: TubularPropertiesModalInterface): React.R
                 label="name"
                 defaultValue={editableTubular.name}
                 helperText={editableTubular.name.length === 0 ? "A tubular name must be 1-64 characters" : ""}
+                variant={editableTubular.name.length === 0 ? "error" : undefined}
                 onChange={(e: any) => setEditableTubular({ ...editableTubular, name: e.target.value })}
               />
               <Autocomplete

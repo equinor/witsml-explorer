@@ -69,6 +69,7 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 disabled={editMode}
                 required
                 helperText={editableLogObject.uid.length === 0 ? "A wellbore uid must be 1-64 characters" : ""}
+                variant={validText(editableLogObject.uid) ? undefined : "error"}
                 onChange={(e: any) => setEditableLogObject({ ...editableLogObject, uid: e.target.value })}
               />
               <TextField
@@ -76,6 +77,7 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 label="name"
                 defaultValue={editableLogObject.name}
                 helperText={editableLogObject.name.length === 0 ? "A log name must be 1-64 characters" : ""}
+                variant={editableLogObject.name.length === 0 ? "error" : undefined}
                 onChange={(e: any) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
               />
               <TextField disabled id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} />
