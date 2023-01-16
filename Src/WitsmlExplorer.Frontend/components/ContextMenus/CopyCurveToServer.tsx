@@ -10,7 +10,7 @@ import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import CredentialsService from "../../services/credentialsService";
+import AuthorizationService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
@@ -46,7 +46,7 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
     displayReplaceModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
   } else {
     const copyJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
-    CredentialsService.setSourceServer(sourceServer);
+    AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(JobType.CopyLogData, copyJob, targetServer, sourceServer);
   }
 };

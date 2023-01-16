@@ -4,7 +4,7 @@ import Well from "../../models/well";
 import Wellbore, { calculateTrajectoryGroupId } from "../../models/wellbore";
 import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction } from "../modificationActions";
 import ModificationType from "../modificationType";
-import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable, listWellsFlag } from "../navigationContext";
+import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import { getInitialState, LOG_1, SERVER_1, TRAJECTORY_1, TRAJECTORY_GROUP_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3 } from "../stateReducerTestUtils";
 
@@ -265,8 +265,7 @@ it("Should update wells", () => {
   const expectedState = {
     ...getInitialState(),
     wells: newWells,
-    filteredWells: newWells,
-    currentSelected: listWellsFlag
+    filteredWells: newWells
   };
   expect(afterUpdateWells).toStrictEqual(expectedState);
 });

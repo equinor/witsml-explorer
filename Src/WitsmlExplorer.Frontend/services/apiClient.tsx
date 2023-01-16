@@ -1,7 +1,7 @@
 import { Server } from "../models/server";
 import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
-import CredentialsService, { AuthorizationStatus } from "./credentialsService";
+import AuthorizationService, { AuthorizationStatus } from "./credentialsService";
 
 export class ApiClient {
   private static async getCommonHeaders(targetServer: Server = undefined, sourceServer: Server = undefined): Promise<HeadersInit> {
@@ -26,7 +26,7 @@ export class ApiClient {
     return null;
   }
 
-  public static async get(pathName: string, abortSignal: AbortSignal | null = null, server = CredentialsService.selectedServer): Promise<Response> {
+  public static async get(pathName: string, abortSignal: AbortSignal | null = null, server = AuthorizationService.selectedServer): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await ApiClient.getCommonHeaders(server),
@@ -40,8 +40,8 @@ export class ApiClient {
     pathName: string,
     body: string,
     abortSignal: AbortSignal | null = null,
-    targetServer = CredentialsService.selectedServer,
-    sourceServer = CredentialsService.getSourceServer()
+    targetServer = AuthorizationService.selectedServer,
+    sourceServer = AuthorizationService.sourceServer
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
@@ -129,7 +129,7 @@ export class ApiClient {
       resolve(originalResponse);
       return;
     }
-    const unsub = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
+    const unsub = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Cancel) {
         unsub();
         resolve(originalResponse);
@@ -138,7 +138,7 @@ export class ApiClient {
         this.fetchWithRerun(url, requestInit, targetServer, sourceServer, true, resolve, reject);
       }
     });
-    CredentialsService.onAuthorizationChangeDispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
+    AuthorizationService.onAuthorizationChangeDispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
   }
 }
 

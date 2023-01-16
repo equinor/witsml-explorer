@@ -9,7 +9,7 @@ import { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService from "../../services/credentialsService";
+import AuthorizationService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
@@ -41,7 +41,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
   } else {
     const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
-    CredentialsService.setSourceServer(sourceServer);
+    AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(JobType.CopyLog, copyJob, targetServer, sourceServer);
   }
 };

@@ -8,7 +8,7 @@ import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { calculateLogTypeId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
-import CredentialsService from "../services/credentialsService";
+import AuthorizationService from "../services/credentialsService";
 import { filterWells } from "./filter";
 import {
   AddServerAction,
@@ -38,7 +38,7 @@ import {
 } from "./modificationActions";
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
-import { allDeselected, listWellsFlag, NavigationState } from "./navigationContext";
+import { allDeselected, NavigationState } from "./navigationContext";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -121,11 +121,11 @@ const updateServer = (state: NavigationState, { payload }: UpdateServerAction) =
   const { server } = payload;
   const index = state.servers.findIndex((s) => s.id === server.id);
   state.servers.splice(index, 1, server);
-  if (CredentialsService.selectedServer?.id == server.id) {
-    CredentialsService.setSelectedServer(server);
+  if (AuthorizationService.selectedServer?.id == server.id) {
+    AuthorizationService.setSelectedServer(server);
   }
-  if (CredentialsService.getSourceServer()?.id == server.id) {
-    CredentialsService.setSourceServer(server);
+  if (AuthorizationService.sourceServer?.id == server.id) {
+    AuthorizationService.setSourceServer(server);
   }
   return {
     ...state,
@@ -533,7 +533,6 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   return {
     ...state,
     wells: wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
-    currentSelected: listWellsFlag
+    filteredWells: filterWells(wells, state.selectedFilter)
   };
 };

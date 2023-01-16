@@ -23,11 +23,11 @@ export interface AuthorizationState {
   status: AuthorizationStatus;
 }
 
-class CredentialsService {
-  private static _instance: CredentialsService;
+class AuthorizationService {
+  private static _instance: AuthorizationService;
   private _onAuthorizationChange = new SimpleEventDispatcher<AuthorizationState>();
   private server?: Server;
-  private sourceServer?: Server;
+  private _sourceServer?: Server;
   private serversAwaitingAuthorization: Server[] = [];
 
   public awaitServerAuthorization(server: Server) {
@@ -54,15 +54,15 @@ class CredentialsService {
   }
 
   public setSourceServer(server: Server) {
-    this.sourceServer = server;
+    this._sourceServer = server;
   }
 
-  public getSourceServer(): Server {
-    return { ...this.sourceServer };
+  public get sourceServer(): Server {
+    return { ...this._sourceServer };
   }
 
   public resetSourceServer() {
-    this.sourceServer = null;
+    this._sourceServer = null;
   }
 
   public onAuthorized(server: Server, username: string, dispatchNavigation: (action: UpdateServerAction) => void) {
@@ -96,7 +96,7 @@ class CredentialsService {
     const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
-      CredentialsService.throwError(response.status, message);
+      AuthorizationService.throwError(response.status, message);
     }
   }
 
@@ -104,7 +104,7 @@ class CredentialsService {
     const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
-      CredentialsService.throwError(response.status, message);
+      AuthorizationService.throwError(response.status, message);
     }
   }
 
@@ -132,4 +132,4 @@ class CredentialsService {
   }
 }
 
-export default CredentialsService.Instance;
+export default AuthorizationService.Instance;

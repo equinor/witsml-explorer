@@ -3,7 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
+import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
 import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 const AuthorizationManager = (): React.ReactElement => {
@@ -11,12 +11,12 @@ const AuthorizationManager = (): React.ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
 
   useEffect(() => {
-    const unsubscribe = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState: AuthorizationState) => {
-      if (authorizationState.status == AuthorizationStatus.Unauthorized && !CredentialsService.serverIsAwaitingAuthorization(authorizationState.server)) {
+    const unsubscribe = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState: AuthorizationState) => {
+      if (authorizationState.status == AuthorizationStatus.Unauthorized && !AuthorizationService.serverIsAwaitingAuthorization(authorizationState.server)) {
         showCredentialsModal(authorizationState.server);
-        CredentialsService.awaitServerAuthorization(authorizationState.server);
+        AuthorizationService.awaitServerAuthorization(authorizationState.server);
       } else if (authorizationState.status == AuthorizationStatus.Authorized || authorizationState.status == AuthorizationStatus.Cancel) {
-        CredentialsService.finishServerAuthorization(authorizationState.server);
+        AuthorizationService.finishServerAuthorization(authorizationState.server);
       }
     });
     return () => {
@@ -31,7 +31,7 @@ const AuthorizationManager = (): React.ReactElement => {
       confirmText: "Login",
       onConnectionVerified: (credentials) => {
         dispatchOperation({ type: OperationType.HideModal });
-        CredentialsService.onAuthorized(server, credentials.username, dispatchNavigation);
+        AuthorizationService.onAuthorized(server, credentials.username, dispatchNavigation);
       },
       errorMessage
     };

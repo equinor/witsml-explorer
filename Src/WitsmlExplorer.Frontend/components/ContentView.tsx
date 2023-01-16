@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
+import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import JobsView from "./ContentViews/JobsView";
@@ -87,8 +87,6 @@ const ContentView = (): React.ReactElement => {
         setView(<JobsView />);
       } else if (currentSelected === selectedServerManagerFlag) {
         setView(<ServerManager />);
-      } else if (currentSelected === listWellsFlag) {
-        setView(<WellsListView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

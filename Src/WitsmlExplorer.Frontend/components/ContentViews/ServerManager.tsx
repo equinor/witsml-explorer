@@ -11,7 +11,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
-import CredentialsService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
+import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -30,7 +30,7 @@ const ServerManager = (): React.ReactElement => {
   const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
+    const unsubscribeFromCredentialsEvents = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
       setAuthorizationState(authorizationState);
     });
     return () => {

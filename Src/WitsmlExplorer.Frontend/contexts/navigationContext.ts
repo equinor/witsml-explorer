@@ -26,7 +26,6 @@ export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject 
 
 export const selectedJobsFlag = "jobs";
 export const selectedServerManagerFlag = "serverManager";
-export const listWellsFlag = "listWells";
 
 export interface NavigationState {
   selectedServer: Server;

@@ -4,7 +4,7 @@ import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import CredentialsService from "./credentialsService";
+import AuthorizationService from "./credentialsService";
 import NotificationService from "./notificationService";
 
 export default class LogObjectService {
@@ -91,7 +91,7 @@ export default class LogObjectService {
           errorMessage = `Something unexpected has happened.`;
       }
       NotificationService.Instance.alertDispatcher.dispatch({
-        serverUrl: new URL(CredentialsService.selectedServer.url),
+        serverUrl: new URL(AuthorizationService.selectedServer.url),
         message: errorMessage,
         isSuccess: false
       });

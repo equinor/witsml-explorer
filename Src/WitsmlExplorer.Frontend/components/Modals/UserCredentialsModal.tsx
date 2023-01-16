@@ -4,7 +4,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
+import AuthorizationService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
@@ -32,7 +32,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const shouldFocusPasswordInput = !!username;
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(CredentialsService.getKeepLoggedInToServer(server.url));
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(AuthorizationService.getKeepLoggedInToServer(server.url));
 
   useEffect(() => {
     if (serverCredentials) {
@@ -57,8 +57,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      CredentialsService.onAuthorized(server, username, dispatchNavigation);
+      await AuthorizationService.verifyCredentials(credentials, keepLoggedIn);
+      AuthorizationService.onAuthorized(server, username, dispatchNavigation);
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);
@@ -74,7 +74,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       password
     };
     try {
-      await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
+      await AuthorizationService.verifyCredentials(credentials, keepLoggedIn);
       props.onConnectionVerified({ ...credentials, password: "" });
     } catch (error) {
       setErrorMessage(error.message);
@@ -123,7 +123,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={() => {
-        CredentialsService.onAuthorizationChangeDispatch({ server, status: AuthorizationStatus.Cancel });
+        AuthorizationService.onAuthorizationChangeDispatch({ server, status: AuthorizationStatus.Cancel });
         dispatchOperation({ type: OperationType.HideModal });
         if (props.onCancel) {
           props.onCancel();

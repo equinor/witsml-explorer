@@ -1,7 +1,7 @@
 import JobInfo from "../models/jobs/jobInfo";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import CredentialsService from "./credentialsService";
+import AuthorizationService from "./credentialsService";
 import NotificationService from "./notificationService";
 
 export default class JobService {
@@ -15,8 +15,8 @@ export default class JobService {
     return this.onResponse(jobType, response, targetServer);
   }
 
-  private static async onResponse(jobType: JobType, response: Response, server = CredentialsService.selectedServer): Promise<any> {
-    CredentialsService.resetSourceServer();
+  private static async onResponse(jobType: JobType, response: Response, server = AuthorizationService.selectedServer): Promise<any> {
+    AuthorizationService.resetSourceServer();
     if (response.ok) {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),

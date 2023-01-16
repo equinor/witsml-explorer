@@ -9,7 +9,7 @@ import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellb
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService from "../../services/credentialsService";
+import AuthorizationService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
@@ -105,7 +105,7 @@ const displayDeleteModal = (
       heading={`Delete ${toDeleteTypeName}?`}
       content={
         <Layout>
-          <TextField readOnly id="server" label="Server" defaultValue={CredentialsService.selectedServer?.name} tabIndex={-1} />
+          <TextField readOnly id="server" label="Server" defaultValue={AuthorizationService.selectedServer?.name} tabIndex={-1} />
           <TextField readOnly id="wellbore" label="Wellbore" defaultValue={wellbore} tabIndex={-1} />
           {parent != null && <TextField readOnly id="parent_object" label={parentType} defaultValue={parent} tabIndex={-1} />}
           <span>
