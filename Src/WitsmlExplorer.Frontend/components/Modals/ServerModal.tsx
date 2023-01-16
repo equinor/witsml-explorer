@@ -12,7 +12,7 @@ import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import { BasicServerCredentials } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
@@ -196,7 +196,6 @@ export const showDeleteServerModal = (
       if (server.id === selectedServer?.id) {
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
         dispatchNavigation(action);
-        CredentialsService.setSelectedServer(null);
       }
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({

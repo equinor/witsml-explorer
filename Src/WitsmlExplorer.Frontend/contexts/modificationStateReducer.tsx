@@ -8,6 +8,7 @@ import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { calculateLogTypeId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import CredentialsService from "../services/credentialsService";
 import { filterWells } from "./filter";
 import {
   AddServerAction,
@@ -120,6 +121,12 @@ const updateServer = (state: NavigationState, { payload }: UpdateServerAction) =
   const { server } = payload;
   const index = state.servers.findIndex((s) => s.id === server.id);
   state.servers.splice(index, 1, server);
+  if (CredentialsService.selectedServer?.id == server.id) {
+    CredentialsService.setSelectedServer(server);
+  }
+  if (CredentialsService.getSourceServer()?.id == server.id) {
+    CredentialsService.setSourceServer(server);
+  }
   return {
     ...state,
     servers: [...state.servers],

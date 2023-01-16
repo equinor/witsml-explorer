@@ -34,7 +34,6 @@ import Wellbore, {
 } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import BhaRunService from "../services/bhaRunService";
-import CredentialsService from "../services/credentialsService";
 import LogObjectService from "../services/logObjectService";
 import MessageObjectService from "../services/messageObjectService";
 import RigService from "../services/rigService";
@@ -112,7 +111,6 @@ const Routing = (): React.ReactElement => {
       if (server && !selectedServer) {
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
         dispatchNavigation(action);
-        CredentialsService.setSelectedServer(server);
       }
     }
   }, [servers, urlParams]);

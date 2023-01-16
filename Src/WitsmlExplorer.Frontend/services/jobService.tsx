@@ -1,6 +1,7 @@
 import JobInfo from "../models/jobs/jobInfo";
+import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import CredentialsService from "./credentialsService";
 import NotificationService from "./notificationService";
 
 export default class JobService {
@@ -9,25 +10,23 @@ export default class JobService {
     return this.onResponse(jobType, response);
   }
 
-  public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, credentials: BasicServerCredentials[]): Promise<any> {
-    const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, credentials);
-    return this.onResponse(jobType, response, credentials);
+  public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, targetServer: Server, sourceServer: Server): Promise<any> {
+    const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, targetServer, sourceServer);
+    return this.onResponse(jobType, response, targetServer);
   }
 
-  private static async onResponse(jobType: JobType, response: Response, credentials = CredentialsService.getCredentials()): Promise<any> {
-    if (CredentialsService.getSourceServerCredentials()) {
-      CredentialsService.resetSourceServer();
-    }
+  private static async onResponse(jobType: JobType, response: Response, server = CredentialsService.selectedServer): Promise<any> {
+    CredentialsService.resetSourceServer();
     if (response.ok) {
       NotificationService.Instance.snackbarDispatcher.dispatch({
-        serverUrl: new URL(credentials[0]?.server.url),
+        serverUrl: new URL(server?.url),
         message: `Ordered ${jobType} job`,
         isSuccess: true
       });
       return response.body;
     } else {
       NotificationService.Instance.snackbarDispatcher.dispatch({
-        serverUrl: new URL(credentials[0]?.server.url),
+        serverUrl: new URL(server?.url),
         message: `Failed ordering ${jobType} job`,
         isSuccess: false
       });

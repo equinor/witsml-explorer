@@ -1,5 +1,6 @@
 import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
@@ -9,7 +10,7 @@ import { validText } from "./ModalParts";
 
 export interface UserCredentialsModalProps {
   server: Server;
-  serverCredentials: BasicServerCredentials;
+  serverCredentials?: BasicServerCredentials;
   mode: CredentialsMode;
   errorMessage?: string;
   onConnectionVerified?: (credentials?: BasicServerCredentials) => void;
@@ -25,6 +26,7 @@ export enum CredentialsMode {
 const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElement => {
   const { mode, server, serverCredentials, confirmText } = props;
   const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +58,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     };
     try {
       await CredentialsService.verifyCredentials(credentials, keepLoggedIn);
-      CredentialsService.saveCredentials({ ...credentials, password: "" });
+      CredentialsService.onAuthorized(server, username, dispatchNavigation);
     } catch (error) {
       setErrorMessage(error.message);
       setIsLoading(false);

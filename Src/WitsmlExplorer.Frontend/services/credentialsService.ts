@@ -1,7 +1,10 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
+import { UpdateServerAction } from "../contexts/modificationActions";
+import ModificationType from "../contexts/modificationType";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
+import { AuthorizationClient } from "./authorizationClient";
 
 export interface BasicServerCredentials {
   server: Server;
@@ -23,7 +26,6 @@ export interface AuthorizationState {
 class CredentialsService {
   private static _instance: CredentialsService;
   private _onAuthorizationChange = new SimpleEventDispatcher<AuthorizationState>();
-  private credentials: BasicServerCredentials[] = [];
   private server?: Server;
   private sourceServer?: Server;
   private serversAwaitingAuthorization: Server[] = [];
@@ -48,66 +50,26 @@ class CredentialsService {
   }
 
   public get selectedServer(): Server {
-    return this.server;
+    return { ...this.server };
   }
 
   public setSourceServer(server: Server) {
     this.sourceServer = server;
   }
 
+  public getSourceServer(): Server {
+    return { ...this.sourceServer };
+  }
+
   public resetSourceServer() {
     this.sourceServer = null;
   }
 
-  public addServer(server: Server) {
-    this.credentials.push({ server });
-  }
-
-  public removeServer(serverUid: string) {
-    const index = this.credentials.findIndex((creds) => creds.server.id == serverUid);
-    if (index > -1) {
-      this.credentials.splice(index, 1);
-    }
-  }
-
-  public updateServer(server: Server) {
-    const creds = this.getCredentialsForServer(server);
-    creds.server = server;
-  }
-
-  public saveServers(servers: Server[]) {
-    this.credentials = servers.map((server) => {
-      return {
-        server
-      };
-    });
-  }
-
-  public saveCredentials(serverCredentials: BasicServerCredentials) {
-    // TODO: username will be set on the server properly as part of WE-744
-    // username on first login with system user is not set yet, will be fixed as part of WE-749
-    serverCredentials.server.username = serverCredentials.username;
-    const index = this.credentials.findIndex((c) => c.server.id === serverCredentials.server.id);
-    if (index === -1) {
-      this.credentials.push(serverCredentials);
-    } else {
-      this.credentials[index] = serverCredentials;
-    }
-    this._onAuthorizationChange.dispatch({ server: serverCredentials.server, status: AuthorizationStatus.Authorized });
-  }
-
-  public getCredentials(): BasicServerCredentials[] {
-    const currentCredentials = this.credentials.find((c) => c.server.id === this.server?.id);
-    const sourceCredentials = this.getSourceServerCredentials();
-    return [...(currentCredentials ? [currentCredentials] : []), ...(sourceCredentials ? [sourceCredentials] : [])];
-  }
-
-  public getCredentialsForServer(server: Server): BasicServerCredentials {
-    return this.credentials.find((c) => c.server.id === server.id);
-  }
-
-  public getSourceServerCredentials(): BasicServerCredentials | undefined {
-    return this.credentials.find((c) => c.server.id === this.sourceServer?.id);
+  public onAuthorized(server: Server, username: string, dispatchNavigation: (action: UpdateServerAction) => void) {
+    // TODO: username on first login with system user is not set yet, will be fixed as part of WE-749
+    server.username = username;
+    dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server } });
+    this._onAuthorizationChange.dispatch({ server, status: AuthorizationStatus.Authorized });
   }
 
   public getKeepLoggedInToServer(serverUrl: string): boolean {
@@ -131,7 +93,7 @@ class CredentialsService {
     } catch {
       // ignore unavailable local storage
     }
-    const response = await ApiClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, [credentials], false, false);
+    const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);
@@ -139,7 +101,7 @@ class CredentialsService {
   }
 
   public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal, undefined);
+    const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       CredentialsService.throwError(response.status, message);

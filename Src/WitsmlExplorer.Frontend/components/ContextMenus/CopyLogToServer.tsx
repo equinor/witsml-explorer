@@ -9,7 +9,7 @@ import { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import CredentialsService from "../../services/credentialsService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";
@@ -22,15 +22,13 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
   const wellUid = logsToCopy[0].wellUid;
   const wellboreUid = logsToCopy[0].wellboreUid;
 
-  const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
-  const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
-  const wellbore = await WellboreService.getWellboreFromServer(wellUid, wellboreUid, targetCredentials);
+  const wellbore = await WellboreService.getWellboreFromServer(wellUid, wellboreUid, targetServer);
   if (wellbore.uid !== wellboreUid) {
     displayMissingWellboreModal(targetServer, wellUid, wellboreUid, dispatchOperation, "No logs will be copied.");
     return;
   }
 
-  const logQueries = logsToCopy.map((log) => LogObjectService.getLogFromServer(wellUid, wellboreUid, log.uid, targetCredentials));
+  const logQueries = logsToCopy.map((log) => LogObjectService.getLogFromServer(wellUid, wellboreUid, log.uid, targetServer));
   const existingLogs: LogObject[] = [];
   for (const logQuery of logQueries) {
     const receivedLog = await logQuery;
@@ -39,12 +37,12 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     }
   }
   if (existingLogs.length > 0) {
-    const onConfirm = () => replaceLogObjects(sourceServer, [targetCredentials, sourceCredentials], logsToCopy, existingLogs, wellbore, dispatchOperation);
+    const onConfirm = () => replaceLogObjects(targetServer, sourceServer, logsToCopy, existingLogs, wellbore, dispatchOperation);
     displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
   } else {
     const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
     CredentialsService.setSourceServer(sourceServer);
-    JobService.orderJobAtServer(JobType.CopyLog, copyJob, [targetCredentials, sourceCredentials]);
+    JobService.orderJobAtServer(JobType.CopyLog, copyJob, targetServer, sourceServer);
   }
 };
 
@@ -61,8 +59,8 @@ const createCopyJob = (sourceServer: Server, logs: LogObject[], targetWellbore: 
 };
 
 const replaceLogObjects = async (
+  targetServer: Server,
   sourceServer: Server,
-  credentials: BasicServerCredentials[],
   logsToCopy: LogObject[],
   logsToDelete: LogObject[],
   targetWellbore: Wellbore,
@@ -74,7 +72,7 @@ const replaceLogObjects = async (
   };
   const copyJob: CopyObjectsJob = createCopyJob(sourceServer, logsToCopy, targetWellbore);
   const replaceJob: ReplaceLogObjectsJob = { deleteJob, copyJob };
-  await JobService.orderJobAtServer(JobType.ReplaceLogObjects, replaceJob, credentials);
+  await JobService.orderJobAtServer(JobType.ReplaceLogObjects, replaceJob, targetServer, sourceServer);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 

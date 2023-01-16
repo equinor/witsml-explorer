@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
@@ -7,6 +8,7 @@ import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from
 
 const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
 
   useEffect(() => {
     const unsubscribe = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState: AuthorizationState) => {
@@ -23,15 +25,13 @@ const AuthorizationManager = (): React.ReactElement => {
   }, []);
 
   const showCredentialsModal = (server: Server, errorMessage = "") => {
-    const currentCredentials = CredentialsService.getCredentialsForServer(server);
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server: server,
-      serverCredentials: currentCredentials,
       mode: CredentialsMode.TEST,
       confirmText: "Login",
       onConnectionVerified: (credentials) => {
         dispatchOperation({ type: OperationType.HideModal });
-        CredentialsService.saveCredentials({ ...credentials, password: "" });
+        CredentialsService.onAuthorized(server, credentials.username, dispatchNavigation);
       },
       errorMessage
     };

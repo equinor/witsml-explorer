@@ -53,6 +53,7 @@ const ServerManager = (): React.ReactElement => {
           message: error.message,
           isSuccess: false
         });
+        dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: null } });
       }
     };
     onCurrentLoginStateChange();
@@ -68,7 +69,6 @@ const ServerManager = (): React.ReactElement => {
       const getServers = async () => {
         const freshServers = await ServerService.getServers(abortController.signal);
         setHasFetchedServers(true);
-        CredentialsService.saveServers(freshServers);
         const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
         dispatchNavigation(action);
       };
@@ -82,7 +82,6 @@ const ServerManager = (): React.ReactElement => {
 
   const onSelectItem = async (server: Server) => {
     const currentServer = server.id === selectedServer?.id ? null : server;
-    CredentialsService.setSelectedServer(currentServer);
     const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentServer } };
     dispatchNavigation(action);
   };
