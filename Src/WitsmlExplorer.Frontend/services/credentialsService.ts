@@ -3,7 +3,7 @@ import { UpdateServerAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
-import { ApiClient } from "./apiClient";
+import { ApiClient, throwError } from "./apiClient";
 import { AuthorizationClient } from "./authorizationClient";
 
 export interface BasicServerCredentials {
@@ -96,7 +96,7 @@ class AuthorizationService {
     const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
-      AuthorizationService.throwError(response.status, message);
+      throwError(response.status, message);
     }
   }
 
@@ -104,18 +104,7 @@ class AuthorizationService {
     const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal);
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
-      AuthorizationService.throwError(response.status, message);
-    }
-  }
-
-  private static throwError(statusCode: number, message: string) {
-    switch (statusCode) {
-      case 401:
-      case 404:
-      case 500:
-        throw new Error(message);
-      default:
-        throw new Error(`Something unexpected has happened.`);
+      throwError(response.status, message);
     }
   }
 

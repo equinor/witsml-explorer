@@ -171,3 +171,15 @@ export function truncateAbortHandler(e: Error): void {
   }
   throw e;
 }
+
+export function throwError(statusCode: number, message: string) {
+  switch (statusCode) {
+    case 401:
+    case 403:
+    case 404:
+    case 500:
+      throw new Error(message);
+    default:
+      throw new Error(`Something unexpected has happened.`);
+  }
+}

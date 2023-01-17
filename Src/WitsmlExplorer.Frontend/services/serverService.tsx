@@ -1,6 +1,6 @@
 import { ErrorDetails } from "../models/errorDetails";
-import { emptyServer, Server } from "../models/server";
-import { ApiClient } from "./apiClient";
+import { Server } from "../models/server";
+import { ApiClient, throwError } from "./apiClient";
 
 export default class ServerService {
   public static async getServers(abortSignal?: AbortSignal): Promise<Server[]> {
@@ -17,7 +17,7 @@ export default class ServerService {
     if (response.ok) {
       return await response.json();
     } else {
-      return emptyServer();
+      throwError(response.status, response.statusText);
     }
   }
 
@@ -26,7 +26,7 @@ export default class ServerService {
     if (response.ok) {
       return await response.json();
     } else {
-      return emptyServer();
+      throwError(response.status, response.statusText);
     }
   }
 
@@ -36,18 +36,7 @@ export default class ServerService {
       return true;
     } else {
       const { message }: ErrorDetails = await response.json();
-      this.throwError(response.status, message);
-    }
-  }
-
-  private static throwError(statusCode: number, message: string) {
-    switch (statusCode) {
-      case 401:
-      case 404:
-      case 500:
-        throw new Error(message);
-      default:
-        throw new Error(`Something unexpected has happened.`);
+      throwError(response.status, message);
     }
   }
 }

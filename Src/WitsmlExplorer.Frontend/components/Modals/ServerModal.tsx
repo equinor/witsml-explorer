@@ -43,15 +43,24 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     const abortController = new AbortController();
 
     setIsLoading(true);
-    if (isAddingNewServer) {
-      const freshServer = await ServerService.addServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
-    } else {
-      const freshServer = await ServerService.updateServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+    try {
+      if (isAddingNewServer) {
+        const freshServer = await ServerService.addServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
+      } else {
+        const freshServer = await ServerService.updateServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+      }
+    } catch (error) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: null,
+        message: error.message,
+        isSuccess: false
+      });
+    } finally {
+      setIsLoading(false);
+      dispatchOperation({ type: OperationType.HideModal });
     }
-    setIsLoading(false);
-    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const showCredentialsModal = () => {
