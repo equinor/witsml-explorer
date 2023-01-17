@@ -114,7 +114,7 @@ export class ApiClient {
     fetch(url.toString(), requestInit)
       .then((response) => {
         if (response.status == 401 && rerun) {
-          this.handleUnauthorized(url, requestInit, currentCredentials, response.json(), response, resolve, reject);
+          this.handleUnauthorized(url, requestInit, currentCredentials, response, resolve, reject);
         } else {
           resolve(response);
         }
@@ -131,15 +131,14 @@ export class ApiClient {
     url: URL,
     requestInit: RequestInit,
     currentCredentials: BasicServerCredentials[],
-    responseBody: Promise<any>,
     originalResponse: Response,
     resolve: (value: Response | PromiseLike<Response>) => void,
     reject: (reason?: any) => void
   ) {
-    const result = await responseBody;
+    const result = await originalResponse.clone().json();
     const server: "Target" | "Source" | undefined = result.server;
     const serverToAuthorize = server == "Source" ? currentCredentials[1].server : currentCredentials[0].server;
-    const unsub = CredentialsService.onAuthorizationChanged.subscribe(async (authorizationState) => {
+    const unsub = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
       if (authorizationState.status == AuthorizationStatus.Cancel) {
         unsub();
         resolve(originalResponse);
@@ -148,7 +147,7 @@ export class ApiClient {
         this.fetchWithRerun(url, requestInit, currentCredentials, true, resolve, reject);
       }
     });
-    CredentialsService.onAuthorizationChanged.dispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
+    CredentialsService.onAuthorizationChangeDispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
   }
 }
 

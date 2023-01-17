@@ -121,7 +121,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
       onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
       onCancel={() => {
-        CredentialsService.onAuthorizationChanged.dispatch({ server, status: AuthorizationStatus.Cancel });
+        CredentialsService.onAuthorizationChangeDispatch({ server, status: AuthorizationStatus.Cancel });
         dispatchOperation({ type: OperationType.HideModal });
         if (props.onCancel) {
           props.onCancel();

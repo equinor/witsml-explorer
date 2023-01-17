@@ -1,7 +1,8 @@
 import { Button, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { ReactElement, useContext, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect } from "react";
 import styled from "styled-components";
+import NavigationContext from "../contexts/navigationContext";
 import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
@@ -25,7 +26,9 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const TopRightCornerMenu = (): React.ReactElement => {
-  const [username, setUsername] = useState<string>("");
+  const {
+    navigationState: { selectedServer }
+  } = useContext(NavigationContext);
   const {
     operationState: { theme, timeZone },
     dispatchOperation
@@ -39,15 +42,6 @@ const TopRightCornerMenu = (): React.ReactElement => {
       const storedTimeZone = (localStorage.getItem("selectedTimeZone") as TimeZone) ?? timeZone;
       dispatchOperation({ type: OperationType.SetTimeZone, payload: storedTimeZone });
     }
-  }, []);
-
-  useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChanged.subscribe(() => {
-      setUsername(CredentialsService.getCredentials()[0]?.username);
-    });
-    return () => {
-      unsubscribeFromCredentialsEvents();
-    };
   }, []);
 
   const onSelectTimeZone = (selectedTimeZone: TimeZone) => {
@@ -118,10 +112,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   return (
     <Layout>
-      {username && (
+      {selectedServer?.username && (
         <StyledButton variant="ghost" disabled>
           <Icon name="person" />
-          {username}
+          {selectedServer.username}
         </StyledButton>
       )}
       <ServerManagerButton />
@@ -163,7 +157,7 @@ const SelectTypography = styled(Typography)<{ selected: boolean }>`
   }
 `;
 
-const TimeZoneTypography = styled(SelectTypography)<{ selected: boolean }>`
+const TimeZoneTypography = styled(SelectTypography)`
   && {
     font-feature-settings: "tnum";
   }

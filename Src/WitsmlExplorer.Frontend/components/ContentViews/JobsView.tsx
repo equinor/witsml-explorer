@@ -5,8 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
-import { adminRole, developerRole, getUserAppRoles, getUsername, msalEnabled } from "../../msal/MsalAuthProvider";
-import CredentialsService from "../../services/credentialsService";
+import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -21,13 +20,10 @@ export const JobsView = (): React.ReactElement => {
     dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, servers } = navigationState;
+  const { servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
   const [showAll, setShowAll] = useState(false);
-
-  const credentials = CredentialsService.getCredentials();
-  const username = msalEnabled ? getUsername() : credentials.find((creds) => creds.server.id == selectedServer.id)?.username;
 
   const fetchJobs = () => {
     const abortController = new AbortController();
@@ -61,7 +57,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [username, showAll]);
+  }, [showAll]);
 
   useEffect(() => {
     if (shouldRefresh) {

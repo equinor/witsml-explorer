@@ -84,7 +84,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     setDisplayUrlError(!isUrlValid(server.url));
   };
 
-  // Uncomment to enable user edit of server list
   const validateForm = () => {
     return server.name.length !== 0 && isUrlValid(server.url);
   };

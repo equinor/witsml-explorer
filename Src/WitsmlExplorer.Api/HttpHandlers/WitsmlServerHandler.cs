@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -16,17 +17,26 @@ namespace WitsmlExplorer.Api.HttpHandlers
 {
     public static class WitsmlServerHandler
     {
-        [Produces(typeof(IEnumerable<Server>))]
-        public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, IConfiguration configuration, HttpContext httpContext)
+        [Produces(typeof(IEnumerable<Connection>))]
+        public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, IConfiguration configuration, HttpContext httpContext, ICredentialsService credentialsService)
         {
+            EssentialHeaders httpHeaders = new(httpContext?.Request);
             bool useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             if (!useOAuth)
             {
                 httpContext.GetOrCreateWitsmlExplorerCookie();
             }
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
+            IEnumerable<Connection> credentials = servers.Select((server) =>
+            {
+                string username = credentialsService.GetCredentialsFromCache(useOAuth, httpHeaders, server.Url.ToString())?.UserId;
+                return new Connection(server)
+                {
+                    Username = username
+                };
+            });
 
-            return TypedResults.Ok(servers);
+            return TypedResults.Ok(credentials);
         }
         [Produces(typeof(Server))]
         public static async Task<IResult> CreateWitsmlServer(Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
