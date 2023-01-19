@@ -26,11 +26,12 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             string clientId = Guid.NewGuid().ToString();
             string url = "https://somehost";
+            string witsmlUsername = "user";
 
             _credentialsCache.Clear();
-            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
-            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
-            _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
 
             long before = _credentialsCache.Count();
             _credentialsCache.RemoveAllClientCredentials(clientId);
@@ -44,10 +45,11 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             string clientId = Guid.NewGuid().ToString();
             string url = "https://somehost";
+            string witsmlUsername = "user";
 
-            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
-            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
-            _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem($"{clientId}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem($"{Guid.NewGuid()}@{url}{_random.Next(1000)}.com", $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
 
             long before = _credentialsCache.Count();
             _credentialsCache.Clear();

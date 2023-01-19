@@ -67,8 +67,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlClient == null)
             {
-                _targetCreds = _credentialsService.GetCredentialsFromCache(_useOAuth, _httpHeaders, _httpHeaders.TargetServer);
-                _targetCreds ??= _useOAuth ? _credentialsService.GetSystemCredentialsByToken(_httpHeaders.GetBearerToken(), new Uri(_httpHeaders.TargetServer)).Result : null;
+                _targetCreds = _credentialsService.GetCredentials(_useOAuth, _httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
                     ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;
@@ -81,8 +80,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlSourceClient == null)
             {
-                _sourceCreds = _credentialsService.GetCredentialsFromCache(_useOAuth, _httpHeaders, _httpHeaders.SourceServer);
-                _sourceCreds ??= _useOAuth ? _credentialsService.GetSystemCredentialsByToken(_httpHeaders.GetBearerToken(), new Uri(_httpHeaders.SourceServer)).Result : null;
+                _sourceCreds = _credentialsService.GetCredentials(_useOAuth, _httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
                 _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsCredsNullOrEmpty())
                     ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;

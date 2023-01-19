@@ -65,9 +65,17 @@ class AuthorizationService {
     this._sourceServer = null;
   }
 
+  public onServerStateChange(server: Server) {
+    if (this.selectedServer?.id == server.id) {
+      this.setSelectedServer(server);
+    }
+    if (this.sourceServer?.id == server.id) {
+      this.setSourceServer(server);
+    }
+  }
+
   public onAuthorized(server: Server, username: string, dispatchNavigation: (action: UpdateServerAction) => void) {
-    // TODO: username on first login with system user is not set yet, will be fixed as part of WE-749
-    server.username = username;
+    server.currentUsername = username;
     dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server } });
     this._onAuthorizationChange.dispatch({ server, status: AuthorizationStatus.Authorized });
   }

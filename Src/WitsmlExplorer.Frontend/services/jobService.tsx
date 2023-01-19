@@ -1,7 +1,7 @@
 import JobInfo from "../models/jobs/jobInfo";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import AuthorizationService from "./credentialsService";
+import AuthorizationService from "./authorizationService";
 import NotificationService from "./notificationService";
 
 export default class JobService {

@@ -12,12 +12,11 @@ import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import { BasicServerCredentials } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
 import ModalDialog from "./ModalDialog";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
+import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
 
 export interface ServerModalProps {
   server: Server;
@@ -69,12 +68,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       dispatchOperation({ type: OperationType.HideModal });
     };
 
-    const serverCredentials: BasicServerCredentials = { username: "", password: "", server };
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server,
-      serverCredentials,
-      mode: CredentialsMode.TEST,
-      errorMessage: "",
+      confirmText: "Test",
       onConnectionVerified: onVerifyConnection
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });

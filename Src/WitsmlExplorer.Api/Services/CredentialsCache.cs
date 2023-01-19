@@ -8,8 +8,8 @@ namespace WitsmlExplorer.Api.Services
 
     public interface ICredentialsCache
     {
-        void SetItem(string cacheId, string encryptedCredentials, double ttl);
-        public string GetItem(string cacheId);
+        void SetItem(string cacheId, string encryptedPassword, double ttl, string username);
+        public Dictionary<string, string> GetItem(string cacheId);
         public long Count();
         public void Clear();
         public void RemoveAllClientCredentials(string clientId);
@@ -25,15 +25,28 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public void SetItem(string cacheId, string encryptedCredentials, double ttl)
+        public void SetItem(string cacheId, string encryptedPassword, double ttl, string username)
         {
             CacheItemPolicy cacheItemPolicy = new() { SlidingExpiration = TimeSpan.FromHours(ttl) };
-            _cache.Set(cacheId, encryptedCredentials, cacheItemPolicy);
+            Dictionary<string, string> item = GetItem(cacheId);
+            if (item == null)
+            {
+                item = new Dictionary<string, string>
+                {
+                    { username, encryptedPassword }
+                };
+            }
+            else
+            {
+                item.Remove(username);
+                item.Add(username, encryptedPassword);
+            }
+            _cache.Set(cacheId, item, cacheItemPolicy);
         }
 
-        public string GetItem(string cacheId)
+        public Dictionary<string, string> GetItem(string cacheId)
         {
-            return _cache.Get(cacheId) as string;
+            return _cache.Get(cacheId) as Dictionary<string, string>;
         }
 
         public long Count()

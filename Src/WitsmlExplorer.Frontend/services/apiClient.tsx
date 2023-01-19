@@ -1,7 +1,7 @@
 import { Server } from "../models/server";
 import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
-import AuthorizationService, { AuthorizationStatus } from "./credentialsService";
+import AuthorizationService, { AuthorizationStatus } from "./authorizationService";
 
 export class ApiClient {
   private static async getCommonHeaders(targetServer: Server = undefined, sourceServer: Server = undefined): Promise<HeadersInit> {
@@ -10,12 +10,18 @@ export class ApiClient {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
       "WitsmlTargetServer": this.getServerHeader(targetServer),
-      "WitsmlSourceServer": this.getServerHeader(sourceServer)
+      "WitsmlSourceServer": this.getServerHeader(sourceServer),
+      "WitsmlTargetUsername": this.getUsernameHeader(targetServer),
+      "WitsmlSourceUsername": this.getUsernameHeader(sourceServer)
     };
   }
 
   private static getServerHeader(server: Server | undefined): string {
     return server?.url == null ? "" : server.url.toString();
+  }
+
+  private static getUsernameHeader(server: Server | undefined): string {
+    return server?.currentUsername == null ? "" : server.currentUsername;
   }
 
   public static async getAuthorizationHeader(): Promise<string | null> {
@@ -122,7 +128,13 @@ export class ApiClient {
     resolve: (value: Response | PromiseLike<Response>) => void,
     reject: (reason?: any) => void
   ) {
-    const result = await originalResponse.clone().json();
+    let result;
+    try {
+      result = await originalResponse.clone().json();
+    } catch {
+      resolve(originalResponse);
+      return;
+    }
     const server: "Target" | "Source" | undefined = result.server;
     const serverToAuthorize = server == "Source" ? sourceServer : targetServer;
     if (serverToAuthorize == null) {
@@ -135,7 +147,11 @@ export class ApiClient {
         resolve(originalResponse);
       } else if (authorizationState.status == AuthorizationStatus.Authorized && authorizationState.server.id == serverToAuthorize.id) {
         unsub();
-        this.fetchWithRerun(url, requestInit, targetServer, sourceServer, true, resolve, reject);
+        const updatedTargetServer = server == "Target" ? authorizationState.server : targetServer;
+        const updatedSourceServer = server == "Source" ? authorizationState.server : sourceServer;
+        // recalculate headers because the usernames might have changed
+        requestInit.headers = await ApiClient.getCommonHeaders(updatedTargetServer, updatedSourceServer);
+        this.fetchWithRerun(url, requestInit, updatedTargetServer, updatedSourceServer, true, resolve, reject);
       }
     });
     AuthorizationService.onAuthorizationChangeDispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });

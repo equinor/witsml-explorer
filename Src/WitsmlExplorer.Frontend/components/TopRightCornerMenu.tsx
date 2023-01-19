@@ -7,11 +7,12 @@ import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
-import AuthorizationService from "../services/credentialsService";
+import AuthorizationService from "../services/authorizationService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
 import JobsButton from "./JobsButton";
+import UserCredentialsModal, { UserCredentialsModalProps } from "./Modals/UserCredentialsModal";
 import ServerManagerButton from "./ServerManagerButton";
 
 const timeZoneLabels: Record<TimeZone, string> = {
@@ -27,7 +28,8 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const TopRightCornerMenu = (): React.ReactElement => {
   const {
-    navigationState: { selectedServer }
+    navigationState: { selectedServer },
+    dispatchNavigation
   } = useContext(NavigationContext);
   const {
     operationState: { theme, timeZone },
@@ -110,12 +112,23 @@ const TopRightCornerMenu = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: menu, position } });
   };
 
+  const openCredentialsModal = () => {
+    const userCredentialsModalProps: UserCredentialsModalProps = {
+      server: selectedServer,
+      onConnectionVerified: (username) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        AuthorizationService.onAuthorized(selectedServer, username, dispatchNavigation);
+      }
+    };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
+  };
+
   return (
     <Layout>
-      {selectedServer?.username && (
-        <StyledButton variant="ghost" disabled>
+      {selectedServer?.currentUsername && (
+        <StyledButton variant="ghost" onClick={openCredentialsModal}>
           <Icon name="person" />
-          {selectedServer.username}
+          {selectedServer.currentUsername}
         </StyledButton>
       )}
       <ServerManagerButton />
