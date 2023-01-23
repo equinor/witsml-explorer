@@ -7,7 +7,7 @@ import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
-import CredentialsService from "../services/credentialsService";
+import AuthorizationService from "../services/credentialsService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
@@ -92,7 +92,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
           key={"signout"}
           onClick={() => {
             const logout = async () => {
-              await CredentialsService.deauthorize();
+              await AuthorizationService.deauthorize();
               signOut();
             };
             logout();

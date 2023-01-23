@@ -15,6 +15,7 @@ import {
   calculateWellboreNodeId,
   getWellboreProperties
 } from "../models/wellbore";
+import AuthorizationService from "../services/credentialsService";
 import { filterWells } from "./filter";
 import { performModificationAction } from "./modificationStateReducer";
 import ModificationType from "./modificationType";
@@ -120,10 +121,11 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction) =
   const { server } = payload;
   const alreadySelected = server != null && server.id === state.selectedServer?.id;
   const expandedTreeNodes: string[] = [];
+  AuthorizationService.setSelectedServer(server);
   return {
     ...state,
     ...allDeselected,
-    currentSelected: alreadySelected ? server : selectedServerManagerFlag,
+    currentSelected: server ?? selectedServerManagerFlag,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     filteredWells: alreadySelected ? state.filteredWells : [],

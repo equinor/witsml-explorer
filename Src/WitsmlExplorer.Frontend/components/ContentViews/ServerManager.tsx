@@ -11,7 +11,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { emptyServer, Server } from "../../models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
-import CredentialsService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
+import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -30,7 +30,7 @@ const ServerManager = (): React.ReactElement => {
   const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = CredentialsService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
+    const unsubscribeFromCredentialsEvents = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
       setAuthorizationState(authorizationState);
     });
     return () => {
@@ -53,6 +53,7 @@ const ServerManager = (): React.ReactElement => {
           message: error.message,
           isSuccess: false
         });
+        dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: null } });
       }
     };
     onCurrentLoginStateChange();
@@ -68,7 +69,6 @@ const ServerManager = (): React.ReactElement => {
       const getServers = async () => {
         const freshServers = await ServerService.getServers(abortController.signal);
         setHasFetchedServers(true);
-        CredentialsService.saveServers(freshServers);
         const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
         dispatchNavigation(action);
       };
@@ -82,7 +82,6 @@ const ServerManager = (): React.ReactElement => {
 
   const onSelectItem = async (server: Server) => {
     const currentServer = server.id === selectedServer?.id ? null : server;
-    CredentialsService.setSelectedServer(currentServer);
     const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: currentServer } };
     dispatchNavigation(action);
   };

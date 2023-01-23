@@ -1,7 +1,7 @@
+import { Server } from "../models/server";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
 import { ApiClient } from "./apiClient";
 import BhaRunService from "./bhaRunService";
-import { BasicServerCredentials } from "./credentialsService";
 import LogObjectService from "./logObjectService";
 import RigService from "./rigService";
 import RiskObjectService from "./riskObjectService";
@@ -19,8 +19,8 @@ export default class WellboreService {
     }
   }
 
-  public static async getWellboreFromServer(wellUid: string, wellboreUid: string, credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<Wellbore> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal, [credentials]);
+  public static async getWellboreFromServer(wellUid: string, wellboreUid: string, server: Server, abortSignal?: AbortSignal): Promise<Wellbore> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}`, abortSignal, server);
     if (response.ok) {
       const text = await response.text();
       if (text.length) {

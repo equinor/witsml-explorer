@@ -12,7 +12,7 @@ import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import { BasicServerCredentials } from "../../services/credentialsService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
@@ -43,15 +43,24 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     const abortController = new AbortController();
 
     setIsLoading(true);
-    if (isAddingNewServer) {
-      const freshServer = await ServerService.addServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
-    } else {
-      const freshServer = await ServerService.updateServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+    try {
+      if (isAddingNewServer) {
+        const freshServer = await ServerService.addServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
+      } else {
+        const freshServer = await ServerService.updateServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+      }
+    } catch (error) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: null,
+        message: error.message,
+        isSuccess: false
+      });
+    } finally {
+      setIsLoading(false);
+      dispatchOperation({ type: OperationType.HideModal });
     }
-    setIsLoading(false);
-    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const showCredentialsModal = () => {
@@ -196,7 +205,6 @@ export const showDeleteServerModal = (
       if (server.id === selectedServer?.id) {
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
         dispatchNavigation(action);
-        CredentialsService.setSelectedServer(null);
       }
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({
