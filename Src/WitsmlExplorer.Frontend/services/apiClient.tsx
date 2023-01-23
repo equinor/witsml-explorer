@@ -5,14 +5,14 @@ import AuthorizationService, { AuthorizationStatus } from "./authorizationServic
 
 export class ApiClient {
   private static async getCommonHeaders(targetServer: Server = undefined, sourceServer: Server = undefined): Promise<HeadersInit> {
-    const authorizationHeader = await this.getAuthorizationHeader();
+    const authorizationHeader = await ApiClient.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "WitsmlTargetServer": this.getServerHeader(targetServer),
-      "WitsmlSourceServer": this.getServerHeader(sourceServer),
-      "WitsmlTargetUsername": this.getUsernameHeader(targetServer),
-      "WitsmlSourceUsername": this.getUsernameHeader(sourceServer)
+      "WitsmlTargetServer": ApiClient.getServerHeader(targetServer),
+      "WitsmlSourceServer": ApiClient.getServerHeader(sourceServer),
+      "WitsmlTargetUsername": ApiClient.getUsernameHeader(targetServer),
+      "WitsmlSourceUsername": ApiClient.getUsernameHeader(sourceServer)
     };
   }
 

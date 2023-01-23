@@ -76,9 +76,10 @@ namespace WitsmlExplorer.Api.Services
 
             bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
             IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host.ToString());
-            bool validRole = hostServer.Any(n => n.Roles.Intersect(roles).Any());
+            bool validRole = hostServer.Any(n =>
+             n.Roles != null && n.Roles.Intersect(roles).Any()
+             );
             result &= systemCredsExists & validRole;
-
             return result;
         }
 
