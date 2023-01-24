@@ -17,7 +17,7 @@ export class AuthorizationClient {
     if (!credentials) {
       return "";
     }
-    return btoa(credentials.username + ":" + credentials.password) + "@" + credentials.server.url.toString();
+    return Buffer.from(credentials.username + ":" + credentials.password).toString("base64") + "@" + credentials.server.url.toString();
   }
 
   public static async get(pathName: string, abortSignal: AbortSignal | null = null, targetCredentials: BasicServerCredentials): Promise<Response> {
