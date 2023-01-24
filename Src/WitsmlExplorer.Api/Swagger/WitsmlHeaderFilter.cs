@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Api.Swagger
     {
         private static readonly string AUTHORIZE_DESCRIPTION = """
             Include b64 encoded credentials.
-            Example: 'dXNlcm5hbWU6cHNzd29yZA==@https://witsml-explorer.serverhost.com/Store/WITSML'
+            Example: 'dXNlcm5hbWU6cGFzc3dvcmQ=@https://witsml-explorer.serverhost.com/Store/WITSML'
         """;
 
         private static readonly string SERVER_DESCRIPTION = """
