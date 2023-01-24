@@ -14,11 +14,13 @@ namespace WitsmlExplorer.Api.Swagger
     public class WitsmlHeaderFilter : IOperationFilter
     {
         private static readonly string AUTHORIZE_DESCRIPTION = """
-            Include b64 encoded credentials.Example: 'dXNlcm5hbWU6cHNzd29yZA==@https://witsml-explorer.serverhost.com/Store/WITSML'
+            Include b64 encoded credentials.
+            Example: 'dXNlcm5hbWU6cHNzd29yZA==@https://witsml-explorer.serverhost.com/Store/WITSML'
         """;
 
         private static readonly string SERVER_DESCRIPTION = """
-            Only use host url.Example: 'https://witsml-explorer.serverhost.com/Store/WITSML'
+            Only use host url.
+            Example: 'https://witsml-explorer.serverhost.com/Store/WITSML'
         """;
 
         private static readonly string USERNAME_DESCRIPTION = """

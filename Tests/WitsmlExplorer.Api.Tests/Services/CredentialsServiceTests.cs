@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCredentials_CredentialsInCache_ReturnerCorrectly()
+        public void GetCredentials_CredentialsInCache_ReturnCorrectly()
         {
             string userId = "username";
             string clientId = Guid.NewGuid().ToString();

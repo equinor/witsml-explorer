@@ -76,6 +76,12 @@ class AuthorizationService {
 
   public onAuthorized(server: Server, username: string, dispatchNavigation: (action: UpdateServerAction) => void) {
     server.currentUsername = username;
+    if (server.usernames == null) {
+      server.usernames = [];
+    }
+    if (!server.usernames.includes(username)) {
+      server.usernames.push(username);
+    }
     dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server } });
     this._onAuthorizationChange.dispatch({ server, status: AuthorizationStatus.Authorized });
   }
