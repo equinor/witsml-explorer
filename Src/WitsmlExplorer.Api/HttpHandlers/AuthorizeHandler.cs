@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -16,27 +15,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             EssentialHeaders eh = new(httpContext?.Request);
-            string basicAuth = eh.TargetServer;
-            ServerCredentials creds = await credentialsService.GetCredentialsFromHeaderValue(basicAuth);
-            await credentialsService.VerifyCredentials(creds);
-            if (creds.IsCredsNullOrEmpty())
+            bool success = await credentialsService.VerifyAndCacheCredentials(eh, useOAuth2, keep);
+            if (success)
             {
-                return TypedResults.Unauthorized();
-            }
-            else
-            {
-                string cookieId = eh.GetCookieValue() ?? Guid.NewGuid().ToString();
-                string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : cookieId;
-                double ttl = keep ? 24.0 : 1.0; // hours
-                credentialsService.CacheCredentials(cacheClientId, creds, ttl);
                 return TypedResults.Ok();
             }
+            return TypedResults.Unauthorized();
         }
+
         public static IResult Deauthorize(IConfiguration configuration, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             EssentialHeaders eh = new(httpContext?.Request);
-            string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "sub") : eh.GetCookieValue();
+            string cacheClientId = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "sub") : eh.GetCookieValue();
             if (!useOAuth2)
             {
                 httpContext.Response.Cookies.Delete(EssentialHeaders.CookieName);

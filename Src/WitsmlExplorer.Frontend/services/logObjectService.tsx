@@ -4,7 +4,7 @@ import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import AuthorizationService from "./credentialsService";
+import AuthorizationService from "./authorizationService";
 import NotificationService from "./notificationService";
 
 export default class LogObjectService {

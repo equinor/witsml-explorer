@@ -76,5 +76,39 @@ namespace WitsmlExplorer.Api.Tests.Extensions
             Assert.True(testResult.IsCredsNullOrEmpty() && testResult.Host == null);
         }
 
+        [Fact]
+        public void ParseServerHttpHeader_BasicCreds_ReturnBasicCreds()
+        {
+            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
+
+            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(basicHeader, n => n);
+            Assert.True(creds.UserId == "basicuser" && creds.Password == "basicpassword");
+        }
+
+        [Fact]
+        public void ParseServerHttpHeader_BasicNoCreds_ReturnEmpty()
+        {
+            string basicHeader = "http://some.url.com";
+
+            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(basicHeader, n => n);
+            Assert.True(creds.IsCredsNullOrEmpty());
+        }
+
+        [Fact]
+        public void ParseServerHttpHeader_BasicNoHeader_ReturnEmpty()
+        {
+            string basicHeader = null;
+
+            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(basicHeader, n => n);
+            Assert.True(creds.IsCredsNullOrEmpty());
+        }
+
+        private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
+        {
+            ServerCredentials sc = new() { UserId = username, Password = dummypassword, Host = new Uri(host) };
+            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
+            return b64Creds + "@" + sc.Host.ToString();
+        }
+
     }
 }

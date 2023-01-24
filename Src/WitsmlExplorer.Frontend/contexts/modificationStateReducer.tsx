@@ -8,7 +8,7 @@ import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { calculateLogTypeId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
-import AuthorizationService from "../services/credentialsService";
+import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
   AddServerAction,
@@ -121,12 +121,7 @@ const updateServer = (state: NavigationState, { payload }: UpdateServerAction) =
   const { server } = payload;
   const index = state.servers.findIndex((s) => s.id === server.id);
   state.servers.splice(index, 1, server);
-  if (AuthorizationService.selectedServer?.id == server.id) {
-    AuthorizationService.setSelectedServer(server);
-  }
-  if (AuthorizationService.sourceServer?.id == server.id) {
-    AuthorizationService.setSourceServer(server);
-  }
+  AuthorizationService.onServerStateChange(server);
   return {
     ...state,
     servers: [...state.servers],
@@ -522,6 +517,15 @@ const replacePropertiesInWellbore = (
 };
 
 const updateServerList = (state: NavigationState, { payload }: UpdateServerListAction) => {
+  if (state.servers) {
+    payload.servers.forEach((server) => {
+      const existingServer = state.servers.find((s) => s.id == server.id);
+      if (existingServer != null) {
+        server.currentUsername = existingServer.currentUsername;
+        AuthorizationService.onServerStateChange(server);
+      }
+    });
+  }
   return {
     ...state,
     servers: payload.servers

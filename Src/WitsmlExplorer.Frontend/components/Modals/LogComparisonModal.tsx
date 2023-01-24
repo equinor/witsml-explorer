@@ -93,7 +93,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
   const toFixed = (value: string | number): string => {
     const number = Number(value);
-    if (isNaN(number)) {
+    if (Number.isNaN(number)) {
       return missingIndex;
     }
     return number.toFixed(4);

@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react";
+import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/credentialsService";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/authorizationService";
+import UserCredentialsModal, { UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
 const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
@@ -12,11 +13,17 @@ const AuthorizationManager = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState: AuthorizationState) => {
-      if (authorizationState.status == AuthorizationStatus.Unauthorized && !AuthorizationService.serverIsAwaitingAuthorization(authorizationState.server)) {
-        showCredentialsModal(authorizationState.server);
-        AuthorizationService.awaitServerAuthorization(authorizationState.server);
+      const server = authorizationState.server;
+      if (authorizationState.status == AuthorizationStatus.Unauthorized && !AuthorizationService.serverIsAwaitingAuthorization(server)) {
+        const index = server.usernames.findIndex((u) => u == server.currentUsername);
+        if (index !== -1) {
+          server.usernames.splice(index, 1);
+        }
+        dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server } });
+        showCredentialsModal(server);
+        AuthorizationService.awaitServerAuthorization(server);
       } else if (authorizationState.status == AuthorizationStatus.Authorized || authorizationState.status == AuthorizationStatus.Cancel) {
-        AuthorizationService.finishServerAuthorization(authorizationState.server);
+        AuthorizationService.finishServerAuthorization(server);
       }
     });
     return () => {
@@ -24,16 +31,13 @@ const AuthorizationManager = (): React.ReactElement => {
     };
   }, []);
 
-  const showCredentialsModal = (server: Server, errorMessage = "") => {
+  const showCredentialsModal = (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server: server,
-      mode: CredentialsMode.TEST,
-      confirmText: "Login",
-      onConnectionVerified: (credentials) => {
+      onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(server, credentials.username, dispatchNavigation);
-      },
-      errorMessage
+        AuthorizationService.onAuthorized(server, username, dispatchNavigation);
+      }
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };

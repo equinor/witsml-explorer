@@ -1,32 +1,24 @@
-import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
+import { Autocomplete, Button, Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import AuthorizationService, { AuthorizationStatus, BasicServerCredentials } from "../../services/credentialsService";
+import AuthorizationService, { AuthorizationStatus, BasicServerCredentials } from "../../services/authorizationService";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import { validText } from "./ModalParts";
 
 export interface UserCredentialsModalProps {
   server: Server;
-  serverCredentials?: BasicServerCredentials;
-  mode: CredentialsMode;
   errorMessage?: string;
-  onConnectionVerified?: (credentials?: BasicServerCredentials) => void;
+  onConnectionVerified?: (username?: string) => void;
   onCancel?: () => void;
   confirmText?: string;
 }
 
-export enum CredentialsMode {
-  SAVE,
-  TEST
-}
-
 const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElement => {
-  const { mode, server, serverCredentials, confirmText } = props;
+  const { server, confirmText } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,12 +26,21 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
   const shouldFocusPasswordInput = !!username;
   const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(AuthorizationService.getKeepLoggedInToServer(server.url));
 
-  useEffect(() => {
-    if (serverCredentials) {
-      setUsername(serverCredentials.username);
-      setPassword(serverCredentials.password);
+  const getInitialUsername = (): string => {
+    if (server.usernames == null || server.usernames.length == 0) {
+      return null;
+    } else if (server.usernames.length > 1 && server.usernames[0] == server.currentUsername) {
+      return server.usernames[1];
     }
-  }, [serverCredentials]);
+    return server.usernames[0];
+  };
+  const [selectedUsername, setSelectedUsername] = useState<string>(getInitialUsername());
+
+  useEffect(() => {
+    if (server.currentUsername) {
+      setUsername(server.currentUsername);
+    }
+  }, [server]);
 
   useEffect(() => {
     if (props.errorMessage !== "") {
@@ -48,34 +49,17 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     }
   }, [props]);
 
-  const onSave = async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-    const credentials = {
-      server,
-      username,
-      password
-    };
-    try {
-      await AuthorizationService.verifyCredentials(credentials, keepLoggedIn);
-      AuthorizationService.onAuthorized(server, username, dispatchNavigation);
-    } catch (error) {
-      setErrorMessage(error.message);
-      setIsLoading(false);
-    }
-  };
-
   const onVerifyConnection = async () => {
     setIsLoading(true);
     setErrorMessage("");
-    const credentials = {
+    const credentials: BasicServerCredentials = {
       server,
       username,
       password
     };
     try {
       await AuthorizationService.verifyCredentials(credentials, keepLoggedIn);
-      props.onConnectionVerified({ ...credentials, password: "" });
+      props.onConnectionVerified(username);
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -110,6 +94,20 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
             autoComplete="current-password"
             onChange={(e: any) => setPassword(e.target.value)}
           />
+          {server.usernames && server.usernames.length > 0 && (
+            <Row>
+              <Autocomplete
+                label="Switch to an already logged in user"
+                initialSelectedOptions={[selectedUsername]}
+                options={server.usernames}
+                hideClearButton={true}
+                onOptionsChange={({ selectedItems }) => {
+                  setSelectedUsername(selectedItems[0]);
+                }}
+              />
+              <Button onClick={() => props.onConnectionVerified(selectedUsername)}>Switch user</Button>
+            </Row>
+          )}
           <Checkbox
             label={`Keep me logged in to this server for 24 hours`}
             defaultChecked={keepLoggedIn}
@@ -120,8 +118,8 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
         </>
       }
       confirmDisabled={!validText(username) || !validText(password)}
-      confirmText={confirmText ?? mode === CredentialsMode.SAVE ? "Login" : "Test"}
-      onSubmit={mode === CredentialsMode.SAVE ? onSave : onVerifyConnection}
+      confirmText={confirmText ?? "Login"}
+      onSubmit={onVerifyConnection}
       onCancel={() => {
         AuthorizationService.onAuthorizationChangeDispatch({ server, status: AuthorizationStatus.Cancel });
         dispatchOperation({ type: OperationType.HideModal });
@@ -135,5 +133,12 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
     />
   );
 };
+
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 0 20px 0;
+  align-items: flex-end;
+`;
 
 export default UserCredentialsModal;

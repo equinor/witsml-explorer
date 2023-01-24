@@ -72,96 +72,49 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void GetCredentialsFromHeaderValue_BasicCreds_ReturnBasicCreds()
+        public void GetCredentials_ValidTokenValidRolesValidURLValidUsername_ReturnSystemCreds()
         {
-            string token = null;
-            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
-
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.UserId == "basicuser" && creds.Password == "basicpassword");
-            Cleanup();
-        }
-
-        [Fact]
-        public void GetCredentialsFromHeaderValue_BasicNoCreds_ReturnEmpty()
-        {
-            string token = null;
-            string basicHeader = "http://some.url.com";
-
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.IsCredsNullOrEmpty());
-            Cleanup();
-        }
-
-        [Fact]
-        public void GetCredentialsFromHeaderValue_BasicNoHeader_ReturnEmpty()
-        {
-            string token = null;
-            string basicHeader = null;
-
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.IsCredsNullOrEmpty());
-            Cleanup();
-        }
-        [Fact]
-        public void GetCredentialsFromHeaderValue_BasicAndTokenValidRolesHeaderValidURL_ReturnBasicCreds()
-        {
-            // WHEN
-            //  Valid Basic credentials and Valid Bearer token are present along with Valid URL
-            // THEN 
-            //  Basic auth should always be preferred
-            string basicHeader = CreateBasicHeaderValue("basicuser", "basicpassword", "http://some.url.com");
-            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
-
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.UserId == "basicuser" && creds.Password == "basicpassword");
-            Cleanup();
-        }
-
-        [Fact]
-        public void GetCredentialsFromHeaderValue_ValidTokenValidRolesValidURLBasicHeader_ReturnSystemCreds()
-        {
-            // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.com" and role: ["user"]
+            // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.com" and role: ["validrole"]
             // 2. CONFIG:   There exist system credentials in keyvault for server with URL: "http://some.url.com"
             // 3. REQUEST:  User provide token and valid roles in token
             // 4. REQUEST:  Header WitsmlTargetServer Header with URL: "http://some.url.com"
             // 5. RESPONSE: System creds should be returned because server-roles and user-roles overlap
-            string basicHeader = "http://some.url.com";
-            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            string server = "http://some.url.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
+            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
             Assert.True(creds.UserId == "systemuser" && creds.Password == "systempassword");
             Cleanup();
         }
 
         [Fact]
-        public void GetCredentialsFromHeaderValue_ValidTokenValidRolesInvalidURLBasicHeader_ReturnEmpty()
+        public void GetCredentials_ValidTokenValidRolesInvalidURL_ReturnNull()
         {
-            string basicHeader = "http://some.invalidurl.com";
-            string token = CreateJwtToken(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+            string server = "http://some.invalidurl.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.IsCredsNullOrEmpty());
+            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
+            Assert.Null(creds);
             Cleanup();
         }
 
         [Fact]
-        public void GetCredentialsFromHeaderValue_InvalidTokenRolesURLOnlyBasicHeader_ReturnEmpty()
+        public void GetCredentials_InvalidTokenRolesURLOnlyBasicHeader_ReturnNull()
         {
-            string basicHeader = "http://some.url.com";
-            string token = CreateJwtToken(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
+            string server = "http://some.url.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentialsFromHeaderValue(basicHeader, token).Result;
-            Assert.True(creds.IsCredsNullOrEmpty());
+            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
+            Assert.Null(creds);
             Cleanup();
         }
 
         [Fact]
-        public void CacheCredentials_InsertOne_GetCredentialsFromCache()
+        public void GetCredentials_CredentialsInCache_ReturnCorrectly()
         {
-
+            string userId = "username";
             string clientId = Guid.NewGuid().ToString();
-            ServerCredentials sc = new() { UserId = "username", Password = "dummypassword", Host = new Uri("https://somehost.url") };
+            ServerCredentials sc = new() { UserId = userId, Password = "dummypassword", Host = new Uri("https://somehost.url") };
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
             string headerValue = b64Creds + "@" + sc.Host;
 
@@ -170,23 +123,18 @@ namespace WitsmlExplorer.Api.Tests.Services
             headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
 
             _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
-            ServerCredentials fromCache = _credentialsService.GetCredentialsFromCache(false, headersMock.Object, headersMock.Object.TargetServer);
+            ServerCredentials fromCache = _credentialsService.GetCredentials(false, headersMock.Object, headersMock.Object.TargetServer, userId);
             Assert.Equal(sc, fromCache);
             _credentialsService.RemoveAllCachedCredentials();
             Cleanup();
         }
+
         private void Cleanup()
         {
             _credentialsService.RemoveAllCachedCredentials();
         }
-        private static string CreateBasicHeaderValue(string username, string dummypassword, string host)
-        {
-            ServerCredentials sc = new() { UserId = username, Password = dummypassword, Host = new Uri(host) };
-            string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
-            return b64Creds + "@" + sc.Host.ToString();
-        }
 
-        private static string CreateJwtToken(string[] appRoles, bool signed, string upn)
+        private static EssentialHeaders CreateEhWithAuthorization(string[] appRoles, bool signed, string upn)
         {
             SecurityTokenDescriptor tokenDescriptor = new()
             {
@@ -207,7 +155,10 @@ namespace WitsmlExplorer.Api.Tests.Services
                     SecurityAlgorithms.Sha512Digest
                 );
             }
-            return new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor));
+            return new()
+            {
+                Authorization = "Bearer " + new JwtSecurityTokenHandler().WriteToken(new JwtSecurityTokenHandler().CreateJwtSecurityToken(tokenDescriptor))
+            };
         }
     }
 }

@@ -15,7 +15,7 @@ import {
   calculateWellboreNodeId,
   getWellboreProperties
 } from "../models/wellbore";
-import AuthorizationService from "../services/credentialsService";
+import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import { performModificationAction } from "./modificationStateReducer";
 import ModificationType from "./modificationType";

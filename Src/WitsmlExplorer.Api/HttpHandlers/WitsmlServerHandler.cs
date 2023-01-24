@@ -27,17 +27,14 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 httpContext.GetOrCreateWitsmlExplorerCookie();
             }
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
-            IEnumerable<Connection> credentials = servers.Select((server) =>
-            {
-                string username = credentialsService.GetCredentialsFromCache(useOAuth, httpHeaders, server.Url.ToString())?.UserId;
-                return new Connection(server)
+            IEnumerable<Connection> credentials = await Task.WhenAll(servers.Select(async (server) =>
+                new Connection(server)
                 {
-                    Username = username
-                };
-            });
-
+                    Usernames = await credentialsService.GetLoggedInUsernames(useOAuth, httpHeaders, server.Url)
+                }));
             return TypedResults.Ok(credentials);
         }
+
         [Produces(typeof(Server))]
         public static async Task<IResult> CreateWitsmlServer(Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {

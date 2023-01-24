@@ -10,7 +10,7 @@ import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import AuthorizationService from "../../services/credentialsService";
+import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";

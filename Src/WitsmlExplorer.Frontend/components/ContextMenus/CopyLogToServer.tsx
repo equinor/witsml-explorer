@@ -9,7 +9,7 @@ import { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import AuthorizationService from "../../services/credentialsService";
+import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import WellboreService from "../../services/wellboreService";

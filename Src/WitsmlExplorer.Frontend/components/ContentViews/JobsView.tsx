@@ -20,7 +20,7 @@ export const JobsView = (): React.ReactElement => {
     dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { servers } = navigationState;
+  const { servers, selectedServer } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
   const [showAll, setShowAll] = useState(false);
@@ -57,7 +57,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [showAll]);
+  }, [showAll, selectedServer]);
 
   useEffect(() => {
     if (shouldRefresh) {

@@ -15,8 +15,8 @@ namespace WitsmlExplorer.Api.Models
             Id = server.Id;
         }
 
-        [JsonPropertyName("username")]
-        public string Username { get; set; }
+        [JsonPropertyName("usernames")]
+        public string[] Usernames { get; set; }
 
         public override string ToString()
         {

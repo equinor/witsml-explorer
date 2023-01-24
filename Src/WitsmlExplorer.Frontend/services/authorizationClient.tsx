@@ -1,34 +1,29 @@
 import { ApiClient } from "./apiClient";
 
-import { BasicServerCredentials } from "./credentialsService";
+import { BasicServerCredentials } from "./authorizationService";
 
 export class AuthorizationClient {
-  private static async getHeaders(credentials: BasicServerCredentials[], serverOnly: boolean): Promise<HeadersInit> {
+  private static async getHeaders(credentials: BasicServerCredentials[]): Promise<HeadersInit> {
     const authorizationHeader = await ApiClient.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "WitsmlTargetServer": this.getServerHeader(credentials[0], serverOnly),
-      "WitsmlSourceServer": this.getServerHeader(credentials[1], serverOnly)
+      "WitsmlTargetServer": this.getServerHeader(credentials[0]),
+      "WitsmlSourceServer": this.getServerHeader(credentials[1])
     };
   }
 
-  private static getServerHeader(credentials: BasicServerCredentials | undefined, serverOnly: boolean): string {
-    let result = "";
+  private static getServerHeader(credentials: BasicServerCredentials | undefined): string {
     if (!credentials) {
-      return result;
+      return "";
     }
-    if (!serverOnly) {
-      result = btoa(credentials.username + ":" + credentials.password) + "@";
-    }
-    result += credentials.server.url.toString();
-    return result;
+    return Buffer.from(credentials.username + ":" + credentials.password).toString("base64") + "@" + credentials.server.url.toString();
   }
 
   public static async get(pathName: string, abortSignal: AbortSignal | null = null, targetCredentials: BasicServerCredentials): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: await AuthorizationClient.getHeaders([targetCredentials], false),
+      headers: await AuthorizationClient.getHeaders([targetCredentials]),
       credentials: "include"
     };
 
