@@ -56,7 +56,6 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Name = "Test Server",
                     Url = new Uri("http://some.url.com"),
                     Description = "Testserver for SystemCreds testing",
-                    SecurityScheme = "OAuth2",
                     Roles = new List<string>() {"validrole","developer"}
                 }
             });

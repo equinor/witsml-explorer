@@ -7,8 +7,8 @@ import Wellbore from "../models/wellbore";
 import Filter, { EMPTY_FILTER } from "./filter";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
 
-export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", roles: [] };
-export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", roles: [] };
+export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", roles: [] };
+export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", roles: [] };
 export const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
