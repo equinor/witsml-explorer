@@ -74,10 +74,11 @@ namespace WitsmlExplorer.Api.Services
             return geologyIntervals.Select(geologyInterval =>
                 new MudLogGeologyInterval
                 {
+                    Uid = geologyInterval.Uid,
                     TypeLithology = geologyInterval.TypeLithology,
                     MdTop = geologyInterval.MdTop?.Value,
                     MdBottom = geologyInterval.MdBottom?.Value,
-                    Lithology = new MudLogLithology
+                    Lithology = geologyInterval.Lithology == null ? null : new MudLogLithology
                     {
                         CodeLith = geologyInterval.Lithology.CodeLith,
                         LithPc = geologyInterval.Lithology.LithPc?.Value,
