@@ -59,14 +59,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget);
             if (!copyResultForExistingMnemonics.Success)
             {
-                string message = $"Failed to copy curves for existing mnemonics to log. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows";
+                string message = $"Failed to copy curves for existing mnemonics to log. {copyResultForExistingMnemonics.ErrorReason}. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows.";
                 return LogAndReturnErrorResult(message, job);
             }
 
             CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget);
             if (!copyResultForNewMnemonics.Success)
             {
-                string message = $"Failed to copy curves for new mnemonics to log. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
+                string message = $"Failed to copy curves for new mnemonics to log. {copyResultForNewMnemonics.ErrorReason}. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
                 return LogAndReturnErrorResult(message, job);
             }
 
@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 else
                 {
                     Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), startIndex.GetValueAsString());
-                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied };
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
                 }
             }
 
@@ -223,6 +223,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             public bool Success { get; set; }
             public int NumberOfRowsCopied { get; set; }
+            public string ErrorReason { get; set; }
         }
     }
 }
