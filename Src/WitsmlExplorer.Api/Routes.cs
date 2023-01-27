@@ -46,6 +46,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs", MudLogHandler.GetMudLogs, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}", MudLogHandler.GetMudLog, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/mudlogs/{mudlogUid}/geologyintervals", MudLogHandler.GetGeologyIntervals, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/trajectories", TrajectoryHandler.GetTrajectories, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/trajectories/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);

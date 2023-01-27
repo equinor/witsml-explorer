@@ -5,6 +5,7 @@ import {
   SelectBhaRunGroupAction,
   SelectLogObjectAction,
   SelectMessageGroupAction,
+  SelectMudLogAction,
   SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
@@ -19,6 +20,7 @@ import {
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
+import MudLog from "../models/mudLog";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
@@ -38,7 +40,7 @@ import { truncateAbortHandler } from "../services/apiClient";
 import BhaRunService from "../services/bhaRunService";
 import LogObjectService from "../services/logObjectService";
 import MessageObjectService from "../services/messageObjectService";
-import MudLogObjectService from "../services/mudLogObjectService";
+import MudLogService from "../services/mudLogService";
 import RigService from "../services/rigService";
 import RiskObjectService from "../services/riskObjectService";
 import TrajectoryService from "../services/trajectoryService";
@@ -58,6 +60,7 @@ const Routing = (): React.ReactElement => {
     selectedBhaRunGroup,
     selectedMessageGroup,
     selectedMudLogGroup,
+    selectedMudLog,
     selectedRigGroup,
     selectedRiskGroup,
     selectedTrajectory,
@@ -91,6 +94,7 @@ const Routing = (): React.ReactElement => {
     selectedTubular,
     selectedBhaRunGroup,
     selectedMessageGroup,
+    selectedMudLog,
     selectedMudLogGroup,
     selectedRigGroup,
     selectedRiskGroup,
@@ -157,7 +161,7 @@ const Routing = (): React.ReactElement => {
         const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
         const getTubulars = TubularService.getTubulars(selectedWell.uid, wellboreUid, controller.signal);
         const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
-        const getMudLogs = MudLogObjectService.getMudLogs(selectedWell.uid, wellboreUid, controller.signal);
+        const getMudLogs = MudLogService.getMudLogs(selectedWell.uid, wellboreUid, controller.signal);
         const getRisks = RiskObjectService.getRisks(selectedWell.uid, wellboreUid, controller.signal);
         const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(selectedWell.uid, wellboreUid, controller.signal);
         const [bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys] = await Promise.all([
@@ -232,6 +236,16 @@ const Routing = (): React.ReactElement => {
           payload: { mudLogGroup: calculateMudLogGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
         };
         dispatch(true, action);
+      }
+
+      const mudLogUid = urlParams?.mudLogUid?.toString();
+      if (mudLogUid && !selectedMudLog) {
+        const mudLog = selectedWellbore.mudLogs.find((t: MudLog) => t.uid === mudLogUid);
+        const selectMudLogAction: SelectMudLogAction = {
+          type: NavigationType.SelectMudLog,
+          payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore), mudLog }
+        };
+        dispatch(mudLog, selectMudLogAction);
       }
 
       const rigGroupUid = urlParams?.rigGroupUid?.toString();
@@ -310,6 +324,7 @@ const getQueryParamsFromState = (state: NavigationState): QueryParams => {
     ...(state.selectedRiskGroup && { riskGroupUid: "group" }),
     ...(state.selectedTrajectory && { trajectoryUid: state.selectedTrajectory.uid }),
     ...(state.selectedTubular && { tubularUid: state.selectedTubular.uid }),
+    ...(state.selectedMudLog && { mudLogUid: state.selectedMudLog.uid }),
     ...(state.selectedWbGeometry && { wbGeometryUid: state.selectedWbGeometry.uid })
   };
 };
@@ -322,11 +337,12 @@ const getQueryParamsFromUrl = (router: NextRouter): QueryParams => {
     ...(router.query.bhaRunGroupUid && { bhaRunGroupUid: router.query.bhaRunGroupUid.toString() }),
     ...(router.query.logObjectUid && { logObjectUid: router.query.logObjectUid.toString() }),
     ...(router.query.messageGroupUid && { messageGroupUid: router.query.messageGroupUid.toString() }),
-    ...(router.query.mudLogGroupUid && { messageGroupUid: router.query.mudLogGroupUid.toString() }),
+    ...(router.query.mudLogGroupUid && { mudLogGroupUid: router.query.mudLogGroupUid.toString() }),
     ...(router.query.rigGroupUid && { rigGroupUid: router.query.rigGroupUid.toString() }),
     ...(router.query.riskGroupUid && { riskGroupUid: router.query.riskGroupUid.toString() }),
     ...(router.query.trajectoryUid && { trajectoryUid: router.query.trajectoryUid.toString() }),
     ...(router.query.tubularUid && { tubularUid: router.query.tubularUid.toString() }),
+    ...(router.query.mudLogUid && { mudLogUid: router.query.mudLogUid.toString() }),
     ...(router.query.wbGeometryUid && { wbGeometryUid: router.query.wbGeometryUid.toString() })
   };
 };
@@ -339,6 +355,7 @@ export interface QueryParams {
   logObjectUid?: string;
   messageGroupUid?: string;
   mudLogGroupUid?: string;
+  mudLogUid?: string;
   rigGroupUid?: string;
   riskGroupUid?: string;
   trajectoryUid?: string;
