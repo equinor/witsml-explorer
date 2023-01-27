@@ -1,4 +1,4 @@
-import mudLog, { emptyMudLog } from "../models/mudLog";
+import { emptyMudLog } from "../models/mudLog";
 import MudLogComponent from "../models/mudLogGeologyInterval";
 import { ApiClient } from "./apiClient";
 

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
-import mudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MudLogRow extends ContentTableRow {

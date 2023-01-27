@@ -1,7 +1,6 @@
 import BhaRun from "../../models/bhaRun";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
-import mudLog from "../../models/mudLog";
 import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
