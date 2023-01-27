@@ -1,6 +1,7 @@
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
+import MudLogObject from "../models/mudLog";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -43,6 +44,7 @@ export interface SelectWellboreAction extends Action {
     rigs: Rig[];
     trajectories: Trajectory[];
     messages: MessageObject[];
+    mudLogs: MudLogObject[];
     risks: RiskObject[];
     tubulars: Tubular[];
     wbGeometrys: WbGeometryObject[];
@@ -76,6 +78,11 @@ export interface SelectLogObjectAction extends Action {
 export interface SelectMessageGroupAction extends Action {
   type: NavigationType.SelectMessageGroup;
   payload: { well: Well; wellbore: Wellbore; messageGroup: any };
+}
+
+export interface SelectMudLogGroupAction extends Action {
+  type: NavigationType.SelectMudLogGroup;
+  payload: { well: Well; wellbore: Wellbore; mudLogGroup: any };
 }
 
 export interface SelectRiskGroupAction extends Action {

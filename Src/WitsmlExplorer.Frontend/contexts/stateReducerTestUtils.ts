@@ -18,6 +18,7 @@ export const WELLBORE_1: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -34,6 +35,7 @@ export const WELLBORE_2: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -50,6 +52,7 @@ export const WELLBORE_3: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -109,6 +112,9 @@ export const MESSAGE_1 = {
   wellUid: "",
   wellboreName: "",
   wellboreUid: ""
+};
+export const MUDLOG_1 = {
+  uid: "123"
 };
 export const RISK_1 = {
   dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",

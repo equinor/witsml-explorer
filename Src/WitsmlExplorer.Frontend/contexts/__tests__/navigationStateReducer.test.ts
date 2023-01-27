@@ -1,6 +1,7 @@
 import BhaRun from "../../models/bhaRun";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
+import MudLogObject from "../../models/mudLog";
 import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
@@ -29,6 +30,7 @@ import {
   getInitialState,
   LOG_1,
   MESSAGE_1,
+  MUDLOG_1,
   RIG_1,
   RISK_1,
   SERVER_1,
@@ -87,12 +89,13 @@ it("Should also update selected well when a wellbore is selected", () => {
   const rigs: Rig[] = [];
   const risks: RiskObject[] = [];
   const messages: MessageObject[] = [];
+  const mudLogs: MudLogObject[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, logs, rigs, trajectories, risks, messages, tubulars, wbGeometrys }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometrys }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -120,6 +123,7 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
       rigs: [RIG_1],
       trajectories: [TRAJECTORY_1],
       messages: [MESSAGE_1],
+      mudLogs: [MUDLOG_1],
       risks: [RISK_1],
       tubulars: [TUBULAR_1],
       wbGeometrys: [WBGEOMETRY_1]
@@ -133,6 +137,7 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
     rigs: [RIG_1],
     trajectories: [TRAJECTORY_1],
     messages: [MESSAGE_1],
+    mudLogs: [MUDLOG_1],
     risks: [RISK_1],
     tubulars: [TUBULAR_1],
     wbGeometrys: [WBGEOMETRY_1]
@@ -271,13 +276,14 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const bhaRuns: BhaRun[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
+  const mudLogs: MudLogObject[] = [];
   const risks: RiskObject[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
