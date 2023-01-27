@@ -7,6 +7,7 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
+  SelectMudlogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -43,6 +44,7 @@ const Nav = (): React.ReactElement => {
     selectedLogTypeGroup,
     selectedLog,
     selectedMessageGroup,
+    selectedMudlogGroup,
     selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
@@ -66,6 +68,7 @@ const Nav = (): React.ReactElement => {
       getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getMudlogGroupCrumb(selectedMudlogGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
@@ -142,6 +145,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
               messages: selectedWellbore.messages,
+              mudLogs: selectedWellbore.mudLogs,
               risks: selectedWellbore.risks,
               tubulars: selectedWellbore.tubulars,
               wbGeometrys: selectedWellbore.wbGeometrys
@@ -172,6 +176,19 @@ const getMessageGroupCrumb = (selectedMessageGroup: string, selectedWell: Well, 
           dispatch({
             type: NavigationType.SelectMessageGroup,
             payload: { well: selectedWell, wellbore: selectedWellbore, messageGroup: selectedMessageGroup }
+          })
+      }
+    : {};
+};
+
+const getMudlogGroupCrumb = (selectedMudlogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMudlogGroupAction) => void) => {
+  return selectedMudlogGroup
+    ? {
+        name: "MudLogs",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMudlogGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, mudlogGroup: selectedMudlogGroup }
           })
       }
     : {};

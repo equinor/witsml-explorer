@@ -7,6 +7,7 @@ import {
   calculateLogGroupId,
   calculateLogTypeId,
   calculateMessageGroupId,
+  calculateMudlogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -27,6 +28,7 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
+  SelectMudlogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -81,6 +83,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectLogObject(state, action);
     case NavigationType.SelectMessageGroup:
       return selectMessageGroup(state, action);
+    case NavigationType.SelectMudlogGroup:
+      return selectMudlogGroup(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
     case NavigationType.SelectRigGroup:
@@ -165,9 +169,9 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction) => {
 };
 
 const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction) => {
-  const { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys } = payload;
+  const { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys } = payload;
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys };
+  const wellboreWithProperties = { ...wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys };
   const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
   const updatedWell = { ...well, wellbores: updatedWellbores };
   const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
@@ -314,6 +318,22 @@ const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGr
     selectedMessageGroup: messageGroup,
     currentSelected: messageGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMessageGroupId(wellbore)) : state.expandedTreeNodes,
+    currentProperties: getWellboreProperties(wellbore)
+  };
+};
+
+const selectMudlogGroup = (state: NavigationState, { payload }: SelectMudlogGroupAction) => {
+  const { well, wellbore, mudlogGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMudlogGroupId(wellbore), calculateWellboreNodeId(wellbore));
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    selectedMudlogGroup: mudlogGroup,
+    currentSelected: mudlogGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMudlogGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };

@@ -5,6 +5,7 @@ import {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
+  calculateMudlogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -47,24 +48,30 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
       },
       {
         uid: 5,
+        name: "MudLogs",
+        action: NavigationType.SelectMudlogGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, mudlogGroup: calculateMudlogGroupId(selectedWellbore) }
+      },
+      {
+        uid: 6,
         name: "Tubulars",
         action: NavigationType.SelectTubularGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore) }
       },
       {
-        uid: 6,
+        uid: 7,
         name: "Risks",
         action: NavigationType.SelectRiskGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: calculateRiskGroupId(selectedWellbore) }
       },
       {
-        uid: 7,
+        uid: 8,
         name: "WbGeometries",
         action: NavigationType.SelectWbGeometryGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
       },
       {
-        uid: 8,
+        uid: 9,
         name: "BhaRuns",
         action: NavigationType.SelectBhaRunGroup,
         actionPayload: { well: selectedWell, wellbore: selectedWellbore, bhaRunGroup: calculateBhaRunGroupId(selectedWellbore) }
