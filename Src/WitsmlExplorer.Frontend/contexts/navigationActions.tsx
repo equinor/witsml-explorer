@@ -1,7 +1,7 @@
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
-import { default as MudLog, default as mudLog } from "../models/mudLog";
+import MudLog from "../models/mudLog";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -44,7 +44,7 @@ export interface SelectWellboreAction extends Action {
     rigs: Rig[];
     trajectories: Trajectory[];
     messages: MessageObject[];
-    mudLogs: mudLog[];
+    mudLogs: MudLog[];
     risks: RiskObject[];
     tubulars: Tubular[];
     wbGeometrys: WbGeometryObject[];

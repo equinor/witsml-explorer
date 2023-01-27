@@ -3,7 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import mudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface mudLogRow extends ContentTableRow {
+export interface MudLogRow extends ContentTableRow {
   message: mudLog;
 }
 

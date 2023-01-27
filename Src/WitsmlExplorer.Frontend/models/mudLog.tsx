@@ -4,7 +4,7 @@ import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export default interface MudLog extends ObjectOnWellbore {}
 
-export function emptymudLog(): MudLog {
+export function emptyMudLog(): MudLog {
   return {
     ...emptyObjectOnWellbore()
   };

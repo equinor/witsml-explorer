@@ -23,7 +23,7 @@ import BhaRunService from "../../services/bhaRunService";
 import { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import MessageObjectService from "../../services/messageObjectService";
-import mudLogService from "../../services/mudLogService";
+import MudLogService from "../../services/mudLogService";
 import RigService from "../../services/rigService";
 import RiskObjectService from "../../services/riskObjectService";
 import TrajectoryService from "../../services/trajectoryService";
@@ -97,7 +97,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
       const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
-      const getMudLogs = mudLogService.getMudLogs(well.uid, wellbore.uid, controller.signal);
+      const getMudLogs = MudLogService.getMudLogs(well.uid, wellbore.uid, controller.signal);
       const getRisks = RiskObjectService.getRisks(well.uid, wellbore.uid, controller.signal);
       const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal);
       const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(well.uid, wellbore.uid, controller.signal);

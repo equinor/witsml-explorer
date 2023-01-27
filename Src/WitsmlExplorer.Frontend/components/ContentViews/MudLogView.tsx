@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import MudLogComponent from "../../models/mudLogGeologyInterval";
-import mudLogService from "../../services/mudLogService";
+import MudLogService from "../../services/mudLogService";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MudLogGeologyIntervalRow extends ContentTableRow {
@@ -20,7 +20,7 @@ export const MudLogView = (): React.ReactElement => {
       const abortController = new AbortController();
 
       const getMudLogGeologyInterval = async () => {
-        setMudLogGeologyInterval(await mudLogService.getGeologyIntervals(selectedMudLog.wellUid, selectedMudLog.wellboreUid, selectedMudLog.uid, abortController.signal));
+        setMudLogGeologyInterval(await MudLogService.getGeologyIntervals(selectedMudLog.wellUid, selectedMudLog.wellboreUid, selectedMudLog.uid, abortController.signal));
         setIsFetchingData(false);
       };
 
