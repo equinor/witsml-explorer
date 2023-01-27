@@ -36,7 +36,7 @@ export interface NavigationState {
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
   selectedMessageGroup: string;
-  selectedMudlogGroup: string;
+  selectedMudLogGroup: string;
   selectedRig: Rig;
   selectedRigGroup: string;
   selectedRisk: RiskObject;
@@ -67,7 +67,7 @@ export const allDeselected: any = {
   selectedLogTypeGroup: null,
   selectedLog: null,
   selectedMessageGroup: null,
-  selectedMudlogGroup: null,
+  selectedMudLogGroup: null,
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
@@ -92,7 +92,7 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedLogTypeGroup: null,
   selectedLog: null,
   selectedMessageGroup: null,
-  selectedMudlogGroup: null,
+  selectedMudLogGroup: null,
   selectedRig: null,
   selectedRigGroup: null,
   selectedRiskGroup: null,

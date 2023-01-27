@@ -5,7 +5,7 @@ import {
   SelectBhaRunGroupAction,
   SelectLogObjectAction,
   SelectMessageGroupAction,
-  SelectMudlogGroupAction,
+  SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -27,7 +27,7 @@ import Well from "../models/well";
 import Wellbore, {
   calculateBhaRunGroupId,
   calculateMessageGroupId,
-  calculateMudlogGroupId,
+  calculateMudLogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -57,7 +57,7 @@ const Routing = (): React.ReactElement => {
     selectedTubular,
     selectedBhaRunGroup,
     selectedMessageGroup,
-    selectedMudlogGroup,
+    selectedMudLogGroup,
     selectedRigGroup,
     selectedRiskGroup,
     selectedTrajectory,
@@ -91,7 +91,7 @@ const Routing = (): React.ReactElement => {
     selectedTubular,
     selectedBhaRunGroup,
     selectedMessageGroup,
-    selectedMudlogGroup,
+    selectedMudLogGroup,
     selectedRigGroup,
     selectedRiskGroup,
     selectedTrajectory,
@@ -225,11 +225,11 @@ const Routing = (): React.ReactElement => {
         dispatch(true, action);
       }
 
-      const mudlogGroupUid = urlParams?.mudlogGroupUid?.toString();
-      if (mudlogGroupUid && !selectedMudlogGroup) {
-        const action: SelectMudlogGroupAction = {
-          type: NavigationType.SelectMudlogGroup,
-          payload: { mudlogGroup: calculateMudlogGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+      const mudLogGroupUid = urlParams?.mudLogGroupUid?.toString();
+      if (mudLogGroupUid && !selectedMudLogGroup) {
+        const action: SelectMudLogGroupAction = {
+          type: NavigationType.SelectMudLogGroup,
+          payload: { mudLogGroup: calculateMudLogGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
         };
         dispatch(true, action);
       }
@@ -305,7 +305,7 @@ const getQueryParamsFromState = (state: NavigationState): QueryParams => {
     ...(state.selectedBhaRunGroup && { bhaRunGroupUid: "group" }),
     ...(state.selectedLog && { logObjectUid: state.selectedLog.uid }),
     ...(state.selectedMessageGroup && { messageGroupUid: "group" }),
-    ...(state.selectedMudlogGroup && { mudlogGroupUid: "group" }),
+    ...(state.selectedMudLogGroup && { mudLogGroupUid: "group" }),
     ...(state.selectedRigGroup && { rigGroupUid: "group" }),
     ...(state.selectedRiskGroup && { riskGroupUid: "group" }),
     ...(state.selectedTrajectory && { trajectoryUid: state.selectedTrajectory.uid }),
@@ -322,7 +322,7 @@ const getQueryParamsFromUrl = (router: NextRouter): QueryParams => {
     ...(router.query.bhaRunGroupUid && { bhaRunGroupUid: router.query.bhaRunGroupUid.toString() }),
     ...(router.query.logObjectUid && { logObjectUid: router.query.logObjectUid.toString() }),
     ...(router.query.messageGroupUid && { messageGroupUid: router.query.messageGroupUid.toString() }),
-    ...(router.query.mudlogGroupUid && { messageGroupUid: router.query.mudlogGroupUid.toString() }),
+    ...(router.query.mudLogGroupUid && { messageGroupUid: router.query.mudLogGroupUid.toString() }),
     ...(router.query.rigGroupUid && { rigGroupUid: router.query.rigGroupUid.toString() }),
     ...(router.query.riskGroupUid && { riskGroupUid: router.query.riskGroupUid.toString() }),
     ...(router.query.trajectoryUid && { trajectoryUid: router.query.trajectoryUid.toString() }),
@@ -338,7 +338,7 @@ export interface QueryParams {
   bhaRunGroupUid?: string;
   logObjectUid?: string;
   messageGroupUid?: string;
-  mudlogGroupUid?: string;
+  mudLogGroupUid?: string;
   rigGroupUid?: string;
   riskGroupUid?: string;
   trajectoryUid?: string;

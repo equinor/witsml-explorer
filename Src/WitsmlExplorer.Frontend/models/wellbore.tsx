@@ -3,7 +3,7 @@ import BhaRun from "./bhaRun";
 import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
-import MudlogObject from "./mudLog";
+import MudLogObject from "./mudLog";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -46,7 +46,7 @@ export default interface Wellbore extends WellboreProperties {
   rigs?: Rig[];
   trajectories?: Trajectory[];
   messages?: MessageObject[];
-  mudLogs?: MudlogObject[];
+  mudLogs?: MudLogObject[];
   tubulars?: Tubular[];
   risks?: RiskObject[];
   wbGeometrys?: WbGeometryObject[];
@@ -73,6 +73,7 @@ export function emptyWellbore(): Wellbore {
     trajectories: [],
     tubulars: [],
     messages: [],
+    mudLogs: [],
     risks: [],
     wbGeometrys: []
   };
@@ -98,7 +99,7 @@ export const calculateMessageGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "messages";
 };
 
-export const calculateMudlogGroupId = (wellbore: Wellbore): string => {
+export const calculateMudLogGroupId = (wellbore: Wellbore): string => {
   return calculateWellboreNodeId(wellbore) + "mudLogs";
 };
 

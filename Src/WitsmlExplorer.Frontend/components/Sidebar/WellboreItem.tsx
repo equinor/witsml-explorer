@@ -11,7 +11,7 @@ import Wellbore, {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
-  calculateMudlogGroupId,
+  calculateMudLogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -138,8 +138,8 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, messageGroup } });
   };
 
-  const onSelectMudlogGroup = async (well: Well, wellbore: Wellbore, mudlogGroup: string) => {
-    dispatchNavigation({ type: NavigationType.SelectMudlogGroup, payload: { well, wellbore, mudlogGroup } });
+  const onSelectMudLogGroup = async (well: Well, wellbore: Wellbore, mudLogGroup: string) => {
+    dispatchNavigation({ type: NavigationType.SelectMudLogGroup, payload: { well, wellbore, mudLogGroup } });
   };
 
   const onSelectRiskGroup = async (well: Well, wellbore: Wellbore, riskGroup: string) => {
@@ -198,7 +198,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const bhaRunGroupId = calculateBhaRunGroupId(wellbore);
   const logGroupId = calculateLogGroupId(wellbore);
   const messageGroupId = calculateMessageGroupId(wellbore);
-  const mudlogGroupId = calculateMudlogGroupId(wellbore);
+  const mudLogGroupId = calculateMudLogGroupId(wellbore);
   const riskGroupId = calculateRiskGroupId(wellbore);
   const trajectoryGroupId = calculateTrajectoryGroupId(wellbore);
   const rigGroupId = calculateRigGroupId(wellbore);
@@ -241,9 +241,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onContextMenu={preventContextMenuPropagation}
       />
       <TreeItem
-        nodeId={mudlogGroupId}
+        nodeId={mudLogGroupId}
         labelText={"MudLogs"}
-        onLabelClick={() => onSelectMudlogGroup(well, wellbore, mudlogGroupId)}
+        onLabelClick={() => onSelectMudLogGroup(well, wellbore, mudLogGroupId)}
         onContextMenu={preventContextMenuPropagation}
       />
       <TreeItem

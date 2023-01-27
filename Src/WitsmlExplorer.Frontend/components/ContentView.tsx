@@ -34,7 +34,7 @@ const ContentView = (): React.ReactElement => {
     selectedLogCurveInfo,
     selectedRigGroup,
     selectedMessageGroup,
-    selectedMudlogGroup,
+    selectedMudLogGroup,
     selectedRiskGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -69,7 +69,7 @@ const ContentView = (): React.ReactElement => {
         setView(<RigsListView />);
       } else if (currentSelected === selectedMessageGroup) {
         setView(<MessagesListView />);
-      } else if (currentSelected === selectedMudlogGroup) {
+      } else if (currentSelected === selectedMudLogGroup) {
         setView(<MudLogsListView />);
       } else if (currentSelected === selectedRiskGroup) {
         setView(<RisksListView />);

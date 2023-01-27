@@ -1,12 +1,11 @@
 import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
-export default interface MudlogObject extends ObjectOnWellbore {
-  uid: string;
-}
+// This is disabled because more attributes will be included later
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export default interface MudLogObject extends ObjectOnWellbore {}
 
-export function emptyMudlogObject(): MudlogObject {
+export function emptyMudLogObject(): MudLogObject {
   return {
-    ...emptyObjectOnWellbore(),
-    uid: ""
+    ...emptyObjectOnWellbore()
   };
 }

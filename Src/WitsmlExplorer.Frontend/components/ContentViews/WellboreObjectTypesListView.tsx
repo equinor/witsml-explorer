@@ -5,7 +5,7 @@ import {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
-  calculateMudlogGroupId,
+  calculateMudLogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -49,8 +49,8 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
       {
         uid: 5,
         name: "MudLogs",
-        action: NavigationType.SelectMudlogGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, mudlogGroup: calculateMudlogGroupId(selectedWellbore) }
+        action: NavigationType.SelectMudLogGroup,
+        actionPayload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore) }
       },
       {
         uid: 6,

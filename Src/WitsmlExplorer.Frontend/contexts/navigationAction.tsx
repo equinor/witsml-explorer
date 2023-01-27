@@ -32,7 +32,7 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
-  SelectMudlogGroupAction,
+  SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -86,7 +86,7 @@ export type NavigationAction =
   | SelectWellboreAction
   | SelectRigGroupAction
   | SelectMessageGroupAction
-  | SelectMudlogGroupAction
+  | SelectMudLogGroupAction
   | SelectRiskGroupAction
   | SelectServerAction
   | SelectTrajectoryAction

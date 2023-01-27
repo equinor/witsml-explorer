@@ -7,7 +7,7 @@ import {
   calculateLogGroupId,
   calculateLogTypeId,
   calculateMessageGroupId,
-  calculateMudlogGroupId,
+  calculateMudLogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -28,7 +28,7 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
-  SelectMudlogGroupAction,
+  SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -83,8 +83,8 @@ const performNavigationAction = (state: NavigationState, action: Action) => {
       return selectLogObject(state, action);
     case NavigationType.SelectMessageGroup:
       return selectMessageGroup(state, action);
-    case NavigationType.SelectMudlogGroup:
-      return selectMudlogGroup(state, action);
+    case NavigationType.SelectMudLogGroup:
+      return selectMudLogGroup(state, action);
     case NavigationType.SelectRiskGroup:
       return selectRiskGroup(state, action);
     case NavigationType.SelectRigGroup:
@@ -322,18 +322,18 @@ const selectMessageGroup = (state: NavigationState, { payload }: SelectMessageGr
   };
 };
 
-const selectMudlogGroup = (state: NavigationState, { payload }: SelectMudlogGroupAction) => {
-  const { well, wellbore, mudlogGroup } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMudlogGroupId(wellbore), calculateWellboreNodeId(wellbore));
+const selectMudLogGroup = (state: NavigationState, { payload }: SelectMudLogGroupAction) => {
+  const { well, wellbore, mudLogGroup } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateMudLogGroupId(wellbore), calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
     selectedWell: well,
     selectedWellbore: wellbore,
-    selectedMudlogGroup: mudlogGroup,
-    currentSelected: mudlogGroup,
-    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMudlogGroupId(wellbore)) : state.expandedTreeNodes,
+    selectedMudLogGroup: mudLogGroup,
+    currentSelected: mudLogGroup,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMudLogGroupId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };
