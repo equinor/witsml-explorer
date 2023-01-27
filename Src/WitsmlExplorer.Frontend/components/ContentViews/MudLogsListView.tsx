@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
 import MudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -8,9 +9,9 @@ export interface MudLogRow extends ContentTableRow {
 }
 
 export const MudLogsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
 
-  const { selectedWellbore } = navigationState;
+  const { selectedWell, selectedWellbore, selectedMudLogGroup } = navigationState;
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
   useEffect(() => {
@@ -18,6 +19,13 @@ export const MudLogsListView = (): React.ReactElement => {
       setMudLogs(selectedWellbore.mudLogs);
     }
   }, [selectedWellbore]);
+
+  const onSelect = (mudLog: any) => {
+    dispatchNavigation({
+      type: NavigationType.SelectMudLog,
+      payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup, mudLog }
+    });
+  };
 
   const getTableData = () => {
     return mudLogs.map((msg) => {
@@ -30,7 +38,7 @@ export const MudLogsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [{ property: "uid", label: "uid", type: ContentType.String }];
 
-  return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} />;
+  return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} />;
 };
 
 export default MudLogsListView;
