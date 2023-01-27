@@ -1,7 +1,7 @@
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
-import mudLog from "../models/mudLog";
+import { default as MudLog, default as mudLog } from "../models/mudLog";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -83,6 +83,11 @@ export interface SelectMessageGroupAction extends Action {
 export interface SelectMudLogGroupAction extends Action {
   type: NavigationType.SelectMudLogGroup;
   payload: { well: Well; wellbore: Wellbore; mudLogGroup: any };
+}
+
+export interface SelectMudLogAction extends Action {
+  type: NavigationType.SelectMudLog;
+  payload: { well: Well; wellbore: Wellbore; mudLog: MudLog; mudLogGroup: any };
 }
 
 export interface SelectRiskGroupAction extends Action {

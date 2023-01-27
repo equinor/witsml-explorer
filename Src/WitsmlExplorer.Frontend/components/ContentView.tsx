@@ -9,6 +9,7 @@ import { LogsListView } from "./ContentViews/LogsListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";
+import MudLogView from "./ContentViews/MudLogView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
 import ServerManager from "./ContentViews/ServerManager";
@@ -35,6 +36,7 @@ const ContentView = (): React.ReactElement => {
     selectedRigGroup,
     selectedMessageGroup,
     selectedMudLogGroup,
+    selectedMudLog,
     selectedRiskGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -71,6 +73,8 @@ const ContentView = (): React.ReactElement => {
         setView(<MessagesListView />);
       } else if (currentSelected === selectedMudLogGroup) {
         setView(<MudLogsListView />);
+      } else if (currentSelected == selectedMudLog) {
+        setView(<MudLogView />);
       } else if (currentSelected === selectedRiskGroup) {
         setView(<RisksListView />);
       } else if (currentSelected === selectedLogCurveInfo) {

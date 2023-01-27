@@ -7,6 +7,7 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
+  SelectMudLogAction,
   SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
@@ -23,12 +24,20 @@ import {
 import NavigationContext, { Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
+import MudLog from "../models/mudLog";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId, calculateWbGeometryGroupId } from "../models/wellbore";
+import Wellbore, {
+  calculateLogGroupId,
+  calculateLogTypeDepthId,
+  calculateMudLogGroupId,
+  calculateTrajectoryGroupId,
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
+} from "../models/wellbore";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
@@ -45,6 +54,7 @@ const Nav = (): React.ReactElement => {
     selectedLog,
     selectedMessageGroup,
     selectedMudLogGroup,
+    selectedMudLog,
     selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
@@ -69,6 +79,7 @@ const Nav = (): React.ReactElement => {
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getMudLogGroupCrumb(selectedMudLogGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getMudLogCrumb(selectedMudLog, selectedWell, selectedWellbore, dispatchNavigation),
       getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
@@ -189,6 +200,19 @@ const getMudLogGroupCrumb = (selectedMudLogGroup: string, selectedWell: Well, se
           dispatch({
             type: NavigationType.SelectMudLogGroup,
             payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup }
+          })
+      }
+    : {};
+};
+
+const getMudLogCrumb = (selectedMudLog: MudLog, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMudLogAction) => void) => {
+  return selectedMudLog?.uid
+    ? {
+        name: selectedMudLog.uid,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMudLog,
+            payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore), mudLog: selectedMudLog }
           })
       }
     : {};
