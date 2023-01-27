@@ -1,5 +1,5 @@
+import GeologyInterval from "../models/geologyInterval";
 import MudLog, { emptyMudLog } from "../models/mudLog";
-import MudLogComponent from "../models/mudLogGeologyInterval";
 import { ApiClient } from "./apiClient";
 
 export default class MudLogService {
@@ -21,7 +21,7 @@ export default class MudLogService {
     }
   }
 
-  public static async getGeologyIntervals(wellUid: string, wellboreUid: string, mudLogId: string, abortSignal: AbortSignal): Promise<MudLogComponent[]> {
+  public static async getGeologyIntervals(wellUid: string, wellboreUid: string, mudLogId: string, abortSignal: AbortSignal): Promise<GeologyInterval[]> {
     const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/mudlogs/${mudLogId}/geologyintervals`, abortSignal);
     if (response.ok) {
       return response.json();

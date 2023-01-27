@@ -206,9 +206,9 @@ const getMudLogGroupCrumb = (selectedMudLogGroup: string, selectedWell: Well, se
 };
 
 const getMudLogCrumb = (selectedMudLog: MudLog, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMudLogAction) => void) => {
-  return selectedMudLog?.uid
+  return selectedMudLog?.name
     ? {
-        name: selectedMudLog.uid,
+        name: selectedMudLog.name,
         onClick: () =>
           dispatch({
             type: NavigationType.SelectMudLog,

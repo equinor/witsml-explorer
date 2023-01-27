@@ -5,7 +5,9 @@ import MudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MudLogRow extends ContentTableRow {
-  message: MudLog;
+  mudLog: MudLog;
+  name: string;
+  uid: string;
 }
 
 export const MudLogsListView = (): React.ReactElement => {
@@ -20,23 +22,28 @@ export const MudLogsListView = (): React.ReactElement => {
     }
   }, [selectedWellbore]);
 
-  const onSelect = (mudLog: any) => {
+  const onSelect = (mudLogRow: MudLogRow) => {
     dispatchNavigation({
       type: NavigationType.SelectMudLog,
-      payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup, mudLog }
+      payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup, mudLog: mudLogRow.mudLog }
     });
   };
 
-  const getTableData = () => {
-    return mudLogs.map((msg) => {
+  const getTableData = (): MudLogRow[] => {
+    return mudLogs.map((mudLog, index) => {
       return {
-        id: msg.uid,
-        uid: msg.uid
+        id: index,
+        name: mudLog.name,
+        uid: mudLog.uid,
+        mudLog
       };
     });
   };
 
-  const columns: ContentTableColumn[] = [{ property: "uid", label: "uid", type: ContentType.String }];
+  const columns: ContentTableColumn[] = [
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String }
+  ];
 
   return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} />;
 };

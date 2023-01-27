@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
-import MudLogComponent from "../../models/mudLogGeologyInterval";
+import GeologyInterval from "../../models/geologyInterval";
 import MudLogService from "../../services/mudLogService";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface MudLogGeologyIntervalRow extends ContentTableRow {
+export interface GeologyIntervalRow extends ContentTableRow {
   uid: string;
 }
 
 export const MudLogView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedMudLog } = navigationState;
-  const [mudLogGeologyInterval, setMudLogGeologyInterval] = useState<MudLogComponent[]>([]);
+  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
 
   useEffect(() => {
@@ -19,12 +19,12 @@ export const MudLogView = (): React.ReactElement => {
     if (selectedMudLog) {
       const abortController = new AbortController();
 
-      const getMudLogGeologyInterval = async () => {
-        setMudLogGeologyInterval(await MudLogService.getGeologyIntervals(selectedMudLog.wellUid, selectedMudLog.wellboreUid, selectedMudLog.uid, abortController.signal));
+      const getGeologyIntervals = async () => {
+        setGeologyIntervals(await MudLogService.getGeologyIntervals(selectedMudLog.wellUid, selectedMudLog.wellboreUid, selectedMudLog.uid, abortController.signal));
         setIsFetchingData(false);
       };
 
-      getMudLogGeologyInterval();
+      getGeologyIntervals();
 
       return function cleanup() {
         abortController.abort();
@@ -34,14 +34,14 @@ export const MudLogView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [{ property: "uid", label: "uid", type: ContentType.String }];
 
-  const mudLogGeologyIntervalRows = mudLogGeologyInterval.map((mudLogGeologyInterval) => {
+  const geologyIntervalRows = geologyIntervals.map((geologyInterval) => {
     return {
-      id: mudLogGeologyInterval.uid,
-      uid: mudLogGeologyInterval.uid
+      id: geologyInterval.uid,
+      uid: geologyInterval.uid
     };
   });
 
-  return selectedMudLog && !isFetchingData ? <ContentTable columns={columns} data={mudLogGeologyIntervalRows} /> : <></>;
+  return selectedMudLog && !isFetchingData ? <ContentTable columns={columns} data={geologyIntervalRows} /> : <></>;
 };
 
 export default MudLogView;

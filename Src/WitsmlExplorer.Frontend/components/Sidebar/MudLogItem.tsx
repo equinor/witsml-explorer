@@ -23,7 +23,7 @@ const MudLogItem = (props: MudLogProps): React.ReactElement => {
     <TreeItem
       key={nodeId}
       nodeId={nodeId}
-      labelText={mudLog.uid}
+      labelText={mudLog.name}
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMudLog, payload: { mudLog, wellbore, well, mudLogGroup } })}
     />

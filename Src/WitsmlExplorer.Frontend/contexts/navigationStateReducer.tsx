@@ -354,7 +354,7 @@ const selectMudLog = (state: NavigationState, { payload }: SelectMudLogAction) =
     selectedMudLog: mudLog,
     currentSelected: mudLog,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateMudLogGroupId(wellbore)) : state.expandedTreeNodes,
-    currentProperties: getWellboreProperties(wellbore)
+    currentProperties: getObjectOnWellboreProperties(mudLog, ObjectType.MudLog)
   };
 };
 

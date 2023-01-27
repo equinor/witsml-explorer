@@ -15,11 +15,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return TypedResults.Ok(await mudLogService.GetMudLogs(wellUid, wellboreUid));
         }
+
         [Produces(typeof(MudLog))]
         public static async Task<IResult> GetMudLog(string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService)
         {
             return TypedResults.Ok(await mudLogService.GetMudLog(wellUid, wellboreUid, mudlogUid));
         }
+
         [Produces(typeof(List<MudLogGeologyInterval>))]
         public static async Task<IResult> GetGeologyIntervals(string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService)
         {
