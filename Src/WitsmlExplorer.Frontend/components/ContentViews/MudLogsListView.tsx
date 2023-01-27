@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
-import MudLogObject from "../../models/mudLog";
+import mudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface MudLogObjectRow extends ContentTableRow {
-  message: MudLogObject;
+export interface mudLogRow extends ContentTableRow {
+  message: mudLog;
 }
 
 export const MudLogsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
 
   const { selectedWellbore } = navigationState;
-  const [mudLogs, setMudLogs] = useState<MudLogObject[]>([]);
+  const [mudLogs, setMudLogs] = useState<mudLog[]>([]);
 
   useEffect(() => {
     if (selectedWellbore && selectedWellbore.mudLogs) {
@@ -20,10 +20,9 @@ export const MudLogsListView = (): React.ReactElement => {
   }, [selectedWellbore]);
 
   const getTableData = () => {
-    return mudLogs.map((msg, index) => {
+    return mudLogs.map((msg) => {
       return {
         id: msg.uid,
-        index: index + 1,
         uid: msg.uid
       };
     });

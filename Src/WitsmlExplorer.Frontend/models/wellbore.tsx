@@ -3,7 +3,7 @@ import BhaRun from "./bhaRun";
 import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
-import MudLogObject from "./mudLog";
+import mudLog from "./mudLog";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -46,7 +46,7 @@ export default interface Wellbore extends WellboreProperties {
   rigs?: Rig[];
   trajectories?: Trajectory[];
   messages?: MessageObject[];
-  mudLogs?: MudLogObject[];
+  mudLogs?: mudLog[];
   tubulars?: Tubular[];
   risks?: RiskObject[];
   wbGeometrys?: WbGeometryObject[];

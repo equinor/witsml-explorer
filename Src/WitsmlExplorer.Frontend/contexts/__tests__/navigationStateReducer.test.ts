@@ -1,7 +1,7 @@
 import BhaRun from "../../models/bhaRun";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
-import MudLogObject from "../../models/mudLog";
+import mudLog from "../../models/mudLog";
 import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
@@ -89,7 +89,7 @@ it("Should also update selected well when a wellbore is selected", () => {
   const rigs: Rig[] = [];
   const risks: RiskObject[] = [];
   const messages: MessageObject[] = [];
-  const mudLogs: MudLogObject[] = [];
+  const mudLogs: mudLog[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const wbGeometrys: WbGeometryObject[] = [];
@@ -276,7 +276,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const bhaRuns: BhaRun[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
-  const mudLogs: MudLogObject[] = [];
+  const mudLogs: mudLog[] = [];
   const risks: RiskObject[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];

@@ -38,7 +38,7 @@ import { truncateAbortHandler } from "../services/apiClient";
 import BhaRunService from "../services/bhaRunService";
 import LogObjectService from "../services/logObjectService";
 import MessageObjectService from "../services/messageObjectService";
-import MudLogObjectService from "../services/mudLogObjectService";
+import mudLogService from "../services/mudLogService";
 import RigService from "../services/rigService";
 import RiskObjectService from "../services/riskObjectService";
 import TrajectoryService from "../services/trajectoryService";
@@ -157,7 +157,7 @@ const Routing = (): React.ReactElement => {
         const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
         const getTubulars = TubularService.getTubulars(selectedWell.uid, wellboreUid, controller.signal);
         const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
-        const getMudLogs = MudLogObjectService.getMudLogs(selectedWell.uid, wellboreUid, controller.signal);
+        const getMudLogs = mudLogService.getMudLogs(selectedWell.uid, wellboreUid, controller.signal);
         const getRisks = RiskObjectService.getRisks(selectedWell.uid, wellboreUid, controller.signal);
         const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(selectedWell.uid, wellboreUid, controller.signal);
         const [bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys] = await Promise.all([
