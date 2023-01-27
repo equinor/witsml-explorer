@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import MudLog from "../../models/mudLog";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MudLogRow extends ContentTableRow {
-  message: mudLog;
+  message: MudLog;
 }
 
 export const MudLogsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
 
   const { selectedWellbore } = navigationState;
-  const [mudLogs, setMudLogs] = useState<mudLog[]>([]);
+  const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
   useEffect(() => {
     if (selectedWellbore && selectedWellbore.mudLogs) {
