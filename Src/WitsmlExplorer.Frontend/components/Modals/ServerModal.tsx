@@ -1,4 +1,3 @@
-import { Autocomplete } from "@equinor/eds-core-react";
 import { Button, TextField } from "@material-ui/core";
 import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import React, { ChangeEvent, useContext, useState } from "react";
@@ -36,7 +35,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isAddingNewServer = props.server.id === undefined;
-  const schemeValues = ["Basic", "OAuth2"];
 
   const onSubmit = async () => {
     const abortController = new AbortController();
@@ -152,17 +150,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             fullWidth
             inputProps={{ maxLength: 64 }}
             onChange={(e) => setServer({ ...server, description: e.target.value })}
-            disabled={props.editDisabled}
-          />
-          <Autocomplete
-            id="securityScheme"
-            label="Security Scheme Type"
-            options={schemeValues}
-            initialSelectedOptions={[server.securityscheme || schemeValues[0]]}
-            onOptionsChange={({ selectedItems }) => {
-              setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
-            }}
-            hideClearButton={true}
             disabled={props.editDisabled}
           />
           <TextField
