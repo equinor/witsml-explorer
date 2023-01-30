@@ -45,21 +45,30 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
             {
                 string errorMessage = "Failed to copy log.";
-                Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
             }
 
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
-            IEnumerable<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(copyLogDataJob => _copyLogDataWorker.Execute(copyLogDataJob));
+            IEnumerable<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(_copyLogDataWorker.Execute);
 
-            Task copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
+            Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
             await copyLogDataResultTask;
 
             if (copyLogDataResultTask.Status == TaskStatus.Faulted)
             {
                 string errorMessage = "Failed to copy log data.";
-                Logger.LogError("{errorMessage} - {job.Description()}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
+            }
+
+            int failedCopyDataTasks = copyLogDataResultTask.Result.Count((task) => task.Result.IsSuccess == false);
+            if (failedCopyDataTasks > 0)
+            {
+                (WorkerResult Result, RefreshAction) firstFailedTask = copyLogDataResultTask.Result.First((task) => task.Result.IsSuccess == false);
+                string errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, firstFailedTask.Result.Reason), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());

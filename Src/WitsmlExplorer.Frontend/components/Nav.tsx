@@ -7,6 +7,8 @@ import {
   SelectLogObjectAction,
   SelectLogTypeAction,
   SelectMessageGroupAction,
+  SelectMudLogAction,
+  SelectMudLogGroupAction,
   SelectRigGroupAction,
   SelectRiskGroupAction,
   SelectServerAction,
@@ -22,12 +24,20 @@ import {
 import NavigationContext, { Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
+import MudLog from "../models/mudLog";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateTrajectoryGroupId, calculateTubularGroupId, calculateWbGeometryGroupId } from "../models/wellbore";
+import Wellbore, {
+  calculateLogGroupId,
+  calculateLogTypeDepthId,
+  calculateMudLogGroupId,
+  calculateTrajectoryGroupId,
+  calculateTubularGroupId,
+  calculateWbGeometryGroupId
+} from "../models/wellbore";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
@@ -43,6 +53,8 @@ const Nav = (): React.ReactElement => {
     selectedLogTypeGroup,
     selectedLog,
     selectedMessageGroup,
+    selectedMudLogGroup,
+    selectedMudLog,
     selectedRiskGroup,
     selectedRigGroup,
     selectedTrajectoryGroup,
@@ -66,6 +78,8 @@ const Nav = (): React.ReactElement => {
       getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getLogCrumbs(selectedLog, selectedWell, selectedWellbore, selectedLogTypeGroup, dispatchNavigation),
       getMessageGroupCrumb(selectedMessageGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getMudLogGroupCrumb(selectedMudLogGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getMudLogCrumb(selectedMudLog, selectedWell, selectedWellbore, dispatchNavigation),
       getRiskGroupCrumb(selectedRiskGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getRigGroupCrumb(selectedRigGroup, selectedWell, selectedWellbore, dispatchNavigation),
       getTrajectoryGroupCrumb(selectedTrajectoryGroup, selectedWell, selectedWellbore, dispatchNavigation),
@@ -142,6 +156,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,
               messages: selectedWellbore.messages,
+              mudLogs: selectedWellbore.mudLogs,
               risks: selectedWellbore.risks,
               tubulars: selectedWellbore.tubulars,
               wbGeometrys: selectedWellbore.wbGeometrys
@@ -172,6 +187,32 @@ const getMessageGroupCrumb = (selectedMessageGroup: string, selectedWell: Well, 
           dispatch({
             type: NavigationType.SelectMessageGroup,
             payload: { well: selectedWell, wellbore: selectedWellbore, messageGroup: selectedMessageGroup }
+          })
+      }
+    : {};
+};
+
+const getMudLogGroupCrumb = (selectedMudLogGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMudLogGroupAction) => void) => {
+  return selectedMudLogGroup
+    ? {
+        name: "MudLogs",
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMudLogGroup,
+            payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup }
+          })
+      }
+    : {};
+};
+
+const getMudLogCrumb = (selectedMudLog: MudLog, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectMudLogAction) => void) => {
+  return selectedMudLog?.name
+    ? {
+        name: selectedMudLog.name,
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectMudLog,
+            payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore), mudLog: selectedMudLog }
           })
       }
     : {};

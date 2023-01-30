@@ -11,6 +11,7 @@ import Wellbore, {
   calculateBhaRunGroupId,
   calculateLogGroupId,
   calculateMessageGroupId,
+  calculateMudLogGroupId,
   calculateRigGroupId,
   calculateRiskGroupId,
   calculateTrajectoryGroupId,
@@ -22,6 +23,7 @@ import BhaRunService from "../../services/bhaRunService";
 import { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import MessageObjectService from "../../services/messageObjectService";
+import MudLogService from "../../services/mudLogService";
 import RigService from "../../services/rigService";
 import RiskObjectService from "../../services/riskObjectService";
 import TrajectoryService from "../../services/trajectoryService";
@@ -34,6 +36,7 @@ import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/T
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogTypeItem from "./LogTypeItem";
+import MudLogItem from "./MudLogItem";
 import TrajectoryItem from "./TrajectoryItem";
 import TreeItem from "./TreeItem";
 import TubularItem from "./TubularItem";
@@ -49,7 +52,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedTrajectory, selectedTubular, selectedWbGeometry, servers } = navigationState;
+  const { selectedMudLog, selectedTrajectory, selectedTubular, selectedWbGeometry, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -94,22 +97,24 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
       const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
       const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
+      const getMudLogs = MudLogService.getMudLogs(well.uid, wellbore.uid, controller.signal);
       const getRisks = RiskObjectService.getRisks(well.uid, wellbore.uid, controller.signal);
       const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal);
       const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(well.uid, wellbore.uid, controller.signal);
-      const [bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys] = await Promise.all([
+      const [bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys] = await Promise.all([
         getBhaRuns,
         getLogs,
         getRigs,
         getTrajectories,
         getMessages,
+        getMudLogs,
         getRisks,
         getTubulars,
         getWbGeometrys
       ]);
       const selectWellbore: SelectWellboreAction = {
         type: NavigationType.SelectWellbore,
-        payload: { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+        payload: { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
       };
       dispatchNavigation(selectWellbore);
       setIsFetchingData(false);
@@ -132,6 +137,10 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
   const onSelectMessageGroup = async (well: Well, wellbore: Wellbore, messageGroup: string) => {
     dispatchNavigation({ type: NavigationType.SelectMessageGroup, payload: { well, wellbore, messageGroup } });
+  };
+
+  const onSelectMudLogGroup = async (well: Well, wellbore: Wellbore, mudLogGroup: string) => {
+    dispatchNavigation({ type: NavigationType.SelectMudLogGroup, payload: { well, wellbore, mudLogGroup } });
   };
 
   const onSelectRiskGroup = async (well: Well, wellbore: Wellbore, riskGroup: string) => {
@@ -165,6 +174,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         rigs: wellbore.rigs,
         trajectories: wellbore.trajectories,
         messages: wellbore.messages,
+        mudLogs: wellbore.mudLogs,
         risks: wellbore.risks,
         tubulars: wellbore.tubulars,
         wbGeometrys: wellbore.wbGeometrys
@@ -189,6 +199,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const bhaRunGroupId = calculateBhaRunGroupId(wellbore);
   const logGroupId = calculateLogGroupId(wellbore);
   const messageGroupId = calculateMessageGroupId(wellbore);
+  const mudLogGroupId = calculateMudLogGroupId(wellbore);
   const riskGroupId = calculateRiskGroupId(wellbore);
   const trajectoryGroupId = calculateTrajectoryGroupId(wellbore);
   const rigGroupId = calculateRigGroupId(wellbore);
@@ -230,6 +241,21 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onLabelClick={() => onSelectMessageGroup(well, wellbore, messageGroupId)}
         onContextMenu={preventContextMenuPropagation}
       />
+      <TreeItem nodeId={mudLogGroupId} labelText={"MudLogs"} onLabelClick={() => onSelectMudLogGroup(well, wellbore, mudLogGroupId)} onContextMenu={preventContextMenuPropagation}>
+        {wellbore &&
+          wellbore.mudLogs &&
+          wellbore.mudLogs.map((mudLog) => (
+            <MudLogItem
+              key={calculateObjectNodeId(mudLog, ObjectType.MudLog)}
+              mudLogGroup={mudLogGroupId}
+              mudLog={mudLog}
+              well={well}
+              wellbore={wellbore}
+              nodeId={calculateObjectNodeId(mudLog, ObjectType.Trajectory)}
+              selected={selectedMudLog && selectedMudLog.uid === mudLog.uid ? true : undefined}
+            />
+          ))}
+      </TreeItem>
       <TreeItem
         nodeId={rigGroupId}
         labelText={"Rigs"}
