@@ -285,6 +285,7 @@ const configureTemplateColumns = memoizeOne((checkableRows: boolean, isHeader: b
     }
     const columnWidth = "200px";
     const columnWidths = new Array(columns.length).fill(columnWidth);
+    columnWidths[0] = "235px"; //make the first data column wider to fit datetime index
     templateColumns = templateColumns.concat(columnWidths);
   } else {
     templateColumns = columnRefs.map((ref: any) => {
