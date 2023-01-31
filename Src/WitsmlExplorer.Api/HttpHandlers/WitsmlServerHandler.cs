@@ -21,8 +21,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, IConfiguration configuration, HttpContext httpContext, ICredentialsService credentialsService)
         {
             EssentialHeaders httpHeaders = new(httpContext?.Request);
-            bool useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            if (!useOAuth)
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            if (!useOAuth2)
             {
                 httpContext.GetOrCreateWitsmlExplorerCookie();
             }
@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             IEnumerable<Connection> credentials = await Task.WhenAll(servers.Select(async (server) =>
                 new Connection(server)
                 {
-                    Usernames = await credentialsService.GetLoggedInUsernames(useOAuth, httpHeaders, server.Url)
+                    Usernames = await credentialsService.GetLoggedInUsernames(httpHeaders, server.Url)
                 }));
             return TypedResults.Ok(credentials);
         }
