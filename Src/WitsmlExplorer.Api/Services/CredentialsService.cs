@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -33,6 +34,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICredentialsCache _credentialsCache;
         private readonly Task<IEnumerable<Server>> _allServers;
         private static readonly string SUBJECT = "sub";
+        private readonly bool _useOAuth2;
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
@@ -40,7 +42,8 @@ namespace WitsmlExplorer.Api.Services
             IWitsmlSystemCredentials witsmlServerCredentials,
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             ICredentialsCache credentialsCache,
-            ILogger<CredentialsService> logger)
+            ILogger<CredentialsService> logger,
+            IConfiguration configuration)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
             _logger = logger ?? throw new ArgumentException("Missing ILogger");
@@ -49,9 +52,10 @@ namespace WitsmlExplorer.Api.Services
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
             _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
             _allServers = _witsmlServerRepository.GetDocumentsAsync();
+            _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
-        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool useOauth, bool keep)
+        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep)
         {
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.TargetServer, Decrypt);
             if (creds.IsCredsNullOrEmpty())
@@ -62,10 +66,10 @@ namespace WitsmlExplorer.Api.Services
             WitsmlClient witsmlClient = new(creds.Host.ToString(), creds.UserId, creds.Password, _clientCapabilities);
             await witsmlClient.TestConnectionAsync();
 
-            string cookieId = eh.GetCookieValue() ?? Guid.NewGuid().ToString();
-            string cacheClientId = useOauth ? GetClaimFromToken(eh.GetBearerToken(), "sub") : cookieId;
+            string clientId = GetClientId(eh);
+            clientId ??= _useOAuth2 ? clientId : Guid.NewGuid().ToString();
             double ttl = keep ? 24.0 : 1.0; // hours
-            CacheCredentials(cacheClientId, creds, ttl);
+            CacheCredentials(clientId, creds, ttl);
             return true;
         }
 
@@ -146,10 +150,9 @@ namespace WitsmlExplorer.Api.Services
 
         public void VerifyUserIsLoggedIn(IEssentialHeaders eh, ServerType serverType)
         {
-            bool useOauth = eh.GetCookieValue() == null;
             string server = serverType == ServerType.Target ? eh.TargetServer : eh.SourceServer;
             string username = serverType == ServerType.Target ? eh.TargetUsername : eh.SourceUsername;
-            ServerCredentials creds = GetCredentials(useOauth, eh, server, username);
+            ServerCredentials creds = GetCredentials(eh, server, username);
             if (creds == null || creds.IsCredsNullOrEmpty())
             {
                 string serverTypeName = serverType == ServerType.Target ? "target" : "source";
@@ -157,13 +160,13 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        public async Task<string[]> GetLoggedInUsernames(bool useOauth, IEssentialHeaders eh, Uri serverUrl)
+        public async Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl)
         {
-            string cacheClientId = useOauth ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
+            string cacheClientId = GetClientId(eh);
             string cacheId = $"{cacheClientId}@{serverUrl.Host}";
             Dictionary<string, string> credentials = _credentialsCache.GetItem(cacheId);
             List<string> usernames = credentials == null ? new() : credentials.Keys.ToList();
-            if (useOauth)
+            if (_useOAuth2)
             {
                 ServerCredentials systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), serverUrl);
                 if (!systemCredentials.IsCredsNullOrEmpty() && !usernames.Contains(systemCredentials.UserId))
@@ -174,10 +177,10 @@ namespace WitsmlExplorer.Api.Services
             return usernames.ToArray();
         }
 
-        private ServerCredentials GetCredentialsFromCache(bool useOauth, IEssentialHeaders eh, string serverUrl, string username, Func<string, string> delDecrypt = null)
+        private ServerCredentials GetCredentialsFromCache(IEssentialHeaders eh, string serverUrl, string username, Func<string, string> delDecrypt = null)
         {
             delDecrypt ??= Decrypt;
-            string cacheClientId = useOauth ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
+            string cacheClientId = GetClientId(eh);
             string cacheId = $"{cacheClientId}@{new Uri(serverUrl).Host}";
             Dictionary<string, string> credentials = _credentialsCache.GetItem(cacheId);
             if (credentials == null || !credentials.ContainsKey(username))
@@ -194,10 +197,10 @@ namespace WitsmlExplorer.Api.Services
             };
         }
 
-        public ServerCredentials GetCredentials(bool useOauth, IEssentialHeaders eh, string server, string username)
+        public ServerCredentials GetCredentials(IEssentialHeaders eh, string server, string username)
         {
-            ServerCredentials creds = GetCredentialsFromCache(useOauth, eh, server, username);
-            if (creds == null && useOauth)
+            ServerCredentials creds = GetCredentialsFromCache(eh, server, username);
+            if (creds == null && _useOAuth2)
             {
                 creds = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
                 if (creds.IsCredsNullOrEmpty() || !creds.UserId.Equals(username, StringComparison.Ordinal))
@@ -208,5 +211,9 @@ namespace WitsmlExplorer.Api.Services
             return creds;
         }
 
+        public string GetClientId(IEssentialHeaders eh)
+        {
+            return _useOAuth2 ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
+        }
     }
 }
