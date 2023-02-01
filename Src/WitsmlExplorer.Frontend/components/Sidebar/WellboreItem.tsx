@@ -52,7 +52,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedMudLog, selectedTrajectory, selectedTubular, selectedWbGeometry, servers } = navigationState;
+  const { selectedMudLog, selectedTrajectory, selectedTubular, selectedWbGeometry, servers, expandedTreeNodes } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -188,7 +188,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
   const onIconClick = () => {
     const wellboreHasData = wellbore.logs?.length > 0;
-    if (wellboreHasData) {
+    if (wellboreHasData || expandedTreeNodes?.includes(props.nodeId)) {
       const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: props.nodeId } };
       dispatchNavigation(toggleTreeNode);
     } else {
