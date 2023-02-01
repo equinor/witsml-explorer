@@ -1,8 +1,10 @@
-using System;
+using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.HttpHandlers;
+
 namespace WitsmlExplorer.Api.Extensions
 {
     public static class HttpContextExtensions
@@ -19,7 +21,8 @@ namespace WitsmlExplorer.Api.Extensions
                     Secure = true,
                     HttpOnly = true
                 };
-                cookieValue = Guid.NewGuid().ToString();
+                // Using a more secure ID than Guid https://neilmadden.blog/2018/08/30/moving-away-from-uuids/
+                cookieValue = Base64UrlEncoder.Encode(RandomNumberGenerator.GetBytes(20));
                 httpContext?.Response.Cookies.Append(EssentialHeaders.CookieName, cookieValue, cookieOptions);
             }
             return cookieValue;
