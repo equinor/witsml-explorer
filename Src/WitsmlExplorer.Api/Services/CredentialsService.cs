@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Services
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
-        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep)
+        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, string clientId)
         {
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.TargetServer, Decrypt);
             if (creds.IsCredsNullOrEmpty())
@@ -66,8 +66,6 @@ namespace WitsmlExplorer.Api.Services
             WitsmlClient witsmlClient = new(creds.Host.ToString(), creds.UserId, creds.Password, _clientCapabilities);
             await witsmlClient.TestConnectionAsync();
 
-            string clientId = GetClientId(eh);
-            clientId ??= _useOAuth2 ? clientId : Guid.NewGuid().ToString();
             double ttl = keep ? 24.0 : 1.0; // hours
             CacheCredentials(clientId, creds, ttl);
             return true;
