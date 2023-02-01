@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -24,7 +25,8 @@ namespace WitsmlExplorer.Api.Tests.Services
 {
     public class CredentialsServiceTests
     {
-        private readonly CredentialsService _credentialsService;
+        private readonly CredentialsService _basicCredentialsService;
+        private readonly CredentialsService _oauthCredentialsService;
 
         public CredentialsServiceTests()
         {
@@ -35,6 +37,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IWitsmlSystemCredentials> witsmlServerCredentials = new();
             Mock<IDocumentRepository<Server, Guid>> witsmlServerRepository = new();
             CredentialsCache credentialsCache = new(new Mock<ILogger<CredentialsCache>>().Object);
+            Mock<IConfiguration> basicConfiguration = new();
+            Mock<IConfiguration> oauthConfiguration = new();
 
             dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
             dataProtector.Setup(p => p.Unprotect(It.IsAny<byte[]>())).Returns((byte[] a) => a);
@@ -56,18 +60,30 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Name = "Test Server",
                     Url = new Uri("http://some.url.com"),
                     Description = "Testserver for SystemCreds testing",
-                    SecurityScheme = "OAuth2",
                     Roles = new List<string>() {"validrole","developer"}
                 }
             });
 
-            _credentialsService = new(
+            basicConfiguration.SetupGet(p => p[ConfigConstants.OAuth2Enabled]).Returns("False");
+            _basicCredentialsService = new(
                 dataProtectorProvider.Object,
                 clientCapabilities.Object,
                 witsmlServerCredentials.Object,
                 witsmlServerRepository.Object,
                 credentialsCache,
-                logger.Object
+                logger.Object,
+                basicConfiguration.Object
+            );
+
+            oauthConfiguration.SetupGet(p => p[ConfigConstants.OAuth2Enabled]).Returns("True");
+            _oauthCredentialsService = new(
+                dataProtectorProvider.Object,
+                clientCapabilities.Object,
+                witsmlServerCredentials.Object,
+                witsmlServerRepository.Object,
+                credentialsCache,
+                logger.Object,
+                oauthConfiguration.Object
             );
         }
 
@@ -82,9 +98,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.url.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
             Assert.True(creds.UserId == "systemuser" && creds.Password == "systempassword");
-            Cleanup();
+            _oauthCredentialsService.RemoveAllCachedCredentials();
         }
 
         [Fact]
@@ -93,9 +109,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.invalidurl.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
             Assert.Null(creds);
-            Cleanup();
+            _oauthCredentialsService.RemoveAllCachedCredentials();
         }
 
         [Fact]
@@ -104,9 +120,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.url.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _credentialsService.GetCredentials(true, eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
             Assert.Null(creds);
-            Cleanup();
+            _oauthCredentialsService.RemoveAllCachedCredentials();
         }
 
         [Fact]
@@ -122,16 +138,10 @@ namespace WitsmlExplorer.Api.Tests.Services
             headersMock.Setup(x => x.GetCookieValue()).Returns(clientId);
             headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
 
-            _credentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
-            ServerCredentials fromCache = _credentialsService.GetCredentials(false, headersMock.Object, headersMock.Object.TargetServer, userId);
+            _basicCredentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
+            ServerCredentials fromCache = _basicCredentialsService.GetCredentials(headersMock.Object, headersMock.Object.TargetServer, userId);
             Assert.Equal(sc, fromCache);
-            _credentialsService.RemoveAllCachedCredentials();
-            Cleanup();
-        }
-
-        private void Cleanup()
-        {
-            _credentialsService.RemoveAllCachedCredentials();
+            _basicCredentialsService.RemoveAllCachedCredentials();
         }
 
         private static EssentialHeaders CreateEhWithAuthorization(string[] appRoles, bool signed, string upn)

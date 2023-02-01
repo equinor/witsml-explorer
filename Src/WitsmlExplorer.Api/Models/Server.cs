@@ -23,8 +23,6 @@ namespace WitsmlExplorer.Api.Models
         {
             return JsonSerializer.Serialize(this);
         }
-        [JsonPropertyName("securityscheme")]
-        public string SecurityScheme { get; set; }
         [JsonPropertyName("roles")]
         public IList<string> Roles { get; set; }
 

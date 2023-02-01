@@ -7,6 +7,7 @@ import Wellbore from "../../models/wellbore";
 import BhaRunService from "../../services/bhaRunService";
 import LogObjectService from "../../services/logObjectService";
 import MessageObjectService from "../../services/messageObjectService";
+import MudLogService from "../../services/mudLogService";
 import RigService from "../../services/rigService";
 import RiskObjectService from "../../services/riskObjectService";
 import TrajectoryService from "../../services/trajectoryService";
@@ -61,11 +62,12 @@ export const WellboresListView = (): React.ReactElement => {
     const bhaRuns = await BhaRunService.getBhaRuns(wellUid, uid, controller.signal);
     const tubulars = await TubularService.getTubulars(wellUid, uid, controller.signal);
     const messages = await MessageObjectService.getMessages(wellUid, uid, controller.signal);
+    const mudLogs = await MudLogService.getMudLogs(wellUid, uid, controller.signal);
     const risks = await RiskObjectService.getRisks(wellUid, uid, controller.signal);
     const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(wellUid, uid, controller.signal);
     dispatchNavigation({
       type: NavigationType.SelectWellbore,
-      payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, risks, tubulars, wbGeometrys }
+      payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
     });
   };
 

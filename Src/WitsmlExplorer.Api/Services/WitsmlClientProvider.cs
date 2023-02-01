@@ -31,7 +31,6 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICredentialsService _credentialsService;
         private readonly ILogger<WitsmlClientProvider> _logger;
         private readonly bool _logQueries;
-        private readonly bool _useOAuth;
 
         public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
@@ -45,7 +44,6 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger ?? throw new ArgumentException("Logger missing");
             _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
             _logger.LogDebug("WitsmlClientProvider initialised");
-            _useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)
@@ -67,7 +65,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlClient == null)
             {
-                _targetCreds = _credentialsService.GetCredentials(_useOAuth, _httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
+                _targetCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
                     ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;
@@ -80,7 +78,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlSourceClient == null)
             {
-                _sourceCreds = _credentialsService.GetCredentials(_useOAuth, _httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
+                _sourceCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
                 _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsCredsNullOrEmpty())
                     ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;

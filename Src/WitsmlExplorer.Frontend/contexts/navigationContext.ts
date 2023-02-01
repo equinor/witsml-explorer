@@ -3,6 +3,7 @@ import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
+import MudLog from "../models/mudLog";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -36,6 +37,8 @@ export interface NavigationState {
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
   selectedMessageGroup: string;
+  selectedMudLogGroup: string;
+  selectedMudLog: MudLog;
   selectedRig: Rig;
   selectedRigGroup: string;
   selectedRisk: RiskObject;
@@ -66,6 +69,8 @@ export const allDeselected: any = {
   selectedLogTypeGroup: null,
   selectedLog: null,
   selectedMessageGroup: null,
+  selectedMudLogGroup: null,
+  selectedMudLog: null,
   selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
@@ -90,6 +95,8 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedLogTypeGroup: null,
   selectedLog: null,
   selectedMessageGroup: null,
+  selectedMudLogGroup: null,
+  selectedMudLog: null,
   selectedRig: null,
   selectedRigGroup: null,
   selectedRiskGroup: null,

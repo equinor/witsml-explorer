@@ -193,6 +193,7 @@ For our non frontend code, we use [dotnet-format](https://github.com/dotnet/form
 
 ### Run checks as a pre-commit hook
 We use [Husky](https://github.com/typicode/husky) to run `ESLint`, `Prettier` and `dotnet-format` as pre commit hooks. This will give errors when creating commits that causes checks to fail.
+To ensure you have the husky trigger installed, please run `yarn install` in root folder once.
 
 ## Project overview
 Here you will get a brief overview of the system flow and project structure.

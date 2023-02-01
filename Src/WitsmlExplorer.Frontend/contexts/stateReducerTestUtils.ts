@@ -7,8 +7,8 @@ import Wellbore from "../models/wellbore";
 import Filter, { EMPTY_FILTER } from "./filter";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
 
-export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", securityscheme: "", roles: [] };
-export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", securityscheme: "", roles: [] };
+export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", roles: [] };
+export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", roles: [] };
 export const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
@@ -18,6 +18,7 @@ export const WELLBORE_1: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -34,6 +35,7 @@ export const WELLBORE_2: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -50,6 +52,7 @@ export const WELLBORE_3: Wellbore = {
   rigs: [],
   trajectories: [],
   messages: [],
+  mudLogs: [],
   risks: [],
   tubulars: [],
   wbGeometrys: [],
@@ -109,6 +112,9 @@ export const MESSAGE_1 = {
   wellUid: "",
   wellboreName: "",
   wellboreUid: ""
+};
+export const MUDLOG_1 = {
+  uid: "123"
 };
 export const RISK_1 = {
   dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",

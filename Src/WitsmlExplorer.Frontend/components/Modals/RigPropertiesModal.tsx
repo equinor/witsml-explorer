@@ -30,7 +30,9 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
   const editMode = mode === PropertiesModalMode.Edit;
 
   useEffect(() => {
-    setEditableRig(rig);
+    setEditableRig({
+      ...rig
+    });
   }, [rig]);
 
   const onSubmit = async (updatedRig: Rig) => {
@@ -43,6 +45,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const yearEntServiceValid =
+    (rig.yearEntService == null && (editableRig?.yearEntService == null || editableRig?.yearEntService.length == 0)) || editableRig?.yearEntService?.length == 4;
   return (
     <>
       {editableRig && (
@@ -98,8 +102,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 label={"yearEntService"}
                 type="number"
                 value={editableRig.yearEntService ? editableRig.yearEntService : ""}
-                error={editableRig.yearEntService?.length != 4}
-                helperText={editableRig.yearEntService?.length < 4 ? "The rig yearEntService must be a 4 digit integer number" : ""}
+                error={!yearEntServiceValid}
+                helperText={!yearEntServiceValid ? "The rig yearEntService must be a 4 digit integer number" : ""}
                 fullWidth
                 inputProps={{ minLength: 4, maxLength: 4 }}
                 onChange={(e) => setEditableRig({ ...editableRig, yearEntService: e.target.value })}
@@ -199,7 +203,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
               />
             </>
           }
-          confirmDisabled={!validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid}
+          confirmDisabled={!validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid || !yearEntServiceValid}
           onSubmit={() => onSubmit(editableRig)}
           isLoading={isLoading}
         />
