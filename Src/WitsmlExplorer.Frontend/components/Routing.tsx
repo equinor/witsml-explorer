@@ -1,4 +1,5 @@
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
 import { NavigationAction } from "../contexts/navigationAction";
 import {
@@ -75,7 +76,7 @@ const Routing = (): React.ReactElement => {
   useEffect(() => {
     //set initial params state
     if (isSyncingUrlAndState) {
-      setUrlParams(getQueryParamsFromUrl(router));
+      setUrlParams(getQueryParamsFromUrl(router.query));
       setCurrentQueryParams(getQueryParamsFromState(navigationState));
     }
   }, [router]);
@@ -315,7 +316,7 @@ const isQueryParamsEqual = (urlQp: QueryParams, stateQp: QueryParams): boolean =
   });
 };
 
-const getQueryParamsFromState = (state: NavigationState): QueryParams => {
+export const getQueryParamsFromState = (state: NavigationState): QueryParams => {
   return {
     ...(state.selectedServer && { serverUrl: state.selectedServer.url }),
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
@@ -333,21 +334,21 @@ const getQueryParamsFromState = (state: NavigationState): QueryParams => {
   };
 };
 
-const getQueryParamsFromUrl = (router: NextRouter): QueryParams => {
+export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
   return {
-    ...(router.query.serverUrl && { serverUrl: router.query.serverUrl.toString() }),
-    ...(router.query.wellUid && { wellUid: router.query.wellUid.toString() }),
-    ...(router.query.wellboreUid && { wellboreUid: router.query.wellboreUid.toString() }),
-    ...(router.query.bhaRunGroupUid && { bhaRunGroupUid: router.query.bhaRunGroupUid.toString() }),
-    ...(router.query.logObjectUid && { logObjectUid: router.query.logObjectUid.toString() }),
-    ...(router.query.messageGroupUid && { messageGroupUid: router.query.messageGroupUid.toString() }),
-    ...(router.query.mudLogGroupUid && { mudLogGroupUid: router.query.mudLogGroupUid.toString() }),
-    ...(router.query.rigGroupUid && { rigGroupUid: router.query.rigGroupUid.toString() }),
-    ...(router.query.riskGroupUid && { riskGroupUid: router.query.riskGroupUid.toString() }),
-    ...(router.query.trajectoryUid && { trajectoryUid: router.query.trajectoryUid.toString() }),
-    ...(router.query.tubularUid && { tubularUid: router.query.tubularUid.toString() }),
-    ...(router.query.mudLogUid && { mudLogUid: router.query.mudLogUid.toString() }),
-    ...(router.query.wbGeometryUid && { wbGeometryUid: router.query.wbGeometryUid.toString() })
+    ...(query.serverUrl && { serverUrl: query.serverUrl.toString() }),
+    ...(query.wellUid && { wellUid: query.wellUid.toString() }),
+    ...(query.wellboreUid && { wellboreUid: query.wellboreUid.toString() }),
+    ...(query.bhaRunGroupUid && { bhaRunGroupUid: query.bhaRunGroupUid.toString() }),
+    ...(query.logObjectUid && { logObjectUid: query.logObjectUid.toString() }),
+    ...(query.messageGroupUid && { messageGroupUid: query.messageGroupUid.toString() }),
+    ...(query.mudLogGroupUid && { mudLogGroupUid: query.mudLogGroupUid.toString() }),
+    ...(query.mudLogUid && { mudLogUid: query.mudLogUid.toString() }),
+    ...(query.rigGroupUid && { rigGroupUid: query.rigGroupUid.toString() }),
+    ...(query.riskGroupUid && { riskGroupUid: query.riskGroupUid.toString() }),
+    ...(query.trajectoryUid && { trajectoryUid: query.trajectoryUid.toString() }),
+    ...(query.tubularUid && { tubularUid: query.tubularUid.toString() }),
+    ...(query.wbGeometryUid && { wbGeometryUid: query.wbGeometryUid.toString() })
   };
 };
 
