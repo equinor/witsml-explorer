@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
         public void VerifyUserIsLoggedIn(IEssentialHeaders eh, ServerType serverType);
         public Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl);
         public string GetClaimFromToken(string token, string claim);
-        public Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep);
+        public Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, string clientId);
         public ServerCredentials GetCredentials(IEssentialHeaders eh, string server, string username);
         public string GetClientId(IEssentialHeaders eh);
     }
