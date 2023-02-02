@@ -11,6 +11,7 @@ import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
+import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
@@ -152,15 +153,17 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onChange={(e) => setServer({ ...server, description: e.target.value })}
             disabled={props.editDisabled}
           />
-          <TextField
-            id="role"
-            label="Roles (space delimited)"
-            defaultValue={server.roles?.join(" ")}
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-            onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
-            disabled={props.editDisabled}
-          />
+          {msalEnabled && (
+            <TextField
+              id="role"
+              label="Roles (space delimited)"
+              defaultValue={server.roles?.join(" ")}
+              fullWidth
+              inputProps={{ maxLength: 64 }}
+              onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
+              disabled={props.editDisabled}
+            />
+          )}
         </>
       }
       onSubmit={onSubmit}
