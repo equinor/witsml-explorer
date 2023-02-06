@@ -7,7 +7,10 @@ enum OperationType {
   AddToClipboard,
   ClearClipboard,
   SetTheme,
-  SetTimeZone
+  SetTimeZone,
+  ShowActiveWells,
+  SetGrowing,
+  DisplayInactiveTimeCurve
 }
 
 export default OperationType;
