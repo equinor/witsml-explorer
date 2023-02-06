@@ -6,11 +6,13 @@ import NotificationService from "./notificationService";
 
 export default class JobService {
   public static async orderJob(jobType: JobType, payload: Record<string, any>): Promise<any> {
+    payload.connectionId = NotificationService.Instance.connectionId;
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload));
     return this.onResponse(jobType, response);
   }
 
   public static async orderJobAtServer(jobType: JobType, payload: Record<string, any>, targetServer: Server, sourceServer: Server): Promise<any> {
+    payload.connectionId = NotificationService.Instance.connectionId;
     const response = await ApiClient.post(`/api/jobs/${jobType}`, JSON.stringify(payload), undefined, targetServer, sourceServer);
     return this.onResponse(jobType, response, targetServer);
   }

@@ -82,11 +82,6 @@ export interface UpdateWellboreMessagesAction extends Action {
   payload: { messages: MessageObject[]; wellUid: string; wellboreUid: string };
 }
 
-export interface UpdateWellboreMessageAction extends Action {
-  type: ModificationType.UpdateMessageObject;
-  payload: { message: MessageObject };
-}
-
 export interface UpdateWellboreRigsAction extends Action {
   type: ModificationType.UpdateRigsOnWellbore;
   payload: { rigs: Rig[]; wellUid: string; wellboreUid: string };

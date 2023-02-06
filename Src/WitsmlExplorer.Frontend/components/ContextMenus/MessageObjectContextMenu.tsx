@@ -1,7 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreMessageAction, UpdateWellboreMessagesAction } from "../../contexts/modificationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
@@ -21,7 +20,6 @@ import NestedMenuItem from "./NestedMenuItem";
 export interface MessageObjectContextMenuProps {
   checkedMessageObjectRows: MessageObjectRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreMessagesAction | UpdateWellboreMessageAction) => void;
   servers: Server[];
   selectedServer: Server;
   wellbore: Wellbore;

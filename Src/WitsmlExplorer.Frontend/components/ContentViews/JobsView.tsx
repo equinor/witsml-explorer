@@ -7,7 +7,7 @@ import JobInfo from "../../models/jobs/jobInfo";
 import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
-import NotificationService, { Notification } from "../../services/notificationService";
+import NotificationService from "../../services/notificationService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
@@ -20,7 +20,7 @@ export const JobsView = (): React.ReactElement => {
     dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { servers, selectedServer } = navigationState;
+  const { servers } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState<boolean>(true);
   const [showAll, setShowAll] = useState(false);
@@ -40,11 +40,8 @@ export const JobsView = (): React.ReactElement => {
   };
 
   useEffect(() => {
-    const eventHandler = (notification: Notification) => {
-      const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
-      if (shouldFetch) {
-        setShouldRefresh(true);
-      }
+    const eventHandler = () => {
+      setShouldRefresh(true);
     };
     const unsubscribeOnSnackbar = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(eventHandler);
     const unsubscribeOnAlert = NotificationService.Instance.alertDispatcherAsEvent.subscribe(eventHandler);
@@ -53,11 +50,11 @@ export const JobsView = (): React.ReactElement => {
       unsubscribeOnSnackbar();
       unsubscribeOnAlert();
     };
-  }, [navigationState.selectedServer]);
+  }, []);
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [showAll, selectedServer]);
+  }, [showAll]);
 
   useEffect(() => {
     if (shouldRefresh) {
