@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require("webpack");
 const weURL = process.env.WITSMLEXPLORER_FRONTEND_URL;
@@ -8,7 +9,7 @@ module.exports = {
   basePath: wePath,
   webpack: (config) => {
     const env = Object.keys(process.env).reduce((acc, curr) => {
-      acc[`process.env.${curr}`] = JSON.stringify(process.env[curr]);
+      acc[`process.env.NODE_ENV${curr}`] = JSON.stringify(process.env[curr]);
       return acc;
     }, {});
 

@@ -96,6 +96,22 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Null(logInQuery.EndDateTimeIndex);
         }
 
+        [Fact]
+        public async Task Execute_ErrorOnCopyLogData_ReasonInWorkingResult()
+        {
+            CopyLogJob copyLogJob = CreateJobTemplate();
+            SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
+            SetupGetWellbore();
+            string errorReason = "test";
+            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+                .ReturnsAsync((new WorkerResult(null, false, "", errorReason), null));
+
+            (WorkerResult Result, RefreshAction) copyTask = await _copyLogWorker.Execute(copyLogJob);
+
+            Assert.Contains(errorReason, copyTask.Result.Reason);
+        }
+
         private void SetupSourceLog(string indexType, WitsmlLogs sourceLogs = null)
         {
             switch (indexType)

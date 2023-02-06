@@ -7,7 +7,6 @@ import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import CredentialsService from "../../services/credentialsService";
 import LogObjectService from "../../services/logObjectService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
@@ -41,9 +40,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
       const wellUid = sourceLog.wellUid;
       const wellboreUid = sourceLog.wellboreUid;
       const fetchCurves = async () => {
-        const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
         const fetchSource = LogObjectService.getLogCurveInfo(wellUid, wellboreUid, sourceLog.uid);
-        const fetchTarget = LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, sourceLog.uid, targetCredentials);
+        const fetchTarget = LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, sourceLog.uid, targetServer);
         return {
           sourceLogCurveInfo: await fetchSource,
           targetLogCurveInfo: await fetchTarget
@@ -95,7 +93,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
   const toFixed = (value: string | number): string => {
     const number = Number(value);
-    if (isNaN(number)) {
+    if (Number.isNaN(number)) {
       return missingIndex;
     }
     return number.toFixed(4);

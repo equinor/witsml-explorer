@@ -2,8 +2,9 @@ import { ErrorDetails } from "../models/errorDetails";
 import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
 import LogObject, { emptyLogObject } from "../models/logObject";
+import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import CredentialsService, { BasicServerCredentials } from "./credentialsService";
+import AuthorizationService from "./authorizationService";
 import NotificationService from "./notificationService";
 
 export default class LogObjectService {
@@ -25,8 +26,8 @@ export default class LogObjectService {
     }
   }
 
-  public static async getLogFromServer(wellUid: string, wellboreUid: string, logUid: string, credentials: BasicServerCredentials, abortSignal?: AbortSignal): Promise<LogObject> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal, [credentials]);
+  public static async getLogFromServer(wellUid: string, wellboreUid: string, logUid: string, server: Server, abortSignal?: AbortSignal): Promise<LogObject> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}`, abortSignal, server);
     if (response.ok) {
       // the route returns null if the log was not found so we need to check for it
       const text = await response.text();
@@ -49,14 +50,8 @@ export default class LogObjectService {
     }
   }
 
-  public static async getLogCurveInfoFromServer(
-    wellUid: string,
-    wellboreUid: string,
-    logUid: string,
-    credentials: BasicServerCredentials,
-    abortSignal?: AbortSignal
-  ): Promise<LogCurveInfo[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, [credentials]);
+  public static async getLogCurveInfoFromServer(wellUid: string, wellboreUid: string, logUid: string, server: Server, abortSignal?: AbortSignal): Promise<LogCurveInfo[]> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, server);
     if (response.ok) {
       const text = await response.text();
       if (text.length) {
@@ -96,7 +91,7 @@ export default class LogObjectService {
           errorMessage = `Something unexpected has happened.`;
       }
       NotificationService.Instance.alertDispatcher.dispatch({
-        serverUrl: new URL(CredentialsService.getCredentials()[0].server.url),
+        serverUrl: new URL(AuthorizationService.selectedServer.url),
         message: errorMessage,
         isSuccess: false
       });

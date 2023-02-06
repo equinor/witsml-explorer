@@ -9,14 +9,14 @@ import ObjectOnWellbore, { toObjectReference, toObjectReferences } from "../../m
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService from "../../services/credentialsService";
+import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import { DispatchOperation } from "./ContextMenuUtils";
 
-export const onClickPaste = async (servers: Server[], sourceServerUrl: string, dispatchOperation: DispatchOperation, orderCopyJob: () => void) => {
+export const onClickPaste = async (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === sourceServerUrl);
   if (sourceServer !== null) {
-    CredentialsService.setSourceServer(sourceServer);
+    AuthorizationService.setSourceServer(sourceServer);
     orderCopyJob();
   }
 };
@@ -34,7 +34,7 @@ export const pasteObjectOnWellbore = async (servers: Server[], objectReferences:
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  onClickPaste(servers, objectReferences?.serverUrl, dispatchOperation, orderCopyJob);
+  onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
 };
 
 export const pasteComponents = async (
@@ -51,7 +51,7 @@ export const pasteComponents = async (
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  onClickPaste(servers, sourceReferences?.serverUrl, dispatchOperation, orderCopyJob);
+  onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
 };
 
 export const copyObjectOnWellbore = async (selectedServer: Server, objectsOnWellbore: ObjectOnWellbore[], dispatchOperation: DispatchOperation, objectType: ObjectType) => {

@@ -9,7 +9,7 @@ import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellb
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import CredentialsService from "../../services/credentialsService";
+import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
@@ -66,7 +66,6 @@ export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation,
     objectsOnWellbore.map((item) => item.name),
     orderDeleteJob,
     dispatchOperation,
-    CredentialsService.getCredentials()[0].server.name,
     objectsOnWellbore[0].wellboreName
   );
 };
@@ -86,7 +85,6 @@ export const onClickDeleteComponents = async (dispatchOperation: DispatchOperati
     componentReferences.componentUids,
     orderDeleteJob,
     dispatchOperation,
-    CredentialsService.getCredentials()[0].server.name,
     componentReferences.parent.wellboreName,
     componentReferences.parent.name,
     getParentType(componentReferences.componentType)
@@ -98,7 +96,6 @@ const displayDeleteModal = (
   toDeleteNames: string[],
   onDelete: () => void,
   dispatchOperation: DispatchOperation,
-  server: string,
   wellbore: string,
   parent?: string,
   parentType?: string
@@ -108,7 +105,7 @@ const displayDeleteModal = (
       heading={`Delete ${toDeleteTypeName}?`}
       content={
         <Layout>
-          <TextField readOnly id="server" label="Server" defaultValue={server} tabIndex={-1} />
+          <TextField readOnly id="server" label="Server" defaultValue={AuthorizationService.selectedServer?.name} tabIndex={-1} />
           <TextField readOnly id="wellbore" label="Wellbore" defaultValue={wellbore} tabIndex={-1} />
           {parent != null && <TextField readOnly id="parent_object" label={parentType} defaultValue={parent} tabIndex={-1} />}
           <span>

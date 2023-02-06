@@ -10,13 +10,12 @@ namespace WitsmlExplorer.Api.Models
             Name = server.Name;
             Url = server.Url;
             Description = server.Description;
-            SecurityScheme = server.SecurityScheme;
             Roles = server.Roles;
             Id = server.Id;
         }
 
-        [JsonPropertyName("username")]
-        public string Username { get; set; }
+        [JsonPropertyName("usernames")]
+        public string[] Usernames { get; set; }
 
         public override string ToString()
         {

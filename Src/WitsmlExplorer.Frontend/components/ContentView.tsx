@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { listWellsFlag, selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
+import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import JobsView from "./ContentViews/JobsView";
@@ -8,6 +8,8 @@ import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogsListView } from "./ContentViews/LogsListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
+import { MudLogsListView } from "./ContentViews/MudLogsListView";
+import MudLogView from "./ContentViews/MudLogView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
 import ServerManager from "./ContentViews/ServerManager";
@@ -33,6 +35,8 @@ const ContentView = (): React.ReactElement => {
     selectedLogCurveInfo,
     selectedRigGroup,
     selectedMessageGroup,
+    selectedMudLogGroup,
+    selectedMudLog,
     selectedRiskGroup,
     selectedTrajectoryGroup,
     selectedTrajectory,
@@ -67,6 +71,10 @@ const ContentView = (): React.ReactElement => {
         setView(<RigsListView />);
       } else if (currentSelected === selectedMessageGroup) {
         setView(<MessagesListView />);
+      } else if (currentSelected === selectedMudLogGroup) {
+        setView(<MudLogsListView />);
+      } else if (currentSelected == selectedMudLog) {
+        setView(<MudLogView />);
       } else if (currentSelected === selectedRiskGroup) {
         setView(<RisksListView />);
       } else if (currentSelected === selectedLogCurveInfo) {
@@ -87,8 +95,6 @@ const ContentView = (): React.ReactElement => {
         setView(<JobsView />);
       } else if (currentSelected === selectedServerManagerFlag) {
         setView(<ServerManager />);
-      } else if (currentSelected === listWellsFlag) {
-        setView(<WellsListView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);

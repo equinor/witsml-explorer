@@ -10,7 +10,7 @@ import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
@@ -33,23 +33,21 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
   const wellboreUid = curvesToCopy[0].wellboreUid;
   const logUid = curvesToCopy[0].logUid;
 
-  const targetCredentials = CredentialsService.getCredentialsForServer(targetServer);
-  const sourceCredentials = CredentialsService.getCredentialsForServer(sourceServer);
-  const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetCredentials);
+  const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetServer);
   if (targetLog.uid !== logUid) {
     displayMissingObjectModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.", ObjectType.Log);
     return;
   }
 
-  const allCurves = await LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, targetLog.uid, targetCredentials);
+  const allCurves = await LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, targetLog.uid, sourceServer);
   const existingCurves: LogCurveInfo[] = allCurves.filter((curve) => curvesToCopy.find((curveToCopy) => curveToCopy.uid === curve.uid));
   if (existingCurves.length > 0) {
-    const onConfirm = () => replaceCurves(sourceServer, [targetCredentials, sourceCredentials], curvesToCopy, existingCurves, dispatchOperation, targetLog, sourceLog);
+    const onConfirm = () => replaceCurves(targetServer, sourceServer, curvesToCopy, existingCurves, dispatchOperation, targetLog, sourceLog);
     displayReplaceModal(existingCurves, curvesToCopy, "curve", "log", dispatchOperation, onConfirm, printCurveInfo);
   } else {
     const copyJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
-    CredentialsService.setSourceServer(sourceServer);
-    JobService.orderJobAtServer(JobType.CopyLogData, copyJob, [targetCredentials, sourceCredentials]);
+    AuthorizationService.setSourceServer(sourceServer);
+    JobService.orderJobAtServer(JobType.CopyLogData, copyJob, targetServer, sourceServer);
   }
 };
 
@@ -66,8 +64,8 @@ const createCopyJob = (sourceServer: Server, curves: LogCurveInfoRow[], targetLo
 };
 
 const replaceCurves = async (
+  targetServer: Server,
   sourceServer: Server,
-  credentials: BasicServerCredentials[],
   curvesToCopy: LogCurveInfoRow[],
   curvesToDelete: LogCurveInfo[],
   dispatchOperation: DispatchOperation,
@@ -84,7 +82,7 @@ const replaceCurves = async (
   };
   const copyJob: CopyComponentsJob = createCopyJob(sourceServer, curvesToCopy, targetLog, sourceLog);
   const replaceJob: ReplaceLogDataJob = { deleteJob, copyJob };
-  await JobService.orderJobAtServer(JobType.ReplaceLogData, replaceJob, credentials);
+  await JobService.orderJobAtServer(JobType.ReplaceLogData, replaceJob, targetServer, sourceServer);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 

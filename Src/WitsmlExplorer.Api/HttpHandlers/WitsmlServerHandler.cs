@@ -5,10 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
-using WitsmlExplorer.Api.Configuration;
-using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
@@ -18,26 +15,18 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public static class WitsmlServerHandler
     {
         [Produces(typeof(IEnumerable<Connection>))]
-        public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, IConfiguration configuration, HttpContext httpContext, ICredentialsService credentialsService)
+        public static async Task<IResult> GetWitsmlServers([FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, HttpContext httpContext, ICredentialsService credentialsService)
         {
             EssentialHeaders httpHeaders = new(httpContext?.Request);
-            bool useOAuth = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            if (!useOAuth)
-            {
-                httpContext.GetOrCreateWitsmlExplorerCookie();
-            }
             IEnumerable<Server> servers = await witsmlServerRepository.GetDocumentsAsync();
-            IEnumerable<Connection> credentials = servers.Select((server) =>
-            {
-                string username = credentialsService.GetCredentialsFromCache(useOAuth, httpHeaders, server.Url.ToString())?.UserId;
-                return new Connection(server)
+            IEnumerable<Connection> credentials = await Task.WhenAll(servers.Select(async (server) =>
+                new Connection(server)
                 {
-                    Username = username
-                };
-            });
-
+                    Usernames = await credentialsService.GetLoggedInUsernames(httpHeaders, server.Url)
+                }));
             return TypedResults.Ok(credentials);
         }
+
         [Produces(typeof(Server))]
         public static async Task<IResult> CreateWitsmlServer(Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {

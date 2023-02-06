@@ -507,22 +507,23 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.5.tgz#77211291c1900a700b8a78cfafda3160d76949ed"
   integrity sha512-OWORNpfjMsSSUBVrRBVGECkhWcULOAJz9ZW8uK9qgxD+87M7jHRcvh/A96XXNhXTLmKcoYSQtBEX7lHMO7YRwg==
 
-"@equinor/eds-core-react@^0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.27.0.tgz#b5d4894bed3dc03f636a2d9de19c7e631abde185"
-  integrity sha512-mbcc0B7fZLxWT0De6bI+DFUQUJ+y1M8zEtVFQDwLu9++n8+8odwNbTN/TsT/97VP5cea0xmtZpHRFA6ix4oCnw==
+"@equinor/eds-core-react@^0.28.0":
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-core-react/-/eds-core-react-0.28.0.tgz#a9b4a05706cdd8dc0c3d800a64d7ad2e523b5930"
+  integrity sha512-hCIgjjPa4c6lEKE9vfb7zrV1eFHrrPcsTRr6cdTzt5JHyu+hAlHx+mk7nUPn9yDN+2dGV8xQBIKrCeDuX1w5eQ==
   dependencies:
     "@babel/runtime" "^7.19.0"
-    "@equinor/eds-icons" "0.16.0"
+    "@equinor/eds-icons" "0.17.0"
     "@equinor/eds-tokens" "0.9.0"
     "@equinor/eds-utils" "0.7.0"
     "@floating-ui/react-dom-interactions" "^0.10.1"
-    downshift "^7.0.1"
+    "@tanstack/react-virtual" "3.0.0-beta.30"
+    downshift "^7.0.5"
 
-"@equinor/eds-icons@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.16.0.tgz#af0c2b384171424958530508de6161dfa79574c6"
-  integrity sha512-ByEJLYaTMAoxRGpiyB/pSY/cfsXdiQ4TvQR0H4jaiWeDat/wYSZPWkA0tImo80As9iczTV8uC7iXCF7ZrY4KQA==
+"@equinor/eds-icons@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@equinor/eds-icons/-/eds-icons-0.17.0.tgz#5e13d5b6472cdeb2714de5914c6d481e909ee42f"
+  integrity sha512-Nhd/3rPS5l6IE+BN+fd1Om1yjS71CSMCCqWaXe3dVNPfkAG/ARIiG72+S4Rcjb1d5Qbn1bppNCUL26O5dlKrCw==
 
 "@equinor/eds-tokens@0.9.0", "@equinor/eds-tokens@^0.9.0":
   version "0.9.0"
@@ -1096,6 +1097,18 @@
   integrity sha512-4C7nX/dvpzB7za4Ql9K81xK3HPxCpHMgwTZVyf+9JQ6VUbn9jjZVN7/Nkdz/Ugzs2CSjqnL/UPXroiVBVHUWUw==
   dependencies:
     tslib "^2.4.0"
+
+"@tanstack/react-virtual@3.0.0-beta.30":
+  version "3.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.0.0-beta.30.tgz#7236f43bdc4755b00872dfef1cb2006dd8f717f7"
+  integrity sha512-Sn1SSbSjDwb++jVOtgiQ/OHFMdcXFg8Qx02/cn0eq9xxHIhm/SqrKDpywIeydgNdOsdfBomOfxm/4gqTLrY1gg==
+  dependencies:
+    "@tanstack/virtual-core" "3.0.0-beta.30"
+
+"@tanstack/virtual-core@3.0.0-beta.30":
+  version "3.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.30.tgz#7fd5e206dd706297b8234227c330c203a795f061"
+  integrity sha512-fewNoKiJeG5v0T4jg7UO99G+hUYDHig6AkiIeqvC1O2zEw96MlzR6DXw91aqxcsIPSVp83IPsgNa7su8yZWldw==
 
 "@testing-library/dom@^8.5.0":
   version "8.13.0"
@@ -1947,10 +1960,10 @@ commander@^9.3.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-9.3.0.tgz#f619114a5a2d2054e0d9ff1b31d5ccf89255e26b"
   integrity sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==
 
-compute-scroll-into-view@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.17.tgz#6a88f18acd9d42e9cf4baa6bec7e0522607ab7ab"
-  integrity sha512-j4dx+Fb0URmzbwwMUrhqWM2BEWHdFGx+qZ9qqASHRPqvTYdqvWnHg0H1hIbcyLnvgnoNAVMlwkepyqM3DaIFUg==
+compute-scroll-into-view@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-2.0.4.tgz#2b444b2b9e4724819d2531efacb7ac094155fdf6"
+  integrity sha512-y/ZA3BGnxoM/QHHQ2Uy49CLtnWPbt4tTPpEEZiEmmiWBFKjej7nEyH8Ryz54jH0MLXflUYA3Er2zUxPSJu5R+g==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -2149,13 +2162,13 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
-downshift@^7.0.1:
-  version "7.0.5"
-  resolved "https://registry.yarnpkg.com/downshift/-/downshift-7.0.5.tgz#78e5e5d4a63a401869c01bbeb785431e7a5740ce"
-  integrity sha512-q52vBjtRkt4PLD0xQDUf3lM+uaUOpc5m0L8YfE9oPtn4RJLu5YITB/G4mr9OyPYwWIBe/h9g3RX6mggMVaBIDw==
+downshift@^7.0.5:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-7.2.0.tgz#f2a2777253a8ca26ca56c38caa8e75f76a6ab346"
+  integrity sha512-dEn1Sshe7iTelUhmdbmiJhtIiwIBxBV8p15PuvEBh0qZcHXZnEt0geuCIIkCL4+ooaKRuLE0Wc+Fz9SwWuBIyg==
   dependencies:
     "@babel/runtime" "^7.14.8"
-    compute-scroll-into-view "^1.0.17"
+    compute-scroll-into-view "^2.0.4"
     prop-types "^15.7.2"
     react-is "^17.0.2"
     tslib "^2.3.0"
@@ -3054,14 +3067,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-isomorphic-unfetch@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-unfetch/-/isomorphic-unfetch-3.1.0.tgz#87341d5f4f7b63843d468438128cb087b7c3e98f"
-  integrity sha512-geDJjpoZ8N0kWexiwkX8F9NkTsXhetLPVbZFQ+JTW239QNOwvB0gniuR1Wc6f0AMTn7/mFGyXvHTifrCp/GH8Q==
-  dependencies:
-    node-fetch "^2.6.1"
-    unfetch "^4.2.0"
-
 istanbul-lib-coverage@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.0.0.tgz#f5944a37c70b550b02a78a5c3b2055b280cec8ec"
@@ -3943,7 +3948,7 @@ next@^13.0.0:
     "@next/swc-win32-ia32-msvc" "13.0.6"
     "@next/swc-win32-x64-msvc" "13.0.6"
 
-node-fetch@^2.6.1, node-fetch@^2.6.7:
+node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -5006,11 +5011,6 @@ unbox-primitive@^1.0.2:
     has-bigints "^1.0.2"
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
-
-unfetch@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/unfetch/-/unfetch-4.2.0.tgz#7e21b0ef7d363d8d9af0fb929a5555f6ef97a3be"
-  integrity sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==
 
 universalify@^0.1.2:
   version "0.1.2"

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
@@ -20,12 +21,16 @@ namespace WitsmlExplorer.Api.HttpHandlers
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
 
-            (ServerCredentials targetCreds, ServerCredentials sourceCreds) = credentialsService.GetWitsmlUsernamesFromCache(eh);
+            credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
+            if (!string.IsNullOrEmpty(eh.SourceServer))
+            {
+                credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Source);
+            }
             JobInfo jobInfo = new()
             {
-                Username = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId,
-                WitsmlTargetUsername = targetCreds.UserId,
-                WitsmlSourceUsername = sourceCreds.UserId,
+                Username = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "upn") : eh.TargetUsername,
+                WitsmlTargetUsername = eh.TargetUsername,
+                WitsmlSourceUsername = eh.SourceUsername,
                 SourceServer = eh.SourceServer,
                 TargetServer = eh.TargetServer
             };
@@ -37,8 +42,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            (ServerCredentials targetCreds, _) = credentialsService.GetWitsmlUsernamesFromCache(eh);
-            string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh, "upn") : targetCreds.UserId;
+            string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "upn") : eh.TargetUsername;
+            if (!useOAuth2)
+            {
+                credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
+            }
             return TypedResults.Ok(jobCache.GetJobInfosByUser(userName));
         }
 

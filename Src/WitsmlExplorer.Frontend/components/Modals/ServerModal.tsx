@@ -1,4 +1,3 @@
-import { Autocomplete } from "@equinor/eds-core-react";
 import { Button, TextField } from "@material-ui/core";
 import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
 import React, { ChangeEvent, useContext, useState } from "react";
@@ -12,12 +11,12 @@ import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
-import CredentialsService, { BasicServerCredentials } from "../../services/credentialsService";
+import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
 import ModalDialog from "./ModalDialog";
-import UserCredentialsModal, { CredentialsMode, UserCredentialsModalProps } from "./UserCredentialsModal";
+import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
 
 export interface ServerModalProps {
   server: Server;
@@ -37,21 +36,29 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isAddingNewServer = props.server.id === undefined;
-  const schemeValues = ["Basic", "OAuth2"];
 
   const onSubmit = async () => {
     const abortController = new AbortController();
 
     setIsLoading(true);
-    if (isAddingNewServer) {
-      const freshServer = await ServerService.addServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
-    } else {
-      const freshServer = await ServerService.updateServer(server, abortController.signal);
-      dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+    try {
+      if (isAddingNewServer) {
+        const freshServer = await ServerService.addServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.AddServer, payload: { server: freshServer } });
+      } else {
+        const freshServer = await ServerService.updateServer(server, abortController.signal);
+        dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server: freshServer } });
+      }
+    } catch (error) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: null,
+        message: error.message,
+        isSuccess: false
+      });
+    } finally {
+      setIsLoading(false);
+      dispatchOperation({ type: OperationType.HideModal });
     }
-    setIsLoading(false);
-    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const showCredentialsModal = () => {
@@ -60,12 +67,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       dispatchOperation({ type: OperationType.HideModal });
     };
 
-    const serverCredentials: BasicServerCredentials = { username: "", password: "", server };
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server,
-      serverCredentials,
-      mode: CredentialsMode.TEST,
-      errorMessage: "",
+      confirmText: "Test",
       onConnectionVerified: onVerifyConnection
     };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
@@ -149,26 +153,17 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             onChange={(e) => setServer({ ...server, description: e.target.value })}
             disabled={props.editDisabled}
           />
-          <Autocomplete
-            id="securityScheme"
-            label="Security Scheme Type"
-            options={schemeValues}
-            initialSelectedOptions={[server.securityscheme || schemeValues[0]]}
-            onOptionsChange={({ selectedItems }) => {
-              setServer({ ...server, securityscheme: selectedItems[0] || schemeValues[0] });
-            }}
-            hideClearButton={true}
-            disabled={props.editDisabled}
-          />
-          <TextField
-            id="role"
-            label="Roles (space delimited)"
-            defaultValue={server.roles?.join(" ")}
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-            onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
-            disabled={props.editDisabled}
-          />
+          {msalEnabled && (
+            <TextField
+              id="role"
+              label="Roles (space delimited)"
+              defaultValue={server.roles?.join(" ")}
+              fullWidth
+              inputProps={{ maxLength: 64 }}
+              onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
+              disabled={props.editDisabled}
+            />
+          )}
         </>
       }
       onSubmit={onSubmit}
@@ -196,7 +191,6 @@ export const showDeleteServerModal = (
       if (server.id === selectedServer?.id) {
         const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
         dispatchNavigation(action);
-        CredentialsService.setSelectedServer(null);
       }
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({

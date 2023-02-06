@@ -1,6 +1,6 @@
 import MessageObject, { emptyMessageObject } from "../models/messageObject";
+import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
-import { BasicServerCredentials } from "./credentialsService";
 
 export default class MessageObjectService {
   public static async getMessage(wellUid: string, wellboreUid: string, uid: string, abortSignal?: AbortSignal): Promise<MessageObject> {
@@ -21,14 +21,8 @@ export default class MessageObjectService {
     }
   }
 
-  public static async getMessageFromServer(
-    wellUid: string,
-    wellboreUid: string,
-    uid: string,
-    credentials: BasicServerCredentials,
-    abortSignal?: AbortSignal
-  ): Promise<MessageObject> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/messages/${uid}`, abortSignal, [credentials]);
+  public static async getMessageFromServer(wellUid: string, wellboreUid: string, uid: string, server: Server, abortSignal?: AbortSignal): Promise<MessageObject> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/messages/${uid}`, abortSignal, server);
     if (response.ok) {
       const text = await response.text();
       if (text.length) {
