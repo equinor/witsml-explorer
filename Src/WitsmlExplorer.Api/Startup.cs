@@ -106,7 +106,7 @@ namespace WitsmlExplorer.Api
                 app.UseAuthorization();
 
             }
-            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
+            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications").RequireAuthorization());
         }
     }
 }

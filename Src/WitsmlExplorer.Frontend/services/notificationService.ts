@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
-import { HttpTransportType, HubConnection } from "@microsoft/signalr";
+import { HubConnection } from "@microsoft/signalr";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
-import { getBaseUrl } from "./apiClient";
+import { ApiClient, getBaseUrl } from "./apiClient";
 
 export interface Notification {
   serverUrl: URL;
@@ -48,34 +48,37 @@ export default class NotificationService {
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${notificationURL}notifications`, {
-        skipNegotiation: true,
-        transport: HttpTransportType.WebSockets
-      })
-      .withAutomaticReconnect([3000, 5000, 10000])
-      .configureLogging(signalR.LogLevel.None)
-      .build();
+    ApiClient.getAuthorizationHeader().then((val) => {
+      this.hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl(`${notificationURL}notifications`, {
+          headers: {
+            Authorization: val
+          }
+        })
+        .withAutomaticReconnect([3000, 5000, 10000])
+        .configureLogging(signalR.LogLevel.None)
+        .build();
 
-    this.hubConnection.on("jobFinished", (notification: Notification) => {
-      notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
-    });
+      this.hubConnection.on("jobFinished", (notification: Notification) => {
+        notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
+      });
 
-    this.hubConnection.on("refresh", (refreshAction: RefreshAction) => {
-      this._refreshDispatcher.dispatch(refreshAction);
-    });
+      this.hubConnection.on("refresh", (refreshAction: RefreshAction) => {
+        this._refreshDispatcher.dispatch(refreshAction);
+      });
 
-    this.hubConnection.onreconnecting(() => {
-      this._onConnectionStateChanged.dispatch(false);
-    });
-    this.hubConnection.onreconnected(() => {
-      this._onConnectionStateChanged.dispatch(true);
-    });
-    this.hubConnection.onclose(() => {
-      setTimeout(() => this.hubConnection.start(), 5000);
-    });
+      this.hubConnection.onreconnecting(() => {
+        this._onConnectionStateChanged.dispatch(false);
+      });
+      this.hubConnection.onreconnected(() => {
+        this._onConnectionStateChanged.dispatch(true);
+      });
+      this.hubConnection.onclose(() => {
+        setTimeout(() => this.hubConnection.start(), 5000);
+      });
 
-    this.hubConnection.start();
+      this.hubConnection.start();
+    });
   }
 
   public get snackbarDispatcher(): SimpleEventDispatcher<Notification> {
