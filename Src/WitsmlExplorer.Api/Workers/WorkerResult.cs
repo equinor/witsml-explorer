@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Workers
         public string Message { get; }
         public string Reason { get; }
         public EntityDescription Description { get; }
+        public string ConnectionId { get; set; }
     }
 
     public class EntityDescription

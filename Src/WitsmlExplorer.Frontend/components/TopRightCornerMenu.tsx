@@ -3,6 +3,7 @@ import { MenuItem } from "@material-ui/core";
 import React, { ReactElement, useContext, useEffect } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
+import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
@@ -11,7 +12,6 @@ import AuthorizationService from "../services/authorizationService";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import { getOffsetFromTimeZone } from "./DateFormatter";
-import JobsButton from "./JobsButton";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./Modals/UserCredentialsModal";
 import ServerManagerButton from "./ServerManagerButton";
 
@@ -123,6 +123,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
+  const onJobs = () => {
+    dispatchNavigation({ type: NavigationType.SelectJobs, payload: {} });
+  };
+
   return (
     <Layout>
       {selectedServer?.currentUsername && (
@@ -132,7 +136,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
         </StyledButton>
       )}
       <ServerManagerButton />
-      <JobsButton />
+      <Button variant="ghost" onClick={onJobs}>
+        <Icon name="assignment" />
+        Jobs
+      </Button>
       <StyledButton variant="ghost" onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
         <Icon name="world" />
         {timeZoneLabels[timeZone]}

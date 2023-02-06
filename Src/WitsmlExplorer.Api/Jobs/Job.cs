@@ -23,5 +23,7 @@ namespace WitsmlExplorer.Api.Jobs
             }
         }
 
+        public string ConnectionId { get; init; }
+
     }
 }

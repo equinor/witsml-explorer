@@ -1,5 +1,5 @@
 import * as signalR from "@microsoft/signalr";
-import { HttpTransportType, HubConnection } from "@microsoft/signalr";
+import { HubConnection } from "@microsoft/signalr";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
 import { getBaseUrl } from "./apiClient";
 
@@ -49,10 +49,7 @@ export default class NotificationService {
       notificationURL = notificationURL + "/";
     }
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${notificationURL}notifications`, {
-        skipNegotiation: true,
-        transport: HttpTransportType.WebSockets
-      })
+      .withUrl(`${notificationURL}notifications`)
       .withAutomaticReconnect([3000, 5000, 10000])
       .configureLogging(signalR.LogLevel.None)
       .build();
@@ -76,6 +73,10 @@ export default class NotificationService {
     });
 
     this.hubConnection.start();
+  }
+
+  public get connectionId(): string | null {
+    return this.hubConnection.connectionId;
   }
 
   public get snackbarDispatcher(): SimpleEventDispatcher<Notification> {

@@ -24,7 +24,6 @@ import {
   UpdateWellboreBhaRunsAction,
   UpdateWellboreLogAction,
   UpdateWellboreLogsAction,
-  UpdateWellboreMessageAction,
   UpdateWellboreMessagesAction,
   UpdateWellboreRigsAction,
   UpdateWellboreRisksAction,
@@ -68,8 +67,6 @@ export const performModificationAction = (state: NavigationState, action: Action
       return updateWellboreLog(state, action);
     case ModificationType.UpdateMessageObjects:
       return updateWellboreMessages(state, action);
-    case ModificationType.UpdateMessageObject:
-      return updateWellboreMessage(state, action);
     case ModificationType.UpdateRigsOnWellbore:
       return updateWellboreRigs(state, action);
     case ModificationType.UpdateRiskObjects:
@@ -277,17 +274,6 @@ const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellb
   };
 };
 
-const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellboreMessageAction) => {
-  const { wells } = state;
-  const { message } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, message);
-  return {
-    ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter)
-  };
-};
-
 const updateWellboreRigs = (state: NavigationState, { payload }: UpdateWellboreRigsAction) => {
   const { wells } = state;
   const { rigs, wellUid, wellboreUid } = payload;
@@ -344,7 +330,9 @@ const insertLogIntoWellsStructure = (wells: Well[], log: LogObject): Well[] => {
   const wellIndex = getWellIndex(freshWells, log.wellUid);
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, log.wellboreUid);
   const logIndex = getLogIndex(freshWells, wellIndex, wellboreIndex, log.uid);
-  freshWells[wellIndex].wellbores[wellboreIndex].logs[logIndex] = log;
+  if (logIndex != null) {
+    freshWells[wellIndex].wellbores[wellboreIndex].logs[logIndex] = log;
+  }
 
   return freshWells;
 };
@@ -487,7 +475,7 @@ const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string)
 };
 
 const getLogIndex = (wells: Well[], wellIndex: number, wellboreIndex: number, logUid: string) => {
-  return wells[wellIndex].wellbores[wellboreIndex].logs.findIndex((log) => log.uid === logUid);
+  return wells[wellIndex]?.wellbores[wellboreIndex]?.logs?.findIndex((log) => log.uid === logUid);
 };
 
 const updateSelectedWellAndWellboreIfNeeded = (state: NavigationState, freshWells: Well[], wellUid: string, wellboreUid: string) => {

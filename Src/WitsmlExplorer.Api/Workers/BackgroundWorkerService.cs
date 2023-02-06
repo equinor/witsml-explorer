@@ -67,7 +67,10 @@ namespace WitsmlExplorer.Api.Workers
                     continue;
                 }
 
-                await _hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
+                if (!string.IsNullOrEmpty(result?.ConnectionId))
+                {
+                    await _hubContext.Clients.Client(result.ConnectionId).SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
+                }
 
                 if (refreshAction != null)
                 {

@@ -14,7 +14,7 @@ export interface MessageObjectRow extends ContentTableRow {
 }
 
 export const MessagesListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
@@ -61,7 +61,7 @@ export const MessagesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedMessageObjectRows: MessageObjectRow[]) => {
-    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers, wellbore: selectedWellbore };
+    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchOperation, selectedServer, servers, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };
