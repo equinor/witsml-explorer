@@ -77,9 +77,9 @@ export interface OperationState {
   modals: ReactElement[];
   theme: UserTheme;
   timeZone: TimeZone;
-  ShowActiveWells: ShowActiveWells
-  SetGrowing: SetGrowing
-  DisplayInactiveTimeCurve: DisplayInactiveTimeCurve
+  ShowActiveWells: ShowActiveWells;
+  SetGrowing: SetGrowing;
+  DisplayInactiveTimeCurve: DisplayInactiveTimeCurve;
 }
 
 export interface MousePosition {
@@ -93,21 +93,21 @@ export interface ContextMenu {
 }
 
 export interface ShowActiveWells {
-  showActiveWells: boolean
+  showActiveWells: boolean;
 }
 
 export interface SetGrowing {
-  showGrowingWells: boolean
+  showGrowingWells: boolean;
 }
 
 export interface DisplayInactiveTimeCurve {
-  displayInactiveTimeCurve: boolean
+  displayInactiveTimeCurve: boolean;
 }
 
 const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
 const showDefaultActiveWells: ShowActiveWells = { showActiveWells: false };
 const SetGrowing: SetGrowing = { showGrowingWells: false };
-const displayInactiveTimeCurve: DisplayInactiveTimeCurve = { displayInactiveTimeCurve: false }
+const displayInactiveTimeCurve: DisplayInactiveTimeCurve = { displayInactiveTimeCurve: false };
 
 export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
   const initialState: OperationState = {
@@ -138,11 +138,11 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
     case OperationType.SetTimeZone:
       return setTimeZone(state, action as SetTimeZoneAction);
     case OperationType.ShowActiveWells:
-      return ShowActiveWells(state, action as SetActiveWellsChecked)
+      return ShowActiveWells(state, action as SetActiveWellsChecked);
     case OperationType.DisplayInactiveTimeCurve:
-      return ShowInactiveCurve(state, action as DisplayInactiveCurves)
+      return ShowInactiveCurve(state, action as DisplayInactiveCurves);
     case OperationType.SetGrowing:
-      return ShowGrowingLogs(state, action as SetGrowingLogs)
+      return ShowGrowingLogs(state, action as SetGrowingLogs);
     default:
       throw new Error();
   }
@@ -199,20 +199,29 @@ const ShowActiveWells = (state: OperationState, { payload }: SetActiveWellsCheck
   return {
     ...state,
     isActiveWellsChecked: payload
-  }
-}
+  };
+};
 const ShowInactiveCurve = (state: OperationState, { payload }: DisplayInactiveCurves) => {
   return {
     ...state,
     displayInactiveCurves: payload
-  }
-}
+  };
+};
 
 const ShowGrowingLogs = (state: OperationState, { payload }: SetGrowingLogs) => {
   return {
     ...state,
     displayInactiveCurves: payload
-  }
-}
+  };
+};
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetActiveWellsChecked | DisplayInactiveCurves | SetGrowingLogs;
+export type OperationAction =
+  | DisplayModalAction
+  | HideModalAction
+  | DisplayContextMenuAction
+  | HideContextMenuAction
+  | SetThemeAction
+  | SetTimeZoneAction
+  | SetActiveWellsChecked
+  | DisplayInactiveCurves
+  | SetGrowingLogs;
