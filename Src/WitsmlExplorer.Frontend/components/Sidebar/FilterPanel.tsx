@@ -33,7 +33,7 @@ const FilterPanel = (): React.ReactElement => {
     paddingBottom: "0.5rem"
   } as CSSProperties;
 
-  const defaultCheckedValues = ["Well", "Wellbore", "bhaRun", "log", "message", "mudLog", "trajectory", "tubular", "wbGeometry"];
+  const defaultCheckedValues = ["Well", "Wellbore", "bhaRun", "log", "message", "mudLog", "risk", "trajectory", "tubular", "wbGeometry"];
   const wellObjectList = Object.values(WellboreObjects).map((wellObj: string) => {
     return (
       <Checkbox

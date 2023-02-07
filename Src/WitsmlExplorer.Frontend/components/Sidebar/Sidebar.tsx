@@ -9,8 +9,8 @@ import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import WellProgress from "../WellProgress";
+import SearchFilter from "./SearchFilter";
 import WellItem from "./WellItem";
-import SearchFilter from "./searchFilter";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -34,7 +34,7 @@ const Sidebar = (): React.ReactElement => {
                 <React.Fragment key={index}>
                   <div style={WellListing} className="ListWells">
                     <WellItem key={well.uid} well={well} />
-                    {well.wellbores.some((wellbores: Wellbore) => wellbores.isActive) ? (
+                    {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
                       <ActiveWellIndicator compactMode={isCompactMode} />
                     ) : (
                       <InactiveWellInidcator compactMode={isCompactMode} />
@@ -46,7 +46,7 @@ const Sidebar = (): React.ReactElement => {
             </TreeView>
           )}
         </WellProgress>
-      </SidebarTreeView>{" "}
+      </SidebarTreeView>
       : <></>
     </React.Fragment>
   );
@@ -61,8 +61,8 @@ const SidebarTreeView = styled.div`
 `;
 
 const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background-color: ${colors.interactive.successHover};
   border-radius: 50%;
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
