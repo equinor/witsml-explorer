@@ -2,12 +2,13 @@
 
 This document describes how to connect to the API with a custom client written in either `C#` or `Python`
 
-For detailed API specification, visit Swagger on url [/swagger/index.html](/swagger/index.html).
+For detailed API specification, visit Swagger on url `/swagger/index.html` on your running instance.
 
 Extra care handling secrets has not been given in the examples below, and will be up to the end user to implement.
 
 ## C#
-witsml-explorer started in Basic authentication mode (`OAuth2Enabled=false`) running on `localhost`
+**Prerequisite:**
+witsml-explorer started in Basic authentication mode (`OAuth2Enabled=false`) running on `localhost`.
 
 In the example below we will first contact the backend to verify access to the WITSML server with the given credentials. The cookie we get in return will be used as authorization later when using endpoints.
 ```csharp
@@ -45,7 +46,8 @@ Console.WriteLine(responseBody);
 ```
 
 ## Python 
-witsml-explorer started in Basic authentication mode (`OAuth2Enabled=false`) running on `localhost`
+**Prerequisite:**
+witsml-explorer started in Basic authentication mode (`OAuth2Enabled=false`) running on `localhost`.
 
 In the example below we will first contact the backend to verify access to the WITSML server with the given credentials. The cookie we get in return will be used as authorization later when using endpoints.
 ```py
@@ -86,3 +88,4 @@ except requests.exceptions.RequestException as e:
 
 ```
 
+For running instances where `OAuth2Enabled=true` the same code can be used, but without any cookies and including a `Bearer` token from your identityprovider added in the `Authorization` Header. 
