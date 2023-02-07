@@ -1,24 +1,16 @@
-﻿import { Checkbox, EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
+﻿import { Checkbox, TextField, Typography } from "@equinor/eds-core-react";
 import { Divider } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
-import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "../../contexts/curveThreshold";
-import Filter, { EMPTY_FILTER } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { DisabledWellObj, WellboreObjects } from "../../contexts/wellboreObjects";
+import { WellboreObjects } from "../../contexts/wellboreObjects";
 import { colors } from "../../styles/Colors";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedFilter, selectedCurveThreshold } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
-
-  const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
-  const [curveThreshold, setCurveThreshold] = useState<CurveThreshold>(DEFAULT_CURVE_THRESHOLD);
 
   const [showMore, setShowmore] = useState<boolean>(false);
   const ListWellborObj = {
@@ -41,59 +33,18 @@ const FilterPanel = (): React.ReactElement => {
     paddingBottom: "0.5rem"
   } as CSSProperties;
 
-  useEffect(() => {
-    setFilter(selectedFilter);
-  }, [selectedFilter]);
-
-  const defaultCheckedValues = ["Well", "Wellbore"];
-  //remove below code if service is implementes for storing checkbox checked value.
-  const isChecked = (event: React.ChangeEvent<HTMLInputElement>, filterParameter: string) => {
-    const isCheckActive = {
-      isCheck: event.target.checked
-    };
-    const isGrowingWell = {
-      isGrowingWellsActive: event.target.checked
-    };
-    const hideInactive = {
-      isInactive: event.target.checked
-    };
-
-    switch (filterParameter) {
-      case "showActiveWells":
-        dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, isActive: event.target.checked } } });
-        localStorage.setItem("showActiveWell", JSON.stringify(isCheckActive));
-        dispatchOperation({ type: OperationType.ShowActiveWells, payload: isCheckActive.isCheck });
-        break;
-      case "showGrowingWells":
-        dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, objectGrowing: event.target.checked } } });
-        localStorage.setItem("showGrowingWells", JSON.stringify(isGrowingWell));
-        dispatchOperation({ type: OperationType.SetGrowing, payload: isGrowingWell.isGrowingWellsActive });
-        break;
-
-      case "hideInactiveWells":
-        dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, hideInactiveCurves: event.target.checked } } });
-        localStorage.setItem("hideInactiveWells", JSON.stringify(hideInactive));
-        dispatchOperation({ type: OperationType.DisplayInactiveTimeCurve, payload: hideInactive.isInactive });
-        break;
-    }
-  };
-  const wellObjectList = Object.values(WellboreObjects).map((wellObj: string, index: number) => {
+  const defaultCheckedValues = ["Well", "Wellbore", "bhaRun", "log", "message", "mudLog", "trajectory", "tubular", "wbGeometry"];
+  const wellObjectList = Object.values(WellboreObjects).map((wellObj: string) => {
     return (
-      <EdsProvider key={index}>
-        <Checkbox
-          label={wellObj}
-          disabled={Object.keys(DisabledWellObj).includes(wellObj)}
-          style={{ height: "0.75rem" }}
-          defaultChecked={defaultCheckedValues[0] == wellObj || defaultCheckedValues[1] == wellObj}
-          key={wellObj}
-        />
-      </EdsProvider>
+      <Checkbox
+        label={wellObj}
+        disabled={true} //disabling everything for now as checking objects does not do anything yet, should use DisabledWellObj when implemented
+        style={{ height: "0.75rem" }}
+        defaultChecked={defaultCheckedValues.includes(wellObj)}
+        key={wellObj}
+      />
     );
   });
-
-  useEffect(() => {
-    setCurveThreshold(selectedCurveThreshold);
-  }, [selectedCurveThreshold]);
 
   return (
     <Container style={{ boxShadow: !showMore ? "1px 4px 5px 0px #8888" : "none" }}>
@@ -110,9 +61,9 @@ const FilterPanel = (): React.ReactElement => {
               type="number"
               min={0}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellLimit: Number(event.target.value) } } })
+                dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, wellLimit: Number(event.target.value) } } })
               }
-              value={filter.wellLimit}
+              value={selectedFilter.wellLimit}
               autoComplete={"off"}
             />
           </div>
@@ -122,16 +73,16 @@ const FilterPanel = (): React.ReactElement => {
               id="filter-isActive"
               value={"Show active Wells / Wellbores"}
               color={"primary"}
-              checked={JSON.parse(localStorage.getItem("showActiveWell"))?.isCheck ?? false}
-              onChange={(event) => isChecked(event, "showActiveWells")}
+              checked={selectedFilter.isActive}
+              onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, isActive: event.target.checked } } })}
               style={{ height: "0.625rem", userSelect: "none" }}
               label={"Show active Wells / Wellbores"}
             />
           </div>
           <div style={{ userSelect: "none" }}>
             <Checkbox
-              onChange={(event) => isChecked(event, "showGrowingWells")}
-              checked={JSON.parse(localStorage.getItem("showGrowingWells"))?.isGrowingWellsActive ?? false}
+              onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, objectGrowing: event.target.checked } } })}
+              checked={selectedFilter.objectGrowing}
               id="filter-objectGrowing"
               value={"Show growing logs"}
               color={"primary"}
@@ -162,9 +113,12 @@ const FilterPanel = (): React.ReactElement => {
               type="number"
               min={0}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...curveThreshold, timeInMinutes: Number(event.target.value) } } })
+                dispatchNavigation({
+                  type: NavigationType.SetCurveThreshold,
+                  payload: { curveThreshold: { ...selectedCurveThreshold, timeInMinutes: Number(event.target.value) } }
+                })
               }
-              value={curveThreshold.timeInMinutes}
+              value={selectedCurveThreshold.timeInMinutes}
               autoComplete={"off"}
             />
           </div>
@@ -172,8 +126,10 @@ const FilterPanel = (): React.ReactElement => {
           <div style={{ userSelect: "none" }}>
             <Checkbox
               id="curveThreshold-hideInactive"
-              onChange={(event) => isChecked(event, "hideInactiveWells")}
-              checked={JSON.parse(localStorage.getItem("hideInactiveWells"))?.isInactive ?? false}
+              onChange={(event) =>
+                dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...selectedCurveThreshold, hideInactiveCurves: event.target.checked } } })
+              }
+              checked={selectedCurveThreshold.hideInactiveCurves}
               value={"Hide inactive time curves"}
               color={"primary"}
               style={{ height: "10px" }}

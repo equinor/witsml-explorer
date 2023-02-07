@@ -3,13 +3,13 @@ export enum WellboreObjects {
   Wellbore = "Wellbore",
   bhaRun = "bhaRun",
   log = "log",
-  cementJobs = "cementJobs",
   message = "message",
   mudLog = "mudLog",
   trajectory = "trajectory",
   tubular = "tubular",
   wbGeometry = "wbGeometry",
   attachment = "attachment",
+  cementJobs = "cementJobs",
   convCore = "convCore",
   customObjcts = "customObjcts",
   drillReport = "drillReport",
@@ -47,5 +47,6 @@ export enum DisabledWellObj {
   drillReport = "drillReport",
   customObjcts = "customObjcts",
   convCore = "convCore",
+  cementJobs = "cementJobs",
   attachment = "attachment"
 }

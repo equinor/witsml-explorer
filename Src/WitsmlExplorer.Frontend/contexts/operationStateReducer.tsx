@@ -56,30 +56,12 @@ export interface SetTimeZoneAction extends PayloadAction {
   payload: TimeZone;
 }
 
-export interface SetActiveWellsChecked extends PayloadAction {
-  type: OperationType.ShowActiveWells;
-  payload: boolean;
-}
-
-export interface SetGrowingLogs extends PayloadAction {
-  type: OperationType.SetGrowing;
-  payload: boolean;
-}
-
-export interface DisplayInactiveCurves extends PayloadAction {
-  type: OperationType.DisplayInactiveTimeCurve;
-  payload: boolean;
-}
-
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
   modals: ReactElement[];
   theme: UserTheme;
   timeZone: TimeZone;
-  ShowActiveWells: ShowActiveWells;
-  SetGrowing: SetGrowing;
-  DisplayInactiveTimeCurve: DisplayInactiveTimeCurve;
 }
 
 export interface MousePosition {
@@ -92,22 +74,7 @@ export interface ContextMenu {
   position: MousePosition;
 }
 
-export interface ShowActiveWells {
-  showActiveWells: boolean;
-}
-
-export interface SetGrowing {
-  showGrowingWells: boolean;
-}
-
-export interface DisplayInactiveTimeCurve {
-  displayInactiveTimeCurve: boolean;
-}
-
 const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
-const showDefaultActiveWells: ShowActiveWells = { showActiveWells: false };
-const SetGrowing: SetGrowing = { showGrowingWells: false };
-const displayInactiveTimeCurve: DisplayInactiveTimeCurve = { displayInactiveTimeCurve: false };
 
 export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
   const initialState: OperationState = {
@@ -115,10 +82,7 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     progressIndicatorValue: 0,
     modals: [],
     theme: UserTheme.Compact,
-    timeZone: TimeZone.Local,
-    ShowActiveWells: showDefaultActiveWells,
-    SetGrowing: SetGrowing,
-    DisplayInactiveTimeCurve: displayInactiveTimeCurve
+    timeZone: TimeZone.Local
   };
   return useReducer(reducer, initialState);
 };
@@ -137,12 +101,6 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return setTheme(state, action as SetThemeAction);
     case OperationType.SetTimeZone:
       return setTimeZone(state, action as SetTimeZoneAction);
-    case OperationType.ShowActiveWells:
-      return ShowActiveWells(state, action as SetActiveWellsChecked);
-    case OperationType.DisplayInactiveTimeCurve:
-      return ShowInactiveCurve(state, action as DisplayInactiveCurves);
-    case OperationType.SetGrowing:
-      return ShowGrowingLogs(state, action as SetGrowingLogs);
     default:
       throw new Error();
   }
@@ -195,33 +153,4 @@ const setTimeZone = (state: OperationState, { payload }: SetTimeZoneAction) => {
   };
 };
 
-const ShowActiveWells = (state: OperationState, { payload }: SetActiveWellsChecked) => {
-  return {
-    ...state,
-    isActiveWellsChecked: payload
-  };
-};
-const ShowInactiveCurve = (state: OperationState, { payload }: DisplayInactiveCurves) => {
-  return {
-    ...state,
-    displayInactiveCurves: payload
-  };
-};
-
-const ShowGrowingLogs = (state: OperationState, { payload }: SetGrowingLogs) => {
-  return {
-    ...state,
-    displayInactiveCurves: payload
-  };
-};
-
-export type OperationAction =
-  | DisplayModalAction
-  | HideModalAction
-  | DisplayContextMenuAction
-  | HideContextMenuAction
-  | SetThemeAction
-  | SetTimeZoneAction
-  | SetActiveWellsChecked
-  | DisplayInactiveCurves
-  | SetGrowingLogs;
+export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction;
