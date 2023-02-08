@@ -23,6 +23,7 @@ using WitsmlExplorer.Api.Services;
 using Xunit;
 namespace WitsmlExplorer.Api.Tests.Services
 {
+    [Collection("UsingCache")]
     public class CredentialsServiceTests
     {
         private readonly CredentialsService _basicCredentialsService;
