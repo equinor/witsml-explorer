@@ -23,7 +23,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
         }
 
-        [Fact]
+        [Fact(Skip = "Should only be run manually")]
         public async Task GetMudLogSerializesCorrectly()
         {
             // if the following mudLog does not exit, add the file MudLog to the server manually
