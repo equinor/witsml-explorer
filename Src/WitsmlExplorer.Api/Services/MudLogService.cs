@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Witsml.Data;
-using Witsml.Query;
+using Witsml.Data.MudLog;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -78,12 +78,13 @@ namespace WitsmlExplorer.Api.Services
                     TypeLithology = geologyInterval.TypeLithology,
                     MdTop = geologyInterval.MdTop?.Value,
                     MdBottom = geologyInterval.MdBottom?.Value,
-                    Lithology = geologyInterval.Lithology == null ? null : new MudLogLithology
+                    Lithologies = geologyInterval.Lithologies?.Select(l => new MudLogLithology()
                     {
-                        CodeLith = geologyInterval.Lithology.CodeLith,
-                        LithPc = geologyInterval.Lithology.LithPc?.Value,
-                        Type = geologyInterval.Lithology.Type
-                    },
+                        Uid = l.Uid,
+                        CodeLith = l.CodeLith,
+                        LithPc = l.LithPc?.Value,
+                        Type = l.Type
+                    }).ToList(),
                     CommonTime = new CommonTime
                     {
                         DTimCreation = StringHelpers.ToDateTime(geologyInterval.CommonTime.DTimCreation),
