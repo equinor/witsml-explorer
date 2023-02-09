@@ -70,6 +70,7 @@ const Routing = (): React.ReactElement => {
   } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
+  const [hasSelectedServer, setHasSelectedServer] = useState<boolean>(false);
   const [urlParams, setUrlParams] = useState<QueryParams>(null);
   const [currentQueryParams, setCurrentQueryParams] = useState<QueryParams>(null);
 
@@ -120,8 +121,14 @@ const Routing = (): React.ReactElement => {
       const serverUrl = urlParams.serverUrl;
       const server = servers.find((server: Server) => server.url === serverUrl);
       if (server && !selectedServer) {
-        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
-        dispatchNavigation(action);
+        if (hasSelectedServer) {
+          // finish syncing if we already attempted to select a server (such as on login cancellation)
+          setIsSyncingUrlAndState(false);
+        } else {
+          setHasSelectedServer(true);
+          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
+          dispatchNavigation(action);
+        }
       }
     }
   }, [servers, urlParams]);
