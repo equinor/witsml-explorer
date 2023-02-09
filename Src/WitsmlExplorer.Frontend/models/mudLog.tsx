@@ -1,11 +1,22 @@
+import CommonData, { emptyCommonData } from "./commonData";
+import MeasureWithDatum from "./measureWithDatum";
 import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
 
-// This is disabled because more attributes will be included later
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export default interface MudLog extends ObjectOnWellbore {}
+export default interface MudLog extends ObjectOnWellbore {
+  mudLogCompany: string;
+  mudLogEngineers: string;
+  startMd: MeasureWithDatum;
+  endMd: MeasureWithDatum;
+  commonData: CommonData;
+}
 
 export function emptyMudLog(): MudLog {
   return {
-    ...emptyObjectOnWellbore()
+    ...emptyObjectOnWellbore(),
+    mudLogCompany: "",
+    mudLogEngineers: "",
+    startMd: null,
+    endMd: null,
+    commonData: emptyCommonData()
   };
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 namespace Witsml.Data.MudLog
@@ -28,10 +29,10 @@ namespace Witsml.Data.MudLog
         public string MudLogEngineers { get; set; }
 
         [XmlElement("startMd")]
-        public WitsmlIndex StartMd { get; set; }
+        public WitsmlMeasureWithDatum StartMd { get; set; }
 
         [XmlElement("endMd")]
-        public WitsmlIndex EndMd { get; set; }
+        public WitsmlMeasureWithDatum EndMd { get; set; }
 
         [XmlElement("relatedLog")]
         public List<string> RelatedLog { get; set; }
