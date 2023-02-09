@@ -241,7 +241,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onLabelClick={() => onSelectMessageGroup(well, wellbore, messageGroupId)}
         onContextMenu={preventContextMenuPropagation}
       />
-      <TreeItem nodeId={mudLogGroupId} labelText={"MudLogs"} onLabelClick={() => onSelectMudLogGroup(well, wellbore, mudLogGroupId)} onContextMenu={preventContextMenuPropagation}>
+      <TreeItem
+        nodeId={mudLogGroupId}
+        labelText={"MudLogs"}
+        onLabelClick={() => onSelectMudLogGroup(well, wellbore, mudLogGroupId)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.MudLog, JobType.CopyMudLog)}
+      >
         {wellbore &&
           wellbore.mudLogs &&
           wellbore.mudLogs.map((mudLog) => (

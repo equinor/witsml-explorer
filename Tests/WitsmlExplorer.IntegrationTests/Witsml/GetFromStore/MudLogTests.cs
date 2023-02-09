@@ -31,7 +31,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             string wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
             string wellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110";
             string mudLogUid = "integration_test";
-            WitsmlMudLogs queryExisting = MudLogQueries.QueryById(wellUid, wellboreUid, mudLogUid);
+            WitsmlMudLogs queryExisting = MudLogQueries.QueryById(wellUid, wellboreUid, new string[] { mudLogUid });
             WitsmlMudLogs serverMudLog = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string responseXml = XmlHelper.Serialize(serverMudLog);
             string serverMudLogXml = TestUtils.CleanResponse(responseXml);

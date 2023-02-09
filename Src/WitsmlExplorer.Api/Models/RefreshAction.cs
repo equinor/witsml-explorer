@@ -128,6 +128,22 @@ namespace WitsmlExplorer.Api.Models
             RefreshType = refreshType;
         }
     }
+
+    public class RefreshMudLogs : RefreshAction
+    {
+        public override EntityType EntityType => EntityType.MudLogs;
+        public string WellUid { get; }
+        public string WellboreUid { get; }
+        public RefreshType RefreshType { get; }
+
+        public RefreshMudLogs(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl)
+        {
+            WellUid = wellUid;
+            WellboreUid = wellboreUid;
+            RefreshType = refreshType;
+        }
+    }
+
     public class RefreshRigs : RefreshAction
     {
         public override EntityType EntityType => EntityType.Rigs;

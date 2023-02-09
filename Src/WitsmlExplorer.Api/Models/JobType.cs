@@ -5,6 +5,7 @@ namespace WitsmlExplorer.Api.Models
         CopyBhaRun = 1,
         CopyLog,
         CopyLogData,
+        CopyMudLog,
         CopyRig,
         CopyRisk,
         CopyTrajectory,

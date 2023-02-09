@@ -1,6 +1,7 @@
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
+import MudLog from "../models/mudLog";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -85,6 +86,11 @@ export interface UpdateWellboreMessagesAction extends Action {
 export interface UpdateWellboreMessageAction extends Action {
   type: ModificationType.UpdateMessageObject;
   payload: { message: MessageObject };
+}
+
+export interface UpdateWellboreMudLogsAction extends Action {
+  type: ModificationType.UpdateMudLogs;
+  payload: { mudLogs: MudLog[]; wellUid: string; wellboreUid: string };
 }
 
 export interface UpdateWellboreRigsAction extends Action {

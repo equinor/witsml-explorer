@@ -6,6 +6,7 @@ import EntityType from "../models/entityType";
 import BhaRunService from "../services/bhaRunService";
 import LogObjectService from "../services/logObjectService";
 import MessageObjectService from "../services/messageObjectService";
+import MudLogService from "../services/mudLogService";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import RigService from "../services/rigService";
 import RiskObjectService from "../services/riskObjectService";
@@ -42,6 +43,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.LogObjects:
             await refreshLogObjects(refreshAction, ModificationType.UpdateLogObjects);
+            break;
+          case EntityType.MudLogs:
+            await refreshMudLogs(refreshAction, ModificationType.UpdateMudLogs);
             break;
           case EntityType.MessageObjects:
             await refreshMessageObjects(refreshAction, modificationType);
@@ -148,6 +152,17 @@ const RefreshHandler = (): React.ReactElement => {
       const wellboreUid = refreshAction.wellboreUid;
       if (messages) {
         dispatchNavigation({ type: modificationType, payload: { messages, wellUid, wellboreUid } });
+      }
+    }
+  }
+
+  async function refreshMudLogs(refreshAction: RefreshAction, modificationType: ModificationType) {
+    if (modificationType === ModificationType.UpdateMudLogs) {
+      const mudLogs = await MudLogService.getMudLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellUid = refreshAction.wellUid;
+      const wellboreUid = refreshAction.wellboreUid;
+      if (mudLogs) {
+        dispatchNavigation({ type: modificationType, payload: { mudLogs, wellUid, wellboreUid } });
       }
     }
   }

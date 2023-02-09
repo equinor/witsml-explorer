@@ -31,16 +31,16 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static WitsmlMudLogs QueryById(string wellUid, string wellboreUid, string mudLogUid)
+        public static WitsmlMudLogs QueryById(string wellUid, string wellboreUid, string[] mudLogUids)
         {
             return new WitsmlMudLogs
             {
-                MudLogs = new WitsmlMudLog
+                MudLogs = mudLogUids.Select(uid => new WitsmlMudLog
                 {
-                    Uid = mudLogUid,
+                    Uid = uid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }).ToList()
             };
         }
 
@@ -89,6 +89,18 @@ namespace WitsmlExplorer.Api.Query
                     }
                 }.AsSingletonList()
             };
+        }
+
+        public static IEnumerable<WitsmlMudLog> CopyWitsmlMudLogs(WitsmlMudLogs mudLogs, WitsmlWellbore targetWellbore)
+        {
+            return mudLogs.MudLogs.Select((mudLog) =>
+            {
+                mudLog.UidWell = targetWellbore.UidWell;
+                mudLog.NameWell = targetWellbore.NameWell;
+                mudLog.UidWellbore = targetWellbore.Uid;
+                mudLog.NameWellbore = targetWellbore.Name;
+                return mudLog;
+            });
         }
     }
 }
