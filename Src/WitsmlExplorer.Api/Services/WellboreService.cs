@@ -80,7 +80,8 @@ namespace WitsmlExplorer.Api.Services
                         WellStatus = witsmlWellbore.StatusWellbore,
                         WellType = witsmlWellbore.TypeWellbore,
                         IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
-                        DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange
+                        DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
+                        DateTimeCreation = witsmlWellbore.CommonData.DTimCreation
                     })
                 .OrderBy(wellbore => wellbore.Name).ToList();
             double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
