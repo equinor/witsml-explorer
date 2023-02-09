@@ -13,7 +13,6 @@ namespace WitsmlExplorer.Api.Tests.Services
     public class CredentialsCacheTests
     {
         private readonly CredentialsCache _credentialsCache;
-        private readonly Random _random = new();
 
         public CredentialsCacheTests()
         {
@@ -22,16 +21,15 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void RemoveAllClientCredentials_TwoOfThree_ReturnOne()
+        public void RemoveAllClientCredentials_OneOfTwo_ReturnOne()
         {
             string cacheId = Guid.NewGuid().ToString();
             string url = "https://somehost";
             string witsmlUsername = "user";
 
             _credentialsCache.Clear();
-            _credentialsCache.SetItem(cacheId, new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
-            _credentialsCache.SetItem(cacheId, new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
-            _credentialsCache.SetItem(Guid.NewGuid().ToString(), new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(cacheId, new Uri($"{url}1.com"), "password1", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(Guid.NewGuid().ToString(), new Uri($"{url}2.com"), "password2", 1.0, witsmlUsername);
 
             long before = _credentialsCache.Count();
             _credentialsCache.RemoveAllClientCredentials(cacheId);
@@ -42,15 +40,14 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public void Clear_SetThree_ReturnZero()
+        public void Clear_SetTwo_ReturnZero()
         {
             string cacheId = Guid.NewGuid().ToString();
             string url = "https://somehost";
             string witsmlUsername = "user";
 
-            _credentialsCache.SetItem(cacheId, new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
-            _credentialsCache.SetItem(cacheId, new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
-            _credentialsCache.SetItem(Guid.NewGuid().ToString(), new Uri($"{url}{_random.Next(1000)}.com"), $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(cacheId, new Uri($"{url}1.com"), "password1", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(Guid.NewGuid().ToString(), new Uri($"{url}2.com"), "password2", 1.0, witsmlUsername);
 
             long before = _credentialsCache.Count();
             _credentialsCache.Clear();
@@ -65,8 +62,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             string cacheId = Guid.NewGuid().ToString();
             Uri url = new("https://somehost.com");
 
-            _credentialsCache.SetItem(cacheId, url, $"DUMMY_VALUE{_random.Next(1000)}", 1.0, "user1");
-            _credentialsCache.SetItem(cacheId, url, $"DUMMY_VALUE{_random.Next(1000)}", 1.0, "user2");
+            _credentialsCache.SetItem(cacheId, url, "password1", 1.0, "user1");
+            _credentialsCache.SetItem(cacheId, url, "password2", 1.0, "user2");
 
             Dictionary<string, Dictionary<string, string>> clientDictionary = _credentialsCache.GetItem(cacheId);
             Assert.Single(clientDictionary);
@@ -83,8 +80,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             Uri url2 = new("https://somehost2.com");
             string witsmlUsername = "user";
 
-            _credentialsCache.SetItem(cacheId, url, $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
-            _credentialsCache.SetItem(cacheId, url2, $"DUMMY_VALUE{_random.Next(1000)}", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(cacheId, url, "password1", 1.0, witsmlUsername);
+            _credentialsCache.SetItem(cacheId, url2, "password2", 1.0, witsmlUsername);
 
             Dictionary<string, Dictionary<string, string>> clientDictionary = _credentialsCache.GetItem(cacheId);
             Assert.Equal(2, clientDictionary.Count);
