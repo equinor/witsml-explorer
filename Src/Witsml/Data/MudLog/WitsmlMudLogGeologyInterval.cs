@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -91,6 +92,7 @@ namespace Witsml.Data.MudLog
         [XmlElement("calcStab")]
         public Measure CalcStab { get; set; }
 
+        [Obsolete("Deprecated as of WITSML version 1.4.1")]
         [XmlElement("nameFormation")]
         public List<string> NameFormation { get; set; }
 

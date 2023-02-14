@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -22,12 +23,15 @@ namespace Witsml.Data.MudLog
         [XmlElement("description")]
         public string Description { get; set; }
 
+        [Obsolete("Deprecated as of WITSML version 1.4.1")]
         [XmlElement("lithClass")]
         public string LithClass { get; set; }
 
+        [Obsolete("Deprecated as of WITSML version 1.4.1")]
         [XmlElement("grainType")]
         public string GrainType { get; set; }
 
+        [Obsolete("Deprecated as of WITSML version 1.4.1")]
         [XmlElement("dunhamClass")]
         public string DunhamClass { get; set; }
 
@@ -67,6 +71,7 @@ namespace Witsml.Data.MudLog
         [XmlElement("permeability")]
         public string Permeability { get; set; }
 
+        [Obsolete("Deprecated as of WITSML version 1.4.1")]
         [XmlElement("densShale")]
         public Measure DensShale { get; set; }
 
