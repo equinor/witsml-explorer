@@ -1,0 +1,172 @@
+<mudLogs version="1.4.1.1" xmlns="http://www.witsml.org/schemas/1series">
+  <mudLog uidWell="8c77de13-4fad-4b2e-ba3d-7e6b0e35a394" uidWellbore="44e7a064-c2f2-4a3a-9259-5ab92085e110" uid="integration_test">
+    <nameWell>0/1-2-3 SAS</nameWell>
+    <nameWellbore>jan_test</nameWellbore>
+    <name>Integration Test</name>
+    <dTim>2011-09-15T15:30:00.402Z</dTim>
+    <mudLogCompany>Mud log company</mudLogCompany>
+    <mudLogEngineers>Mud log Engineers</mudLogEngineers>
+    <startMd uom="ft">8920.19</startMd>
+    <endMd uom="ft">9420</endMd>
+    <parameter uid="00001">
+      <type>midnight depth date</type>
+      <mdTop uom="ft">8920.19</mdTop>
+      <mdBottom uom="ft">8920.19</mdBottom>
+      <text>2011/09/15</text>
+      <commonTime></commonTime>
+    </parameter>
+    <parameter uid="00002">
+      <type>core interval comment</type>
+      <mdTop uom="ft">9010</mdTop>
+      <mdBottom uom="ft">9070</mdBottom>
+      <text>Core #3. Core 8 1/2 inches from 9010 MD to 9070 MD, recovered 98%</text>
+      <commonTime></commonTime>
+    </parameter>
+    <parameter uid="00003">
+      <type>overpull on connection</type>
+      <mdTop uom="ft">9195.42</mdTop>
+      <mdBottom uom="ft">9195.42</mdBottom>
+      <force uom="klbf">50</force>
+      <text>50 Klb o/p on connection</text>
+      <commonTime></commonTime>
+    </parameter>
+    <geologyInterval uid="00001">
+      <typeLithology>cuttings</typeLithology>
+      <mdTop uom="ft">8990</mdTop>
+      <mdBottom uom="ft">9420</mdBottom>
+      <dTim>2011-09-15T02:45:36.381Z</dTim>
+      <tvdTop uom="ft">7236.72</tvdTop>
+      <tvdBase uom="ft">7680.39</tvdBase>
+      <ropAv uom="ft/h">12</ropAv>
+      <ropMn uom="ft/h">10</ropMn>
+      <ropMx uom="ft/h">15</ropMx>
+      <wobAv uom="lbf">6</wobAv>
+      <tqAv uom="lbf.ft">600</tqAv>
+      <rpmAv uom="rpm">120</rpmAv>
+      <wtMudAv uom="lbm/ft3">10.5</wtMudAv>
+      <ecdTdAv uom="lbm/ft3">10.6</ecdTdAv>
+      <dxcAv>0.95</dxcAv>
+      <lithology uid="00001">
+        <type>Sandstone</type>
+        <description>Sandstone: vf-f, clr-frost, mod srt, gd vis por</description>
+        <color>frosted</color>
+        <texture>friable</texture>
+        <hardness>moderately hard</hardness>
+        <sizeGrain>fine sand</sizeGrain>
+        <roundness>well rounded</roundness>
+        <sorting>well sorted</sorting>
+        <matrixCement>Calcite</matrixCement>
+        <porosityVisible>moderate</porosityVisible>
+        <permeability>fairly permeable</permeability>
+        <densShale uom="g/cm3">2.6</densShale>
+        <qualifier uid="00001">
+          <type>pyrite</type>
+          <abundance uom="%">10</abundance>
+          <description>lg crystals</description>
+        </qualifier>
+      </lithology>
+      <show>
+        <showRat>good</showRat>
+        <stainColor>brown</stainColor>
+        <stainDistr>even</stainDistr>
+        <stainPc uom="%">50</stainPc>
+        <natFlorColor>White</natFlorColor>
+        <natFlorPc uom="%">25</natFlorPc>
+        <natFlorLevel>faint</natFlorLevel>
+        <natFlorDesc>Nat Flor Desc</natFlorDesc>
+        <cutColor>white</cutColor>
+        <cutSpeed>fast</cutSpeed>
+        <cutStrength>strong</cutStrength>
+        <cutForm>streaming</cutForm>
+        <cutLevel>bright</cutLevel>
+        <cutFlorColor>bright white</cutFlorColor>
+        <cutFlorSpeed>instantaneous</cutFlorSpeed>
+        <cutFlorStrength>strong</cutFlorStrength>
+        <cutFlorForm>blooming</cutFlorForm>
+        <cutFlorLevel>bright</cutFlorLevel>
+        <residueColor>brown</residueColor>
+        <showDesc>Show Desc</showDesc>
+        <impregnatedLitho>Impregnated Litho</impregnatedLitho>
+        <odor>petrol</odor>
+      </show>
+      <chromatograph>
+        <dTim>2011-09-15T04:34:25.270Z</dTim>
+        <mdTop uom="ft">9210.41</mdTop>
+        <mdBottom uom="ft">9291.93</mdBottom>
+        <wtMudIn uom="lbm/ft3">10.5</wtMudIn>
+        <wtMudOut uom="lbm/ft3">10.5</wtMudOut>
+        <chromType>Flame Ion Detect</chromType>
+        <eTimChromCycle uom="s">30</eTimChromCycle>
+        <chromIntRpt>2011-09-15T04:29:33.579Z</chromIntRpt>
+        <methAv uom="ppm">600</methAv>
+        <methMn uom="ppm">500</methMn>
+        <methMx uom="ppm">700</methMx>
+        <ethAv uom="ppm">120</ethAv>
+        <ethMn uom="ppm">100</ethMn>
+        <ethMx uom="ppm">130</ethMx>
+        <propAv uom="ppm">45</propAv>
+        <propMn uom="ppm">40</propMn>
+        <propMx uom="ppm">70</propMx>
+        <ibutAv uom="ppm">10</ibutAv>
+        <ibutMn uom="ppm">5</ibutMn>
+        <ibutMx uom="ppm">15</ibutMx>
+        <nbutAv uom="ppm">10</nbutAv>
+        <nbutMn uom="ppm">10</nbutMn>
+        <nbutMx uom="ppm">10</nbutMx>
+        <ipentAv uom="ppm">1</ipentAv>
+        <ipentMn uom="ppm">1</ipentMn>
+        <ipentMx uom="ppm">1</ipentMx>
+        <npentAv uom="ppm">1</npentAv>
+        <npentMn uom="ppm">0.099</npentMn>
+        <npentMx uom="ppm">0.099</npentMx>
+        <epentAv uom="ppm">0.099</epentAv>
+        <epentMn uom="ppm">0.099</epentMn>
+        <epentMx uom="ppm">0.099</epentMx>
+        <ihexAv uom="ppm">0.099</ihexAv>
+        <ihexMn uom="ppm">0.099</ihexMn>
+        <ihexMx uom="ppm">0.099</ihexMx>
+        <nhexAv uom="ppm">0.099</nhexAv>
+        <nhexMn uom="ppm">0.099</nhexMn>
+        <nhexMx uom="ppm">0.099</nhexMx>
+        <co2Av uom="ppm">0.099</co2Av>
+        <co2Mn uom="ppm">0.099</co2Mn>
+        <co2Mx uom="ppm">0.099</co2Mx>
+        <h2sAv uom="ppm">0</h2sAv>
+        <h2sMn uom="ppm">0</h2sMn>
+        <h2sMx uom="ppm">0</h2sMx>
+        <acetylene uom="ppm">0.099</acetylene>
+      </chromatograph>
+      <mudGas>
+        <gasAv uom="%">1.24</gasAv>
+        <gasPeak uom="%">1.4</gasPeak>
+        <gasPeakType>connection gas</gasPeakType>
+        <gasBackgnd uom="%">1</gasBackgnd>
+        <gasConAv uom="%">1.2</gasConAv>
+        <gasConMx uom="%">1.3</gasConMx>
+        <gasTrip uom="%">2.4</gasTrip>
+      </mudGas>
+      <densBulk uom="lbm/ft3">1.56</densBulk>
+      <densShale uom="lbm/ft3">1.65</densShale>
+      <calcite uom="%">6</calcite>
+      <dolomite uom="%">1</dolomite>
+      <cec uom="meq/g">0.099</cec>
+      <calcStab uom="%">0.099</calcStab>
+      <lithostratigraphic kind="formation">Rotliegende</lithostratigraphic>
+      <chronostratigraphic kind="period">Permian</chronostratigraphic>
+      <chronostratigraphic kind="epoch">Cisuralian</chronostratigraphic>
+      <chronostratigraphic kind="stage">Sakmarian</chronostratigraphic>
+      <sizeMn uom="in">0.099</sizeMn>
+      <sizeMx uom="in">0.099</sizeMx>
+      <lenPlug uom="in">0.099</lenPlug>
+      <description>Sandstone: vf-f, clr-frost, mod srt, gd vis por</description>
+      <cuttingFluid>Chlorothene</cuttingFluid>
+      <cleaningMethod>Agitene</cleaningMethod>
+      <dryingMethod>Spin Dryer</dryingMethod>
+      <commonTime></commonTime>
+    </geologyInterval>
+    <commonData>
+      <itemState>actual</itemState>
+      <defaultDatum>KB</defaultDatum>
+    </commonData>
+  </mudLog>
+</mudLogs>

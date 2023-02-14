@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-
-using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -11,7 +8,7 @@ namespace WitsmlExplorer.Api.Models
         public string TypeLithology { get; set; }
         public string MdTop { get; set; }
         public string MdBottom { get; set; }
-        public MudLogLithology Lithology { get; set; }
+        public List<MudLogLithology> Lithologies { get; set; }
         public CommonTime CommonTime { get; set; }
     }
 }
