@@ -104,8 +104,8 @@ namespace WitsmlExplorer.Api
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
-
             }
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications"));
         }
     }
