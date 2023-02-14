@@ -5,19 +5,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
-using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandlers
 {
     public static class AuthorizeHandler
     {
-        public static async Task<IResult> Authorize([FromQuery(Name = "keep")] bool keep, [FromServices] ICredentialsService credentialsService, HttpContext httpContext, IConfiguration configuration)
+        public static async Task<IResult> Authorize([FromQuery(Name = "keep")] bool keep, [FromServices] ICredentialsService credentialsService, HttpContext httpContext)
         {
             EssentialHeaders eh = new(httpContext?.Request);
-            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            string clientId = useOAuth2 ? credentialsService.GetClientId(eh) : httpContext.GetOrCreateWitsmlExplorerCookie();
-            bool success = await credentialsService.VerifyAndCacheCredentials(eh, keep, clientId);
+            bool success = await credentialsService.VerifyAndCacheCredentials(eh, keep, httpContext);
             if (success)
             {
                 return TypedResults.Ok();
@@ -33,8 +30,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 httpContext.Response.Cookies.Delete(EssentialHeaders.CookieName);
             }
-            string cacheClientId = credentialsService.GetClientId(eh);
-            credentialsService.RemoveCachedCredentials(cacheClientId);
+            string cacheId = credentialsService.GetCacheId(eh);
+            credentialsService.RemoveCachedCredentials(cacheId);
 
             return TypedResults.Ok();
         }

@@ -23,6 +23,7 @@ using WitsmlExplorer.Api.Services;
 using Xunit;
 namespace WitsmlExplorer.Api.Tests.Services
 {
+    [Collection("UsingCache")]
     public class CredentialsServiceTests
     {
         private readonly CredentialsService _basicCredentialsService;
@@ -129,16 +130,16 @@ namespace WitsmlExplorer.Api.Tests.Services
         public void GetCredentials_CredentialsInCache_ReturnCorrectly()
         {
             string userId = "username";
-            string clientId = Guid.NewGuid().ToString();
+            string cacheId = Guid.NewGuid().ToString();
             ServerCredentials sc = new() { UserId = userId, Password = "dummypassword", Host = new Uri("https://somehost.url") };
             string b64Creds = Convert.ToBase64String(Encoding.ASCII.GetBytes(sc.UserId + ":" + sc.Password));
             string headerValue = b64Creds + "@" + sc.Host;
 
             Mock<IEssentialHeaders> headersMock = new();
-            headersMock.Setup(x => x.GetCookieValue()).Returns(clientId);
+            headersMock.Setup(x => x.GetCookieValue()).Returns(cacheId);
             headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
 
-            _basicCredentialsService.CacheCredentials(clientId, sc, 1.0, n => n);
+            _basicCredentialsService.CacheCredentials(cacheId, sc, 1.0, n => n);
             ServerCredentials fromCache = _basicCredentialsService.GetCredentials(headersMock.Object, headersMock.Object.TargetServer, userId);
             Assert.Equal(sc, fromCache);
             _basicCredentialsService.RemoveAllCachedCredentials();

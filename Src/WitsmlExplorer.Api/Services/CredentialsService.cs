@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -55,19 +56,24 @@ namespace WitsmlExplorer.Api.Services
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
-        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, string clientId)
+        public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext)
         {
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.TargetServer, Decrypt);
             if (creds.IsCredsNullOrEmpty())
             {
                 return false;
             }
+            string cacheId = GetCacheId(eh);
+            if (!_useOAuth2 && (string.IsNullOrEmpty(cacheId) || _credentialsCache.GetItem(cacheId) == null))
+            {
+                cacheId = httpContext.CreateWitsmlExplorerCookie();
+            }
 
             WitsmlClient witsmlClient = new(creds.Host.ToString(), creds.UserId, creds.Password, _clientCapabilities);
             await witsmlClient.TestConnectionAsync();
 
             double ttl = keep ? 24.0 : 1.0; // hours
-            CacheCredentials(clientId, creds, ttl);
+            CacheCredentials(cacheId, creds, ttl);
             return true;
         }
 
@@ -102,9 +108,9 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        public void RemoveCachedCredentials(string clientId)
+        public void RemoveCachedCredentials(string cacheId)
         {
-            _credentialsCache.RemoveAllClientCredentials(clientId);
+            _credentialsCache.RemoveAllClientCredentials(cacheId);
         }
 
         public void RemoveAllCachedCredentials()
@@ -112,13 +118,11 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache.Clear();
         }
 
-        public void CacheCredentials(string clientId, ServerCredentials credentials, double ttl, Func<string, string> delEncrypt = null)
+        public void CacheCredentials(string cacheId, ServerCredentials credentials, double ttl, Func<string, string> delEncrypt = null)
         {
             delEncrypt ??= Encrypt;
-
-            string cacheId = $"{clientId}@{credentials.Host.Host}";
             string encryptedPassword = delEncrypt(credentials.Password);
-            _credentialsCache.SetItem(cacheId, encryptedPassword, ttl, credentials.UserId);
+            _credentialsCache.SetItem(cacheId, credentials.Host, encryptedPassword, ttl, credentials.UserId);
         }
 
         private async Task<ServerCredentials> GetSystemCredentialsByToken(string token, Uri server)
@@ -160,9 +164,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl)
         {
-            string cacheClientId = GetClientId(eh);
-            string cacheId = $"{cacheClientId}@{serverUrl.Host}";
-            Dictionary<string, string> credentials = _credentialsCache.GetItem(cacheId);
+            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), serverUrl);
             List<string> usernames = credentials == null ? new() : credentials.Keys.ToList();
             if (_useOAuth2)
             {
@@ -178,9 +180,7 @@ namespace WitsmlExplorer.Api.Services
         private ServerCredentials GetCredentialsFromCache(IEssentialHeaders eh, string serverUrl, string username, Func<string, string> delDecrypt = null)
         {
             delDecrypt ??= Decrypt;
-            string cacheClientId = GetClientId(eh);
-            string cacheId = $"{cacheClientId}@{new Uri(serverUrl).Host}";
-            Dictionary<string, string> credentials = _credentialsCache.GetItem(cacheId);
+            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), new Uri(serverUrl));
             if (credentials == null || !credentials.ContainsKey(username))
             {
                 return null;
@@ -209,7 +209,7 @@ namespace WitsmlExplorer.Api.Services
             return creds;
         }
 
-        public string GetClientId(IEssentialHeaders eh)
+        public string GetCacheId(IEssentialHeaders eh)
         {
             return _useOAuth2 ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
         }
