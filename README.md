@@ -34,6 +34,9 @@ Please see our [docker setup](/Docker/README.md).
 ## Deploy on server
 Please see our [server readme](./Docker/Server/README.md).
 
+## API custom client access
+Please visit [API client access](./APICLIENT.md).
+
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 
