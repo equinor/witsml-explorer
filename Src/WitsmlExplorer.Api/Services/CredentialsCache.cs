@@ -42,11 +42,19 @@ namespace WitsmlExplorer.Api.Services
 
         public Dictionary<string, Dictionary<string, string>> GetItem(string cacheId)
         {
+            if (cacheId == null)
+            {
+                return null;
+            }
             return _cache.Get(cacheId) as Dictionary<string, Dictionary<string, string>>;
         }
 
         public Dictionary<string, string> GetItem(string cacheId, Uri serverUrl)
         {
+            if (cacheId == null || serverUrl == null)
+            {
+                return null;
+            }
             if (_cache.Get(cacheId) is not Dictionary<string, Dictionary<string, string>> item)
             {
                 return null;

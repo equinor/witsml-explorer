@@ -32,7 +32,10 @@ if (StringHelpers.ToBoolean(builder.Configuration[ConfigConstants.OAuth2Enabled]
     builder.Configuration.AddAzureWitsmlServerCreds();
 }
 builder.Logging.ClearProviders();
-builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+string appName = builder.Configuration["Witsml:ClientCapabilities:Name"] ?? "Witsml Explorer";
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
+.Enrich.WithProperty("Env", builder.Environment.EnvironmentName)
+.Enrich.WithProperty("App", appName));
 
 Startup startup = new(builder.Configuration);
 startup.ConfigureServices(builder.Services);
