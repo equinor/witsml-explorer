@@ -5,9 +5,10 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
+import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore } from "./CopyUtils";
 
 export interface MudLogSidebarContextMenuProps {
@@ -18,13 +19,18 @@ const MudLogSidebarContextMenu = (props: MudLogSidebarContextMenuProps): React.R
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
+  const mudLogs = [props.mudLog];
 
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, [props.mudLog], dispatchOperation, ObjectType.MudLog)}>
+        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, mudLogs, dispatchOperation, ObjectType.MudLog)}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "mudLog", [props.mudLog])}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", "mudLog", mudLogs)}</Typography>
+        </MenuItem>,
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog, JobType.DeleteMudLogs)}>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("delete", "mudLog", mudLogs)}</Typography>
         </MenuItem>
       ]}
     />
