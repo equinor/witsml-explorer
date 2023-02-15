@@ -7,7 +7,7 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import Wellbore, { calculateLogTypeId, calculateMudLogGroupId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
@@ -356,7 +356,7 @@ const updateWellboreMudLogs = (state: NavigationState, { payload }: UpdateWellbo
   const { wells } = state;
   const { mudLogs, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { mudLogs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateTubularGroupId, mudLogs, state.selectedTubular, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateMudLogGroupId, mudLogs, state.selectedMudLog, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
