@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 
 using Serilog.Context;
 
+using WitsmlExplorer.Api.HttpHandlers;
+
 namespace WitsmlExplorer.Api.Middleware
 {
 
@@ -24,6 +26,15 @@ namespace WitsmlExplorer.Api.Middleware
             {
                 string username = context.User.Identity?.Name;
                 LogContext.PushProperty("Username", username);
+            }
+            EssentialHeaders eh = new(context.Request);
+            if (eh.TargetServer != null)
+            {
+                LogContext.PushProperty("WitsmlTarget", eh.TargetServer);
+            }
+            if (eh.SourceServer != null)
+            {
+                LogContext.PushProperty("WitsmlSource", eh.SourceServer);
             }
 
             await _next(context);
