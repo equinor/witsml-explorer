@@ -1,4 +1,3 @@
-using System;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -22,7 +21,9 @@ namespace Witsml.Data.MudLog
         [XmlElement("abundance")]
         public Measure Abundance { get; set; }
 
-        [Obsolete("Deprecated as of WITSML version 1.4.1")]
+        /// <summary>
+        /// Deprecated as of WITSML version 1.4.1"
+        /// </summary>
         [XmlElement("abundanceCode")]
         public string AbundanceCode { get; set; }
 

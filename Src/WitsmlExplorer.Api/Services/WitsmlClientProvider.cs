@@ -70,7 +70,6 @@ namespace WitsmlExplorer.Api.Services
                     ? new WitsmlClient(_targetCreds.Host.ToString(), _targetCreds.UserId, _targetCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;
             }
-            _logger.LogInformation("Current target host: {Host}", _witsmlClient?.GetServerHostname().Host);
             return _witsmlClient;
         }
 
@@ -83,7 +82,6 @@ namespace WitsmlExplorer.Api.Services
                     ? new WitsmlClient(_sourceCreds.Host.ToString(), _sourceCreds.UserId, _sourceCreds.Password, _clientCapabilities, null, _logQueries)
                     : null;
             }
-            _logger.LogInformation("Current source host: {Host}", _witsmlSourceClient?.GetServerHostname().Host);
             return _witsmlSourceClient;
         }
     }
