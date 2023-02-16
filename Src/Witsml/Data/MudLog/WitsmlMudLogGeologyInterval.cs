@@ -15,10 +15,10 @@ namespace Witsml.Data.MudLog
         public string TypeLithology { get; set; }
 
         [XmlElement("mdTop")]
-        public WitsmlIndex MdTop { get; set; }
+        public WitsmlMeasureWithDatum MdTop { get; set; }
 
         [XmlElement("mdBottom")]
-        public WitsmlIndex MdBottom { get; set; }
+        public WitsmlMeasureWithDatum MdBottom { get; set; }
 
         [XmlElement("dTim")]
         public string DTim { get; set; }
