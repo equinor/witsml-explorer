@@ -111,14 +111,6 @@ export const JobsView = (): React.ReactElement => {
   return (
     <>
       <Panel>
-        {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
-          <Switch
-            label="Show all users' jobs"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setShowAll(e.target.checked);
-            }}
-          />
-        )}
         <Button
           variant="outlined"
           aria-disabled={shouldRefresh ? true : false}
@@ -129,6 +121,14 @@ export const JobsView = (): React.ReactElement => {
           <Icon name="refresh" />
           Refresh
         </Button>
+        {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
+          <Switch
+            label="Show all users' jobs"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setShowAll(e.target.checked);
+            }}
+          />
+        )}
         <Typography>Last fetched: {lastFetched}</Typography>
       </Panel>
       <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />
