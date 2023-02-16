@@ -14,10 +14,18 @@ const SearchFilter = (): React.ReactElement => {
   const { selectedFilter } = navigationState;
   const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
   const [expanded, setExpanded] = useState<boolean>(false);
+  const [wellNameFilter, setWellNameFilter] = useState<string>(filter.wellName);
   const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6rem", minWidth: "174px", paddingRight: "0.1em" };
   useEffect(() => {
     setFilter(selectedFilter);
   }, [selectedFilter]);
+
+  useEffect(() => {
+    const dispatch = setTimeout(() => {
+      dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellName: wellNameFilter } } });
+    }, 400);
+    return () => clearTimeout(dispatch);
+  }, [wellNameFilter]);
 
   return (
     <>
@@ -27,9 +35,9 @@ const SearchFilter = (): React.ReactElement => {
             width={10}
             height={"30px"}
             id="filter-tree"
-            value={filter.wellName}
+            value={wellNameFilter}
             placeholder="Search Wells"
-            onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellName: event.target.value } } })}
+            onChange={(event) => setWellNameFilter(event.target.value)}
             autoComplete={"off"}
             style={{ userSelect: "none" }}
           />
