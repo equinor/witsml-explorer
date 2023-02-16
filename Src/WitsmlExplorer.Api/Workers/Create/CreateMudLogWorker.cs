@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers.Create
         private async Task WaitUntilMudLogHasBeenCreated(MudLog mudLog)
         {
             bool isMudLogCreated = false;
-            WitsmlMudLogs query = MudLogQueries.QueryById(mudLog.WellUid, mudLog.WellboreUid, mudLog.Uid);
+            WitsmlMudLogs query = MudLogQueries.QueryById(mudLog.WellUid, mudLog.WellboreUid, new string[] { mudLog.Uid });
             int maxRetries = 30;
             while (!isMudLogCreated)
             {

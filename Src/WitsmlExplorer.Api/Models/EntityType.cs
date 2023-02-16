@@ -11,6 +11,7 @@ namespace WitsmlExplorer.Api.Models
         LogObject,
         LogObjects,
         MessageObjects,
+        MudLogs,
         Rigs,
         Risks,
         Tubular,

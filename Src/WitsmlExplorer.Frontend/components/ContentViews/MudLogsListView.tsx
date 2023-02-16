@@ -2,8 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import MudLogContextMenu, { MudLogContextMenuProps } from "../ContextMenus/MudLogContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -22,9 +25,9 @@ export interface MudLogRow extends ContentTableRow {
 export const MudLogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
+    dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
-
   const { selectedWell, selectedWellbore, selectedMudLogGroup } = navigationState;
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
@@ -50,8 +53,8 @@ export const MudLogsListView = (): React.ReactElement => {
         mudLogEngineers: mudLog.mudLogEngineers,
         startMd: measureToString(mudLog.startMd),
         endMd: measureToString(mudLog.endMd),
-        dTimCreation: formatDateString(mudLog.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(mudLog.commonData.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(mudLog.commonData?.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(mudLog.commonData?.dTimLastChange, timeZone),
         uid: mudLog.uid,
         mudLog
       };
@@ -69,7 +72,15 @@ export const MudLogsListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} />;
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: MudLogRow[]) => {
+    const contextProps: MudLogContextMenuProps = {
+      mudLogs: checkedWbGeometryObjectRows.map((row) => row.mudLog)
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextProps} />, position } });
+  };
+
+  return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />;
 };
 
 export default MudLogsListView;

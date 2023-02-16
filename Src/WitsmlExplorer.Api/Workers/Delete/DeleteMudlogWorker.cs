@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellUid,
                         wellboreUid,
                         uid);
-            WitsmlMudLogs query = MudLogQueries.QueryById(wellUid, wellboreUid, uid);
+            WitsmlMudLogs query = MudLogQueries.QueryById(wellUid, wellboreUid, new string[] { uid });
             WitsmlMudLogs queryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
             EntityDescription description = null;
             WitsmlMudLog mudLog = queryResult.MudLogs.FirstOrDefault();

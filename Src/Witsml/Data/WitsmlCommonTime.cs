@@ -6,9 +6,9 @@ namespace Witsml.Data
     public class WitsmlCommonTime
     {
         [XmlElement("dTimCreation")]
-        public string DTimCreation { get; set; } = "";
+        public string DTimCreation { get; set; } = null;
 
         [XmlElement("dTimLastChange")]
-        public string DTimLastChange { get; set; } = "";
+        public string DTimLastChange { get; set; } = null;
     }
 }

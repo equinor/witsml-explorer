@@ -7,7 +7,7 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import Wellbore, { calculateLogTypeId, calculateMudLogGroupId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
@@ -26,6 +26,7 @@ import {
   UpdateWellboreLogsAction,
   UpdateWellboreMessageAction,
   UpdateWellboreMessagesAction,
+  UpdateWellboreMudLogsAction,
   UpdateWellboreRigsAction,
   UpdateWellboreRisksAction,
   UpdateWellboreTrajectoriesAction,
@@ -70,6 +71,8 @@ export const performModificationAction = (state: NavigationState, action: Action
       return updateWellboreMessages(state, action);
     case ModificationType.UpdateMessageObject:
       return updateWellboreMessage(state, action);
+    case ModificationType.UpdateMudLogs:
+      return updateWellboreMudLogs(state, action);
     case ModificationType.UpdateRigsOnWellbore:
       return updateWellboreRigs(state, action);
     case ModificationType.UpdateRiskObjects:
@@ -347,6 +350,20 @@ const insertLogIntoWellsStructure = (wells: Well[], log: LogObject): Well[] => {
   freshWells[wellIndex].wellbores[wellboreIndex].logs[logIndex] = log;
 
   return freshWells;
+};
+
+const updateWellboreMudLogs = (state: NavigationState, { payload }: UpdateWellboreMudLogsAction) => {
+  const { wells } = state;
+  const { mudLogs, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { mudLogs });
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateMudLogGroupId, mudLogs, state.selectedMudLog, wellboreUid, wellUid);
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    selectedMudLog: newSelectedObject,
+    currentSelected,
+    wells: freshWells
+  };
 };
 
 const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWellboreTrajectoryAction) => {
