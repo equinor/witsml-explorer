@@ -8,7 +8,7 @@ import { ObjectType } from "../../models/objectType";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteObjects, StyledIcon } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -37,6 +37,10 @@ const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement =>
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "mudLog", mudLogReferences?.objectUids)}</Typography>
+        </MenuItem>,
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog, JobType.DeleteMudLogs)} disabled={mudLogs.length === 0}>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("delete", "mudLog", mudLogs)}</Typography>
         </MenuItem>
       ]}
     />

@@ -102,5 +102,17 @@ namespace WitsmlExplorer.Api.Query
                 return mudLog;
             });
         }
+
+        public static IEnumerable<WitsmlMudLog> DeleteWitsmlMudLogs(string wellUid, string wellboreUid, string[] mudLogUids)
+        {
+            return mudLogUids.Select((mudLogUid) =>
+                new WitsmlMudLog
+                {
+                    Uid = mudLogUid,
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid
+                }
+            );
+        }
     }
 }

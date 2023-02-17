@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Jobs
     public record DeleteMnemonicsJob : IDeleteJob<ComponentReferences> { }
     public record DeleteRigsJob : IDeleteJob<ObjectReferences> { }
     public record DeleteRisksJob : IDeleteJob<ObjectReferences> { }
-    public record DeleteMudLogJob : IDeleteJob<ObjectReference> { }
+    public record DeleteMudLogsJob : IDeleteJob<ObjectReferences> { }
     public record DeleteTrajectoriesJob : IDeleteJob<ObjectReferences> { }
     public record DeleteTrajectoryStationsJob : IDeleteJob<ComponentReferences> { }
     public record DeleteTubularComponentsJob : IDeleteJob<ComponentReferences> { }
