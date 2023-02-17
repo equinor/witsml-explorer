@@ -14,7 +14,7 @@ const SearchFilter = (): React.ReactElement => {
   const { selectedFilter } = navigationState;
   const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [wellNameFilter, setWellNameFilter] = useState<string>(filter.wellName);
+  const [wellNameFilter, setWellNameFilter] = useState<string>(selectedFilter.wellName);
   const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6rem", minWidth: "174px", paddingRight: "0.1em" };
   useEffect(() => {
     setFilter(selectedFilter);
@@ -26,6 +26,12 @@ const SearchFilter = (): React.ReactElement => {
     }, 400);
     return () => clearTimeout(dispatch);
   }, [wellNameFilter]);
+
+  useEffect(() => {
+    if (wellNameFilter === "") {
+      setWellNameFilter(selectedFilter.wellName);
+    }
+  }, [selectedFilter.wellName]);
 
   return (
     <>
