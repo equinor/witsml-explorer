@@ -14,7 +14,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTrajectoryGroup, servers } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
 
@@ -45,7 +45,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const onSelect = (trajectory: any) => {
     dispatchNavigation({
       type: NavigationType.SelectTrajectory,
-      payload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: selectedTrajectoryGroup, trajectory }
+      payload: { well: selectedWell, wellbore: selectedWellbore, trajectory }
     });
   };
 

@@ -4,6 +4,7 @@ import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
 import MudLog from "./mudLog";
+import { ObjectType } from "./objectType";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -87,40 +88,8 @@ export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
   return wellbore.wellUid + wellbore.uid;
 };
 
-export const calculateBhaRunGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "bhaRuns";
-};
-
-export const calculateRigGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "rigs";
-};
-
-export const calculateMessageGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "messages";
-};
-
-export const calculateMudLogGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "mudLogs";
-};
-
-export const calculateRiskGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "risks";
-};
-
-export const calculateWbGeometryGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "wbGeometrys";
-};
-
-export const calculateLogGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "logs";
-};
-
-export const calculateTrajectoryGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "trajectories";
-};
-
-export const calculateTubularGroupId = (wellbore: Wellbore): string => {
-  return calculateWellboreNodeId(wellbore) + "tubulars";
+export const calculateObjectGroupId = (wellbore: Wellbore, objectType: ObjectType): string => {
+  return calculateWellboreNodeId(wellbore) + objectType;
 };
 
 export const calculateLogTypeId = (wellbore: Wellbore, logType: string): string => {

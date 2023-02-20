@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { calculateLogGroupId, calculateLogTypeDepthId, calculateLogTypeTimeId } from "../../models/wellbore";
+import { calculateLogTypeDepthId, calculateLogTypeTimeId } from "../../models/wellbore";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 interface LogType {
@@ -28,7 +28,6 @@ export const LogTypeListView = (): React.ReactElement => {
       payload: {
         well: selectedWell,
         wellbore: selectedWellbore,
-        logGroup: calculateLogGroupId(selectedWellbore),
         logTypeGroup: logTypeGroup
       }
     });

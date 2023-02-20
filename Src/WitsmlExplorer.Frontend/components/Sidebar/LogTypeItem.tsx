@@ -8,7 +8,7 @@ import LogObject from "../../models/logObject";
 import { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
-import Wellbore, { calculateLogGroupId, calculateLogTypeDepthId, calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
+import Wellbore, { calculateLogTypeDepthId, calculateLogTypeId, calculateLogTypeTimeId, calculateObjectGroupId } from "../../models/wellbore";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
@@ -26,12 +26,12 @@ const LogTypeItem = (props: LogTypeItemProps): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedLog, servers } = navigationState;
-  const logGroup = calculateLogGroupId(wellbore);
+  const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
 
   const onSelectType = async (logTypeGroup: string) => {
-    const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well, wellbore, logGroup: logGroup, logTypeGroup: logTypeGroup } };
+    const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well, wellbore, logTypeGroup: logTypeGroup } };
     dispatchNavigation(action);
   };
 

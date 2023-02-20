@@ -13,14 +13,13 @@ import TreeItem from "./TreeItem";
 interface MudLogProps {
   nodeId: string;
   mudLog: MudLog;
-  mudLogGroup: string;
   well: Well;
   wellbore: Wellbore;
   selected: boolean;
 }
 
 const MudLogItem = (props: MudLogProps): React.ReactElement => {
-  const { mudLog, mudLogGroup, selected, well, wellbore, nodeId } = props;
+  const { mudLog, selected, well, wellbore, nodeId } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
@@ -37,7 +36,7 @@ const MudLogItem = (props: MudLogProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={mudLog.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMudLog, payload: { mudLog, wellbore, well, mudLogGroup } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMudLog, payload: { mudLog, wellbore, well } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );
