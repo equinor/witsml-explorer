@@ -1,5 +1,4 @@
-import { Button, TextField } from "@material-ui/core";
-import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
+import { Button, TextField, Label } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
@@ -15,8 +14,10 @@ import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
-import ModalDialog from "./ModalDialog";
+import ModalDialog, { controlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import Icons from "../../styles/Icons";
 
 export interface ServerModalProps {
   server: Server;
@@ -37,6 +38,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 
   const isAddingNewServer = props.server.id === undefined;
 
+  const Styles: CSSProperties = {
+    feildname: { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" }
+  };
   const onSubmit = async () => {
     const abortController = new AbortController();
 
@@ -112,64 +116,61 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       heading={`${isAddingNewServer ? "Add" : "Edit"} server`}
       content={
         <>
-          <ServerAndButton>
+          <ContentWrapper>
+            <Label label="Server URL" style={Styles.feildname} />
             <TextField
               id="url"
-              label="Server URL"
               defaultValue={server.url}
-              error={displayUrlError}
+              variant={displayUrlError ? "error" : null}
               helperText={displayUrlError ? "Not a valid server url" : ""}
-              fullWidth
-              inputProps={{ maxLength: 256 }}
               onChange={onChangeUrl}
               onBlur={runUrlValidation}
               required
               disabled={props.editDisabled}
             />
-            {connectionVerified && <ThumbUpOutlinedIcon style={{ color: colors.interactive.successResting }} variant={"outlined"} fontSize={"large"} />}
-            <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
-              {"Test connection"}
-            </TestServerButton>
-          </ServerAndButton>
-          <TextField
-            id="name"
-            label="Server name"
-            defaultValue={server.name}
-            error={displayNameError}
-            helperText={displayNameError ? "A server name must have 1-64 characters" : ""}
-            fullWidth
-            inputProps={{ minLength: 1, maxLength: 64 }}
-            onBlur={runServerNameValidation}
-            onChange={onChangeName}
-            required
-            disabled={props.editDisabled}
-          />
-          <TextField
-            id="description"
-            label="Server description"
-            defaultValue={server.description}
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-            onChange={(e) => setServer({ ...server, description: e.target.value })}
-            disabled={props.editDisabled}
-          />
-          {msalEnabled && (
+            <Label label="Server name" style={Styles.feildname} />
             <TextField
-              id="role"
-              label="Roles (space delimited)"
-              defaultValue={server.roles?.join(" ")}
-              fullWidth
-              inputProps={{ maxLength: 64 }}
-              onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
+              id="name"
+              defaultValue={server.name}
+              variant={displayNameError ? "error" : null}
+              helperText={displayNameError ? "A server name must have 1-64 characters" : ""}
+              onBlur={runServerNameValidation}
+              onChange={onChangeName}
+              required
               disabled={props.editDisabled}
             />
-          )}
+            <Label label="Server description" style={Styles.feildname} />
+            <TextField
+              id="description"
+              defaultValue={server.description}
+              onChange={(e: any) => setServer({ ...server, description: e.target.value })}
+              disabled={props.editDisabled}
+            />
+            {msalEnabled && (
+              <>
+                <Label label="Roles" style={Styles.feildname} />
+                <TextField
+                  id="role"
+                  defaultValue={server.roles?.join(" ")}
+                  onChange={(e: any) => setServer({ ...server, roles: e.target.value.split(" ") })}
+                  disabled={props.editDisabled}
+                />
+              </>
+            )}
+            <ButtonWrapper>
+              <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
+                <Icons name="done" /> {"Test connection"}
+              </TestServerButton>
+            </ButtonWrapper>
+          </ContentWrapper>
         </>
       }
       onSubmit={onSubmit}
       isLoading={isLoading}
       onDelete={server.id && !props.editDisabled ? showDeleteModal : null}
+      ButtonPosition={controlButtonPosition.TOP}
       confirmDisabled={props.editDisabled || !validateForm()}
+      width={ModalWidth.LARGE}
     />
   );
 };
@@ -225,22 +226,24 @@ const isUrlValid = (url: string) => {
     return false;
   }
 };
-
-const ServerAndButton = styled.div`
-  display: flex;
+const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 11em 1fr;
+  align-items: center;
+  margin: 0.5rem 6rem 0.75rem 2.5rem;
+  row-gap: 1.5rem;
 `;
 
 const TestServerButton = styled(Button)`
   && {
     margin-left: 1em;
   }
-  flex: 1 0 auto;
 `;
-
-const ThumbUpOutlinedIcon = styled(MuiThumbUpOutlinedIcon)<{ variant: string }>`
-  && {
-    height: 1.5em;
-  }
+const ButtonWrapper = styled.div`
+  grid-column: 2/3;
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
 `;
 
 export default ServerModal;
