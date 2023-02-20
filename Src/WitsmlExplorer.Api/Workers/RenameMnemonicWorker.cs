@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Workers
             Logger.LogInformation("{JobType} - Job successful. Mnemonic renamed from {Mnemonic} to {NewMnemonic}", GetType().Name, job.Mnemonic, job.NewMnemonic);
             return (
                 new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Mnemonic renamed from {job.Mnemonic} to {job.NewMnemonic}"),
-                new RefreshLogObject(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, RefreshType.Update));
+                new RefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, EntityType.LogObject));
         }
 
         private static WitsmlLogs CreateNewLogWithRenamedMnemonic(RenameMnemonicJob job, WitsmlLog logHeader, IEnumerable<string> mnemonics, WitsmlLog logData)

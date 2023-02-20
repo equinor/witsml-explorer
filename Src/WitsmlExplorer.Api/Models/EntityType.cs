@@ -10,15 +10,15 @@ namespace WitsmlExplorer.Api.Models
         BhaRuns,
         LogObject,
         LogObjects,
-        MessageObjects,
+        Messages,
         MudLogs,
         Rigs,
         Risks,
         Tubular,
+        Tubulars,
         Trajectories,
         Trajectory,
-        TrajectoryStation,
         WbGeometry,
-        WbGeometryObjects,
+        WbGeometries,
     }
 }

@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellboreUid,
                         logUid,
                         mnemonicsString);
-                RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, logUid, EntityType.LogObject);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted mnemonics: {mnemonicsString} for log: {logUid}");
                 return (workerResult, refreshAction);
             }

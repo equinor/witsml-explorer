@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshWbGeometry refreshAction = new(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, EntityType.WbGeometry);
             WorkerResult workerResult = new(witsmlClient.GetServerHostname(), true, $"WbGeometrySections {wbGeometrySectionsString} copied to: {targetWbGeometry.Name}");
 
             return (workerResult, refreshAction);

@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     wellboreUid,
                     tubularUid,
                     tubularcomponents);
-                RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, tubularUid, EntityType.Tubular);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted tubularcomponents: {tubularComponentsString} for tubular: {tubularUid}");
                 return (workerResult, refreshAction);
             }

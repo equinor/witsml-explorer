@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("Message modified. {jobDescription}", job.Description());
-            RefreshMessageObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.MessageObject.WellUid, job.MessageObject.WellboreUid, EntityType.Messages);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"MessageObject {job.MessageObject.Name} updated for {job.MessageObject.WellboreName}");
 
             return (workerResult, refreshAction);

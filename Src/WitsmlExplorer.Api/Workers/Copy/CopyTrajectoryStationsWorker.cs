@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshTrajectory refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, EntityType.Trajectory);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TrajectoryStations {trajectoryStationsString} copied to: {targetTrajectory.Name}");
 
             return (workerResult, refreshAction);

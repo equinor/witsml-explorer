@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("Rig modified. {jobDescription}", job.Description());
-            RefreshRigs refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, EntityType.Rigs);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Rig {job.Rig.Name} updated for {job.Rig.WellboreName}");
 
             return (workerResult, refreshAction);

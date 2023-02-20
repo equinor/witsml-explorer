@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlMudLogs mudlogs, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlMudLog> queries = MudLogQueries.CopyWitsmlMudLogs(mudlogs, targetWellbore);
-            RefreshMudLogs refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.MudLogs);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 
