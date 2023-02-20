@@ -1,6 +1,6 @@
 # Authentication and Authorization in WITSML Explorer using OAuth2
 
-OAuth mode uses JWT authentication to keep track of the user. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow). This mode allows the user to log in with their own credentials, or if roles permit use a `system-user`
+OAuth mode uses JWT authentication to keep track of the user. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow). This mode allows the user to log in with their own credentials, or if roles permit use a `system-user`.
 
 ## Configuration
 Example `mysettings.json` file for API:
@@ -63,7 +63,7 @@ To use Azure keyvault, create your keyvault (named `witsmlexp-servers-kv` in the
 | witsmlcreds--test--password | My server2 test [CRUD]      |         ||
 | witsmlcreds--test--userid | My server2 test [CRUD]      |         ||
 
-Credentials will be mapped on URL from secrets with the serverlist. `Server` entry in MongoDB or CosmosDB will have the property `roles`. The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be made available to the user. An API call will use the system credentials if the system username is set in the `WitsmlTargetUsername` or `WitsmlSourceUsername` header.
+Credentials will be mapped on URL from secrets with the server list. `Server` entry in MongoDB or CosmosDB will have the property `roles`. The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be made available to the user. An API call will use the system credentials if the system username is set in the `WitsmlTargetUsername` or `WitsmlSourceUsername` header.
 
 **example server json in list**
 ```json
@@ -87,8 +87,8 @@ Credentials will be mapped on URL from secrets with the serverlist. `Server` ent
 ## System user credentials flow
 
 1. End user visits Witsml Explorer.
-2. The end user is redirected to login with the configured OAuth2 Authorization server (Azure AD).
-3. Witsml Explorer fetches the initial Serverlist from DB. When OAuth2 is enabled both in the frontend and backend, retrieving the serverlist will only be available for logged in users. Similarly Create, Update and Delete of servers will be reserved for users with role `admin`. A list of available users will be returned for every server. These are previously logged in users and/or a system user.
+2. The end user is redirected to login with OpenID Connect (Azure AD).
+3. Witsml Explorer fetches the initial server list from DB. When OAuth2 is enabled both in the frontend and backend, retrieving the server list will only be available for users logged in with OpenID. Similarly Create, Update and Delete of servers will be reserved for users with role `admin`. A list of available WITSML users will be returned for every server. These are previously logged in WITSML users for the given OpenID user and/or a system user.
 4. When one of the user roles and server roles overlap, the backend fetches system credentials from `Azure Keyvault` for this witsml server.
 5. The user queries a server with an available system user, by specifying them respectively in the `WitsmlTargetServer` and `WitsmlTargetUsername` headers. API routes that handle two servers include `WitsmlSourceServer` and `WitsmlSourceUsername` headers as well. The backend will check the received `Bearer` JWT token for `app-roles`. This in turn will be checked against the configured `roles` for the server to retrieve the system credentials.
 6. The server will now forward the query to the witsml server using `Basic` authorization with system credentials fetched from step 4. The resulting list of wells will then be passed back to the frontend.
@@ -96,9 +96,9 @@ Credentials will be mapped on URL from secrets with the serverlist. `Server` ent
 ```mermaid
 sequenceDiagram
     Note right of WEx Frontend: 1.
-    WEx Frontend->>+Auth Server: Login
-    Note right of Auth Server: 2.
-    Auth Server->>-WEx Frontend: Get token
+    WEx Frontend->>+Identity Provider: Login
+    Note right of Identity Provider: 2.
+    Identity Provider->>-WEx Frontend: Get token
     WEx Frontend->>+WEx Api: Fetch servers
     Note right of WEx Frontend: 3.
     WEx Api->>-Server DB: Fetch servers
@@ -129,8 +129,8 @@ sequenceDiagram
 ## Flow with entered credentials
 ```mermaid
 sequenceDiagram
-    WEx Frontend->>+Auth Server: Login
-    Auth Server->>-WEx Frontend: Get token
+    WEx Frontend->>+Identity Provider: Login
+    Identity Provider->>-WEx Frontend: Get token
     WEx Frontend->>+WEx Api: Fetch servers
     WEx Api->>-Server DB: Fetch servers
     activate Server DB
@@ -176,7 +176,7 @@ Further information about the header format is given on the swagger page/endpoin
 
 ## API Access without frontend
 
-Below are some examples on the use of API endpoints without the frontend. See information about `Swagger` and `Swashbuckle` earlier in the documents for detailed information on the endpoints
+Below are some examples on the use of API endpoints without the frontend. See information about `Swagger` and `Swashbuckle` earlier in the documents for detailed information on the endpoints. Examples of accesing the API with a custom client are presented in the [APICLIENT.md document](./APICLIENT.md).
 
 __1. witsml-server configuration list__ (and other endpoints)
 

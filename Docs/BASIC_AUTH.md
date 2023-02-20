@@ -1,6 +1,6 @@
 # WITSML server credentials flow (Basic)
 
-Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration.
+Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration (and leaving `NEXT_PUBLIC_MSALENABLED=` empty in the frontend environment).
 
 This is a description of the flow:
 ### 1. When the user connects to a server for the first time
@@ -62,7 +62,7 @@ Further information about the header format is given on the swagger page/endpoin
 
 ## API Access without frontend
 
-Below are some examples on the use of API endpoints without the frontend. See information about `Swagger` and `Swashbuckle` earlier in the document for detailed information on the endpoints.
+Below are some examples on the use of API endpoints without the frontend. See information about `Swagger` and `Swashbuckle` earlier in the document for detailed information on the endpoints. Examples of accesing the API with a custom client are presented in the [APICLIENT.md document](./APICLIENT.md).
 
 __1. Get witsml-server configuration list__ and cookie. You will need to include this cookie to subsequent calls to the API
 
