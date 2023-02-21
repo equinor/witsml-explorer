@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlTubulars tubulars, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlTubular> queries = TubularQueries.CopyWitsmlTubulars(tubulars, targetWellbore);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Tubulars);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Tubular);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 

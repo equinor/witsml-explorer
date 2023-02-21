@@ -1,19 +1,15 @@
 enum EntityType {
   Well = "Well",
   Wellbore = "Wellbore",
-  BhaRuns = "BhaRuns",
+  BhaRun = "BhaRun",
   LogObject = "LogObject",
-  LogObjects = "LogObjects",
-  Messages = "Messages",
-  MudLogs = "MudLogs",
-  Risks = "Risks",
+  Message = "Message",
+  MudLog = "MudLog",
+  Rig = "Rig",
+  Risk = "Risk",
   Tubular = "Tubular",
-  Tubulars = "Tubulars",
-  Rigs = "Rigs",
   Trajectory = "Trajectory",
-  Trajectories = "Trajectories",
-  WbGeometry = "WbGeometry",
-  WbGeometries = "WbGeometries"
+  WbGeometry = "WbGeometry"
 }
 
 export default EntityType;

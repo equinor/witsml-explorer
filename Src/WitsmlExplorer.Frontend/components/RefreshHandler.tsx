@@ -35,44 +35,48 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
-          case EntityType.BhaRuns:
+          case EntityType.BhaRun:
             await refreshBhaRuns(refreshAction);
             break;
           case EntityType.LogObject:
-            await refreshLogObject(refreshAction);
+            if (refreshAction.objectUid == null) {
+              await refreshLogObjects(refreshAction);
+            } else {
+              await refreshLogObject(refreshAction);
+            }
             break;
-          case EntityType.LogObjects:
-            await refreshLogObjects(refreshAction);
-            break;
-          case EntityType.Messages:
+          case EntityType.Message:
             await refreshMessageObjects(refreshAction);
             break;
-          case EntityType.MudLogs:
+          case EntityType.MudLog:
             await refreshMudLogs(refreshAction);
             break;
           case EntityType.Trajectory:
-            await refreshTrajectory(refreshAction);
-            break;
-          case EntityType.Trajectories:
-            await refreshTrajectories(refreshAction);
+            if (refreshAction.objectUid == null) {
+              await refreshTrajectories(refreshAction);
+            } else {
+              await refreshTrajectory(refreshAction);
+            }
             break;
           case EntityType.Tubular:
-            await refreshTubular(refreshAction);
+            if (refreshAction.objectUid == null) {
+              await refreshTubulars(refreshAction);
+            } else {
+              await refreshTubular(refreshAction);
+            }
             break;
-          case EntityType.Tubulars:
-            await refreshTubulars(refreshAction);
-            break;
-          case EntityType.Risks:
+          case EntityType.Risk:
             await refreshRisks(refreshAction);
             break;
-          case EntityType.Rigs:
+          case EntityType.Rig:
             await refreshRigs(refreshAction);
             break;
           case EntityType.WbGeometry:
-            await refreshWbGeometry(refreshAction);
-            break;
-          case EntityType.WbGeometries:
-            await refreshWbGeometryObjects(refreshAction);
+            if (refreshAction.objectUid == null) {
+              await refreshWbGeometryObjects(refreshAction);
+            } else {
+              await refreshWbGeometry(refreshAction);
+            }
         }
       } catch (error) {
         // eslint-disable-next-line no-console

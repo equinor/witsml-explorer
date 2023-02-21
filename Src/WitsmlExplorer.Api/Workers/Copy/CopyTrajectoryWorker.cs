@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlTrajectories trajectories, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlTrajectory> queries = TrajectoryQueries.CopyWitsmlTrajectories(trajectories, targetWellbore);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Trajectories);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Trajectory);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 

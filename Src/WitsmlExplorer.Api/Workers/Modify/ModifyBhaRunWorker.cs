@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("BhaRun modified. {jobDescription}", job.Description());
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.BhaRun.WellUid, job.BhaRun.WellboreUid, EntityType.BhaRuns);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.BhaRun.WellUid, job.BhaRun.WellboreUid, EntityType.BhaRun);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"BhaRun {job.BhaRun.Name} updated for {job.BhaRun.WellboreName}");
 
             return (workerResult, refreshAction);

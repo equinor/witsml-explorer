@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlRisks risks, WitsmlWellbore targetWellbore) = await FetchData(job);
             IEnumerable<WitsmlRisk> queries = RiskQueries.CopyWitsmlRisks(risks, targetWellbore);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Risks);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Risk);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 

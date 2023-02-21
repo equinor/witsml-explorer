@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("TubularComponent modified. {jobDescription}", job.Description());
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, tubularUid, EntityType.Tubular);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Tubular, tubularUid);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TubularComponent updated ({job.TubularComponent.Uid})"), refreshAction);
             }
 

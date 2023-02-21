@@ -68,14 +68,7 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreUid { get; }
         public string ObjectUid { get; }
 
-        public RefreshObjects(Uri serverUrl, string wellUid, string wellboreUid, EntityType entityType) : base(serverUrl, RefreshType.Update)
-        {
-            WellUid = wellUid;
-            WellboreUid = wellboreUid;
-            _entityType = entityType;
-        }
-
-        public RefreshObjects(Uri serverUrl, string wellUid, string wellboreUid, string objectUid, EntityType entityType) : base(serverUrl, RefreshType.Update)
+        public RefreshObjects(Uri serverUrl, string wellUid, string wellboreUid, EntityType entityType, string objectUid = null) : base(serverUrl, RefreshType.Update)
         {
             WellUid = wellUid;
             WellboreUid = wellboreUid;

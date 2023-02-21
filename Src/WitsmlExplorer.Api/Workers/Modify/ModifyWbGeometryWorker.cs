@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("WbGeometry modified. {jobDescription}", job.Description());
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.WbGeometry.WellUid, job.WbGeometry.WellboreUid, EntityType.WbGeometries);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.WbGeometry.WellUid, job.WbGeometry.WellboreUid, EntityType.WbGeometry);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"WbGeometry {job.WbGeometry.Name} updated for {job.WbGeometry.WellboreName}");
 
             return (workerResult, refreshAction);
