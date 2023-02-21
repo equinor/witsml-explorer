@@ -26,25 +26,17 @@ import {
   UpdateWellsAction
 } from "./modificationActions";
 import {
-  SelectBhaRunGroupAction,
   SelectJobsAction,
   SelectLogCurveInfoAction,
-  SelectLogGroupAction,
   SelectLogObjectAction,
   SelectLogTypeAction,
-  SelectMessageGroupAction,
   SelectMudLogAction,
-  SelectMudLogGroupAction,
-  SelectRigGroupAction,
-  SelectRiskGroupAction,
+  SelectObjectGroupAction,
   SelectServerAction,
   SelectServerManagerAction,
   SelectTrajectoryAction,
-  SelectTrajectoryGroupAction,
   SelectTubularAction,
-  SelectTubularGroupAction,
   SelectWbGeometryAction,
-  SelectWbGeometryGroupAction,
   SelectWellAction,
   SelectWellboreAction,
   SetCurveThresholdAction,
@@ -80,24 +72,16 @@ export type NavigationAction =
   | UpdateWellboreWbGeometrysAction
   | ToggleTreeNodeAction
   | SelectJobsAction
-  | SelectBhaRunGroupAction
   | SelectLogTypeAction
-  | SelectLogGroupAction
   | SelectLogCurveInfoAction
   | SelectLogObjectAction
   | SelectWellAction
   | SelectWellboreAction
-  | SelectRigGroupAction
-  | SelectMessageGroupAction
-  | SelectMudLogGroupAction
   | SelectMudLogAction
-  | SelectRiskGroupAction
+  | SelectObjectGroupAction
   | SelectServerAction
   | SelectTrajectoryAction
-  | SelectTrajectoryGroupAction
   | SelectTubularAction
-  | SelectTubularGroupAction
-  | SelectWbGeometryGroupAction
   | SelectWbGeometryAction
   | SetFilterAction
   | SetCurveThresholdAction

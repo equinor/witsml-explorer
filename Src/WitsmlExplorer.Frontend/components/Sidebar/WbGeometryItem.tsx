@@ -13,14 +13,13 @@ import TreeItem from "./TreeItem";
 interface WbGeometryProps {
   nodeId: string;
   wbGeometry: WbGeometry;
-  wbGeometryGroup: string;
   well: Well;
   wellbore: Wellbore;
   selected: boolean;
 }
 
 const WbGeometryItem = (props: WbGeometryProps): React.ReactElement => {
-  const { wbGeometry, wbGeometryGroup, selected, well, wellbore, nodeId } = props;
+  const { wbGeometry, selected, well, wellbore, nodeId } = props;
   const {
     dispatchNavigation,
     navigationState: { selectedServer, servers }
@@ -41,7 +40,7 @@ const WbGeometryItem = (props: WbGeometryProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={wbGeometry.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectWbGeometry, payload: { wbGeometry, wellbore, well, wbGeometryGroup } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectWbGeometry, payload: { wbGeometry, wellbore, well } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, wbGeometry)}
     />
   );

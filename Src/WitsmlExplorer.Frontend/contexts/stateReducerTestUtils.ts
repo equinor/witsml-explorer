@@ -141,7 +141,6 @@ export const WBGEOMETRY_1 = {
   wellboreUid: ""
 };
 export const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
-export const TRAJECTORY_GROUP_1 = "TrajectoryGroup";
 
 export const getInitialState = (): NavigationState => {
   const well1 = { ...WELL_1, wellbores: [{ ...WELLBORE_1 }] };

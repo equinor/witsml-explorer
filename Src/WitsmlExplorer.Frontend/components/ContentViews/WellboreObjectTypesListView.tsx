@@ -1,17 +1,8 @@
 import React, { useContext } from "react";
+import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import {
-  calculateBhaRunGroupId,
-  calculateLogGroupId,
-  calculateMessageGroupId,
-  calculateMudLogGroupId,
-  calculateRigGroupId,
-  calculateRiskGroupId,
-  calculateTrajectoryGroupId,
-  calculateTubularGroupId,
-  calculateWbGeometryGroupId
-} from "../../models/wellbore";
+import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
@@ -20,70 +11,22 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
 
-  const getObjectTypes = () => {
-    return [
-      {
-        uid: 1,
-        name: "Logs",
-        action: NavigationType.SelectLogGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, logGroup: calculateLogGroupId(selectedWellbore) }
-      },
-      {
-        uid: 2,
-        name: "Rigs",
-        action: NavigationType.SelectRigGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, rigGroup: calculateRigGroupId(selectedWellbore) }
-      },
-      {
-        uid: 3,
-        name: "Trajectories",
-        action: NavigationType.SelectTrajectoryGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: calculateTrajectoryGroupId(selectedWellbore) }
-      },
-      {
-        uid: 4,
-        name: "Messages",
-        action: NavigationType.SelectMessageGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, messageGroup: calculateMessageGroupId(selectedWellbore) }
-      },
-      {
-        uid: 5,
-        name: "MudLogs",
-        action: NavigationType.SelectMudLogGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore) }
-      },
-      {
-        uid: 6,
-        name: "Tubulars",
-        action: NavigationType.SelectTubularGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore) }
-      },
-      {
-        uid: 7,
-        name: "Risks",
-        action: NavigationType.SelectRiskGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, riskGroup: calculateRiskGroupId(selectedWellbore) }
-      },
-      {
-        uid: 8,
-        name: "WbGeometries",
-        action: NavigationType.SelectWbGeometryGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore) }
-      },
-      {
-        uid: 9,
-        name: "BhaRuns",
-        action: NavigationType.SelectBhaRunGroup,
-        actionPayload: { well: selectedWell, wellbore: selectedWellbore, bhaRunGroup: calculateBhaRunGroupId(selectedWellbore) }
-      }
-    ];
+  const getRows = () => {
+    return Object.keys(ObjectType).map((key, index) => {
+      return {
+        uid: index,
+        name: pluralizeObjectType(key as ObjectType),
+        objectType: key as ObjectType
+      };
+    });
   };
 
-  const onSelect = async (objectType: any) => {
-    dispatchNavigation({ type: objectType.action, payload: { ...objectType.actionPayload, well: selectedWell, wellbore: selectedWellbore } });
+  const onSelect = async (row: any) => {
+    const action: SelectObjectGroupAction = { type: NavigationType.SelectObjectGroup, payload: { objectType: row.objectType, well: selectedWell, wellbore: selectedWellbore } };
+    dispatchNavigation(action);
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={getObjectTypes()} onSelect={onSelect} /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={getRows()} onSelect={onSelect} /> : <></>;
 };
 
 export default WellboreObjectTypesListView;

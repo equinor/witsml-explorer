@@ -28,7 +28,7 @@ export const MudLogsListView = (): React.ReactElement => {
     dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore, selectedMudLogGroup } = navigationState;
+  const { selectedWell, selectedWellbore } = navigationState;
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const MudLogsListView = (): React.ReactElement => {
   const onSelect = (mudLogRow: MudLogRow) => {
     dispatchNavigation({
       type: NavigationType.SelectMudLog,
-      payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: selectedMudLogGroup, mudLog: mudLogRow.mudLog }
+      payload: { well: selectedWell, wellbore: selectedWellbore, mudLog: mudLogRow.mudLog }
     });
   };
 

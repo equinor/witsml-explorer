@@ -10,7 +10,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTubularGroup, servers, wells } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
@@ -35,7 +35,7 @@ export const TubularsListView = (): React.ReactElement => {
   const onSelect = (tubular: any) => {
     dispatchNavigation({
       type: NavigationType.SelectTubular,
-      payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: selectedTubularGroup, tubular }
+      payload: { well: selectedWell, wellbore: selectedWellbore, tubular }
     });
   };
 

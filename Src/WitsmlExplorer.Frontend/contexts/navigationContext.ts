@@ -4,6 +4,7 @@ import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import MudLog from "../models/mudLog";
+import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -32,23 +33,15 @@ export interface NavigationState {
   selectedServer: Server;
   selectedWell: Well;
   selectedWellbore: Wellbore;
-  selectedBhaRunGroup: string;
-  selectedLogGroup: string;
   selectedLogTypeGroup: string;
   selectedLog: LogObject;
-  selectedMessageGroup: string;
-  selectedMudLogGroup: string;
   selectedMudLog: MudLog;
+  selectedObjectGroup: ObjectType;
   selectedRig: Rig;
-  selectedRigGroup: string;
   selectedRisk: RiskObject;
-  selectedRiskGroup: string;
   selectedLogCurveInfo: LogCurveInfoRow[];
-  selectedTrajectoryGroup: string;
   selectedTrajectory: Trajectory;
-  selectedTubularGroup: string;
   selectedTubular: Tubular;
-  selectedWbGeometryGroup: string;
   selectedWbGeometry: WbGeometryObject;
   servers: Server[];
   currentSelected: Selectable;
@@ -64,23 +57,15 @@ export const allDeselected: any = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
-  selectedBhaRunGroup: null,
-  selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
-  selectedMessageGroup: null,
-  selectedMudLogGroup: null,
   selectedMudLog: null,
-  selectedRiskGroup: null,
+  selectedObjectGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
   selectedRig: null,
-  selectedRigGroup: null,
-  selectedTrajectoryGroup: null,
   selectedTrajectory: null,
-  selectedTubularGroup: null,
   selectedTubular: null,
-  selectedWbGeometryGroup: null,
   selectedWbGeometry: null,
   currentSelected: null,
   currentProperties: new Map()
@@ -90,23 +75,15 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedServer: null,
   selectedWell: null,
   selectedWellbore: null,
-  selectedBhaRunGroup: null,
-  selectedLogGroup: null,
   selectedLogTypeGroup: null,
   selectedLog: null,
-  selectedMessageGroup: null,
-  selectedMudLogGroup: null,
   selectedMudLog: null,
+  selectedObjectGroup: null,
   selectedRig: null,
-  selectedRigGroup: null,
-  selectedRiskGroup: null,
   selectedRisk: null,
   selectedLogCurveInfo: null,
-  selectedTrajectoryGroup: null,
   selectedTrajectory: null,
-  selectedTubularGroup: null,
   selectedTubular: null,
-  selectedWbGeometryGroup: null,
   selectedWbGeometry: null,
   servers: [],
   currentSelected: null,
