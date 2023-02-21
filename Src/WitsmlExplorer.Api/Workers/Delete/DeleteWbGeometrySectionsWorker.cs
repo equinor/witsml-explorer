@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     wellboreUid,
                     wbGeometryUid,
                     wbGeometrySections);
-                RefreshWbGeometry refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, wbGeometryUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.WbGeometry, wbGeometryUid);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted wbGeometrySections: {wbGeometrySectionsString} for wbGeometry: {wbGeometryUid}");
                 return (workerResult, refreshAction);
             }

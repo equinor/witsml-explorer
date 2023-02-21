@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Workers
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, logUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.LogObject, logUid);
             string mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);

@@ -7,18 +7,14 @@ namespace WitsmlExplorer.Api.Models
     {
         Well,
         Wellbore,
-        BhaRuns,
+        BhaRun,
         LogObject,
-        LogObjects,
-        MessageObjects,
-        MudLogs,
-        Rigs,
-        Risks,
+        Message,
+        MudLog,
+        Rig,
+        Risk,
         Tubular,
-        Trajectories,
         Trajectory,
-        TrajectoryStation,
         WbGeometry,
-        WbGeometryObjects,
     }
 }

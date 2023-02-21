@@ -35,41 +35,48 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
-          case EntityType.BhaRuns:
-            await refreshBhaRuns(refreshAction, modificationType);
+          case EntityType.BhaRun:
+            await refreshBhaRuns(refreshAction);
             break;
           case EntityType.LogObject:
-            await refreshLogObject(refreshAction, modificationType);
+            if (refreshAction.objectUid == null) {
+              await refreshLogObjects(refreshAction);
+            } else {
+              await refreshLogObject(refreshAction);
+            }
             break;
-          case EntityType.LogObjects:
-            await refreshLogObjects(refreshAction, ModificationType.UpdateLogObjects);
+          case EntityType.Message:
+            await refreshMessageObjects(refreshAction);
             break;
-          case EntityType.MudLogs:
-            await refreshMudLogs(refreshAction, ModificationType.UpdateMudLogs);
-            break;
-          case EntityType.MessageObjects:
-            await refreshMessageObjects(refreshAction, modificationType);
+          case EntityType.MudLog:
+            await refreshMudLogs(refreshAction);
             break;
           case EntityType.Trajectory:
-            await refreshTrajectory(refreshAction, ModificationType.UpdateTrajectoryOnWellbore);
-            break;
-          case EntityType.Trajectories:
-            await refreshTrajectories(refreshAction, ModificationType.UpdateTrajectoriesOnWellbore);
+            if (refreshAction.objectUid == null) {
+              await refreshTrajectories(refreshAction);
+            } else {
+              await refreshTrajectory(refreshAction);
+            }
             break;
           case EntityType.Tubular:
-            await refreshTubulars(refreshAction, ModificationType.UpdateTubularsOnWellbore);
+            if (refreshAction.objectUid == null) {
+              await refreshTubulars(refreshAction);
+            } else {
+              await refreshTubular(refreshAction);
+            }
             break;
-          case EntityType.Risks:
-            await refreshRisks(refreshAction, ModificationType.UpdateRiskObjects);
+          case EntityType.Risk:
+            await refreshRisks(refreshAction);
             break;
-          case EntityType.Rigs:
-            await refreshRigs(refreshAction, ModificationType.UpdateRigsOnWellbore);
+          case EntityType.Rig:
+            await refreshRigs(refreshAction);
             break;
           case EntityType.WbGeometry:
-            await refreshWbGeometry(refreshAction, ModificationType.UpdateWbGeometryOnWellbore);
-            break;
-          case EntityType.WbGeometryObjects:
-            await refreshWbGeometryObjects(refreshAction, ModificationType.UpdateWbGeometryObjects);
+            if (refreshAction.objectUid == null) {
+              await refreshWbGeometryObjects(refreshAction);
+            } else {
+              await refreshWbGeometry(refreshAction);
+            }
         }
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -116,131 +123,114 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshBhaRuns(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateBhaRuns) {
-      const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (bhaRuns) {
-        dispatchNavigation({ type: modificationType, payload: { bhaRuns, wellUid, wellboreUid } });
-      }
+  async function refreshBhaRuns(refreshAction: RefreshAction) {
+    const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (bhaRuns) {
+      dispatchNavigation({ type: ModificationType.UpdateBhaRuns, payload: { bhaRuns, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshLogObject(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateLogObject) {
-      const log = await LogObjectService.getLog(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.logObjectUid);
-      if (log) {
-        dispatchNavigation({ type: modificationType, payload: { log } });
-      }
+  async function refreshLogObject(refreshAction: RefreshAction) {
+    const log = await LogObjectService.getLog(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    if (log) {
+      dispatchNavigation({ type: ModificationType.UpdateLogObject, payload: { log } });
     }
   }
 
-  async function refreshLogObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateLogObjects) {
-      const logs = await LogObjectService.getLogs(refreshAction.wellUid, refreshAction.wellboreUid);
-      if (logs) {
-        dispatchNavigation({ type: modificationType, payload: { logs, wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } });
-      }
+  async function refreshLogObjects(refreshAction: RefreshAction) {
+    const logs = await LogObjectService.getLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+    if (logs) {
+      dispatchNavigation({ type: ModificationType.UpdateLogObjects, payload: { logs, wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } });
     }
   }
 
-  async function refreshMessageObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateMessageObjects) {
-      const messages = await MessageObjectService.getMessages(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (messages) {
-        dispatchNavigation({ type: modificationType, payload: { messages, wellUid, wellboreUid } });
-      }
+  async function refreshMessageObjects(refreshAction: RefreshAction) {
+    const messages = await MessageObjectService.getMessages(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (messages) {
+      dispatchNavigation({ type: ModificationType.UpdateMessageObjects, payload: { messages, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshMudLogs(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateMudLogs) {
-      const mudLogs = await MudLogService.getMudLogs(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (mudLogs) {
-        dispatchNavigation({ type: modificationType, payload: { mudLogs, wellUid, wellboreUid } });
-      }
+  async function refreshMudLogs(refreshAction: RefreshAction) {
+    const mudLogs = await MudLogService.getMudLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (mudLogs) {
+      dispatchNavigation({ type: ModificationType.UpdateMudLogs, payload: { mudLogs, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshRigs(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateRigsOnWellbore) {
-      const rigs = await RigService.getRigs(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (rigs) {
-        dispatchNavigation({ type: modificationType, payload: { rigs, wellUid, wellboreUid } });
-      }
+  async function refreshRigs(refreshAction: RefreshAction) {
+    const rigs = await RigService.getRigs(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (rigs) {
+      dispatchNavigation({ type: ModificationType.UpdateRigsOnWellbore, payload: { rigs, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshRisks(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateRiskObjects) {
-      const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (risks) {
-        dispatchNavigation({ type: modificationType, payload: { risks, wellUid, wellboreUid } });
-      }
+  async function refreshRisks(refreshAction: RefreshAction) {
+    const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (risks) {
+      dispatchNavigation({ type: ModificationType.UpdateRiskObjects, payload: { risks, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshTubulars(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateTubularsOnWellbore) {
-      const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (tubulars) {
-        dispatchNavigation({ type: modificationType, payload: { tubulars, wellUid, wellboreUid } });
-      }
+  async function refreshTubular(refreshAction: RefreshAction) {
+    const tubular = await TubularService.getTubular(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    if (tubular) {
+      dispatchNavigation({ type: ModificationType.UpdateTubularOnWellbore, payload: { tubular, exists: true } });
     }
   }
 
-  async function refreshTrajectory(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateTrajectoryOnWellbore) {
-      const trajectory = await TrajectoryService.getTrajectory(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.trajectoryUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (trajectory) {
-        dispatchNavigation({ type: modificationType, payload: { trajectory, wellUid, wellboreUid } });
-      }
+  async function refreshTubulars(refreshAction: RefreshAction) {
+    const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (tubulars) {
+      dispatchNavigation({ type: ModificationType.UpdateTubularsOnWellbore, payload: { tubulars, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshTrajectories(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateTrajectoriesOnWellbore) {
-      const trajectories = await TrajectoryService.getTrajectories(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (trajectories) {
-        dispatchNavigation({ type: modificationType, payload: { trajectories, wellUid, wellboreUid } });
-      }
+  async function refreshTrajectory(refreshAction: RefreshAction) {
+    const trajectory = await TrajectoryService.getTrajectory(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (trajectory) {
+      dispatchNavigation({ type: ModificationType.UpdateTrajectoryOnWellbore, payload: { trajectory, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshWbGeometry(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateWbGeometryOnWellbore) {
-      const wbGeometry = await WbGeometryObjectService.getWbGeometry(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.wbGeometryUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (wbGeometry) {
-        dispatchNavigation({ type: modificationType, payload: { wbGeometry, wellUid, wellboreUid } });
-      }
+  async function refreshTrajectories(refreshAction: RefreshAction) {
+    const trajectories = await TrajectoryService.getTrajectories(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (trajectories) {
+      dispatchNavigation({ type: ModificationType.UpdateTrajectoriesOnWellbore, payload: { trajectories, wellUid, wellboreUid } });
     }
   }
 
-  async function refreshWbGeometryObjects(refreshAction: RefreshAction, modificationType: ModificationType) {
-    if (modificationType === ModificationType.UpdateWbGeometryObjects) {
-      const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
-      const wellUid = refreshAction.wellUid;
-      const wellboreUid = refreshAction.wellboreUid;
-      if (wbGeometrys) {
-        dispatchNavigation({ type: modificationType, payload: { wbGeometrys, wellUid, wellboreUid } });
-      }
+  async function refreshWbGeometry(refreshAction: RefreshAction) {
+    const wbGeometry = await WbGeometryObjectService.getWbGeometry(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (wbGeometry) {
+      dispatchNavigation({ type: ModificationType.UpdateWbGeometryOnWellbore, payload: { wbGeometry, wellUid, wellboreUid } });
+    }
+  }
+
+  async function refreshWbGeometryObjects(refreshAction: RefreshAction) {
+    const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (wbGeometrys) {
+      dispatchNavigation({ type: ModificationType.UpdateWbGeometryObjects, payload: { wbGeometrys, wellUid, wellboreUid } });
     }
   }
 

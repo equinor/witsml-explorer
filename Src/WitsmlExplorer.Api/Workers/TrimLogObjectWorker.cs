@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, EntityType.LogObject, job.LogObject.Uid);
 
             return trimmedStartOfLog && trimmedEndOfLog
                 ? ((WorkerResult, RefreshAction))(new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Updated start/end of log [{job.LogObject.Uid}]"), refreshAction)

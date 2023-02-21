@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(job);
-            Assert.True(result.IsSuccess && ((RefreshLogObjects)refreshAction).WellboreUid == WellboreUid);
+            Assert.True(result.IsSuccess && ((RefreshObjects)refreshAction).WellboreUid == WellboreUid);
         }
     }
 }

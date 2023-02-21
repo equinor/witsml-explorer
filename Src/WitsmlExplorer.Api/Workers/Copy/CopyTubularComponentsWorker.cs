@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Tubular, job.Target.Uid);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TubularComponents {tubularComponentsString} copied to: {targetTubular.Name}");
 
             return (workerResult, refreshAction);

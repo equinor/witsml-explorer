@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     wellboreUid,
                     trajectoryUid,
                     trajectoryStations);
-                RefreshTrajectory refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, trajectoryUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Trajectory, trajectoryUid);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted trajectoryStations: {trajectoryStationsString} for trajectory: {trajectoryUid}");
                 return (workerResult, refreshAction);
             }

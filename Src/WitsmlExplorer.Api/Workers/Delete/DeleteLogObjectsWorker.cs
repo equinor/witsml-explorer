@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 UidWellbore = wellboreUid,
                 Uid = uid
             });
-            RefreshLogObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.LogObject);
             return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
 
