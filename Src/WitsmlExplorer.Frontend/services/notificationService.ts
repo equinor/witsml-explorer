@@ -43,42 +43,47 @@ export default class NotificationService {
   private _refreshDispatcher = new SimpleEventDispatcher<RefreshAction>();
   private _onConnectionStateChanged = new SimpleEventDispatcher<boolean>();
 
+  private static async getToken(): Promise<any> {
+    console.log("getToken");
+    const response = await ApiClient.get(`/api/credentials/token`);
+    if (response.ok) {
+      return response.text();
+    }
+  }
+
   private constructor() {
     let notificationURL = getBaseUrl().toString();
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }
-    ApiClient.getAuthorizationHeader().then((val) => {
-      this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl(`${notificationURL}notifications`, {
-          headers: {
-            Authorization: val
-          }
-        })
-        .withAutomaticReconnect([3000, 5000, 10000])
-        .configureLogging(signalR.LogLevel.None)
-        .build();
 
-      this.hubConnection.on("jobFinished", (notification: Notification) => {
-        notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
-      });
+    this.hubConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${notificationURL}notifications`, {
+        accessTokenFactory: () => NotificationService.getToken()
+      })
+      .withAutomaticReconnect([3000, 5000, 10000])
+      .configureLogging(signalR.LogLevel.None)
+      .build();
 
-      this.hubConnection.on("refresh", (refreshAction: RefreshAction) => {
-        this._refreshDispatcher.dispatch(refreshAction);
-      });
-
-      this.hubConnection.onreconnecting(() => {
-        this._onConnectionStateChanged.dispatch(false);
-      });
-      this.hubConnection.onreconnected(() => {
-        this._onConnectionStateChanged.dispatch(true);
-      });
-      this.hubConnection.onclose(() => {
-        setTimeout(() => this.hubConnection.start(), 5000);
-      });
-
-      this.hubConnection.start();
+    this.hubConnection.on("jobFinished", (notification: Notification) => {
+      notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
     });
+
+    this.hubConnection.on("refresh", (refreshAction: RefreshAction) => {
+      this._refreshDispatcher.dispatch(refreshAction);
+    });
+
+    this.hubConnection.onreconnecting(() => {
+      this._onConnectionStateChanged.dispatch(false);
+    });
+    this.hubConnection.onreconnected(() => {
+      this._onConnectionStateChanged.dispatch(true);
+    });
+    this.hubConnection.onclose(() => {
+      setTimeout(() => this.hubConnection.start(), 5000);
+    });
+
+    this.hubConnection.start();
   }
 
   public get snackbarDispatcher(): SimpleEventDispatcher<Notification> {
