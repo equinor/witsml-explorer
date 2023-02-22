@@ -13,14 +13,13 @@ import TreeItem from "./TreeItem";
 interface TrajectoryProps {
   nodeId: string;
   trajectory: Trajectory;
-  trajectoryGroup: string;
   well: Well;
   wellbore: Wellbore;
   selected: boolean;
 }
 
 const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
-  const { trajectory, trajectoryGroup, selected, well, wellbore, nodeId } = props;
+  const { trajectory, selected, well, wellbore, nodeId } = props;
   const {
     dispatchNavigation,
     navigationState: { selectedServer, servers }
@@ -41,7 +40,7 @@ const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={trajectory.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTrajectory, payload: { trajectory, wellbore, well, trajectoryGroup } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTrajectory, payload: { trajectory, wellbore, well } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, trajectory)}
     />
   );

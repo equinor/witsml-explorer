@@ -3,13 +3,9 @@ import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
 import { NavigationAction } from "../contexts/navigationAction";
 import {
-  SelectBhaRunGroupAction,
   SelectLogObjectAction,
-  SelectMessageGroupAction,
   SelectMudLogAction,
-  SelectMudLogGroupAction,
-  SelectRigGroupAction,
-  SelectRiskGroupAction,
+  SelectObjectGroupAction,
   SelectServerAction,
   SelectTrajectoryAction,
   SelectTubularAction,
@@ -22,21 +18,13 @@ import NavigationContext, { NavigationState } from "../contexts/navigationContex
 import NavigationType from "../contexts/navigationType";
 import LogObject from "../models/logObject";
 import MudLog from "../models/mudLog";
+import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, {
-  calculateBhaRunGroupId,
-  calculateMessageGroupId,
-  calculateMudLogGroupId,
-  calculateRigGroupId,
-  calculateRiskGroupId,
-  calculateTrajectoryGroupId,
-  calculateTubularGroupId,
-  calculateWbGeometryGroupId
-} from "../models/wellbore";
+import Wellbore from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import BhaRunService from "../services/bhaRunService";
 import LogObjectService from "../services/logObjectService";
@@ -58,18 +46,15 @@ const Routing = (): React.ReactElement => {
     selectedWell,
     selectedWellbore,
     selectedLog,
-    selectedTubular,
-    selectedBhaRunGroup,
-    selectedMessageGroup,
-    selectedMudLogGroup,
     selectedMudLog,
-    selectedRigGroup,
-    selectedRiskGroup,
+    selectedObjectGroup,
     selectedTrajectory,
+    selectedTubular,
     selectedWbGeometry
   } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
+  const [hasSelectedServer, setHasSelectedServer] = useState<boolean>(false);
   const [urlParams, setUrlParams] = useState<QueryParams>(null);
   const [currentQueryParams, setCurrentQueryParams] = useState<QueryParams>(null);
 
@@ -88,21 +73,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedLog,
-    selectedTubular,
-    selectedBhaRunGroup,
-    selectedMessageGroup,
-    selectedMudLog,
-    selectedMudLogGroup,
-    selectedRigGroup,
-    selectedRiskGroup,
-    selectedTrajectory,
-    selectedWbGeometry
-  ]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedLog, selectedTubular, selectedMudLog, selectedObjectGroup, selectedTrajectory, selectedWbGeometry]);
 
   useEffect(() => {
     //update router on params change
@@ -120,8 +91,14 @@ const Routing = (): React.ReactElement => {
       const serverUrl = urlParams.serverUrl;
       const server = servers.find((server: Server) => server.url === serverUrl);
       if (server && !selectedServer) {
-        const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
-        dispatchNavigation(action);
+        if (hasSelectedServer) {
+          // finish syncing if we already attempted to select a server (such as on login cancellation)
+          setIsSyncingUrlAndState(false);
+        } else {
+          setHasSelectedServer(true);
+          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
+          dispatchNavigation(action);
+        }
       }
     }
   }, [servers, urlParams]);
@@ -212,7 +189,7 @@ const Routing = (): React.ReactElement => {
 
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWellbore) {
-      const dispatch = (object: any, action: NavigationAction, uid: string) => {
+      const dispatch = (action: NavigationAction, object: any = true, uid = "") => {
         if (object) {
           dispatchNavigation(action);
         } else {
@@ -235,68 +212,68 @@ const Routing = (): React.ReactElement => {
       const trajectoryUid = urlParams?.trajectoryUid?.toString();
       const tubularUid = urlParams?.tubularUid?.toString();
       const wbGeometryUid = urlParams?.wbGeometryUid?.toString();
-      if (bhaRunGroupUid && !selectedBhaRunGroup) {
-        const action: SelectBhaRunGroupAction = {
-          type: NavigationType.SelectBhaRunGroup,
-          payload: { bhaRunGroup: calculateBhaRunGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+      if (bhaRunGroupUid && selectedObjectGroup !== ObjectType.BhaRun) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: ObjectType.BhaRun, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, bhaRunGroupUid);
+        dispatch(action);
       } else if (logObjectUid && !selectedLog) {
         const log = selectedWellbore.logs.find((l: LogObject) => l.uid === logObjectUid);
         const selectLogObjectAction: SelectLogObjectAction = { type: NavigationType.SelectLogObject, payload: { log, well: selectedWell, wellbore: selectedWellbore } };
-        dispatch(log, selectLogObjectAction, logObjectUid);
-      } else if (messageGroupUid && !selectedMessageGroup) {
-        const action: SelectMessageGroupAction = {
-          type: NavigationType.SelectMessageGroup,
-          payload: { messageGroup: calculateMessageGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+        dispatch(selectLogObjectAction, log, logObjectUid);
+      } else if (messageGroupUid && selectedObjectGroup !== ObjectType.Message) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: ObjectType.Message, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, messageGroupUid);
+        dispatch(action);
       } else if (mudLogUid && !selectedMudLog) {
         const mudLog = selectedWellbore.mudLogs.find((t: MudLog) => t.uid === mudLogUid);
         const selectMudLogAction: SelectMudLogAction = {
           type: NavigationType.SelectMudLog,
-          payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore), mudLog }
+          payload: { well: selectedWell, wellbore: selectedWellbore, mudLog }
         };
-        dispatch(mudLog, selectMudLogAction, mudLogUid);
-      } else if (mudLogGroupUid && !selectedMudLogGroup) {
-        const action: SelectMudLogGroupAction = {
-          type: NavigationType.SelectMudLogGroup,
-          payload: { mudLogGroup: calculateMudLogGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+        dispatch(selectMudLogAction, mudLog, mudLogUid);
+      } else if (mudLogGroupUid && selectedObjectGroup !== ObjectType.MudLog) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: ObjectType.MudLog, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, mudLogGroupUid);
-      } else if (rigGroupUid && !selectedRigGroup) {
-        const action: SelectRigGroupAction = {
-          type: NavigationType.SelectRigGroup,
-          payload: { rigGroup: calculateRigGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+        dispatch(action);
+      } else if (rigGroupUid && selectedObjectGroup !== ObjectType.Rig) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: ObjectType.Rig, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, rigGroupUid);
-      } else if (riskGroupUid && !selectedRiskGroup) {
-        const action: SelectRiskGroupAction = {
-          type: NavigationType.SelectRiskGroup,
-          payload: { riskGroup: calculateRiskGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+        dispatch(action);
+      } else if (riskGroupUid && selectedObjectGroup !== ObjectType.Risk) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: ObjectType.Risk, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, riskGroupUid);
+        dispatch(action);
       } else if (trajectoryUid && !selectedTrajectory) {
         const trajectory = selectedWellbore.trajectories.find((t: Trajectory) => t.uid === trajectoryUid);
         const selectTrajectoryAction: SelectTrajectoryAction = {
           type: NavigationType.SelectTrajectory,
-          payload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: calculateTrajectoryGroupId(selectedWellbore), trajectory }
+          payload: { well: selectedWell, wellbore: selectedWellbore, trajectory }
         };
-        dispatch(trajectory, selectTrajectoryAction, trajectoryUid);
+        dispatch(selectTrajectoryAction, trajectory, trajectoryUid);
       } else if (tubularUid && !selectedTubular) {
         const tubular = selectedWellbore.tubulars.find((t: Tubular) => t.uid === tubularUid);
         const selectTubularAction: SelectTubularAction = {
           type: NavigationType.SelectTubular,
-          payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular }
+          payload: { well: selectedWell, wellbore: selectedWellbore, tubular }
         };
-        dispatch(tubular, selectTubularAction, tubularUid);
+        dispatch(selectTubularAction, tubular, tubularUid);
       } else if (wbGeometryUid && !selectedWbGeometry) {
         const wbGeometry = selectedWellbore.wbGeometrys.find((object: WbGeometryObject) => object.uid === wbGeometryUid);
         const action: SelectWbGeometryAction = {
           type: NavigationType.SelectWbGeometry,
-          payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore), wbGeometry }
+          payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometry }
         };
-        dispatch(wbGeometry, action, wbGeometryUid);
+        dispatch(action, wbGeometry, wbGeometryUid);
       } else {
         setIsSyncingUrlAndState(false);
       }
@@ -321,12 +298,12 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedServer && { serverUrl: state.selectedServer.url }),
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
-    ...(state.selectedBhaRunGroup && { bhaRunGroupUid: "group" }),
+    ...(state.selectedObjectGroup === ObjectType.BhaRun && { bhaRunGroupUid: "group" }),
     ...(state.selectedLog && { logObjectUid: state.selectedLog.uid }),
-    ...(state.selectedMessageGroup && { messageGroupUid: "group" }),
-    ...(state.selectedMudLogGroup && { mudLogGroupUid: "group" }),
-    ...(state.selectedRigGroup && { rigGroupUid: "group" }),
-    ...(state.selectedRiskGroup && { riskGroupUid: "group" }),
+    ...(state.selectedObjectGroup === ObjectType.Message && { messageGroupUid: "group" }),
+    ...(state.selectedObjectGroup === ObjectType.MudLog && { mudLogGroupUid: "group" }),
+    ...(state.selectedObjectGroup === ObjectType.Rig && { rigGroupUid: "group" }),
+    ...(state.selectedObjectGroup === ObjectType.Risk && { riskGroupUid: "group" }),
     ...(state.selectedTrajectory && { trajectoryUid: state.selectedTrajectory.uid }),
     ...(state.selectedTubular && { tubularUid: state.selectedTubular.uid }),
     ...(state.selectedMudLog && { mudLogUid: state.selectedMudLog.uid }),

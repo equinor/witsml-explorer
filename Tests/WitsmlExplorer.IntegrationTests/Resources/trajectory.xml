@@ -3,7 +3,6 @@
     <nameWell>0/1-2-3 SAS</nameWell>
     <nameWellbore>jan_test</nameWellbore>
     <name>integration_test</name>
-    <objectGrowing>false</objectGrowing>
     <parentTrajectory>
       <trajectoryReference uidRef="1">bob</trajectoryReference>
       <wellboreParent uidRef="2">bob 2</wellboreParent>

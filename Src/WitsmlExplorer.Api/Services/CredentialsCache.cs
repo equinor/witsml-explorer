@@ -8,11 +8,12 @@ namespace WitsmlExplorer.Api.Services
 
     public interface ICredentialsCache
     {
-        void SetItem(string cacheId, string encryptedPassword, double ttl, string username);
-        public Dictionary<string, string> GetItem(string cacheId);
+        void SetItem(string cacheId, Uri serverUrl, string encryptedPassword, double ttl, string username);
+        public Dictionary<string, Dictionary<string, string>> GetItem(string cacheId);
+        public Dictionary<string, string> GetItem(string cacheId, Uri serverUrl);
         public long Count();
         public void Clear();
-        public void RemoveAllClientCredentials(string clientId);
+        public void RemoveAllClientCredentials(string cacheId);
     }
 
     public class CredentialsCache : ICredentialsCache
@@ -25,28 +26,40 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public void SetItem(string cacheId, string encryptedPassword, double ttl, string username)
+        public void SetItem(string cacheId, Uri serverUrl, string encryptedPassword, double ttl, string username)
         {
             CacheItemPolicy cacheItemPolicy = new() { SlidingExpiration = TimeSpan.FromHours(ttl) };
-            Dictionary<string, string> item = GetItem(cacheId);
-            if (item == null)
+            Dictionary<string, Dictionary<string, string>> item = GetItem(cacheId);
+            item ??= new Dictionary<string, Dictionary<string, string>>();
+            if (!item.ContainsKey(serverUrl.Host))
             {
-                item = new Dictionary<string, string>
-                {
-                    { username, encryptedPassword }
-                };
+                item[serverUrl.Host] = new Dictionary<string, string>();
             }
-            else
-            {
-                item.Remove(username);
-                item.Add(username, encryptedPassword);
-            }
+            item[serverUrl.Host].Remove(username);
+            item[serverUrl.Host].Add(username, encryptedPassword);
             _cache.Set(cacheId, item, cacheItemPolicy);
         }
 
-        public Dictionary<string, string> GetItem(string cacheId)
+        public Dictionary<string, Dictionary<string, string>> GetItem(string cacheId)
         {
-            return _cache.Get(cacheId) as Dictionary<string, string>;
+            if (cacheId == null)
+            {
+                return null;
+            }
+            return _cache.Get(cacheId) as Dictionary<string, Dictionary<string, string>>;
+        }
+
+        public Dictionary<string, string> GetItem(string cacheId, Uri serverUrl)
+        {
+            if (cacheId == null || serverUrl == null)
+            {
+                return null;
+            }
+            if (_cache.Get(cacheId) is not Dictionary<string, Dictionary<string, string>> item)
+            {
+                return null;
+            }
+            return item.TryGetValue(serverUrl.Host, out Dictionary<string, string> value) ? value : null;
         }
 
         public long Count()
@@ -59,15 +72,9 @@ namespace WitsmlExplorer.Api.Services
             ((MemoryCache)_cache).Trim(100);
         }
 
-        public void RemoveAllClientCredentials(string clientId)
+        public void RemoveAllClientCredentials(string cacheId)
         {
-            foreach (KeyValuePair<string, object> item in _cache)
-            {
-                if (item.Key.StartsWith(clientId))
-                {
-                    _cache.Remove(item.Key);
-                }
-            }
+            _cache.Remove(cacheId);
         }
 
         public void LogCache()

@@ -28,7 +28,9 @@ import {
   save,
   settings,
   trending_up as isActive,
-  world
+  world,
+  filter_alt_active as activeFilter,
+  filter_alt as filter
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
@@ -59,7 +61,9 @@ const icons = {
   person,
   save,
   done,
-  cloudOff
+  cloudOff,
+  activeFilter,
+  filter
 };
 
 Icon.add(icons);

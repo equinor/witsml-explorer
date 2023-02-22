@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,13 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Data;
-using Witsml.Extensions;
-using Witsml.Query;
+using Witsml.Data.MudLog;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Create
@@ -29,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             MudLog mudLog = job.MudLog;
             Verify(mudLog);
 
-            WitsmlMudLogs mudLogToCreate = SetupMudLogToCreate(mudLog);
+            WitsmlMudLogs mudLogToCreate = MudLogQueries.SetupMudLogToUpdate(mudLog);
 
             QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(mudLogToCreate);
             if (result.IsSuccessful)
@@ -50,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers.Create
         private async Task WaitUntilMudLogHasBeenCreated(MudLog mudLog)
         {
             bool isMudLogCreated = false;
-            WitsmlMudLogs query = MudLogQueries.QueryById(mudLog.WellUid, mudLog.WellboreUid, mudLog.Uid);
+            WitsmlMudLogs query = MudLogQueries.QueryById(mudLog.WellUid, mudLog.WellboreUid, new string[] { mudLog.Uid });
             int maxRetries = 30;
             while (!isMudLogCreated)
             {
@@ -62,53 +60,6 @@ namespace WitsmlExplorer.Api.Workers.Create
                 WitsmlMudLogs mudLogResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.IdOnly));
                 isMudLogCreated = mudLogResult.MudLogs.Any();
             }
-        }
-
-        private static WitsmlMudLogs SetupMudLogToCreate(MudLog mudLog)
-        {
-            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
-            {
-                Uid = geologyInterval.Uid,
-                TypeLithology = geologyInterval.TypeLithology,
-                MdTop = new WitsmlIndex { Uom = "m", Value = geologyInterval.MdTop },
-                MdBottom = new WitsmlIndex { Uom = "m", Value = geologyInterval.MdBottom },
-                Lithology = new WitsmlMudLogLithology
-                {
-                    Uid = geologyInterval.Lithology.Uid,
-                    Type = geologyInterval.Lithology.Type,
-                    CodeLith = geologyInterval.Lithology.CodeLith,
-                    LithPc = new WitsmlIndex { Uom = "%", Value = geologyInterval.Lithology.LithPc }
-                },
-                CommonTime = new WitsmlCommonTime
-                {
-                    DTimCreation = geologyInterval.CommonTime.DTimCreation?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ"),
-                    DTimLastChange = geologyInterval.CommonTime.DTimLastChange?.ToString("yyyy-MM-ddTHH:mm:ssK.fffZ")
-                },
-            }).ToList();
-
-            return new WitsmlMudLogs
-            {
-                MudLogs = new WitsmlMudLog
-                {
-                    Uid = mudLog.Uid,
-                    UidWellbore = mudLog.WellboreUid,
-                    UidWell = mudLog.WellUid,
-                    Name = mudLog.Name,
-                    NameWellbore = mudLog.WellboreName,
-                    NameWell = mudLog.WellName,
-                    ObjectGrowing = mudLog.ObjectGrowing.ToString(),
-                    MudLogCompany = mudLog.MudLogCompany,
-                    MudLogEngineers = mudLog.MudLogEngineers,
-                    StartMd = new WitsmlIndex { Uom = "m", Value = mudLog.StartMd },
-                    EndMd = new WitsmlIndex { Uom = "m", Value = mudLog.EndMd },
-                    GeologyInterval = geologyIntervals,
-                    CommonData = new WitsmlCommonData
-                    {
-                        ItemState = mudLog.CommonData.ItemState,
-                        SourceName = mudLog.CommonData.SourceName
-                    }
-                }.AsSingletonList()
-            };
         }
 
         private static void Verify(MudLog mudLog)

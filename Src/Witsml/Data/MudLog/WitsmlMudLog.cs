@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
 using Witsml.Extensions;
 
-namespace Witsml.Data
+namespace Witsml.Data.MudLog
 {
     public class WitsmlMudLog : ObjectOnWellbore<WitsmlMudLogs>
     {
@@ -18,6 +19,9 @@ namespace Witsml.Data
         [XmlElement("objectGrowing")]
         public string ObjectGrowing { get; set; }
 
+        [XmlElement("dTim")]
+        public string DTim { get; set; }
+
         [XmlElement("mudLogCompany")]
         public string MudLogCompany { get; set; }
 
@@ -25,15 +29,24 @@ namespace Witsml.Data
         public string MudLogEngineers { get; set; }
 
         [XmlElement("startMd")]
-        public WitsmlIndex StartMd { get; set; }
+        public WitsmlMeasureWithDatum StartMd { get; set; }
 
         [XmlElement("endMd")]
-        public WitsmlIndex EndMd { get; set; }
+        public WitsmlMeasureWithDatum EndMd { get; set; }
+
+        [XmlElement("relatedLog")]
+        public List<string> RelatedLog { get; set; }
+
+        [XmlElement("parameter")]
+        public List<WitsmlMudLogParameter> MudLogParameters { get; set; }
 
         [XmlElement("geologyInterval")]
         public List<WitsmlMudLogGeologyInterval> GeologyInterval { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
     }
 }

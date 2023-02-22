@@ -14,7 +14,7 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
 
 export const WbGeometrysListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, selectedServer, selectedWbGeometryGroup, servers } = navigationState;
+  const { selectedWellbore, selectedWell, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
 
@@ -38,7 +38,7 @@ export const WbGeometrysListView = (): React.ReactElement => {
   const onSelect = (wbGeometry: any) => {
     dispatchNavigation({
       type: NavigationType.SelectWbGeometry,
-      payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: selectedWbGeometryGroup, wbGeometry }
+      payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometry }
     });
   };
 

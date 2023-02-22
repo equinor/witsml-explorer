@@ -17,13 +17,13 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 * URL deep linking directly to objects
 
 ## Witsml as a Nuget package
-Please see [nuget_witsml.md](/nuget_witsml.md)
+Please see [nuget_witsml.md](/Docs/nuget_witsml.md)
 
 ## Contributing
 Please see our [contributing.md](/CONTRIBUTING.md).
 
 ## AuthN/Z
-Please see our [auth.md](/AUTH.md).
+Please see our [auth.md](/Docs/AUTH.md).
 
 ## Database
 Please see [mongoDb](Docker/MongoDb/README.md) or [cosmosDb](Scripts/Azure/README.md) readme.
@@ -33,6 +33,9 @@ Please see our [docker setup](/Docker/README.md).
 
 ## Deploy on server
 Please see our [server readme](./Docker/Server/README.md).
+
+## API custom client access
+Please visit [API client access](/Docs/APICLIENT.md).
 
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)

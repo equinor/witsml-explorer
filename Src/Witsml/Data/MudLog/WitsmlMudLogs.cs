@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Witsml.Data
+namespace Witsml.Data.MudLog
 {
     [XmlRoot("mudLogs", Namespace = "http://www.witsml.org/schemas/1series")]
     public class WitsmlMudLogs : IWitsmlGrowingDataQueryType

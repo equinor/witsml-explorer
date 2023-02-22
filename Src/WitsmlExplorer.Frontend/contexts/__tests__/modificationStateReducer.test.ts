@@ -1,12 +1,13 @@
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
-import Wellbore, { calculateTrajectoryGroupId } from "../../models/wellbore";
+import Wellbore from "../../models/wellbore";
 import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction } from "../modificationActions";
 import ModificationType from "../modificationType";
 import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
-import { getInitialState, LOG_1, SERVER_1, TRAJECTORY_1, TRAJECTORY_GROUP_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3 } from "../stateReducerTestUtils";
+import { getInitialState, LOG_1, SERVER_1, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3 } from "../stateReducerTestUtils";
 
 it("Should only update list of servers if no server selected", () => {
   const editedServer: Server = { ...SERVER_1, description: "Another description" };
@@ -94,11 +95,11 @@ it("Should update trajectories for selected wellbore", () => {
       trajectories: [updatedTrajectory]
     }
   };
-  const initialState = {
+  const initialState: NavigationState = {
     ...getInitialState(),
     selectedWell: { ...WELL_1 },
     selectedWellbore: { ...WELLBORE_1 },
-    selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
+    selectedObjectGroup: ObjectType.Trajectory,
     selectedTrajectory: { ...TRAJECTORY_1 }
   };
   const updatedWellbore = { ...WELLBORE_1, trajectories: [updatedTrajectory] };
@@ -109,7 +110,7 @@ it("Should update trajectories for selected wellbore", () => {
     ...getInitialState(),
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
-    selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
+    selectedObjectGroup: ObjectType.Trajectory,
     selectedTrajectory: updatedTrajectory,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
@@ -118,7 +119,6 @@ it("Should update trajectories for selected wellbore", () => {
 
 it("Should update currentSelected if deleted", () => {
   const newTrajectories: Trajectory[] = [];
-  const trajectoryGroup = calculateTrajectoryGroupId(WELLBORE_1);
   const updateTrajectoryOnWellbore = {
     type: ModificationType.UpdateTrajectoriesOnWellbore,
     payload: {
@@ -127,11 +127,11 @@ it("Should update currentSelected if deleted", () => {
       trajectories: newTrajectories
     }
   };
-  const initialState = {
+  const initialState: NavigationState = {
     ...getInitialState(),
     selectedWell: { ...WELL_1 },
     selectedWellbore: { ...WELLBORE_1 },
-    selectedTrajectoryGroup: trajectoryGroup,
+    selectedObjectGroup: ObjectType.Trajectory,
     selectedTrajectory: TRAJECTORY_1,
     currentSelected: TRAJECTORY_1
   };
@@ -139,16 +139,17 @@ it("Should update currentSelected if deleted", () => {
   const actual = reducer(initialState, updateTrajectoryOnWellbore);
 
   const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
-  expect(actual).toStrictEqual({
+  const expected: NavigationState = {
     ...getInitialState(),
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
-    selectedTrajectoryGroup: trajectoryGroup,
+    selectedObjectGroup: ObjectType.Trajectory,
     selectedTrajectory: null,
-    currentSelected: trajectoryGroup,
+    currentSelected: ObjectType.Trajectory,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
-  });
+  };
+  expect(actual).toStrictEqual(expected);
 });
 
 it("Should update refreshed well", () => {
