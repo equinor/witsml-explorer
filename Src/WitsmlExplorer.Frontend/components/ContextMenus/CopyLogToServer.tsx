@@ -11,7 +11,7 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
-import LogObjectService from "../../services/logObjectService";
+import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { displayMissingWellboreModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
@@ -28,11 +28,11 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     return;
   }
 
-  const logQueries = logsToCopy.map((log) => LogObjectService.getLogFromServer(wellUid, wellboreUid, log.uid, targetServer));
+  const logQueries = logsToCopy.map((log) => ObjectService.getObjectFromServer(wellUid, wellboreUid, log.uid, ObjectType.Log, targetServer));
   const existingLogs: LogObject[] = [];
   for (const logQuery of logQueries) {
     const receivedLog = await logQuery;
-    if (logsToCopy.find((log) => receivedLog.uid === log.uid)) {
+    if (logsToCopy.find((log) => receivedLog?.uid === log.uid)) {
       existingLogs.push(receivedLog);
     }
   }

@@ -3,16 +3,9 @@ import { RemoveWellboreAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
-import BhaRunService from "../services/bhaRunService";
-import LogObjectService from "../services/logObjectService";
-import MessageObjectService from "../services/messageObjectService";
-import MudLogService from "../services/mudLogService";
+import { ObjectType } from "../models/objectType";
 import NotificationService, { RefreshAction } from "../services/notificationService";
-import RigService from "../services/rigService";
-import RiskObjectService from "../services/riskObjectService";
-import TrajectoryService from "../services/trajectoryService";
-import TubularService from "../services/tubularService";
-import WbGeometryObjectService from "../services/wbGeometryService";
+import ObjectService from "../services/objectService";
 import WellboreService from "../services/wellboreService";
 import WellService from "../services/wellService";
 
@@ -38,7 +31,7 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.BhaRun:
             await refreshBhaRuns(refreshAction);
             break;
-          case EntityType.LogObject:
+          case EntityType.Log:
             if (refreshAction.objectUid == null) {
               await refreshLogObjects(refreshAction);
             } else {
@@ -124,7 +117,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshBhaRuns(refreshAction: RefreshAction) {
-    const bhaRuns = await BhaRunService.getBhaRuns(refreshAction.wellUid, refreshAction.wellboreUid);
+    const bhaRuns = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.BhaRun);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (bhaRuns) {
@@ -133,21 +126,21 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshLogObject(refreshAction: RefreshAction) {
-    const log = await LogObjectService.getLog(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const log = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Log);
     if (log) {
       dispatchNavigation({ type: ModificationType.UpdateLogObject, payload: { log } });
     }
   }
 
   async function refreshLogObjects(refreshAction: RefreshAction) {
-    const logs = await LogObjectService.getLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+    const logs = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Log);
     if (logs) {
       dispatchNavigation({ type: ModificationType.UpdateLogObjects, payload: { logs, wellUid: refreshAction.wellUid, wellboreUid: refreshAction.wellboreUid } });
     }
   }
 
   async function refreshMessageObjects(refreshAction: RefreshAction) {
-    const messages = await MessageObjectService.getMessages(refreshAction.wellUid, refreshAction.wellboreUid);
+    const messages = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Message);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (messages) {
@@ -156,7 +149,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshMudLogs(refreshAction: RefreshAction) {
-    const mudLogs = await MudLogService.getMudLogs(refreshAction.wellUid, refreshAction.wellboreUid);
+    const mudLogs = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.MudLog);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (mudLogs) {
@@ -165,7 +158,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshRigs(refreshAction: RefreshAction) {
-    const rigs = await RigService.getRigs(refreshAction.wellUid, refreshAction.wellboreUid);
+    const rigs = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Rig);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (rigs) {
@@ -174,7 +167,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshRisks(refreshAction: RefreshAction) {
-    const risks = await RiskObjectService.getRisks(refreshAction.wellUid, refreshAction.wellboreUid);
+    const risks = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Risk);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (risks) {
@@ -183,14 +176,14 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshTubular(refreshAction: RefreshAction) {
-    const tubular = await TubularService.getTubular(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const tubular = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Tubular);
     if (tubular) {
       dispatchNavigation({ type: ModificationType.UpdateTubularOnWellbore, payload: { tubular, exists: true } });
     }
   }
 
   async function refreshTubulars(refreshAction: RefreshAction) {
-    const tubulars = await TubularService.getTubulars(refreshAction.wellUid, refreshAction.wellboreUid);
+    const tubulars = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Tubular);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (tubulars) {
@@ -199,7 +192,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshTrajectory(refreshAction: RefreshAction) {
-    const trajectory = await TrajectoryService.getTrajectory(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const trajectory = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Trajectory);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (trajectory) {
@@ -208,7 +201,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshTrajectories(refreshAction: RefreshAction) {
-    const trajectories = await TrajectoryService.getTrajectories(refreshAction.wellUid, refreshAction.wellboreUid);
+    const trajectories = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.Trajectory);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (trajectories) {
@@ -217,7 +210,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshWbGeometry(refreshAction: RefreshAction) {
-    const wbGeometry = await WbGeometryObjectService.getWbGeometry(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid);
+    const wbGeometry = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.WbGeometry);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (wbGeometry) {
@@ -226,7 +219,7 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshWbGeometryObjects(refreshAction: RefreshAction) {
-    const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(refreshAction.wellUid, refreshAction.wellboreUid);
+    const wbGeometrys = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.WbGeometry);
     const wellUid = refreshAction.wellUid;
     const wellboreUid = refreshAction.wellboreUid;
     if (wbGeometrys) {
