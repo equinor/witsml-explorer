@@ -1,14 +1,11 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
-import { UpdateWellboreBhaRunsAction } from "../../contexts/modificationActions";
-import ModificationType from "../../contexts/modificationType";
 import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import { itemStateTypes } from "../../models/itemStateTypes";
-import BhaRunService from "../../services/bhaRunService";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
@@ -18,14 +15,13 @@ import { PropertiesModalMode, validText } from "./ModalParts";
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
 
 export interface BhaRunPropertiesModalProps {
-  dispatchNavigation: (action: UpdateWellboreBhaRunsAction) => void;
   mode: PropertiesModalMode;
   bhaRun: BhaRun;
   dispatchOperation: (action: HideModalAction) => void;
 }
 
 const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactElement => {
-  const { mode, bhaRun, dispatchOperation, dispatchNavigation } = props;
+  const { mode, bhaRun, dispatchOperation } = props;
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
@@ -58,16 +54,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
       bhaRun: updatedBhaRun
     };
     await JobService.orderJob(JobType.ModifyBhaRun, wellboreBhaRunJob);
-    const freshBhaRuns = await BhaRunService.getBhaRuns(bhaRun.wellUid, bhaRun.wellboreUid);
-    dispatchNavigation({
-      type: ModificationType.UpdateBhaRuns,
-      payload: {
-        wellUid: bhaRun.wellUid,
-        wellboreUid: bhaRun.wellboreUid,
-        bhaRuns: freshBhaRuns
-      }
-    });
-    setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
 

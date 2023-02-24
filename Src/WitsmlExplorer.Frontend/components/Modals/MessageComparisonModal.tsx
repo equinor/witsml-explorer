@@ -6,7 +6,7 @@ import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import MessageObjectService from "../../services/messageObjectService";
+import ObjectService from "../../services/objectService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
@@ -35,7 +35,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
     const fetchTarget = async () => {
       const wellUid = sourceMessage.wellUid;
       const wellboreUid = sourceMessage.wellboreUid;
-      const target = await MessageObjectService.getMessageFromServer(wellUid, wellboreUid, sourceMessage.uid, targetServer);
+      const target = await ObjectService.getObjectFromServer(wellUid, wellboreUid, sourceMessage.uid, ObjectType.Message, targetServer);
       if (target == null) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = `Unable to compare the message as either the message with UID ${sourceMessage.uid} does not exist on the target server or it was not possible to fetch the message.`;

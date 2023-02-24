@@ -11,17 +11,6 @@ export default interface ObjectOnWellbore {
   wellName: string;
 }
 
-export function emptyObjectOnWellbore(): ObjectOnWellbore {
-  return {
-    wellboreUid: "",
-    wellboreName: "",
-    wellUid: "",
-    wellName: "",
-    uid: "",
-    name: ""
-  };
-}
-
 export function toObjectReference(objectOnWellbore: ObjectOnWellbore): ObjectReference {
   return {
     uid: objectOnWellbore.uid,
