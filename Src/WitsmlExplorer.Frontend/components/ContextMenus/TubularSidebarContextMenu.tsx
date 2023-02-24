@@ -56,7 +56,7 @@ const TubularSidebarContextMenu = (props: TubularSidebarContextMenuProps): React
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, [tubular], ObjectType.Tubular, JobType.DeleteTubulars)}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, [tubular], ObjectType.Tubular)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete tubular</Typography>
         </MenuItem>,

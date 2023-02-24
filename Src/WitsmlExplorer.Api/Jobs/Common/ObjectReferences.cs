@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Jobs.Common
 {
     public class ObjectReferences : IReference
@@ -11,10 +13,12 @@ namespace WitsmlExplorer.Api.Jobs.Common
         public string WellName { get; set; }
         public string WellboreName { get; set; }
         public string[] Names { get; set; }
+        public EntityType ObjectType { get; set; }
 
         public string Description()
         {
             StringBuilder desc = new();
+            desc.Append($"ObjectType: {ObjectType}; ");
             desc.Append($"WellUid: {WellUid}; ");
             desc.Append($"WellboreUid: {WellboreUid}; ");
             desc.Append($"ObjectUids: {string.Join(", ", ObjectUids)}; ");

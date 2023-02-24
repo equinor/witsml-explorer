@@ -38,7 +38,7 @@ const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement =>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "mudLog", mudLogReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog, JobType.DeleteMudLogs)} disabled={mudLogs.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog)} disabled={mudLogs.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "mudLog", mudLogs)}</Typography>
         </MenuItem>

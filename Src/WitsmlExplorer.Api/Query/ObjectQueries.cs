@@ -3,22 +3,27 @@ using System.Linq;
 
 using Witsml.Data;
 
+using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Query
 {
     public static class ObjectQueries
     {
-        public static IEnumerable<T> DeleteObjectsQuery<T>(string wellUid, string wellboreUid, string[] objectUids) where T : ObjectOnWellbore, new()
+        public static IEnumerable<Witsml.Data.ObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
         {
-            return objectUids.Select((uid) =>
-                new T
-                {
-                    Uid = uid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
+            return toDelete.ObjectUids.Select((uid) =>
+            {
+                Witsml.Data.ObjectOnWellbore o = EntityTypeHelper.EntityTypeToObjectOnWellbore(toDelete.ObjectType);
+                o.Uid = uid;
+                o.UidWellbore = toDelete.WellboreUid;
+                o.UidWell = toDelete.WellUid;
+                return o;
+            }
             );
         }
-        public static IEnumerable<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : ObjectOnWellbore
+
+        public static IEnumerable<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : Witsml.Data.ObjectOnWellbore
         {
             return objects.Select((o) =>
             {

@@ -51,14 +51,14 @@ export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperat
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, jobType: JobType) => {
+export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType) => {
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteObjectsJob = {
       toDelete: toObjectReferences(objectsOnWellbore, objectType)
     };
-    await JobService.orderJob(jobType, job);
+    await JobService.orderJob(JobType.DeleteObjects, job);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(

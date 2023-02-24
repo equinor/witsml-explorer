@@ -68,8 +68,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
             onClickDeleteObjects(
               dispatchOperation,
               checkedBhaRunRows.map((r) => r.bhaRun),
-              ObjectType.BhaRun,
-              JobType.DeleteBhaRuns
+              ObjectType.BhaRun
             )
           }
           disabled={checkedBhaRunRows.length === 0}

@@ -48,7 +48,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, rigs, ObjectType.Rig, JobType.DeleteRigs)} disabled={checkedRigRows.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, rigs, ObjectType.Rig)} disabled={checkedRigRows.length === 0}>
           <ListItemIcon>
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
