@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -89,30 +88,6 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid
                 }).ToList()
             };
-        }
-
-        public static IEnumerable<WitsmlRig> DeleteRigQuery(string wellUid, string wellboreUid, string[] rigUids)
-        {
-            return rigUids.Select((rigUid) =>
-                new WitsmlRig
-                {
-                    Uid = rigUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-
-        public static IEnumerable<WitsmlRig> CopyWitsmlRigs(WitsmlRigs rigs, WitsmlWellbore targetWellbore)
-        {
-            return rigs.Rigs.Select((rig) =>
-            {
-                rig.UidWell = targetWellbore.UidWell;
-                rig.NameWell = targetWellbore.NameWell;
-                rig.UidWellbore = targetWellbore.Uid;
-                rig.NameWellbore = targetWellbore.Name;
-                return rig;
-            });
         }
 
         public static WitsmlRigs CreateRig(Rig rig)

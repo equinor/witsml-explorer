@@ -7,7 +7,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data.Tubular
 {
-    public class WitsmlTubular : ObjectOnWellbore<WitsmlTubulars>
+    public class WitsmlTubular : ObjectOnWellbore
     {
         public override WitsmlTubulars AsSingletonWitsmlList()
         {

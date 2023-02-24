@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -84,30 +83,6 @@ namespace WitsmlExplorer.Api.Query
                     },
                 }.AsSingletonList()
             };
-        }
-
-        public static IEnumerable<WitsmlRisk> DeleteRiskQuery(string wellUid, string wellboreUid, string[] riskUids)
-        {
-            return riskUids.Select((riskUid) =>
-                new WitsmlRisk
-                {
-                    Uid = riskUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-
-        public static IEnumerable<WitsmlRisk> CopyWitsmlRisks(WitsmlRisks risks, WitsmlWellbore targetWellbore)
-        {
-            return risks.Risks.Select((risk) =>
-            {
-                risk.UidWell = targetWellbore.UidWell;
-                risk.NameWell = targetWellbore.NameWell;
-                risk.UidWellbore = targetWellbore.Uid;
-                risk.NameWellbore = targetWellbore.Name;
-                return risk;
-            });
         }
 
         public static WitsmlRisks CreateRisk(Risk risk)

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Data;
 
 using WitsmlExplorer.Api.Models;
 
@@ -15,7 +14,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
     public interface ICopyUtils
     {
-        public Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid) where T : IWitsmlQueryType;
+        public Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<Witsml.Data.ObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid);
     }
 
     public class CopyUtils : ICopyUtils
@@ -27,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             _logger = logger;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid) where T : IWitsmlQueryType
+        public async Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<Witsml.Data.ObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid)
         {
             bool error = false;
             List<string> successUids = new();

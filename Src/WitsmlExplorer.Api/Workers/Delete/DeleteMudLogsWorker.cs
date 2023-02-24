@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteMudLogsJob job)
         {
             job.ToDelete.Verify();
-            IEnumerable<WitsmlMudLog> queries = MudLogQueries.DeleteWitsmlMudLogs(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
+            IEnumerable<WitsmlMudLog> queries = ObjectQueries.DeleteObjectsQuery<WitsmlMudLog>(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, EntityType.MudLog);
             return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }
