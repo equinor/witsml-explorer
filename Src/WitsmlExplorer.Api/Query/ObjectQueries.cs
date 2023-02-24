@@ -12,12 +12,17 @@ namespace WitsmlExplorer.Api.Query
     {
         public static IEnumerable<Witsml.Data.ObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
         {
-            return toDelete.ObjectUids.Select((uid) =>
+            return IdsToObjects(toDelete.WellUid, toDelete.WellboreUid, toDelete.ObjectUids, toDelete.ObjectType);
+        }
+
+        public static IEnumerable<Witsml.Data.ObjectOnWellbore> IdsToObjects(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
+        {
+            return objectUids.Select((uid) =>
             {
-                Witsml.Data.ObjectOnWellbore o = EntityTypeHelper.EntityTypeToObjectOnWellbore(toDelete.ObjectType);
+                Witsml.Data.ObjectOnWellbore o = EntityTypeHelper.EntityTypeToObjectOnWellbore(type);
                 o.Uid = uid;
-                o.UidWellbore = toDelete.WellboreUid;
-                o.UidWell = toDelete.WellUid;
+                o.UidWellbore = wellboreUid;
+                o.UidWell = wellUid;
                 return o;
             }
             );
@@ -33,6 +38,14 @@ namespace WitsmlExplorer.Api.Query
                 o.NameWellbore = targetWellbore.Name;
                 return o;
             });
+        }
+
+
+        public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
+        {
+            IWitsmlObjectList list = EntityTypeHelper.EntityTypeToObjectList(type);
+            list.Objects = IdsToObjects(wellUid, wellboreUid, objectUids, type);
+            return list;
         }
     }
 }

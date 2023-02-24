@@ -59,5 +59,24 @@ namespace WitsmlExplorer.Api.Models
                 _ => null,
             };
         }
+
+        public static IWitsmlObjectList EntityTypeToObjectList(EntityType type)
+        {
+            return type switch
+            {
+                EntityType.BhaRun => new WitsmlBhaRuns(),
+                EntityType.Log => new WitsmlLogs(),
+                EntityType.Message => new WitsmlMessages(),
+                EntityType.MudLog => new WitsmlMudLogs(),
+                EntityType.Rig => new WitsmlRigs(),
+                EntityType.Risk => new WitsmlRisks(),
+                EntityType.Tubular => new WitsmlTubulars(),
+                EntityType.Trajectory => new WitsmlTrajectories(),
+                EntityType.WbGeometry => new WitsmlWbGeometrys(),
+                EntityType.Well => null,
+                EntityType.Wellbore => null,
+                _ => null,
+            };
+        }
     }
 }

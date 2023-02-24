@@ -1,28 +1,19 @@
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
+using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlFormationMarker
+    public class WitsmlFormationMarker : ObjectOnWellbore
     {
-        [XmlAttribute("uidWell")]
-        public string UidWell { get; init; }
-
-        [XmlAttribute("uidWellbore")]
-        public string UidWellbore { get; init; }
-
-        [XmlAttribute("uid")]
-        public string Uid { get; init; }
-
-        [XmlElement("nameWell")]
-        public string NameWell { get; init; }
-
-        [XmlElement("nameWellbore")]
-        public string NameWellbore { get; init; }
-
-        [XmlElement("name")]
-        public string Name { get; init; }
+        public override WitsmlFormationMarkers AsSingletonWitsmlList()
+        {
+            return new WitsmlFormationMarkers()
+            {
+                FormationMarkers = this.AsSingletonList()
+            };
+        }
 
         [XmlElement("description")]
         public string Description { get; init; }

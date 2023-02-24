@@ -6,6 +6,7 @@ namespace WitsmlExplorer.Api.Models
         CopyLog,
         CopyLogData,
         CopyMudLog,
+        CopyObjects,
         CopyRig,
         CopyRisk,
         CopyTrajectory,
