@@ -41,21 +41,20 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok();
         }
 
-        public static string GenerateToken(HttpRequest request, [FromServices] ICredentialsService credentialsService)
+        public static string GenerateToken(IConfiguration configuration, HttpRequest request, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(request);
             string sub = credentialsService.GetClaimFromToken(eh.GetBearerToken(), "sub");
 
-            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes("superSecretKey@1"));
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(configuration[ConfigConstants.NotificationsKey]));
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
             Claim[] claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, sub),
             };
-            JwtSecurityToken token = new("https://localhost:5000/",
-                "https://localhost:5000/",
-                claims,
-                expires: DateTime.Now.AddMinutes(15),
+            JwtSecurityToken token = new(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

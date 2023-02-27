@@ -74,18 +74,14 @@ namespace WitsmlExplorer.Api
 
             if (StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]))
             {
-                //this one is used on notifications route as well causing validation error spam
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
-                services.AddAuthentication().AddJwtBearer("SignalR", options =>
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("SignalRAuth", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "https://localhost:5000/",
-                        ValidAudience = "https://localhost:5000/",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@1")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[ConfigConstants.NotificationsKey])),
                     };
                     options.Events = new JwtBearerEvents
                     {
@@ -96,14 +92,13 @@ namespace WitsmlExplorer.Api
                             PathString path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notifications"))
                             {
-                                // Read the token out of the query string
                                 context.Token = accessToken;
                             }
                             return Task.CompletedTask;
                         }
                     };
                 }
-                );
+                ).AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
 
                 services.AddAuthorization(options =>
                 {
@@ -116,7 +111,7 @@ namespace WitsmlExplorer.Api
                         authBuilder.RequireRole(new string[] { AuthorizationPolicyRoles.ADMIN, AuthorizationPolicyRoles.DEVELOPER })
                     );
 
-                    AuthorizationPolicyBuilder signalRBuilder = new("SignalR");
+                    AuthorizationPolicyBuilder signalRBuilder = new("SignalRAuth");
                     options.AddPolicy("SignalRPolicy", signalRBuilder
                         .RequireAuthenticatedUser()
                         .Build());

@@ -42,12 +42,16 @@ export default class NotificationService {
   private _alertDispatcher = new SimpleEventDispatcher<Notification>();
   private _refreshDispatcher = new SimpleEventDispatcher<RefreshAction>();
   private _onConnectionStateChanged = new SimpleEventDispatcher<boolean>();
+  private static token: string | null = null;
 
-  private static async getToken(): Promise<any> {
-    console.log("getToken");
+  private static async getToken(): Promise<string> {
+    if (this.token != null) {
+      return this.token;
+    }
     const response = await ApiClient.get(`/api/credentials/token`);
     if (response.ok) {
-      return response.text();
+      this.token = await response.text();
+      return this.token;
     }
   }
 
@@ -56,7 +60,6 @@ export default class NotificationService {
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }
-
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${notificationURL}notifications`, {
         accessTokenFactory: () => NotificationService.getToken()
@@ -80,6 +83,7 @@ export default class NotificationService {
       this._onConnectionStateChanged.dispatch(true);
     });
     this.hubConnection.onclose(() => {
+      NotificationService.token = null;
       setTimeout(() => this.hubConnection.start(), 5000);
     });
 
