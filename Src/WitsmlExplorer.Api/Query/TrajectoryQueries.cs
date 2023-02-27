@@ -62,30 +62,6 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlTrajectory> DeleteTrajectories(string wellUid, string wellboreUid, string[] trajectoryUids)
-        {
-            return trajectoryUids.Select((trajectoryUid) =>
-                new WitsmlTrajectory
-                {
-                    Uid = trajectoryUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-
-        public static IEnumerable<WitsmlTrajectory> CopyWitsmlTrajectories(WitsmlTrajectories trajectories, WitsmlWellbore targetWellbore)
-        {
-            return trajectories.Trajectories.Select((trajectory) =>
-            {
-                trajectory.UidWell = targetWellbore.UidWell;
-                trajectory.NameWell = targetWellbore.NameWell;
-                trajectory.UidWellbore = targetWellbore.Uid;
-                trajectory.NameWellbore = targetWellbore.Name;
-                return trajectory;
-            });
-        }
-
         public static WitsmlTrajectories CopyTrajectoryStations(WitsmlTrajectory trajectory, IEnumerable<WitsmlTrajectoryStation> trajectoryStations)
         {
             trajectory.TrajectoryStations.AddRange(trajectoryStations);

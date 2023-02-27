@@ -1,4 +1,5 @@
 import { TextField } from "@equinor/eds-core-react";
+import { Fragment } from "react";
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -111,12 +112,12 @@ const displayDeleteModal = (
           <span>
             This will permanently delete {toDeleteNames.length} {toDeleteTypeName}:
             <strong>
-              {toDeleteNames.map((name) => {
+              {toDeleteNames.map((name, index) => {
                 return (
-                  <>
+                  <Fragment key={index}>
                     <br />
                     {name}
-                  </>
+                  </Fragment>
                 );
               })}
             </strong>

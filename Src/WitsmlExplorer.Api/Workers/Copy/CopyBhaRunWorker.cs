@@ -29,8 +29,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyBhaRunJob job)
         {
             (WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore) = await FetchData(job);
-            IEnumerable<WitsmlBhaRun> queries = BhaRunQueries.CopyWitsmlBhaRuns(bhaRuns, targetWellbore);
-            RefreshBhaRuns refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            IEnumerable<WitsmlBhaRun> queries = ObjectQueries.CopyObjectsQuery(bhaRuns.BhaRuns, targetWellbore);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.BhaRun);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 

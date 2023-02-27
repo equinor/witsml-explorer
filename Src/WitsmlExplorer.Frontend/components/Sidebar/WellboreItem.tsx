@@ -9,16 +9,8 @@ import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
-import BhaRunService from "../../services/bhaRunService";
 import { JobType } from "../../services/jobService";
-import LogObjectService from "../../services/logObjectService";
-import MessageObjectService from "../../services/messageObjectService";
-import MudLogService from "../../services/mudLogService";
-import RigService from "../../services/rigService";
-import RiskObjectService from "../../services/riskObjectService";
-import TrajectoryService from "../../services/trajectoryService";
-import TubularService from "../../services/tubularService";
-import WbGeometryObjectService from "../../services/wbGeometryService";
+import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import ObjectsSidebarContextMenu, { ObjectsSidebarContextMenuProps } from "../ContextMenus/ObjectsSidebarContextMenu";
@@ -82,29 +74,10 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const controller = new AbortController();
 
     async function getChildren() {
-      const getBhaRuns = BhaRunService.getBhaRuns(well.uid, wellbore.uid, controller.signal);
-      const getLogs = LogObjectService.getLogs(well.uid, wellbore.uid, controller.signal);
-      const getRigs = RigService.getRigs(well.uid, wellbore.uid, controller.signal);
-      const getTrajectories = TrajectoryService.getTrajectories(well.uid, wellbore.uid, controller.signal);
-      const getMessages = MessageObjectService.getMessages(well.uid, wellbore.uid, controller.signal);
-      const getMudLogs = MudLogService.getMudLogs(well.uid, wellbore.uid, controller.signal);
-      const getRisks = RiskObjectService.getRisks(well.uid, wellbore.uid, controller.signal);
-      const getTubulars = TubularService.getTubulars(well.uid, wellbore.uid, controller.signal);
-      const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(well.uid, wellbore.uid, controller.signal);
-      const [bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys] = await Promise.all([
-        getBhaRuns,
-        getLogs,
-        getRigs,
-        getTrajectories,
-        getMessages,
-        getMudLogs,
-        getRisks,
-        getTubulars,
-        getWbGeometrys
-      ]);
+      const wellboreObjects = await WellboreService.getWellboreObjects(well.uid, wellbore.uid);
       const selectWellbore: SelectWellboreAction = {
         type: NavigationType.SelectWellbore,
-        payload: { well, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
+        payload: { well, wellbore, ...wellboreObjects }
       };
       dispatchNavigation(selectWellbore);
       setIsFetchingData(false);
@@ -203,7 +176,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               mudLog={mudLog}
               well={well}
               wellbore={wellbore}
-              nodeId={calculateObjectNodeId(mudLog, ObjectType.Trajectory)}
+              nodeId={calculateObjectNodeId(mudLog, ObjectType.MudLog)}
               selected={selectedMudLog && selectedMudLog.uid === mudLog.uid ? true : undefined}
             />
           ))}

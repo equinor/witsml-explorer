@@ -8,6 +8,7 @@ using Moq;
 using Serilog;
 
 using Witsml;
+using Witsml.Data;
 using Witsml.Data.MudLog;
 
 using WitsmlExplorer.Api.Jobs;
@@ -32,7 +33,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             Mock<IWitsmlClient> witsmlClient = new();
-            witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<WitsmlMudLogs>(o => o.MudLogs.First().UidWell == WellUid && o.MudLogs.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
+            witsmlClient.Setup(client => client.DeleteFromStoreAsync(Match.Create<IWitsmlQueryType>(o => ((WitsmlMudLogs)o).MudLogs.First().UidWell == WellUid && ((WitsmlMudLogs)o).MudLogs.First().UidWellbore == WellboreUid))).ReturnsAsync(new QueryResult(true));
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
@@ -57,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(job);
-            Assert.True(result.IsSuccess && ((RefreshMudLogs)refreshAction).WellboreUid == WellboreUid);
+            Assert.True(result.IsSuccess && ((RefreshObjects)refreshAction).WellboreUid == WellboreUid);
         }
     }
 }

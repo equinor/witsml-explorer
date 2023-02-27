@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace WitsmlExplorer.Api.Models
@@ -7,18 +10,30 @@ namespace WitsmlExplorer.Api.Models
     {
         Well,
         Wellbore,
-        BhaRuns,
-        LogObject,
-        LogObjects,
-        MessageObjects,
-        MudLogs,
-        Rigs,
-        Risks,
+        BhaRun,
+        Log,
+        Message,
+        MudLog,
+        Rig,
+        Risk,
         Tubular,
-        Trajectories,
         Trajectory,
-        TrajectoryStation,
         WbGeometry,
-        WbGeometryObjects,
+    }
+
+    public class EntityTypeHelper
+    {
+        public static Dictionary<EntityType, string> EntityTypeToPluralLowercase()
+        {
+            return Enum.GetValues(typeof(EntityType))
+               .Cast<EntityType>()
+               .ToDictionary(
+                entityType => entityType,
+               entityType =>
+               {
+                   string lower = entityType.ToString().ToLowerInvariant();
+                   return lower.Last() == 'y' ? lower.Remove(lower.Length - 1) + "ies" : lower + "s";
+               });
+        }
     }
 }

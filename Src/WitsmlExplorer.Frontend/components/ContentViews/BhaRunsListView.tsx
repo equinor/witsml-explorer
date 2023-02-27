@@ -13,7 +13,7 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
 }
 
 export const BhaRunsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
@@ -58,7 +58,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedBhaRunRows: BhaRunRow[]) => {
-    const contextProps: BhaRunContextMenuProps = { checkedBhaRunRows, wellbore: selectedWellbore, dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: BhaRunContextMenuProps = { checkedBhaRunRows, wellbore: selectedWellbore, dispatchOperation, selectedServer, servers };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <BhaRunContextMenu {...contextProps} />, position } });
   };

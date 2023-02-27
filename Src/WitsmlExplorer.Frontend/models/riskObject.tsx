@@ -1,6 +1,6 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
-import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
+import ObjectOnWellbore from "./objectOnWellbore";
 
 export default interface RiskObject extends ObjectOnWellbore {
   type: string;
@@ -17,29 +17,4 @@ export default interface RiskObject extends ObjectOnWellbore {
   summary: string;
   details: string;
   commonData: CommonData;
-}
-
-export function emptyRiskObject(): RiskObject {
-  return {
-    ...emptyObjectOnWellbore(),
-    type: "",
-    category: "",
-    subCategory: "",
-    extendCategory: "",
-    affectedPersonnel: "",
-    dTimEnd: null,
-    dTimStart: null,
-    mdBitStart: null,
-    mdBitEnd: null,
-    severityLevel: "",
-    probabilityLevel: "",
-    summary: "",
-    details: "",
-    commonData: {
-      sourceName: "",
-      dTimCreation: "",
-      dTimLastChange: "",
-      itemState: ""
-    }
-  };
 }

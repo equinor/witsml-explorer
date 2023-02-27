@@ -13,6 +13,7 @@ import { Server } from "../../models/server";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import LogObjectService from "../../services/logObjectService";
+import ObjectService from "../../services/objectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
@@ -33,8 +34,8 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
   const wellboreUid = curvesToCopy[0].wellboreUid;
   const logUid = curvesToCopy[0].logUid;
 
-  const targetLog = await LogObjectService.getLogFromServer(wellUid, wellboreUid, logUid, targetServer);
-  if (targetLog.uid !== logUid) {
+  const targetLog = await ObjectService.getObjectFromServer(wellUid, wellboreUid, logUid, ObjectType.Log, targetServer);
+  if (targetLog?.uid !== logUid) {
     displayMissingObjectModal(targetServer, wellUid, wellboreUid, logUid, dispatchOperation, "No curves will be copied.", ObjectType.Log);
     return;
   }

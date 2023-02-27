@@ -3,9 +3,9 @@ using System.Xml.Serialization;
 
 namespace Witsml.Data
 {
-    public abstract class ObjectOnWellbore<T> where T : IWitsmlQueryType
+    public abstract class ObjectOnWellbore
     {
-        public abstract T AsSingletonWitsmlList();
+        public abstract IWitsmlQueryType AsSingletonWitsmlList();
 
         [XmlAttribute("uidWell")]
         public string UidWell { get; set; }

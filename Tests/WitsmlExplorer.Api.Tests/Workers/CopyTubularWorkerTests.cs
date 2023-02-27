@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == TubularUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceTubulars());
             SetupGetWellbore();
-            List<WitsmlTubulars> copyTubularQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlTubulars> copyTubularQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlTubulars>(_witsmlClient);
 
             (WorkerResult, RefreshAction) result = await _copyTubularWorker.Execute(copyTubularJob);
             Assert.True(result.Item1.IsSuccess);
@@ -73,15 +73,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         }
                     }
                 });
-        }
-
-        private List<WitsmlTubulars> SetupAddInStoreAsync()
-        {
-            List<WitsmlTubulars> addedTubular = new();
-            _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlTubulars>()))
-                .Callback<WitsmlTubulars>(addedTubular.Add)
-                .ReturnsAsync(new QueryResult(true));
-            return addedTubular;
         }
 
         private static CopyTubularJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)

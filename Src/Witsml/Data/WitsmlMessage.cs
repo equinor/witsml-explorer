@@ -5,7 +5,7 @@ using Witsml.Extensions;
 namespace Witsml.Data
 {
     [XmlRoot]
-    public class WitsmlMessage : ObjectOnWellbore<WitsmlMessages>
+    public class WitsmlMessage : ObjectOnWellbore
     {
         public override WitsmlMessages AsSingletonWitsmlList()
         {

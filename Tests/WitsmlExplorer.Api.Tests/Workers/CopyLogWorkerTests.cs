@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CopyLogJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
-            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CopyLogJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
-            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
@@ -103,7 +103,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             string errorReason = "test";
-            IEnumerable<WitsmlLogs> copyLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, false, "", errorReason), null));
 
@@ -148,15 +148,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         }
                     }
                 });
-        }
-
-        private IEnumerable<WitsmlLogs> SetupAddInStoreAsync()
-        {
-            List<WitsmlLogs> addedLog = new();
-            _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(addedLog.Add)
-                .ReturnsAsync(new QueryResult(true));
-            return addedLog;
         }
 
         private static CopyLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)

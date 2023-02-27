@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
-using Witsml.Data;
 
 using WitsmlExplorer.Api.Models;
 
@@ -15,7 +14,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
     public interface IDeleteUtils
     {
-        public Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType;
+        public Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<Witsml.Data.ObjectOnWellbore> queries, RefreshAction refreshAction);
     }
 
     public class DeleteUtils : IDeleteUtils
@@ -27,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             _logger = logger;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType
+        public async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<Witsml.Data.ObjectOnWellbore> queries, RefreshAction refreshAction)
         {
             string uidWell = queries.First().UidWell;
             string uidWellbore = queries.First().UidWellbore;

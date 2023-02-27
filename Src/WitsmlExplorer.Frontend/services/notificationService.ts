@@ -23,10 +23,7 @@ export interface RefreshAction {
   serverUrl: URL;
   wellUid: string;
   wellboreUid?: string;
-  logObjectUid?: string;
-  messageObjectUid?: string;
-  trajectoryUid?: string;
-  wbGeometryUid?: string;
+  objectUid?: string;
 }
 
 export enum RefreshType {

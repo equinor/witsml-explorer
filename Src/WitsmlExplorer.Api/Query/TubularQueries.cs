@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
@@ -42,30 +41,6 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid
                 }).ToList()
             };
-        }
-
-        public static IEnumerable<WitsmlTubular> DeleteWitsmlTubulars(string wellUid, string wellboreUid, string[] tubularUids)
-        {
-            return tubularUids.Select((tubularUid) =>
-                new WitsmlTubular
-                {
-                    Uid = tubularUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-
-        public static IEnumerable<WitsmlTubular> CopyWitsmlTubulars(WitsmlTubulars tubulars, WitsmlWellbore targetWellbore)
-        {
-            return tubulars.Tubulars.Select((tubular) =>
-            {
-                tubular.UidWell = targetWellbore.UidWell;
-                tubular.NameWell = targetWellbore.NameWell;
-                tubular.UidWellbore = targetWellbore.Uid;
-                tubular.NameWellbore = targetWellbore.Name;
-                return tubular;
-            });
         }
 
         public static WitsmlTubulars CopyTubularComponents(WitsmlTubular tubular, IEnumerable<WitsmlTubularComponent> tubularComponents)

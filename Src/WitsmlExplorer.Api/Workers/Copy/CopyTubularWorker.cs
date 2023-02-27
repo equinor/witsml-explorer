@@ -31,8 +31,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyTubularJob job)
         {
             (WitsmlTubulars tubulars, WitsmlWellbore targetWellbore) = await FetchData(job);
-            IEnumerable<WitsmlTubular> queries = TubularQueries.CopyWitsmlTubulars(tubulars, targetWellbore);
-            RefreshTubulars refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Update);
+            IEnumerable<WitsmlTubular> queries = ObjectQueries.CopyObjectsQuery(tubulars.Tubulars, targetWellbore);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Tubular);
             return await _copyUtils.CopyObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
 

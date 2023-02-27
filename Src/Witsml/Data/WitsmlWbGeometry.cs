@@ -7,7 +7,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlWbGeometry : ObjectOnWellbore<WitsmlWbGeometrys>
+    public class WitsmlWbGeometry : ObjectOnWellbore
     {
         public override WitsmlWbGeometrys AsSingletonWitsmlList()
         {

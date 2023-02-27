@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     client.GetFromStoreAsync(It.Is<WitsmlMudLogs>(witsmlMudLogs => witsmlMudLogs.MudLogs.First().Uid == MudLogUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceMudLogs());
             SetupGetWellbore();
-            List<WitsmlMudLogs> copyMudLogQuery = SetupAddInStoreAsync();
+            IEnumerable<WitsmlMudLogs> copyMudLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlMudLogs>(_witsmlClient);
 
             (WorkerResult, RefreshAction) result = await _copyMudLogWorker.Execute(copyMudLogJob);
             Assert.True(result.Item1.IsSuccess);
@@ -73,15 +73,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         }
                     }
                 });
-        }
-
-        private List<WitsmlMudLogs> SetupAddInStoreAsync()
-        {
-            List<WitsmlMudLogs> addedMudLog = new();
-            _witsmlClient.Setup(client => client.AddToStoreAsync(It.IsAny<WitsmlMudLogs>()))
-                .Callback<WitsmlMudLogs>(addedMudLog.Add)
-                .ReturnsAsync(new QueryResult(true));
-            return addedMudLog;
         }
 
         private static CopyMudLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
