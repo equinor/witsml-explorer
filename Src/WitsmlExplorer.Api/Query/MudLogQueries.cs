@@ -90,29 +90,5 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-
-        public static IEnumerable<WitsmlMudLog> CopyWitsmlMudLogs(WitsmlMudLogs mudLogs, WitsmlWellbore targetWellbore)
-        {
-            return mudLogs.MudLogs.Select((mudLog) =>
-            {
-                mudLog.UidWell = targetWellbore.UidWell;
-                mudLog.NameWell = targetWellbore.NameWell;
-                mudLog.UidWellbore = targetWellbore.Uid;
-                mudLog.NameWellbore = targetWellbore.Name;
-                return mudLog;
-            });
-        }
-
-        public static IEnumerable<WitsmlMudLog> DeleteWitsmlMudLogs(string wellUid, string wellboreUid, string[] mudLogUids)
-        {
-            return mudLogUids.Select((mudLogUid) =>
-                new WitsmlMudLog
-                {
-                    Uid = mudLogUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
     }
 }

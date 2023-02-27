@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -110,29 +109,6 @@ namespace WitsmlExplorer.Api.Query
                     }
                 }.AsSingletonList()
             };
-        }
-
-        public static IEnumerable<WitsmlBhaRun> DeleteBhaRunQuery(string wellUid, string wellboreUid, string[] bhaRunUids)
-        {
-            return bhaRunUids.Select((bhaRunUid) =>
-                new WitsmlBhaRun
-                {
-                    Uid = bhaRunUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-        public static IEnumerable<WitsmlBhaRun> CopyWitsmlBhaRuns(WitsmlBhaRuns bhaRuns, WitsmlWellbore targetWellbore)
-        {
-            return bhaRuns.BhaRuns.Select((bhaRun) =>
-            {
-                bhaRun.UidWell = targetWellbore.UidWell;
-                bhaRun.NameWell = targetWellbore.NameWell;
-                bhaRun.UidWellbore = targetWellbore.Uid;
-                bhaRun.NameWellbore = targetWellbore.Name;
-                return bhaRun;
-            });
         }
     }
 }

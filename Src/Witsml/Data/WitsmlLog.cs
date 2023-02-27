@@ -5,7 +5,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlLog : ObjectOnWellbore<WitsmlLogs>
+    public class WitsmlLog : ObjectOnWellbore
     {
         public override WitsmlLogs AsSingletonWitsmlList()
         {

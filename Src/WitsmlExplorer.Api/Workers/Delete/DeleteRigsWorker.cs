@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteRigsJob job)
         {
             job.ToDelete.Verify();
-            IEnumerable<WitsmlRig> queries = RigQueries.DeleteRigQuery(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
+            IEnumerable<WitsmlRig> queries = ObjectQueries.DeleteObjectsQuery<WitsmlRig>(job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectUids);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, EntityType.Rig);
             return await _deleteUtils.DeleteObjectsOnWellbore(GetTargetWitsmlClientOrThrow(), queries, refreshAction);
         }

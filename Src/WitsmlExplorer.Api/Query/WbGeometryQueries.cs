@@ -95,18 +95,6 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlWbGeometry> DeleteWbGeometryQuery(string wellUid, string wellboreUid, string[] wbGeometryUids)
-        {
-            return wbGeometryUids.Select((wbGeometryUid) =>
-                new WitsmlWbGeometry
-                {
-                    Uid = wbGeometryUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
-        }
-
         public static WitsmlWbGeometrys CreateWbGeometry(WbGeometry wbGeometry)
         {
             return new WitsmlWbGeometrys
