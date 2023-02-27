@@ -1,13 +1,13 @@
+import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
-import Wellbore, { emptyWellbore } from "../models/wellbore";
+import Wellbore, { emptyWellbore, WellboreObjects } from "../models/wellbore";
 import { ApiClient } from "./apiClient";
-import BhaRunService from "./bhaRunService";
-import LogObjectService from "./logObjectService";
-import RigService from "./rigService";
-import RiskObjectService from "./riskObjectService";
-import TrajectoryService from "./trajectoryService";
-import TubularService from "./tubularService";
-import WbGeometryObjectService from "./wbGeometryService";
+import ObjectService from "./objectService";
+
+// Removes 'optional' attributes from a type's properties
+type Concrete<Type> = {
+  [Property in keyof Type]-?: Type[Property];
+};
 
 export default class WellboreService {
   public static async getWellbore(wellUid: string, wellboreUid: string, abortSignal?: AbortSignal): Promise<Wellbore> {
@@ -35,24 +35,33 @@ export default class WellboreService {
 
   public static async getCompleteWellbore(wellUid: string, wellboreUid: string): Promise<Wellbore> {
     const getWellbore = WellboreService.getWellbore(wellUid, wellboreUid);
-    const getBhaRuns = BhaRunService.getBhaRuns(wellUid, wellboreUid);
-    const getLogs = LogObjectService.getLogs(wellUid, wellboreUid);
-    const getRigs = RigService.getRigs(wellUid, wellboreUid);
-    const getRisks = RiskObjectService.getRisks(wellUid, wellboreUid);
-    const getTrajectories = TrajectoryService.getTrajectories(wellUid, wellboreUid);
-    const getTubulars = TubularService.getTubulars(wellUid, wellboreUid);
-    const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(wellUid, wellboreUid);
-    const [wellbore, bhaRuns, logs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
-      getWellbore,
+    const getObjects = WellboreService.getWellboreObjects(wellUid, wellboreUid);
+    const [wellbore, wellboreObjects] = await Promise.all([getWellbore, getObjects]);
+
+    return { ...wellbore, ...wellboreObjects };
+  }
+
+  public static async getWellboreObjects(wellUid: string, wellboreUid: string): Promise<Concrete<WellboreObjects>> {
+    const getBhaRuns = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.BhaRun);
+    const getLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Log);
+    const getMessages = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Message);
+    const getMudLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.MudLog);
+    const getRigs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Rig);
+    const getRisks = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Risk);
+    const getTrajectories = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Trajectory);
+    const getTubulars = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Tubular);
+    const getWbGeometrys = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
+    const [bhaRuns, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
       getBhaRuns,
       getLogs,
+      getMessages,
+      getMudLogs,
       getRigs,
       getRisks,
       getTrajectories,
       getTubulars,
       getWbGeometrys
     ]);
-
-    return { ...wellbore, bhaRuns, logs, rigs, risks, trajectories, tubulars, wbGeometrys };
+    return { bhaRuns, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys };
   }
 }

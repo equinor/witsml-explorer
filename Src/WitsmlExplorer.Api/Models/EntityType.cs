@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace WitsmlExplorer.Api.Models
@@ -8,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         Well,
         Wellbore,
         BhaRun,
-        LogObject,
+        Log,
         Message,
         MudLog,
         Rig,
@@ -16,5 +19,21 @@ namespace WitsmlExplorer.Api.Models
         Tubular,
         Trajectory,
         WbGeometry,
+    }
+
+    public class EntityTypeHelper
+    {
+        public static Dictionary<EntityType, string> EntityTypeToPluralLowercase()
+        {
+            return Enum.GetValues(typeof(EntityType))
+               .Cast<EntityType>()
+               .ToDictionary(
+                entityType => entityType,
+               entityType =>
+               {
+                   string lower = entityType.ToString().ToLowerInvariant();
+                   return lower.Last() == 'y' ? lower.Remove(lower.Length - 1) + "ies" : lower + "s";
+               });
+        }
     }
 }

@@ -41,7 +41,7 @@ export interface WellboreProperties {
   itemState?: string;
 }
 
-export default interface Wellbore extends WellboreProperties {
+export interface WellboreObjects {
   bhaRuns?: BhaRun[];
   logs?: LogObject[];
   rigs?: Rig[];
@@ -52,6 +52,8 @@ export default interface Wellbore extends WellboreProperties {
   risks?: RiskObject[];
   wbGeometrys?: WbGeometryObject[];
 }
+
+export default interface Wellbore extends WellboreProperties, WellboreObjects {}
 
 export function emptyWellbore(): Wellbore {
   return {

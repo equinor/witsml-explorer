@@ -6,9 +6,10 @@ import { HideModalAction } from "../../../contexts/operationStateReducer";
 import OperationType from "../../../contexts/operationType";
 import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
 import LogObject from "../../../models/logObject";
+import { ObjectType } from "../../../models/objectType";
 import { truncateAbortHandler } from "../../../services/apiClient";
 import JobService, { JobType } from "../../../services/jobService";
-import LogObjectService from "../../../services/logObjectService";
+import ObjectService from "../../../services/objectService";
 import { colors } from "../../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../../Constants";
 import ModalDialog from "../ModalDialog";
@@ -40,7 +41,7 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
     const controller = new AbortController();
 
     async function getLogObject() {
-      const freshLogs = await LogObjectService.getLogs(log.wellUid, log.wellboreUid, controller.signal);
+      const freshLogs = await ObjectService.getObjects(log.wellUid, log.wellboreUid, ObjectType.Log, controller.signal);
       dispatchNavigation({ type: ModificationType.UpdateLogObjects, payload: { wellUid: log.wellUid, wellboreUid: log.wellboreUid, logs: freshLogs } });
       setIsLoading(false);
       dispatchOperation({ type: OperationType.HideModal });
