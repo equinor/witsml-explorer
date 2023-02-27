@@ -1,7 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreBhaRunsAction } from "../../contexts/modificationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
@@ -21,19 +20,18 @@ import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 export interface BhaRunContextMenuProps {
   checkedBhaRunRows: BhaRunRow[];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  dispatchNavigation: (action: UpdateWellboreBhaRunsAction) => void;
   servers: Server[];
   wellbore: Wellbore;
   selectedServer: Server;
 }
 
 const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement => {
-  const { checkedBhaRunRows, wellbore, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
+  const { checkedBhaRunRows, wellbore, dispatchOperation, selectedServer, servers } = props;
   const bhaRunReferences = useClipboardReferencesOfType(ObjectType.BhaRun);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyBhaRunProps: BhaRunPropertiesModalProps = { mode, bhaRun: checkedBhaRunRows[0].bhaRun, dispatchOperation, dispatchNavigation };
+    const modifyBhaRunProps: BhaRunPropertiesModalProps = { mode, bhaRun: checkedBhaRunRows[0].bhaRun, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <BhaRunPropertiesModal {...modifyBhaRunProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

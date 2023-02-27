@@ -4,15 +4,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import BhaRunService from "../../services/bhaRunService";
-import LogObjectService from "../../services/logObjectService";
-import MessageObjectService from "../../services/messageObjectService";
-import MudLogService from "../../services/mudLogService";
-import RigService from "../../services/rigService";
-import RiskObjectService from "../../services/riskObjectService";
-import TrajectoryService from "../../services/trajectoryService";
-import TubularService from "../../services/tubularService";
-import WbGeometryObjectService from "../../services/wbGeometryService";
+import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
@@ -53,21 +45,10 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const onSelect = async (wellbore: any) => {
-    const { wellUid, uid } = wellbore;
-
-    const controller = new AbortController();
-    const logs = await LogObjectService.getLogs(wellbore.wellUid, uid, controller.signal);
-    const rigs = await RigService.getRigs(wellUid, uid, controller.signal);
-    const trajectories = await TrajectoryService.getTrajectories(wellUid, uid, controller.signal);
-    const bhaRuns = await BhaRunService.getBhaRuns(wellUid, uid, controller.signal);
-    const tubulars = await TubularService.getTubulars(wellUid, uid, controller.signal);
-    const messages = await MessageObjectService.getMessages(wellUid, uid, controller.signal);
-    const mudLogs = await MudLogService.getMudLogs(wellUid, uid, controller.signal);
-    const risks = await RiskObjectService.getRisks(wellUid, uid, controller.signal);
-    const wbGeometrys = await WbGeometryObjectService.getWbGeometrys(wellUid, uid, controller.signal);
+    const wellboreObjects = await WellboreService.getWellboreObjects(selectedWell.uid, wellbore.uid);
     dispatchNavigation({
       type: NavigationType.SelectWellbore,
-      payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
+      payload: { well: selectedWell, wellbore, ...wellboreObjects }
     });
   };
 

@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 }
             }
 
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.LogObject, logUid);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Log, logUid);
             string mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
             return (workerResult, refreshAction);
