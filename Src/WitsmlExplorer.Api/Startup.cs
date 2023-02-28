@@ -138,13 +138,14 @@ namespace WitsmlExplorer.Api
             app.UseCors(_myAllowSpecificOrigins);
 
             app.UseRouting();
-            if (StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]))
+            bool oAuth2Enabled = StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]);
+            if (oAuth2Enabled)
             {
                 app.UseAuthentication();
                 app.UseAuthorization();
             }
             app.UseMiddleware<LoggingMiddleware>();
-            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications").RequireAuthorization("SignalRPolicy"));
+            app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications", oAuth2Enabled, "SignalRPolicy"));
         }
     }
 }
