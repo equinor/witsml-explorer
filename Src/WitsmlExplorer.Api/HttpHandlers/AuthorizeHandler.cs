@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
             Claim[] claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, sub),
+                new Claim("sub", sub),
             };
             JwtSecurityToken token = new(
                 claims: claims,
