@@ -48,7 +48,7 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "risk", riskReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, risks, ObjectType.Risk, JobType.DeleteRisks)} disabled={risks.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, risks, ObjectType.Risk)} disabled={risks.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "risk", risks)}</Typography>
         </MenuItem>,

@@ -136,11 +136,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"deletelogobject"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log, JobType.DeleteLogObjects)}
-          disabled={checkedLogObjects.length === 0}
-        >
+        <MenuItem key={"deletelogobject"} onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log)} disabled={checkedLogObjects.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>

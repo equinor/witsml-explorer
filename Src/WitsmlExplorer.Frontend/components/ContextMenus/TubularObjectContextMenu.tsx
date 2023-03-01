@@ -57,7 +57,7 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "tubular", tubularReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, tubulars, ObjectType.Tubular, JobType.DeleteTubulars)} disabled={tubulars.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, tubulars, ObjectType.Tubular)} disabled={tubulars.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "tubular", tubulars)}</Typography>
         </MenuItem>,
