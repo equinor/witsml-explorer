@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Models
         WbGeometry,
     }
 
-    public class EntityTypeHelper
+    public static class EntityTypeHelper
     {
         public static Dictionary<EntityType, string> EntityTypeToPluralLowercase()
         {

@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             List<string> successUids = new();
             string errorReason = null;
 
-            QueryResult[] results = await Task.WhenAll(queries.Select(async (query) =>
+            await Task.WhenAll(queries.Select(async (query) =>
             {
                 try
                 {
@@ -83,6 +83,5 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
                 : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.First().GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
         }
-
     }
 }
