@@ -40,7 +40,6 @@ namespace WitsmlExplorer.Api.Query
             });
         }
 
-
         public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
         {
             IWitsmlObjectList list = EntityTypeHelper.EntityTypeToObjectList(type);
