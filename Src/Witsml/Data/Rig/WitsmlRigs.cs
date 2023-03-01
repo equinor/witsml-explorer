@@ -16,7 +16,7 @@ namespace Witsml.Data.Rig
         public string TypeName => "rig";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Rigs;
             set => Rigs = value.Select(obj => (WitsmlRig)obj).ToList();

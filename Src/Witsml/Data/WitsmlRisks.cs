@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "risk";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Risks;
             set => Risks = value.Select(obj => (WitsmlRisk)obj).ToList();

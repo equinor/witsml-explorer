@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "bhaRun";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => BhaRuns;
             set => BhaRuns = value.Select(obj => (WitsmlBhaRun)obj).ToList();

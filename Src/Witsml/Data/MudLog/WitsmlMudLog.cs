@@ -6,7 +6,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data.MudLog
 {
-    public class WitsmlMudLog : ObjectOnWellbore
+    public class WitsmlMudLog : WitsmlObjectOnWellbore
     {
         public override WitsmlMudLogs AsSingletonWitsmlList()
         {

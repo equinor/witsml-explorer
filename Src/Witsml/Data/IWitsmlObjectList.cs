@@ -6,6 +6,6 @@ namespace Witsml.Data
     public interface IWitsmlObjectList : IWitsmlQueryType
     {
         [XmlIgnore]
-        IEnumerable<ObjectOnWellbore> Objects { get; set; }
+        IEnumerable<WitsmlObjectOnWellbore> Objects { get; set; }
     }
 }
