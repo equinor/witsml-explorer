@@ -3,6 +3,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 namespace WitsmlExplorer.Api.Jobs
 {
     public record CopyBhaRunJob : ICopyJob<ObjectReferences, WellboreReference> { }
+    public record CopyGeologyIntervalsJob : ICopyJob<ComponentReferences, ObjectReference> { }
     public record CopyLogDataJob : ICopyJob<ComponentReferences, ObjectReference> { }
     public record CopyLogJob : ICopyJob<ObjectReferences, WellboreReference> { }
     public record CopyMudLogJob : ICopyJob<ObjectReferences, WellboreReference> { }

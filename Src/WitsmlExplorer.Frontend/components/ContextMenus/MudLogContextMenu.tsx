@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
 import { JobType } from "../../services/jobService";
@@ -11,8 +12,8 @@ import { colors } from "../../styles/Colors";
 import MudLogPropertiesModal, { MudLogPropertiesModalProps } from "../Modals/MudLogPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, StyledIcon } from "./ContextMenuUtils";
-import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
+import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface MudLogContextMenuProps {
   mudLogs: MudLog[];
@@ -21,8 +22,8 @@ export interface MudLogContextMenuProps {
 const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement => {
   const { mudLogs } = props;
   const { navigationState } = useContext(NavigationContext);
-  const { selectedServer, servers, selectedWellbore } = navigationState;
-  const mudLogReferences = useClipboardReferencesOfType(ObjectType.MudLog);
+  const { selectedServer, servers } = navigationState;
+  const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onClickModify = async () => {
@@ -40,11 +41,11 @@ const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement =>
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, mudLogReferences, dispatchOperation, selectedWellbore, JobType.CopyMudLog)}
-          disabled={mudLogReferences === null}
+          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, mudLogs[0], JobType.CopyGeologyIntervals)}
+          disabled={geologyIntervalReferences === null || mudLogs.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "mudLog", mudLogReferences?.objectUids)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
         </MenuItem>,
         <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog)} disabled={mudLogs.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />

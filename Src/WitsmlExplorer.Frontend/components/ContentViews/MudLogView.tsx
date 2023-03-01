@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
 import MudLogService from "../../services/mudLogService";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface GeologyIntervalRow extends ContentTableRow {
@@ -21,11 +25,13 @@ export interface GeologyIntervalRow extends ContentTableRow {
   ecdTdAv: string;
   dxcAv: string;
   uid: string;
+  geologyInterval: GeologyInterval;
 }
 
 export const MudLogView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedMudLog } = navigationState;
+  const { dispatchOperation } = useContext(OperationContext);
   const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
 
@@ -46,6 +52,14 @@ export const MudLogView = (): React.ReactElement => {
       };
     }
   }, [selectedMudLog]);
+
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: GeologyIntervalRow[]) => {
+    const contextMenuProps: GeologyIntervalContextMenuProps = {
+      checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval)
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <GeologyIntervalContextMenu {...contextMenuProps} />, position } });
+  };
 
   const columns: ContentTableColumn[] = [
     { property: "typeLithology", label: "typeLithology", type: ContentType.String },
@@ -82,11 +96,12 @@ export const MudLogView = (): React.ReactElement => {
       wtMudAv: measureToString(geologyInterval.wtMudAv),
       ecdTdAv: measureToString(geologyInterval.ecdTdAv),
       dxcAv: geologyInterval.dxcAv,
-      uid: geologyInterval.uid
+      uid: geologyInterval.uid,
+      geologyInterval
     };
   });
 
-  return selectedMudLog && !isFetchingData ? <ContentTable columns={columns} data={geologyIntervalRows} /> : <></>;
+  return selectedMudLog && !isFetchingData ? <ContentTable columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
 };
 
 export default MudLogView;

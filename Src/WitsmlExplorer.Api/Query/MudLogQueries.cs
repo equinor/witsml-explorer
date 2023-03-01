@@ -6,6 +6,7 @@ using Witsml.Data.Measures;
 using Witsml.Data.MudLog;
 using Witsml.Extensions;
 
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
@@ -88,6 +89,21 @@ namespace WitsmlExplorer.Api.Query
                         SourceName = mudLog.CommonData.SourceName
                     }
                 }.AsSingletonList()
+            };
+        }
+
+        public static WitsmlMudLogs CopyGeologyIntervals(IEnumerable<WitsmlMudLogGeologyInterval> geologyIntervals, ObjectReference target)
+        {
+            return new()
+            {
+                MudLogs = new List<WitsmlMudLog> {
+                    new WitsmlMudLog() {
+                        Uid = target.Uid,
+                        UidWellbore = target.WellboreUid,
+                        UidWell = target.WellUid,
+                        GeologyInterval = geologyIntervals.ToList()
+                    }
+                }
             };
         }
     }
