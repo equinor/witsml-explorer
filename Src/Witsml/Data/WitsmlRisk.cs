@@ -6,7 +6,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlRisk : ObjectOnWellbore
+    public class WitsmlRisk : WitsmlObjectOnWellbore
     {
         public override WitsmlRisks AsSingletonWitsmlList()
         {

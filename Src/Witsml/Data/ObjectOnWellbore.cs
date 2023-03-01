@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace Witsml.Data
 {
-    public abstract class ObjectOnWellbore
+    public abstract class WitsmlObjectOnWellbore
     {
         public abstract IWitsmlQueryType AsSingletonWitsmlList();
 

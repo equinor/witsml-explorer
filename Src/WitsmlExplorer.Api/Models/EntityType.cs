@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Models
                });
         }
 
-        public static Witsml.Data.ObjectOnWellbore EntityTypeToObjectOnWellbore(EntityType type)
+        public static WitsmlObjectOnWellbore EntityTypeToObjectOnWellbore(EntityType type)
         {
             return type switch
             {

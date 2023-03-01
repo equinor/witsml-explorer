@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
+using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -29,12 +30,12 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job)
         {
             job.ToDelete.Verify();
-            IEnumerable<Witsml.Data.ObjectOnWellbore> queries = ObjectQueries.DeleteObjectsQuery(job.ToDelete);
+            IEnumerable<WitsmlObjectOnWellbore> queries = ObjectQueries.DeleteObjectsQuery(job.ToDelete);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectType);
             return await DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IEnumerable<Witsml.Data.ObjectOnWellbore> queries, RefreshAction refreshAction)
+        private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction)
         {
             IWitsmlClient witsmlClient = GetTargetWitsmlClientOrThrow();
             string uidWell = queries.First().UidWell;

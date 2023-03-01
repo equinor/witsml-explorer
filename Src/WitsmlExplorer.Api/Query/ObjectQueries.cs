@@ -10,11 +10,11 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class ObjectQueries
     {
-        public static IEnumerable<Witsml.Data.ObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
+        public static IEnumerable<WitsmlObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
         {
             return toDelete.ObjectUids.Select((uid) =>
             {
-                Witsml.Data.ObjectOnWellbore o = EntityTypeHelper.EntityTypeToObjectOnWellbore(toDelete.ObjectType);
+                WitsmlObjectOnWellbore o = EntityTypeHelper.EntityTypeToObjectOnWellbore(toDelete.ObjectType);
                 o.Uid = uid;
                 o.UidWellbore = toDelete.WellboreUid;
                 o.UidWell = toDelete.WellUid;
@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Query
             );
         }
 
-        public static IEnumerable<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : Witsml.Data.ObjectOnWellbore
+        public static IEnumerable<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : WitsmlObjectOnWellbore
         {
             return objects.Select((o) =>
             {
