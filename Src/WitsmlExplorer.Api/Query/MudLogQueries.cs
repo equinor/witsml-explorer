@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)
         {
-            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
+            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval?.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
             {
                 Uid = geologyInterval.Uid,
                 TypeLithology = geologyInterval.TypeLithology,
@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Query
                     CodeLith = l.CodeLith,
                     LithPc = new WitsmlIndex { Uom = "%", Value = l.LithPc }
                 }).ToList(),
-                CommonTime = new WitsmlCommonTime
+                CommonTime = geologyInterval.CommonTime == null ? null : new WitsmlCommonTime
                 {
                     DTimCreation = geologyInterval.CommonTime.DTimCreation,
                     DTimLastChange = geologyInterval.CommonTime.DTimLastChange
@@ -79,10 +79,10 @@ namespace WitsmlExplorer.Api.Query
                     ObjectGrowing = StringHelpers.OptionalBooleanToString(mudLog.ObjectGrowing),
                     MudLogCompany = mudLog.MudLogCompany,
                     MudLogEngineers = mudLog.MudLogEngineers,
-                    StartMd = mudLog.StartMd.ToWitsml<WitsmlMeasureWithDatum>(),
-                    EndMd = mudLog.EndMd.ToWitsml<WitsmlMeasureWithDatum>(),
+                    StartMd = mudLog.StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
+                    EndMd = mudLog.EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
                     GeologyInterval = geologyIntervals,
-                    CommonData = new WitsmlCommonData
+                    CommonData = mudLog.CommonData == null ? null : new WitsmlCommonData
                     {
                         ItemState = mudLog.CommonData.ItemState,
                         SourceName = mudLog.CommonData.SourceName

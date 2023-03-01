@@ -1,10 +1,12 @@
 using System.IO;
+using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using Serilog;
 
@@ -30,6 +32,7 @@ if (builder.Environment.IsDevelopment())
 if (StringHelpers.ToBoolean(builder.Configuration[ConfigConstants.OAuth2Enabled]))
 {
     builder.Configuration.AddAzureWitsmlServerCreds();
+    builder.Configuration[ConfigConstants.NotificationsKey] = Base64UrlEncoder.Encode(RandomNumberGenerator.GetBytes(20));
 }
 builder.Logging.ClearProviders();
 string appName = builder.Configuration["Witsml:ClientCapabilities:Name"] ?? "Witsml Explorer";

@@ -7,7 +7,7 @@ import MudLog from "../../models/mudLog";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import MudLogSidebarContextMenu, { MudLogSidebarContextMenuProps } from "../ContextMenus/MudLogSidebarContextMenu";
+import MudLogContextMenu, { MudLogContextMenuProps } from "../ContextMenus/MudLogContextMenu";
 import TreeItem from "./TreeItem";
 
 interface MudLogProps {
@@ -25,9 +25,9 @@ const MudLogItem = (props: MudLogProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: MudLogSidebarContextMenuProps = { mudLog };
+    const contextMenuProps: MudLogContextMenuProps = { mudLogs: [mudLog] };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogSidebarContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextMenuProps} />, position } });
   };
 
   return (

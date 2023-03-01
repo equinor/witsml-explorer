@@ -25,27 +25,36 @@ const msalConfig: Configuration = {
 export const msalInstance: PublicClientApplication = new PublicClientApplication(msalConfig);
 
 export async function getAccessToken(scopes: string[]): Promise<string | null> {
-  const accounts = msalInstance.getAllAccounts();
-  let accessToken = null;
-
-  if (accounts.length > 0) {
-    const request: SilentRequest & RedirectRequest = {
-      scopes: scopes,
-      account: accounts[0]
-    };
-
-    await msalInstance
-      .acquireTokenSilent(request)
-      .then((response: AuthenticationResult) => {
-        accessToken = response.accessToken;
-      })
-      .catch((error) => {
-        // acquireTokenSilent can fail for a number of reasons, fallback to interaction
-        if (error instanceof InteractionRequiredAuthError) {
-          msalInstance.acquireTokenRedirect(request);
+  let accounts = msalInstance.getAllAccounts();
+  if (accounts.length < 1) {
+    await new Promise<void>((resolve) => {
+      const intervalId = setInterval(() => {
+        accounts = msalInstance.getAllAccounts();
+        if (accounts.length > 0) {
+          resolve();
+          clearInterval(intervalId);
         }
-      });
+      }, 100);
+    });
   }
+
+  const request: SilentRequest & RedirectRequest = {
+    scopes: scopes,
+    account: accounts[0]
+  };
+
+  let accessToken = null;
+  await msalInstance
+    .acquireTokenSilent(request)
+    .then((response: AuthenticationResult) => {
+      accessToken = response.accessToken;
+    })
+    .catch((error) => {
+      // acquireTokenSilent can fail for a number of reasons, fallback to interaction
+      if (error instanceof InteractionRequiredAuthError) {
+        msalInstance.acquireTokenRedirect(request);
+      }
+    });
   return accessToken;
 }
 

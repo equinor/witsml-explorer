@@ -2,6 +2,7 @@ using System;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.SignalR;
 
 namespace WitsmlExplorer.Api.Extensions
 {
@@ -75,6 +76,18 @@ namespace WitsmlExplorer.Api.Extensions
             else
             {
                 endpoints.MapPatch(ApiPath + pattern, handler);
+            }
+        }
+
+        public static void MapHub<T>(this IEndpointRouteBuilder endpoints, string pattern, bool useOAuth2, params string[] policyNames) where T : Hub
+        {
+            if (useOAuth2)
+            {
+                endpoints.MapHub<T>(pattern).RequireAuthorization(policyNames);
+            }
+            else
+            {
+                endpoints.MapHub<T>(pattern);
             }
         }
     }
