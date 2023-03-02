@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import WbGeometry from "../../models/wbGeometry";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
@@ -40,7 +41,7 @@ const WbGeometryItem = (props: WbGeometryProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={wbGeometry.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectWbGeometry, payload: { wbGeometry, wellbore, well } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: wbGeometry, wellbore, well, objectType: ObjectType.WbGeometry } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, wbGeometry)}
     />
   );

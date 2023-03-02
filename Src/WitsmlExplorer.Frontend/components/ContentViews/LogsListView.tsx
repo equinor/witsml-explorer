@@ -4,6 +4,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { calculateLogTypeDepthId, calculateLogTypeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
@@ -70,8 +71,8 @@ export const LogsListView = (): React.ReactElement => {
 
   const onSelect = (log: LogObjectRow) => {
     dispatchNavigation({
-      type: NavigationType.SelectLogObject,
-      payload: { log: log.logObject, well: selectedWell, wellbore: selectedWellbore }
+      type: NavigationType.SelectObject,
+      payload: { object: log.logObject, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
     });
   };
 

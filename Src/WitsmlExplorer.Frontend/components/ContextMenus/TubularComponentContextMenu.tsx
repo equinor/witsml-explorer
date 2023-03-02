@@ -6,6 +6,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Tubular from "../../models/tubular";
 import { JobType } from "../../services/jobService";
@@ -84,7 +85,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubular, "tubularUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubular, ObjectType.Tubular)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

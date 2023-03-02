@@ -13,7 +13,7 @@ import { emptyWell, getWellProperties } from "../../models/well";
 import Wellbore, { calculateLogTypeTimeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../../models/wellbore";
 import { EMPTY_FILTER } from "../filter";
 import { sortList } from "../modificationStateReducer";
-import { SelectObjectGroupAction, SelectServerAction, SelectTrajectoryAction, ToggleTreeNodeAction } from "../navigationActions";
+import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
@@ -150,9 +150,9 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
 });
 
 it("Should also update well and wellbore when a trajectory is selected", () => {
-  const selectTrajectoryAction: SelectTrajectoryAction = {
-    type: NavigationType.SelectTrajectory,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, trajectory: TRAJECTORY_1 }
+  const selectTrajectoryAction: SelectObjectAction = {
+    type: NavigationType.SelectObject,
+    payload: { well: WELL_2, wellbore: WELLBORE_2, object: TRAJECTORY_1, objectType: ObjectType.Trajectory }
   };
   const actual = reducer(getInitialState(), selectTrajectoryAction);
   const expected: NavigationState = {
