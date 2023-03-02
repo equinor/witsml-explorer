@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Models
         WbGeometry,
     }
 
-    public class EntityTypeHelper
+    public static class EntityTypeHelper
     {
         public static Dictionary<EntityType, string> EntityTypeToPluralLowercase()
         {
@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Models
                });
         }
 
-        public static Witsml.Data.ObjectOnWellbore EntityTypeToObjectOnWellbore(EntityType type)
+        public static WitsmlObjectOnWellbore EntityTypeToObjectOnWellbore(EntityType type)
         {
             return type switch
             {

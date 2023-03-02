@@ -16,7 +16,7 @@ namespace Witsml.Data.Tubular
         public string TypeName => "tubular";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Tubulars;
             set => Tubulars = value.Select(obj => (WitsmlTubular)obj).ToList();

@@ -16,7 +16,7 @@ namespace Witsml.Data.MudLog
         public string TypeName => "mudLog";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => MudLogs;
             set => MudLogs = value.Select(obj => (WitsmlMudLog)obj).ToList();

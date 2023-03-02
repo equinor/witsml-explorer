@@ -17,7 +17,7 @@ namespace Witsml.Data
         public string TypeName => "message";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Messages;
             set => Messages = value.Select(obj => (WitsmlMessage)obj).ToList();

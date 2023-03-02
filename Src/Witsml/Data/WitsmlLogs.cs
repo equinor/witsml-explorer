@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "log";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Logs;
             set => Logs = value.Select(obj => (WitsmlLog)obj).ToList();

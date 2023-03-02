@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(client.GetServerHostname(), false, "Failed to deserialize response from Witsml server when fetching objects to copy"), null);
             }
 
-            IEnumerable<Witsml.Data.ObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectList.Objects, targetWellbore);
+            IEnumerable<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectList.Objects, targetWellbore);
             RefreshObjects refreshAction = new(client.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType);
             return await _copyUtils.CopyObjectsOnWellbore(client, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }

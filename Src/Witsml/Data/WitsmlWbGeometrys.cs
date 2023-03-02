@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "wbGeometry";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => WbGeometrys;
             set => WbGeometrys = value.Select(obj => (WitsmlWbGeometry)obj).ToList();

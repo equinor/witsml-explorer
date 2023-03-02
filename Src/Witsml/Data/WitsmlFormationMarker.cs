@@ -5,7 +5,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlFormationMarker : ObjectOnWellbore
+    public class WitsmlFormationMarker : WitsmlObjectOnWellbore
     {
         public override WitsmlFormationMarkers AsSingletonWitsmlList()
         {

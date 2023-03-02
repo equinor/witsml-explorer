@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "trajectory";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => Trajectories;
             set => Trajectories = value.Select(obj => (WitsmlTrajectory)obj).ToList();

@@ -7,7 +7,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlTrajectory : ObjectOnWellbore
+    public class WitsmlTrajectory : WitsmlObjectOnWellbore
     {
         public override WitsmlTrajectories AsSingletonWitsmlList()
         {

@@ -16,7 +16,7 @@ namespace Witsml.Data
         public string TypeName => "formationMarker";
 
         [XmlIgnore]
-        public IEnumerable<ObjectOnWellbore> Objects
+        public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => FormationMarkers;
             set => FormationMarkers = value.Select(obj => (WitsmlFormationMarker)obj).ToList();

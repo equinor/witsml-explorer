@@ -42,7 +42,6 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                     ObjectUids = new string[] { "<object_uid_1>", "<object_uid_2>" },
                     ObjectType = EntityType.Log // set to the type of object you want to delete
                 }
-
             };
             await _worker.Execute(job);
         }
