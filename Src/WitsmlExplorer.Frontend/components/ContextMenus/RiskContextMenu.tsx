@@ -6,7 +6,6 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { RiskObjectRow } from "../ContentViews/RisksListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
@@ -44,7 +43,7 @@ const RiskObjectContextMenu = (props: RiskObjectContextMenuProps): React.ReactEl
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "risk", risks)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, riskReferences, dispatchOperation, wellbore, JobType.CopyRisk)} disabled={riskReferences === null}>
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, riskReferences, dispatchOperation, wellbore)} disabled={riskReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "risk", riskReferences?.objectUids)}</Typography>
         </MenuItem>,

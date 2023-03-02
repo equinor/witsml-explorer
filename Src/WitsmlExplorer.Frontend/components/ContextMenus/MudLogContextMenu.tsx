@@ -6,7 +6,6 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import MudLogPropertiesModal, { MudLogPropertiesModalProps } from "../Modals/MudLogPropertiesModal";
 import ContextMenu from "./ContextMenu";
@@ -38,11 +37,7 @@ const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement =>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "mudLog", mudLogs)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, mudLogReferences, dispatchOperation, selectedWellbore, JobType.CopyMudLog)}
-          disabled={mudLogReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, mudLogReferences, dispatchOperation, selectedWellbore)} disabled={mudLogReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "mudLog", mudLogReferences?.objectUids)}</Typography>
         </MenuItem>,

@@ -6,7 +6,6 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { RigRow } from "../ContentViews/RigsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
@@ -44,7 +43,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "rig", rigs)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore, JobType.CopyRig)} disabled={rigReferences === null}>
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore)} disabled={rigReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
         </MenuItem>,

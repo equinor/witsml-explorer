@@ -6,7 +6,6 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
@@ -33,11 +32,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory", trajectories)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, trajectoryReferences, dispatchOperation, wellbore, JobType.CopyTrajectory)}
-          disabled={trajectoryReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, trajectoryReferences, dispatchOperation, wellbore)} disabled={trajectoryReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.objectUids)}</Typography>
         </MenuItem>,
