@@ -80,6 +80,7 @@ export enum JobType {
   ModifyBhaRun = "ModifyBhaRun",
   ModifyLogObject = "ModifyLogObject",
   ModifyMessageObject = "ModifyMessageObject",
+  ModifyMudLog = "ModifyMudLog",
   ModifyRig = "ModifyRig",
   ModifyRisk = "ModifyRisk",
   RenameMnemonic = "RenameMnemonic",
