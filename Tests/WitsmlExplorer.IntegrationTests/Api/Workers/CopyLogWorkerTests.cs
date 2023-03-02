@@ -26,7 +26,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker _worker;
-        private readonly DeleteLogObjectsWorker _deleteLogsWorker;
+        private readonly DeleteObjectsWorker _deleteLogsWorker;
         private readonly IWitsmlClient _client;
         private readonly LogObjectService _logObjectService;
 
@@ -43,9 +43,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             _worker = new CopyLogWorker(logger2, witsmlClientProvider, copyLogDataWorker);
             _logObjectService = new LogObjectService(witsmlClientProvider);
 
-            ILogger<DeleteLogObjectsJob> logger3 = loggerFactory.CreateLogger<DeleteLogObjectsJob>();
-            ILogger<DeleteUtils> logger4 = loggerFactory.CreateLogger<DeleteUtils>();
-            _deleteLogsWorker = new DeleteLogObjectsWorker(logger3, witsmlClientProvider, new DeleteUtils(logger4));
+            ILogger<DeleteObjectsJob> logger3 = loggerFactory.CreateLogger<DeleteObjectsJob>();
+            _deleteLogsWorker = new DeleteObjectsWorker(logger3, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
@@ -86,13 +85,14 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             };
 
             await _deleteLogsWorker.Execute(
-                new DeleteLogObjectsJob
+                new DeleteObjectsJob
                 {
                     ToDelete = new ObjectReferences()
                     {
                         WellUid = "",
                         WellboreUid = "",
-                        ObjectUids = new string[] { logUid }
+                        ObjectUids = new string[] { logUid },
+                        ObjectType = EntityType.Log
                     }
                 }
                 );

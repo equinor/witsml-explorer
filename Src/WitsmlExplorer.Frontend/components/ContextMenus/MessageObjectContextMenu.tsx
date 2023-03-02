@@ -8,7 +8,6 @@ import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/MessageComparisonModal";
@@ -55,8 +54,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
             onClickDeleteObjects(
               dispatchOperation,
               checkedMessageObjectRows.map((row) => row.message),
-              ObjectType.Message,
-              JobType.DeleteMessageObjects
+              ObjectType.Message
             )
           }
           disabled={checkedMessageObjectRows.length === 0}

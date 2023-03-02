@@ -41,11 +41,7 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, trajectories, ObjectType.Trajectory, JobType.DeleteTrajectories)}
-          disabled={trajectories.length === 0}
-        >
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, trajectories, ObjectType.Trajectory)} disabled={trajectories.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory", trajectories)}</Typography>
         </MenuItem>,

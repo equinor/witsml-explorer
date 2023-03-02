@@ -17,6 +17,7 @@ namespace Witsml
     public interface IWitsmlClient
     {
         Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new();
+        Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType;
         Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlGrowingDataQueryType, new();
         Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn);
         Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
@@ -106,30 +107,55 @@ namespace Witsml
         {
             try
             {
-                WMLS_GetFromStoreRequest request = new()
-                {
-                    WMLtypeIn = query.TypeName,
-                    OptionsIn = optionsIn.GetKeywords(),
-                    QueryIn = XmlHelper.Serialize(query),
-                    CapabilitiesIn = _clientCapabilities
-                };
-
-                WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-                LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
-
-                if (response.IsSuccessful())
-                {
-                    return XmlHelper.Deserialize<T>(response.XMLout);
-                }
-
-                WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
-                throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+                return await GetFromStoreInnerAsync(query, optionsIn);
             }
             catch (XmlException e)
             {
                 Log.Error(e, "Failed to deserialize response from Witsml server");
                 return new T();
             }
+        }
+
+        /// <summary>
+        /// Returns one or more WITSML data-objects from the server
+        /// </summary>
+        /// <param name="query">The query that specifies what data-object(s) to be returned</param>
+        /// <param name="optionsIn">For information about the OptionsIn, see WITSML specification</param>
+        /// <typeparam name="T">The Witsml type to be returned</typeparam>
+        /// <returns>The deserialized results of type T or null on exception</returns>
+        public async Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        {
+            try
+            {
+                return await GetFromStoreInnerAsync(query, optionsIn);
+            }
+            catch (XmlException e)
+            {
+                Log.Error(e, "Failed to deserialize response from Witsml server");
+                return default;
+            }
+        }
+
+        private async Task<T> GetFromStoreInnerAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        {
+            WMLS_GetFromStoreRequest request = new()
+            {
+                WMLtypeIn = query.TypeName,
+                OptionsIn = optionsIn.GetKeywords(),
+                QueryIn = XmlHelper.Serialize(query),
+                CapabilitiesIn = _clientCapabilities
+            };
+
+            WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
+            LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
+
+            if (response.IsSuccessful())
+            {
+                return XmlHelper.Deserialize(response.XMLout, query);
+            }
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
         /// <summary>
@@ -157,7 +183,7 @@ namespace Witsml
 
                 if (response.IsSuccessful())
                 {
-                    return (XmlHelper.Deserialize<T>(response.XMLout), response.Result);
+                    return (XmlHelper.Deserialize(response.XMLout, query), response.Result);
                 }
 
                 WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);

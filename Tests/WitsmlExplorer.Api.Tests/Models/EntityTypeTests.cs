@@ -1,5 +1,10 @@
 using System.Collections.Generic;
 
+using Witsml.Data;
+using Witsml.Data.MudLog;
+using Witsml.Data.Rig;
+using Witsml.Data.Tubular;
+
 using WitsmlExplorer.Api.Models;
 
 using Xunit;
@@ -21,6 +26,34 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.Equal("trajectories", strings[EntityType.Trajectory]);
             Assert.Equal("tubulars", strings[EntityType.Tubular]);
             Assert.Equal("wbgeometries", strings[EntityType.WbGeometry]);
+        }
+
+        [Fact]
+        public void EntityTypeToObjectOnWellbore_GetAllWellboreObjects_CorrectType()
+        {
+            Assert.IsType<WitsmlBhaRun>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.BhaRun));
+            Assert.IsType<WitsmlLog>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Log));
+            Assert.IsType<WitsmlMessage>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Message));
+            Assert.IsType<WitsmlMudLog>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.MudLog));
+            Assert.IsType<WitsmlRig>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Rig));
+            Assert.IsType<WitsmlRisk>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Risk));
+            Assert.IsType<WitsmlTrajectory>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Trajectory));
+            Assert.IsType<WitsmlTubular>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.Tubular));
+            Assert.IsType<WitsmlWbGeometry>(EntityTypeHelper.EntityTypeToObjectOnWellbore(EntityType.WbGeometry));
+        }
+
+        [Fact]
+        public void EntityTypeToObjectList_GetAllWellboreObjectLists_CorrectType()
+        {
+            Assert.IsType<WitsmlBhaRuns>(EntityTypeHelper.EntityTypeToObjectList(EntityType.BhaRun));
+            Assert.IsType<WitsmlLogs>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Log));
+            Assert.IsType<WitsmlMessages>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Message));
+            Assert.IsType<WitsmlMudLogs>(EntityTypeHelper.EntityTypeToObjectList(EntityType.MudLog));
+            Assert.IsType<WitsmlRigs>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Rig));
+            Assert.IsType<WitsmlRisks>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Risk));
+            Assert.IsType<WitsmlTrajectories>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Trajectory));
+            Assert.IsType<WitsmlTubulars>(EntityTypeHelper.EntityTypeToObjectList(EntityType.Tubular));
+            Assert.IsType<WitsmlWbGeometrys>(EntityTypeHelper.EntityTypeToObjectList(EntityType.WbGeometry));
         }
     }
 }
