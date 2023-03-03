@@ -46,5 +46,10 @@ namespace WitsmlExplorer.Api.Query
             list.Objects = IdsToObjects(wellUid, wellboreUid, objectUids, type);
             return list;
         }
+
+        public static IWitsmlObjectList GetWitsmlObjectById(string wellUid, string wellboreUid, string objectUid, EntityType type)
+        {
+            return GetWitsmlObjectsByIds(wellUid, wellboreUid, new string[] { objectUid }, type);
+        }
     }
 }

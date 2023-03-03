@@ -5,10 +5,11 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
+import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { menuItemText, onClickDeleteComponents, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -24,6 +25,11 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
   } = useContext(NavigationContext);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
 
+  const toDelete = createComponentReferences(
+    checkedGeologyIntervals.map((gi) => gi.uid),
+    selectedMudLog,
+    ComponentType.GeologyInterval
+  );
   return (
     <ContextMenu
       menuItems={[
@@ -50,6 +56,14 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"delete"}
+          onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteGeologyIntervals)}
+          disabled={checkedGeologyIntervals.length === 0}
+        >
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("delete", "geology interval", checkedGeologyIntervals)}</Typography>
         </MenuItem>
       ]}
     />
