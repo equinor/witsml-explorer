@@ -4,7 +4,7 @@ import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
 import MudLog from "./mudLog";
-import { ObjectType } from "./objectType";
+import { ObjectType, ObjectTypeToModel } from "./objectType";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -114,3 +114,37 @@ export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> =
     ["UID Wellbore", wellbore.uid]
   ]);
 };
+
+export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
+  let objects: any[] = null;
+  switch (objectType) {
+    case ObjectType.BhaRun:
+      objects = wellbore.bhaRuns;
+      break;
+    case ObjectType.Log:
+      objects = wellbore.logs;
+      break;
+    case ObjectType.Message:
+      objects = wellbore.messages;
+      break;
+    case ObjectType.MudLog:
+      objects = wellbore.mudLogs;
+      break;
+    case ObjectType.Rig:
+      objects = wellbore.rigs;
+      break;
+    case ObjectType.Risk:
+      objects = wellbore.risks;
+      break;
+    case ObjectType.Trajectory:
+      objects = wellbore.trajectories;
+      break;
+    case ObjectType.Tubular:
+      objects = wellbore.tubulars;
+      break;
+    case ObjectType.WbGeometry:
+      objects = wellbore.wbGeometrys;
+      break;
+  }
+  return objects?.find((object) => object.uid === uid);
+}

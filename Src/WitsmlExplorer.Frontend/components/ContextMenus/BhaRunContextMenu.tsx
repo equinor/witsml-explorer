@@ -78,7 +78,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "bhaRunGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.BhaRun)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

@@ -6,6 +6,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import { JobType } from "../../services/jobService";
@@ -78,7 +79,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, ObjectType.Trajectory)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
