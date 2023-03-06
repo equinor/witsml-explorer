@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (toCopy.Count() != job.Source.ComponentUids.Length)
             {
                 string errorMessage = "Failed to copy geology intervals.";
-                string missingUids = string.Join(", ", toCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
+                string missingUids = string.Join(", ", job.Source.ComponentUids.Except(toCopy.Select(t => t.Uid).ToArray()));
                 string reason = $"Could not retrieve all geology intervals, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(targetHostname, false, errorMessage, reason), null);
