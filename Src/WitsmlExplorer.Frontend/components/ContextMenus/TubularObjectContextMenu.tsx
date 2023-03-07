@@ -63,7 +63,7 @@ const TubularObjectContextMenu = (props: TubularObjectContextMenuProps): React.R
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={tubulars.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubulars[0], "tubularUid")} disabled={tubulars.length !== 1}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubulars[0], ObjectType.Tubular)} disabled={tubulars.length !== 1}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

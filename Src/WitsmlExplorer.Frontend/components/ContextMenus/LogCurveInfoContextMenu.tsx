@@ -7,6 +7,7 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
@@ -101,7 +102,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, selectedLog, "logObjectUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, selectedLog, ObjectType.Log)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

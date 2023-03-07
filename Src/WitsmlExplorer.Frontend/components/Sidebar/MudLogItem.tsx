@@ -4,6 +4,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import MudLog from "../../models/mudLog";
+import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
@@ -36,7 +37,7 @@ const MudLogItem = (props: MudLogProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={mudLog.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectMudLog, payload: { mudLog, wellbore, well } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: mudLog, wellbore, well, objectType: ObjectType.MudLog } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );

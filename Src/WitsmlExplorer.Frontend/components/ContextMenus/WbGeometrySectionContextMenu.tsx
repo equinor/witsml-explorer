@@ -5,6 +5,7 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import WbGeometry from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
@@ -77,7 +78,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, wbGeometry, "wbGeometryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, wbGeometry, ObjectType.WbGeometry)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

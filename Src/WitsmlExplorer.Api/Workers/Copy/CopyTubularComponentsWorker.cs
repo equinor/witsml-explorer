@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (componentsToCopy.Count() != job.Source.ComponentUids.Length)
             {
                 string errorMessage = "Failed to copy tubular components.";
-                string missingUids = string.Join(", ", componentsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
+                string missingUids = string.Join(", ", job.Source.ComponentUids.Except(componentsToCopy.Select(t => t.Uid).ToArray()));
                 string reason = $"Could not retrieve all tubular components, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, reason), null);

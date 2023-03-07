@@ -28,15 +28,11 @@ import {
 import {
   SelectJobsAction,
   SelectLogCurveInfoAction,
-  SelectLogObjectAction,
   SelectLogTypeAction,
-  SelectMudLogAction,
+  SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
   SelectServerManagerAction,
-  SelectTrajectoryAction,
-  SelectTubularAction,
-  SelectWbGeometryAction,
   SelectWellAction,
   SelectWellboreAction,
   SetCurveThresholdAction,
@@ -74,15 +70,11 @@ export type NavigationAction =
   | SelectJobsAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
-  | SelectLogObjectAction
   | SelectWellAction
   | SelectWellboreAction
-  | SelectMudLogAction
+  | SelectObjectAction
   | SelectObjectGroupAction
   | SelectServerAction
-  | SelectTrajectoryAction
-  | SelectTubularAction
-  | SelectWbGeometryAction
   | SetFilterAction
   | SetCurveThresholdAction
   | SelectServerManagerAction;

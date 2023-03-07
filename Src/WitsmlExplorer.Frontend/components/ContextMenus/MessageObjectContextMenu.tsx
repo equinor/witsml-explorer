@@ -78,7 +78,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
         </NestedMenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "messageGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.Message)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
