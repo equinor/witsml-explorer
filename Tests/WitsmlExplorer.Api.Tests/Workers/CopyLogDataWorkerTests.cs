@@ -399,7 +399,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         StartDateTimeIndex = startIndex.GetValueAsString(),
                         EndDateTimeIndex = endIndex.GetValueAsString(),
-                        IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                         LogData = new WitsmlLogData
                         {
                             MnemonicList = string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME]),
@@ -437,7 +436,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         StartIndex = new WitsmlIndex(new DepthIndex(startIndex.Value)),
                         EndIndex = new WitsmlIndex(new DepthIndex(endIndex.Value)),
-                        IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
                         LogData = new WitsmlLogData
                         {
                             MnemonicList = string.Join(",", mnemonics ?? SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),

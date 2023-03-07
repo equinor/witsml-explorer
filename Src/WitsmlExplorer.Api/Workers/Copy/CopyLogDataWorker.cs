@@ -105,6 +105,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
+                    sourceLogWithData.IndexType = sourceLog.IndexType;
                     startIndex = Index.End(sourceLogWithData).AddEpsilon();
                 }
                 else
