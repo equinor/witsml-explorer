@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Models.Measure
 
         public static LengthMeasure FromWitsml(Witsml.Data.Measures.Measure witsmlMeasure)
         {
-            if (witsmlMeasure == null)
+            if (witsmlMeasure == null || string.IsNullOrEmpty(witsmlMeasure.Value))
             {
                 return null;
             }

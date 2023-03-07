@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyLogObject,
         ModifyMessageObject,
         DeleteCurveValues,
+        DeleteGeologyIntervals,
         DeleteMnemonics,
         DeleteObjects,
         DeleteTrajectoryStations,

@@ -106,5 +106,22 @@ namespace WitsmlExplorer.Api.Query
                 }
             };
         }
+
+        public static WitsmlMudLogs DeleteGeologyIntervals(string wellUid, string wellboreUid, string objectUid, IEnumerable<string> componentUids)
+        {
+            return new WitsmlMudLogs
+            {
+                MudLogs = new WitsmlMudLog
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = objectUid,
+                    GeologyInterval = componentUids.Select(uid => new WitsmlMudLogGeologyInterval
+                    {
+                        Uid = uid
+                    }).ToList()
+                }.AsSingletonList()
+            };
+        }
     }
 }
