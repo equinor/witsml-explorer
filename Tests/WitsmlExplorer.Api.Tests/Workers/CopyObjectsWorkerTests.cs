@@ -52,8 +52,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupGetWellbore();
             IEnumerable<IWitsmlObjectList> copyObjectQuery = CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
 
-            (WorkerResult, RefreshAction) result = await _copyObjectWorker.Execute(copyObjectJob);
-            Assert.True(result.Item1.IsSuccess);
+            (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
+            Assert.True(workerResult.IsSuccess);
+            Assert.Equal(EntityType.Tubular, refreshAction.EntityType);
         }
 
         private void SetupGetWellbore()
