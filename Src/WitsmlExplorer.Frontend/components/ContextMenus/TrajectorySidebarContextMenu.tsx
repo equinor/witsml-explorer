@@ -45,7 +45,7 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, ObjectType.Trajectory)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

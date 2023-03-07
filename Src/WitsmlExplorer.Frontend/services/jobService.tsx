@@ -55,6 +55,7 @@ export default class JobService {
 
 export enum JobType {
   CreateWell = "CreateWell",
+  CopyGeologyIntervals = "CopyGeologyIntervals",
   CopyLog = "CopyLog",
   CopyLogData = "CopyLogData",
   CopyObjects = "CopyObjects",

@@ -5,6 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
+import { ObjectType } from "../../models/objectType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MudLogContextMenu, { MudLogContextMenuProps } from "../ContextMenus/MudLogContextMenu";
 import formatDateString from "../DateFormatter";
@@ -39,8 +40,8 @@ export const MudLogsListView = (): React.ReactElement => {
 
   const onSelect = (mudLogRow: MudLogRow) => {
     dispatchNavigation({
-      type: NavigationType.SelectMudLog,
-      payload: { well: selectedWell, wellbore: selectedWellbore, mudLog: mudLogRow.mudLog }
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: mudLogRow.mudLog, objectType: ObjectType.MudLog }
     });
   };
 

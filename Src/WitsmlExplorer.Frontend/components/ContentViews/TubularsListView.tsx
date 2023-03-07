@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
@@ -34,8 +35,8 @@ export const TubularsListView = (): React.ReactElement => {
 
   const onSelect = (tubular: any) => {
     dispatchNavigation({
-      type: NavigationType.SelectTubular,
-      payload: { well: selectedWell, wellbore: selectedWellbore, tubular }
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: tubular, objectType: ObjectType.Tubular }
     });
   };
 

@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometryObjectContextMenu, { WbGeometryObjectContextMenuProps } from "../ContextMenus/WbGeometryContextMenu";
@@ -37,8 +38,8 @@ export const WbGeometrysListView = (): React.ReactElement => {
 
   const onSelect = (wbGeometry: any) => {
     dispatchNavigation({
-      type: NavigationType.SelectWbGeometry,
-      payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometry }
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: wbGeometry, objectType: ObjectType.WbGeometry }
     });
   };
 

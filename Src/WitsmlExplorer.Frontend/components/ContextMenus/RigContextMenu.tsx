@@ -55,7 +55,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "rigGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.Rig)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

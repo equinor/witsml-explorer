@@ -3,6 +3,7 @@ namespace WitsmlExplorer.Api.Models
     public enum JobType
     {
         CopyLog = 1,
+        CopyGeologyIntervals,
         CopyLogData,
         CopyObjects,
         CopyTrajectoryStations,

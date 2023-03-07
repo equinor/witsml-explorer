@@ -152,7 +152,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], "logObjectUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], ObjectType.Log)}
               disabled={checkedLogObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>
