@@ -1,6 +1,7 @@
 import { ObjectType } from "./objectType";
 
 export enum ComponentType {
+  GeologyInterval = "Geology Interval",
   Mnemonic = "Mnemonic",
   TrajectoryStation = "Trajectory Station",
   TubularComponent = "Tubular Component",
@@ -9,6 +10,8 @@ export enum ComponentType {
 
 export const getParentType = (componentType: ComponentType): ObjectType => {
   switch (componentType) {
+    case ComponentType.GeologyInterval:
+      return ObjectType.MudLog;
     case ComponentType.Mnemonic:
       return ObjectType.Log;
     case ComponentType.TrajectoryStation:
