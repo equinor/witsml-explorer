@@ -6,6 +6,7 @@ export interface Server {
   roles: string[];
   currentUsername?: string;
   usernames?: string[];
+  depthLogDecimals: number;
 }
 
 export function emptyServer(): Server {
@@ -16,6 +17,7 @@ export function emptyServer(): Server {
     url: "",
     roles: [],
     currentUsername: undefined,
-    usernames: []
+    usernames: [],
+    depthLogDecimals: 0
   };
 }
