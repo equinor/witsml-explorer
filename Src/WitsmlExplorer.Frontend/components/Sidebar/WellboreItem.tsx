@@ -9,7 +9,6 @@ import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
-import { JobType } from "../../services/jobService";
 import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
@@ -45,9 +44,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };
 
-  const onObjectsContextMenu = (event: React.MouseEvent<HTMLLIElement>, objectType: ObjectType, jobType: JobType) => {
+  const onObjectsContextMenu = (event: React.MouseEvent<HTMLLIElement>, objectType: ObjectType) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: ObjectsSidebarContextMenuProps = { dispatchOperation, wellbore, servers, objectType, jobType };
+    const contextMenuProps: ObjectsSidebarContextMenuProps = { dispatchOperation, wellbore, servers, objectType };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ObjectsSidebarContextMenu {...contextMenuProps} />, position } });
   };
@@ -143,7 +142,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectGroupId(wellbore, ObjectType.BhaRun)}
         labelText={"BhaRuns"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.BhaRun)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.BhaRun, JobType.CopyBhaRun)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.BhaRun)}
       />
 
       <TreeItem
@@ -166,7 +165,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectGroupId(wellbore, ObjectType.MudLog)}
         labelText={"MudLogs"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.MudLog)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.MudLog, JobType.CopyMudLog)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.MudLog)}
       >
         {wellbore &&
           wellbore.mudLogs &&
@@ -185,19 +184,19 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Rig)}
         labelText={"Rigs"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Rig)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Rig, JobType.CopyRig)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Rig)}
       />
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Risk)}
         labelText={"Risks"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Risk)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Risk, JobType.CopyRisk)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Risk)}
       />
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Trajectory)}
         labelText={"Trajectories"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Trajectory)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Trajectory, JobType.CopyTrajectory)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Trajectory)}
       >
         {wellbore &&
           wellbore.trajectories &&

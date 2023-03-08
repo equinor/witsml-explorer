@@ -5,7 +5,6 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
@@ -17,17 +16,16 @@ export interface ObjectsSidebarContextMenuProps {
   servers: Server[];
   wellbore: Wellbore;
   objectType: ObjectType;
-  jobType: JobType;
 }
 
 const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React.ReactElement => {
-  const { wellbore, dispatchOperation, servers, objectType, jobType } = props;
+  const { wellbore, dispatchOperation, servers, objectType } = props;
   const objectReferences = useClipboardReferencesOfType(objectType);
 
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, jobType)} disabled={objectReferences === null}>
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore)} disabled={objectReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", objectType, objectReferences?.objectUids)}</Typography>
         </MenuItem>
