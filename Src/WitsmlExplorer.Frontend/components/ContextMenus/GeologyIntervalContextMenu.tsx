@@ -1,12 +1,14 @@
-import { Typography } from "@equinor/eds-core-react";
+import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
+import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
@@ -23,6 +25,12 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
     navigationState: { selectedServer, selectedMudLog, servers }
   } = useContext(NavigationContext);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
+
+  const onClickProperties = async () => {
+    const geologyIntervalPropertiesModalProps = { geologyInterval: checkedGeologyIntervals[0] };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <GeologyIntervalPropertiesModal {...geologyIntervalPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
 
   return (
     <ContextMenu
@@ -50,6 +58,11 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedGeologyIntervals.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />
