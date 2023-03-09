@@ -9,6 +9,7 @@ import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbo
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
+import { invalidStringInput, undefinedOnUnchagedEmptyString } from "./PropertiesModalUtils";
 
 export interface MudLogPropertiesModalProps {
   mudLog: MudLog;
@@ -44,9 +45,9 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
     }
   }, [mudLog]);
 
-  const invalidName = invalid(mudLog?.name, editableMudLog?.name, MaxLength.Name);
-  const invalidMudLogCompany = invalid(mudLog?.mudLogCompany, editableMudLog?.mudLogCompany, MaxLength.Name);
-  const invalidMudLogEngineers = invalid(mudLog?.mudLogEngineers, editableMudLog?.mudLogEngineers, MaxLength.Description);
+  const invalidName = invalidStringInput(mudLog?.name, editableMudLog?.name, MaxLength.Name);
+  const invalidMudLogCompany = invalidStringInput(mudLog?.mudLogCompany, editableMudLog?.mudLogCompany, MaxLength.Name);
+  const invalidMudLogEngineers = invalidStringInput(mudLog?.mudLogEngineers, editableMudLog?.mudLogEngineers, MaxLength.Description);
   return (
     <>
       {editableMudLog && (
@@ -117,30 +118,9 @@ const EditableTextField = (props: EditableTextFieldProps): React.ReactElement =>
       defaultValue={value != null ? value : originalValue ?? ""}
       variant={invalid ? "error" : undefined}
       helperText={invalid ? `${property} must be 1-${maxLength} characters` : ""}
-      onChange={(e: any) => setter({ ...editableObject, [property]: nullOnUnchagedEmpty(originalValue, e.target.value) })}
+      onChange={(e: any) => setter({ ...editableObject, [property]: undefinedOnUnchagedEmptyString(originalValue, e.target.value) })}
     />
   );
-};
-
-const nullOnUnchagedEmpty = (original?: string, edited?: string): string | null => {
-  if (edited?.length > 0) {
-    return edited;
-  }
-  if (original == null || original.length == 0) {
-    return null;
-  }
-  return "";
-};
-
-const invalid = (original: string, edited: string, maxLength: MaxLength): boolean => {
-  return errorOnDeletion(original, edited) || (edited != null && edited.length > maxLength);
-};
-
-const errorOnDeletion = (original: string, edited: string): boolean => {
-  if (original == null || original.length == 0) {
-    return false;
-  }
-  return edited != null && edited.length == 0;
 };
 
 const Layout = styled.div`
