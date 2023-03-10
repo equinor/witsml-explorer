@@ -111,6 +111,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
         {
             Logger.LogError("{message} - {Description}", message, job.Description());
+            if (message.Contains("Error while updating store: -463"))
+            {
+                Server server;
+                message += $" If copying to a target server with lower number of depth log decimals than the source server, make sure that the {nameof(server.DepthLogDecimals)} field is filled out for both the target and the source server.";
+            }
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
