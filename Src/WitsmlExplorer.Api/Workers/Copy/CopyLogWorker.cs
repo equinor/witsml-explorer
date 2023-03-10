@@ -40,14 +40,19 @@ namespace WitsmlExplorer.Api.Workers.Copy
             IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
             IEnumerable<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList()));
 
-            Task copyLogTasksResult = Task.WhenAll(copyLogTasks);
-            await copyLogTasksResult;
+            Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
+            IEnumerable<QueryResult> results = await copyLogTasksResult;
 
+            string errorMessage = "Failed to copy log.";
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
             {
-                string errorMessage = "Failed to copy log.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
+            }
+            if (results.Any((result) => !result.IsSuccessful))
+            {
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason), null);
             }
 
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
@@ -58,7 +63,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (copyLogDataResultTask.Status == TaskStatus.Faulted)
             {
-                string errorMessage = "Failed to copy log data.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
             }
@@ -67,7 +71,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (failedCopyDataTasks > 0)
             {
                 (WorkerResult Result, RefreshAction) firstFailedTask = copyLogDataResultTask.Result.First((task) => task.Result.IsSuccess == false);
-                string errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
+                errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, firstFailedTask.Result.Reason), null);
             }

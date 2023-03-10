@@ -9,10 +9,10 @@ namespace Witsml.Data
         public string SourceName { get; set; }
 
         [XmlElement("dTimCreation")]
-        public string DTimCreation { get; set; } = "";
+        public string DTimCreation { get; set; }
 
         [XmlElement("dTimLastChange")]
-        public string DTimLastChange { get; set; } = "";
+        public string DTimLastChange { get; set; }
 
         [XmlElement("itemState")]
         public string ItemState { get; set; }

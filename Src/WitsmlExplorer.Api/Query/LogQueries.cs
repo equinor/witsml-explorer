@@ -29,6 +29,10 @@ namespace WitsmlExplorer.Api.Query
                     StartDateTimeIndex = "",
                     EndDateTimeIndex = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }
@@ -55,7 +59,7 @@ namespace WitsmlExplorer.Api.Query
             Index startIndex,
             Index endIndex)
         {
-            var queryLog = new WitsmlLog
+            WitsmlLog queryLog = new()
             {
                 Uid = logUid,
                 UidWell = wellUid,
@@ -78,6 +82,8 @@ namespace WitsmlExplorer.Api.Query
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
                     break;
+                default:
+                    break;
             }
 
             return new WitsmlLogs
@@ -95,7 +101,7 @@ namespace WitsmlExplorer.Api.Query
             Index startIndex,
             Index endIndex)
         {
-            var queryLog = new WitsmlLog
+            WitsmlLog queryLog = new()
             {
                 Uid = logUid,
                 UidWell = wellUid,
@@ -116,6 +122,8 @@ namespace WitsmlExplorer.Api.Query
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
+                    break;
+                default:
                     break;
             }
 

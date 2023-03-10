@@ -28,6 +28,10 @@ namespace WitsmlExplorer.Api.Query
                     StartMd = MeasureWithDatum.ToEmptyWitsml<WitsmlMeasureWithDatum>(),
                     EndMd = MeasureWithDatum.ToEmptyWitsml<WitsmlMeasureWithDatum>(),
                     CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }
