@@ -18,6 +18,7 @@ jobs:
       tag-version: ${{ steps.get.outputs.tag-version }}            
 
   notify:
+    if: github.repository_owner == 'equinor'
     needs: fetchtag
     runs-on: ubuntu-latest
     steps:

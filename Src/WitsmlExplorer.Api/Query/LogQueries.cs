@@ -64,7 +64,6 @@ namespace WitsmlExplorer.Api.Query
                 Uid = logUid,
                 UidWell = wellUid,
                 UidWellbore = wellboreUid,
-                IndexType = "",
                 LogCurveInfo = new List<WitsmlLogCurveInfo>(),
                 LogData = new WitsmlLogData
                 {

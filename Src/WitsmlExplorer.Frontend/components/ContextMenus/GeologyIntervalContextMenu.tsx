@@ -1,13 +1,15 @@
-import { Typography } from "@equinor/eds-core-react";
+import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
+import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteComponents, StyledIcon } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
@@ -24,6 +26,12 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
     navigationState: { selectedServer, selectedMudLog, servers }
   } = useContext(NavigationContext);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
+
+  const onClickProperties = async () => {
+    const geologyIntervalPropertiesModalProps = { geologyInterval: checkedGeologyIntervals[0] };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <GeologyIntervalPropertiesModal {...geologyIntervalPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
 
   const toDelete = createComponentReferences(
     checkedGeologyIntervals.map((gi) => gi.uid),
@@ -64,6 +72,11 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "geology interval", checkedGeologyIntervals)}</Typography>
+        </MenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedGeologyIntervals.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
     />

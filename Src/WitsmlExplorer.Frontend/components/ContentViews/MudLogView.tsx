@@ -75,7 +75,7 @@ export const MudLogView = (): React.ReactElement => {
     { property: "rpmAv", label: "rpmAv", type: ContentType.String },
     { property: "wtMudAv", label: "wtMudAv", type: ContentType.String },
     { property: "ecdTdAv", label: "ecdTdAv", type: ContentType.String },
-    { property: "dxcAv", label: "dxcAv", type: ContentType.String },
+    { property: "dxcAv", label: "dxcAv", type: ContentType.Number },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 

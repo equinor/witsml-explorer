@@ -205,7 +205,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
                 newData.Add(CollateData(temp, lastIndex));
                 sourceLogWithData.LogData.Data = newData;
-                sourceLogWithData.IndexType = sourceLog.IndexType;
                 startIndex = index;
 
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
