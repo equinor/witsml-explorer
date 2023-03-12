@@ -39,13 +39,13 @@ const TrajectorySidebarContextMenu = (props: TrajectorySidebarContextMenuProps):
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, [trajectory], ObjectType.Trajectory, JobType.DeleteTrajectories)}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, [trajectory], ObjectType.Trajectory)}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete trajectory</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, "trajectoryUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, ObjectType.Trajectory)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

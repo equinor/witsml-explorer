@@ -48,7 +48,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
         </MenuItem>,
         <MenuItem
           key={"delete"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedWbGeometryObjects, ObjectType.WbGeometry, JobType.DeleteWbGeometrys)}
+          onClick={() => onClickDeleteObjects(dispatchOperation, checkedWbGeometryObjects, ObjectType.WbGeometry)}
           disabled={checkedWbGeometryObjects.length === 0}
         >
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
@@ -58,7 +58,7 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedWbGeometryObjects[0], "wbGeometryUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedWbGeometryObjects[0], ObjectType.WbGeometry)}
               disabled={checkedWbGeometryObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

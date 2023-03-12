@@ -6,7 +6,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data
 {
-    public class WitsmlBhaRun : ObjectOnWellbore
+    public class WitsmlBhaRun : WitsmlObjectOnWellbore
     {
         public override WitsmlBhaRuns AsSingletonWitsmlList()
         {

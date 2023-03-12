@@ -8,7 +8,7 @@ using Moq;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.MudLog;
+using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -22,38 +22,39 @@ using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
-    public class CopyMudLogWorkerTests
+    public class CopyObjectsWorkerTests
     {
-        private readonly CopyMudLogWorker _copyMudLogWorker;
+        private readonly CopyObjectsWorker _copyObjectWorker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
         private const string TargetWellboreUid = "targetWellboreUid";
-        private const string MudLogUid = "mudLogUid";
+        private const string ObjectUid = "objectUid";
 
-        public CopyMudLogWorkerTests()
+        public CopyObjectsWorkerTests()
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
-            Mock<ILogger<CopyMudLogJob>> logger = new();
+            Mock<ILogger<CopyObjectsJob>> logger = new();
             CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object);
-            _copyMudLogWorker = new CopyMudLogWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
+            _copyObjectWorker = new CopyObjectsWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
         }
 
         [Fact]
-        public async Task CopyMudLogOK()
+        public async Task Execute_CopyOneTubular_IsSuccess()
         {
-            CopyMudLogJob copyMudLogJob = CreateJobTemplate();
+            CopyObjectsJob copyObjectJob = CreateJobTemplate();
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlMudLogs>(witsmlMudLogs => witsmlMudLogs.MudLogs.First().Uid == MudLogUid), new OptionsIn(ReturnElements.All, null, null)))
-                .ReturnsAsync(GetSourceMudLogs());
+                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), new OptionsIn(ReturnElements.All, null, null)))
+                .ReturnsAsync(GetSourceObjects());
             SetupGetWellbore();
-            IEnumerable<WitsmlMudLogs> copyMudLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlMudLogs>(_witsmlClient);
+            IEnumerable<IWitsmlObjectList> copyObjectQuery = CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
 
-            (WorkerResult, RefreshAction) result = await _copyMudLogWorker.Execute(copyMudLogJob);
-            Assert.True(result.Item1.IsSuccess);
+            (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
+            Assert.True(workerResult.IsSuccess);
+            Assert.Equal(EntityType.Tubular, refreshAction.EntityType);
         }
 
         private void SetupGetWellbore()
@@ -75,15 +76,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 });
         }
 
-        private static CopyMudLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
+        private static CopyObjectsJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
         {
-            return new CopyMudLogJob
+            return new CopyObjectsJob
             {
                 Source = new ObjectReferences
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
-                    ObjectUids = new string[] { MudLogUid }
+                    ObjectUids = new string[] { ObjectUid },
+                    ObjectType = EntityType.Tubular
                 },
                 Target = new WellboreReference
                 {
@@ -93,22 +95,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private static WitsmlMudLogs GetSourceMudLogs()
+        private static IWitsmlObjectList GetSourceObjects()
         {
-            WitsmlMudLog witsmlMudLog = new()
+            WitsmlTubular witsmlObject = new()
             {
                 UidWell = WellUid,
                 UidWellbore = SourceWellboreUid,
-                Uid = MudLogUid,
-                NameWell = "",
-                NameWellbore = "",
-                Name = "",
-                CommonData = new WitsmlCommonData(),
-                CustomData = new WitsmlCustomData()
+                Uid = ObjectUid,
             };
-            return new WitsmlMudLogs
+            return new WitsmlTubulars
             {
-                MudLogs = new List<WitsmlMudLog> { witsmlMudLog }
+                Objects = new List<WitsmlTubular> { witsmlObject }
             };
         }
     }

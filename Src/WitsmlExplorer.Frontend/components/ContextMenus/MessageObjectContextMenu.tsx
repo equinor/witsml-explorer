@@ -8,7 +8,6 @@ import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { MessageObjectRow } from "../ContentViews/MessagesListView";
 import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/MessageComparisonModal";
@@ -55,8 +54,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
             onClickDeleteObjects(
               dispatchOperation,
               checkedMessageObjectRows.map((row) => row.message),
-              ObjectType.Message,
-              JobType.DeleteMessageObjects
+              ObjectType.Message
             )
           }
           disabled={checkedMessageObjectRows.length === 0}
@@ -80,7 +78,7 @@ const MessageObjectContextMenu = (props: MessageObjectContextMenuProps): React.R
         </NestedMenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "messageGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.Message)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

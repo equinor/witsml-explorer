@@ -6,7 +6,6 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { RigRow } from "../ContentViews/RigsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
@@ -44,11 +43,11 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "rig", rigs)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore, JobType.CopyRig)} disabled={rigReferences === null}>
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore)} disabled={rigReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, rigs, ObjectType.Rig, JobType.DeleteRigs)} disabled={checkedRigRows.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, rigs, ObjectType.Rig)} disabled={checkedRigRows.length === 0}>
           <ListItemIcon>
             <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
@@ -56,7 +55,7 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "rigGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.Rig)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

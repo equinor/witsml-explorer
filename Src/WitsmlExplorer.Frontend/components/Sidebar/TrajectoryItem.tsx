@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
@@ -40,7 +41,7 @@ const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={trajectory.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTrajectory, payload: { trajectory, wellbore, well } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: trajectory, wellbore, well, objectType: ObjectType.Trajectory } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, trajectory)}
     />
   );

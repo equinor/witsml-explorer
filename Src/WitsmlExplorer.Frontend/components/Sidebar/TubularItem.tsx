@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
@@ -40,7 +41,7 @@ const TubularItem = (props: TubularProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={tubular.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTubular, payload: { tubular, wellbore, well } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: tubular, wellbore, well, objectType: ObjectType.Tubular } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, tubular)}
     />
   );

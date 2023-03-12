@@ -1,4 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
+import { Typography } from "@equinor/eds-core-react";
 import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Alerts from "../components/Alerts";
@@ -6,11 +7,11 @@ import ContentView from "../components/ContentView";
 import { preventContextMenuPropagation } from "../components/ContextMenus/ContextMenu";
 import Nav from "../components/Nav";
 import Sidebar from "../components/Sidebar/Sidebar";
+import NavigationContext from "../contexts/navigationContext";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
 import { msalEnabled } from "../msal/MsalAuthProvider";
 import { colors } from "../styles/Colors";
 import PropertiesPanel from "./PropertiesPanel";
-import NavigationContext from "../contexts/navigationContext";
 
 const PageLayout = (): ReactElement => {
   const sidebarRef = useRef(null);
@@ -20,6 +21,7 @@ const PageLayout = (): ReactElement => {
   const { width: documentWidth } = useDocumentDimensions();
   const { navigationState } = useContext(NavigationContext);
   const { currentProperties } = navigationState;
+  const version = process.env.NEXT_PUBLIC_WEX_VERSION;
 
   const startResizing = useCallback(() => {
     setIsResizing(true);
@@ -71,7 +73,10 @@ const PageLayout = (): ReactElement => {
         <ContentView />
       </ContentViewLayout>
       <PropertyBar>
-        <PropertiesPanel properties={currentProperties} />
+        <Properties>
+          <PropertiesPanel properties={currentProperties} />
+        </Properties>
+        {version && <Typography token={{ fontFamily: "Equinor", fontSize: "0.875rem", color: colors.text.staticIconsTertiary }}>v.{version}</Typography>}
       </PropertyBar>
     </Layout>
   ) : (
@@ -126,15 +131,23 @@ const ContentViewLayout = styled.div`
   word-wrap: wrap;
   padding-right: 0.2rem;
 `;
+
 const PropertyBar = styled.div`
-   {
-    width: 100vw;
-    height: 40px;
-    background-color: ${colors.ui.backgroundLight};
-    grid-area: footer;
-    display: flex;
-    align-items: center;
-    padding-left: 1.6rem;
-  }
+  width: 100vw;
+  height: 40px;
+  background-color: ${colors.ui.backgroundLight};
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
 `;
+
+const Properties = styled.div`
+  width: 95vw;
+  display: flex;
+  align-items: center;
+`;
+
 export default PageLayout;

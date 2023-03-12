@@ -136,11 +136,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"deletelogobject"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log, JobType.DeleteLogObjects)}
-          disabled={checkedLogObjects.length === 0}
-        >
+        <MenuItem key={"deletelogobject"} onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log)} disabled={checkedLogObjects.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
@@ -156,7 +152,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], "logObjectUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], ObjectType.Log)}
               disabled={checkedLogObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

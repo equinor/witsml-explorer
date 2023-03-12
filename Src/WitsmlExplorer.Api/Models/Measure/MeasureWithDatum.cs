@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Models.Measure
 
         public static MeasureWithDatum FromWitsml(Witsml.Data.Measures.WitsmlMeasureWithDatum witsmlMeasure)
         {
-            if (witsmlMeasure == null)
+            if (witsmlMeasure == null || string.IsNullOrEmpty(witsmlMeasure.Value))
             {
                 return null;
             }

@@ -99,7 +99,7 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
                 label="factFric"
                 type="number"
                 defaultValue={editableWbgs?.factFric}
-                helperText={invalidFactFric ? `${name} cannot be empty` : ""}
+                helperText={invalidFactFric ? `FactFric cannot be empty` : ""}
                 variant={invalidFactFric ? "error" : undefined}
                 onChange={(e: any) => {
                   setEditableWbGeometrySection({

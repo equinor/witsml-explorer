@@ -6,7 +6,6 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { BhaRunRow } from "../ContentViews/BhaRunsListView";
 import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
@@ -54,11 +53,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "bhaRun", checkedBhaRunRows)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, bhaRunReferences, dispatchOperation, wellbore, JobType.CopyBhaRun)}
-          disabled={bhaRunReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, bhaRunReferences, dispatchOperation, wellbore)} disabled={bhaRunReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "bhaRun", bhaRunReferences?.objectUids)}</Typography>
         </MenuItem>,
@@ -68,8 +63,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
             onClickDeleteObjects(
               dispatchOperation,
               checkedBhaRunRows.map((r) => r.bhaRun),
-              ObjectType.BhaRun,
-              JobType.DeleteBhaRuns
+              ObjectType.BhaRun
             )
           }
           disabled={checkedBhaRunRows.length === 0}
@@ -79,7 +73,7 @@ const BhaRunContextMenu = (props: BhaRunContextMenuProps): React.ReactElement =>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, "bhaRunGroupUid")}>
+            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.BhaRun)}>
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

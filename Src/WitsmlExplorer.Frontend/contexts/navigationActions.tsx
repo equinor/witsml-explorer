@@ -2,6 +2,7 @@ import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import MudLog from "../models/mudLog";
+import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
@@ -66,34 +67,14 @@ export interface SelectLogTypeAction extends Action {
   payload: { well: Well; wellbore: Wellbore; logTypeGroup: any };
 }
 
-export interface SelectLogObjectAction extends Action {
-  type: NavigationType.SelectLogObject;
-  payload: { log: LogObject; well: Well; wellbore: Wellbore };
-}
-
-export interface SelectMudLogAction extends Action {
-  type: NavigationType.SelectMudLog;
-  payload: { well: Well; wellbore: Wellbore; mudLog: MudLog };
-}
-
 export interface SelectLogCurveInfoAction extends Action {
   type: NavigationType.ShowCurveValues;
   payload: { logCurveInfo: any };
 }
 
-export interface SelectTrajectoryAction extends Action {
-  type: NavigationType.SelectTrajectory;
-  payload: { well: Well; wellbore: Wellbore; trajectory: Trajectory };
-}
-
-export interface SelectTubularAction extends Action {
-  type: NavigationType.SelectTubular;
-  payload: { well: Well; wellbore: Wellbore; tubular: Tubular };
-}
-
-export interface SelectWbGeometryAction extends Action {
-  type: NavigationType.SelectWbGeometry;
-  payload: { well: Well; wellbore: Wellbore; wbGeometry: WbGeometryObject };
+export interface SelectObjectAction extends Action {
+  type: NavigationType.SelectObject;
+  payload: { object: ObjectOnWellbore; well: Well; wellbore: Wellbore; objectType: ObjectType };
 }
 
 export interface SetFilterAction extends Action {
