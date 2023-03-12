@@ -43,6 +43,9 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.BhaRun], BhaRunHandler.GetBhaRuns, useOAuth2);
             app.MapGet(routes[EntityType.BhaRun] + "/{bhaRunUid}", BhaRunHandler.GetBhaRun, useOAuth2);
 
+            app.MapGet(routes[EntityType.FormationMarker], FormationMarkerHandler.GetFormationMarkers, useOAuth2);
+            app.MapGet(routes[EntityType.FormationMarker] + "/{formationMarkerUid}", FormationMarkerHandler.GetFormationMarker, useOAuth2);
+
             app.MapGet(routes[EntityType.Rig], RigHandler.GetRigs, useOAuth2);
             app.MapGet(routes[EntityType.Rig] + "/{rigUid}", RigHandler.GetRig, useOAuth2);
 

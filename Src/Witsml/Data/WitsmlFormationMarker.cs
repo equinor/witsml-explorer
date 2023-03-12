@@ -15,9 +15,6 @@ namespace Witsml.Data
             };
         }
 
-        [XmlElement("description")]
-        public string Description { get; init; }
-
         [XmlElement("mdPrognosed")]
         public WitsmlMeasuredDepthCoord MdPrognosed { get; init; }
 
@@ -50,6 +47,21 @@ namespace Witsml.Data
 
         [XmlElement("dipDirection")]
         public WitsmlPlaneAngleMeasure DipDirection { get; init; }
+
+        [XmlElement("lithostratigraphic")]
+        public WitsmlLithostratigraphyStruct Lithostratigraphic { get; init; }
+
+        [XmlElement("chronostratigraphic")]
+        public WitsmlChronostratigraphyStruct Chronostratigraphic { get; init; }
+
+        /// <summary>
+        /// Deprecated as of WITSML version 1.4.1.1"
+        /// </summary>
+        [XmlElement("nameFormation")]
+        public string NameFormation { get; init; }
+
+        [XmlElement("description")]
+        public string Description { get; init; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; init; }
