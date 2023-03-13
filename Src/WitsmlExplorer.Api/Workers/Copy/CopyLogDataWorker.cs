@@ -113,8 +113,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Logger.LogError("{message} - {Description}", message, job.Description());
             if (message.Contains("Error while updating store: -463"))
             {
-                Server server;
-                message += $" If copying to a target server with lower number of depth log decimals than the source server, make sure that the {nameof(server.DepthLogDecimals)} field is filled out for both the target and the source server.";
+                message += $" If copying to a target server with lower number of depth log decimals than the source server, make sure that the \"Number of decimals in depth log index\" field is filled out for both the target and the source server.";
             }
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
@@ -184,28 +183,32 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
                 List<WitsmlData> data = sourceLogWithData.LogData.Data;
                 List<WitsmlData> newData = new();
-                List<string[]> temp = new();
+                List<string[]> rowsToCollate = new();
                 double difference = Math.Pow(0.1, targetDepthLogDecimals + 1);
-                double lastIndex = double.MinValue;
-                double index = double.MinValue;
+                double firstSourceRowIndex = double.MinValue;
+                double lastSourceRowIndex = double.MinValue;
+                double targetIndex = double.MinValue;
                 foreach (WitsmlData row in data)
                 {
                     string[] split = row.Data.Split(",");
-                    index = Math.Round(StringHelpers.ToDouble(split[0]), targetDepthLogDecimals);
-                    if (Math.Abs(lastIndex - index) > difference)
+                    lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
+                    double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals);
+                    if (Math.Abs(targetIndex - nextTargetIndex) > difference)
                     {
-                        if (temp.Any())
+                        if (rowsToCollate.Any())
                         {
-                            newData.Add(CollateData(temp, lastIndex));
+                            newData.Add(CollateData(rowsToCollate, targetIndex));
                         }
-                        lastIndex = index;
-                        temp = new();
+                        firstSourceRowIndex = lastSourceRowIndex;
+                        targetIndex = nextTargetIndex;
+                        rowsToCollate = new();
                     }
-                    temp.Add(split[1..]);
+                    rowsToCollate.Add(split[1..]);
                 }
-                newData.Add(CollateData(temp, lastIndex));
+                newData.Add(CollateData(rowsToCollate, targetIndex));
+                startIndex = lastSourceRowIndex >= endIndex ? endIndex : firstSourceRowIndex;
+
                 sourceLogWithData.LogData.Data = newData;
-                startIndex = index;
 
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
                 QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
@@ -224,21 +227,22 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied, OriginalNumberOfRows = originalNumberOfRows };
         }
 
-        private static WitsmlData CollateData(List<string[]> temp, double lastIndex)
+        private static WitsmlData CollateData(List<string[]> oldRows, double index)
         {
-            string[] newRow = new string[temp.First().Length];
+            string[] newRow = new string[oldRows.First().Length];
             Array.Fill(newRow, "");
-            foreach (string[] oldRow in temp)
+            for (int i = 0; i < newRow.Length; i++)
             {
-                for (int i = 0; i < newRow.Length; i++)
+                for (int j = 0; j < oldRows.Count; j++)
                 {
-                    if (newRow[i] == "" && oldRow[i] != "")
+                    if (oldRows[j][i] != "")
                     {
-                        newRow[i] = oldRow[i];
+                        newRow[i] = oldRows[j][i];
+                        break;
                     }
                 }
             }
-            return new() { Data = lastIndex + "," + string.Join(",", newRow) };
+            return new() { Data = index + "," + string.Join(",", newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)

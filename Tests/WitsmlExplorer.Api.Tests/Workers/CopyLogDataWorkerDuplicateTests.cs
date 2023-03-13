@@ -61,10 +61,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             }
                         });
             CopyLogDataJob job = LogUtils.CreateJobTemplate();
-            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.1, 123.16, "Depth");
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.16, "Depth");
             LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlSourceClient, sourceLogs);
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlTargetClient);
-            SetupGetDepthIndexed(_witsmlSourceClient);
+            SetupGetDepthIndexed(_witsmlSourceClient, (logs) => true,
+            new() { new() { Data = "123.11,1," }, new() { Data = "123.12,,2" }, new() { Data = "123.13,3," }, new() { Data = "123.16,4," } });
             List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlTargetClient);
 
             await _worker.Execute(job);
@@ -73,39 +74,51 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal("123.2,4,", updatedLogs.First().Logs.First().LogData.Data[1].Data);
         }
 
-        private static void SetupGetDepthIndexed(Mock<IWitsmlClient> witsmlClient)
+        [Fact]
+        public async Task Execute_FewerTargetDecimalsNewRowSplitBetweenBatches_NoSourceRowsOmitted()
         {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _documentRepository.Setup(client => client.GetDocumentsAsync())
+                        .ReturnsAsync(new List<Server>(){
+                            new(){
+                                Url = _targetUri,
+                                DepthLogDecimals = 1
+                            },
+                            new(){
+                                Url = _sourceUri,
+                                DepthLogDecimals = 2
+                            }
+                        });
+            CopyLogDataJob job = LogUtils.CreateJobTemplate();
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.18, "Depth");
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlSourceClient, sourceLogs);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlTargetClient);
+            SetupGetDepthIndexed(_witsmlSourceClient, logs => logs.Logs.First().StartIndex?.Value == "123.11",
+            new() { new() { Data = "123.11,1," }, new() { Data = "123.16,,2" } });
+            SetupGetDepthIndexed(_witsmlSourceClient, logs => logs.Logs.First().StartIndex?.Value == "123.16",
+            new() { new() { Data = "123.16,,2" }, new() { Data = "123.17,3," }, new() { Data = "123.18,,4" } });
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlTargetClient);
+
+            await _worker.Execute(job);
+
+            Assert.Equal("123.1,1,", updatedLogs.First().Logs.First().LogData.Data[0].Data);
+            Assert.Equal("123.2,3,2", updatedLogs[1].Logs.First().LogData.Data[0].Data);
+        }
+
+        private static void SetupGetDepthIndexed(Mock<IWitsmlClient> witsmlClient, Func<WitsmlLogs, bool> predicate, List<WitsmlData> data)
+        {
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.Is<WitsmlLogs>(logs => predicate(logs)), new OptionsIn(ReturnElements.DataOnly, null, null)))
                 .ReturnsAsync(() => new WitsmlLogs
                 {
                     Logs = new WitsmlLog
                     {
-                        StartIndex = new WitsmlIndex(new DepthIndex(123.11)),
-                        EndIndex = new WitsmlIndex(new DepthIndex(123.16)),
+                        StartIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.First().Data.Split(",")[0]))),
+                        EndIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.Last().Data.Split(",")[0]))),
                         IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
                         LogData = new WitsmlLogData
                         {
                             MnemonicList = string.Join(",", LogUtils.SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),
                             UnitList = "m,m,m",
-                            Data = new()
-                            {
-                                new()
-                                {
-                                    Data = "123.11,1,"
-                                },
-                                new()
-                                {
-                                    Data = "123.12,,2"
-                                },
-                                new()
-                                {
-                                    Data = "123.13,3,"
-                                },
-                                new()
-                                {
-                                    Data = "123.16,4,"
-                                }
-                            }
+                            Data = data
                         }
                     }.AsSingletonList()
                 });
