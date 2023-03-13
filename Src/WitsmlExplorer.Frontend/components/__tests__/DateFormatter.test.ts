@@ -1,5 +1,5 @@
 import { TimeZone } from "../../contexts/operationStateReducer";
-import formatDateString, { validateIsoDateString } from "../DateFormatter";
+import formatDateString, { getOffsetFromTimeZone, validateIsoDateString } from "../DateFormatter";
 
 it("Should replace +00:00 with Z when TimeZone is Raw", () => {
   const actual = formatDateString("2022-11-17T13:54:17.000+00:00", TimeZone.Raw);
@@ -13,7 +13,19 @@ it("Should keep the offset when TimeZone is Raw", () => {
 
 it("Should convert the time when a specific TimeZone is picked", () => {
   const actual = formatDateString("2022-11-17T13:54:17.000+02:00", TimeZone.Houston);
-  expect(actual).toEqual("2022-11-17T05:54:17.000-06:00");
+  //handle daylight saving time for Houston
+  const offset = getOffsetFromTimeZone(TimeZone.Houston);
+  let expected;
+  if (offset == "-06:00") {
+    // winter time
+    expected = "2022-11-17T05:54:17.000-06:00";
+  } else if (offset == "-05:00") {
+    // summer time
+    expected = "2022-11-17T06:54:17.000-05:00";
+  } else {
+    expected = "check whether Houston still uses daylight saving time";
+  }
+  expect(actual).toEqual(expected);
 });
 
 it("Should validate offset with minus", () => {
