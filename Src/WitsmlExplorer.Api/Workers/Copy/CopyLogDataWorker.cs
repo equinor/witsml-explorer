@@ -145,8 +145,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
+                    string index = sourceLogWithData.LogData.Data.Last().Data.Split(",")[0];
                     sourceLogWithData.IndexType = sourceLog.IndexType;
-                    startIndex = Index.End(sourceLogWithData).AddEpsilon();
+                    startIndex = Index.End(sourceLogWithData, index).AddEpsilon();
                 }
                 else
                 {
