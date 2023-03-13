@@ -166,7 +166,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
           )}
           <TextField
             id="depthLogDecimals"
-            label="Depth Log Decimals"
+            label="Number of decimals in depth log index"
             defaultValue={server.depthLogDecimals}
             error={isNaN(server.depthLogDecimals)}
             helperText={isNaN(server.depthLogDecimals) ? "Depth log decimals must be a valid positive integer" : ""}
