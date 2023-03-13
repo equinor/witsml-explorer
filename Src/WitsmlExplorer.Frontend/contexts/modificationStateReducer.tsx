@@ -7,7 +7,7 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeId, calculateMudLogGroupId, calculateTrajectoryGroupId, calculateTubularGroupId } from "../models/wellbore";
+import Wellbore from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
@@ -317,8 +317,7 @@ const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreL
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { logs });
-  const calculateGroup = (wellbore: Wellbore) => calculateLogTypeId(wellbore, state.selectedLog.indexType);
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateGroup, logs, state.selectedLog, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, logs, state.selectedLog, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
@@ -356,7 +355,7 @@ const updateWellboreMudLogs = (state: NavigationState, { payload }: UpdateWellbo
   const { wells } = state;
   const { mudLogs, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { mudLogs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateMudLogGroupId, mudLogs, state.selectedMudLog, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, mudLogs, state.selectedMudLog, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
@@ -390,7 +389,7 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
   const { wells } = state;
   const { trajectories, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { trajectories });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateTrajectoryGroupId, trajectories, state.selectedTrajectory, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, trajectories, state.selectedTrajectory, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
@@ -404,7 +403,7 @@ const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellb
   const { wells } = state;
   const { tubulars, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, calculateTubularGroupId, tubulars, state.selectedTubular, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, tubulars, state.selectedTubular, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
@@ -473,7 +472,6 @@ const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWel
 //update the current selected object if the current selected object was deleted
 const getCurrentSelectedObjectIfRemoved = (
   state: NavigationState,
-  calculateGroupId: (wellbore: Wellbore) => string,
   objects: ObjectOnWellbore[],
   selectedObject: ObjectOnWellbore,
   updatedWellboreUid: string,
@@ -487,7 +485,7 @@ const getCurrentSelectedObjectIfRemoved = (
     !fetchedSelectedObject && // the selected object does not exist among the objects fetched from the server, implying deletion
     state.currentSelected == selectedObject; // the object that is currently selected was deleted, requiring update of currently selected object
   //navigate from the currently selected object to its object group if it was deleted
-  const currentSelected = isCurrentlySelectedObjectRemoved ? calculateGroupId(state.selectedWellbore) : state.currentSelected;
+  const currentSelected = isCurrentlySelectedObjectRemoved ? state.selectedObjectGroup : state.currentSelected;
   return {
     currentSelected,
     //update the selected object if it was fetched

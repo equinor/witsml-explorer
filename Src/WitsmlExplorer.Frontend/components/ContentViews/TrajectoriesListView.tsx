@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryContextMenu, { TrajectoryContextMenuProps } from "../ContextMenus/TrajectoryContextMenu";
@@ -14,7 +15,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTrajectoryGroup, servers } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
 
@@ -44,8 +45,8 @@ export const TrajectoriesListView = (): React.ReactElement => {
 
   const onSelect = (trajectory: any) => {
     dispatchNavigation({
-      type: NavigationType.SelectTrajectory,
-      payload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: selectedTrajectoryGroup, trajectory }
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: trajectory, objectType: ObjectType.Trajectory }
     });
   };
 

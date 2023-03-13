@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("Risk modified. {jobDescription}", job.Description());
-            RefreshRisks refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Risk.WellUid, job.Risk.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Risk.WellUid, job.Risk.WellboreUid, EntityType.Risk);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Risk {job.Risk.Name} updated for {job.Risk.WellboreName}");
 
             return (workerResult, refreshAction);

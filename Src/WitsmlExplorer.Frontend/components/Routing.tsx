@@ -1,53 +1,16 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
-import { NavigationAction } from "../contexts/navigationAction";
-import {
-  SelectBhaRunGroupAction,
-  SelectLogObjectAction,
-  SelectMessageGroupAction,
-  SelectMudLogAction,
-  SelectMudLogGroupAction,
-  SelectRigGroupAction,
-  SelectRiskGroupAction,
-  SelectServerAction,
-  SelectTrajectoryAction,
-  SelectTubularAction,
-  SelectWbGeometryAction,
-  SelectWellAction,
-  SelectWellboreAction,
-  SetFilterAction
-} from "../contexts/navigationActions";
+import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction, SetFilterAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
-import LogObject from "../models/logObject";
-import MudLog from "../models/mudLog";
+import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
-import Trajectory from "../models/trajectory";
-import Tubular from "../models/tubular";
-import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, {
-  calculateBhaRunGroupId,
-  calculateMessageGroupId,
-  calculateMudLogGroupId,
-  calculateRigGroupId,
-  calculateRiskGroupId,
-  calculateTrajectoryGroupId,
-  calculateTubularGroupId,
-  calculateWbGeometryGroupId
-} from "../models/wellbore";
+import Wellbore, { getObjectFromWellbore } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
-import BhaRunService from "../services/bhaRunService";
-import LogObjectService from "../services/logObjectService";
-import MessageObjectService from "../services/messageObjectService";
-import MudLogService from "../services/mudLogService";
 import NotificationService from "../services/notificationService";
-import RigService from "../services/rigService";
-import RiskObjectService from "../services/riskObjectService";
-import TrajectoryService from "../services/trajectoryService";
-import TubularService from "../services/tubularService";
-import WbGeometryObjectService from "../services/wbGeometryService";
+import WellboreService from "../services/wellboreService";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -58,14 +21,10 @@ const Routing = (): React.ReactElement => {
     selectedWell,
     selectedWellbore,
     selectedLog,
-    selectedTubular,
-    selectedBhaRunGroup,
-    selectedMessageGroup,
-    selectedMudLogGroup,
     selectedMudLog,
-    selectedRigGroup,
-    selectedRiskGroup,
+    selectedObjectGroup,
     selectedTrajectory,
+    selectedTubular,
     selectedWbGeometry
   } = navigationState;
   const router = useRouter();
@@ -89,21 +48,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedLog,
-    selectedTubular,
-    selectedBhaRunGroup,
-    selectedMessageGroup,
-    selectedMudLog,
-    selectedMudLogGroup,
-    selectedRigGroup,
-    selectedRiskGroup,
-    selectedTrajectory,
-    selectedWbGeometry
-  ]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedLog, selectedTubular, selectedMudLog, selectedObjectGroup, selectedTrajectory, selectedWbGeometry]);
 
   useEffect(() => {
     //update router on params change
@@ -171,31 +116,12 @@ const Routing = (): React.ReactElement => {
       const controller = new AbortController();
 
       const getChildren = async () => {
-        const getBhaRuns = BhaRunService.getBhaRuns(selectedWell.uid, wellboreUid, controller.signal);
-        const getLogs = LogObjectService.getLogs(selectedWell.uid, wellboreUid, controller.signal);
-        const getRigs = RigService.getRigs(selectedWell.uid, wellboreUid, controller.signal);
-        const getTrajectories = TrajectoryService.getTrajectories(selectedWell.uid, wellboreUid, controller.signal);
-        const getTubulars = TubularService.getTubulars(selectedWell.uid, wellboreUid, controller.signal);
-        const getMessages = MessageObjectService.getMessages(selectedWell.uid, wellboreUid, controller.signal);
-        const getMudLogs = MudLogService.getMudLogs(selectedWell.uid, wellboreUid, controller.signal);
-        const getRisks = RiskObjectService.getRisks(selectedWell.uid, wellboreUid, controller.signal);
-        const getWbGeometrys = WbGeometryObjectService.getWbGeometrys(selectedWell.uid, wellboreUid, controller.signal);
-        const [bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys] = await Promise.all([
-          getBhaRuns,
-          getLogs,
-          getRigs,
-          getTrajectories,
-          getMessages,
-          getMudLogs,
-          getRisks,
-          getTubulars,
-          getWbGeometrys
-        ]);
         const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
         if (wellbore) {
+          const wellboreObjects = await WellboreService.getWellboreObjects(selectedWell.uid, wellboreUid);
           const selectWellbore: SelectWellboreAction = {
             type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
+            payload: { well: selectedWell, wellbore, ...wellboreObjects }
           } as SelectWellboreAction;
           dispatchNavigation(selectWellbore);
         } else {
@@ -219,94 +145,31 @@ const Routing = (): React.ReactElement => {
 
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWellbore) {
-      const dispatch = (object: any, action: NavigationAction, uid: string) => {
-        if (object) {
+      const group = urlParams?.group as ObjectType;
+      const objectUid = urlParams?.objectUid;
+      if (objectUid != null) {
+        const object = getObjectFromWellbore(selectedWellbore, objectUid, group);
+        if (object != null) {
+          const action: SelectObjectAction = {
+            type: NavigationType.SelectObject,
+            payload: { object, well: selectedWell, wellbore: selectedWellbore, objectType: group }
+          };
           dispatchNavigation(action);
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer?.url),
-            message: `Unable to ${action.type} with UID ${uid} on the ${selectedWellbore.name} wellbore as the object was not found.`,
+            message: `Unable to select an object of type ${group} with UID ${objectUid} on the ${selectedWellbore.name} wellbore as the object was not found.`,
             isSuccess: false
           });
         }
-        setIsSyncingUrlAndState(false);
-      };
-
-      const bhaRunGroupUid = urlParams?.bhaRunGroupUid?.toString();
-      const logObjectUid = urlParams?.logObjectUid?.toString();
-      const messageGroupUid = urlParams?.messageGroupUid?.toString();
-      const mudLogGroupUid = urlParams?.mudLogGroupUid?.toString();
-      const mudLogUid = urlParams?.mudLogUid?.toString();
-      const rigGroupUid = urlParams?.rigGroupUid?.toString();
-      const riskGroupUid = urlParams?.riskGroupUid?.toString();
-      const trajectoryUid = urlParams?.trajectoryUid?.toString();
-      const tubularUid = urlParams?.tubularUid?.toString();
-      const wbGeometryUid = urlParams?.wbGeometryUid?.toString();
-      if (bhaRunGroupUid && !selectedBhaRunGroup) {
-        const action: SelectBhaRunGroupAction = {
-          type: NavigationType.SelectBhaRunGroup,
-          payload: { bhaRunGroup: calculateBhaRunGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
+      } else if (group != null) {
+        const action: SelectObjectGroupAction = {
+          type: NavigationType.SelectObjectGroup,
+          payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore }
         };
-        dispatch(true, action, bhaRunGroupUid);
-      } else if (logObjectUid && !selectedLog) {
-        const log = selectedWellbore.logs.find((l: LogObject) => l.uid === logObjectUid);
-        const selectLogObjectAction: SelectLogObjectAction = { type: NavigationType.SelectLogObject, payload: { log, well: selectedWell, wellbore: selectedWellbore } };
-        dispatch(log, selectLogObjectAction, logObjectUid);
-      } else if (messageGroupUid && !selectedMessageGroup) {
-        const action: SelectMessageGroupAction = {
-          type: NavigationType.SelectMessageGroup,
-          payload: { messageGroup: calculateMessageGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
-        };
-        dispatch(true, action, messageGroupUid);
-      } else if (mudLogUid && !selectedMudLog) {
-        const mudLog = selectedWellbore.mudLogs.find((t: MudLog) => t.uid === mudLogUid);
-        const selectMudLogAction: SelectMudLogAction = {
-          type: NavigationType.SelectMudLog,
-          payload: { well: selectedWell, wellbore: selectedWellbore, mudLogGroup: calculateMudLogGroupId(selectedWellbore), mudLog }
-        };
-        dispatch(mudLog, selectMudLogAction, mudLogUid);
-      } else if (mudLogGroupUid && !selectedMudLogGroup) {
-        const action: SelectMudLogGroupAction = {
-          type: NavigationType.SelectMudLogGroup,
-          payload: { mudLogGroup: calculateMudLogGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
-        };
-        dispatch(true, action, mudLogGroupUid);
-      } else if (rigGroupUid && !selectedRigGroup) {
-        const action: SelectRigGroupAction = {
-          type: NavigationType.SelectRigGroup,
-          payload: { rigGroup: calculateRigGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
-        };
-        dispatch(true, action, rigGroupUid);
-      } else if (riskGroupUid && !selectedRiskGroup) {
-        const action: SelectRiskGroupAction = {
-          type: NavigationType.SelectRiskGroup,
-          payload: { riskGroup: calculateRiskGroupId(selectedWellbore), well: selectedWell, wellbore: selectedWellbore }
-        };
-        dispatch(true, action, riskGroupUid);
-      } else if (trajectoryUid && !selectedTrajectory) {
-        const trajectory = selectedWellbore.trajectories.find((t: Trajectory) => t.uid === trajectoryUid);
-        const selectTrajectoryAction: SelectTrajectoryAction = {
-          type: NavigationType.SelectTrajectory,
-          payload: { well: selectedWell, wellbore: selectedWellbore, trajectoryGroup: calculateTrajectoryGroupId(selectedWellbore), trajectory }
-        };
-        dispatch(trajectory, selectTrajectoryAction, trajectoryUid);
-      } else if (tubularUid && !selectedTubular) {
-        const tubular = selectedWellbore.tubulars.find((t: Tubular) => t.uid === tubularUid);
-        const selectTubularAction: SelectTubularAction = {
-          type: NavigationType.SelectTubular,
-          payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: calculateTubularGroupId(selectedWellbore), tubular }
-        };
-        dispatch(tubular, selectTubularAction, tubularUid);
-      } else if (wbGeometryUid && !selectedWbGeometry) {
-        const wbGeometry = selectedWellbore.wbGeometrys.find((object: WbGeometryObject) => object.uid === wbGeometryUid);
-        const action: SelectWbGeometryAction = {
-          type: NavigationType.SelectWbGeometry,
-          payload: { well: selectedWell, wellbore: selectedWellbore, wbGeometryGroup: calculateWbGeometryGroupId(selectedWellbore), wbGeometry }
-        };
-        dispatch(wbGeometry, action, wbGeometryUid);
-      } else {
-        setIsSyncingUrlAndState(false);
+        dispatchNavigation(action);
       }
+      setIsSyncingUrlAndState(false);
     }
   }, [selectedWellbore]);
 
@@ -328,16 +191,12 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedServer && { serverUrl: state.selectedServer.url }),
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
-    ...(state.selectedBhaRunGroup && { bhaRunGroupUid: "group" }),
-    ...(state.selectedLog && { logObjectUid: state.selectedLog.uid }),
-    ...(state.selectedMessageGroup && { messageGroupUid: "group" }),
-    ...(state.selectedMudLogGroup && { mudLogGroupUid: "group" }),
-    ...(state.selectedRigGroup && { rigGroupUid: "group" }),
-    ...(state.selectedRiskGroup && { riskGroupUid: "group" }),
-    ...(state.selectedTrajectory && { trajectoryUid: state.selectedTrajectory.uid }),
-    ...(state.selectedTubular && { tubularUid: state.selectedTubular.uid }),
-    ...(state.selectedMudLog && { mudLogUid: state.selectedMudLog.uid }),
-    ...(state.selectedWbGeometry && { wbGeometryUid: state.selectedWbGeometry.uid })
+    ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
+    ...(state.selectedLog && { objectUid: state.selectedLog.uid }),
+    ...(state.selectedTrajectory && { objectUid: state.selectedTrajectory.uid }),
+    ...(state.selectedTubular && { objectUid: state.selectedTubular.uid }),
+    ...(state.selectedMudLog && { objectUid: state.selectedMudLog.uid }),
+    ...(state.selectedWbGeometry && { objectUid: state.selectedWbGeometry.uid })
   };
 };
 
@@ -346,16 +205,8 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.serverUrl && { serverUrl: query.serverUrl.toString() }),
     ...(query.wellUid && { wellUid: query.wellUid.toString() }),
     ...(query.wellboreUid && { wellboreUid: query.wellboreUid.toString() }),
-    ...(query.bhaRunGroupUid && { bhaRunGroupUid: query.bhaRunGroupUid.toString() }),
-    ...(query.logObjectUid && { logObjectUid: query.logObjectUid.toString() }),
-    ...(query.messageGroupUid && { messageGroupUid: query.messageGroupUid.toString() }),
-    ...(query.mudLogGroupUid && { mudLogGroupUid: query.mudLogGroupUid.toString() }),
-    ...(query.mudLogUid && { mudLogUid: query.mudLogUid.toString() }),
-    ...(query.rigGroupUid && { rigGroupUid: query.rigGroupUid.toString() }),
-    ...(query.riskGroupUid && { riskGroupUid: query.riskGroupUid.toString() }),
-    ...(query.trajectoryUid && { trajectoryUid: query.trajectoryUid.toString() }),
-    ...(query.tubularUid && { tubularUid: query.tubularUid.toString() }),
-    ...(query.wbGeometryUid && { wbGeometryUid: query.wbGeometryUid.toString() })
+    ...(query.group && { group: query.group.toString() }),
+    ...(query.objectUid && { objectUid: query.objectUid.toString() })
   };
 };
 
@@ -363,16 +214,8 @@ export interface QueryParams {
   serverUrl: string;
   wellUid?: string;
   wellboreUid?: string;
-  bhaRunGroupUid?: string;
-  logObjectUid?: string;
-  messageGroupUid?: string;
-  mudLogGroupUid?: string;
-  mudLogUid?: string;
-  rigGroupUid?: string;
-  riskGroupUid?: string;
-  trajectoryUid?: string;
-  tubularUid?: string;
-  wbGeometryUid?: string;
+  group?: string;
+  objectUid?: string;
 }
 
 export default Routing;

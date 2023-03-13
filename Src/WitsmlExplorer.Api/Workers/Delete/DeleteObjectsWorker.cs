@@ -8,27 +8,36 @@ using Microsoft.Extensions.Logging;
 using Witsml;
 using Witsml.Data;
 
+using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
 {
-
-    public interface IDeleteUtils
+    public interface IDeleteObjectsWorker
     {
-        public Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType;
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job);
     }
 
-    public class DeleteUtils : IDeleteUtils
+    public class DeleteObjectsWorker : BaseWorker<DeleteObjectsJob>, IWorker, IDeleteObjectsWorker
     {
-        private readonly ILogger<DeleteUtils> _logger;
+        public JobType JobType => JobType.DeleteObjects;
 
-        public DeleteUtils(ILogger<DeleteUtils> logger)
+        public DeleteObjectsWorker(ILogger<DeleteObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger)
+        { }
+
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job)
         {
-            _logger = logger;
+            job.ToDelete.Verify();
+            IEnumerable<WitsmlObjectOnWellbore> queries = ObjectQueries.DeleteObjectsQuery(job.ToDelete);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectType);
+            return await DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        public async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore<T>(IWitsmlClient witsmlClient, IEnumerable<ObjectOnWellbore<T>> queries, RefreshAction refreshAction) where T : IWitsmlQueryType
+        private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction)
         {
+            IWitsmlClient witsmlClient = GetTargetWitsmlClientOrThrow();
             string uidWell = queries.First().UidWell;
             string uidWellbore = queries.First().UidWellbore;
 
@@ -36,20 +45,20 @@ namespace WitsmlExplorer.Api.Workers.Delete
             List<string> successUids = new();
             string errorReason = null;
 
-            QueryResult[] results = await Task.WhenAll(queries.Select(async (query) =>
+            await Task.WhenAll(queries.Select(async (query) =>
             {
                 try
                 {
                     QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsSingletonWitsmlList());
                     if (result.IsSuccessful)
                     {
-                        _logger.LogInformation("Deleted {ObjectType} successfully, UidWell: {WellUid}, UidWellbore: {WellboreUid}, ObjectUid: {Uid}.",
+                        Logger.LogInformation("Deleted {ObjectType} successfully, UidWell: {WellUid}, UidWellbore: {WellboreUid}, ObjectUid: {Uid}.",
                         query.GetType().Name, uidWell, uidWellbore, query.Uid);
                         successUids.Add(query.Uid);
                     }
                     else
                     {
-                        _logger.LogError("Failed to delete {ObjectType}. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {Uid}, Reason: {Reason}",
+                        Logger.LogError("Failed to delete {ObjectType}. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {Uid}, Reason: {Reason}",
                         query.GetType(),
                         uidWell,
                         uidWellbore,
@@ -65,7 +74,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("An unexpected exception has occured: {ex}", ex);
+                    Logger.LogError("An unexpected exception has occured: {ex}", ex);
                     throw;
                 }
             }));

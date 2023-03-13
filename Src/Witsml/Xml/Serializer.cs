@@ -18,18 +18,18 @@ namespace Witsml.Xml
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add("", "http://www.witsml.org/schemas/1series");
 
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(item.GetType());
             serializer.Serialize(writer, item, namespaces);
 
             return textWriter.ToString();
         }
 
-        public static T Deserialize<T>(string xmlString)
+        public static T Deserialize<T>(string xmlString, T item)
         {
             var bytes = Encoding.UTF8.GetBytes(xmlString);
             using var stream = new MemoryStream(bytes);
 
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(item.GetType());
             return (T)serializer.Deserialize(stream);
         }
     }

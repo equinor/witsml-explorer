@@ -1,6 +1,7 @@
 import BhaRun from "../../models/bhaRun";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
+import MudLog from "../../models/mudLog";
 import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
@@ -9,17 +10,10 @@ import Trajectory from "../../models/trajectory";
 import Tubular from "../../models/tubular";
 import WbGeometryObject from "../../models/wbGeometry";
 import { emptyWell, getWellProperties } from "../../models/well";
-import Wellbore, {
-  calculateLogGroupId,
-  calculateLogTypeTimeId,
-  calculateRigGroupId,
-  calculateTrajectoryGroupId,
-  calculateWellboreNodeId,
-  getWellboreProperties
-} from "../../models/wellbore";
+import Wellbore, { calculateLogTypeTimeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../../models/wellbore";
 import { EMPTY_FILTER } from "../filter";
 import { sortList } from "../modificationStateReducer";
-import { SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
+import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
@@ -35,7 +29,6 @@ import {
   SERVER_1,
   SERVER_2,
   TRAJECTORY_1,
-  TRAJECTORY_GROUP_1,
   TUBULAR_1,
   WBGEOMETRY_1,
   WELLBORE_1,
@@ -88,7 +81,7 @@ it("Should also update selected well when a wellbore is selected", () => {
   const rigs: Rig[] = [];
   const risks: RiskObject[] = [];
   const messages: MessageObject[] = [];
-  const mudLogs: mudLog[] = [];
+  const mudLogs: MudLog[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
   const wbGeometrys: WbGeometryObject[] = [];
@@ -157,25 +150,26 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
 });
 
 it("Should also update well and wellbore when a trajectory is selected", () => {
-  const selectTrajectoryAction = {
-    type: NavigationType.SelectTrajectory,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, trajectory: TRAJECTORY_1, trajectoryGroup: TRAJECTORY_GROUP_1 }
+  const selectTrajectoryAction: SelectObjectAction = {
+    type: NavigationType.SelectObject,
+    payload: { well: WELL_2, wellbore: WELLBORE_2, object: TRAJECTORY_1, objectType: ObjectType.Trajectory }
   };
   const actual = reducer(getInitialState(), selectTrajectoryAction);
-  expect(actual).toStrictEqual({
+  const expected: NavigationState = {
     ...EMPTY_NAVIGATION_STATE,
     selectedServer: SERVER_1,
     selectedWell: WELL_2,
     selectedWellbore: WELLBORE_2,
     selectedTrajectory: TRAJECTORY_1,
-    selectedTrajectoryGroup: TRAJECTORY_GROUP_1,
+    selectedObjectGroup: ObjectType.Trajectory,
     currentSelected: TRAJECTORY_1,
     servers: [SERVER_1],
     wells: WELLS,
     filteredWells: WELLS,
     selectedFilter: EMPTY_FILTER,
     currentProperties: getObjectOnWellboreProperties(TRAJECTORY_1, ObjectType.Trajectory)
-  });
+  };
+  expect(actual).toStrictEqual(expected);
 });
 
 it("Should filter wells", () => {
@@ -275,7 +269,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const bhaRuns: BhaRun[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
-  const mudLogs: mudLog[] = [];
+  const mudLogs: MudLog[] = [];
   const risks: RiskObject[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
@@ -294,86 +288,68 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   expect(afterWellboreSelect).toStrictEqual(expected);
 });
 
-it("Selecting a log group node twice should change nothing", () => {
-  const wellbore1LogGroup = calculateLogGroupId(WELLBORE_1);
-  const initialState = {
+it("Selecting an object group node twice should change nothing", () => {
+  const initialState: NavigationState = {
     ...getInitialState(),
     selectedWell: WELL_1,
     selectedWellbore: WELLBORE_1,
-    selectedLogGroup: wellbore1LogGroup,
-    currentSelected: wellbore1LogGroup,
-    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), wellbore1LogGroup],
+    selectedObjectGroup: ObjectType.Log,
+    currentSelected: ObjectType.Log,
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log)],
     currentProperties: getWellboreProperties(WELLBORE_1)
   };
-  const selectLogGroupAction = {
-    type: NavigationType.SelectLogGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, logGroup: wellbore1LogGroup }
+  const action: SelectObjectGroupAction = {
+    type: NavigationType.SelectObjectGroup,
+    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Log }
   };
-  const afterLogGroupSelect = reducer(initialState, selectLogGroupAction);
+  const afterLogGroupSelect = reducer(initialState, action);
   const expected = { ...initialState };
   expect(afterLogGroupSelect).toStrictEqual(expected);
 });
 
 it("Selecting a log type group node twice should change nothing", () => {
-  const logGroup = calculateLogGroupId(WELLBORE_1);
   const logTypeGroup = calculateLogTypeTimeId(WELLBORE_1);
-  const initialState = {
+  const initialState: NavigationState = {
     ...getInitialState(),
     selectedWell: WELL_1,
     selectedWellbore: WELLBORE_1,
-    selectedLogGroup: logGroup,
+    selectedObjectGroup: ObjectType.Log,
     selectedLogTypeGroup: logTypeGroup,
     currentSelected: logTypeGroup,
-    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), logGroup, logTypeGroup],
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log), logTypeGroup],
     currentProperties: getWellboreProperties(WELLBORE_1)
   };
   const selectLogTypeGroupAction = {
     type: NavigationType.SelectLogType,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, logGroup: logGroup, logTypeGroup: logTypeGroup }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, logTypeGroup: logTypeGroup }
   };
   const afterLogTypeGroupSelect = reducer(initialState, selectLogTypeGroupAction);
   const expected = { ...initialState };
   expect(afterLogTypeGroupSelect).toStrictEqual(expected);
 });
 
-it("Selecting a rig group node twice should change nothing", () => {
-  const rigGroup = calculateRigGroupId(WELLBORE_1);
-  const initialState = {
+it("Selecting a different object group should update the selectedObjectGroup", () => {
+  const initialState: NavigationState = {
     ...getInitialState(),
     selectedWell: WELL_1,
     selectedWellbore: WELLBORE_1,
-    selectedRigGroup: rigGroup,
-    currentSelected: rigGroup,
-    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), rigGroup],
+    selectedObjectGroup: ObjectType.Log,
+    currentSelected: ObjectType.Log,
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log)],
     currentProperties: getWellboreProperties(WELLBORE_1)
   };
-  const selectRigGroupAction = {
-    type: NavigationType.SelectRigGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, rigGroup: rigGroup }
+  const action: SelectObjectGroupAction = {
+    type: NavigationType.SelectObjectGroup,
+    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Rig }
   };
-  const afterRigGroupSelect = reducer(initialState, selectRigGroupAction);
-  const expected = { ...initialState };
+  const afterRigGroupSelect = reducer(initialState, action);
+  const expected: NavigationState = {
+    ...initialState,
+    selectedObjectGroup: ObjectType.Rig,
+    currentSelected: ObjectType.Rig,
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log), calculateObjectGroupId(WELLBORE_1, ObjectType.Rig)]
+  };
   expect(afterRigGroupSelect).toStrictEqual(expected);
-});
-
-it("Selecting a trajectory group node twice should change nothing", () => {
-  const trajectoryGroup = calculateTrajectoryGroupId(WELLBORE_1);
-  const initialState = {
-    ...getInitialState(),
-    selectedWell: WELL_1,
-    selectedWellbore: WELLBORE_1,
-    selectedTrajectoryGroup: trajectoryGroup,
-    currentSelected: trajectoryGroup,
-    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), trajectoryGroup],
-    currentProperties: getWellboreProperties(WELLBORE_1)
-  };
-  const selectTrajectoryGroupAction = {
-    type: NavigationType.SelectTrajectoryGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, trajectoryGroup: trajectoryGroup }
-  };
-  const afterTrajectoryGroupSelect = reducer(initialState, selectTrajectoryGroupAction);
-  const expected = { ...initialState };
-  expect(afterTrajectoryGroupSelect).toStrictEqual(expected);
 });
 
 it("Should expand (not select) a collapsed node when toggled", () => {

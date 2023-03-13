@@ -47,14 +47,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyTubularComponentCopiedCorrectly()
         {
-            CopyTubularComponentsJob copyTubularComponentJob = CreateJobTemplate();
-            _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == SourceTubularUid), new OptionsIn(ReturnElements.All, null, null)))
-                .ReturnsAsync(GetSourceTubulars());
-            _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == TargetTubularUid), new OptionsIn(ReturnElements.All, null, null)))
-                .ReturnsAsync(GetTargetTubulars());
+            SetupGetFromStoreAsync();
             List<WitsmlTubulars> copyTubularComponentQuery = SetupUpdateInStoreAsync();
+            CopyTubularComponentsJob copyTubularComponentJob = CreateJobTemplate();
 
             (WorkerResult, RefreshAction) result = await _copyTubularComponentWorker.Execute(copyTubularComponentJob);
             WitsmlTubular updatedTubular = copyTubularComponentQuery.First().Tubulars.First();
@@ -66,6 +61,30 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Single(updatedTubular.TubularComponents.FindAll((tc) => tc.Uid == TcUid4));
             Assert.Equal(3, updatedTubular.TubularComponents.Count);
         }
+
+        [Fact]
+        public async Task Execute_MissingUid_UidInErrorReason()
+        {
+            SetupGetFromStoreAsync();
+            CopyTubularComponentsJob copyTubularComponentJob = CreateJobTemplate();
+            string missingUid = "uidOfMissingTubularComponent123123";
+            copyTubularComponentJob.Source.ComponentUids = copyTubularComponentJob.Source.ComponentUids.Append(missingUid).ToArray();
+            (WorkerResult workerResult, _) = await _copyTubularComponentWorker.Execute(copyTubularComponentJob);
+
+            Assert.False(workerResult.IsSuccess);
+            Assert.Contains(missingUid, workerResult.Reason);
+        }
+
+        private void SetupGetFromStoreAsync()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == SourceTubularUid), new OptionsIn(ReturnElements.All, null, null)))
+            .ReturnsAsync(GetSourceTubulars());
+            _witsmlClient.Setup(client =>
+                    client.GetFromStoreAsync(It.Is<WitsmlTubulars>(witsmlTubulars => witsmlTubulars.Tubulars.First().Uid == TargetTubularUid), new OptionsIn(ReturnElements.All, null, null)))
+            .ReturnsAsync(GetTargetTubulars());
+        }
+
 
         private List<WitsmlTubulars> SetupUpdateInStoreAsync()
         {

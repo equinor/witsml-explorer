@@ -11,7 +11,7 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
-import LogObjectService from "../../services/logObjectService";
+import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
@@ -60,7 +60,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
   };
 
   const onClickRefresh = async () => {
-    const log = await LogObjectService.getLog(checkedLogObjects[0].wellUid, checkedLogObjects[0].wellboreUid, checkedLogObjects[0].uid);
+    const log = await ObjectService.getObject(checkedLogObjects[0].wellUid, checkedLogObjects[0].wellboreUid, checkedLogObjects[0].uid, ObjectType.Log);
     dispatchNavigation({
       type: ModificationType.UpdateLogObject,
       payload: { log: log }
@@ -136,11 +136,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           </ListItemIcon>
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"deletelogobject"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log, JobType.DeleteLogObjects)}
-          disabled={checkedLogObjects.length === 0}
-        >
+        <MenuItem key={"deletelogobject"} onClick={() => onClickDeleteObjects(dispatchOperation, checkedLogObjects, ObjectType.Log)} disabled={checkedLogObjects.length === 0}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
           </ListItemIcon>
@@ -156,7 +152,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
-              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], "logObjectUid")}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedLogObjects[0], ObjectType.Log)}
               disabled={checkedLogObjects.length !== 1}
             >
               <Typography color={"primary"}>{server.name}</Typography>

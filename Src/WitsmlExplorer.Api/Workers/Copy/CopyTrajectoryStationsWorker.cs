@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (stationsToCopy.Count() != job.Source.ComponentUids.Length)
             {
                 string errorMessage = "Failed to copy trajectory stations.";
-                string missingUids = string.Join(", ", stationsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
+                string missingUids = string.Join(", ", job.Source.ComponentUids.Except(stationsToCopy.Select(t => t.Uid).ToArray()));
                 string reason = $"Could not retrieve all trajectory stations, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, reason), null);
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshTrajectory refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Trajectory, job.Target.Uid);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"TrajectoryStations {trajectoryStationsString} copied to: {targetTrajectory.Name}");
 
             return (workerResult, refreshAction);

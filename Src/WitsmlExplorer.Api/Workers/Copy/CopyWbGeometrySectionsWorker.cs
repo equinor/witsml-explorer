@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
             if (componentsToCopy.Count() != job.Source.ComponentUids.Length)
             {
-                string missingUids = string.Join(", ", componentsToCopy.Select((ts) => ts.Uid).Where((uid) => !job.Source.ComponentUids.Contains(uid)));
+                string missingUids = string.Join(", ", job.Source.ComponentUids.Except(componentsToCopy.Select(t => t.Uid).ToArray()));
                 string reason = $"Could not retrieve all wbGeometrySections, missing uids: {missingUids}.";
                 Logger.LogError("{errorMessage} {reason} - {description}", errorMessage, reason, job.Description());
                 return (new WorkerResult(witsmlClient.GetServerHostname(), false, errorMessage, reason), null);
@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshWbGeometry refreshAction = new(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(witsmlClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.WbGeometry, job.Target.Uid);
             WorkerResult workerResult = new(witsmlClient.GetServerHostname(), true, $"WbGeometrySections {wbGeometrySectionsString} copied to: {targetWbGeometry.Name}");
 
             return (workerResult, refreshAction);

@@ -6,6 +6,7 @@ using Witsml.Data.Measures;
 using Witsml.Data.MudLog;
 using Witsml.Extensions;
 
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
@@ -46,7 +47,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)
         {
-            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
+            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval?.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
             {
                 Uid = geologyInterval.Uid,
                 TypeLithology = geologyInterval.TypeLithology,
@@ -59,7 +60,7 @@ namespace WitsmlExplorer.Api.Query
                     CodeLith = l.CodeLith,
                     LithPc = new WitsmlIndex { Uom = "%", Value = l.LithPc }
                 }).ToList(),
-                CommonTime = new WitsmlCommonTime
+                CommonTime = geologyInterval.CommonTime == null ? null : new WitsmlCommonTime
                 {
                     DTimCreation = geologyInterval.CommonTime.DTimCreation,
                     DTimLastChange = geologyInterval.CommonTime.DTimLastChange
@@ -79,10 +80,10 @@ namespace WitsmlExplorer.Api.Query
                     ObjectGrowing = StringHelpers.OptionalBooleanToString(mudLog.ObjectGrowing),
                     MudLogCompany = mudLog.MudLogCompany,
                     MudLogEngineers = mudLog.MudLogEngineers,
-                    StartMd = mudLog.StartMd.ToWitsml<WitsmlMeasureWithDatum>(),
-                    EndMd = mudLog.EndMd.ToWitsml<WitsmlMeasureWithDatum>(),
+                    StartMd = mudLog.StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
+                    EndMd = mudLog.EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
                     GeologyInterval = geologyIntervals,
-                    CommonData = new WitsmlCommonData
+                    CommonData = mudLog.CommonData == null ? null : new WitsmlCommonData
                     {
                         ItemState = mudLog.CommonData.ItemState,
                         SourceName = mudLog.CommonData.SourceName
@@ -91,28 +92,76 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
-        public static IEnumerable<WitsmlMudLog> CopyWitsmlMudLogs(WitsmlMudLogs mudLogs, WitsmlWellbore targetWellbore)
+        public static WitsmlMudLogs CopyGeologyIntervals(IEnumerable<WitsmlMudLogGeologyInterval> geologyIntervals, ObjectReference target)
         {
-            return mudLogs.MudLogs.Select((mudLog) =>
+            return new()
             {
-                mudLog.UidWell = targetWellbore.UidWell;
-                mudLog.NameWell = targetWellbore.NameWell;
-                mudLog.UidWellbore = targetWellbore.Uid;
-                mudLog.NameWellbore = targetWellbore.Name;
-                return mudLog;
-            });
+                MudLogs = new List<WitsmlMudLog> {
+                    new WitsmlMudLog() {
+                        Uid = target.Uid,
+                        UidWellbore = target.WellboreUid,
+                        UidWell = target.WellUid,
+                        GeologyInterval = geologyIntervals.ToList()
+                    }
+                }
+            };
+        }
+        public static WitsmlMudLogs DeleteGeologyIntervals(string wellUid, string wellboreUid, string objectUid, IEnumerable<string> componentUids)
+        {
+            return new WitsmlMudLogs
+            {
+                MudLogs = new WitsmlMudLog
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = objectUid,
+                    GeologyInterval = componentUids.Select(uid => new WitsmlMudLogGeologyInterval
+                    {
+                        Uid = uid
+                    }).ToList()
+                }.AsSingletonList()
+            };
         }
 
-        public static IEnumerable<WitsmlMudLog> DeleteWitsmlMudLogs(string wellUid, string wellboreUid, string[] mudLogUids)
+        public static WitsmlMudLogs UpdateGeologyInterval(MudLogGeologyInterval geologyInterval, ObjectReference mudLogReference)
         {
-            return mudLogUids.Select((mudLogUid) =>
-                new WitsmlMudLog
+            return new WitsmlMudLogs
+            {
+                MudLogs = new WitsmlMudLog
                 {
-                    Uid = mudLogUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
+                    Uid = mudLogReference.Uid,
+                    UidWellbore = mudLogReference.WellboreUid,
+                    UidWell = mudLogReference.WellUid,
+                    GeologyInterval = new()
+                    {
+                        new()
+                        {
+                            Uid = geologyInterval.Uid,
+                            TypeLithology = geologyInterval.TypeLithology,
+                            Description = geologyInterval.Description,
+                            MdTop = geologyInterval.MdTop?.ToWitsml<WitsmlMeasureWithDatum>(),
+                            MdBottom = geologyInterval.MdBottom?.ToWitsml<WitsmlMeasureWithDatum>(),
+                            TvdTop = geologyInterval.TvdTop?.ToWitsml<WitsmlMeasureWithDatum>(),
+                            TvdBase = geologyInterval.TvdBase?.ToWitsml<WitsmlMeasureWithDatum>(),
+                            RopAv = geologyInterval.RopAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            WobAv = geologyInterval.WobAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            TqAv = geologyInterval.TqAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            CurrentAv = geologyInterval.CurrentAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            RpmAv = geologyInterval.RpmAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            WtMudAv = geologyInterval.WtMudAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            EcdTdAv = geologyInterval.EcdTdAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                            DxcAv = geologyInterval.DxcAv,
+                            Lithologies = geologyInterval.Lithologies?.Select(l => new WitsmlMudLogLithology()
+                            {
+                                Uid = l.Uid,
+                                Type = l.Type,
+                                CodeLith = l.CodeLith,
+                                LithPc = string.IsNullOrEmpty(l.LithPc) ? null : new WitsmlIndex { Uom = "%", Value = l.LithPc }
+                            }).ToList()
+                        }
+                    },
+                }.AsSingletonList()
+            };
         }
     }
 }

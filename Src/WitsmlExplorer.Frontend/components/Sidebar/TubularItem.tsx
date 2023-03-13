@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
@@ -13,14 +14,13 @@ import TreeItem from "./TreeItem";
 interface TubularProps {
   nodeId: string;
   tubular: Tubular;
-  tubularGroup: string;
   well: Well;
   wellbore: Wellbore;
   selected: boolean;
 }
 
 const TubularItem = (props: TubularProps): React.ReactElement => {
-  const { tubular, tubularGroup, selected, well, wellbore, nodeId } = props;
+  const { tubular, selected, well, wellbore, nodeId } = props;
   const {
     dispatchNavigation,
     navigationState: { selectedServer, servers }
@@ -41,7 +41,7 @@ const TubularItem = (props: TubularProps): React.ReactElement => {
       nodeId={nodeId}
       labelText={tubular.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectTubular, payload: { tubular, wellbore, well, tubularGroup } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: tubular, wellbore, well, objectType: ObjectType.Tubular } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event, tubular)}
     />
   );

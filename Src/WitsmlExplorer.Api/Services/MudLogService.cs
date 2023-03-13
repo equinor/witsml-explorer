@@ -57,12 +57,12 @@ namespace WitsmlExplorer.Api.Services
                     TvdTop = MeasureWithDatum.FromWitsml(geologyInterval.TvdTop),
                     TvdBase = MeasureWithDatum.FromWitsml(geologyInterval.TvdBase),
                     RopAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    WobAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    TqAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    CurrentAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    RpmAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    WtMudAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
-                    EcdTdAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
+                    WobAv = LengthMeasure.FromWitsml(geologyInterval.WobAv),
+                    TqAv = LengthMeasure.FromWitsml(geologyInterval.TqAv),
+                    CurrentAv = LengthMeasure.FromWitsml(geologyInterval.CurrentAv),
+                    RpmAv = LengthMeasure.FromWitsml(geologyInterval.RpmAv),
+                    WtMudAv = LengthMeasure.FromWitsml(geologyInterval.WtMudAv),
+                    EcdTdAv = LengthMeasure.FromWitsml(geologyInterval.EcdTdAv),
                     DxcAv = geologyInterval.DxcAv,
                     Lithologies = geologyInterval.Lithologies?.Select(l => new MudLogLithology()
                     {

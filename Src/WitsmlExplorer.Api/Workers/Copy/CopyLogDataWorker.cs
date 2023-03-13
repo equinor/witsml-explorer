@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             int totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
             Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{totalRowsCopied} rows copied");
-            RefreshLogObject refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Target.Uid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
         }
 
@@ -105,6 +105,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
+                    sourceLogWithData.IndexType = sourceLog.IndexType;
                     startIndex = Index.End(sourceLogWithData).AddEpsilon();
                 }
                 else

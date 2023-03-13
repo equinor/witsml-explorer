@@ -1,4 +1,5 @@
 import { TextField } from "@equinor/eds-core-react";
+import { Fragment } from "react";
 import styled from "styled-components";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -13,7 +14,6 @@ import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
-import { QueryParams } from "../Routing";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -37,28 +37,28 @@ export const menuItemText = (operation: string, object: string, array: any[] | n
   return `${operationUpperCase}${count}${objectPlural}`;
 };
 
-export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, paramName: keyof QueryParams) => {
+export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, objectType: ObjectType) => {
   const host = `${window.location.protocol}//${window.location.host}`;
-  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&${paramName}=${objectOnWellbore.uid}`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
   window.open(logUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, paramName: keyof QueryParams) => {
+export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, objectType: ObjectType) => {
   const host = `${window.location.protocol}//${window.location.host}`;
-  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&${paramName}=group`;
+  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
   window.open(logUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, jobType: JobType) => {
+export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType) => {
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteObjectsJob = {
       toDelete: toObjectReferences(objectsOnWellbore, objectType)
     };
-    await JobService.orderJob(jobType, job);
+    await JobService.orderJob(JobType.DeleteObjects, job);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(
@@ -111,12 +111,12 @@ const displayDeleteModal = (
           <span>
             This will permanently delete {toDeleteNames.length} {toDeleteTypeName}:
             <strong>
-              {toDeleteNames.map((name) => {
+              {toDeleteNames.map((name, index) => {
                 return (
-                  <>
+                  <Fragment key={index}>
                     <br />
                     {name}
-                  </>
+                  </Fragment>
                 );
               })}
             </strong>

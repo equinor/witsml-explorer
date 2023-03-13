@@ -55,12 +55,11 @@ namespace WitsmlExplorer.Api.Query
             Index startIndex,
             Index endIndex)
         {
-            var queryLog = new WitsmlLog
+            WitsmlLog queryLog = new()
             {
                 Uid = logUid,
                 UidWell = wellUid,
                 UidWellbore = wellboreUid,
-                IndexType = "",
                 LogCurveInfo = new List<WitsmlLogCurveInfo>(),
                 LogData = new WitsmlLogData
                 {
@@ -77,6 +76,8 @@ namespace WitsmlExplorer.Api.Query
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
+                    break;
+                default:
                     break;
             }
 
@@ -95,7 +96,7 @@ namespace WitsmlExplorer.Api.Query
             Index startIndex,
             Index endIndex)
         {
-            var queryLog = new WitsmlLog
+            WitsmlLog queryLog = new()
             {
                 Uid = logUid,
                 UidWell = wellUid,
@@ -116,6 +117,8 @@ namespace WitsmlExplorer.Api.Query
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
                     queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
+                    break;
+                default:
                     break;
             }
 

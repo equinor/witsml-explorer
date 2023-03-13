@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-
 using Witsml.Data;
 using Witsml.Extensions;
 
@@ -47,18 +44,6 @@ namespace WitsmlExplorer.Api.Query
                     }
                 }.AsSingletonList()
             };
-        }
-
-        public static IEnumerable<WitsmlMessage> DeleteMessageQuery(string wellUid, string wellboreUid, string[] messageUids)
-        {
-            return messageUids.Select((messageUid) =>
-                new WitsmlMessage
-                {
-                    Uid = messageUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }
-            );
         }
 
         public static WitsmlMessages CreateMessageObject(MessageObject messageObject)

@@ -47,7 +47,6 @@ const Sidebar = (): React.ReactElement => {
           )}
         </WellProgress>
       </SidebarTreeView>
-      : <></>
     </React.Fragment>
   );
 };

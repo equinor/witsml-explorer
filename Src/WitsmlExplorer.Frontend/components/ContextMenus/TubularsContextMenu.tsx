@@ -6,7 +6,6 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, StyledIcon } from "./ContextMenuUtils";
@@ -32,11 +31,7 @@ const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElemen
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh tubulars</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, tubularReferences, dispatchOperation, wellbore, JobType.CopyTubular)}
-          disabled={tubularReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, tubularReferences, dispatchOperation, wellbore)} disabled={tubularReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "tubular", tubularReferences?.objectUids)}</Typography>
         </MenuItem>

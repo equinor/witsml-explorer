@@ -7,6 +7,7 @@ using Serilog;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers.Delete;
 
@@ -14,32 +15,32 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    public class DeleteTubularWorkerTests
+    public class DeleteObjectsWorkerTests
     {
-        private readonly DeleteTubularsWorker _worker;
 
-        public DeleteTubularWorkerTests()
+        private readonly DeleteObjectsWorker _worker;
+
+        public DeleteObjectsWorkerTests()
         {
             IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<DeleteTubularsJob> logger = loggerFactory.CreateLogger<DeleteTubularsJob>();
-            ILogger<DeleteUtils> logger2 = loggerFactory.CreateLogger<DeleteUtils>();
-            DeleteUtils deleteUtils = new(logger2);
-            _worker = new DeleteTubularsWorker(logger, witsmlClientProvider, deleteUtils);
+            ILogger<DeleteObjectsJob> logger = loggerFactory.CreateLogger<DeleteObjectsJob>();
+            _worker = new DeleteObjectsWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
-        public async Task DeleteTubular()
+        public async Task DeleteObjects()
         {
-            DeleteTubularsJob job = new()
+            DeleteObjectsJob job = new()
             {
-                ToDelete = new ObjectReferences
+                ToDelete = new ObjectReferences()
                 {
-                    WellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394",
-                    WellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110",
-                    ObjectUids = new string[] { "2YA2M49" }
+                    WellUid = "<well_uid>",
+                    WellboreUid = "<wellbore_uid>",
+                    ObjectUids = new string[] { "<object_uid_1>", "<object_uid_2>" },
+                    ObjectType = EntityType.Log // set to the type of object you want to delete
                 }
             };
             await _worker.Execute(job);

@@ -1,6 +1,6 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
-import ObjectOnWellbore, { emptyObjectOnWellbore } from "./objectOnWellbore";
+import ObjectOnWellbore from "./objectOnWellbore";
 
 export default interface Rig extends ObjectOnWellbore {
   airGap: Measure;
@@ -22,34 +22,4 @@ export default interface Rig extends ObjectOnWellbore {
   telNumber: string;
   typeRig: string;
   yearEntService: string;
-}
-
-export function emptyRig(): Rig {
-  return {
-    ...emptyObjectOnWellbore(),
-    airGap: null,
-    approvals: "",
-    classRig: "",
-    dTimStartOp: null,
-    dTimEndOp: null,
-    emailAddress: "",
-    faxNumber: "",
-    itemState: "",
-    isOffshore: null,
-    manufacturer: "",
-    nameContact: "",
-    owner: "",
-    ratingDrillDepth: null,
-    ratingWaterDepth: null,
-    registration: "",
-    typeRig: "",
-    telNumber: "",
-    yearEntService: "",
-    commonData: {
-      sourceName: "",
-      dTimCreation: "",
-      dTimLastChange: "",
-      itemState: ""
-    }
-  };
 }

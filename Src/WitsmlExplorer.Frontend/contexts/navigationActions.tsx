@@ -2,6 +2,8 @@ import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import MudLog from "../models/mudLog";
+import ObjectOnWellbore from "../models/objectOnWellbore";
+import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -55,44 +57,14 @@ export interface SelectJobsAction extends Action {
   type: NavigationType.SelectJobs;
 }
 
-export interface SelectBhaRunGroupAction extends Action {
-  type: NavigationType.SelectBhaRunGroup;
-  payload: { well: Well; wellbore: Wellbore; bhaRunGroup: any };
-}
-
-export interface SelectLogGroupAction extends Action {
-  type: NavigationType.SelectLogGroup;
-  payload: { well: Well; wellbore: Wellbore; logGroup: any };
+export interface SelectObjectGroupAction extends Action {
+  type: NavigationType.SelectObjectGroup;
+  payload: { well: Well; wellbore: Wellbore; objectType: ObjectType };
 }
 
 export interface SelectLogTypeAction extends Action {
   type: NavigationType.SelectLogType;
-  payload: { well: Well; wellbore: Wellbore; logGroup: string; logTypeGroup: any };
-}
-
-export interface SelectLogObjectAction extends Action {
-  type: NavigationType.SelectLogObject;
-  payload: { log: LogObject; well: Well; wellbore: Wellbore };
-}
-
-export interface SelectMessageGroupAction extends Action {
-  type: NavigationType.SelectMessageGroup;
-  payload: { well: Well; wellbore: Wellbore; messageGroup: any };
-}
-
-export interface SelectMudLogGroupAction extends Action {
-  type: NavigationType.SelectMudLogGroup;
-  payload: { well: Well; wellbore: Wellbore; mudLogGroup: any };
-}
-
-export interface SelectMudLogAction extends Action {
-  type: NavigationType.SelectMudLog;
-  payload: { well: Well; wellbore: Wellbore; mudLog: MudLog; mudLogGroup: any };
-}
-
-export interface SelectRiskGroupAction extends Action {
-  type: NavigationType.SelectRiskGroup;
-  payload: { well: Well; wellbore: Wellbore; riskGroup: any };
+  payload: { well: Well; wellbore: Wellbore; logTypeGroup: any };
 }
 
 export interface SelectLogCurveInfoAction extends Action {
@@ -100,39 +72,9 @@ export interface SelectLogCurveInfoAction extends Action {
   payload: { logCurveInfo: any };
 }
 
-export interface SelectRigGroupAction extends Action {
-  type: NavigationType.SelectRigGroup;
-  payload: { well: Well; wellbore: Wellbore; rigGroup: any };
-}
-
-export interface SelectTrajectoryGroupAction extends Action {
-  type: NavigationType.SelectTrajectoryGroup;
-  payload: { well: Well; wellbore: Wellbore; trajectoryGroup: any };
-}
-
-export interface SelectTrajectoryAction extends Action {
-  type: NavigationType.SelectTrajectory;
-  payload: { well: Well; wellbore: Wellbore; trajectory: Trajectory; trajectoryGroup: any };
-}
-
-export interface SelectTubularGroupAction extends Action {
-  type: NavigationType.SelectTubularGroup;
-  payload: { well: Well; wellbore: Wellbore; tubularGroup: any };
-}
-
-export interface SelectTubularAction extends Action {
-  type: NavigationType.SelectTubular;
-  payload: { well: Well; wellbore: Wellbore; tubular: Tubular; tubularGroup: any };
-}
-
-export interface SelectWbGeometryGroupAction extends Action {
-  type: NavigationType.SelectWbGeometryGroup;
-  payload: { well: Well; wellbore: Wellbore; wbGeometryGroup: any };
-}
-
-export interface SelectWbGeometryAction extends Action {
-  type: NavigationType.SelectWbGeometry;
-  payload: { well: Well; wellbore: Wellbore; wbGeometry: WbGeometryObject; wbGeometryGroup: any };
+export interface SelectObjectAction extends Action {
+  type: NavigationType.SelectObject;
+  payload: { object: ObjectOnWellbore; well: Well; wellbore: Wellbore; objectType: ObjectType };
 }
 
 export interface SetFilterAction extends Action {

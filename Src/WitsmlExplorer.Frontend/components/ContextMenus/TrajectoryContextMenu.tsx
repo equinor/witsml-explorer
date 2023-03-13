@@ -6,7 +6,6 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
@@ -33,25 +32,21 @@ const TrajectoryContextMenu = (props: TrajectoryContextMenuProps): React.ReactEl
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory", trajectories)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteObjectOnWellbore(servers, trajectoryReferences, dispatchOperation, wellbore, JobType.CopyTrajectory)}
-          disabled={trajectoryReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, trajectoryReferences, dispatchOperation, wellbore)} disabled={trajectoryReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.objectUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, trajectories, ObjectType.Trajectory, JobType.DeleteTrajectories)}
-          disabled={trajectories.length === 0}
-        >
+        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, trajectories, ObjectType.Trajectory)} disabled={trajectories.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory", trajectories)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={trajectories.length !== 1}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectories[0], "trajectoryUid")} disabled={trajectories.length !== 1}>
+            <MenuItem
+              key={server.name}
+              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectories[0], ObjectType.Trajectory)}
+              disabled={trajectories.length !== 1}
+            >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

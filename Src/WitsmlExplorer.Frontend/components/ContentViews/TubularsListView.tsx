@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
@@ -10,7 +11,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedTubularGroup, servers, wells } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
@@ -34,8 +35,8 @@ export const TubularsListView = (): React.ReactElement => {
 
   const onSelect = (tubular: any) => {
     dispatchNavigation({
-      type: NavigationType.SelectTubular,
-      payload: { well: selectedWell, wellbore: selectedWellbore, tubularGroup: selectedTubularGroup, tubular }
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: tubular, objectType: ObjectType.Tubular }
     });
   };
 

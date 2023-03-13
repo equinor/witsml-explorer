@@ -1,3 +1,4 @@
+import Lithology from "./lithology";
 import Measure from "./measure";
 import MeasureWithDatum from "./measureWithDatum";
 
@@ -17,4 +18,5 @@ export default interface GeologyInterval {
   ecdTdAv: Measure;
   dxcAv: string;
   description: string;
+  lithologies: Lithology[];
 }

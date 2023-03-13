@@ -13,12 +13,12 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
 const items = [
-  { type: ObjectType.BhaRun, jobType: JobType.CopyBhaRun },
+  { type: ObjectType.BhaRun },
   { type: ObjectType.Log, jobType: JobType.CopyLog },
-  { type: ObjectType.Rig, jobType: JobType.CopyRig },
-  { type: ObjectType.Risk, jobType: JobType.CopyRisk },
-  { type: ObjectType.Trajectory, jobType: JobType.CopyTrajectory },
-  { type: ObjectType.Tubular, jobType: JobType.CopyTubular }
+  { type: ObjectType.Rig },
+  { type: ObjectType.Risk },
+  { type: ObjectType.Trajectory },
+  { type: ObjectType.Tubular }
 ];
 
 export interface WellborePasteMenuItemProps {
@@ -36,7 +36,7 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
       {items.map((item) => (
         <MenuItem
           key={"paste" + item.type}
-          onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, item.jobType)}
+          onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, item.jobType ?? JobType.CopyObjects)}
           disabled={objectReferences === null || objectReferences.objectType != item.type}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
