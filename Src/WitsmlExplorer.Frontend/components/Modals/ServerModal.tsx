@@ -158,8 +158,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               </>
             )}
             <ButtonWrapper>
+              {connectionVerified && <Icons name="done" color={colors.interactive.primaryResting} size={32} />}
               <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
-                <Icons name="done" /> {"Test connection"}
+                {"Test connection"}
               </TestServerButton>
             </ButtonWrapper>
           </ContentWrapper>
