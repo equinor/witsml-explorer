@@ -23,15 +23,15 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<Rig>> GetRigs(string wellUid, string wellboreUid)
         {
-            WitsmlRigs witsmlRigs = RigQueries.GetWitsmlRigByWellbore(wellUid, wellboreUid);
-            WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.All));
+            WitsmlRigs witsmlRigs = RigQueries.GetWitsmlRig(wellUid, wellboreUid);
+            WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.Requested));
             return result.Rigs.Select(WitsmlRigToRig).OrderBy(rig => rig.Name);
         }
 
         public async Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid)
         {
-            WitsmlRigs query = RigQueries.GetWitsmlRigById(wellUid, wellboreUid, rigUid);
-            WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlRigs query = RigQueries.GetWitsmlRig(wellUid, wellboreUid, rigUid);
+            WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             WitsmlRig witsmlRig = result.Rigs.FirstOrDefault();
 
             return WitsmlRigToRig(witsmlRig);
@@ -64,12 +64,9 @@ namespace WitsmlExplorer.Api.Services
                 WellUid = witsmlRig.UidWell,
                 WellboreUid = witsmlRig.UidWellbore,
                 YearEntService = witsmlRig.YearEntService,
-                CommonData = new CommonData()
+                CommonData = witsmlRig.CommonData == null ? null : new CommonData()
                 {
-                    ItemState = witsmlRig.CommonData.ItemState,
-                    SourceName = witsmlRig.CommonData.SourceName,
-                    DTimLastChange = witsmlRig.CommonData.DTimLastChange,
-                    DTimCreation = witsmlRig.CommonData.DTimCreation,
+                    ItemState = witsmlRig.CommonData.ItemState
                 }
             };
         }

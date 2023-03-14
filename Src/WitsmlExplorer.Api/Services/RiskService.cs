@@ -23,8 +23,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<IEnumerable<Risk>> GetRisks(string wellUid, string wellboreUid)
         {
             WitsmlRisks query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
-            WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-
+            WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
             return result.Risks.Select(risk =>
 
@@ -48,7 +47,6 @@ namespace WitsmlExplorer.Api.Services
                     SeverityLevel = risk.SeverityLevel,
                     ProbabilityLevel = risk.ProbabilityLevel,
                     Summary = risk.Summary,
-
                     Details = risk.Details,
                     CommonData = new CommonData()
                     {
