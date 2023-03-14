@@ -16,7 +16,7 @@ import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
-import ModalDialog, { controlButtonPosition, ModalWidth } from "./ModalDialog";
+import ModalDialog, { ControlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
 
 export interface ServerModalProps {
@@ -38,9 +38,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 
   const isAddingNewServer = props.server.id === undefined;
 
-  const Styles: CSSProperties = {
-    feildname: { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" }
-  };
   const onSubmit = async () => {
     const abortController = new AbortController();
 
@@ -117,7 +114,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       content={
         <>
           <ContentWrapper>
-            <Label label="Server URL" style={Styles.feildname} />
+            <Label label="Server URL" style={labelStyle} />
             <TextField
               id="url"
               defaultValue={server.url}
@@ -128,7 +125,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server name" style={Styles.feildname} />
+            <Label label="Server name" style={labelStyle} />
             <TextField
               id="name"
               defaultValue={server.name}
@@ -139,7 +136,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server description" style={Styles.feildname} />
+            <Label label="Server description" style={labelStyle} />
             <TextField
               id="description"
               defaultValue={server.description}
@@ -148,7 +145,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             />
             {msalEnabled && (
               <>
-                <Label label="Roles" style={Styles.feildname} />
+                <Label label="Roles (space delimited)" style={labelStyle} />
                 <TextField
                   id="role"
                   defaultValue={server.roles?.join(" ")}
@@ -157,7 +154,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 />
               </>
             )}
-            <Label label="Number of decimals in depth log index" style={Styles.feildname} />
+            <Label label="Number of decimals in depth log index" style={labelStyle} />
             <TextField
               id="depthLogDecimals"
               defaultValue={server.depthLogDecimals}
@@ -169,9 +166,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             />
             <ButtonWrapper>
               {connectionVerified && <Icons name="done" color={colors.interactive.primaryResting} size={32} />}
-              <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
+              <Button disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
                 {"Test connection"}
-              </TestServerButton>
+              </Button>
             </ButtonWrapper>
           </ContentWrapper>
         </>
@@ -179,7 +176,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       onSubmit={onSubmit}
       isLoading={isLoading}
       onDelete={server.id && !props.editDisabled ? showDeleteModal : null}
-      ButtonPosition={controlButtonPosition.TOP}
+      buttonPosition={ControlButtonPosition.TOP}
       confirmDisabled={props.editDisabled || !validateForm()}
       width={ModalWidth.LARGE}
     />
@@ -237,23 +234,21 @@ const isUrlValid = (url: string) => {
     return false;
   }
 };
+
+const labelStyle: CSSProperties = { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" };
+
 const ContentWrapper = styled.div`
   display: grid;
-  grid-template-columns: 11em 1fr;
+  grid-template-columns: 12em 1fr;
   align-items: center;
   margin: 0.5rem 6rem 0.75rem 2.5rem;
   row-gap: 1.5rem;
 `;
 
-const TestServerButton = styled(Button)`
-  && {
-    margin-left: 1em;
-  }
-`;
 const ButtonWrapper = styled.div`
   grid-column: 2/3;
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: flex-end;
 `;
 

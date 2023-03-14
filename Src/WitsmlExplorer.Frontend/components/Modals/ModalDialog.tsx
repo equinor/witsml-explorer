@@ -21,7 +21,7 @@ interface ModalDialogProps {
   onDelete?: () => void;
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
-  ButtonPosition?: controlButtonPosition;
+  buttonPosition?: ControlButtonPosition;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -39,7 +39,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     width = ModalWidth.MEDIUM,
     showConfirmButton = true,
     showCancelButton = true,
-    ButtonPosition = controlButtonPosition.BOTTOM
+    buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM
   } = props;
   const context = React.useContext(OperationContext);
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] = useState<boolean>(false);
@@ -76,7 +76,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           color={confirmColor ?? "primary"}
           variant="contained"
         >
-          {ButtonPosition == controlButtonPosition.TOP ? <Icons name="save" /> : ""}
+          {ButtonPosition == ControlButtonPosition.TOP ? <Icons name="save" /> : ""}
           {confirmText ?? "Save"}
         </StyledButton>
       )
@@ -135,12 +135,12 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   );
   return (
     <Dialog onKeyDown={onKeyPress} open={true} style={{ width: width }}>
-      {ButtonPosition == controlButtonPosition.TOP ? top : header}
+      {ButtonPosition == ControlButtonPosition.TOP ? top : header}
       <Content>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
-      {ButtonPosition == controlButtonPosition.BOTTOM ? bottom : <></>}
+      {ButtonPosition == ControlButtonPosition.BOTTOM ? bottom : <></>}
     </Dialog>
   );
 };
@@ -166,7 +166,7 @@ export const ModalContentLayout = styled.div`
   gap: 0.8rem;
 `;
 
-export enum controlButtonPosition {
+export enum ControlButtonPosition {
   TOP = "top",
   BOTTOM = "bottom"
 }
