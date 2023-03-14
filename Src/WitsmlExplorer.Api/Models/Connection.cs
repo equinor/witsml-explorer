@@ -12,6 +12,7 @@ namespace WitsmlExplorer.Api.Models
             Description = server.Description;
             Roles = server.Roles;
             Id = server.Id;
+            DepthLogDecimals = server.DepthLogDecimals;
         }
 
         [JsonPropertyName("usernames")]

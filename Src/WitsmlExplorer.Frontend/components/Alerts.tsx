@@ -24,7 +24,6 @@ const Alerts = (): React.ReactElement => {
       if (!shouldNotify) {
         return;
       }
-
       if (notification.description) {
         const content = (
           <>
@@ -35,7 +34,7 @@ const Alerts = (): React.ReactElement => {
             {notification.reason && (
               <>
                 <br />
-                <span>Reason: {notification.reason}</span>
+                <span style={{ whiteSpace: "pre-wrap" }}>Reason: {notification.reason}</span>
               </>
             )}
           </>
@@ -45,7 +44,7 @@ const Alerts = (): React.ReactElement => {
         const content = (
           <>
             <h4>{notification.message}</h4>
-            {notification.reason && <span>Reason: {notification.reason}</span>}
+            {notification.reason && <span style={{ whiteSpace: "pre-wrap" }}>Reason: {notification.reason}</span>}
           </>
         );
         setAlert(content);

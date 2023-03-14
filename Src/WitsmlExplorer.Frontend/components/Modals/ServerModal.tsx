@@ -89,7 +89,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   const validateForm = () => {
-    return server.name.length !== 0 && isUrlValid(server.url);
+    return server.name.length !== 0 && isUrlValid(server.url) && !isNaN(server.depthLogDecimals);
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -164,6 +164,17 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               disabled={props.editDisabled}
             />
           )}
+          <TextField
+            id="depthLogDecimals"
+            label="Number of decimals in depth log index"
+            defaultValue={server.depthLogDecimals}
+            error={isNaN(server.depthLogDecimals)}
+            helperText={isNaN(server.depthLogDecimals) ? "Depth log decimals must be a valid positive integer" : ""}
+            type="number"
+            fullWidth
+            onChange={(e) => setServer({ ...server, depthLogDecimals: parseInt(e.target.value) })}
+            disabled={props.editDisabled}
+          />
         </>
       }
       onSubmit={onSubmit}

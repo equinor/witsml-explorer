@@ -19,12 +19,14 @@ namespace WitsmlExplorer.Api.Models
         public Uri Url { get; set; }
         [JsonPropertyName("description")]
         public string Description { get; set; }
+        [JsonPropertyName("roles")]
+        public IList<string> Roles { get; set; }
+        [JsonPropertyName("depthLogDecimals")]
+        public int DepthLogDecimals { get; set; }
+
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
         }
-        [JsonPropertyName("roles")]
-        public IList<string> Roles { get; set; }
-
     }
 }
