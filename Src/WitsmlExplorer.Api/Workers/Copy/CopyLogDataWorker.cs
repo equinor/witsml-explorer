@@ -113,7 +113,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Logger.LogError("{message} - {Description}", message, job.Description());
             if (message.Contains("Error while updating store: -463"))
             {
-                message += $" If copying to a target server with lower number of depth log decimals than the source server, make sure that the \"Number of decimals in depth log index\" field is filled out for both the target and the source server.";
+                message += $" \nIf copying to a target server with lower number of depth log decimals than the source server, make sure that the \"Number of decimals in depth log index\" field is filled out for both the target and the source server.";
             }
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
@@ -193,7 +193,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     string[] split = row.Data.Split(",");
                     lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
-                    double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals);
+                    double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals, MidpointRounding.AwayFromZero);
                     if (Math.Abs(targetIndex - nextTargetIndex) > difference)
                     {
                         if (rowsToCollate.Any())

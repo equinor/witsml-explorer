@@ -61,11 +61,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             }
                         });
             CopyLogDataJob job = LogUtils.CreateJobTemplate();
-            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.16, "Depth");
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.15, "Depth");
             LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlSourceClient, sourceLogs);
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlTargetClient);
             SetupGetDepthIndexed(_witsmlSourceClient, (logs) => true,
-            new() { new() { Data = "123.11,1," }, new() { Data = "123.12,,2" }, new() { Data = "123.13,3," }, new() { Data = "123.16,4," } });
+            new() { new() { Data = "123.11,1," }, new() { Data = "123.12,,2" }, new() { Data = "123.13,3," }, new() { Data = "123.15,4," } });
             List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlTargetClient);
 
             await _worker.Execute(job);
