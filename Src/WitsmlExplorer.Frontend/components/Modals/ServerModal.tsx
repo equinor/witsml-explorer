@@ -1,4 +1,5 @@
-import { Button, TextField, Label } from "@equinor/eds-core-react";
+import { Button, Label, TextField } from "@equinor/eds-core-react";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
@@ -14,10 +15,9 @@ import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
+import Icons from "../../styles/Icons";
 import ModalDialog, { controlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import Icons from "../../styles/Icons";
 
 export interface ServerModalProps {
   server: Server;
@@ -93,7 +93,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   const validateForm = () => {
-    return server.name.length !== 0 && isUrlValid(server.url);
+    return server.name.length !== 0 && isUrlValid(server.url) && !isNaN(server.depthLogDecimals);
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +157,16 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 />
               </>
             )}
+            <Label label="Number of decimals in depth log index" style={Styles.feildname} />
+            <TextField
+              id="depthLogDecimals"
+              defaultValue={server.depthLogDecimals}
+              variant={isNaN(server.depthLogDecimals) ? "error" : null}
+              helperText={isNaN(server.depthLogDecimals) ? "Depth log decimals must be a valid positive integer" : ""}
+              type="number"
+              onChange={(e: any) => setServer({ ...server, depthLogDecimals: parseInt(e.target.value) })}
+              disabled={props.editDisabled}
+            />
             <ButtonWrapper>
               {connectionVerified && <Icons name="done" color={colors.interactive.primaryResting} size={32} />}
               <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">

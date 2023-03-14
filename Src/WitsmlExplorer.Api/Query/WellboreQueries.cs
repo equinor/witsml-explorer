@@ -24,6 +24,10 @@ namespace WitsmlExplorer.Api.Query
                     StatusWellbore = "",
                     IsActive = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }
@@ -37,6 +41,10 @@ namespace WitsmlExplorer.Api.Query
                     Uid = "",
                     UidWell = wellUid,
                     CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }

@@ -29,6 +29,10 @@ namespace WitsmlExplorer.Api.Query
                     StartDateTimeIndex = "",
                     EndDateTimeIndex = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }
