@@ -243,7 +243,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     }
                 }
             }
-            return new() { Data = index + "," + string.Join(",", newRow) };
+            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + "," + string.Join(",", newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
