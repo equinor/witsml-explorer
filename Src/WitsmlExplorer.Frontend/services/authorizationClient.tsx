@@ -8,8 +8,7 @@ export class AuthorizationClient {
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "WitsmlTargetServer": this.getServerHeader(credentials[0]),
-      "WitsmlSourceServer": this.getServerHeader(credentials[1])
+      "WitsmlAuth": this.getServerHeader(credentials[0])
     };
   }
 

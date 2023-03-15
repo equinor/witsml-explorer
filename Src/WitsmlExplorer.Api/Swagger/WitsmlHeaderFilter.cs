@@ -9,7 +9,7 @@ using WitsmlExplorer.Api.HttpHandlers;
 namespace WitsmlExplorer.Api.Swagger
 {
     /// <summary>
-    /// This class will add a Required HTTP Header `WitsmlTargetServer` and `WitsmlSourceServer`to SwaggerUI for all required endpoints,
+    /// This class will add a Required HTTP Headers to SwaggerUI for all required endpoints,
     /// </summary>
     public class WitsmlHeaderFilter : IOperationFilter
     {
@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Swagger
         """;
 
         private static readonly string USERNAME_DESCRIPTION = """
-            Use the same username as the one passed in the WitsmlTargetServer header to the api/credentials/authorize route.
+            Use the same username as the one passed in the WitsmlAuth header to the api/credentials/authorize route.
         """;
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
@@ -39,11 +39,25 @@ namespace WitsmlExplorer.Api.Swagger
 
             if (authorizeHeaders)
             {
-                AddTargetServerHeader(operation, AUTHORIZE_DESCRIPTION);
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = EssentialHeaders.WitsmlAuthHeader,
+                    In = ParameterLocation.Header,
+                    Schema = new OpenApiSchema { Type = "string" },
+                    Required = true,
+                    Description = AUTHORIZE_DESCRIPTION
+                });
             }
             else if (!noHeader)
             {
-                AddTargetServerHeader(operation, SERVER_DESCRIPTION);
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = EssentialHeaders.WitsmlTargetServer,
+                    In = ParameterLocation.Header,
+                    Schema = new OpenApiSchema { Type = "string" },
+                    Required = true,
+                    Description = SERVER_DESCRIPTION
+                });
                 if (targetUsernameHeader)
                 {
                     AddTargetUsernameHeader(operation);
@@ -83,18 +97,5 @@ namespace WitsmlExplorer.Api.Swagger
                 Description = USERNAME_DESCRIPTION
             });
         }
-
-        private static void AddTargetServerHeader(OpenApiOperation operation, string description)
-        {
-            operation.Parameters.Add(new OpenApiParameter
-            {
-                Name = EssentialHeaders.WitsmlTargetServer,
-                In = ParameterLocation.Header,
-                Schema = new OpenApiSchema { Type = "string" },
-                Required = true,
-                Description = description
-            });
-        }
-
     }
 }

@@ -23,7 +23,7 @@ var credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{w
 
 using var httpClient = new HttpClient();
 var request = new HttpRequestMessage(HttpMethod.Get, url);
-request.Headers.Add("WitsmlTargetServer", $"{credentials}@{witsmlServer}");
+request.Headers.Add("WitsmlAuth", $"{credentials}@{witsmlServer}");
 
 var response = httpClient.Send(request); 
 var setCookie = response.Headers.FirstOrDefault(n=> n.Key == "Set-Cookie").Value.ToList()[0];
@@ -61,7 +61,7 @@ credentials = base64.b64encode(f"{witsmluser}:{witsmlpass}".encode()).decode()
 url = "https://localhost:5001/api/credentials/authorize"
 witsmlserver= "https://witsml-server.com"
 params = {  "keep": "false" }
-headers = { "WitsmlTargetServer": f"{credentials}@{witsmlserver}" }
+headers = { "WitsmlAuth": f"{credentials}@{witsmlserver}" }
 cookies = {'witsmlexplorer': ''}
 ca_certs = "localhost.pem" # For local dev-certs, in case of https
 
