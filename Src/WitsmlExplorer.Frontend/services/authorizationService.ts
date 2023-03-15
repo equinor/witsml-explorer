@@ -96,7 +96,7 @@ class AuthorizationService {
   }
 
   // Verify basic credentials for the first time
-  // Basic credentials for this call will be set in header: WitsmlTargetServer
+  // Basic credentials for this call will be set in header: WitsmlAuth
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
     try {
       if (keep) {

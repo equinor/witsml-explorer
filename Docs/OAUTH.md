@@ -167,7 +167,7 @@ The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a
 
 Steps to use endpoints:
 1. Authorize with the tenant.
-2. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlTargetServer`. 
+2. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlAuth`. 
 3. Now visit any endpoint, e.g. `/api/wells` and provide the same Url in the header `WitsmlTargetServer` (now without credentials), as well as the username in the `WitsmlTargetUsername` header.
 
 When using a system user, the second step can be omitted.
@@ -211,6 +211,6 @@ Authorization: Bearer eyJ...<token here>
 Host: localhost:5000
 Content-Type: application/json
 Origin: http://localhost:3000
-WitsmlTargetServer: dXNlcjEyMzpwYXNzNDU2@https://witsmlserver.using.basic.creds/Store/WITSML
+WitsmlAuth: dXNlcjEyMzpwYXNzNDU2@https://witsmlserver.using.basic.creds/Store/WITSML
 ```
 (note the base64 encoded `username:password` @ witsmlserver)

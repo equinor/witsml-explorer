@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext)
         {
-            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.TargetServer, Decrypt);
+            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.WitsmlAuth, Decrypt);
             if (creds.IsCredsNullOrEmpty())
             {
                 return false;

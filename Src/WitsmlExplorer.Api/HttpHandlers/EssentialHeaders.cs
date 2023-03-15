@@ -6,6 +6,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     {
 
         public string Authorization { get; }
+        public string WitsmlAuth { get; }
         public string TargetServer { get; }
         public string SourceServer { get; }
         public string TargetUsername { get; }
@@ -18,6 +19,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public class EssentialHeaders : IEssentialHeaders
     {
         public static readonly string CookieName = "witsmlexplorer";
+        public static readonly string WitsmlAuthHeader = "WitsmlAuth";
         public static readonly string WitsmlTargetServer = "WitsmlTargetServer";
         public static readonly string WitsmlSourceServer = "WitsmlSourceServer";
         public static readonly string WitsmlTargetUsername = "WitsmlTargetUsername";
@@ -28,6 +30,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
 
             Authorization = httpRequest?.Headers["Authorization"];
+            WitsmlAuth = httpRequest?.Headers[WitsmlAuthHeader];
             TargetServer = httpRequest?.Headers[WitsmlTargetServer];
             SourceServer = httpRequest?.Headers[WitsmlSourceServer];
             TargetUsername = httpRequest?.Headers[WitsmlTargetUsername];
@@ -35,6 +38,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             WitsmlExplorerCookie = httpRequest?.Cookies[CookieName];
         }
         public string Authorization { get; init; }
+        public string WitsmlAuth { get; init; }
         public string TargetServer { get; init; }
         public string SourceServer { get; init; }
         public string TargetUsername { get; init; }
