@@ -134,7 +134,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 WitsmlLogs query = LogQueries.GetLogContent(job.Source.Parent.WellUid, job.Source.Parent.WellboreUid,
                     job.Source.Parent.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
                 WitsmlLogs sourceData = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
-                if (!sourceData.Logs.Any())
+                if (!sourceData.Logs.Any() || sourceData.Logs.First().LogData == null)
                 {
                     break;
                 }

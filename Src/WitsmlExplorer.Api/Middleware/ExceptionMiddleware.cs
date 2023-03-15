@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Middleware
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlTargetServer, n => "");
+                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlAuthHeader, n => "");
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
