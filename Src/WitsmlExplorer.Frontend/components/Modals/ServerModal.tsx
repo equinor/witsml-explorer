@@ -1,5 +1,5 @@
-import { Button, TextField } from "@material-ui/core";
-import MuiThumbUpOutlinedIcon from "@material-ui/icons/ThumbUpOutlined";
+import { Button, Label, TextField } from "@equinor/eds-core-react";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
@@ -15,7 +15,8 @@ import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import { colors } from "../../styles/Colors";
-import ModalDialog from "./ModalDialog";
+import Icons from "../../styles/Icons";
+import ModalDialog, { ControlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
 
 export interface ServerModalProps {
@@ -89,7 +90,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   };
 
   const validateForm = () => {
-    return server.name.length !== 0 && isUrlValid(server.url);
+    return server.name.length !== 0 && isUrlValid(server.url) && !isNaN(server.depthLogDecimals);
   };
 
   const onChangeUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -112,64 +113,72 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       heading={`${isAddingNewServer ? "Add" : "Edit"} server`}
       content={
         <>
-          <ServerAndButton>
+          <ContentWrapper>
+            <Label label="Server URL" style={labelStyle} />
             <TextField
               id="url"
-              label="Server URL"
               defaultValue={server.url}
-              error={displayUrlError}
+              variant={displayUrlError ? "error" : null}
               helperText={displayUrlError ? "Not a valid server url" : ""}
-              fullWidth
-              inputProps={{ maxLength: 256 }}
               onChange={onChangeUrl}
               onBlur={runUrlValidation}
               required
               disabled={props.editDisabled}
             />
-            {connectionVerified && <ThumbUpOutlinedIcon style={{ color: colors.interactive.successResting }} variant={"outlined"} fontSize={"large"} />}
-            <TestServerButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
-              {"Test connection"}
-            </TestServerButton>
-          </ServerAndButton>
-          <TextField
-            id="name"
-            label="Server name"
-            defaultValue={server.name}
-            error={displayNameError}
-            helperText={displayNameError ? "A server name must have 1-64 characters" : ""}
-            fullWidth
-            inputProps={{ minLength: 1, maxLength: 64 }}
-            onBlur={runServerNameValidation}
-            onChange={onChangeName}
-            required
-            disabled={props.editDisabled}
-          />
-          <TextField
-            id="description"
-            label="Server description"
-            defaultValue={server.description}
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-            onChange={(e) => setServer({ ...server, description: e.target.value })}
-            disabled={props.editDisabled}
-          />
-          {msalEnabled && (
+            <Label label="Server name" style={labelStyle} />
             <TextField
-              id="role"
-              label="Roles (space delimited)"
-              defaultValue={server.roles?.join(" ")}
-              fullWidth
-              inputProps={{ maxLength: 64 }}
-              onChange={(e) => setServer({ ...server, roles: e.target.value.split(" ") })}
+              id="name"
+              defaultValue={server.name}
+              variant={displayNameError ? "error" : null}
+              helperText={displayNameError ? "A server name must have 1-64 characters" : ""}
+              onBlur={runServerNameValidation}
+              onChange={onChangeName}
+              required
               disabled={props.editDisabled}
             />
-          )}
+            <Label label="Server description" style={labelStyle} />
+            <TextField
+              id="description"
+              defaultValue={server.description}
+              onChange={(e: any) => setServer({ ...server, description: e.target.value })}
+              disabled={props.editDisabled}
+            />
+            {msalEnabled && (
+              <>
+                <Label label="Roles (space delimited)" style={labelStyle} />
+                <TextField
+                  id="role"
+                  defaultValue={server.roles?.join(" ")}
+                  onChange={(e: any) => setServer({ ...server, roles: e.target.value.split(" ") })}
+                  disabled={props.editDisabled}
+                />
+              </>
+            )}
+            <Label label="Number of decimals in depth log index" style={labelStyle} />
+            <TextField
+              id="depthLogDecimals"
+              defaultValue={server.depthLogDecimals}
+              variant={isNaN(server.depthLogDecimals) ? "error" : null}
+              helperText={isNaN(server.depthLogDecimals) ? "Depth log decimals must be a valid positive integer" : ""}
+              type="number"
+              onChange={(e: any) => setServer({ ...server, depthLogDecimals: parseInt(e.target.value) })}
+              disabled={props.editDisabled}
+            />
+            <ButtonWrapper>
+              {connectionVerified && <Icons name="done" color={colors.interactive.primaryResting} size={32} />}
+              <Button disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
+                {"Test connection"}
+              </Button>
+            </ButtonWrapper>
+          </ContentWrapper>
         </>
       }
       onSubmit={onSubmit}
       isLoading={isLoading}
       onDelete={server.id && !props.editDisabled ? showDeleteModal : null}
+      buttonPosition={ControlButtonPosition.TOP}
       confirmDisabled={props.editDisabled || !validateForm()}
+      width={ModalWidth.LARGE}
     />
   );
 };
@@ -226,21 +235,21 @@ const isUrlValid = (url: string) => {
   }
 };
 
-const ServerAndButton = styled.div`
+const labelStyle: CSSProperties = { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" };
+
+const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 12em 1fr;
+  align-items: center;
+  margin: 0.5rem 6rem 0.75rem 2.5rem;
+  row-gap: 1.5rem;
+`;
+
+const ButtonWrapper = styled.div`
+  grid-column: 2/3;
   display: flex;
-`;
-
-const TestServerButton = styled(Button)`
-  && {
-    margin-left: 1em;
-  }
-  flex: 1 0 auto;
-`;
-
-const ThumbUpOutlinedIcon = styled(MuiThumbUpOutlinedIcon)<{ variant: string }>`
-  && {
-    height: 1.5em;
-  }
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 export default ServerModal;

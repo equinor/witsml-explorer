@@ -13,6 +13,7 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
@@ -28,9 +29,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private readonly ICopyLogDataWorker _copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
 
-        public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null) : base(witsmlClientProvider, logger)
+        public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
-            _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider);
+            _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider, null, witsmlServerRepository);
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
@@ -39,14 +40,19 @@ namespace WitsmlExplorer.Api.Workers.Copy
             IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
             IEnumerable<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList()));
 
-            Task copyLogTasksResult = Task.WhenAll(copyLogTasks);
-            await copyLogTasksResult;
+            Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
+            IEnumerable<QueryResult> results = await copyLogTasksResult;
 
+            string errorMessage = "Failed to copy log.";
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
             {
-                string errorMessage = "Failed to copy log.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
+            }
+            if (results.Any((result) => !result.IsSuccessful))
+            {
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason), null);
             }
 
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
@@ -57,7 +63,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (copyLogDataResultTask.Status == TaskStatus.Faulted)
             {
-                string errorMessage = "Failed to copy log data.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
             }
@@ -66,7 +71,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (failedCopyDataTasks > 0)
             {
                 (WorkerResult Result, RefreshAction) firstFailedTask = copyLogDataResultTask.Result.First((task) => task.Result.IsSuccess == false);
-                string errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
+                errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, firstFailedTask.Result.Reason), null);
             }

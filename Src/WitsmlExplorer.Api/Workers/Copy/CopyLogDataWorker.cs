@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 
 using Index = Witsml.Data.Curves.Index;
@@ -25,13 +27,22 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
     public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
     {
-
+        private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CopyLogData;
 
-        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null) : base(witsmlClientProvider, logger) { }
+        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        {
+            _witsmlServerRepository = witsmlServerRepository;
+        }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
         {
+            Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
+            Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
+            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url == targetHostname)?.DepthLogDecimals ?? 0;
+            int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url == sourceHostname)?.DepthLogDecimals ?? 0;
+
             (WitsmlLog sourceLog, WitsmlLog targetLog) = await GetLogs(job);
             List<string> mnemonicsToCopy = job.Source.ComponentUids.Any()
                 ? job.Source.ComponentUids.Distinct().ToList()
@@ -56,23 +67,43 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
-            CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget);
-            if (!copyResultForExistingMnemonics.Success)
+            int totalRowsCopied = 0;
+            int originalRows = 0;
+            if (existingMnemonicsInTarget.Any())
             {
-                string message = $"Failed to copy curves for existing mnemonics to log. {copyResultForExistingMnemonics.ErrorReason}. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows.";
-                return LogAndReturnErrorResult(message, job);
+                CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals);
+                totalRowsCopied += copyResultForExistingMnemonics.NumberOfRowsCopied;
+                originalRows += copyResultForExistingMnemonics.OriginalNumberOfRows;
+                if (!copyResultForExistingMnemonics.Success)
+                {
+                    string message = $"Failed to copy curves for existing mnemonics to log. {copyResultForExistingMnemonics.ErrorReason}. Copied a total of {copyResultForExistingMnemonics.NumberOfRowsCopied} rows.";
+                    return LogAndReturnErrorResult(message, job);
+                }
             }
 
-            CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget);
-            if (!copyResultForNewMnemonics.Success)
+            if (newMnemonicsInTarget.Any())
             {
-                string message = $"Failed to copy curves for new mnemonics to log. {copyResultForNewMnemonics.ErrorReason}. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
-                return LogAndReturnErrorResult(message, job);
+                CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals);
+                totalRowsCopied += copyResultForNewMnemonics.NumberOfRowsCopied;
+                originalRows += copyResultForNewMnemonics.OriginalNumberOfRows;
+                if (!copyResultForNewMnemonics.Success)
+                {
+                    string message = $"Failed to copy curves for new mnemonics to log. {copyResultForNewMnemonics.ErrorReason}. Copied a total of {copyResultForNewMnemonics.NumberOfRowsCopied} rows";
+                    return LogAndReturnErrorResult(message, job);
+                }
             }
 
-            int totalRowsCopied = copyResultForExistingMnemonics.NumberOfRowsCopied + copyResultForNewMnemonics.NumberOfRowsCopied;
-            Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{totalRowsCopied} rows copied");
+            string resultMessage = $"{totalRowsCopied} rows copied";
+            if (originalRows > 0)
+            {
+                resultMessage = $"{originalRows} rows collated into {totalRowsCopied} rows in the target";
+                Logger.LogInformation("{JobType} - Job successful. {Original} rows collated into {Count} rows in the target. {Description}", GetType().Name, originalRows, totalRowsCopied, job.Description());
+            }
+            else
+            {
+                Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
+            }
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
         }
@@ -80,11 +111,20 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
         {
             Logger.LogError("{message} - {Description}", message, job.Description());
+            if (message.Contains("Error while updating store: -463"))
+            {
+                message += $" \nIf copying to a target server with lower number of depth log decimals than the source server, make sure that the \"Number of decimals in depth log index\" field is filled out for both the target and the source server.";
+            }
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
-        private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics)
+        private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals)
         {
+            if (targetDepthLogDecimals > 0 && targetDepthLogDecimals < sourceDepthLogDecimals && sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+            {
+                return await CopyLogDataWithoutDuplicates(sourceLog, targetLog, job, mnemonics, targetDepthLogDecimals);
+            }
+
             Index startIndex = Index.Start(sourceLog);
             Index endIndex = Index.End(sourceLog);
             int numberOfDataRowsCopied = 0;
@@ -94,7 +134,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 WitsmlLogs query = LogQueries.GetLogContent(job.Source.Parent.WellUid, job.Source.Parent.WellboreUid,
                     job.Source.Parent.Uid, sourceLog.IndexType, mnemonics, startIndex, endIndex);
                 WitsmlLogs sourceData = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
-                if (!sourceData.Logs.Any())
+                if (!sourceData.Logs.Any() || sourceData.Logs.First().LogData == null)
                 {
                     break;
                 }
@@ -105,8 +145,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
+                    string index = sourceLogWithData.LogData.Data.Last().Data.Split(",")[0];
                     sourceLogWithData.IndexType = sourceLog.IndexType;
-                    startIndex = Index.End(sourceLogWithData).AddEpsilon();
+                    startIndex = Index.End(sourceLogWithData, index).AddEpsilon();
                 }
                 else
                 {
@@ -116,6 +157,93 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied };
+        }
+
+        private async Task<CopyResult> CopyLogDataWithoutDuplicates(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics, int targetDepthLogDecimals)
+        {
+            double startIndex = StringHelpers.ToDouble(sourceLog.StartIndex.Value);
+            double endIndex = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
+            int numberOfDataRowsCopied = 0;
+            int originalNumberOfRows = 0;
+            while (startIndex < endIndex)
+            {
+                WitsmlLogs query = LogQueries.GetLogContent(
+                    job.Source.Parent.WellUid,
+                    job.Source.Parent.WellboreUid,
+                    job.Source.Parent.Uid,
+                    sourceLog.IndexType, mnemonics,
+                    Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
+                    Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
+                WitsmlLogs sourceData = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+                if (!sourceData.Logs.Any())
+                {
+                    break;
+                }
+
+                WitsmlLog sourceLogWithData = sourceData.Logs.First();
+
+                List<WitsmlData> data = sourceLogWithData.LogData.Data;
+                List<WitsmlData> newData = new();
+                List<string[]> rowsToCollate = new();
+                double difference = Math.Pow(0.1, targetDepthLogDecimals + 1);
+                double firstSourceRowIndex = double.MinValue;
+                double lastSourceRowIndex = double.MinValue;
+                double targetIndex = double.MinValue;
+                foreach (WitsmlData row in data)
+                {
+                    string[] split = row.Data.Split(",");
+                    lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
+                    double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals, MidpointRounding.AwayFromZero);
+                    if (Math.Abs(targetIndex - nextTargetIndex) > difference)
+                    {
+                        if (rowsToCollate.Any())
+                        {
+                            newData.Add(CollateData(rowsToCollate, targetIndex));
+                        }
+                        firstSourceRowIndex = lastSourceRowIndex;
+                        targetIndex = nextTargetIndex;
+                        rowsToCollate = new();
+                    }
+                    rowsToCollate.Add(split[1..]);
+                }
+                newData.Add(CollateData(rowsToCollate, targetIndex));
+                startIndex = lastSourceRowIndex >= endIndex ? endIndex : firstSourceRowIndex;
+
+                sourceLogWithData.LogData.Data = newData;
+
+                WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
+                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
+                if (result.IsSuccessful)
+                {
+                    numberOfDataRowsCopied += newData.Count;
+                    originalNumberOfRows += data.Count;
+                }
+                else
+                {
+                    Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), startIndex.ToString());
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
+                }
+            }
+
+            return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied, OriginalNumberOfRows = originalNumberOfRows };
+        }
+
+        private static WitsmlData CollateData(List<string[]> oldRows, double index)
+        {
+            string[] newRow = new string[oldRows.First().Length];
+            Array.Fill(newRow, "");
+            for (int i = 0; i < newRow.Length; i++)
+            {
+                for (int j = 0; j < oldRows.Count; j++)
+                {
+                    if (oldRows[j][i] != "")
+                    {
+                        newRow[i] = oldRows[j][i];
+                        break;
+                    }
+                }
+            }
+            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + "," + string.Join(",", newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
@@ -196,12 +324,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, IList<string> newMnemonics, IList<string> existingMnemonics)
         {
             string indexMnemonic = log.IndexCurve.Value;
-            if (!newMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
+            if (newMnemonics.Any() && !newMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
             {
                 newMnemonics.Insert(0, indexMnemonic);
             }
 
-            if (!existingMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
+            if (existingMnemonics.Any() && !existingMnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
             {
                 existingMnemonics.Insert(0, indexMnemonic);
             }
@@ -224,6 +352,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             public bool Success { get; set; }
             public int NumberOfRowsCopied { get; set; }
+            public int OriginalNumberOfRows { get; set; }
             public string ErrorReason { get; set; }
         }
     }
