@@ -66,7 +66,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
 
   const calculateIsCurveActive = (logCurveInfo: LogCurveInfo, maxDepth: number): boolean => {
     if (isDepthIndex) {
-      return maxDepth - logCurveInfo.maxDepthIndex < selectedCurveThreshold.depthInMeters;
+      return maxDepth - parseFloat(logCurveInfo.maxDepthIndex) < selectedCurveThreshold.depthInMeters;
     } else {
       const dateDifferenceInMilliseconds = new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
       return dateDifferenceInMilliseconds < timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes);
@@ -74,29 +74,38 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   };
 
   const getTableData = () => {
-    const maxDepth = Math.max(...logCurveInfoList.map((x) => x.maxDepthIndex));
-
-    return logCurveInfoList.map((logCurveInfo) => {
-      const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
-      return {
-        id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
-        uid: logCurveInfo.uid,
-        mnemonic: logCurveInfo.mnemonic,
-        minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
-        maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
-        classWitsml: logCurveInfo.classWitsml,
-        unit: logCurveInfo.unit,
-        sensorOffset: measureToString(logCurveInfo.sensorOffset),
-        mnemAlias: logCurveInfo.mnemAlias,
-        logUid: selectedLog.uid,
-        wellUid: selectedWell.uid,
-        wellboreUid: selectedWellbore.uid,
-        wellName: selectedWell.name,
-        wellboreName: selectedWellbore.name,
-        isActive: isActive,
-        isVisibleFunction: isVisibleFunction(isActive)
-      };
-    });
+    const maxDepth = Math.max(...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex)));
+    const decimals = !selectedServer.depthLogDecimals ? 4 : selectedServer.depthLogDecimals;
+    return logCurveInfoList
+      .map((logCurveInfo) => {
+        const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
+        return {
+          id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
+          uid: logCurveInfo.uid,
+          mnemonic: logCurveInfo.mnemonic,
+          minIndex: isDepthIndex ? parseFloat(logCurveInfo.minDepthIndex).toFixed(decimals) : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
+          maxIndex: isDepthIndex ? parseFloat(logCurveInfo.maxDepthIndex).toFixed(decimals) : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
+          classWitsml: logCurveInfo.classWitsml,
+          unit: logCurveInfo.unit,
+          sensorOffset: measureToString(logCurveInfo.sensorOffset),
+          mnemAlias: logCurveInfo.mnemAlias,
+          logUid: selectedLog.uid,
+          wellUid: selectedWell.uid,
+          wellboreUid: selectedWellbore.uid,
+          wellName: selectedWell.name,
+          wellboreName: selectedWellbore.name,
+          isActive: isActive,
+          isVisibleFunction: isVisibleFunction(isActive)
+        };
+      })
+      .sort((curve, curve2) => {
+        if (curve.mnemonic.toLowerCase() === selectedLog.indexCurve.toLowerCase()) {
+          return -1;
+        } else if (curve2.mnemonic.toLowerCase() === selectedLog.indexCurve.toLowerCase()) {
+          return 1;
+        }
+        return curve.mnemonic.localeCompare(curve2.mnemonic);
+      });
   };
 
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {

@@ -9,3 +9,11 @@ export default interface LogObject extends ObjectOnWellbore {
   runNumber?: string;
   indexCurve?: string;
 }
+
+export const indexToNumber = (index: string): number => {
+  return Number(index.replace(/[^\d.-]/g, ""));
+};
+
+export const indexToUnit = (index: string): string => {
+  return index?.replace(/[\d.-]/g, "") ?? "";
+};
