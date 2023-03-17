@@ -64,6 +64,9 @@ const Routing = (): React.ReactElement => {
     // update selected server when servers are fetched
     if (isSyncingUrlAndState && urlParams) {
       const serverUrl = urlParams.serverUrl;
+      if (serverUrl == null) {
+        return;
+      }
       const server = servers.find((server: Server) => server.url.toLowerCase() === serverUrl.toLowerCase());
       if (server && !selectedServer) {
         if (hasSelectedServer) {
