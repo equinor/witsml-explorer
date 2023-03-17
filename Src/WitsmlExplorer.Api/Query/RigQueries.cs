@@ -13,66 +13,37 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class RigQueries
     {
-        public static WitsmlRigs GetWitsmlRigByWellbore(string wellUid, string wellboreUid)
+        public static WitsmlRigs GetWitsmlRig(string wellUid, string wellboreUid, string rigUid = "")
         {
             return new WitsmlRigs
             {
                 Rigs = new WitsmlRig
                 {
-                    AirGap = null,
+                    AirGap = Measure.ToFetch<WitsmlLengthMeasure>(),
                     Approvals = "",
                     ClassRig = "",
-                    DTimStartOp = null,
-                    DTimEndOp = null,
+                    DTimStartOp = "",
+                    DTimEndOp = "",
                     EmailAddress = "",
                     FaxNumber = "",
-                    IsOffshore = null,
+                    IsOffshore = "",
                     Manufacturer = "",
                     Name = "",
                     NameContact = "",
                     Owner = "",
                     Registration = "",
-                    RatingDrillDepth = null,
-                    RatingWaterDepth = null,
+                    RatingDrillDepth = Measure.ToFetch<WitsmlLengthMeasure>(),
+                    RatingWaterDepth = Measure.ToFetch<WitsmlLengthMeasure>(),
                     TelNumber = "",
                     TypeRig = "",
-                    Uid = "",
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
-                    YearEntService = "",
-                    CommonData = new WitsmlCommonData()
-                }.AsSingletonList()
-            };
-        }
-
-        public static WitsmlRigs GetWitsmlRigById(string wellUid, string wellboreUid, string rigUid)
-        {
-            return new WitsmlRigs
-            {
-                Rigs = new WitsmlRig
-                {
-                    Owner = "",
                     Uid = rigUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
-                    AirGap = null,
-                    Approvals = "",
-                    ClassRig = "",
-                    DTimStartOp = null,
-                    DTimEndOp = null,
-                    EmailAddress = "",
-                    FaxNumber = "",
-                    IsOffshore = null,
-                    Manufacturer = "",
-                    Name = "",
-                    NameContact = "",
-                    Registration = "",
-                    RatingDrillDepth = null,
-                    RatingWaterDepth = null,
-                    TelNumber = "",
-                    TypeRig = "",
                     YearEntService = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        ItemState = ""
+                    }
                 }.AsSingletonList()
             };
         }

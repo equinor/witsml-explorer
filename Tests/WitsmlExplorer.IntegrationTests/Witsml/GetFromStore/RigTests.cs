@@ -31,7 +31,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             string wellUid = "8c77de13-4fad-4b2e-ba3d-7e6b0e35a394";
             string wellboreUid = "44e7a064-c2f2-4a3a-9259-5ab92085e110";
             string rigUid = "integration_test";
-            WitsmlRigs queryExisting = RigQueries.GetWitsmlRigById(wellUid, wellboreUid, rigUid);
+            WitsmlRigs queryExisting = RigQueries.GetWitsmlRig(wellUid, wellboreUid, rigUid);
             WitsmlRigs serverRig = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string responseXml = XmlHelper.Serialize(serverRig);
             string serverRigXml = TestUtils.CleanResponse(responseXml);
