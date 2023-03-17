@@ -1,5 +1,6 @@
 import React from "react";
 import { CurveSpecification } from "../../../models/logData";
+import { indexToNumber } from "../../../models/logObject";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -36,14 +37,22 @@ export enum ContentType {
   String,
   Number,
   DateTime,
-  Icon
+  Icon,
+  Measure
 }
+
+export const getColumnAlignment = (column: { type: ContentType }) => {
+  return column.type === ContentType.Number || column.type == ContentType.Measure ? "right" : "left";
+};
 
 export const getComparatorByColumn = (column: ContentTableColumn): [(row: any) => any, string] => {
   let comparator;
   switch (column.type) {
     case ContentType.Number:
       comparator = (row: any): number => Number(row[column.property]);
+      break;
+    case ContentType.Measure:
+      comparator = (row: any): number => Number(indexToNumber(row[column.property]));
       break;
     default:
       comparator = (row: any): string => row[column.property];

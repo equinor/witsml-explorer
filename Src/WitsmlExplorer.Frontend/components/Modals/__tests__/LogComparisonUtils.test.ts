@@ -16,9 +16,9 @@ const mnemonic = "mnemonic";
 const matchingMinDateTimeIndex = "minDateTimeIndex";
 const matchingMaxDateTimeIndex = "maxDateTimeIndex";
 const mismatchedDateTime = "mismatch";
-const matchingMinDepthIndex = 1;
-const matchingMaxDepthIndex = 2;
-const mismatchedDepth = 1.5;
+const matchingMinDepthIndex = "1";
+const matchingMaxDepthIndex = "2";
+const mismatchedDepth = "1.5";
 
 const matchingDateTimes: LogCurveInfo = {
   mnemonic,
