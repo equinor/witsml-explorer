@@ -128,6 +128,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Index startIndex = Index.Start(sourceLog);
             Index endIndex = Index.End(sourceLog);
             int numberOfDataRowsCopied = 0;
+            bool dropFirstRow = false;
 
             while (startIndex < endIndex)
             {
@@ -140,6 +141,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
 
                 WitsmlLog sourceLogWithData = sourceData.Logs.First();
+                if (dropFirstRow)
+                {
+                    sourceLogWithData.LogData.Data.RemoveAt(0);
+                    if (!sourceLogWithData.LogData.Data.Any())
+                    {
+                        break;
+                    }
+                }
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData);
                 QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
                 if (result.IsSuccessful)
@@ -147,7 +156,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     numberOfDataRowsCopied += copyNewCurvesQuery.Logs.First().LogData.Data.Count;
                     string index = sourceLogWithData.LogData.Data.Last().Data.Split(",")[0];
                     sourceLogWithData.IndexType = sourceLog.IndexType;
-                    startIndex = Index.End(sourceLogWithData, index).AddEpsilon();
+                    startIndex = Index.End(sourceLogWithData, index);
+                    dropFirstRow = true;
                 }
                 else
                 {
