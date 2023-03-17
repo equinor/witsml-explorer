@@ -75,7 +75,6 @@ export const LogCurveInfoListView = (): React.ReactElement => {
 
   const getTableData = () => {
     const maxDepth = Math.max(...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex)));
-    const decimals = !selectedServer.depthLogDecimals ? 4 : selectedServer.depthLogDecimals;
     return logCurveInfoList
       .map((logCurveInfo) => {
         const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
@@ -83,8 +82,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
           uid: logCurveInfo.uid,
           mnemonic: logCurveInfo.mnemonic,
-          minIndex: isDepthIndex ? parseFloat(logCurveInfo.minDepthIndex).toFixed(decimals) : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
-          maxIndex: isDepthIndex ? parseFloat(logCurveInfo.maxDepthIndex).toFixed(decimals) : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
+          minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
+          maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
           classWitsml: logCurveInfo.classWitsml,
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),

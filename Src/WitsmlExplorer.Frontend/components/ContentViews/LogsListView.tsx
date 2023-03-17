@@ -3,7 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import LogObject, { indexToNumber, indexToUnit } from "../../models/logObject";
+import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -48,24 +48,13 @@ export const LogsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };
 
-  const formatIndex = (index: string) => {
-    if (selectedWellbore == null) {
-      return "";
-    }
-    if (isTimeIndexed()) {
-      return formatDateString(index, timeZone);
-    }
-    const decimals = !selectedServer.depthLogDecimals ? 4 : selectedServer.depthLogDecimals;
-    return indexToNumber(index).toFixed(decimals) + indexToUnit(index);
-  };
-
   const getTableData = (): LogObjectRow[] => {
     return logs.map((log, index) => {
       return {
         ...log,
         id: index,
-        startIndex: formatIndex(log.startIndex),
-        endIndex: formatIndex(log.endIndex),
+        startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone) : log.startIndex,
+        endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone) : log.endIndex,
         logObject: log
       };
     });
