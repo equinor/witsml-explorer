@@ -64,10 +64,10 @@ const Routing = (): React.ReactElement => {
     // update selected server when servers are fetched
     if (isSyncingUrlAndState && urlParams) {
       const serverUrl = urlParams.serverUrl;
-      const server = servers.find((server: Server) => server.url === serverUrl);
+      const server = servers.find((server: Server) => server.url.toLowerCase() === serverUrl.toLowerCase());
       if (server && !selectedServer) {
         if (hasSelectedServer) {
-          // finish syncing if we already attempted to select a server (such as on login cancellation)
+          // finish syncing if routing has already attempted to navigate to a server (such as on login cancellation)
           setIsSyncingUrlAndState(false);
         } else {
           setHasSelectedServer(true);
