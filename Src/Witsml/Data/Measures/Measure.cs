@@ -6,5 +6,14 @@ namespace Witsml.Data.Measures
     {
         [XmlAttribute("uom")] public string Uom { get; set; }
         [XmlText] public string Value { get; set; }
+
+        public static T ToFetch<T>() where T : Measure, new()
+        {
+            return new()
+            {
+                Uom = "",
+                Value = ""
+            };
+        }
     }
 }
