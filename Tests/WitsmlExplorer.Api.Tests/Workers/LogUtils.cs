@@ -12,6 +12,7 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
@@ -288,6 +289,26 @@ namespace WitsmlExplorer.Api.Tests.Workers
             }
 
             return new WitsmlLogs();
+        }
+
+        public static void SetupGetDepthIndexed(Mock<IWitsmlClient> witsmlClient, Func<WitsmlLogs, bool> predicate, List<WitsmlData> data)
+        {
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.Is<WitsmlLogs>(logs => predicate(logs)), new OptionsIn(ReturnElements.DataOnly, null, null)))
+                .ReturnsAsync(() => new WitsmlLogs
+                {
+                    Logs = new WitsmlLog
+                    {
+                        StartIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.First().Data.Split(",")[0]))),
+                        EndIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.Last().Data.Split(",")[0]))),
+                        IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
+                        LogData = new WitsmlLogData
+                        {
+                            MnemonicList = string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),
+                            UnitList = "m,m,m",
+                            Data = new(data)
+                        }
+                    }.AsSingletonList()
+                });
         }
     }
 }

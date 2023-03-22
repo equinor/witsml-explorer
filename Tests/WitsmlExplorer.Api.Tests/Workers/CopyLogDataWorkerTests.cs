@@ -181,5 +181,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
             Assert.Equal(targetIndexCurve, updatedLogs.First().Logs.First().LogCurveInfo.First().Mnemonic);
         }
+
+        [Fact]
+        public async Task Execute_OneDepthRow_CopiedCorrectly()
+        {
+            CopyLogDataJob job = LogUtils.CreateJobTemplate();
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.11, "Depth");
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
+            LogUtils.SetupGetDepthIndexed(_witsmlClient, (logs) => true, new() { new() { Data = "123.11,1,2" }, });
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+
+            await _worker.Execute(job);
+
+            Assert.Equal("123.11,1,2", updatedLogs.First().Logs.First().LogData.Data[0].Data);
+        }
     }
 }
