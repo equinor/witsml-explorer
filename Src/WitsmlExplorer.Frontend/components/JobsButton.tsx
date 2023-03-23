@@ -4,7 +4,11 @@ import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Icon from "../styles/Icons";
 
-const JobsButton = (): React.ReactElement => {
+export interface JobsButtonProps {
+  showLabels: boolean;
+}
+
+const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const { dispatchNavigation } = useContext(NavigationContext);
@@ -14,9 +18,9 @@ const JobsButton = (): React.ReactElement => {
   };
 
   return (
-    <Button variant="ghost" onClick={onClick} disabled={!selectedServer}>
+    <Button variant={props.showLabels ? "ghost" : "ghost_icon"} onClick={onClick} disabled={!selectedServer}>
       <Icon name="assignment" />
-      Jobs
+      {props.showLabels && "Jobs"}
     </Button>
   );
 };

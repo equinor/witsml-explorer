@@ -43,7 +43,7 @@ const Nav = (): React.ReactElement => {
       <Layout>
         <NavContainer>
           <Title>WITSML Explorer</Title>
-          {breadcrumbContent.length ? <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} /> : ""}
+          {breadcrumbContent.length != 0 && <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} style={{ minWidth: "18" }} />}
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
@@ -54,6 +54,7 @@ const Nav = (): React.ReactElement => {
                   fontFamily: breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
                   color: `${colors.interactive.primaryResting}`
                 }}
+                maxWidth={180}
               >
                 {breadCrumb.name}
               </Breadcrumbs.Breadcrumb>
@@ -199,12 +200,16 @@ const Title = styled.p`
   color: ${colors.interactive.primaryResting};
   font-size: 1rem;
   font-family: "EquinorBold";
+  min-width: 143px;
 `;
 
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   padding-top: 0.2em;
   width: auto;
+  height: 1.5rem;
+  overflow: clip;
 `;
+
 const NavContainer = styled.div`
    {
     display: flex;

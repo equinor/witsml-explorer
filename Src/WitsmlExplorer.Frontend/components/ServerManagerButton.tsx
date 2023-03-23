@@ -5,7 +5,11 @@ import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import Icon from "../styles/Icons";
 
-const ServerManagerButton = (): React.ReactElement => {
+export interface ServerManagerButtonProps {
+  showLabels: boolean;
+}
+
+const ServerManagerButton = (props: ServerManagerButtonProps): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, wells } = navigationState;
 
@@ -15,9 +19,9 @@ const ServerManagerButton = (): React.ReactElement => {
 
   const connected = selectedServer && wells.length;
   return (
-    <StyledButton variant="ghost" onClick={onClick}>
+    <StyledButton variant={props.showLabels ? "ghost" : "ghost_icon"} onClick={onClick}>
       <Icon name={connected ? "cloudDownload" : "cloudOff"} />
-      {connected ? "Server Connections" : "No Connection"}
+      {props.showLabels && (connected ? "Server Connections" : "No Connection")}
     </StyledButton>
   );
 };
