@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Security;
 using System.Threading.Tasks;
@@ -324,19 +325,21 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
-            WMLS_GetCapRequest request = new()
+            WMLS_GetVersionResponse response = await _client.WMLS_GetVersionAsync();
+            if (string.IsNullOrEmpty(response.Result))
             {
-                OptionsIn = "dataVersion=1.4.1.1"
-            };
-
-            WMLS_GetCapResponse response = await _client.WMLS_GetCapAsync(request);
-            if (response.IsSuccessful())
-            {
-                return new QueryResult(true);
+                throw new Exception("Error while testing connection: Server failed to return a valid version");
             }
 
-            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
-            throw new Exception($"Error while testing connection: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+            // Spec requires a comma-seperated list of supported versions without spaces
+            string[] versions = response.Result.Split(',');
+
+            if (!versions.Any(v => v == "1.4.1.1"))
+            {
+                throw new Exception("Error while testing connection: Server does not indicate support for WITSML 1.4.1.1");
+            }
+
+            return new QueryResult(true);
         }
 
         private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmLReceived = null)
