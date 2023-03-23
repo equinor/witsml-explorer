@@ -191,13 +191,12 @@ export const CurveValuesView = (): React.ReactElement => {
 };
 
 const Container = styled.div`
-  height: calc(100% - 55px);
-  width: 100%;
+  height: calc(100% - 60px);
+  width: calc(100% - 4px);
 `;
 
 const ExportButtonGrid = styled(Grid)`
-  padding-bottom: 10px;
-  padding-left: 10px;
+  padding: 10px;
 `;
 
 const Message = styled.div`
