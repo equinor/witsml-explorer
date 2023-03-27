@@ -36,7 +36,7 @@ const PageLayout = (): ReactElement => {
       if (isResizing) {
         mouseMoveEvent.stopPropagation();
         mouseMoveEvent.preventDefault();
-        setSidebarWidth(mouseMoveEvent.clientX - sidebarRef.current.getBoundingClientRect().left);
+        setSidebarWidth(Math.max(mouseMoveEvent.clientX - sidebarRef.current.getBoundingClientRect().left, 174));
       }
     },
     [isResizing]
@@ -86,6 +86,7 @@ const PageLayout = (): ReactElement => {
 
 const Layout = styled.div`
   display: grid;
+  overflow: hidden;
   grid-template-areas:
     "header header header"
     "sidebar divider content"
@@ -106,7 +107,7 @@ const SidebarLayout = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 174px;
-  overflow: scroll;
+  overflow: hidden;
 `;
 
 const Divider = styled.div`
@@ -129,7 +130,6 @@ const ContentViewLayout = styled.div`
   overflow-y: auto;
   overflow-x: auto;
   word-wrap: wrap;
-  padding-right: 0.2rem;
 `;
 
 const PropertyBar = styled.div`
@@ -142,6 +142,7 @@ const PropertyBar = styled.div`
   justify-content: space-between;
   padding-left: 1.6rem;
   padding-right: 1.6rem;
+  overflow: hidden;
 `;
 
 const Properties = styled.div`
