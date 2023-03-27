@@ -191,8 +191,8 @@ export const CurveValuesView = (): React.ReactElement => {
 };
 
 const Container = styled.div`
-  height: calc(100% - 60px);
-  width: calc(100% - 4px);
+  height: calc(100% - 65px);
+  width: calc(100% - 14px);
 `;
 
 const ExportButtonGrid = styled(Grid)`
