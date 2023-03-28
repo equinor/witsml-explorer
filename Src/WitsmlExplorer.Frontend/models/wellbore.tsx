@@ -1,5 +1,6 @@
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
 import BhaRun from "./bhaRun";
+import ChangeLog from "./changeLog";
 import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
@@ -43,6 +44,7 @@ export interface WellboreProperties {
 
 export interface WellboreObjects {
   bhaRuns?: BhaRun[];
+  changeLogs?: ChangeLog[];
   logs?: LogObject[];
   rigs?: Rig[];
   trajectories?: Trajectory[];
@@ -71,6 +73,7 @@ export function emptyWellbore(): Wellbore {
     dateTimeLastChange: "",
     itemState: "",
     bhaRuns: [],
+    changeLogs: [],
     logs: [],
     rigs: [],
     trajectories: [],
@@ -120,6 +123,9 @@ export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore
   switch (objectType) {
     case ObjectType.BhaRun:
       objects = wellbore.bhaRuns;
+      break;
+    case ObjectType.ChangeLog:
+      objects = wellbore.changeLogs;
       break;
     case ObjectType.Log:
       objects = wellbore.logs;
