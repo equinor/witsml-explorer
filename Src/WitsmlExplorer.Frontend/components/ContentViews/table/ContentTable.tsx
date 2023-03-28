@@ -148,11 +148,10 @@ const TableHeaderCell = styled(MuiTableCell)`
 const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
   position: relative;
   z-index: 0;
-  :first-child {
+  border-right: 1px solid rgba(224, 224, 224, 1);
+  && {
     color: ${colors.text.staticIconsDefault};
-  }
-  &:not(:first-child) {
-    color: ${colors.text.staticIconsTertiary};
+    font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
   ${({ type }) =>

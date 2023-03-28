@@ -6,6 +6,7 @@ import NavigationContext from "../contexts/navigationContext";
 import OperationContext from "../contexts/operationContext";
 import { TimeZone, UserTheme } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
+import useDocumentDimensions from "../hooks/useDocumentDimensions";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import AuthorizationService from "../services/authorizationService";
 import Icon from "../styles/Icons";
@@ -35,6 +36,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
     operationState: { theme, timeZone },
     dispatchOperation
   } = useContext(OperationContext);
+  const { width: documentWidth } = useDocumentDimensions();
+  const showLabels = documentWidth > 1180;
 
   useEffect(() => {
     let localStorageTheme;
@@ -126,25 +129,25 @@ const TopRightCornerMenu = (): React.ReactElement => {
   return (
     <Layout>
       {selectedServer?.currentUsername && (
-        <StyledButton variant="ghost" onClick={openCredentialsModal}>
+        <StyledButton variant={showLabels ? "ghost" : "ghost_icon"} onClick={openCredentialsModal}>
           <Icon name="person" />
-          {selectedServer.currentUsername}
+          {showLabels && selectedServer.currentUsername}
         </StyledButton>
       )}
-      <ServerManagerButton />
-      <JobsButton />
-      <StyledButton variant="ghost" onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
+      <ServerManagerButton showLabels={showLabels} />
+      <JobsButton showLabels={showLabels} />
+      <StyledButton variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onOpenMenu(event, timeZoneMenu)}>
         <Icon name="world" />
-        {timeZoneLabels[timeZone]}
+        {showLabels && timeZoneLabels[timeZone]}
       </StyledButton>
-      <Button variant="ghost" onClick={(event) => onOpenMenu(event, themeMenu)}>
+      <Button variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event) => onOpenMenu(event, themeMenu)}>
         <Icon name="accessible" />
-        Theme
+        {showLabels && "Theme"}
       </Button>
       {msalEnabled && (
-        <Button variant="ghost" onClick={(event) => onOpenMenu(event, accountMenu)}>
+        <Button variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event) => onOpenMenu(event, accountMenu)}>
           <Icon name="accountCircle" />
-          Account
+          {showLabels && "Account"}
         </Button>
       )}
     </Layout>
