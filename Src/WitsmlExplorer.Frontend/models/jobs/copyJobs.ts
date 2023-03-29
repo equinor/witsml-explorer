@@ -11,4 +11,6 @@ export interface CopyObjectsJob {
 export interface CopyComponentsJob {
   source: ComponentReferences;
   target: ObjectReference;
+  startIndex?: string;
+  endIndex?: string;
 }

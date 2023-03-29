@@ -52,6 +52,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
             List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 
+            SetIndexesOnSourceLogs(sourceLog, job);
+
             try
             {
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
@@ -106,6 +108,38 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
+        }
+
+        private static void SetIndexesOnSourceLogs(WitsmlLog sourceLog, CopyLogDataJob job)
+        {
+            if (!string.IsNullOrEmpty(job.StartIndex))
+            {
+                if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                {
+                    sourceLog.StartIndex = new WitsmlIndex(job.StartIndex)
+                    {
+                        Uom = sourceLog.StartIndex.Uom
+                    };
+                }
+                else
+                {
+                    sourceLog.StartDateTimeIndex = job.StartIndex;
+                }
+            }
+            if (!string.IsNullOrEmpty(job.EndIndex))
+            {
+                if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                {
+                    sourceLog.EndIndex = new WitsmlIndex(job.EndIndex)
+                    {
+                        Uom = sourceLog.EndIndex.Uom
+                    };
+                }
+                else
+                {
+                    sourceLog.EndDateTimeIndex = job.EndIndex;
+                }
+            }
         }
 
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
