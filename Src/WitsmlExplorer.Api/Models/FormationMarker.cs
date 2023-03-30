@@ -30,8 +30,6 @@ namespace WitsmlExplorer.Api.Models
 
         public Struct Chronostratigraphic { get; init; }
 
-        public string NameFormation { get; init; }
-
         public string Description { get; init; }
 
         public CommonData CommonData { get; init; }
