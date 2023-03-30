@@ -5,7 +5,7 @@ import ModificationType from "../../../contexts/modificationType";
 import { HideModalAction } from "../../../contexts/operationStateReducer";
 import OperationType from "../../../contexts/operationType";
 import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
-import LogObject from "../../../models/logObject";
+import LogObject, { indexToNumber } from "../../../models/logObject";
 import { ObjectType } from "../../../models/objectType";
 import { truncateAbortHandler } from "../../../services/apiClient";
 import JobService, { JobType } from "../../../services/jobService";
@@ -96,10 +96,6 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
       )}
     </>
   );
-};
-
-const indexToNumber = (index: string): number => {
-  return Number(index.replace(/[^\d.-]/g, ""));
 };
 
 const Warning = styled.div`

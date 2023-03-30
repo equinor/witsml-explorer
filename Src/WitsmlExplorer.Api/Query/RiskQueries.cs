@@ -22,7 +22,26 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Name = "",
+                    Type = "",
+                    Category = "",
+                    SubCategory = "",
+                    ExtendCategory = "",
+                    AffectedPersonnel = new string[] { "" },
+                    DTimStart = "",
+                    DTimEnd = "",
+                    MdBitStart = WitsmlMeasureWithDatum.ToFetch(),
+                    MdBitEnd = WitsmlMeasureWithDatum.ToFetch(),
+                    SeverityLevel = "",
+                    ProbabilityLevel = "",
+                    Summary = "",
+                    Details = "",
                     CommonData = new WitsmlCommonData()
+                    {
+                        ItemState = "",
+                        SourceName = "",
+                        DTimLastChange = "",
+                        DTimCreation = "",
+                    }
                 }.AsSingletonList()
             };
         }

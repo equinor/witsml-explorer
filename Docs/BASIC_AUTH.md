@@ -55,7 +55,7 @@ When developing, visit `https://localhost:5001/swagger/index.html` to examine en
 The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a list of WITSML servers in json format without any credentials.
 
 Steps to use endpoints with `Basic` authentication
-1. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlTargetServer`. 
+1. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlAuth`. 
 2. Now visit any endpoint, e.g. `/api/wells` and provide the same Url in the header `WitsmlTargetServer` (now without credentials), as well as the username in the `WitsmlTargetUsername` header
 
 Further information about the header format is given on the swagger page/endpoint. 
@@ -77,7 +77,7 @@ HTTP/1.1 200 OK
 Set-Cookie: witsmlexplorer=9a8c9c5d-1d0c-4ebf-867d-6641962da380; path=/; secure; samesite=strict; httponly
 ```
 
-__2. Authorize WITSML credentials__ for the WITSML server you will query, this to ensure that backend encrypts the password and caches it against your session. The WitsmlTargetServer consists of base 64 encoded `username:password` (in the following example it is `user123:pass456`), and, after the 'at' sign `@`, the WITSML server URL.
+__2. Authorize WITSML credentials__ for the WITSML server you will query, this to ensure that backend encrypts the password and caches it against your session. The WitsmlAuth consists of base 64 encoded `username:password` (in the following example it is `user123:pass456`), and, after the 'at' sign `@`, the WITSML server URL.
 
 ```http
 GET http://localhost:5000/api/credentials/authorize?keep=false HTTP/1.1
@@ -85,7 +85,7 @@ Host: localhost:5000
 Content-Type: application/json
 Origin: http://localhost:3000
 Cookie: witsmlexplorer=9a8c9c5d-1d0c-4ebf-867d-6641962da380
-WitsmlTargetServer: dXNlcjEyMzpwYXNzNDU2@https://witsmlserver.using.basic.creds/Store/WITSML
+WitsmlAuth: dXNlcjEyMzpwYXNzNDU2@https://witsmlserver.using.basic.creds/Store/WITSML
 ```
 ```http
 HTTP/1.1 200 OK

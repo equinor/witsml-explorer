@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
-import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./";
+import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getColumnAlignment, getComparatorByColumn, getSelectedRange, Order } from "./";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows, order } = props;
@@ -72,7 +72,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             columns.map(
               (column) =>
                 column && (
-                  <TableHeaderCell key={column.property} align={column.type === ContentType.Number ? "right" : "left"}>
+                  <TableHeaderCell key={column.property} align={getColumnAlignment(column)}>
                     <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
                       {column.label}
                     </TableSortLabel>
@@ -103,7 +103,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                           key={item[column.property] + column.property}
                           clickable={onSelect ? "true" : "false"}
                           type={column.type}
-                          align={column.type === ContentType.Number ? "right" : "left"}
+                          align={getColumnAlignment(column)}
                           onClick={(event) => selectRow(event, item)}
                         >
                           {formatCell(column.type, item[column.property])}
@@ -148,11 +148,10 @@ const TableHeaderCell = styled(MuiTableCell)`
 const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
   position: relative;
   z-index: 0;
-  :first-child {
+  border-right: 1px solid rgba(224, 224, 224, 1);
+  && {
     color: ${colors.text.staticIconsDefault};
-  }
-  &:not(:first-child) {
-    color: ${colors.text.staticIconsTertiary};
+    font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
   ${({ type }) =>
@@ -163,7 +162,7 @@ const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: str
     text-overflow: ellipsis;
   `};
   ${({ type }) =>
-    type === ContentType.Number &&
+    (type === ContentType.Number || type === ContentType.Measure) &&
     `
     font-feature-settings: "tnum";
   `};

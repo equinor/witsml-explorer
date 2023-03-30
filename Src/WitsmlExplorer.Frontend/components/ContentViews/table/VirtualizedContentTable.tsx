@@ -10,7 +10,17 @@ import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
 import { formatCell } from "./ContentTable";
-import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getComparatorByColumn, getSelectedRange, Order } from "./tableParts";
+import {
+  ContentTableColumn,
+  ContentTableProps,
+  ContentTableRow,
+  ContentType,
+  getCheckedRows,
+  getColumnAlignment,
+  getComparatorByColumn,
+  getSelectedRange,
+  Order
+} from "./tableParts";
 
 interface RowProps {
   index: number;
@@ -69,7 +79,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
               component={"div"}
               clickable={onSelect ? "true" : "false"}
               type={column.type}
-              align={column.type === ContentType.Number ? "right" : "left"}
+              align={getColumnAlignment(column)}
             >
               {formatCell(column.type, item[column.property])}
             </TableDataCell>
@@ -110,12 +120,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
           )}
           {columns &&
             columns.map((column: ContentTableColumn, index: number) => (
-              <TableHeaderCell
-                component={"div"}
-                key={column.property}
-                align={column.type === ContentType.Number ? "right" : "left"}
-                ref={(ref: any) => storeColumnReference(ref, index)}
-              >
+              <TableHeaderCell component={"div"} key={column.property} align={getColumnAlignment(column)} ref={(ref: any) => storeColumnReference(ref, index)}>
                 <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
                   {column.label}
                 </TableSortLabel>
@@ -350,11 +355,10 @@ const TableRow = styled.div<{ hover: boolean }>`
 `;
 
 const TableDataCell = styled(MuiTableCell)<{ clickable?: string; type?: ContentType }>`
-  :first-child {
+  border-right: 1px solid rgba(224, 224, 224, 1);
+  && {
     color: ${colors.text.staticIconsDefault};
-  }
-  &:not(:first-child) {
-    color: ${colors.text.staticIconsTertiary};
+    font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
   ${({ type }) =>
@@ -365,7 +369,7 @@ const TableDataCell = styled(MuiTableCell)<{ clickable?: string; type?: ContentT
     text-overflow: ellipsis;
   `};
   ${({ type }) =>
-    (type === ContentType.Number || type === ContentType.DateTime) &&
+    (type === ContentType.Number || type === ContentType.DateTime || type === ContentType.Measure) &&
     `
     font-feature-settings: "tnum";
   `};
