@@ -96,7 +96,7 @@ const RefreshHandler = (): React.ReactElement => {
     return function cleanup() {
       unsubscribe();
     };
-  }, [selectedServer]);
+  }, [selectedServer, wells]);
 
   async function refreshWell(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.RemoveWell) {

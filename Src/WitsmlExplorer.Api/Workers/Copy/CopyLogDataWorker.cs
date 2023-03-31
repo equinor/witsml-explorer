@@ -58,7 +58,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
-                VerifyMatchingIndexCurves(sourceLog, targetLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
                 await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.ComponentUids, targetLog);
             }
@@ -271,7 +270,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
         {
             List<WitsmlLogCurveInfo> newLogCurveInfos = new();
-            foreach (string mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
+            foreach (string mnemonic in sourceMnemonics.Where(mnemonic =>
+            !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(sourceLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
             {
                 if (targetLog.LogCurveInfo.All(lci => !string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -297,6 +298,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLogData logData)
         {
+            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(",", StringComparison.InvariantCulture)..];
             return new()
             {
                 Logs = new List<WitsmlLog> {
@@ -327,18 +329,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 throw new Exception($"Invalid interval. Start must be before End. Start: {sourceStart}, End: {sourceEnd}");
             }
-        }
-
-        private static void VerifyMatchingIndexCurves(WitsmlLog sourceLog, WitsmlLog targetLog)
-        {
-            string sourceIndexMnemonic = sourceLog.IndexCurve.Value;
-            string targetIndexMnemonic = targetLog.IndexCurve.Value;
-            if (sourceIndexMnemonic.Equals(targetIndexMnemonic, StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            throw new Exception($"Source and Target has different index mnemonics. Source: {sourceIndexMnemonic}, Target: {targetIndexMnemonic}");
         }
 
         private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, IList<string> newMnemonics, IList<string> existingMnemonics)
