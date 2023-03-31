@@ -1,4 +1,5 @@
 import BhaRun from "./bhaRun";
+import ChangeLog from "./changeLog";
 import FormationMarker from "./formationMarker";
 import LogObject from "./logObject";
 import MessageObject from "./messageObject";
@@ -11,6 +12,7 @@ import WbGeometryObject from "./wbGeometry";
 
 export enum ObjectType {
   BhaRun = "BhaRun",
+  ChangeLog = "ChangeLog",
   FormationMarker = "FormationMarker",
   Log = "Log",
   Message = "Message",
@@ -28,6 +30,7 @@ export const pluralizeObjectType = (objectType: ObjectType) => {
 
 export type ObjectTypeToModel = {
   [ObjectType.BhaRun]: BhaRun;
+  [ObjectType.ChangeLog]: ChangeLog;
   [ObjectType.FormationMarker]: FormationMarker;
   [ObjectType.Log]: LogObject;
   [ObjectType.Message]: MessageObject;
