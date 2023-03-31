@@ -115,7 +115,7 @@ export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> =
   ]);
 };
 
-export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
+export function getObjectsFromWellbore<Key extends ObjectType>(wellbore: Wellbore, objectType: Key): ObjectTypeToModel[Key][] {
   let objects: any[] = null;
   switch (objectType) {
     case ObjectType.BhaRun:
@@ -146,5 +146,10 @@ export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore
       objects = wellbore.wbGeometrys;
       break;
   }
+  return objects;
+}
+
+export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
+  const objects = getObjectsFromWellbore(wellbore, objectType);
   return objects?.find((object) => object.uid === uid);
 }
