@@ -129,11 +129,6 @@ namespace WitsmlExplorer.Api.Services
             Index startIndex = Index.Start(log, start);
             Index endIndex = Index.End(log, end);
 
-            if (!startIndexIsInclusive)
-            {
-                startIndex = startIndex.AddEpsilon();
-            }
-
             if (startIndex > endIndex)
             {
                 return new LogData();
@@ -147,12 +142,21 @@ namespace WitsmlExplorer.Api.Services
 
             WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
             WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null)
+            if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null || !witsmlLogs.Logs.First().LogData.Data.Any())
             {
                 return new LogData();
             }
 
             WitsmlLog witsmlLog = witsmlLogs.Logs.First();
+
+            if (!startIndexIsInclusive)
+            {
+                witsmlLog.LogData.Data.RemoveAt(0);
+                if (witsmlLog.LogData.Data.Count == 0)
+                {
+                    return new LogData();
+                }
+            }
 
             string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(",");
             string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(",");

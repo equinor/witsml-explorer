@@ -39,6 +39,7 @@ namespace Witsml.Data.Curves
 
         private bool HasSameUnitAs(DepthIndex that) => Uom.Equals(that.Uom);
 
+        [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
         public override Index AddEpsilon() => new DepthIndex(Value + OffsetEpsilon, Uom);
 
         private Index Subtract(Index that)

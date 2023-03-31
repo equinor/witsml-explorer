@@ -27,6 +27,7 @@ namespace Witsml.Data.Curves
             return index1.CompareTo(index2) >= 0;
         }
 
+        [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
         public abstract Index AddEpsilon();
 
         public abstract int CompareTo(Index other);
