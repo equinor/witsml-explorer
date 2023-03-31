@@ -4,20 +4,36 @@ import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
 import { ObjectType } from "../models/objectType";
+import { getObjectsFromWellbore } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import ObjectService from "../services/objectService";
 import WellboreService from "../services/wellboreService";
 import WellService from "../services/wellService";
 
 const RefreshHandler = (): React.ReactElement => {
-  const { dispatchNavigation, navigationState } = useContext(NavigationContext);
+  const {
+    dispatchNavigation,
+    navigationState: { wells, selectedServer }
+  } = useContext(NavigationContext);
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction: RefreshAction) => {
-      const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldTryRefresh = refreshAction?.serverUrl.toString() === selectedServer?.url;
       if (!shouldTryRefresh) {
         return;
       }
+
+      //do not refresh if attempting to refresh objects on a wellbore that has not been opened
+      if (refreshAction.entityType != EntityType.Well && refreshAction.entityType != EntityType.Wellbore) {
+        const wellbore = wells?.find((well) => well.uid === refreshAction.wellUid)?.wellbores?.find((wellbore) => wellbore.uid === refreshAction.wellboreUid);
+        if (wellbore == null) {
+          return;
+        }
+        if (getObjectsFromWellbore(wellbore, refreshAction.entityType as ObjectType) == null) {
+          return;
+        }
+      }
+
       try {
         // @ts-ignore
         const modificationType: ModificationType = ModificationType[`${refreshAction.refreshType}${refreshAction.entityType}`];
@@ -80,7 +96,7 @@ const RefreshHandler = (): React.ReactElement => {
     return function cleanup() {
       unsubscribe();
     };
-  }, [navigationState.selectedServer]);
+  }, [selectedServer]);
 
   async function refreshWell(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.RemoveWell) {
