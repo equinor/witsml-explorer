@@ -17,27 +17,27 @@ namespace WitsmlExplorer.Api.Tests.Models
         [InlineData(null, null, null)]
         public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string name, string code, string elevation)
         {
-            var sourceWitsmlDatum = new WitsmlDatum
+            WitsmlDatum sourceWitsmlDatum = new WitsmlDatum
             {
                 Name = name,
                 Code = code,
-                Elevation = elevation
+                Elevation = new Witsml.Data.WellElevationCoord { Value = elevation }
             };
 
-            var sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
+            List<WitsmlDatum> sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
 
-            var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
 
             Assert.Equal(newWellDatum.Name, sourceWitsmlDatum.Name);
             Assert.Equal(newWellDatum.Code, sourceWitsmlDatum.Code);
-            Assert.Equal(newWellDatum.Elevation, sourceWitsmlDatum.Elevation);
+            Assert.Equal(newWellDatum.Elevation, sourceWitsmlDatum.Elevation.Value);
         }
 
         [Fact]
         public void FromWitsmlDatum_ReturnsNullIfListIsEmpty()
         {
-            var sourceWitsmlDatumList = new List<WitsmlDatum>();
-            var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            List<WitsmlDatum> sourceWitsmlDatumList = new();
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
             Assert.Null(newWellDatum);
         }
 
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void FromWitsmlDatum_ReturnsNullIfListIsNull()
         {
             List<WitsmlDatum> sourceWitsmlDatumList = null;
-            var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
             Assert.Null(newWellDatum);
         }
 
@@ -53,8 +53,8 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void FromWitsmlDatum_ReturnsNullIfWellDatumIsNull()
         {
             WitsmlDatum sourceWitsmlDatum = null;
-            var sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
-            var newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
             Assert.Null(newWellDatum);
         }
     }

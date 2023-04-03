@@ -5,12 +5,24 @@ namespace Witsml.Data
 {
     public class WellDatum
     {
+        [XmlAttribute("uid")]
+        public string Uid { get; set; }
         [XmlElement("name")]
         public string Name { get; set; }
         [XmlElement("code")]
         public string Code { get; set; }
         [XmlElement("elevation")]
-        public string Elevation { get; set; }
+        public WellElevationCoord Elevation { get; set; }
+    }
+
+    public class WellElevationCoord
+    {
+        [XmlAttribute("uom")]
+        public string Uom { get; set; }
+        [XmlAttribute("datum")]
+        public string Datum { get; set; }
+        [XmlText]
+        public string Value { get; set; }
     }
 
     public class WitsmlWell
