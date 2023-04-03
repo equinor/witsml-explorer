@@ -22,6 +22,7 @@ import {
   UpdateWellAction,
   UpdateWellboreAction,
   UpdateWellboreBhaRunsAction,
+  UpdateWellboreFormationMarkersAction,
   UpdateWellboreLogAction,
   UpdateWellboreLogsAction,
   UpdateWellboreMessageAction,
@@ -39,7 +40,7 @@ import {
 } from "./modificationActions";
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
-import { allDeselected, NavigationState } from "./navigationContext";
+import { NavigationState, allDeselected } from "./navigationContext";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -63,6 +64,8 @@ export const performModificationAction = (state: NavigationState, action: Action
       return updateWellbore(state, action);
     case ModificationType.UpdateBhaRuns:
       return updateWellboreBhaRuns(state, action);
+    case ModificationType.UpdateFormationMarkers:
+      return updateWellboreFormationMarkers(state, action);
     case ModificationType.UpdateLogObjects:
       return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
@@ -262,6 +265,17 @@ const updateWellboreBhaRuns = (state: NavigationState, { payload }: UpdateWellbo
   const { wells } = state;
   const { bhaRuns, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { bhaRuns });
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    wells: freshWells
+  };
+};
+
+const updateWellboreFormationMarkers = (state: NavigationState, { payload }: UpdateWellboreFormationMarkersAction) => {
+  const { wells } = state;
+  const { formationMarkers, wellUid, wellboreUid } = payload;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { formationMarkers });
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),

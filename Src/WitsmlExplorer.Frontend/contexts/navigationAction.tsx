@@ -10,6 +10,7 @@ import {
   UpdateWellAction,
   UpdateWellboreAction,
   UpdateWellboreBhaRunsAction,
+  UpdateWellboreFormationMarkersAction,
   UpdateWellboreLogAction,
   UpdateWellboreLogsAction,
   UpdateWellboreMessageAction,
@@ -53,6 +54,7 @@ export type NavigationAction =
   | UpdateWellsAction
   | UpdateWellboreAction
   | UpdateWellboreBhaRunsAction
+  | UpdateWellboreFormationMarkersAction
   | UpdateWellboreLogAction
   | UpdateWellboreLogsAction
   | UpdateWellboreMessagesAction
