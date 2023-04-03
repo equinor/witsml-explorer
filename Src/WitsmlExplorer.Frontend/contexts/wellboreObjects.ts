@@ -2,6 +2,7 @@ export enum WellboreObjects {
   Well = "Well",
   Wellbore = "Wellbore",
   bhaRun = "bhaRun",
+  changeLog = "changeLog",
   log = "log",
   message = "message",
   mudLog = "mudLog",

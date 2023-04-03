@@ -1,4 +1,5 @@
 import BhaRun from "../../models/bhaRun";
+import ChangeLog from "../../models/changeLog";
 import LogObject from "../../models/logObject";
 import MessageObject from "../../models/messageObject";
 import MudLog from "../../models/mudLog";
@@ -19,6 +20,7 @@ import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
 import {
   BHARUN_1,
+  CHANGELOG_1,
   FILTER_1,
   getInitialState,
   LOG_1,
@@ -77,6 +79,7 @@ it("Should update state when selecting another server", () => {
 
 it("Should also update selected well when a wellbore is selected", () => {
   const bhaRuns: BhaRun[] = [];
+  const changeLogs: ChangeLog[] = [];
   const logs: LogObject[] = [];
   const rigs: Rig[] = [];
   const risks: RiskObject[] = [];
@@ -87,7 +90,7 @@ it("Should also update selected well when a wellbore is selected", () => {
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometrys }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, changeLogs, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometrys }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -111,6 +114,7 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
       well: WELL_3,
       wellbore: WELLBORE_3,
       bhaRuns: [BHARUN_1],
+      changeLogs: [CHANGELOG_1],
       logs: [LOG_1],
       rigs: [RIG_1],
       trajectories: [TRAJECTORY_1],
@@ -125,6 +129,7 @@ it("Should add rigs, bhaRuns, logs, messages, trajectories, and tubulars to a we
   const expectedWellbore = {
     ...WELLBORE_3,
     bhaRuns: [BHARUN_1],
+    changeLogs: [CHANGELOG_1],
     logs: [LOG_1],
     rigs: [RIG_1],
     trajectories: [TRAJECTORY_1],
@@ -267,6 +272,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   };
   const logs: LogObject[] = [];
   const bhaRuns: BhaRun[] = [];
+  const changeLogs: ChangeLog[] = [];
   const rigs: Rig[] = [];
   const messages: MessageObject[] = [];
   const mudLogs: MudLog[] = [];
@@ -276,7 +282,7 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const wbGeometrys: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, changeLogs, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
