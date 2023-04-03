@@ -34,6 +34,7 @@ namespace Witsml.Data.Curves
             return false;
         }
 
+        [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
         public override Index AddEpsilon() => new DateTimeIndex(Value.AddMilliseconds(1));
 
         public override int CompareTo(Index that)
