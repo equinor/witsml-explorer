@@ -32,7 +32,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
       dispatchOperation({ type: OperationType.HideModal });
       confirmedCopyToServer(wellUid, wellboreUid, wellboreRef, true, targetServer, sourceServer, logsToCopy, dispatchOperation);
     };
-    displayCopyWellboreModal(wellUid, wellboreUid, dispatchOperation, onConfirm);
+    displayCopyWellboreModal(wellboreUid, dispatchOperation, onConfirm);
     return;
   }
 
@@ -98,7 +98,7 @@ const createCopyWithParentJob = (sourceServer: Server, logs: LogObject[], target
   const copyWellboreJob: CopyWellboreJob = { source: targetWellboreReference, target: targetWellboreReference };
   const copyLogJob: CopyLogJob = createCopyJob(sourceServer, logs, targetWellbore);
   return { copyWellJob: copyWellJob, copyWellboreJob: copyWellboreJob, ...copyLogJob };
-}
+};
 
 const replaceLogObjects = async (
   targetServer: Server,
