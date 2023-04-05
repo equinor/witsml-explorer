@@ -31,7 +31,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
     const onConfirm = () => {
       dispatchOperation({ type: OperationType.HideModal });
       confirmedCopyToServer(wellUid, wellboreUid, wellboreRef, true, targetServer, sourceServer, logsToCopy, dispatchOperation);
-    }
+    };
     displayCopyWellboreModal(wellUid, wellboreUid, dispatchOperation, onConfirm);
     return;
   }
@@ -60,13 +60,11 @@ const confirmedCopyToServer = async (
   if (existingLogs.length > 0) {
     const onConfirm = () => replaceLogObjects(targetServer, sourceServer, logsToCopy, existingLogs, wellbore, dispatchOperation);
     displayReplaceModal(existingLogs, logsToCopy, "log", "wellbore", dispatchOperation, onConfirm, printLog);
-  }
-  else if (copyParents) {
+  } else if (copyParents) {
     const copyWithParentJob = createCopyWithParentJob(sourceServer, logsToCopy, wellbore);
     AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(JobType.CopyLogWithParent, copyWithParentJob, targetServer, sourceServer);
-  }
-  else {
+  } else {
     const copyJob = createCopyJob(sourceServer, logsToCopy, wellbore);
     AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(JobType.CopyLog, copyJob, targetServer, sourceServer);
@@ -99,7 +97,7 @@ const createCopyWithParentJob = (sourceServer: Server, logs: LogObject[], target
   const copyWellJob: CopyWellJob = { source: targetWellReference, target: targetWellReference };
   const copyWellboreJob: CopyWellboreJob = { source: targetWellboreReference, target: targetWellboreReference };
   const copyLogJob: CopyLogJob = createCopyJob(sourceServer, logs, targetWellbore);
-  return { copyWellJob: copyWellJob, copyWellboreJob: copyWellboreJob, copyLogJob: copyLogJob };
+  return { copyWellJob: copyWellJob, copyWellboreJob: copyWellboreJob, ...copyLogJob };
 }
 
 const replaceLogObjects = async (

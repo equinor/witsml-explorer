@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }
 
-            return await _copyLogWorker.Execute(job.CopyLogJob);
+            return await _copyLogWorker.Execute(new() { Source = job.Source, Target = job.Target });
         }
     }
 }

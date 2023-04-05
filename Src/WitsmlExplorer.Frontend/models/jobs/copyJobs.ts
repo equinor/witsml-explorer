@@ -29,8 +29,7 @@ export interface CopyComponentsJob {
   target: ObjectReference;
 }
 
-export interface CopyLogsWithParentJob {
+export interface CopyLogsWithParentJob extends CopyLogJob {
   copyWellJob?: CopyWellJob;
   copyWellboreJob?: CopyWellboreJob;
-  copyLogJob: CopyLogJob;
 }

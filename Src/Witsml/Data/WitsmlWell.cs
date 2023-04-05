@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
+
 namespace Witsml.Data
 {
     public class WellDatum
@@ -48,22 +50,22 @@ namespace Witsml.Data
         [XmlElement("operator")]
         public string Operator { get; set; }
 
-        [XmlElement("purposeWell")]
-        public string PurposeWell { get; set; }
-
         [XmlElement("statusWell")]
         public string StatusWell { get; set; }
+
+        [XmlElement("purposeWell")]
+        public string PurposeWell { get; set; }
 
         [XmlElement("wellDatum")]
         public List<WellDatum> WellDatum { get; set; }
 
-        [XmlElement("commonData")]
-        public WitsmlCommonData CommonData { get; set; }
-
         [XmlElement("waterDepth")]
-        public string WaterDepth { get; set; }
+        public WitsmlLengthMeasure WaterDepth { get; set; }
 
         [XmlElement("wellLocation")]
         public WitsmlLocation WellLocation { get; set; }
+
+        [XmlElement("commonData")]
+        public WitsmlCommonData CommonData { get; set; }
     }
 }
