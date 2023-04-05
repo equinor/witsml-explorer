@@ -6,8 +6,7 @@ export function displayCopyWellboreModal(
   wellUid: string,
   wellboreUid: string,
   dispatchOperation: DispatchOperation,
-  onConfirm: () => void,
-  printObject: (object: any) => JSX.Element
+  onConfirm: () => void
 ) {
   const content =
     <span>

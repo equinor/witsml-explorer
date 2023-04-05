@@ -32,7 +32,7 @@ export const onClickCopyLogToServer = async (targetServer: Server, sourceServer:
       dispatchOperation({ type: OperationType.HideModal });
       confirmedCopyToServer(wellUid, wellboreUid, wellboreRef, true, targetServer, sourceServer, logsToCopy, dispatchOperation);
     }
-    displayCopyWellboreModal(wellUid, wellboreUid, dispatchOperation, onConfirm, printLog);
+    displayCopyWellboreModal(wellUid, wellboreUid, dispatchOperation, onConfirm);
     return;
   }
 
