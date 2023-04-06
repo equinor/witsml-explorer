@@ -32,9 +32,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyLogWithParentJob job)
         {
+            RefreshAction refreshAction = null;
+
             if (job.CopyWellJob != null)
             {
-                (WorkerResult result, RefreshAction) wellResult = await _copyWellWorker.Execute(job.CopyWellJob);
+                (WorkerResult result, RefreshAction refresh) wellResult = await _copyWellWorker.Execute(job.CopyWellJob);
+                refreshAction = wellResult.refresh;
 
                 if (!wellResult.result.IsSuccess)
                 {
@@ -44,7 +47,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (job.CopyWellboreJob != null)
             {
-                (WorkerResult result, RefreshAction) wellboreResult = await _copyWellboreWorker.Execute(job.CopyWellboreJob);
+                (WorkerResult result, RefreshAction refresh) wellboreResult = await _copyWellboreWorker.Execute(job.CopyWellboreJob);
+                refreshAction ??= wellboreResult.refresh;
 
                 if (!wellboreResult.result.IsSuccess)
                 {
@@ -52,7 +56,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }
 
-            return await _copyLogWorker.Execute(new() { Source = job.Source, Target = job.Target });
+            (WorkerResult logResult, RefreshAction logRefresh) = await _copyLogWorker.Execute(new() { Source = job.Source, Target = job.Target });
+            refreshAction ??= logRefresh;
+            return (logResult, refreshAction);
         }
     }
 }

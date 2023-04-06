@@ -17,14 +17,14 @@ namespace WitsmlExplorer.Api.Tests.Models
         [InlineData(null, null, null)]
         public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string name, string code, string elevation)
         {
-            WitsmlDatum sourceWitsmlDatum = new WitsmlDatum
+            WitsmlDatum sourceWitsmlDatum = new()
             {
                 Name = name,
                 Code = code,
-                Elevation = new Witsml.Data.WellElevationCoord { Value = elevation }
+                Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Value = elevation }
             };
 
-            List<WitsmlDatum> sourceWitsmlDatumList = new List<WitsmlDatum> { sourceWitsmlDatum };
+            List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
 
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
 

@@ -1,4 +1,4 @@
-export default interface WellboreReference {
+export default interface WellReference {
   wellUid: string;
   wellName: string;
 }

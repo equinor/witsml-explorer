@@ -14,17 +14,7 @@ namespace Witsml.Data
         [XmlElement("code")]
         public string Code { get; set; }
         [XmlElement("elevation")]
-        public WellElevationCoord Elevation { get; set; }
-    }
-
-    public class WellElevationCoord
-    {
-        [XmlAttribute("uom")]
-        public string Uom { get; set; }
-        [XmlAttribute("datum")]
-        public string Datum { get; set; }
-        [XmlText]
-        public string Value { get; set; }
+        public WitsmlMeasureWithDatum Elevation { get; set; }
     }
 
     public class WitsmlWell
