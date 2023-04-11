@@ -1,4 +1,5 @@
 import BhaRun from "../models/bhaRun";
+import ChangeLog from "../models/changeLog";
 import LogObject from "../models/logObject";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
@@ -14,6 +15,7 @@ export const WELLBORE_1: Wellbore = {
   wellUid: "well1",
   name: "Wellbore 1",
   bhaRuns: [],
+  changeLogs: [],
   logs: [],
   rigs: [],
   trajectories: [],
@@ -31,6 +33,7 @@ export const WELLBORE_2: Wellbore = {
   wellUid: "well2",
   name: "Wellbore 2",
   bhaRuns: [],
+  changeLogs: [],
   logs: [],
   rigs: [],
   trajectories: [],
@@ -86,6 +89,18 @@ export const BHARUN_1: BhaRun = {
   objectiveBha: "",
   commonData: null,
   tubularUidRef: ""
+};
+export const CHANGELOG_1: ChangeLog = {
+  uid: "changelog",
+  name: "changelog 1",
+  wellUid: WELL_1.uid,
+  wellboreUid: WELLBORE_1.uid,
+  wellboreName: "",
+  wellName: "",
+  uidObject: "uidObject",
+  nameObject: "nameObject",
+  lastChangeType: "lastChangeType",
+  commonData: null
 };
 export const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "", wellName: "" };
 export const RIG_1 = { uid: "rig1", name: "Rig 1" };

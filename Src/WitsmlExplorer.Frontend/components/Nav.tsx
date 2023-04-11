@@ -96,6 +96,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               well: selectedWell,
               wellbore: selectedWellbore,
               bhaRuns: selectedWellbore.bhaRuns,
+              changeLogs: selectedWellbore.changeLogs,
               logs: selectedWellbore.logs,
               rigs: selectedWellbore.rigs,
               trajectories: selectedWellbore.trajectories,

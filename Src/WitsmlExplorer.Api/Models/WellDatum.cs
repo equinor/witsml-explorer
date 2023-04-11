@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Models
                 {
                     Name = witsmlWellDatum.Name,
                     Code = witsmlWellDatum.Code,
-                    Elevation = witsmlWellDatum.Elevation,
+                    Elevation = witsmlWellDatum.Elevation?.Value,
                 };
         }
     }

@@ -100,6 +100,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         well,
         wellbore,
         bhaRuns: wellbore.bhaRuns,
+        changeLogs: wellbore.changeLogs,
         logs: wellbore.logs,
         rigs: wellbore.rigs,
         trajectories: wellbore.trajectories,
@@ -144,7 +145,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.BhaRun)}
         onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.BhaRun)}
       />
-
+      <TreeItem
+        nodeId={calculateObjectGroupId(wellbore, ObjectType.ChangeLog)}
+        labelText={"ChangeLogs"}
+        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.ChangeLog)}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.ChangeLog)}
+      />
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
         labelText={"Logs"}
@@ -154,7 +160,6 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       >
         <LogTypeItem well={well} wellbore={wellbore} />
       </TreeItem>
-
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Message)}
         labelText={"Messages"}
