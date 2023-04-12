@@ -275,5 +275,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Equal(3, updatedLogs.First().Logs.First().LogData.Data.Count);
         }
+
+        [Fact]
+        public async Task Execute_NoRows_NoCopies()
+        {
+            CopyLogDataJob job = LogUtils.CreateJobTemplate();
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogsEmpty(WitsmlLog.WITSML_INDEX_TYPE_MD, "Depth");
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            Assert.True(result.Item1.IsSuccess);
+            Assert.Empty(updatedLogs);
+        }
     }
 }

@@ -172,6 +172,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
+        public static WitsmlLogs GetSourceLogsEmpty(string indexType, string indexCurveValue = null)
+        {
+            WitsmlLog witsmlLog = new()
+            {
+                UidWell = WellUid,
+                UidWellbore = WellboreUid,
+                Uid = SourceLogUid,
+                IndexType = indexType,
+                IndexCurve = new WitsmlIndexCurve { Value = indexCurveValue ?? SourceMnemonics[indexType][0] },
+                LogCurveInfo = SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD].Select(mnemonic => new WitsmlLogCurveInfo
+                {
+                    Uid = mnemonic,
+                    Mnemonic = mnemonic.Equals(indexCurveValue, StringComparison.OrdinalIgnoreCase) ? indexCurveValue : mnemonic
+                }).ToList()
+            };
+
+            return new WitsmlLogs
+            {
+                Logs = new List<WitsmlLog> { witsmlLog }
+            };
+        }
+
         public static WitsmlLogs GetTargetLogs(string indexType)
         {
             WitsmlLogCurveInfo indexLogCurveInfo = indexType switch
