@@ -55,8 +55,8 @@ namespace WitsmlExplorer.Api.Services
                 TvdLogSample = MeasureWithDatum.FromWitsml(formationMarker.TvdLogSample),
                 Dip = LengthMeasure.FromWitsml(formationMarker.Dip),
                 DipDirection = LengthMeasure.FromWitsml(formationMarker.DipDirection),
-                Lithostratigraphic = Struct.FromWitsml(formationMarker.Lithostratigraphic),
-                Chronostratigraphic = Struct.FromWitsml(formationMarker.Chronostratigraphic),
+                Lithostratigraphic = StratigraphicStruct.FromWitsml(formationMarker.Lithostratigraphic),
+                Chronostratigraphic = StratigraphicStruct.FromWitsml(formationMarker.Chronostratigraphic),
                 Description = formationMarker.Description,
                 CommonData = new CommonData()
                 {

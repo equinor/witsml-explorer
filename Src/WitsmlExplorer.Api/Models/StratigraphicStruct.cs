@@ -2,12 +2,12 @@ using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class Struct
+    public class StratigraphicStruct
     {
         public string Kind { get; init; }
         public string Value { get; init; }
 
-        public static Struct FromWitsml(WitsmlLithostratigraphyStruct witsmlStruct)
+        public static StratigraphicStruct FromWitsml(WitsmlLithostratigraphyStruct witsmlStruct)
         {
             if (witsmlStruct == null || string.IsNullOrEmpty(witsmlStruct.Value))
             {
@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Models
             };
         }
 
-        public static Struct FromWitsml(WitsmlChronostratigraphyStruct witsmlStruct)
+        public static StratigraphicStruct FromWitsml(WitsmlChronostratigraphyStruct witsmlStruct)
         {
             if (witsmlStruct == null || string.IsNullOrEmpty(witsmlStruct.Value))
             {
