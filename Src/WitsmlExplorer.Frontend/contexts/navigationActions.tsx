@@ -1,5 +1,6 @@
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
+import FormationMarker from "../models/formationMarker";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import MudLog from "../models/mudLog";
@@ -44,6 +45,7 @@ export interface SelectWellboreAction extends Action {
     wellbore: Wellbore;
     bhaRuns: BhaRun[];
     changeLogs: ChangeLog[];
+    formationMarkers: FormationMarker[];
     logs: LogObject[];
     rigs: Rig[];
     trajectories: Trajectory[];
