@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Models;
@@ -85,7 +86,7 @@ namespace WitsmlExplorer.Api.Query
                     StatusWell = "",
                     PurposeWell = "",
                     WellDatum = new List<WellDatum>(),
-                    WaterDepth = "",
+                    WaterDepth = Measure.ToFetch<WitsmlLengthMeasure>(),
                     WellLocation = new WitsmlLocation(),
                     CommonData = new WitsmlCommonData
                     {

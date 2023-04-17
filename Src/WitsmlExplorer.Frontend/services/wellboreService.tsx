@@ -43,6 +43,8 @@ export default class WellboreService {
 
   public static async getWellboreObjects(wellUid: string, wellboreUid: string): Promise<Concrete<WellboreObjects>> {
     const getBhaRuns = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.BhaRun);
+    const getChangeLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.ChangeLog);
+    const getFormationMarkers = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.FormationMarker);
     const getLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Log);
     const getMessages = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Message);
     const getMudLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.MudLog);
@@ -51,8 +53,10 @@ export default class WellboreService {
     const getTrajectories = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Trajectory);
     const getTubulars = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Tubular);
     const getWbGeometrys = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
-    const [bhaRuns, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
+    const [bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
       getBhaRuns,
+      getChangeLogs,
+      getFormationMarkers,
       getLogs,
       getMessages,
       getMudLogs,
@@ -62,6 +66,6 @@ export default class WellboreService {
       getTubulars,
       getWbGeometrys
     ]);
-    return { bhaRuns, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys };
+    return { bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys };
   }
 }

@@ -25,7 +25,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
             <TextField InputProps={{ readOnly: true }} id="objectName" label="Object Name(s)" defaultValue={jobInfo.objectName} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="wellboreName" label="Wellbore Name" defaultValue={jobInfo.wellboreName} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="wellName" label="Well Name" defaultValue={jobInfo.wellName} fullWidth />
-            <TextField InputProps={{ readOnly: true }} multiline id="description" label="Description" defaultValue={description.substring(0, description.length - 1)} fullWidth />
+            <TextField InputProps={{ readOnly: true }} multiline id="description" label="Description" defaultValue={description} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="targetServer" label="Target Server Url" defaultValue={jobInfo.targetServer} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="witsmlTargetUsername" label="Target Username" defaultValue={jobInfo.witsmlTargetUsername} fullWidth />
             <TextField

@@ -4,20 +4,36 @@ import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
 import { ObjectType } from "../models/objectType";
+import { getObjectsFromWellbore } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import ObjectService from "../services/objectService";
-import WellboreService from "../services/wellboreService";
 import WellService from "../services/wellService";
+import WellboreService from "../services/wellboreService";
 
 const RefreshHandler = (): React.ReactElement => {
-  const { dispatchNavigation, navigationState } = useContext(NavigationContext);
+  const {
+    dispatchNavigation,
+    navigationState: { wells, selectedServer }
+  } = useContext(NavigationContext);
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction: RefreshAction) => {
-      const shouldTryRefresh = refreshAction?.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldTryRefresh = refreshAction?.serverUrl.toString() === selectedServer?.url;
       if (!shouldTryRefresh) {
         return;
       }
+
+      //do not refresh if attempting to refresh objects on a wellbore that has not been opened
+      if (refreshAction.entityType != EntityType.Well && refreshAction.entityType != EntityType.Wellbore) {
+        const wellbore = wells?.find((well) => well.uid === refreshAction.wellUid)?.wellbores?.find((wellbore) => wellbore.uid === refreshAction.wellboreUid);
+        if (wellbore == null) {
+          return;
+        }
+        if (getObjectsFromWellbore(wellbore, refreshAction.entityType as ObjectType) == null) {
+          return;
+        }
+      }
+
       try {
         // @ts-ignore
         const modificationType: ModificationType = ModificationType[`${refreshAction.refreshType}${refreshAction.entityType}`];
@@ -30,6 +46,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.BhaRun:
             await refreshBhaRuns(refreshAction);
+            break;
+          case EntityType.FormationMarker:
+            await refreshFormationMarkers(refreshAction);
             break;
           case EntityType.Log:
             if (refreshAction.objectUid == null) {
@@ -80,7 +99,7 @@ const RefreshHandler = (): React.ReactElement => {
     return function cleanup() {
       unsubscribe();
     };
-  }, [navigationState.selectedServer]);
+  }, [selectedServer, wells]);
 
   async function refreshWell(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.RemoveWell) {
@@ -122,6 +141,15 @@ const RefreshHandler = (): React.ReactElement => {
     const wellboreUid = refreshAction.wellboreUid;
     if (bhaRuns) {
       dispatchNavigation({ type: ModificationType.UpdateBhaRuns, payload: { bhaRuns, wellUid, wellboreUid } });
+    }
+  }
+
+  async function refreshFormationMarkers(refreshAction: RefreshAction) {
+    const formationMarkers = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.FormationMarker);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (formationMarkers) {
+      dispatchNavigation({ type: ModificationType.UpdateFormationMarkers, payload: { formationMarkers, wellUid, wellboreUid } });
     }
   }
 

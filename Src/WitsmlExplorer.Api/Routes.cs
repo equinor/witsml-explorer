@@ -31,33 +31,38 @@ namespace WitsmlExplorer.Api
             Dictionary<EntityType, string> types = EntityTypeHelper.EntityTypeToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
 
-            app.MapGet(routes[EntityType.Risk], RiskHandler.GetRisks, useOAuth2);
-
-            app.MapGet(routes[EntityType.Tubular], TubularHandler.GetTubulars, useOAuth2);
-            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}", TubularHandler.GetTubular, useOAuth2);
-            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents, useOAuth2);
-
-            app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
-            app.MapGet(routes[EntityType.Message] + "/{messageUid}", MessageHandler.GetMessage, useOAuth2);
-
             app.MapGet(routes[EntityType.BhaRun], BhaRunHandler.GetBhaRuns, useOAuth2);
             app.MapGet(routes[EntityType.BhaRun] + "/{bhaRunUid}", BhaRunHandler.GetBhaRun, useOAuth2);
 
-            app.MapGet(routes[EntityType.Rig], RigHandler.GetRigs, useOAuth2);
-            app.MapGet(routes[EntityType.Rig] + "/{rigUid}", RigHandler.GetRig, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
+
+            app.MapGet(routes[EntityType.FormationMarker], FormationMarkerHandler.GetFormationMarkers, useOAuth2);
+            app.MapGet(routes[EntityType.FormationMarker] + "/{formationMarkerUid}", FormationMarkerHandler.GetFormationMarker, useOAuth2);
 
             app.MapGet(routes[EntityType.Log], LogHandler.GetLogs, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo, useOAuth2);
             app.MapPost(routes[EntityType.Log] + "/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
 
+            app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
+            app.MapGet(routes[EntityType.Message] + "/{messageUid}", MessageHandler.GetMessage, useOAuth2);
+
             app.MapGet(routes[EntityType.MudLog], MudLogHandler.GetMudLogs, useOAuth2);
             app.MapGet(routes[EntityType.MudLog] + "/{mudlogUid}", MudLogHandler.GetMudLog, useOAuth2);
             app.MapGet(routes[EntityType.MudLog] + "/{mudlogUid}/geologyintervals", MudLogHandler.GetGeologyIntervals, useOAuth2);
 
+            app.MapGet(routes[EntityType.Rig], RigHandler.GetRigs, useOAuth2);
+            app.MapGet(routes[EntityType.Rig] + "/{rigUid}", RigHandler.GetRig, useOAuth2);
+
+            app.MapGet(routes[EntityType.Risk], RiskHandler.GetRisks, useOAuth2);
+
             app.MapGet(routes[EntityType.Trajectory], TrajectoryHandler.GetTrajectories, useOAuth2);
             app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);
             app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations, useOAuth2);
+
+            app.MapGet(routes[EntityType.Tubular], TubularHandler.GetTubulars, useOAuth2);
+            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}", TubularHandler.GetTubular, useOAuth2);
+            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents, useOAuth2);
 
             app.MapGet(routes[EntityType.WbGeometry], WbGeometryHandler.GetWbGeometries, useOAuth2);
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}", WbGeometryHandler.GetWbGeometry, useOAuth2);
