@@ -7,8 +7,8 @@ import { ObjectType } from "../models/objectType";
 import { getObjectsFromWellbore } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import ObjectService from "../services/objectService";
-import WellboreService from "../services/wellboreService";
 import WellService from "../services/wellService";
+import WellboreService from "../services/wellboreService";
 
 const RefreshHandler = (): React.ReactElement => {
   const {
@@ -46,6 +46,9 @@ const RefreshHandler = (): React.ReactElement => {
             break;
           case EntityType.BhaRun:
             await refreshBhaRuns(refreshAction);
+            break;
+          case EntityType.FormationMarker:
+            await refreshFormationMarkers(refreshAction);
             break;
           case EntityType.Log:
             if (refreshAction.objectUid == null) {
@@ -96,7 +99,7 @@ const RefreshHandler = (): React.ReactElement => {
     return function cleanup() {
       unsubscribe();
     };
-  }, [selectedServer]);
+  }, [selectedServer, wells]);
 
   async function refreshWell(refreshAction: RefreshAction, modificationType: ModificationType) {
     if (modificationType === ModificationType.RemoveWell) {
@@ -138,6 +141,15 @@ const RefreshHandler = (): React.ReactElement => {
     const wellboreUid = refreshAction.wellboreUid;
     if (bhaRuns) {
       dispatchNavigation({ type: ModificationType.UpdateBhaRuns, payload: { bhaRuns, wellUid, wellboreUid } });
+    }
+  }
+
+  async function refreshFormationMarkers(refreshAction: RefreshAction) {
+    const formationMarkers = await ObjectService.getObjects(refreshAction.wellUid, refreshAction.wellboreUid, ObjectType.FormationMarker);
+    const wellUid = refreshAction.wellUid;
+    const wellboreUid = refreshAction.wellboreUid;
+    if (formationMarkers) {
+      dispatchNavigation({ type: ModificationType.UpdateFormationMarkers, payload: { formationMarkers, wellUid, wellboreUid } });
     }
   }
 

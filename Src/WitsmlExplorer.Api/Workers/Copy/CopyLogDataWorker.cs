@@ -52,11 +52,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
             List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 
+            SetIndexesOnSourceLogs(sourceLog, job);
+
             try
             {
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
-                VerifyMatchingIndexCurves(sourceLog, targetLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
                 await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.ComponentUids, targetLog);
             }
@@ -106,6 +107,38 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
+        }
+
+        private static void SetIndexesOnSourceLogs(WitsmlLog sourceLog, CopyLogDataJob job)
+        {
+            if (!string.IsNullOrEmpty(job.StartIndex))
+            {
+                if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                {
+                    sourceLog.StartIndex = new WitsmlIndex(job.StartIndex)
+                    {
+                        Uom = sourceLog.StartIndex.Uom
+                    };
+                }
+                else
+                {
+                    sourceLog.StartDateTimeIndex = job.StartIndex;
+                }
+            }
+            if (!string.IsNullOrEmpty(job.EndIndex))
+            {
+                if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                {
+                    sourceLog.EndIndex = new WitsmlIndex(job.EndIndex)
+                    {
+                        Uom = sourceLog.EndIndex.Uom
+                    };
+                }
+                else
+                {
+                    sourceLog.EndDateTimeIndex = job.EndIndex;
+                }
+            }
         }
 
         private (WorkerResult, RefreshAction) LogAndReturnErrorResult(string message, CopyLogDataJob job)
@@ -237,7 +270,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
         {
             List<WitsmlLogCurveInfo> newLogCurveInfos = new();
-            foreach (string mnemonic in sourceMnemonics.Where(mnemonic => !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
+            foreach (string mnemonic in sourceMnemonics.Where(mnemonic =>
+            !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(sourceLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
             {
                 if (targetLog.LogCurveInfo.All(lci => !string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -263,6 +298,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLogData logData)
         {
+            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(",", StringComparison.InvariantCulture)..];
             return new()
             {
                 Logs = new List<WitsmlLog> {
@@ -293,18 +329,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 throw new Exception($"Invalid interval. Start must be before End. Start: {sourceStart}, End: {sourceEnd}");
             }
-        }
-
-        private static void VerifyMatchingIndexCurves(WitsmlLog sourceLog, WitsmlLog targetLog)
-        {
-            string sourceIndexMnemonic = sourceLog.IndexCurve.Value;
-            string targetIndexMnemonic = targetLog.IndexCurve.Value;
-            if (sourceIndexMnemonic.Equals(targetIndexMnemonic, StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            throw new Exception($"Source and Target has different index mnemonics. Source: {sourceIndexMnemonic}, Target: {targetIndexMnemonic}");
         }
 
         private static void VerifyIndexCurveIsIncludedInMnemonics(WitsmlLog log, IList<string> newMnemonics, IList<string> existingMnemonics)

@@ -73,9 +73,9 @@ export const MudLogsListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: MudLogRow[]) => {
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: MudLogRow[]) => {
     const contextProps: MudLogContextMenuProps = {
-      mudLogs: checkedWbGeometryObjectRows.map((row) => row.mudLog)
+      mudLogs: checkedRows.map((row) => row.mudLog)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextProps} />, position } });

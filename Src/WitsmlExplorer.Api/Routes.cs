@@ -36,6 +36,9 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
 
+            app.MapGet(routes[EntityType.FormationMarker], FormationMarkerHandler.GetFormationMarkers, useOAuth2);
+            app.MapGet(routes[EntityType.FormationMarker] + "/{formationMarkerUid}", FormationMarkerHandler.GetFormationMarker, useOAuth2);
+
             app.MapGet(routes[EntityType.Log], LogHandler.GetLogs, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo, useOAuth2);
