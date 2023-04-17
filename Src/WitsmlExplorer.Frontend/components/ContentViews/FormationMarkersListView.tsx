@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
 import Struct from "../../models/struct";
+import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import FormationMarkerContextMenu, { FormationMarkerContextMenuProps } from "../ContextMenus/FormationMarkerContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface FormationMarkerRow extends ContentTableRow {
@@ -11,6 +15,7 @@ export interface FormationMarkerRow extends ContentTableRow {
 
 export const FormationMarkersListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
   const [formationMarkers, setFormationMarkers] = useState<FormationMarker[]>([]);
 
@@ -52,7 +57,15 @@ export const FormationMarkersListView = (): React.ReactElement => {
     });
   };
 
-  return Object.is(selectedWellbore?.formationMarkers, formationMarkers) && <ContentTable columns={columns} data={getTableData()} />;
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: FormationMarkerRow[]) => {
+    const contextProps: FormationMarkerContextMenuProps = {
+      formationMarkers: checkedRows.map((row) => row.formationMarker)
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FormationMarkerContextMenu {...contextProps} />, position } });
+  };
+
+  return Object.is(selectedWellbore?.formationMarkers, formationMarkers) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
 
 const columns: ContentTableColumn[] = [
