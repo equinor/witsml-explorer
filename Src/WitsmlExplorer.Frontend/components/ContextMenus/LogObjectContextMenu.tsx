@@ -7,10 +7,14 @@ import ModificationType from "../../contexts/modificationType";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
+import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
+import { CopyComponentsJob } from "../../models/jobs/copyJobs";
+import ObjectReference from "../../models/jobs/objectReference";
 import LogObject from "../../models/logObject";
+import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import { JobType } from "../../services/jobService";
+import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -22,7 +26,7 @@ import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogOb
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { onClickCopyLogToServer } from "./CopyLogToServer";
-import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
+import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -38,7 +42,7 @@ const useContextMenuIconStyle = makeStyles({ iconStyle: { width: 16, height: 16,
 
 const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElement => {
   const { checkedLogObjects, dispatchOperation, dispatchNavigation, selectedServer, servers } = props;
-  const logCurvesReference = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
+  const logCurvesReference: CopyRangeClipboard = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const classes = useContextMenuIconStyle();
 
   const onClickProperties = () => {
@@ -65,6 +69,18 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
       type: ModificationType.UpdateLogObject,
       payload: { log: log }
     });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
+  const orderCopyJob = () => {
+    const targetReference: ObjectReference = toObjectReference(checkedLogObjects[0]);
+    const copyJob: CopyComponentsJob = {
+      source: logCurvesReference,
+      target: targetReference,
+      startIndex: logCurvesReference.startIndex,
+      endIndex: logCurvesReference.endIndex
+    };
+    JobService.orderJob(JobType.CopyLogData, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -112,7 +128,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
         </NestedMenuItem>,
         <MenuItem
           key={"pastelogcurves"}
-          onClick={() => pasteComponents(servers, logCurvesReference, dispatchOperation, checkedLogObjects[0], JobType.CopyLogData)}
+          onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}
           disabled={logCurvesReference === null || checkedLogObjects.length !== 1}
         >
           <ListItemIcon>

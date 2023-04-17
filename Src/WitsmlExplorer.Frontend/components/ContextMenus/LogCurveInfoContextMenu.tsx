@@ -12,6 +12,7 @@ import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
+import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
@@ -37,6 +38,13 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     const modalProps = { selectedLogCurveInfoRow: checkedLogCurveInfoRows, selectedLog, dispatchOperation, dispatchNavigation };
     const displayModalAction: DisplayModalAction = { type: OperationType.DisplayModal, payload: <SelectIndexToDisplayModal {...modalProps} /> };
     dispatchOperation(displayModalAction);
+  };
+
+  const onClickCopyRange = () => {
+    const copyRangeProps: CopyRangeModalProps = {
+      mnemonics: checkedLogCurveInfoRows.map((lc) => lc.mnemonic)
+    };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <CopyRangeModal {...copyRangeProps} /> });
   };
 
   const onClickProperties = () => {
@@ -73,6 +81,10 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "curve", checkedLogCurveInfoRows)}</Typography>
+        </MenuItem>,
+        <MenuItem key={"copyRange"} onClick={onClickCopyRange} disabled={checkedLogCurveInfoRows.length === 0}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} with range`}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} to server`} disabled={checkedLogCurveInfoRows.length < 1}>
           {servers.map(

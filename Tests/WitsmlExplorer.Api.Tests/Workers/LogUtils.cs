@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 });
         }
 
-        public static CopyLogDataJob CreateJobTemplate()
+        public static CopyLogDataJob CreateJobTemplate(string startIndex = null, string endIndex = null)
         {
             return new CopyLogDataJob
             {
@@ -112,7 +112,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
                     Uid = TargetLogUid
-                }
+                },
+                StartIndex = startIndex,
+                EndIndex = endIndex
             };
         }
 
