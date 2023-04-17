@@ -183,6 +183,38 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task Execute_DifferentIndexMnemonics_CopyWithTargetIndex()
+        {
+            string sourceIndexCurve = "DEPTH";
+            string targetIndexCurve = "Dep";
+            string[] mnemonics = new[] { sourceIndexCurve, "DepthBit", "DepthHole" };
+            CopyLogDataJob job = LogUtils.CreateJobTemplate();
+            job.Source.ComponentUids = mnemonics;
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd, sourceIndexCurve);
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
+            WitsmlLogs targetLog = LogUtils.GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_MD);
+            targetLog.Logs.First().IndexCurve = new() { Value = targetIndexCurve };
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, targetLog);
+
+            WitsmlLogs query = null;
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+                .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
+                .ReturnsAsync(() =>
+                {
+                    double startIndex = double.Parse(query.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    return LogUtils.GetSourceLogData(startIndex, endIndex, mnemonics);
+                });
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
+            Assert.StartsWith(targetIndexCurve, updatedLogs[1].Logs.First().LogData.MnemonicList);
+            Assert.StartsWith(targetIndexCurve, updatedLogs[2].Logs.First().LogData.MnemonicList);
+        }
+
+        [Fact]
         public async Task Execute_OneDepthRow_CopiedCorrectly()
         {
             CopyLogDataJob job = LogUtils.CreateJobTemplate();
