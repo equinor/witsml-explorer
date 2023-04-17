@@ -57,25 +57,6 @@ export const FormationMarkersListView = (): React.ReactElement => {
     });
   };
 
-  const columns: ContentTableColumn[] = [
-    { property: "name", label: "name", type: ContentType.String },
-    { property: "itemState", label: "itemState", type: ContentType.String },
-    { property: "mdPrognosed", label: "mdPrognosed", type: ContentType.String },
-    { property: "tvdPrognosed", label: "tvdPrognosed", type: ContentType.String },
-    { property: "mdTopSample", label: "mdTopSample", type: ContentType.String },
-    { property: "tvdTopSample", label: "tvdTopSample", type: ContentType.String },
-    { property: "thicknessBed", label: "thicknessBed", type: ContentType.String },
-    { property: "thicknessApparent", label: "thicknessApparent", type: ContentType.String },
-    { property: "thicknessPerpen", label: "thicknessPerpen", type: ContentType.String },
-    { property: "mdLogSample", label: "mdLogSample", type: ContentType.String },
-    { property: "tvdLogSample", label: "tvdLogSample", type: ContentType.String },
-    { property: "dip", label: "dip", type: ContentType.String },
-    { property: "dipDirection", label: "dipDirection", type: ContentType.String },
-    { property: "lithostratigraphic", label: "lithostratigraphic", type: ContentType.String },
-    { property: "chronostratigraphic", label: "chronostratigraphic", type: ContentType.String },
-    { property: "description", label: "description", type: ContentType.String }
-  ];
-
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: FormationMarkerRow[]) => {
     const contextProps: FormationMarkerContextMenuProps = {
       formationMarkers: checkedRows.map((row) => row.formationMarker)
@@ -86,5 +67,24 @@ export const FormationMarkersListView = (): React.ReactElement => {
 
   return Object.is(selectedWellbore?.formationMarkers, formationMarkers) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
 };
+
+const columns: ContentTableColumn[] = [
+  { property: "name", label: "name", type: ContentType.String },
+  { property: "itemState", label: "itemState", type: ContentType.String },
+  { property: "mdPrognosed", label: "mdPrognosed", type: ContentType.String },
+  { property: "tvdPrognosed", label: "tvdPrognosed", type: ContentType.String },
+  { property: "mdTopSample", label: "mdTopSample", type: ContentType.String },
+  { property: "tvdTopSample", label: "tvdTopSample", type: ContentType.String },
+  { property: "thicknessBed", label: "thicknessBed", type: ContentType.String },
+  { property: "thicknessApparent", label: "thicknessApparent", type: ContentType.String },
+  { property: "thicknessPerpen", label: "thicknessPerpen", type: ContentType.String },
+  { property: "mdLogSample", label: "mdLogSample", type: ContentType.String },
+  { property: "tvdLogSample", label: "tvdLogSample", type: ContentType.String },
+  { property: "dip", label: "dip", type: ContentType.String },
+  { property: "dipDirection", label: "dipDirection", type: ContentType.String },
+  { property: "lithostratigraphic", label: "lithostratigraphic", type: ContentType.String },
+  { property: "chronostratigraphic", label: "chronostratigraphic", type: ContentType.String },
+  { property: "description", label: "description", type: ContentType.String }
+];
 
 export default FormationMarkersListView;

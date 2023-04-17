@@ -80,7 +80,10 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
             updateObject(e.target.value, validate(e.target.value));
           }}
-          style={{ fontFeatureSettings: '"tnum"' }}
+          style={{
+            fontFeatureSettings: '"tnum"',
+            paddingBottom: validate(value) ? "24px" : 0
+          }}
         />
       </Horizontal>
       <PickerIcon name="calendar" />

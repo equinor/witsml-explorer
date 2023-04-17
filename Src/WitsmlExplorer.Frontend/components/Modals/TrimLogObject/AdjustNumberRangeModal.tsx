@@ -80,6 +80,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         error={!startIndexIsValid}
         helperText={startIndexIsValid ? "" : `Must be lower than ${endValue}`}
         onChange={handleStartIndexChanged}
+        style={{ paddingBottom: startIndexIsValid ? "23px" : 0 }}
       />
       <TextField
         fullWidth
@@ -89,6 +90,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         error={!endIndexIsValid}
         helperText={endIndexIsValid ? "" : `Must be higher than ${maxValue}`}
         onChange={handleEndIndexChanged}
+        style={{ paddingBottom: endIndexIsValid ? "23px" : 0 }}
       />
     </>
   );

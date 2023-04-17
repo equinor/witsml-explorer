@@ -26,9 +26,9 @@ namespace WitsmlExplorer.Api.Models
 
         public LengthMeasure DipDirection { get; init; }
 
-        public Struct Lithostratigraphic { get; init; }
+        public StratigraphicStruct Lithostratigraphic { get; init; }
 
-        public Struct Chronostratigraphic { get; init; }
+        public StratigraphicStruct Chronostratigraphic { get; init; }
 
         public string Description { get; init; }
 

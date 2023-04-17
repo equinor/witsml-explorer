@@ -33,6 +33,9 @@ namespace Witsml.Data
         [XmlElement("statusWellbore")]
         public string StatusWellbore { get; set; }
 
+        [XmlElement("isActive")]
+        public string IsActive { get; set; }
+
         [XmlElement("purposeWellbore")]
         public string PurposeWellbore { get; set; }
 
@@ -74,8 +77,5 @@ namespace Witsml.Data
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
-
-        [XmlElement("isActive")]
-        public string IsActive { get; set; }
     }
 }

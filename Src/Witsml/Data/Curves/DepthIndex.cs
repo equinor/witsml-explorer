@@ -7,7 +7,7 @@ namespace Witsml.Data.Curves
     public class DepthIndex : Index
     {
         private const double OffsetEpsilon = 1e-3;
-        private const double Epsilon = 1e-4;
+        private const double Epsilon = 1e-5;
         public const double NullValue = -999.25;
 
         public double Value { get; }

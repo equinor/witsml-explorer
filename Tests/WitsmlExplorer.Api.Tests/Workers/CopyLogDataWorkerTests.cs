@@ -196,5 +196,52 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Equal("123.11,1,2", updatedLogs.First().Logs.First().LogData.Data[0].Data);
         }
+
+        [Fact]
+        public async Task Execute_DepthRange_CopiedCorrectly()
+        {
+            string startIndex = "123.12";
+            string endIndex = "123.18";
+            CopyLogDataJob job = LogUtils.CreateJobTemplate(startIndex, endIndex);
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.10, 123.20, "Depth");
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
+            string row1 = "123.12,1,2";
+            string row2 = "123.15,3,4";
+            string row3 = "123.18,5,6";
+            LogUtils.SetupGetDepthIndexed(_witsmlClient,
+            (logs) => logs.Logs.First().StartIndex?.Value == startIndex && logs.Logs.First().EndIndex?.Value == endIndex,
+            new() { new() { Data = row1 }, new() { Data = row2 }, new() { Data = row3 } });
+            LogUtils.SetupGetDepthIndexed(_witsmlClient,
+            (logs) => logs.Logs.First().StartIndex?.Value == endIndex,
+            new() { new() { Data = row3 } });
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+
+            await _worker.Execute(job);
+
+            Assert.Equal(row1, updatedLogs.First().Logs.First().LogData.Data[0].Data);
+            Assert.Equal(row2, updatedLogs.First().Logs.First().LogData.Data[1].Data);
+            Assert.Equal(row3, updatedLogs.First().Logs.First().LogData.Data[2].Data);
+        }
+
+        [Fact]
+        public async Task Execute_TimeRange_CopiedCorrectly()
+        {
+            string startIndex = "2019-11-01T21:02:00.000Z";
+            string endIndex = "2019-11-01T21:04:00.000Z";
+            CopyLogDataJob job = LogUtils.CreateJobTemplate(startIndex, endIndex);
+
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, _witsmlClient);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, _witsmlClient);
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+            WitsmlLogs query = null;
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+                .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
+                .ReturnsAsync(() => LogUtils.GetSourceLogData(query.Logs.First().StartDateTimeIndex, query.Logs.First().EndDateTimeIndex));
+
+            await _worker.Execute(job);
+
+            Assert.Equal(3, updatedLogs.First().Logs.First().LogData.Data.Count);
+        }
     }
 }

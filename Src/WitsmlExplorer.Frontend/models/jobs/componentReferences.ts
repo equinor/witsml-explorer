@@ -9,6 +9,11 @@ export default interface ComponentReferences {
   componentUids: string[];
 }
 
+export interface CopyRangeClipboard extends ComponentReferences {
+  startIndex?: string;
+  endIndex?: string;
+}
+
 export function createComponentReferences(uids: string[], parent: ObjectOnWellbore, componentType: ComponentType, serverUrl?: string): ComponentReferences {
   return {
     serverUrl: serverUrl,
