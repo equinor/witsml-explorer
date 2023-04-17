@@ -46,8 +46,8 @@ namespace WitsmlExplorer.Api.Services
         /// <param name="bufferSize">How many query results to buffer at a time. Defaults to 4.</param>
         public LogDataReader(IWitsmlClient witsmlClient, WitsmlLog sourceLog, List<string> mnemonics, ILogger logger, int bufferSize = 4)
         {
-            _witsmlClient = witsmlClient;
-            _uidWell = sourceLog.UidWell;
+            _witsmlClient = witsmlClient ?? throw new ArgumentNullException(nameof(witsmlClient));
+            _uidWell = sourceLog?.UidWell ?? throw new ArgumentNullException(nameof(sourceLog));
             _uidWellbore = sourceLog.UidWellbore;
             _uidLog = sourceLog.Uid;
             _indexType = sourceLog.IndexType;
@@ -55,24 +55,23 @@ namespace WitsmlExplorer.Api.Services
 
             _startIndex = Index.Start(sourceLog);
             _endIndex = Index.End(sourceLog);
-            _mnemonics = mnemonics;
+            _mnemonics = mnemonics ?? throw new ArgumentNullException(nameof(mnemonics));
             if (!mnemonics.Any())
             {
                 _finished = true;
                 logger?.LogInformation("{ClassName} received an empty mnemonics list. No data will be fetched", GetType().Name);
+                return;
             }
-            else
+
+            string indexMnemonic = sourceLog.IndexCurve.Value;
+            if (!mnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
             {
-                string indexMnemonic = sourceLog.IndexCurve.Value;
-                if (!mnemonics.Contains(indexMnemonic, StringComparer.InvariantCultureIgnoreCase))
-                {
-                    mnemonics.Insert(0, indexMnemonic);
-                }
+                mnemonics.Insert(0, indexMnemonic);
             }
-            Produce();
+            Task.Run(Produce);
         }
 
-        private async void Produce()
+        private async Task Produce()
         {
             try
             {
@@ -141,14 +140,14 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<T> WithTimeout<T>(Task<T> task)
         {
-            int timeout = 5 * 60 * 1000;
-            if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+            const int timeoutMinutes = 5;
+            if (await Task.WhenAny(task, Task.Delay(TimeSpan.FromMinutes(timeoutMinutes))) == task)
             {
                 return await task;
             }
             else
             {
-                throw new TimeoutException($"{GetType().Name} timed out after {timeout} milliseconds");
+                throw new TimeoutException($"{GetType().Name} timed out after {timeoutMinutes} minutes");
             }
         }
     }
