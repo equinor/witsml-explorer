@@ -3,7 +3,9 @@ import styled from "styled-components";
 import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { ObjectType } from "../models/objectType";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
+import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
+import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogsListView } from "./ContentViews/LogsListView";
@@ -46,6 +48,10 @@ const ContentView = (): React.ReactElement => {
     const setObjectGroupView = () => {
       if (currentSelected === ObjectType.BhaRun) {
         setView(<BhaRunsListView />);
+      } else if (currentSelected === ObjectType.ChangeLog) {
+        setView(<ChangeLogsListView />);
+      } else if (currentSelected === ObjectType.FormationMarker) {
+        setView(<FormationMarkersListView />);
       } else if (currentSelected === ObjectType.Log) {
         setView(<LogTypeListView />);
       } else if (currentSelected === ObjectType.Message) {

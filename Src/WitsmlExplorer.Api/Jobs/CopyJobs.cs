@@ -20,6 +20,24 @@ namespace WitsmlExplorer.Api.Jobs
             string endIndexDesc = string.IsNullOrEmpty(EndIndex) ? "" : $"\t\nEndIndex: {EndIndex};";
             return $"{base.Description()}{startIndexDesc}{endIndexDesc}";
         }
-
     }
+
+    public record CopyWellJob : ICopyJob<WellReference, WellReference> { }
+    public record CopyWellboreJob : ICopyJob<WellboreReference, WellboreReference> { }
+
+    public abstract record CopyWithParentJob : ICopyJob<ObjectReferences, WellboreReference>
+    {
+        public CopyWellJob CopyWellJob { get; init; }
+
+        public CopyWellboreJob CopyWellboreJob { get; init; }
+
+        public override string Description()
+        {
+            return $"{GetType().Name} - Source - {Source.Description()}\t\nTarget - {Target.Description()}";
+        }
+    }
+
+    public record CopyLogWithParentJob : CopyWithParentJob { }
+
+    public record CopyObjectsWithParentJob : CopyWithParentJob { }
 }

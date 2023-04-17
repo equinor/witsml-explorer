@@ -21,7 +21,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
-  const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
+  const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
 
   const onSubmit = async () => {
     const componentReferences: CopyRangeClipboard = createComponentReferences(props.mnemonics, selectedLog, ComponentType.Mnemonic, selectedServer.url);
@@ -61,7 +61,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
         </>
       }
       isLoading={false}
-      onSubmit={() => onSubmit()}
+      onSubmit={onSubmit}
       confirmText={"Copy"}
       confirmDisabled={confirmDisabled}
       switchButtonPlaces

@@ -7,8 +7,8 @@ import { ObjectType } from "../models/objectType";
 import { getObjectsFromWellbore } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import ObjectService from "../services/objectService";
-import WellboreService from "../services/wellboreService";
 import WellService from "../services/wellService";
+import WellboreService from "../services/wellboreService";
 
 const RefreshHandler = (): React.ReactElement => {
   const {

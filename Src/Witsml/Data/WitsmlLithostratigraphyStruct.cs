@@ -1,8 +1,8 @@
 using System.Xml.Serialization;
 
-namespace Witsml.Data.MudLog
+namespace Witsml.Data
 {
-    public class WitsmlChronostratigraphyStruct
+    public class WitsmlLithostratigraphyStruct
     {
         [XmlAttribute("kind")]
         public string Kind { get; set; }
