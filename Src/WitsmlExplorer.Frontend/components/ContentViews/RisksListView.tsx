@@ -6,8 +6,8 @@ import RiskObject from "../../models/riskObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import RiskObjectContextMenu, { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import { clipLongString } from "./ViewUtils";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
   risk: RiskObject;
@@ -40,6 +40,8 @@ export const RisksListView = (): React.ReactElement => {
         dTimEnd: formatDateString(risk.dTimEnd, timeZone),
         details: clipLongString(risk.details, 30),
         summary: clipLongString(risk.summary, 40),
+        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
         risk: risk
       };
     });
@@ -58,7 +60,9 @@ export const RisksListView = (): React.ReactElement => {
     { property: "category", label: "category", type: ContentType.String },
     { property: "subCategory", label: "subCategory", type: ContentType.String },
     { property: "affectedPersonnel", label: "affectedPersonnel", type: ContentType.String },
-    { property: "details", label: "details", type: ContentType.String }
+    { property: "details", label: "details", type: ContentType.String },
+    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {

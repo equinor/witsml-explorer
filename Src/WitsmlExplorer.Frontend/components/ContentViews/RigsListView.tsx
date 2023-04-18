@@ -38,7 +38,9 @@ export const RigsListView = (): React.ReactElement => {
         rig: rig,
         isOffshore: `${rig.isOffshore ?? ""}`,
         dTimStartOp: formatDateString(rig.dTimStartOp, timeZone),
-        dTimEndOp: formatDateString(rig.dTimEndOp, timeZone)
+        dTimEndOp: formatDateString(rig.dTimEndOp, timeZone),
+        dTimCreation: formatDateString(rig.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(rig.commonData.dTimLastChange, timeZone)
       };
     });
   };
@@ -62,7 +64,9 @@ export const RigsListView = (): React.ReactElement => {
     { property: "isOffshore", label: "isOffshore", type: ContentType.String },
     { property: "airGap", label: "airGap", type: ContentType.String },
     { property: "dTimStartOp", label: "dTimStartOp", type: ContentType.DateTime },
-    { property: "dTimEndOp", label: "dTimEndOp", type: ContentType.DateTime }
+    { property: "dTimEndOp", label: "dTimEndOp", type: ContentType.DateTime },
+    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRigRows: RigRow[]) => {

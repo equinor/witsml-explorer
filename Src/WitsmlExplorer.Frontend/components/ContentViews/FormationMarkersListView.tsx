@@ -7,6 +7,7 @@ import { measureToString } from "../../models/measure";
 import Struct from "../../models/struct";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FormationMarkerContextMenu, { FormationMarkerContextMenuProps } from "../ContextMenus/FormationMarkerContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface FormationMarkerRow extends ContentTableRow {
@@ -15,6 +16,9 @@ export interface FormationMarkerRow extends ContentTableRow {
 
 export const FormationMarkersListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
   const [formationMarkers, setFormationMarkers] = useState<FormationMarker[]>([]);
@@ -52,6 +56,8 @@ export const FormationMarkersListView = (): React.ReactElement => {
         chronostratigraphic: structToString(formationMarker.chronostratigraphic),
         description: formationMarker.description,
         itemState: formationMarker.commonData.itemState,
+        dTimCreation: formatDateString(formationMarker.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(formationMarker.commonData.dTimLastChange, timeZone),
         formationMarker
       };
     });
@@ -84,7 +90,9 @@ const columns: ContentTableColumn[] = [
   { property: "dipDirection", label: "dipDirection", type: ContentType.String },
   { property: "lithostratigraphic", label: "lithostratigraphic", type: ContentType.String },
   { property: "chronostratigraphic", label: "chronostratigraphic", type: ContentType.String },
-  { property: "description", label: "description", type: ContentType.String }
+  { property: "description", label: "description", type: ContentType.String },
+  { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+  { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
 ];
 
 export default FormationMarkersListView;

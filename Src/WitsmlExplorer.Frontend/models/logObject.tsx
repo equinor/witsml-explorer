@@ -1,3 +1,4 @@
+import CommonData from "./commonData";
 import ObjectOnWellbore from "./objectOnWellbore";
 
 export default interface LogObject extends ObjectOnWellbore {
@@ -8,6 +9,7 @@ export default interface LogObject extends ObjectOnWellbore {
   serviceCompany?: string;
   runNumber?: string;
   indexCurve?: string;
+  commonData?: CommonData;
 }
 
 export const indexToNumber = (index: string): number => {

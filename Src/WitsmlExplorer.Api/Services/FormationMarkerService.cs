@@ -60,6 +60,8 @@ namespace WitsmlExplorer.Api.Services
                 Description = formationMarker.Description,
                 CommonData = new CommonData()
                 {
+                    DTimCreation = formationMarker.CommonData.DTimCreation,
+                    DTimLastChange = formationMarker.CommonData.DTimLastChange,
                     ItemState = formationMarker.CommonData.ItemState
                 }
             };
