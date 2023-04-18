@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -31,6 +32,7 @@ namespace WitsmlExplorer.Api.Services
         private bool _dropFirstRow;
         private readonly BufferBlock<WitsmlLogData> _buffer;
         private Exception _exception;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public string StartIndex => _startIndex.GetValueAsString();
         private bool _finished;
@@ -52,6 +54,7 @@ namespace WitsmlExplorer.Api.Services
             _uidLog = sourceLog.Uid;
             _indexType = sourceLog.IndexType;
             _buffer = new BufferBlock<WitsmlLogData>(new DataflowBlockOptions() { BoundedCapacity = bufferSize });
+            _cancellationTokenSource = new CancellationTokenSource();
 
             _startIndex = Index.Start(sourceLog);
             _endIndex = Index.End(sourceLog);
@@ -84,9 +87,14 @@ namespace WitsmlExplorer.Api.Services
                     }
                     await WithTimeout(_buffer.SendAsync(logData));
                 }
+                if (_buffer.Count == 0)
+                {
+                    _cancellationTokenSource.Cancel();
+                }
             }
             catch (Exception e)
             {
+                _cancellationTokenSource.Cancel();
                 _exception = e;
             }
             _finished = true;
@@ -135,7 +143,19 @@ namespace WitsmlExplorer.Api.Services
             {
                 return null;
             }
-            return await WithTimeout(_buffer.ReceiveAsync());
+
+            try
+            {
+                return await _buffer.ReceiveAsync(_cancellationTokenSource.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+                return null;
+            }
         }
 
         private async Task<T> WithTimeout<T>(Task<T> task)
