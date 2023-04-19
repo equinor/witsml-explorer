@@ -1,9 +1,11 @@
 import { TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import JobService, { JobType } from "../../services/jobService";
+import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText, validTimeZone } from "./ModalParts";
 
@@ -15,6 +17,9 @@ export interface WellPropertiesModalProps {
 
 const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElement => {
   const { mode, well, dispatchOperation } = props;
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const [editableWell, setEditableWell] = useState<Well>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;
@@ -95,6 +100,8 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 inputProps={{ maxLength: 6 }}
                 onChange={(e) => setEditableWell({ ...editableWell, timeZone: e.target.value })}
               />
+              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone)} fullWidth />
+              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(well.dateTimeLastChange, timeZone)} fullWidth />
             </>
           }
           confirmDisabled={!validText(editableWell.uid) || !validText(editableWell.name) || !validTimeZone(editableWell.timeZone)}

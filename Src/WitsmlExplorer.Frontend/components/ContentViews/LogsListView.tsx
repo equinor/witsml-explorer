@@ -55,6 +55,8 @@ export const LogsListView = (): React.ReactElement => {
         id: index,
         startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone) : log.startIndex,
         endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone) : log.endIndex,
+        dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(log.commonData.dTimLastChange, timeZone),
         logObject: log
       };
     });
@@ -66,7 +68,9 @@ export const LogsListView = (): React.ReactElement => {
     { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "indexType", label: "indexType", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String }
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onSelect = (log: LogObjectRow) => {

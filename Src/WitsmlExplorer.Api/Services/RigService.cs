@@ -66,6 +66,8 @@ namespace WitsmlExplorer.Api.Services
                 YearEntService = witsmlRig.YearEntService,
                 CommonData = witsmlRig.CommonData == null ? null : new CommonData()
                 {
+                    DTimCreation = witsmlRig.CommonData.DTimCreation,
+                    DTimLastChange = witsmlRig.CommonData.DTimLastChange,
                     ItemState = witsmlRig.CommonData.ItemState
                 }
             };

@@ -7,10 +7,14 @@ import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
+import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { timeZone }
+  } = useContext(OperationContext);
   const { selectedServer, selectedWell, selectedWellbore, servers, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
@@ -30,7 +34,9 @@ export const TubularsListView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
     { property: "typeTubularAssy", label: "typeTubularAssy", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String }
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onSelect = (tubular: any) => {
@@ -43,6 +49,8 @@ export const TubularsListView = (): React.ReactElement => {
   const tubularRows = tubulars.map((tubular) => {
     return {
       ...tubular,
+      dTimCreation: formatDateString(tubular.commonData.dTimCreation, timeZone),
+      dTimLastChange: formatDateString(tubular.commonData.dTimLastChange, timeZone),
       id: tubular.uid
     };
   });

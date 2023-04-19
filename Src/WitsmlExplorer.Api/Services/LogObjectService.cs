@@ -50,8 +50,12 @@ namespace WitsmlExplorer.Api.Services
                     RunNumber = log.RunNumber,
                     StartIndex = log.GetStartIndexAsString(),
                     EndIndex = log.GetEndIndexAsString(),
-                    DateTimeLastChange = log.CommonData.DTimLastChange,
-                    IndexCurve = log.IndexCurve.Value
+                    IndexCurve = log.IndexCurve.Value,
+                    CommonData = new CommonData()
+                    {
+                        DTimCreation = log.CommonData.DTimCreation,
+                        DTimLastChange = log.CommonData.DTimLastChange,
+                    }
                 }).OrderBy(log => log.Name);
         }
 
@@ -82,7 +86,12 @@ namespace WitsmlExplorer.Api.Services
                 IndexCurve = witsmlLog.IndexCurve.Value,
                 ObjectGrowing = StringHelpers.ToBooleanSafe(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
-                RunNumber = witsmlLog.RunNumber
+                RunNumber = witsmlLog.RunNumber,
+                CommonData = new()
+                {
+                    DTimCreation = witsmlLog.CommonData.DTimCreation,
+                    DTimLastChange = witsmlLog.CommonData.DTimLastChange,
+                }
             };
             if (string.IsNullOrEmpty(witsmlLog.IndexType))
             {
