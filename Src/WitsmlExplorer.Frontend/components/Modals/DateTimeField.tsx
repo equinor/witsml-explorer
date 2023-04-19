@@ -47,7 +47,7 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
       <TextField
         id={label}
         label={label}
-        value={value}
+        value={value ?? ""}
         helperText={getHelperText()}
         variant={validate(value) ? undefined : "error"}
         autoComplete="off"
