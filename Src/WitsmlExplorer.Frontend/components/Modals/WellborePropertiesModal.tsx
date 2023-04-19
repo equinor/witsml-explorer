@@ -1,7 +1,7 @@
+import { Autocomplete } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import MenuItem from "@material-ui/core/MenuItem";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
@@ -40,10 +40,6 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
     await JobService.orderJob(mode == PropertiesModalMode.New ? JobType.CreateWellbore : JobType.ModifyWellbore, wellboreJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  const onChangePurpose = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setEditableWellbore({ ...editableWellbore, wellborePurpose: e.target.value });
   };
 
   useEffect(() => {
@@ -86,14 +82,16 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableWellbore.wellUid} fullWidth />
               <TextField disabled id="wellName" label="well name" defaultValue={editableWellbore.wellName} fullWidth />
               <TextField disabled id={"wellboreParent"} label={"wellbore parent"} defaultValue={editableWellbore.wellboreParentName} fullWidth />
-              <TextField id={"wellborePurpose"} select label={"wellbore purpose"} value={editableWellbore.wellborePurpose || ""} fullWidth onChange={(e) => onChangePurpose(e)}>
-                {purposeValues &&
-                  purposeValues.map((purposeValue) => (
-                    <MenuItem key={purposeValue} value={purposeValue}>
-                      {purposeValue}
-                    </MenuItem>
-                  ))}
-              </TextField>
+              <Autocomplete
+                id="wellborePurpose"
+                label="wellbore purpose"
+                options={purposeValues}
+                initialSelectedOptions={[editableWellbore.wellborePurpose]}
+                hideClearButton
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableWellbore({ ...editableWellbore, wellborePurpose: selectedItems[0] });
+                }}
+              />
               {mode == PropertiesModalMode.Edit && (
                 <>
                   <Container>
