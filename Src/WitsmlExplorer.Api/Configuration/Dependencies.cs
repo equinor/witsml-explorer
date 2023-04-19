@@ -30,6 +30,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IWitsmlSystemCredentials>()
                 .IgnoreThisInterface<IWitsmlClientProvider>()
                 .IgnoreThisInterface<ICredentialsCache>()
+                .IgnoreThisInterface<IAsyncDisposable>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();

@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers
             updatedLog.LogCurveInfo.Find(c => c.Mnemonic == job.Mnemonic)!.Mnemonic = job.NewMnemonic;
             WitsmlLogs updatedLogs = new() { Logs = new() { updatedLog } };
 
-            LogDataReader logDataReader = new(client, logHeader, mnemonics, Logger);
+            await using LogDataReader logDataReader = new(client, logHeader, mnemonics, Logger);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             while (logData != null)
             {
