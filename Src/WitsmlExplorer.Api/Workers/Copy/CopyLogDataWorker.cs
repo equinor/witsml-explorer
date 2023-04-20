@@ -159,7 +159,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             int numberOfDataRowsCopied = 0;
-            LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
+            await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
             while (sourceLogData != null)
             {

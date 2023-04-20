@@ -42,6 +42,8 @@ namespace WitsmlExplorer.Api.Query
                     YearEntService = "",
                     CommonData = new WitsmlCommonData()
                     {
+                        DTimCreation = "",
+                        DTimLastChange = "",
                         ItemState = ""
                     }
                 }.AsSingletonList()

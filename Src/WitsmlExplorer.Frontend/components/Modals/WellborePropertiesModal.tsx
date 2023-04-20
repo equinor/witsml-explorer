@@ -291,6 +291,8 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                   />
                 </>
               )}
+              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(wellbore.dateTimeCreation, timeZone)} fullWidth />
+              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(wellbore.dateTimeLastChange, timeZone)} fullWidth />
             </>
           }
           confirmDisabled={!validText(editableWellbore.uid) || !validText(editableWellbore.name) || !dTimeKickoffValid || !wellboreHasChanges(pristineWellbore, editableWellbore)}

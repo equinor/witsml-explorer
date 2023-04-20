@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Data.Tubular;
 using Witsml.Extensions;
@@ -26,6 +27,11 @@ namespace WitsmlExplorer.Api.Query
                     NameWell = "",
                     NameWellbore = "",
                     TypeTubularAssy = "",
+                    CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
                 }.AsSingletonList()
             };
         }

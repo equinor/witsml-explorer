@@ -32,8 +32,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             new() { new() { Data = "123.11,1," }, new() { Data = "123.12,,2" } });
             LogUtils.SetupGetDepthIndexed(_witsmlClient, (logs) => logs.Logs.First().StartIndex?.Value == "123.12",
             new() { new() { Data = "123.12,,2" } });
-            LogDataReader logDataReader = new(_witsmlClient.Object, sourceLog, LogUtils.SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD].ToList(), null);
-
+            await using LogDataReader logDataReader = new(_witsmlClient.Object, sourceLog, LogUtils.SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD].ToList(), null);
             WitsmlLogData firstBatch = await logDataReader.GetNextBatch();
             WitsmlLogData lastBatch = await logDataReader.GetNextBatch();
 

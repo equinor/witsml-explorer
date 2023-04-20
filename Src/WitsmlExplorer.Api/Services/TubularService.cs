@@ -70,7 +70,12 @@ namespace WitsmlExplorer.Api.Services
                 Name = tubular.Name,
                 WellName = tubular.NameWell,
                 WellboreName = tubular.NameWellbore,
-                TypeTubularAssy = tubular.TypeTubularAssy
+                TypeTubularAssy = tubular.TypeTubularAssy,
+                CommonData = new CommonData()
+                {
+                    DTimCreation = tubular.CommonData.DTimCreation,
+                    DTimLastChange = tubular.CommonData.DTimLastChange
+                }
             };
         }
 
