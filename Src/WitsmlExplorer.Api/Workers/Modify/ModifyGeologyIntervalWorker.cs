@@ -9,7 +9,6 @@ using Witsml.Data.MudLog;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
@@ -70,25 +69,17 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 throw new InvalidOperationException($"{nameof(geologyInterval.Uid)} cannot be empty");
             }
-            VerifyMeasure(geologyInterval.MdTop, nameof(geologyInterval.MdTop));
-            VerifyMeasure(geologyInterval.MdBottom, nameof(geologyInterval.MdBottom));
-            VerifyMeasure(geologyInterval.TvdTop, nameof(geologyInterval.TvdTop));
-            VerifyMeasure(geologyInterval.TvdBase, nameof(geologyInterval.TvdBase));
-            VerifyMeasure(geologyInterval.RopAv, nameof(geologyInterval.RopAv));
-            VerifyMeasure(geologyInterval.WobAv, nameof(geologyInterval.WobAv));
-            VerifyMeasure(geologyInterval.TqAv, nameof(geologyInterval.TqAv));
-            VerifyMeasure(geologyInterval.CurrentAv, nameof(geologyInterval.CurrentAv));
-            VerifyMeasure(geologyInterval.RpmAv, nameof(geologyInterval.RpmAv));
-            VerifyMeasure(geologyInterval.WtMudAv, nameof(geologyInterval.WtMudAv));
-            VerifyMeasure(geologyInterval.EcdTdAv, nameof(geologyInterval.EcdTdAv));
-        }
-
-        private static void VerifyMeasure(Measure measure, string name)
-        {
-            if (measure != null && string.IsNullOrEmpty(measure.Uom))
-            {
-                throw new InvalidOperationException($"unit of measure for {name} cannot be empty");
-            }
+            ModifyUtils.VerifyMeasure(geologyInterval.MdTop, nameof(geologyInterval.MdTop));
+            ModifyUtils.VerifyMeasure(geologyInterval.MdBottom, nameof(geologyInterval.MdBottom));
+            ModifyUtils.VerifyMeasure(geologyInterval.TvdTop, nameof(geologyInterval.TvdTop));
+            ModifyUtils.VerifyMeasure(geologyInterval.TvdBase, nameof(geologyInterval.TvdBase));
+            ModifyUtils.VerifyMeasure(geologyInterval.RopAv, nameof(geologyInterval.RopAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.WobAv, nameof(geologyInterval.WobAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.TqAv, nameof(geologyInterval.TqAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.CurrentAv, nameof(geologyInterval.CurrentAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.RpmAv, nameof(geologyInterval.RpmAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.WtMudAv, nameof(geologyInterval.WtMudAv));
+            ModifyUtils.VerifyMeasure(geologyInterval.EcdTdAv, nameof(geologyInterval.EcdTdAv));
         }
     }
 }

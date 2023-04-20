@@ -4,7 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
-import Struct from "../../models/struct";
+import StratigraphicStruct from "../../models/stratigraphicStruct";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FormationMarkerContextMenu, { FormationMarkerContextMenuProps } from "../ContextMenus/FormationMarkerContextMenu";
 import formatDateString from "../DateFormatter";
@@ -29,7 +29,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
     }
   }, [selectedWellbore]);
 
-  const structToString = (struct: Struct) => {
+  const structToString = (struct: StratigraphicStruct) => {
     if (struct == null) {
       return "";
     }
