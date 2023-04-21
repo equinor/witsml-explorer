@@ -7,18 +7,21 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
 const items = [
   { type: ObjectType.BhaRun },
+  { type: ObjectType.FormationMarker },
   { type: ObjectType.Log, jobType: JobType.CopyLog },
+  { type: ObjectType.MudLog },
   { type: ObjectType.Rig },
   { type: ObjectType.Risk },
   { type: ObjectType.Trajectory },
-  { type: ObjectType.Tubular }
+  { type: ObjectType.Tubular },
+  { type: ObjectType.WbGeometry }
 ];
 
 export interface WellborePasteMenuItemProps {
