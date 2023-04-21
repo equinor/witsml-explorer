@@ -100,8 +100,12 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 inputProps={{ maxLength: 6 }}
                 onChange={(e) => setEditableWell({ ...editableWell, timeZone: e.target.value })}
               />
-              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone)} fullWidth />
-              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(well.dateTimeLastChange, timeZone)} fullWidth />
+              {mode !== PropertiesModalMode.New && (
+                <>
+                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone)} fullWidth />
+                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(well.dateTimeLastChange, timeZone)} fullWidth />
+                </>
+              )}
             </>
           }
           confirmDisabled={!validText(editableWell.uid) || !validText(editableWell.name) || !validTimeZone(editableWell.timeZone)}

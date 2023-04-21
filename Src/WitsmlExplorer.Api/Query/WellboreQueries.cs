@@ -91,6 +91,11 @@ namespace WitsmlExplorer.Api.Query
                 witsmlWellbore.NumGovt = wellbore.NumGovt;
             }
 
+            if (!string.IsNullOrEmpty(wellbore.WellborePurpose))
+            {
+                witsmlWellbore.PurposeWellbore = wellbore.WellborePurpose;
+            }
+
             if (wellbore.DTimeKickoff != null)
             {
                 witsmlWellbore.DTimKickoff = wellbore.DTimeKickoff;
