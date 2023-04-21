@@ -95,8 +95,12 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 onOptionsChange={onChangeCurve}
                 hideClearButton={true}
               />
-              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(logObject.commonData.dTimCreation, timeZone)} />
-              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(logObject.commonData.dTimLastChange, timeZone)} />
+              {mode !== PropertiesModalMode.New && (
+                <>
+                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone)} />
+                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone)} />
+                </>
+              )}
             </>
           }
           confirmDisabled={!validText(editableLogObject.uid) || !validText(editableLogObject.name) || !validText(editableLogObject.indexCurve)}
