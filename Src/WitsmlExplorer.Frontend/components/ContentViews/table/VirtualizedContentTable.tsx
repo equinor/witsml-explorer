@@ -1,4 +1,4 @@
-import { Checkbox, TableCell as MuiTableCell, TableSortLabel } from "@material-ui/core";
+import { Checkbox, TableCell as MuiTableCell, TableSortLabel, Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import orderBy from "lodash/orderBy";
 import memoizeOne from "memoize-one";
@@ -15,11 +15,11 @@ import {
   ContentTableProps,
   ContentTableRow,
   ContentType,
+  Order,
   getCheckedRows,
   getColumnAlignment,
   getComparatorByColumn,
-  getSelectedRange,
-  Order
+  getSelectedRange
 } from "./tableParts";
 
 interface RowProps {
@@ -73,16 +73,25 @@ const Row = memo(({ data, index, style }: RowProps) => {
         )}
         {columns &&
           columns.map((column: { property: string; type: ContentType }) => (
-            <TableDataCell
-              id={item[column.property] + column.property}
-              key={column.property + "-" + index}
-              component={"div"}
-              clickable={onSelect ? "true" : "false"}
-              type={column.type}
-              align={getColumnAlignment(column)}
+            <Tooltip
+              title={item[column.property] == null ? "" : item[column.property]}
+              key={column.property + "-" + index + "-tooltip"}
+              placement="top"
+              arrow
+              interactive
+              enterDelay={500}
+              disableHoverListener={item[column.property] === "" || item[column.property] == null}
             >
-              {formatCell(column.type, item[column.property])}
-            </TableDataCell>
+              <TableDataCell
+                id={item[column.property] + column.property}
+                key={column.property + "-" + index}
+                component={"div"}
+                clickable={onSelect ? "true" : "false"}
+                align={getColumnAlignment(column)}
+              >
+                {formatCell(column.type, item[column.property])}
+              </TableDataCell>
+            </Tooltip>
           ))}
       </TableRow>
     </RowWrapper>
@@ -354,25 +363,17 @@ const TableRow = styled.div<{ hover: boolean }>`
   }
 `;
 
-const TableDataCell = styled(MuiTableCell)<{ clickable?: string; type?: ContentType }>`
+const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
   border-right: 1px solid rgba(224, 224, 224, 1);
   && {
     color: ${colors.text.staticIconsDefault};
     font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
-  ${({ type }) =>
-    type === ContentType.String &&
-    `
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  `};
-  ${({ type }) =>
-    (type === ContentType.Number || type === ContentType.DateTime || type === ContentType.Measure) &&
-    `
-    font-feature-settings: "tnum";
-  `};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-feature-settings: "tnum";
 `;
 TableDataCell.displayName = "TableDataCell";
 
