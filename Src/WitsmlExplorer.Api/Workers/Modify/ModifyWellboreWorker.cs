@@ -102,6 +102,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 throw new InvalidOperationException($"unit of measure for {nameof(wellbore.DayTarget)} cannot be empty");
             }
+
+            if (wellbore.Comments == string.Empty)
+            {
+                throw new InvalidOperationException($"{nameof(wellbore.Comments)} cannot be empty");
+            }
         }
     }
 }

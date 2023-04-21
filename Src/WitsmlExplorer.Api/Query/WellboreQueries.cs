@@ -68,7 +68,8 @@ namespace WitsmlExplorer.Api.Query
             WitsmlWellbore witsmlWellbore = new()
             {
                 Uid = wellbore.Uid,
-                UidWell = wellbore.WellUid
+                UidWell = wellbore.WellUid,
+                CommonData = new()
             };
 
             if (!string.IsNullOrEmpty(wellbore.Name))
@@ -144,6 +145,11 @@ namespace WitsmlExplorer.Api.Query
             if (wellbore.DayTarget != null)
             {
                 witsmlWellbore.DayTarget = new WitsmlDayMeasure { Uom = wellbore.DayTarget.Uom, Value = wellbore.DayTarget.Value.ToString(CultureInfo.InvariantCulture) };
+            }
+
+            if (!string.IsNullOrEmpty(wellbore.Comments))
+            {
+                witsmlWellbore.CommonData.Comments = wellbore.Comments;
             }
 
             return new WitsmlWellbores
