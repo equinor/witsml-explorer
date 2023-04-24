@@ -17,6 +17,7 @@ namespace WitsmlExplorer.Api.Models
         public string DateTimeCreation { get; set; }
         public string DateTimeLastChange { get; set; }
         public string ItemState { get; set; }
+        public string Comments { get; set; }
         public string Number { get; set; }
         public string SuffixAPI { get; set; }
         public string NumGovt { get; set; }

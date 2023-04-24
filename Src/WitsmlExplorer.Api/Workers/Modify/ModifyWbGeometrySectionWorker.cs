@@ -11,7 +11,6 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
@@ -41,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update wbGeometrySection";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             WitsmlWbGeometrys wbGeometryQuery = WbGeometryQueries.GetWitsmlWbGeometryIdOnly(wellUid, wellboreUid, wbGeometryUid);
             WitsmlWbGeometrys wbGeometryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(wbGeometryQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlWbGeometry wbGeometry = wbGeometryResult.WbGeometrys.FirstOrDefault();
@@ -80,22 +79,14 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 throw new InvalidOperationException($"{nameof(wbGeometrySection.Uid)} cannot be empty");
             }
-            VerifyMeasure(wbGeometrySection.DiaDrift, nameof(wbGeometrySection.DiaDrift));
-            VerifyMeasure(wbGeometrySection.IdSection, nameof(wbGeometrySection.IdSection));
-            VerifyMeasure(wbGeometrySection.OdSection, nameof(wbGeometrySection.OdSection));
-            VerifyMeasure(wbGeometrySection.MdBottom, nameof(wbGeometrySection.MdBottom));
-            VerifyMeasure(wbGeometrySection.MdTop, nameof(wbGeometrySection.MdTop));
-            VerifyMeasure(wbGeometrySection.TvdBottom, nameof(wbGeometrySection.TvdBottom));
-            VerifyMeasure(wbGeometrySection.TvdTop, nameof(wbGeometrySection.TvdTop));
-            VerifyMeasure(wbGeometrySection.WtPerLen, nameof(wbGeometrySection.WtPerLen));
-        }
-
-        private static void VerifyMeasure(Measure measure, string name)
-        {
-            if (measure != null && string.IsNullOrEmpty(measure.Uom))
-            {
-                throw new InvalidOperationException($"unit of measure for {name} cannot be empty");
-            }
+            ModifyUtils.VerifyMeasure(wbGeometrySection.DiaDrift, nameof(wbGeometrySection.DiaDrift));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.IdSection, nameof(wbGeometrySection.IdSection));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.OdSection, nameof(wbGeometrySection.OdSection));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.MdBottom, nameof(wbGeometrySection.MdBottom));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.MdTop, nameof(wbGeometrySection.MdTop));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.TvdBottom, nameof(wbGeometrySection.TvdBottom));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.TvdTop, nameof(wbGeometrySection.TvdTop));
+            ModifyUtils.VerifyMeasure(wbGeometrySection.WtPerLen, nameof(wbGeometrySection.WtPerLen));
         }
     }
 }

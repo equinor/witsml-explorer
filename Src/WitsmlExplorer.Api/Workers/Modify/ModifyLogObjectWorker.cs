@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update log";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs logs = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlLog log = logs.Logs.FirstOrDefault();

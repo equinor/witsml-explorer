@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (!modifyWbGeometryResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify wbGeometry object";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyWbGeometryResult.Reason), null);
             }
 

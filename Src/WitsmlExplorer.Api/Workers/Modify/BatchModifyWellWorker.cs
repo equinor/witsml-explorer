@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (resultTask.Status == TaskStatus.Faulted)
             {
                 const string errorMessage = "Failed to batch update well properties";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
             }
 

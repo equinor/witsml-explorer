@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update tubularComponent";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             WitsmlTubulars tubularComponentQuery = TubularQueries.GetWitsmlTubular(wellUid, wellboreUid, tubularUid);
             WitsmlTubulars tubularComponents = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(tubularComponentQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlTubular tubular = tubularComponents.Tubulars.FirstOrDefault();

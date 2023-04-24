@@ -246,7 +246,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectGroupId(wellbore, ObjectType.WbGeometry)}
         labelText={"WbGeometries"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.WbGeometry)}
-        onContextMenu={preventContextMenuPropagation}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.WbGeometry)}
       >
         {wellbore &&
           wellbore.wbGeometrys &&

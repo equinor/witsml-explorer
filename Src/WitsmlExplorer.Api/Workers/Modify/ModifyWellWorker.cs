@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 WellName = updatedWell.Name
             };
             const string errorMessage = "Failed to update well";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 

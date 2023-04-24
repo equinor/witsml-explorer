@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 WellboreName = updatedWellbore.Name
             };
             const string errorMessage = "Failed to update wellbore";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 
@@ -101,6 +101,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (wellbore.DayTarget != null && string.IsNullOrEmpty(wellbore.DayTarget.Uom))
             {
                 throw new InvalidOperationException($"unit of measure for {nameof(wellbore.DayTarget)} cannot be empty");
+            }
+
+            if (wellbore.Comments == string.Empty)
+            {
+                throw new InvalidOperationException($"{nameof(wellbore.Comments)} cannot be empty");
             }
         }
     }
