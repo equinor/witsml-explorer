@@ -12,8 +12,8 @@ import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
-import { pasteComponents } from "./CopyUtils";
+import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -25,7 +25,7 @@ export interface WbGeometryObjectContextMenuProps {
 }
 
 const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): React.ReactElement => {
-  const { checkedWbGeometryObjects, dispatchOperation, servers } = props;
+  const { checkedWbGeometryObjects, dispatchOperation, servers, selectedServer } = props;
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(ComponentType.WbGeometrySection);
 
   const onClickModify = async () => {
@@ -38,6 +38,14 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem
+          key={"copy"}
+          onClick={() => copyObjectOnWellbore(selectedServer, checkedWbGeometryObjects, dispatchOperation, ObjectType.WbGeometry)}
+          disabled={checkedWbGeometryObjects.length === 0}
+        >
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("copy", "wbGeometry", checkedWbGeometryObjects)}</Typography>
+        </MenuItem>,
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedWbGeometryObjects[0], JobType.CopyWbGeometrySections)}
