@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (!modifyMessageResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify message object";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyMessageResult.Reason), null);
             }
 

@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
             EntityDescription description = new() { WellboreName = formationMarker.WellboreName };
             const string errorMessage = "Failed to update formationMarker";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
 
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }

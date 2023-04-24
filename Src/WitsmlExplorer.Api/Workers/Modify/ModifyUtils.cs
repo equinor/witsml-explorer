@@ -4,7 +4,7 @@ using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Workers.Modify
 {
-    public class ModifyUtils
+    public static class ModifyUtils
     {
         public static void VerifyMeasure(Measure measure, string name)
         {

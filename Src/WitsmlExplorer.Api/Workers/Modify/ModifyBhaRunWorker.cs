@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (!modifyBhaRunResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify bhaRun";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyBhaRunResult.Reason), null);
             }
 

@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (!modifyRigResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify rig object";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyRigResult.Reason), null);
             }
 

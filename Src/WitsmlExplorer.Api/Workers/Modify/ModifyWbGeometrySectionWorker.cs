@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update wbGeometrySection";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             WitsmlWbGeometrys wbGeometryQuery = WbGeometryQueries.GetWitsmlWbGeometryIdOnly(wellUid, wellboreUid, wbGeometryUid);
             WitsmlWbGeometrys wbGeometryResult = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(wbGeometryQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlWbGeometry wbGeometry = wbGeometryResult.WbGeometrys.FirstOrDefault();

@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update geologyInterval";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             EntityDescription description = new()
             {
                 WellName = job.MudLogReference.WellName,
