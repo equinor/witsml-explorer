@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 WellboreName = updatedWellbore.Name
             };
             const string errorMessage = "Failed to update wellbore";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, result.Reason, description), null);
         }
 

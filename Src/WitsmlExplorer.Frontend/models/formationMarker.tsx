@@ -2,7 +2,7 @@ import CommonData from "./commonData";
 import Measure from "./measure";
 import MeasureWithDatum from "./measureWithDatum";
 import ObjectOnWellbore from "./objectOnWellbore";
-import Struct from "./struct";
+import StratigraphicStruct from "./stratigraphicStruct";
 
 export default interface FormationMarker extends ObjectOnWellbore {
   mdPrognosed?: MeasureWithDatum;
@@ -16,8 +16,8 @@ export default interface FormationMarker extends ObjectOnWellbore {
   tvdLogSample?: MeasureWithDatum;
   dip?: Measure;
   dipDirection?: Measure;
-  lithostratigraphic?: Struct;
-  chronostratigraphic?: Struct;
+  lithostratigraphic?: StratigraphicStruct;
+  chronostratigraphic?: StratigraphicStruct;
   description?: string;
   commonData?: CommonData;
 }

@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (!modifyRiskResult.IsSuccessful)
             {
                 const string errorMessage = "Failed to modify risk object";
-                Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+                Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyRiskResult.Reason), null);
             }
 

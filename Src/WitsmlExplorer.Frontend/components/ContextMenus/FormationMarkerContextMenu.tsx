@@ -1,12 +1,14 @@
-import { Typography } from "@equinor/eds-core-react";
+import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import FormationMarker from "../../models/formationMarker";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { colors } from "../../styles/Colors";
+import FormationMarkerPropertiesModal, { FormationMarkerPropertiesModalProps } from "../Modals/FormationMarkerPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer } from "./ContextMenuUtils";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
@@ -23,6 +25,12 @@ const FormationMarkerContextMenu = (props: FormationMarkerContextMenuProps): Rea
   const { selectedServer, servers, selectedWellbore } = navigationState;
   const objectReferences = useClipboardReferencesOfType(ObjectType.FormationMarker);
   const { dispatchOperation } = useContext(OperationContext);
+
+  const onClickModify = async () => {
+    const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = { formationMarker: formationMarkers[0] };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <FormationMarkerPropertiesModal {...modifyFormationMarkerProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
 
   return (
     <ContextMenu
@@ -49,7 +57,12 @@ const FormationMarkerContextMenu = (props: FormationMarkerContextMenuProps): Rea
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
-        </NestedMenuItem>
+        </NestedMenuItem>,
+        <Divider key={"divider"} />,
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={formationMarkers.length !== 1}>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Properties</Typography>
+        </MenuItem>
       ]}
     />
   );

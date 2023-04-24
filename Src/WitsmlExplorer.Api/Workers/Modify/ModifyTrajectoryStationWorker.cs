@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             const string errorMessage = "Failed to update TrajectoryStation";
-            Logger.LogError("{ErrorMessage}. {jobDescription}}", errorMessage, job.Description());
+            Logger.LogError("{ErrorMessage}. {jobDescription}", errorMessage, job.Description());
             WitsmlTrajectories trajectoryStationQuery = TrajectoryQueries.GetWitsmlTrajectoryById(wellUid, wellboreUid, trajectoryUid);
             WitsmlTrajectories trajectoryStations = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(trajectoryStationQuery, new OptionsIn(ReturnElements.IdOnly));
             WitsmlTrajectory trajectory = trajectoryStations.Trajectories.FirstOrDefault();
