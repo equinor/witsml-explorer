@@ -41,6 +41,7 @@ export interface WellboreProperties {
   dateTimeCreation?: string;
   dateTimeLastChange?: string;
   itemState?: string;
+  comments?: string;
 }
 
 export interface WellboreObjects {

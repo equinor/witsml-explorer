@@ -59,7 +59,8 @@ namespace WitsmlExplorer.Api.Services
                     DayTarget = (witsmlWellbore.DayTarget == null) ? null : new DayMeasure { Uom = witsmlWellbore.DayTarget.Uom, Value = int.Parse(witsmlWellbore.DayTarget.Value) },
                     DateTimeCreation = witsmlWellbore.CommonData.DTimCreation,
                     DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
-                    ItemState = witsmlWellbore.CommonData.ItemState
+                    ItemState = witsmlWellbore.CommonData.ItemState,
+                    Comments = witsmlWellbore.CommonData.Comments
                 };
         }
 

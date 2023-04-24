@@ -6,12 +6,14 @@ import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import MaxLength from "../../models/maxLength";
 import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
+import { invalidStringInput } from "./PropertiesModalUtils";
 
 export interface WellborePropertiesModalProps {
   mode: PropertiesModalMode;
@@ -289,6 +291,22 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                   />
                   <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(wellbore.dateTimeCreation, timeZone)} fullWidth />
                   <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(wellbore.dateTimeLastChange, timeZone)} fullWidth />
+                  <TextField
+                    id="comments"
+                    label="comments"
+                    multiline
+                    error={invalidStringInput(wellbore.comments, editableWellbore.comments, MaxLength.Comment)}
+                    helperText={invalidStringInput(wellbore.comments, editableWellbore.comments, MaxLength.Comment) ? `A comment must be 1-${MaxLength.Comment} characters` : ""}
+                    inputProps={{ maxLength: MaxLength.Comment }}
+                    value={editableWellbore.comments}
+                    fullWidth
+                    onChange={(e) => {
+                      setEditableWellbore({
+                        ...editableWellbore,
+                        comments: e.target.value
+                      });
+                    }}
+                  />
                 </>
               )}
             </>
