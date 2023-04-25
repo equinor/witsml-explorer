@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,13 +12,14 @@ namespace WitsmlExplorer.Api.Configuration
     }
 
     /// <summary>
-    /// Read Witsml ServerCredentials from Configuration and populate a list of <c>WitsmlCreds</c>
+    /// Read Witsml ServerCredentials from Configuration and populate a list of <c>WitsmlCreds</c>.
+    /// The ServerCredentials will be refreshed if Configuration changes on reload.
     /// Example appsettings.json ("ObjectX" key will be discarded):
     /// <c>
     ///    "WitsmlCreds": {
     ///       "ObjectA":  { "Host": "my_host_1", "UserId": "my_user_1", "Password": "my_user_1" },
     ///       "ObjectB":  { "Host": "my_host_2", "UserId": "my_user_2", "Password": "my_user_2" }
-    ///    }    
+    ///    }
     /// </c>
     /// Example keyvault entries ("homeserver" will be ignored):
     /// <c>
@@ -26,13 +28,15 @@ namespace WitsmlExplorer.Api.Configuration
     ///    witsmlcreds--homeserver--password
     /// </c>
     /// </summary>
-    public class WitsmlSystemCredentials : IWitsmlSystemCredentials
+    public class WitsmlSystemCredentials : IWitsmlSystemCredentials, IDisposable
     {
         public ServerCredentials[] WitsmlCreds { get; set; }
+        private readonly IDisposable _unregister;
 
         public WitsmlSystemCredentials(IConfiguration configuration)
         {
             Bind(configuration);
+            _unregister = configuration.GetReloadToken().RegisterChangeCallback((_) => Bind(configuration), null);
         }
 
         private void Bind(IConfiguration configuration)
@@ -45,10 +49,19 @@ namespace WitsmlExplorer.Api.Configuration
             {
                 ServerCredentials cred = new();
                 rule.Bind(cred);
-                credsList.Add(cred);
+                if (!cred.IsCredsNullOrEmpty() && cred.Host != null)
+                {
+                    credsList.Add(cred);
+                }
             }
 
             WitsmlCreds = credsList.ToArray();
+        }
+
+        public void Dispose()
+        {
+            _unregister?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 
