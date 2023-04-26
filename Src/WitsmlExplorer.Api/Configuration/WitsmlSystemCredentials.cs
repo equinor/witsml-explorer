@@ -31,12 +31,11 @@ namespace WitsmlExplorer.Api.Configuration
     public class WitsmlSystemCredentials : IWitsmlSystemCredentials, IDisposable
     {
         public ServerCredentials[] WitsmlCreds { get; set; }
-        private readonly IDisposable _unregister;
+        private IDisposable _unregister;
 
         public WitsmlSystemCredentials(IConfiguration configuration)
         {
             Bind(configuration);
-            _unregister = configuration.GetReloadToken().RegisterChangeCallback((_) => Bind(configuration), null);
         }
 
         private void Bind(IConfiguration configuration)
@@ -56,6 +55,8 @@ namespace WitsmlExplorer.Api.Configuration
             }
 
             WitsmlCreds = credsList.ToArray();
+            _unregister?.Dispose();
+            _unregister = configuration.GetReloadToken().RegisterChangeCallback((_) => Bind(configuration), null);
         }
 
         public void Dispose()
