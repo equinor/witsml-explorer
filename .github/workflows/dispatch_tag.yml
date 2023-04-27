@@ -5,6 +5,8 @@ on:
     tags:
       - 'rips-wex*'
 
+permissions: {}
+
 jobs:
   fetchtag:
     runs-on: ubuntu-latest  
