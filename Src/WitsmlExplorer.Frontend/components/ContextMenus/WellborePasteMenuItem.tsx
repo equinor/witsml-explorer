@@ -16,6 +16,7 @@ const items = [
   { type: ObjectType.BhaRun },
   { type: ObjectType.FormationMarker },
   { type: ObjectType.Log, jobType: JobType.CopyLog },
+  { type: ObjectType.Message },
   { type: ObjectType.MudLog },
   { type: ObjectType.Rig },
   { type: ObjectType.Risk },

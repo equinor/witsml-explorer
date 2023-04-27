@@ -1,0 +1,23 @@
+<messages version="1.4.1.1" xmlns="http://www.witsml.org/schemas/1series">
+  <message uidWell="8c77de13-4fad-4b2e-ba3d-7e6b0e35a394" uidWellbore="44e7a064-c2f2-4a3a-9259-5ab92085e110" uid="integration_test">
+    <nameWell>0/1-2-3 SAS</nameWell>
+    <nameWellbore>jan_test</nameWellbore>
+    <name>integration test</name>
+    <objectReference object="1" uidRef="2">objRef</objectReference>
+    <subObjectReference object="3" uidRef="4">subObjRef</subObjectReference>
+    <dTim>2020-01-02T03:04:05.678Z</dTim>
+    <activityCode>drilling</activityCode>
+    <detailActivity>hello</detailActivity>
+    <md uom="m">123</md>
+    <mdBit uom="m">456</mdBit>
+    <typeMessage>warning</typeMessage>
+    <messageText>test</messageText>
+    <param index="1" name="msgName" uom="m" description="desc1" uid="1">100</param>
+    <param index="2" name="msgName2" uom="m" description="desc2" uid="2">200</param>
+    <severity>minor</severity>
+    <warnProbability>low</warnProbability>
+    <commonData>
+      <itemState>plan</itemState>
+    </commonData>
+  </message>
+</messages>
