@@ -29,7 +29,7 @@ This pull request fixes
 
 [//]: # (List general components of the application that this PR will affect)
 
-* [ ] Fronted
+* [ ] Frontend
 * [ ] API
 * [ ] WITSML
 * [ ] Other (please describe)
