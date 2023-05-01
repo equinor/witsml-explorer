@@ -1,6 +1,6 @@
 namespace WitsmlExplorer.Api.Models
 {
-    public abstract class ObjectOnWellbore
+    public class ObjectOnWellbore
     {
         public string Uid { get; set; }
         public string WellUid { get; set; }

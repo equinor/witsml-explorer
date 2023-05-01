@@ -1,3 +1,4 @@
+import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
@@ -47,5 +48,14 @@ export default class ObjectService {
       }
     }
     return null;
+  }
+
+  public static async getObjectsIdOnly(wellUid: string, wellboreUid: string, objectType: ObjectType, abortSignal?: AbortSignal): Promise<ObjectOnWellbore[]> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
+    }
   }
 }
