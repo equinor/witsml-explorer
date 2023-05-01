@@ -14,11 +14,6 @@ export interface CopyWellboreJob {
   target: WellboreReference;
 }
 
-export interface CopyLogJob {
-  source: ObjectReferences;
-  target: WellboreReference;
-}
-
 export interface CopyObjectsJob {
   source: ObjectReferences;
   target: WellboreReference;
@@ -31,7 +26,7 @@ export interface CopyComponentsJob {
   endIndex?: string;
 }
 
-export interface CopyLogsWithParentJob extends CopyLogJob {
+export interface CopyWithParentJob extends CopyObjectsJob {
   copyWellJob?: CopyWellJob;
   copyWellboreJob?: CopyWellboreJob;
 }

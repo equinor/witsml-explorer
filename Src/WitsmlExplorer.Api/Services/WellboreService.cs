@@ -17,7 +17,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IWellboreService
     {
         Task<Wellbore> GetWellbore(string wellUid, string wellboreUid);
-        Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null);
+        Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = "");
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -64,10 +64,10 @@ namespace WitsmlExplorer.Api.Services
                 };
         }
 
-        public async Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = null)
+        public async Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = "")
         {
             DateTime start = DateTime.Now;
-            WitsmlWellbores query = string.IsNullOrEmpty(wellUid) ? WellboreQueries.GetAllWitsmlWellbores() : WellboreQueries.GetWitsmlWellboreByWell(wellUid);
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByWell(wellUid);
 
             WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             List<Wellbore> wellbores = result.Wellbores

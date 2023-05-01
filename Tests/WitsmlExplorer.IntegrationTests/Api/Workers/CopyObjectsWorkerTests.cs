@@ -28,7 +28,10 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILogger<CopyObjectsJob> logger = loggerFactory.CreateLogger<CopyObjectsJob>();
             ICopyUtils copyUtils = new CopyUtils(loggerFactory.CreateLogger<CopyUtils>());
 
-            _worker = new CopyObjectsWorker(logger, witsmlClientProvider, copyUtils);
+            CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, loggerFactory.CreateLogger<CopyLogDataJob>());
+            CopyLogWorker copyLogworker = new(loggerFactory.CreateLogger<CopyObjectsJob>(), witsmlClientProvider, copyLogDataWorker);
+
+            _worker = new CopyObjectsWorker(logger, witsmlClientProvider, copyUtils, copyLogworker);
         }
 
         [Fact(Skip = "Should only be run manually")]

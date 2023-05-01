@@ -53,14 +53,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
-            Mock<ILogger<CopyLogJob>> logger = new();
+            Mock<ILogger<CopyObjectsJob>> logger = new();
             _copyLogWorker = new CopyLogWorker(logger.Object, witsmlClientProvider.Object, _copyLogDataWorker.Object);
         }
 
         [Fact]
         public async Task CopyLog_TimeIndexed()
         {
-            CopyLogJob copyLogJob = CreateJobTemplate();
+            CopyObjectsJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
             IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLog_DepthIndexed()
         {
-            CopyLogJob copyLogJob = CreateJobTemplate();
+            CopyObjectsJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
@@ -99,7 +99,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_ErrorOnCopyLogData_ReasonInWorkingResult()
         {
-            CopyLogJob copyLogJob = CreateJobTemplate();
+            CopyObjectsJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             string errorReason = "test";
@@ -150,15 +150,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 });
         }
 
-        private static CopyLogJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
+        private static CopyObjectsJob CreateJobTemplate(string targetWellboreUid = TargetWellboreUid)
         {
-            return new CopyLogJob
+            return new CopyObjectsJob
             {
                 Source = new ObjectReferences
                 {
                     WellUid = WellUid,
                     WellboreUid = SourceWellboreUid,
                     ObjectUids = new string[] { LogUid },
+                    ObjectType = EntityType.Log
                 },
                 Target = new WellboreReference
                 {

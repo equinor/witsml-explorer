@@ -13,22 +13,38 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
 {
-    public class CopyObjectsWorker : BaseWorker<CopyObjectsJob>, IWorker
+    public interface ICopyObjectsWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job);
+    }
+
+    public class CopyObjectsWorker : BaseWorker<CopyObjectsJob>, IWorker, ICopyObjectsWorker
     {
         private readonly ICopyUtils _copyUtils;
+        private readonly ICopyLogWorker _copyLogWorker;
         public JobType JobType => JobType.CopyObjects;
 
-        public CopyObjectsWorker(ILogger<CopyObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils) : base(witsmlClientProvider, logger)
+        public CopyObjectsWorker(ILogger<CopyObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyUtils copyUtils, ICopyLogWorker copyLogWorker) : base(witsmlClientProvider, logger)
         {
             _copyUtils = copyUtils;
+            _copyLogWorker = copyLogWorker;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
         {
+            if (job.Source.ObjectType == EntityType.Log)
+            {
+                return await _copyLogWorker.Execute(job);
+            }
+            return await GenericCopy(job);
+        }
+
+        public async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job)
+        {
             Witsml.IWitsmlClient client = GetTargetWitsmlClientOrThrow();
             IWitsmlObjectList witsmlObject = ObjectQueries.GetWitsmlObjectsByIds(job.Source.WellUid, job.Source.WellboreUid, job.Source.ObjectUids, job.Source.ObjectType);
             Task<IWitsmlObjectList> objectsQuery = GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(witsmlObject, new OptionsIn(ReturnElements.All));
-            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
+            Task<WitsmlWellbore> wellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target, retry: true);
             await Task.WhenAll(objectsQuery, wellboreQuery);
             IWitsmlObjectList objectList = objectsQuery.Result;
             WitsmlWellbore targetWellbore = wellboreQuery.Result;

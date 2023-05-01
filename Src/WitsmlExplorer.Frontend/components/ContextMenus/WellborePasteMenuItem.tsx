@@ -5,7 +5,6 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
@@ -13,16 +12,16 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
 const items = [
-  { type: ObjectType.BhaRun },
-  { type: ObjectType.FormationMarker },
-  { type: ObjectType.Log, jobType: JobType.CopyLog },
-  { type: ObjectType.Message },
-  { type: ObjectType.MudLog },
-  { type: ObjectType.Rig },
-  { type: ObjectType.Risk },
-  { type: ObjectType.Trajectory },
-  { type: ObjectType.Tubular },
-  { type: ObjectType.WbGeometry }
+  ObjectType.BhaRun,
+  ObjectType.FormationMarker,
+  ObjectType.Log,
+  ObjectType.Message,
+  ObjectType.MudLog,
+  ObjectType.Rig,
+  ObjectType.Risk,
+  ObjectType.Trajectory,
+  ObjectType.Tubular,
+  ObjectType.WbGeometry
 ];
 
 export interface WellborePasteMenuItemProps {
@@ -39,12 +38,12 @@ const WellborePasteMenuItem = (props: WellborePasteMenuItemProps): React.ReactEl
     <NestedMenuItem key={"paste"} label={"Paste"} icon="paste">
       {items.map((item) => (
         <MenuItem
-          key={"paste" + item.type}
-          onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore, item.jobType ?? JobType.CopyObjects)}
-          disabled={objectReferences === null || objectReferences.objectType != item.type}
+          key={"paste" + item}
+          onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore)}
+          disabled={objectReferences === null || objectReferences.objectType != item}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", item.type, objectReferences?.objectUids)}</Typography>
+          <Typography color={"primary"}>{menuItemText("paste", item, objectReferences?.objectUids)}</Typography>
         </MenuItem>
       ))}
     </NestedMenuItem>
