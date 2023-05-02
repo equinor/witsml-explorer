@@ -4,7 +4,8 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import RiskObject from "../../models/riskObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import RiskObjectContextMenu, { RiskObjectContextMenuProps } from "../ContextMenus/RiskContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
 import formatDateString from "../DateFormatter";
 import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
@@ -18,7 +19,7 @@ export const RisksListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [risks, setRisks] = useState<RiskObject[]>([]);
 
@@ -66,7 +67,7 @@ export const RisksListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRiskObjectRows: RiskObjectRow[]) => {
-    const contextProps: RiskObjectContextMenuProps = { checkedRiskObjectRows, dispatchOperation, selectedServer, wellbore: selectedWellbore, servers };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedRiskObjectRows.map((row) => row.risk), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RiskObjectContextMenu {...contextProps} />, position } });
   };

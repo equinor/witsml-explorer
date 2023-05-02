@@ -7,7 +7,8 @@ import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import MudLogContextMenu, { MudLogContextMenuProps } from "../ContextMenus/MudLogContextMenu";
+import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -74,9 +75,7 @@ export const MudLogsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: MudLogRow[]) => {
-    const contextProps: MudLogContextMenuProps = {
-      mudLogs: checkedRows.map((row) => row.mudLog)
-    };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedRows.map((row) => row.mudLog), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextProps} />, position } });
   };
