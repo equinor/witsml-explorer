@@ -11,6 +11,7 @@ import { colors } from "../../styles/Colors";
 import FormationMarkerPropertiesModal, { FormationMarkerPropertiesModalProps } from "../Modals/FormationMarkerPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer } from "./ContextMenuUtils";
+import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -43,6 +44,20 @@ const FormationMarkerContextMenu = (props: FormationMarkerContextMenuProps): Rea
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "formationMarker", formationMarkers)}</Typography>
         </MenuItem>,
+        <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "formationmarker", formationMarkers)} to server`} disabled={formationMarkers.length < 1}>
+          {servers.map(
+            (server: Server) =>
+              server.id !== selectedServer.id && (
+                <MenuItem
+                  key={server.name}
+                  onClick={() => onClickCopyToServer(server, selectedServer, formationMarkers, ObjectType.FormationMarker, dispatchOperation)}
+                  disabled={formationMarkers.length < 1}
+                >
+                  <Typography color={"primary"}>{server.name}</Typography>
+                </MenuItem>
+              )
+          )}
+        </NestedMenuItem>,
         <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, selectedWellbore)} disabled={objectReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "formationMarker", objectReferences?.objectUids)}</Typography>

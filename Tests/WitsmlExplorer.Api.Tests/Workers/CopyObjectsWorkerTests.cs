@@ -38,8 +38,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyObjectsJob>> logger = new();
-            CopyUtils copyUtils = new Mock<CopyUtils>().Object;
-            CopyLogWorker copyLogWorker = new Mock<CopyLogWorker>().Object;
+            CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object);
+            CopyLogWorker copyLogWorker = new(new Mock<ILogger<CopyObjectsJob>>().Object, witsmlClientProvider.Object);
             _copyObjectWorker = new CopyObjectsWorker(logger.Object, witsmlClientProvider.Object, copyUtils, copyLogWorker);
         }
 
