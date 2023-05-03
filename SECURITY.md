@@ -2,9 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If there are any vulnerabilities in `witsml-explorer`, don't hesitate to report them.
-
-Use any of the private contact addresses.
+If there are any vulnerabilities in `witsml-explorer`, don't hesitate to report them to any of the maintainers.
 
 Describe the vulnerability.
 
