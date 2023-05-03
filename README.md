@@ -41,7 +41,7 @@ Please visit [API client access](/Docs/APICLIENT.md).
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 
 ## Reporting a Vulnerability
-Pleaase see our [Security Policy](/SECURITY.md)
+Please see our [Security Policy](/SECURITY.md)
 
 ## License
 Witsml Explorer has the Apache-2.0 license.
