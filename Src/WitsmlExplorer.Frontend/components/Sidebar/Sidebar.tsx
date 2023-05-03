@@ -21,7 +21,7 @@ const Sidebar = (): React.ReactElement => {
   return (
     <React.Fragment>
       <SearchFilter />
-      <SidebarTreeView>
+      <SidebarTreeView className="sideBarView">
         <WellProgress>
           {filteredWells && filteredWells.length > 0 && (
             <TreeView
@@ -30,19 +30,20 @@ const Sidebar = (): React.ReactElement => {
               defaultEndIcon={<div style={{ width: 24 }} />}
               expanded={expandedTreeNodes}
             >
-              {filteredWells.map((well: Well, index: number) => (
-                <React.Fragment key={index}>
-                  <div style={WellListing} className="ListWells">
-                    <WellItem key={well.uid} well={well} />
-                    {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
-                      <ActiveWellIndicator compactMode={isCompactMode} />
-                    ) : (
-                      <InactiveWellInidcator compactMode={isCompactMode} />
-                    )}
-                  </div>
-                  <Divider style={{ margin: "0px" }} key={index} />
-                </React.Fragment>
-              ))}
+              {
+                filteredWells.map((well: Well, index: number) => (
+                  <React.Fragment key={index}>
+                    <div style={WellListing} className="ListWells">
+                      <WellItem key={well.uid} well={well} />
+                      {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
+                        <ActiveWellIndicator compactMode={isCompactMode} />
+                      ) : (
+                        <InactiveWellInidcator compactMode={isCompactMode} />
+                      )}
+                    </div>
+                    <Divider style={{ margin: "0px" }} key={index} />
+                  </React.Fragment>
+                ))}
             </TreeView>
           )}
         </WellProgress>
@@ -60,18 +61,18 @@ const SidebarTreeView = styled.div`
 `;
 
 const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   background-color: ${colors.interactive.successHover};
   border-radius: 50%;
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
 `;
 
 const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
-  background-color: ${colors.interactive.disabledBorder};
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  border: 2px solid ${colors.text.staticIconsTertiary};
 `;
 export default Sidebar;

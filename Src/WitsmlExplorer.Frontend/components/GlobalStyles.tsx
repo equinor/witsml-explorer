@@ -97,6 +97,20 @@ const GlobalStyles = createGlobalStyle`
       }
     }
   }
+  .sideBarView  .MuiTreeItem-root {
+    min-width:0;
+    .MuiTreeItem-iconContainer{
+      flex: none;
+    }
+    .MuiTreeItem-label {
+      min-width:0;
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 `;
 
 export default GlobalStyles;

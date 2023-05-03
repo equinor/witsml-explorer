@@ -20,10 +20,11 @@ interface LogItemProps {
   selected: boolean;
   nodeId: string;
   objectGrowing: boolean;
+  indexType?: string;
 }
 
 const LogItem = (props: LogItemProps): React.ReactElement => {
-  const { log: log, well, wellbore, selected, nodeId, objectGrowing } = props;
+  const { log: log, well, wellbore, selected, nodeId, objectGrowing, indexType } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const {
     dispatchNavigation,
@@ -45,6 +46,7 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
+      indexType={indexType}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: log, well, wellbore, objectType: ObjectType.Log } })}
     />
   );
