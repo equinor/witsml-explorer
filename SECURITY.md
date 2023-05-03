@@ -2,7 +2,9 @@
 
 ## Reporting a Vulnerability
 
-If there are any vulnerabilities in `witsml-explorer`, don't hesitate to report them to any of the maintainers.
+If there are any vulnerabilities in `witsml-explorer`, don't hesitate to report them.
+
+Report to the maintainers of this repo by visiting the [Security](https://github.com/equinor/witsml-explorer/security) tab on the project page. 
 
 Describe the vulnerability.
 
