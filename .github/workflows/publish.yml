@@ -9,6 +9,9 @@ on:
       - 'Src/Witsml/**'
   workflow_dispatch:      
 
+permissions:
+  packages: read
+
 jobs:
   build:
     name: Package and publish

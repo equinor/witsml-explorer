@@ -9,6 +9,8 @@ on:
       - 'Src/WitsmlExplorer.Console/**'
       - 'Tests/**'
 
+permissions: {}
+
 jobs:
   backend:
     name: Build and Test

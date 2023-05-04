@@ -171,7 +171,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Message)}
         labelText={"Messages"}
         onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Message)}
-        onContextMenu={preventContextMenuPropagation}
+        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Message)}
       />
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.MudLog)}

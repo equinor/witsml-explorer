@@ -6,6 +6,8 @@ on:
     paths:
       - 'Src/WitsmlExplorer.Frontend/**'
 
+permissions: {}
+
 jobs:
   frontend:
     name: Build and Test
