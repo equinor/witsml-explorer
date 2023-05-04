@@ -1,18 +1,20 @@
-import { Checkbox, Table, TableBody, TableCell as MuiTableCell, TableHead, TableRow as MuiTableRow, TableSortLabel } from "@material-ui/core";
+import { Checkbox, TableCell as MuiTableCell, TableRow as MuiTableRow, Table, TableBody, TableHead, TableSortLabel } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
-import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, getCheckedRows, getColumnAlignment, getComparatorByColumn, getSelectedRange, Order } from "./";
+import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, Order, getCheckedRows, getColumnAlignment, getComparatorByColumn, getSelectedRange } from "./";
+import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, order } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, order, inset } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(order ?? Order.Ascending);
   const [sortedColumn, setSortedColumn] = useState<ContentTableColumn>(columns[0]);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
+  const [openInsets, setOpenInsets] = useState<string[]>([]);
 
   useEffect(() => {
     setData(orderBy(props.data, getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
@@ -68,6 +70,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
               />
             </TableHeaderCell>
           )}
+          <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} />
           {columns &&
             columns.map(
               (column) =>
@@ -85,32 +88,36 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
         {data.map((item, index) => {
           return (
             checkVisibility(item.isVisibleFunction) && (
-              <TableRow hover key={index} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
-                {checkableRows && (
-                  <TableDataCell>
-                    <Checkbox
-                      onClick={(event) => toggleRow(event, item)}
-                      checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
-                    />
-                  </TableDataCell>
-                )}
-                {columns &&
-                  columns.map(
-                    (column) =>
-                      column && (
-                        <TableDataCell
-                          id={item[column.property] + column.property}
-                          key={item[column.property] + column.property}
-                          clickable={onSelect ? "true" : "false"}
-                          type={column.type}
-                          align={getColumnAlignment(column)}
-                          onClick={(event) => selectRow(event, item)}
-                        >
-                          {formatCell(column.type, item[column.property])}
-                        </TableDataCell>
-                      )
+              <>
+                <TableRow hover key={index} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+                  {checkableRows && (
+                    <TableDataCell>
+                      <Checkbox
+                        onClick={(event) => toggleRow(event, item)}
+                        checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                      />
+                    </TableDataCell>
                   )}
-              </TableRow>
+                  <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} />
+                  {columns &&
+                    columns.map(
+                      (column) =>
+                        column && (
+                          <TableDataCell
+                            id={item[column.property] + column.property}
+                            key={item[column.property] + column.property}
+                            clickable={onSelect ? "true" : "false"}
+                            type={column.type}
+                            align={getColumnAlignment(column)}
+                            onClick={(event) => selectRow(event, item)}
+                          >
+                            {formatCell(column.type, item[column.property])}
+                          </TableDataCell>
+                        )
+                    )}
+                </TableRow>
+                <InsetRow inset={inset} openInsets={openInsets} columnsLength={columns.length} uid={item.uid} />
+              </>
             )
           );
         })}
@@ -134,7 +141,7 @@ const TableRow = styled(MuiTableRow)`
   }
 `;
 
-const TableHeaderCell = styled(MuiTableCell)`
+export const TableHeaderCell = styled(MuiTableCell)`
   && {
     border-bottom-width: 2px;
     position: sticky;
@@ -145,7 +152,7 @@ const TableHeaderCell = styled(MuiTableCell)`
   }
 `;
 
-const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
+export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
   position: relative;
   z-index: 0;
   border-right: 1px solid rgba(224, 224, 224, 1);

@@ -2,6 +2,7 @@ import { Icon } from "@equinor/eds-core-react";
 import {
   accessible,
   account_circle as accountCircle,
+  filter_alt_active as activeFilter,
   add,
   arrow_down as arrowDown,
   arrow_up as arrowUp,
@@ -10,6 +11,7 @@ import {
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
+  chevron_up as chevronUp,
   cloud_download as cloudDownload,
   cloud_off as cloudOff,
   compare,
@@ -17,9 +19,11 @@ import {
   delete_to_trash as deleteToTrash,
   done,
   edit,
+  filter_alt as filter,
   folder_open as folderOpen,
   format_line_spacing as formatLine,
   info_circle as infoCircle,
+  trending_up as isActive,
   launch,
   more_vertical as moreVertical,
   paste,
@@ -27,15 +31,13 @@ import {
   refresh,
   save,
   settings,
-  trending_up as isActive,
-  world,
-  filter_alt_active as activeFilter,
-  filter_alt as filter
+  world
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
-  chevronRight,
   chevronDown,
+  chevronRight,
+  chevronUp,
   isActive,
   launch,
   formatLine,
