@@ -21,7 +21,7 @@ import {
   SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
-import { allDeselected, EMPTY_NAVIGATION_STATE, NavigationState, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
+import { EMPTY_NAVIGATION_STATE, NavigationState, allDeselected, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
@@ -262,7 +262,7 @@ const setCurveThreshold = (state: NavigationState, { payload }: SetCurveThreshol
   };
 };
 
-const treeNodeIsExpanded = (expandedTreeNodes: string[], nodeId: string) => {
+export const treeNodeIsExpanded = (expandedTreeNodes: string[], nodeId: string): boolean => {
   const nodeIndex = expandedTreeNodes.findIndex((expandedNode) => expandedNode === nodeId);
   return nodeIndex !== -1;
 };
@@ -271,7 +271,7 @@ const shouldExpand = (expandedTreeNodes: string[], nodeId: string, parentNodeId:
   return treeNodeIsExpanded(expandedTreeNodes, parentNodeId) && !treeNodeIsExpanded(expandedTreeNodes, nodeId);
 };
 
-const toggleTreeNode = (expandedTreeNodes: string[], nodeId: string) => {
+export const toggleTreeNode = (expandedTreeNodes: string[], nodeId: string) => {
   const nodeIndexes = expandedTreeNodes.filter((expandedNode) => expandedNode.includes(nodeId));
   const shouldExpandNode = nodeIndexes.length === 0;
   if (shouldExpandNode) {

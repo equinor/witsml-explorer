@@ -20,21 +20,21 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public interface ICopyLogWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job);
     }
 
-    public class CopyLogWorker : BaseWorker<CopyLogJob>, IWorker, ICopyLogWorker
+    public class CopyLogWorker : BaseWorker<CopyObjectsJob>, IWorker, ICopyLogWorker
     {
 
         private readonly ICopyLogDataWorker _copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
 
-        public CopyLogWorker(ILogger<CopyLogJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        public CopyLogWorker(ILogger<CopyObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
             _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider, null, witsmlServerRepository);
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
@@ -84,12 +84,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return (workerResult, refreshAction);
         }
 
-        private async Task<Tuple<WitsmlLog[], WitsmlWellbore>> FetchSourceLogsAndTargetWellbore(CopyLogJob job)
+        private async Task<Tuple<WitsmlLog[], WitsmlWellbore>> FetchSourceLogsAndTargetWellbore(CopyObjectsJob job)
         {
             string[] logUids = job.Source.ObjectUids;
             Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(logUids.Select(
                 logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)));
-            Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target);
+            Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target, retry: true);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);
 
@@ -105,7 +105,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return !result.Logs.Any() ? null : result.Logs.First();
         }
 
-        private static CopyLogDataJob CreateCopyLogDataJob(CopyLogJob job, WitsmlLog targetLog)
+        private static CopyLogDataJob CreateCopyLogDataJob(CopyObjectsJob job, WitsmlLog targetLog)
         {
             ObjectReference sourceLogReference = new()
             {

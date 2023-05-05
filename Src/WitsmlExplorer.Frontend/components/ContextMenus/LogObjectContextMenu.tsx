@@ -25,7 +25,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
-import { onClickCopyLogToServer } from "./CopyLogToServer";
+import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -118,7 +118,7 @@ const LogObjectContextMenu = (props: LogObjectContextMenuProps): React.ReactElem
               server.id !== selectedServer.id && (
                 <MenuItem
                   key={server.name}
-                  onClick={() => onClickCopyLogToServer(server, selectedServer, checkedLogObjects, dispatchOperation)}
+                  onClick={() => onClickCopyToServer(server, selectedServer, checkedLogObjects, ObjectType.Log, dispatchOperation)}
                   disabled={checkedLogObjects.length < 1}
                 >
                   <Typography color={"primary"}>{server.name}</Typography>

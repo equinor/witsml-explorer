@@ -39,7 +39,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyLogDataJob> logger = loggerFactory.CreateLogger<CopyLogDataJob>();
             CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, logger);
-            ILogger<CopyLogJob> logger2 = loggerFactory.CreateLogger<CopyLogJob>();
+            ILogger<CopyObjectsJob> logger2 = loggerFactory.CreateLogger<CopyObjectsJob>();
             _worker = new CopyLogWorker(logger2, witsmlClientProvider, copyLogDataWorker);
             _logObjectService = new LogObjectService(witsmlClientProvider);
 
@@ -50,7 +50,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async Task CopyLog()
         {
-            CopyLogJob job = new()
+            CopyObjectsJob job = new()
             {
                 Source = new ObjectReferences
                 {
@@ -97,7 +97,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 }
                 );
 
-            CopyLogJob job = new()
+            CopyObjectsJob job = new()
             {
                 Source = sourceReference,
                 Target = new WellboreReference

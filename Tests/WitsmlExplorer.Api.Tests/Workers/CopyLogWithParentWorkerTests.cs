@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,46 +15,45 @@ using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class CopyLogWithParentWorkerTests
+    public class CopyWithParentWorkerTests
     {
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
         private const string TargetWellboreUid = "targetWellboreUid";
         private const string LogUid = "sourceLogUid";
 
-        private readonly CopyLogWithParentWorker _worker;
+        private readonly CopyWithParentWorker _worker;
 
         private readonly Mock<ICopyWellWorker> _copyWellWorker;
 
         private readonly Mock<ICopyWellboreWorker> _copyWellboreWorker;
 
-        private readonly Mock<ICopyLogWorker> _copyLogWorker;
+        private readonly Mock<ICopyObjectsWorker> _copyWorker;
 
-        public CopyLogWithParentWorkerTests()
+        public CopyWithParentWorkerTests()
         {
-            _copyLogWorker = new();
+            _copyWorker = new();
             _copyWellWorker = new();
             _copyWellboreWorker = new Mock<ICopyWellboreWorker>();
 
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
 
-            _worker = new CopyLogWithParentWorker(NullLogger<CopyLogWithParentJob>.Instance,
+            _worker = new CopyWithParentWorker(NullLogger<CopyWithParentJob>.Instance,
                                                   witsmlClientProvider.Object,
                                                   _copyWellWorker.Object,
                                                   _copyWellboreWorker.Object,
-                                                  _copyLogWorker.Object);
+                                                  _copyWorker.Object);
         }
 
         [Fact]
         public async Task Execute_AllJobs_Success()
         {
-            CopyLogWithParentJob job = CreateJobTemplate(true, true);
+            CopyWithParentJob job = CreateJobTemplate(true, true);
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SucessResult());
-            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SucessResult());
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
+            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SuccessResult());
 
-            _copyLogWorker.Setup(w => w.Execute(It.Is<CopyLogJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SucessResult());
+            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SuccessResult());
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -65,9 +63,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_LogOnly_Success()
         {
-            CopyLogWithParentJob job = CreateJobTemplate(false, false);
+            CopyWithParentJob job = CreateJobTemplate(false, false);
 
-            _copyLogWorker.Setup(w => w.Execute(It.Is<CopyLogJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SucessResult());
+            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SuccessResult());
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -80,7 +78,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_ErrorOnWellCopy_ReasonInResult()
         {
-            CopyLogWithParentJob job = CreateJobTemplate(true, true);
+            CopyWithParentJob job = CreateJobTemplate(true, true);
 
             string failReason = "test";
 
@@ -93,17 +91,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(failReason, result.Item1.Reason);
 
             _copyWellboreWorker.VerifyNoOtherCalls();
-            _copyLogWorker.VerifyNoOtherCalls();
+            _copyWorker.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task Execute_ErrorOnWellboreCopy_ReasonInResult()
         {
-            CopyLogWithParentJob job = CreateJobTemplate(true, true);
+            CopyWithParentJob job = CreateJobTemplate(true, true);
 
             string failReason = "test";
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SucessResult());
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
             _copyWellboreWorker.Setup(w => w.Execute(It.IsAny<CopyWellboreJob>())).ReturnsAsync(FailureResult(failReason));
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
@@ -112,19 +110,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.Equal(failReason, result.Item1.Reason);
 
-            _copyLogWorker.VerifyNoOtherCalls();
+            _copyWorker.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task Execute_ErrorOnLogCopy_ReasonInResult()
         {
-            CopyLogWithParentJob job = CreateJobTemplate(true, true);
+            CopyWithParentJob job = CreateJobTemplate(true, true);
 
             string failReason = "test";
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SucessResult());
-            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SucessResult());
-            _copyLogWorker.Setup(w => w.Execute(It.IsAny<CopyLogJob>())).ReturnsAsync(FailureResult(failReason));
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
+            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SuccessResult());
+            _copyWorker.Setup(w => w.Execute(It.IsAny<CopyObjectsJob>())).ReturnsAsync(FailureResult(failReason));
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -133,7 +131,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(failReason, result.Item1.Reason);
         }
 
-        private static (WorkerResult, RefreshAction) SucessResult()
+        private static (WorkerResult, RefreshAction) SuccessResult()
         {
             return (new WorkerResult(null, true, "Success"), null);
         }
@@ -143,14 +141,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return (new WorkerResult(null, false, "Failure", reason), null);
         }
 
-        private static CopyLogWithParentJob CreateJobTemplate(bool withWell, bool withWellbore, string targetWellboreUid = TargetWellboreUid)
+        private static CopyWithParentJob CreateJobTemplate(bool withWell, bool withWellbore, string targetWellboreUid = TargetWellboreUid)
         {
             WellReference wellRef = new() { WellUid = WellUid };
             WellboreReference wellboreRef = new() { WellUid = WellUid, WellboreUid = targetWellboreUid };
             CopyWellJob wellJob = withWell ? new CopyWellJob() { Source = wellRef, Target = wellRef } : null;
             CopyWellboreJob wellboreJob = withWellbore ? new CopyWellboreJob() { Source = wellboreRef, Target = wellboreRef } : null;
 
-            return new CopyLogWithParentJob
+            return new CopyWithParentJob
             {
                 Source = new ObjectReferences
                 {
