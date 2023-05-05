@@ -79,8 +79,7 @@ const createCopyJob = (sourceServer: Server, objects: ObjectOnWellbore[], target
     wellName: targetWellbore.wellName,
     wellboreName: targetWellbore.wellboreName
   };
-  const copyJob: CopyObjectsJob = { source: objectReferences, target: targetWellboreReference };
-  return copyJob;
+  return { source: objectReferences, target: targetWellboreReference };
 };
 
 const createCopyWithParentJob = (sourceServer: Server, objects: ObjectOnWellbore[], targetWellbore: WellboreReference, objectType: ObjectType): CopyWithParentJob => {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +22,6 @@ using Xunit;
 
 namespace WitsmlExplorer.Api.Tests.Workers
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class CopyLogWorkerTests
     {
         private readonly CopyLogWorker _copyLogWorker;
@@ -102,8 +100,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CopyObjectsJob copyLogJob = CreateJobTemplate();
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
-            string errorReason = "test";
-            IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
+            const string errorReason = "test";
+            CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
                 .ReturnsAsync((new WorkerResult(null, false, "", errorReason), null));
 

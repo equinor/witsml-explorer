@@ -13,7 +13,7 @@ import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import { DispatchOperation } from "./ContextMenuUtils";
 
-export const onClickPaste = async (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
+export const onClickPaste = (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === sourceServerUrl);
   if (sourceServer !== null) {
     AuthorizationService.setSourceServer(sourceServer);

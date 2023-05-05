@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return await GenericCopy(job);
         }
 
-        public async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job)
+        private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job)
         {
             Witsml.IWitsmlClient client = GetTargetWitsmlClientOrThrow();
             IWitsmlObjectList fetchObjectsQuery = ObjectQueries.GetWitsmlObjectsByIds(job.Source.WellUid, job.Source.WellboreUid, job.Source.ObjectUids, job.Source.ObjectType);

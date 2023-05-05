@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceObjects());
             SetupGetWellbore();
-            IEnumerable<IWitsmlObjectList> copyObjectQuery = CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
+            CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
             Assert.True(workerResult.IsSuccess);
