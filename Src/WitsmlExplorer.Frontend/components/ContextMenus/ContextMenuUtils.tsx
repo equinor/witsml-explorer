@@ -14,6 +14,7 @@ import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
+import { logTypeToQuery } from "../Routing";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
@@ -39,15 +40,18 @@ export const menuItemText = (operation: string, object: string, array: any[] | n
 
 export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, objectType: ObjectType) => {
   const host = `${window.location.protocol}//${window.location.host}`;
-  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
-  window.open(logUrl);
+  const url = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
+  window.open(url);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, objectType: ObjectType) => {
+export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, objectType: ObjectType, logTypeGroup: string = null) => {
   const host = `${window.location.protocol}//${window.location.host}`;
-  const logUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
-  window.open(logUrl);
+  let url = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
+  if (objectType === ObjectType.Log && logTypeGroup != null) {
+    url += `&logType=${logTypeToQuery(logTypeGroup)}`;
+  }
+  window.open(url);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 

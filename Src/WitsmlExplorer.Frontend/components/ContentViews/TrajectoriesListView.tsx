@@ -6,7 +6,8 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TrajectoryContextMenu, { TrajectoryContextMenuProps } from "../ContextMenus/TrajectoryContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
@@ -15,7 +16,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, servers } = navigationState;
+  const { selectedWell, selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
 
@@ -26,7 +27,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   }, [selectedWellbore?.trajectories]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, trajectories: Trajectory[]) => {
-    const contextProps: TrajectoryContextMenuProps = { dispatchOperation, selectedServer, trajectories, servers, wellbore: selectedWellbore };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: trajectories, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextProps} />, position } });
   };

@@ -8,7 +8,8 @@ import WbGeometry from "../../models/wbGeometry";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import WbGeometryObjectContextMenu, { WbGeometryObjectContextMenuProps } from "../ContextMenus/WbGeometryContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
 import TreeItem from "./TreeItem";
 
 interface WbGeometryProps {
@@ -21,16 +22,12 @@ interface WbGeometryProps {
 
 const WbGeometryItem = (props: WbGeometryProps): React.ReactElement => {
   const { wbGeometry, selected, well, wellbore, nodeId } = props;
-  const {
-    dispatchNavigation,
-    navigationState: { selectedServer, servers }
-  } = useContext(NavigationContext);
-
+  const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wbGeometry: WbGeometry) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: WbGeometryObjectContextMenuProps = { checkedWbGeometryObjects: [wbGeometry], selectedServer, dispatchOperation, servers };
+    const contextMenuProps: ObjectContextMenuProps = { checkedObjects: [wbGeometry], wellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometryObjectContextMenu {...contextMenuProps} />, position } });
   };

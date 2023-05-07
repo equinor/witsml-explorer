@@ -181,7 +181,10 @@ const selectObjectGroup = (state: NavigationState, { payload }: SelectObjectGrou
 
 const selectLogType = (state: NavigationState, { payload }: SelectLogTypeAction): NavigationState => {
   const { well, wellbore, logTypeGroup } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, logTypeGroup, calculateWellboreNodeId(wellbore));
+  const groupId = calculateObjectGroupId(wellbore, ObjectType.Log);
+  const shouldExpandLogNode = shouldExpand(state.expandedTreeNodes, groupId, calculateWellboreNodeId(wellbore));
+  const expandedTreeNodes = shouldExpandLogNode ? toggleTreeNode(state.expandedTreeNodes, groupId) : state.expandedTreeNodes;
+  const shouldExpandNode = shouldExpand(expandedTreeNodes, logTypeGroup, calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
@@ -191,7 +194,7 @@ const selectLogType = (state: NavigationState, { payload }: SelectLogTypeAction)
     selectedObjectGroup: ObjectType.Log,
     selectedLogTypeGroup: logTypeGroup,
     currentSelected: logTypeGroup,
-    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, logTypeGroup) : state.expandedTreeNodes,
+    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(expandedTreeNodes, logTypeGroup) : expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
 };

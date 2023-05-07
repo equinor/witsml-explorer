@@ -3,8 +3,9 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
-import BhaRunContextMenu, { BhaRunContextMenuProps } from "../ContextMenus/BhaRunContextMenu";
+import BhaRunContextMenu from "../ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -17,7 +18,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [bhaRuns, setBhaRuns] = useState<BhaRun[]>([]);
 
@@ -58,7 +59,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedBhaRunRows: BhaRunRow[]) => {
-    const contextProps: BhaRunContextMenuProps = { checkedBhaRunRows, wellbore: selectedWellbore, dispatchOperation, selectedServer, servers };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <BhaRunContextMenu {...contextProps} />, position } });
   };

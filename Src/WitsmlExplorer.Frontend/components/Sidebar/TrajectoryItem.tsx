@@ -8,7 +8,8 @@ import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import TrajectorySidebarContextMenu, { TrajectorySidebarContextMenuProps } from "../ContextMenus/TrajectorySidebarContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
 import TreeItem from "./TreeItem";
 
 interface TrajectoryProps {
@@ -21,18 +22,14 @@ interface TrajectoryProps {
 
 const TrajectoryItem = (props: TrajectoryProps): React.ReactElement => {
   const { trajectory, selected, well, wellbore, nodeId } = props;
-  const {
-    dispatchNavigation,
-    navigationState: { selectedServer, servers }
-  } = useContext(NavigationContext);
-
+  const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, trajectory: Trajectory) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TrajectorySidebarContextMenuProps = { trajectory, selectedServer, dispatchOperation, servers };
+    const contextMenuProps: ObjectContextMenuProps = { checkedObjects: [trajectory], wellbore };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectorySidebarContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextMenuProps} />, position } });
   };
 
   return (
