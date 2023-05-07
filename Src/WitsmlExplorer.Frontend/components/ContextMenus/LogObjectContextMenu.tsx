@@ -10,7 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import ObjectReference from "../../models/jobs/objectReference";
-import { toObjectReference } from "../../models/objectOnWellbore";
+import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
@@ -21,11 +21,11 @@ import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogCompar
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
+import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -78,12 +78,19 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const onClickCompareLogToServer = async (targetServer: Server) => {
+  const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const props: LogComparisonModalProps = { sourceLog: checkedObjects[0], sourceServer: selectedServer, targetServer, dispatchOperation };
+    const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
+      const props: LogComparisonModalProps = { sourceLog: checkedObjects[0], sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <LogComparisonModal {...props} />
+      });
+    };
+    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <LogComparisonModal {...props} />
+      payload: <ObjectPickerModal {...props} />
     });
   };
 
@@ -107,16 +114,12 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           </ListItemIcon>
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "log", [])} to server`} disabled={checkedObjects.length != 1} icon="compare">
-          {servers.map(
-            (server: Server) =>
-              server.id !== selectedServer.id && (
-                <MenuItem key={server.name} onClick={() => onClickCompareLogToServer(server)} disabled={checkedObjects.length != 1}>
-                  <Typography color={"primary"}>{server.name}</Typography>
-                </MenuItem>
-              )
-          )}
-        </NestedMenuItem>,
+        <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
+          <ListItemIcon>
+            <Icon name="compare" color={colors.interactive.primaryResting} />
+          </ListItemIcon>
+          <Typography color={"primary"}>{`${menuItemText("compare", "log", [])}`}</Typography>
+        </MenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
           <ListItemIcon>
             <Icon name="formatLine" color={colors.interactive.primaryResting} />
