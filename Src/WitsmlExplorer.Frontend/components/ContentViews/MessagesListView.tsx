@@ -4,21 +4,22 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import MessageObjectContextMenu, { MessageObjectContextMenuProps } from "../ContextMenus/MessageObjectContextMenu";
+import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 import { clipLongString } from "./ViewUtils";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MessageObjectRow extends ContentTableRow {
   message: MessageObject;
 }
 
 export const MessagesListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [messages, setMessages] = useState<MessageObject[]>([]);
 
@@ -61,7 +62,7 @@ export const MessagesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedMessageObjectRows: MessageObjectRow[]) => {
-    const contextProps: MessageObjectContextMenuProps = { checkedMessageObjectRows, dispatchNavigation, dispatchOperation, selectedServer, servers, wellbore: selectedWellbore };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedMessageObjectRows.map((row) => row.message), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MessageObjectContextMenu {...contextProps} />, position } });
   };

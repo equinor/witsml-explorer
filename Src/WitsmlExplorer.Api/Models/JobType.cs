@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         CopyWbGeometrySections,
         CopyWell,
         CopyWellbore,
-        CopyLogWithParent,
+        CopyWithParent,
         CopyObjectsWithParent,
         TrimLogObject,
         DeleteCurveValues,
@@ -48,6 +48,6 @@ namespace WitsmlExplorer.Api.Models
         BatchModifyWell,
         ImportLogData,
         ReplaceLogData,
-        ReplaceLogObjects
+        ReplaceObjects
     }
 }

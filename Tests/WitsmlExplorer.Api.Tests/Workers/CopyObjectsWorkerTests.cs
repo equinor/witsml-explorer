@@ -39,7 +39,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyObjectsJob>> logger = new();
             CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object);
-            _copyObjectWorker = new CopyObjectsWorker(logger.Object, witsmlClientProvider.Object, copyUtils);
+            CopyLogWorker copyLogWorker = new(new Mock<ILogger<CopyObjectsJob>>().Object, witsmlClientProvider.Object);
+            _copyObjectWorker = new CopyObjectsWorker(logger.Object, witsmlClientProvider.Object, copyUtils, copyLogWorker);
         }
 
         [Fact]
@@ -50,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceObjects());
             SetupGetWellbore();
-            IEnumerable<IWitsmlObjectList> copyObjectQuery = CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
+            CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
             Assert.True(workerResult.IsSuccess);

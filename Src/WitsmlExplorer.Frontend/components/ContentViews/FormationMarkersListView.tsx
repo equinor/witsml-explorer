@@ -6,7 +6,8 @@ import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
 import StratigraphicStruct from "../../models/stratigraphicStruct";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import FormationMarkerContextMenu, { FormationMarkerContextMenuProps } from "../ContextMenus/FormationMarkerContextMenu";
+import FormationMarkerContextMenu from "../ContextMenus/FormationMarkerContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -64,9 +65,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
   };
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: FormationMarkerRow[]) => {
-    const contextProps: FormationMarkerContextMenuProps = {
-      formationMarkers: checkedRows.map((row) => row.formationMarker)
-    };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedRows.map((row) => row.formationMarker), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FormationMarkerContextMenu {...contextProps} />, position } });
   };

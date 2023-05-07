@@ -10,29 +10,7 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class WellboreQueries
     {
-        public static WitsmlWellbores GetAllWitsmlWellbores()
-        {
-            return new WitsmlWellbores
-            {
-                Wellbores = new WitsmlWellbore
-                {
-                    Uid = "",
-                    UidWell = "",
-                    Name = "",
-                    NameWell = "",
-                    TypeWellbore = "",
-                    StatusWellbore = "",
-                    IsActive = "",
-                    CommonData = new WitsmlCommonData()
-                    {
-                        DTimCreation = "",
-                        DTimLastChange = ""
-                    }
-                }.AsSingletonList()
-            };
-        }
-
-        public static WitsmlWellbores GetWitsmlWellboreByWell(string wellUid)
+        public static WitsmlWellbores GetWitsmlWellboreByWell(string wellUid = "")
         {
             return new WitsmlWellbores
             {
@@ -40,6 +18,11 @@ namespace WitsmlExplorer.Api.Query
                 {
                     Uid = "",
                     UidWell = wellUid,
+                    Name = "",
+                    NameWell = "",
+                    TypeWellbore = "",
+                    StatusWellbore = "",
+                    IsActive = "",
                     CommonData = new WitsmlCommonData()
                     {
                         DTimCreation = "",

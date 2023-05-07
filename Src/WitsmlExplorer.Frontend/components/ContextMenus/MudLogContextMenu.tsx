@@ -11,23 +11,20 @@ import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import MudLogPropertiesModal, { MudLogPropertiesModalProps } from "../Modals/MudLogPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, StyledIcon } from "./ContextMenuUtils";
-import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { pasteComponents } from "./CopyUtils";
+import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
-export interface MudLogContextMenuProps {
-  mudLogs: MudLog[];
-}
-
-const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement => {
-  const { mudLogs } = props;
+const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+  const { checkedObjects, wellbore } = props;
   const { navigationState } = useContext(NavigationContext);
-  const { selectedServer, servers } = navigationState;
+  const { servers } = navigationState;
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onClickModify = async () => {
-    const modifyMudLogProps: MudLogPropertiesModalProps = { mudLog: mudLogs[0] };
+    const modifyMudLogProps: MudLogPropertiesModalProps = { mudLog: checkedObjects[0] as MudLog };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <MudLogPropertiesModal {...modifyMudLogProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -35,24 +32,17 @@ const MudLogContextMenu = (props: MudLogContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, mudLogs, dispatchOperation, ObjectType.MudLog)} disabled={mudLogs.length === 0}>
-          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "mudLog", mudLogs)}</Typography>
-        </MenuItem>,
+        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, mudLogs[0], JobType.CopyGeologyIntervals)}
-          disabled={geologyIntervalReferences === null || mudLogs.length !== 1}
+          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0], JobType.CopyGeologyIntervals)}
+          disabled={geologyIntervalReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, mudLogs, ObjectType.MudLog)} disabled={mudLogs.length === 0}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("delete", "mudLog", mudLogs)}</Typography>
-        </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={mudLogs.length !== 1}>
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>

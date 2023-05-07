@@ -6,7 +6,8 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TubularObjectContextMenu, { TubularObjectContextMenuProps } from "../ContextMenus/TubularObjectContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import TubularContextMenu from "../ContextMenus/TubularContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
@@ -15,7 +16,7 @@ export const TubularsListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, servers, wells } = navigationState;
+  const { selectedWell, selectedWellbore, wells } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
 
@@ -26,9 +27,9 @@ export const TubularsListView = (): React.ReactElement => {
   }, [selectedWellbore?.tubulars, wells]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, tubulars: Tubular[]) => {
-    const contextProps: TubularObjectContextMenuProps = { dispatchNavigation, dispatchOperation, selectedServer, tubulars, wellbore: selectedWellbore, servers };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: tubulars, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularObjectContextMenu {...contextProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularContextMenu {...contextProps} />, position } });
   };
 
   const columns: ContentTableColumn[] = [

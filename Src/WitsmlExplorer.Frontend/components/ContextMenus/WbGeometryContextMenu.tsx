@@ -1,36 +1,32 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import React, { useContext } from "react";
+import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
 import WbGeometryObject from "../../models/wbGeometry";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowObjectOnServer } from "./ContextMenuUtils";
-import { copyObjectOnWellbore, pasteComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { pasteComponents } from "./CopyUtils";
+import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
-export interface WbGeometryObjectContextMenuProps {
-  checkedWbGeometryObjects: WbGeometryObject[];
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  servers: Server[];
-  selectedServer: Server;
-}
-
-const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): React.ReactElement => {
-  const { checkedWbGeometryObjects, dispatchOperation, servers, selectedServer } = props;
+const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+  const { checkedObjects, wellbore } = props;
+  const { navigationState } = useContext(NavigationContext);
+  const { servers } = navigationState;
+  const { dispatchOperation } = useContext(OperationContext);
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(ComponentType.WbGeometrySection);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyWbGeometryObjectProps: WbGeometryPropertiesModalProps = { mode, wbGeometryObject: checkedWbGeometryObjects[0], dispatchOperation };
+    const modifyWbGeometryObjectProps: WbGeometryPropertiesModalProps = { mode, wbGeometryObject: checkedObjects[0] as WbGeometryObject, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WbGeometryPropertiesModal {...modifyWbGeometryObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -38,43 +34,17 @@ const WbGeometryObjectContextMenu = (props: WbGeometryObjectContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem
-          key={"copy"}
-          onClick={() => copyObjectOnWellbore(selectedServer, checkedWbGeometryObjects, dispatchOperation, ObjectType.WbGeometry)}
-          disabled={checkedWbGeometryObjects.length === 0}
-        >
-          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "wbGeometry", checkedWbGeometryObjects)}</Typography>
-        </MenuItem>,
+        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedWbGeometryObjects[0], JobType.CopyWbGeometrySections)}
-          disabled={wbGeometrySectionReferences === null || checkedWbGeometryObjects.length !== 1}
+          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0], JobType.CopyWbGeometrySections)}
+          disabled={wbGeometrySectionReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "wbGeometry section", wbGeometrySectionReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteObjects(dispatchOperation, checkedWbGeometryObjects, ObjectType.WbGeometry)}
-          disabled={checkedWbGeometryObjects.length === 0}
-        >
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Delete</Typography>
-        </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedWbGeometryObjects.length !== 1}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowObjectOnServer(dispatchOperation, server, checkedWbGeometryObjects[0], ObjectType.WbGeometry)}
-              disabled={checkedWbGeometryObjects.length !== 1}
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
-        </NestedMenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedWbGeometryObjects.length !== 1}>
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>

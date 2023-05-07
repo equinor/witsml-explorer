@@ -8,29 +8,28 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
 {
-    public class CopyLogWithParentWorker : BaseWorker<CopyLogWithParentJob>, IWorker
+    public class CopyWithParentWorker : BaseWorker<CopyWithParentJob>, IWorker
     {
         private readonly ICopyWellWorker _copyWellWorker;
         private readonly ICopyWellboreWorker _copyWellboreWorker;
+        private readonly ICopyObjectsWorker _copyObjectsWorker;
 
-        private readonly ICopyLogWorker _copyLogWorker;
-
-        public CopyLogWithParentWorker(
-            ILogger<CopyLogWithParentJob> logger,
+        public CopyWithParentWorker(
+            ILogger<CopyWithParentJob> logger,
             IWitsmlClientProvider witsmlClientProvider,
             ICopyWellWorker copyWellWorker,
             ICopyWellboreWorker copyWellboreWorker,
-            ICopyLogWorker copyLogWorker)
+            ICopyObjectsWorker copyObjectsWorker)
             : base(witsmlClientProvider, logger)
         {
             _copyWellWorker = copyWellWorker;
             _copyWellboreWorker = copyWellboreWorker;
-            _copyLogWorker = copyLogWorker;
+            _copyObjectsWorker = copyObjectsWorker;
         }
 
-        public JobType JobType => JobType.CopyLogWithParent;
+        public JobType JobType => JobType.CopyWithParent;
 
-        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyLogWithParentJob job)
+        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyWithParentJob job)
         {
             RefreshAction refreshAction = null;
 
@@ -56,9 +55,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }
 
-            (WorkerResult logResult, RefreshAction logRefresh) = await _copyLogWorker.Execute(new() { Source = job.Source, Target = job.Target });
-            refreshAction ??= logRefresh;
-            return (logResult, refreshAction);
+            (WorkerResult objectsResult, RefreshAction objectsRefresh) = await _copyObjectsWorker.Execute(new() { Source = job.Source, Target = job.Target });
+            refreshAction ??= objectsRefresh;
+            return (objectsResult, refreshAction);
         }
     }
 }

@@ -1,37 +1,26 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
-import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
-import React from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { Divider, MenuItem } from "@material-ui/core";
+import React, { useContext } from "react";
+import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
+import Rig from "../../models/rig";
 import { colors } from "../../styles/Colors";
-import { RigRow } from "../ContentViews/RigsListView";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, StyledIcon } from "./ContextMenuUtils";
-import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+import { StyledIcon } from "./ContextMenuUtils";
+import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
-export interface RigContextMenuProps {
-  checkedRigRows: RigRow[];
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  wellbore: Wellbore;
-  servers: Server[];
-  selectedServer: Server;
-}
-
-const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
-  const { checkedRigRows, dispatchOperation, wellbore, servers, selectedServer } = props;
-  const rigReferences = useClipboardReferencesOfType(ObjectType.Rig);
-  const rigs = checkedRigRows.map((row) => row.rig);
+const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+  const { checkedObjects, wellbore } = props;
+  const { navigationState } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyRigObjectProps: RigPropertiesModalProps = { mode, rig: checkedRigRows[0].rig, dispatchOperation };
+    const modifyRigObjectProps: RigPropertiesModalProps = { mode, rig: checkedObjects[0] as Rig, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <RigPropertiesModal {...modifyRigObjectProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -39,29 +28,9 @@ const RigContextMenu = (props: RigContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, rigs, dispatchOperation, ObjectType.Rig)} disabled={rigs.length === 0}>
-          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "rig", rigs)}</Typography>
-        </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore)} disabled={rigReferences === null}>
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
-        </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, rigs, ObjectType.Rig)} disabled={checkedRigRows.length === 0}>
-          <ListItemIcon>
-            <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
-          <Typography color="primary">{menuItemText("delete", "rig", rigs)}</Typography>
-        </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, ObjectType.Rig)}>
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
-        </NestedMenuItem>,
+        ...ObjectMenuItems(checkedObjects, ObjectType.Rig, navigationState, dispatchOperation, wellbore),
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedRigRows.length !== 1}>
+        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>

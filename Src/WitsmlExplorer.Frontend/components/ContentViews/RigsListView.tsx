@@ -4,7 +4,8 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Rig from "../../models/rig";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import RigContextMenu, { RigContextMenuProps } from "../ContextMenus/RigContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import RigContextMenu from "../ContextMenus/RigContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -17,7 +18,7 @@ export const RigsListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedServer, servers } = navigationState;
+  const { selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [rigs, setRigs] = useState<Rig[]>([]);
 
@@ -70,7 +71,7 @@ export const RigsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRigRows: RigRow[]) => {
-    const contextProps: RigContextMenuProps = { checkedRigRows, dispatchOperation, selectedServer, servers, wellbore: selectedWellbore };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedRigRows.map((row) => row.rig), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigContextMenu {...contextProps} />, position } });
   };
