@@ -19,8 +19,10 @@ import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import ContextMenu from "./ContextMenu";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import WellborePasteMenuItem from "./WellborePasteMenuItem";
+import { useClipboardReferences } from "./UseClipboardReferences";
 
 export interface WellboreContextMenuProps {
   dispatchNavigation: (action: UpdateWellboreAction) => void;
@@ -31,6 +33,7 @@ export interface WellboreContextMenuProps {
 
 const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, wellbore, servers } = props;
+  const objectReferences = useClipboardReferences();
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -141,7 +144,10 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
           </ListItemIcon>
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
-        <WellborePasteMenuItem key={"pasteMenu"} dispatchOperation={dispatchOperation} servers={servers} wellbore={wellbore} />,
+        <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore)} disabled={objectReferences === null}>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{menuItemText("paste", objectReferences?.objectType ?? "", objectReferences?.objectUids)}</Typography>
+        </MenuItem>,
         <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
           <ListItemIcon>
             <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
