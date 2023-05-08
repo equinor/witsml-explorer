@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 using Witsml.Data.Curves;
 
@@ -8,7 +9,7 @@ namespace Witsml.Extensions
     {
         public static string ToISODateTimeString(this DateTime dateTime)
         {
-            return dateTime.ToUniversalTime().ToString(DateTimeIndex.IsoPattern);
+            return dateTime.ToUniversalTime().ToString(DateTimeIndex.IsoPattern, CultureInfo.InvariantCulture);
         }
     }
 }
