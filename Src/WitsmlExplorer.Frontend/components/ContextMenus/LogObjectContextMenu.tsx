@@ -1,6 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, ListItemIcon, makeStyles, MenuItem } from "@material-ui/core";
-import { ImportExport } from "@material-ui/icons";
+import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
@@ -16,20 +15,17 @@ import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText } from "./ContextMenuUtils";
+import { menuItemText, StyledIcon } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
-
-const useContextMenuIconStyle = makeStyles({ iconStyle: { width: 16, height: 16, color: "#007079" } });
 
 const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -37,7 +33,6 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   const { servers, selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const logCurvesReference: CopyRangeClipboard = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
-  const classes = useContextMenuIconStyle();
 
   const onClickProperties = () => {
     const logObject = checkedObjects[0];
@@ -91,9 +86,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     <ContextMenu
       menuItems={[
         <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedObjects.length !== 1}>
-          <ListItemIcon>
-            <Icon name="refresh" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
         ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, wellbore),
@@ -102,9 +95,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}
           disabled={logCurvesReference === null || checkedObjects.length !== 1}
         >
-          <ListItemIcon>
-            <Icon name="paste" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "log", [])} to server`} disabled={checkedObjects.length != 1} icon="compare">
@@ -118,22 +109,16 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           )}
         </NestedMenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
-          <ListItemIcon>
-            <Icon name="formatLine" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Adjust range</Typography>
         </MenuItem>,
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
-          <ListItemIcon>
-            <ImportExport className={classes.iconStyle} />
-          </ListItemIcon>
+          <StyledIcon name="upload" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Import log data from .csv</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
-          <ListItemIcon>
-            <Icon name="settings" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}

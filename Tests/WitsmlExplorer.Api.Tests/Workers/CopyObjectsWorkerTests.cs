@@ -25,7 +25,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class CopyObjectsWorkerTests
     {
         private readonly CopyObjectsWorker _copyObjectWorker;
-        private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly Mock<IWitsmlClient> _witsmlTargetClient;
+        private readonly Mock<IWitsmlClient> _witsmlSourceClient;
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
         private const string TargetWellboreUid = "targetWellboreUid";
@@ -34,9 +35,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public CopyObjectsWorkerTests()
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
-            _witsmlClient = new Mock<IWitsmlClient>();
-            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
+            _witsmlTargetClient = new Mock<IWitsmlClient>();
+            _witsmlSourceClient = new Mock<IWitsmlClient>();
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlTargetClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlSourceClient.Object);
             Mock<ILogger<CopyObjectsJob>> logger = new();
             CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object);
             CopyLogWorker copyLogWorker = new(new Mock<ILogger<CopyObjectsJob>>().Object, witsmlClientProvider.Object);
@@ -44,14 +46,31 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task Execute_EmptyList_ThrowsError()
+        {
+            CopyObjectsJob copyObjectJob = CreateJobTemplate();
+            _witsmlSourceClient.Setup(client =>
+                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(
+                        witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid),
+                        new OptionsIn(ReturnElements.All, null, null)))
+                .ReturnsAsync(GetEmptySourceObjects());
+            SetupGetWellbore();
+
+            (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
+
+            Assert.False(workerResult.IsSuccess);
+            Assert.True(workerResult.Message.Length != 0);
+        }
+
+        [Fact]
         public async Task Execute_CopyOneTubular_IsSuccess()
         {
             CopyObjectsJob copyObjectJob = CreateJobTemplate();
-            _witsmlClient.Setup(client =>
+            _witsmlSourceClient.Setup(client =>
                     client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), new OptionsIn(ReturnElements.All, null, null)))
                 .ReturnsAsync(GetSourceObjects());
             SetupGetWellbore();
-            CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
+            CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlTargetClient);
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _copyObjectWorker.Execute(copyObjectJob);
             Assert.True(workerResult.IsSuccess);
@@ -60,7 +79,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void SetupGetWellbore()
         {
-            _witsmlClient.Setup(client =>
+            _witsmlTargetClient.Setup(client =>
                     client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null, null)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
@@ -107,6 +126,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return new WitsmlTubulars
             {
                 Objects = new List<WitsmlTubular> { witsmlObject }
+            };
+        }
+
+        private static IWitsmlObjectList GetEmptySourceObjects()
+        {
+            return new WitsmlTubulars
+            {
+                Objects = new List<WitsmlTubular>()
             };
         }
     }
