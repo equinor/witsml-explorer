@@ -13,7 +13,7 @@ import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import { DispatchOperation } from "./ContextMenuUtils";
 
-export const onClickPaste = async (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
+export const onClickPaste = (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === sourceServerUrl);
   if (sourceServer !== null) {
     AuthorizationService.setSourceServer(sourceServer);
@@ -21,13 +21,7 @@ export const onClickPaste = async (servers: Server[], sourceServerUrl: string, o
   }
 };
 
-export const pasteObjectOnWellbore = async (
-  servers: Server[],
-  objectReferences: ObjectReferences,
-  dispatchOperation: DispatchOperation,
-  wellbore: Wellbore,
-  jobType: JobType = null
-) => {
+export const pasteObjectOnWellbore = async (servers: Server[], objectReferences: ObjectReferences, dispatchOperation: DispatchOperation, wellbore: Wellbore) => {
   const orderCopyJob = () => {
     const wellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
@@ -36,7 +30,7 @@ export const pasteObjectOnWellbore = async (
       wellboreName: wellbore.name
     };
     const copyJob: CopyObjectsJob = { source: objectReferences, target: wellboreReference };
-    JobService.orderJob(jobType ?? JobType.CopyObjects, copyJob);
+    JobService.orderJob(JobType.CopyObjects, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 

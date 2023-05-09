@@ -7,7 +7,7 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore from "../models/wellbore";
+import Wellbore, { calculateWellboreNodeId } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
@@ -41,6 +41,7 @@ import {
 import ModificationType from "./modificationType";
 import { Action } from "./navigationActions";
 import { NavigationState, allDeselected } from "./navigationContext";
+import { toggleTreeNode, treeNodeIsExpanded } from "./navigationStateReducer";
 
 export const performModificationAction = (state: NavigationState, action: Action) => {
   switch (action.type) {
@@ -234,10 +235,14 @@ const removeWellbore = (state: NavigationState, { payload }: RemoveWellboreActio
         selectedWell: state.selectedWell
       }
     : {};
+
+  const wellboreNodeId = calculateWellboreNodeId({ wellUid, uid: wellboreUid });
+  const shouldCollapseWellbore = treeNodeIsExpanded(state.expandedTreeNodes, wellboreNodeId);
   return {
     ...state,
     wells,
     filteredWells: filterWells(wells, state.selectedFilter),
+    expandedTreeNodes: shouldCollapseWellbore ? toggleTreeNode(state.expandedTreeNodes, wellboreNodeId) : state.expandedTreeNodes,
     ...updatedSelectState
   };
 };

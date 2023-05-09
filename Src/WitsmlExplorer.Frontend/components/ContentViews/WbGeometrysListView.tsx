@@ -6,7 +6,8 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WbGeometryObjectContextMenu, { WbGeometryObjectContextMenuProps } from "../ContextMenus/WbGeometryContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -19,7 +20,7 @@ export const WbGeometrysListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedWell, selectedServer, servers } = navigationState;
+  const { selectedWellbore, selectedWell } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
 
@@ -57,12 +58,7 @@ export const WbGeometrysListView = (): React.ReactElement => {
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
-    const contextProps: WbGeometryObjectContextMenuProps = {
-      checkedWbGeometryObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry),
-      dispatchOperation,
-      selectedServer,
-      servers
-    };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WbGeometryObjectContextMenu {...contextProps} />, position } });
   };

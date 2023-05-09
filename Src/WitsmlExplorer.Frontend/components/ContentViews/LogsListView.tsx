@@ -7,7 +7,8 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
+import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
@@ -17,7 +18,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, selectedLogTypeGroup, selectedServer, servers } = navigationState;
+  const { selectedWellbore, selectedWell, selectedLogTypeGroup } = navigationState;
 
   const {
     dispatchOperation,
@@ -37,13 +38,7 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogObjectRows: LogObjectRow[]) => {
-    const contextProps: LogObjectContextMenuProps = {
-      checkedLogObjects: checkedLogObjectRows.map((row) => row.logObject),
-      dispatchNavigation,
-      dispatchOperation,
-      selectedServer,
-      servers
-    };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedLogObjectRows.map((row) => row.logObject), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };

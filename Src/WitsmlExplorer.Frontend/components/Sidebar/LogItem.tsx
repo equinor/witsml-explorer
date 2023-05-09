@@ -8,7 +8,8 @@ import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import LogObjectContextMenu, { LogObjectContextMenuProps } from "../ContextMenus/LogObjectContextMenu";
+import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
+import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
 
 interface LogItemProps {
@@ -25,14 +26,11 @@ interface LogItemProps {
 const LogItem = (props: LogItemProps): React.ReactElement => {
   const { log: log, well, wellbore, selected, nodeId, objectGrowing } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    dispatchNavigation,
-    navigationState: { selectedServer, servers }
-  } = useContext(NavigationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
-    const contextProps: LogObjectContextMenuProps = { checkedLogObjects: [log], dispatchNavigation, dispatchOperation, selectedServer, servers };
+    const contextProps: ObjectContextMenuProps = { checkedObjects: [log], wellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
   };

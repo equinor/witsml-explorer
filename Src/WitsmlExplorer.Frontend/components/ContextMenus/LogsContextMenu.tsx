@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
@@ -8,13 +8,11 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { menuItemText } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -48,15 +46,11 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
     <ContextMenu
       menuItems={[
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
-          <ListItemIcon>
-            <Icon name="add" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
-        <MenuItem key={"pasteLog"} onClick={() => pasteObjectOnWellbore(servers, logReferences, dispatchOperation, wellbore, JobType.CopyLog)} disabled={logReferences === null}>
-          <ListItemIcon>
-            <Icon name="paste" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+        <MenuItem key={"pasteLog"} onClick={() => pasteObjectOnWellbore(servers, logReferences, dispatchOperation, wellbore)} disabled={logReferences === null}>
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "log", logReferences?.objectUids)}</Typography>
         </MenuItem>
       ]}

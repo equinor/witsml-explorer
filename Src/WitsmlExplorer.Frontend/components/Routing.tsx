@@ -1,16 +1,25 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
-import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction, SetFilterAction } from "../contexts/navigationActions";
+import {
+  SelectLogTypeAction,
+  SelectObjectAction,
+  SelectObjectGroupAction,
+  SelectServerAction,
+  SelectWellAction,
+  SelectWellboreAction,
+  SetFilterAction
+} from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
-import Wellbore, { getObjectFromWellbore } from "../models/wellbore";
+import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import NotificationService from "../services/notificationService";
 import WellboreService from "../services/wellboreService";
+import { WITSML_INDEX_TYPE_MD } from "./Constants";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -25,7 +34,8 @@ const Routing = (): React.ReactElement => {
     selectedObjectGroup,
     selectedTrajectory,
     selectedTubular,
-    selectedWbGeometry
+    selectedWbGeometry,
+    selectedLogTypeGroup
   } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
@@ -48,7 +58,18 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [selectedServer, selectedWell, selectedWellbore, selectedLog, selectedTubular, selectedMudLog, selectedObjectGroup, selectedTrajectory, selectedWbGeometry]);
+  }, [
+    selectedServer,
+    selectedWell,
+    selectedWellbore,
+    selectedLog,
+    selectedTubular,
+    selectedMudLog,
+    selectedObjectGroup,
+    selectedTrajectory,
+    selectedWbGeometry,
+    selectedLogTypeGroup
+  ]);
 
   useEffect(() => {
     //update router on params change
@@ -166,11 +187,17 @@ const Routing = (): React.ReactElement => {
           });
         }
       } else if (group != null) {
-        const action: SelectObjectGroupAction = {
-          type: NavigationType.SelectObjectGroup,
-          payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore }
-        };
-        dispatchNavigation(action);
+        if (urlParams.logType != null) {
+          const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
+          const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
+          dispatchNavigation(action);
+        } else {
+          const action: SelectObjectGroupAction = {
+            type: NavigationType.SelectObjectGroup,
+            payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore }
+          };
+          dispatchNavigation(action);
+        }
       }
       setIsSyncingUrlAndState(false);
     }
@@ -189,12 +216,17 @@ const isQueryParamsEqual = (urlQp: QueryParams, stateQp: QueryParams): boolean =
   });
 };
 
+export const logTypeToQuery = (logType: string) => {
+  return logType.includes(WITSML_INDEX_TYPE_MD) ? "depth" : "time";
+};
+
 export const getQueryParamsFromState = (state: NavigationState): QueryParams => {
   return {
     ...(state.selectedServer && { serverUrl: state.selectedServer.url }),
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
+    ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
     ...(state.selectedLog && { objectUid: state.selectedLog.uid }),
     ...(state.selectedTrajectory && { objectUid: state.selectedTrajectory.uid }),
     ...(state.selectedTubular && { objectUid: state.selectedTubular.uid }),
@@ -209,6 +241,7 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.wellUid && { wellUid: query.wellUid.toString() }),
     ...(query.wellboreUid && { wellboreUid: query.wellboreUid.toString() }),
     ...(query.group && { group: query.group.toString() }),
+    ...(query.logType && { logType: query.logType.toString() }),
     ...(query.objectUid && { objectUid: query.objectUid.toString() })
   };
 };
@@ -218,6 +251,7 @@ export interface QueryParams {
   wellUid?: string;
   wellboreUid?: string;
   group?: string;
+  logType?: string;
   objectUid?: string;
 }
 

@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             bool error = false;
             List<string> successUids = new();
             string errorReason = null;
-            EntityDescription errorEnitity = null;
+            EntityDescription errorEntity = null;
             QueryResult[] results = await Task.WhenAll(queries.Select(async (query) =>
             {
                 try
@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         if (!error)
                         {
                             errorReason = result.Reason;
-                            errorEnitity = new EntityDescription
+                            errorEntity = new EntityDescription
                             {
                                 WellName = query.NameWell,
                                 WellboreName = query.NameWellbore,
@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             string successString = successUids.Count > 0 ? $"Copied {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {queries.First().GetType().Name}s", errorReason, errorEnitity), successUids.Count > 0 ? refreshAction : null);
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {queries.First().GetType().Name}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }

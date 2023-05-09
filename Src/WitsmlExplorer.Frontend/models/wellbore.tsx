@@ -93,7 +93,7 @@ export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
-export const calculateWellboreNodeId = (wellbore: Wellbore): string => {
+export const calculateWellboreNodeId = (wellbore: Wellbore | { wellUid: string; uid: string }): string => {
   return wellbore.wellUid + wellbore.uid;
 };
 

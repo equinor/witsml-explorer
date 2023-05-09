@@ -5,6 +5,7 @@ import {
   filter_alt_active as activeFilter,
   add,
   arrow_down as arrowDown,
+  arrow_drop_right as arrowDropRight,
   arrow_up as arrowUp,
   assignment,
   calendar,
@@ -31,10 +32,12 @@ import {
   refresh,
   save,
   settings,
+  upload,
   world
 } from "@equinor/eds-icons";
 const icons = {
   accountCircle,
+  arrowDropRight,
   chevronDown,
   chevronRight,
   chevronUp,
@@ -65,7 +68,8 @@ const icons = {
   done,
   cloudOff,
   activeFilter,
-  filter
+  filter,
+  upload
 };
 
 Icon.add(icons);
