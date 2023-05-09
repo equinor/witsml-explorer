@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
@@ -10,14 +10,14 @@ import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import { WellRow } from "../ContentViews/WellsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
-import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
+import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import ContextMenu from "./ContextMenu";
+import { StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface WellContextMenuProps {
@@ -111,21 +111,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     <ContextMenu
       menuItems={[
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
-          <ListItemIcon>
-            <Icon name="add" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Well</Typography>
         </MenuItem>,
         <MenuItem key={"newWellbore"} onClick={onClickNewWellbore}>
-          <ListItemIcon>
-            <Icon name="add" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
-          <ListItemIcon>
-            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
@@ -137,16 +131,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
-          <ListItemIcon>
-            <Icon name="settings" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>,
         checkedWellRows && (
           <MenuItem key={"batchUpdate"} onClick={onClickBatchUpdate} disabled={checkedWellRows.length == 0}>
-            <ListItemIcon>
-              <Icon name="settings" color={colors.interactive.primaryResting} />
-            </ListItemIcon>
+            <StyledIcon name="settings" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>Batch Update</Typography>
           </MenuItem>
         )
