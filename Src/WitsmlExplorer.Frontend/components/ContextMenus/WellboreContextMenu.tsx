@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, ListItemIcon, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import { UpdateWellboreAction } from "../../contexts/modificationActions";
@@ -13,12 +13,12 @@ import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import ContextMenu from "./ContextMenu";
+import { StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import WellborePasteMenuItem from "./WellborePasteMenuItem";
 
@@ -124,28 +124,20 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     <ContextMenu
       menuItems={[
         <MenuItem key={"refreshwellbore"} onClick={onClickRefresh}>
-          <ListItemIcon>
-            <Icon name="refresh" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
-          <ListItemIcon>
-            <Icon name="add" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"newlog"} onClick={onClickNewLog}>
-          <ListItemIcon>
-            <Icon name="add" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
         </MenuItem>,
         <WellborePasteMenuItem key={"pasteMenu"} dispatchOperation={dispatchOperation} servers={servers} wellbore={wellbore} />,
         <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
-          <ListItemIcon>
-            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
@@ -157,9 +149,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
-          <ListItemIcon>
-            <Icon name="settings" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
