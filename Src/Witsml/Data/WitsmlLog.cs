@@ -15,11 +15,15 @@ namespace Witsml.Data
             };
         }
 
-        public const string WITSML_INDEX_TYPE_MD = "measured depth";
-        public const string WITSML_INDEX_TYPE_DATE_TIME = "date time";
+        public const string WITSMLINDEXTYPEMD = "measured depth";
+        public const string WITSMLINDEXTYPEDATETIME = "date time";
 
         [XmlElement("objectGrowing")]
         public string ObjectGrowing { get; set; }
+
+        [XmlElement("objectGrowing")]
+        public string ObjectGrowing2 { get; set; }
+
 
         [XmlElement("serviceCompany")]
         public string ServiceCompany { get; set; }
