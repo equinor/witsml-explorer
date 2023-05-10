@@ -220,7 +220,7 @@ const selectObject = (state: NavigationState, { payload }: SelectObjectAction): 
     selectedWellbore: wellbore,
     selectedObjectGroup: objectType,
     selectedLogTypeGroup: logTypeGroup,
-    ["selected" + objectType]: object,
+    selectedObject: object,
     currentSelected: object,
     currentProperties: getObjectOnWellboreProperties(object, objectType),
     expandedTreeNodes

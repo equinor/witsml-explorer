@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import TrajectoryService from "../../services/trajectoryService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -25,10 +26,11 @@ export const TrajectoryView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedTrajectory, servers } = navigationState;
+  const { selectedServer, selectedObject, servers } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedTrajectory = selectedObject as Trajectory;
 
   useEffect(() => {
     setIsFetchingData(true);

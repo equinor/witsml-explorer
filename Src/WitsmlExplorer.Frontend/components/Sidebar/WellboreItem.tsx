@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { calculateObjectNodeId } from "../../models/objectOnWellbore";
+import ObjectOnWellbore, { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
@@ -33,7 +33,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedMudLog, selectedTrajectory, selectedTubular, selectedWbGeometry, servers, expandedTreeNodes } = navigationState;
+  const { selectedObject, selectedObjectGroup, servers, expandedTreeNodes } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -128,6 +128,19 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     }
   };
 
+  const isSelected = useCallback(
+    (objectType: ObjectType, objectOnWellbore: ObjectOnWellbore) => {
+      return selectedObject &&
+        selectedObjectGroup === objectType &&
+        selectedObject.uid === objectOnWellbore.uid &&
+        selectedObject.wellboreUid === objectOnWellbore.wellboreUid &&
+        selectedObject.wellUid === objectOnWellbore.wellUid
+        ? true
+        : undefined;
+    },
+    [selectedObject, selectedObjectGroup]
+  );
+
   return (
     <TreeItem
       onContextMenu={(event) => onContextMenu(event, wellbore)}
@@ -188,7 +201,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               well={well}
               wellbore={wellbore}
               nodeId={calculateObjectNodeId(mudLog, ObjectType.MudLog)}
-              selected={selectedMudLog && selectedMudLog.uid === mudLog.uid ? true : undefined}
+              selected={isSelected(ObjectType.MudLog, mudLog)}
             />
           ))}
       </TreeItem>
@@ -219,7 +232,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               well={well}
               wellbore={wellbore}
               nodeId={calculateObjectNodeId(trajectory, ObjectType.Trajectory)}
-              selected={selectedTrajectory && selectedTrajectory.uid === trajectory.uid ? true : undefined}
+              selected={isSelected(ObjectType.Trajectory, trajectory)}
             />
           ))}
       </TreeItem>
@@ -238,7 +251,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               well={well}
               wellbore={wellbore}
               nodeId={calculateObjectNodeId(tubular, ObjectType.Tubular)}
-              selected={selectedTubular && selectedTubular.uid === tubular.uid ? true : undefined}
+              selected={isSelected(ObjectType.Tubular, tubular)}
             />
           ))}
       </TreeItem>
@@ -257,7 +270,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
               well={well}
               wellbore={wellbore}
               nodeId={calculateObjectNodeId(wbGeometry, ObjectType.WbGeometry)}
-              selected={selectedWbGeometry && selectedWbGeometry.uid === wbGeometry.uid ? true : undefined}
+              selected={isSelected(ObjectType.WbGeometry, wbGeometry)}
             />
           ))}
       </TreeItem>

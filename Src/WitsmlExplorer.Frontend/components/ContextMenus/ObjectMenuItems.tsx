@@ -47,7 +47,7 @@ export const ObjectMenuItems = (
           )
       )}
     </NestedMenuItem>,
-    <MenuItem key={"paste"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore)} disabled={objectReferences === null}>
+    <MenuItem key={"pasteObject"} onClick={() => pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, wellbore)} disabled={objectReferences === null}>
       <StyledIcon name="paste" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("paste", objectType, objectReferences?.objectUids)}</Typography>
     </MenuItem>,

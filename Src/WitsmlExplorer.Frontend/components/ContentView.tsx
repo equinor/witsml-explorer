@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
 import { ObjectType } from "../models/objectType";
@@ -8,66 +8,66 @@ import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
-import { LogsListView } from "./ContentViews/LogsListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
+import { LogsListView } from "./ContentViews/LogsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
-import { MudLogsListView } from "./ContentViews/MudLogsListView";
 import MudLogView from "./ContentViews/MudLogView";
+import { MudLogsListView } from "./ContentViews/MudLogsListView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
 import ServerManager from "./ContentViews/ServerManager";
 import TrajectoriesListView from "./ContentViews/TrajectoriesListView";
 import TrajectoryView from "./ContentViews/TrajectoryView";
-import TubularsListView from "./ContentViews/TubularsListView";
 import TubularView from "./ContentViews/TubularView";
-import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
+import TubularsListView from "./ContentViews/TubularsListView";
 import WbGeometryView from "./ContentViews/WbGeometryView";
+import { WbGeometrysListView } from "./ContentViews/WbGeometrysListView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
 
+const objectGroupViews: Record<ObjectType, ReactElement> = {
+  [ObjectType.BhaRun]: <BhaRunsListView />,
+  [ObjectType.ChangeLog]: <ChangeLogsListView />,
+  [ObjectType.FormationMarker]: <FormationMarkersListView />,
+  [ObjectType.Log]: <LogTypeListView />,
+  [ObjectType.Message]: <MessagesListView />,
+  [ObjectType.MudLog]: <MudLogsListView />,
+  [ObjectType.Rig]: <RigsListView />,
+  [ObjectType.Risk]: <RisksListView />,
+  [ObjectType.Trajectory]: <TrajectoriesListView />,
+  [ObjectType.Tubular]: <TubularsListView />,
+  [ObjectType.WbGeometry]: <WbGeometrysListView />
+};
+
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const {
-    selectedWell,
-    selectedWellbore,
-    selectedLogTypeGroup,
-    selectedLog,
-    selectedLogCurveInfo,
-    selectedMudLog,
-    selectedObjectGroup,
-    selectedTrajectory,
-    selectedTubular,
-    selectedWbGeometry,
-    selectedServer,
-    currentSelected
-  } = navigationState;
+  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected } = navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {
     const setObjectGroupView = () => {
-      if (currentSelected === ObjectType.BhaRun) {
-        setView(<BhaRunsListView />);
-      } else if (currentSelected === ObjectType.ChangeLog) {
-        setView(<ChangeLogsListView />);
-      } else if (currentSelected === ObjectType.FormationMarker) {
-        setView(<FormationMarkersListView />);
-      } else if (currentSelected === ObjectType.Log) {
-        setView(<LogTypeListView />);
-      } else if (currentSelected === ObjectType.Message) {
-        setView(<MessagesListView />);
-      } else if (currentSelected === ObjectType.MudLog) {
-        setView(<MudLogsListView />);
-      } else if (currentSelected === ObjectType.Rig) {
-        setView(<RigsListView />);
-      } else if (currentSelected === ObjectType.Risk) {
-        setView(<RisksListView />);
-      } else if (currentSelected === ObjectType.Trajectory) {
-        setView(<TrajectoriesListView />);
-      } else if (currentSelected === ObjectType.Tubular) {
-        setView(<TubularsListView />);
-      } else if (currentSelected === ObjectType.WbGeometry) {
-        setView(<WbGeometrysListView />);
+      const groupView = objectGroupViews[currentSelected as ObjectType];
+      if (groupView != null) {
+        setView(groupView);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
+        setView(undefined);
+      }
+    };
+
+    const setObjectView = () => {
+      if (selectedObjectGroup === ObjectType.Log) {
+        setView(<LogCurveInfoListView />);
+      } else if (selectedObjectGroup === ObjectType.MudLog) {
+        setView(<MudLogView />);
+      } else if (selectedObjectGroup === ObjectType.Trajectory) {
+        setView(<TrajectoryView />);
+      } else if (selectedObjectGroup === ObjectType.Tubular) {
+        setView(<TubularView />);
+      } else if (selectedObjectGroup === ObjectType.WbGeometry) {
+        setView(<WbGeometryView />);
       } else {
         // eslint-disable-next-line no-console
         console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
@@ -88,18 +88,10 @@ const ContentView = (): React.ReactElement => {
         setObjectGroupView();
       } else if (currentSelected === selectedLogTypeGroup) {
         setView(<LogsListView />);
-      } else if (currentSelected === selectedLog) {
-        setView(<LogCurveInfoListView />);
-      } else if (currentSelected == selectedMudLog) {
-        setView(<MudLogView />);
+      } else if (currentSelected === selectedObject) {
+        setObjectView();
       } else if (currentSelected === selectedLogCurveInfo) {
         setView(<CurveValuesView />);
-      } else if (currentSelected === selectedTrajectory) {
-        setView(<TrajectoryView />);
-      } else if (currentSelected === selectedTubular) {
-        setView(<TubularView />);
-      } else if (currentSelected === selectedWbGeometry) {
-        setView(<WbGeometryView />);
       } else if (currentSelected === selectedJobsFlag) {
         setView(<JobsView />);
       } else if (currentSelected === selectedServerManagerFlag) {
