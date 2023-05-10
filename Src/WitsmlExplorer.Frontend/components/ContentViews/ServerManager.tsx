@@ -1,5 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Button, Table, Typography } from "@equinor/eds-core-react";
+import { Button, ButtonProps, Table, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
@@ -9,7 +9,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { emptyServer, Server } from "../../models/server";
+import { Server, emptyServer } from "../../models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/authorizationService";
 import NotificationService from "../../services/notificationService";
@@ -108,6 +108,10 @@ const ServerManager = (): React.ReactElement => {
     padding: "0.3rem"
   };
 
+  const isConnected = (server: Server): boolean => {
+    return selectedServer?.id == server.id && wells.length != 0;
+  };
+
   return (
     <>
       <Header>
@@ -136,23 +140,20 @@ const ServerManager = (): React.ReactElement => {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
               <Table.Row id={server.id} key={server.id}>
-                <Table.Cell style={CellHeaderStyle}>{server.name}</Table.Cell>
+                <Table.Cell style={CellHeaderStyle}>
+                  {isConnected(server) ? (
+                    <StyledLink onClick={() => dispatchNavigation({ type: NavigationType.SelectServer, payload: { server } })}>{server.name}</StyledLink>
+                  ) : (
+                    server.name
+                  )}
+                </Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>{server.currentUsername == null ? "" : server.currentUsername}</Table.Cell>
                 <Table.Cell style={{ textAlign: "center" }}>
-                  <Icon color={selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
+                  <Icon color={isConnected(server) ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
                 </Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>
-                  <CustomButton
-                    variant="outlined"
-                    onClick={() => onSelectItem(server)}
-                    style={{
-                      color: selectedServer?.id == server.id && wells.length ? colors.interactive.primaryResting : colors.text.staticIconsDefault,
-                      borderColor: selectedServer?.id == server.id && wells.length ? colors.interactive.successResting : colors.text.staticIconsDefault
-                    }}
-                  >
-                    {selectedServer?.id == server.id && wells.length ? "Connected" : "Connect"}
-                  </CustomButton>
+                  <ConnectButton isConnected={isConnected(server)} onClick={() => onSelectItem(server)} />
                 </Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
@@ -179,11 +180,39 @@ const Header = styled.div`
   align-items: center;
 `;
 
-const CustomButton = styled(Button)`
+interface ConnectButtonProps extends ButtonProps {
+  isConnected: boolean;
+}
+
+const ConnectButton = ({ isConnected, ...props }: ConnectButtonProps) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  return (
+    <StyledConnectButton {...props} variant="outlined" isConnected={isConnected} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      {isConnected ? (isHovered ? "Disconnect" : "Connected") : "Connect"}
+    </StyledConnectButton>
+  );
+};
+
+const StyledConnectButton = styled(Button)<{ isConnected: boolean }>`
   border-radius: 20px;
   width: 5.75rem;
   height: 1.5rem;
-  border-color: ${colors.interactive.successResting};
+  ${(props) =>
+    props.isConnected
+      ? `
+    color: ${colors.interactive.primaryResting};
+    border-color: ${colors.interactive.successResting};
+    &:hover {
+      color: ${colors.interactive.dangerHover};
+      border-color: ${colors.interactive.dangerHover};
+      background-color: transparent;
+    }
+  `
+      : `
+    color: ${colors.text.staticIconsDefault};
+    border-color: ${colors.text.staticIconsDefault};
+  `}
   &:hover {
     border-radius: 20px;
   }
@@ -196,6 +225,14 @@ const StyledTableBody = styled(Table.Body)`
 
   tr:nth-child(odd) {
     background-color: white;
+  }
+`;
+
+const StyledLink = styled.a`
+  cursor: pointer;
+  text-decoration: underline;
+  &&:hover {
+    text-decoration: none;
   }
 `;
 
