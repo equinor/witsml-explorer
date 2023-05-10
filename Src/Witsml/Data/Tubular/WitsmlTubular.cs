@@ -20,6 +20,9 @@ namespace Witsml.Data.Tubular
         [XmlElement("typeTubularAssy")]
         public string TypeTubularAssy { get; set; }
 
+        [XmlElement("typeTubularAssy2")]
+        public string TypeTubularAssy2 { get; set; }
+
         [XmlIgnore]
         public bool? ValveFloat { get; set; }
         [XmlElement("valveFloat")]
