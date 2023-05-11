@@ -1,0 +1,96 @@
+<fluidsReports version="1.4.1.1" xmlns="http://www.witsml.org/schemas/1series">
+  <fluidsReport uidWell="jbura" uidWellbore="jbura" uid="integration_test">
+    <nameWell>00 jbura</nameWell>
+    <nameWellbore>00 jbura</nameWellbore>
+    <name>Rpt A-42-R003</name>
+    <dTim>2001-10-31T16:30:00.000Z</dTim>
+    <md uom="m">2438</md>
+    <tvd uom="m">2345</tvd>
+    <numReport>1</numReport>
+    <fluid uid="fluid-1">
+      <type>OilBased</type>
+      <locationSample>Pit</locationSample>
+      <dTim>2001-05-15T13:20:00.000Z</dTim>
+      <md uom="m">1</md>
+      <tvd uom="m">2</tvd>
+      <presBopRating uom="psi">3</presBopRating>
+      <mudClass>water based</mudClass>
+      <density uom="g/L">1.26</density>
+      <visFunnel uom="s">135</visFunnel>
+      <tempVis uom="degC">28</tempVis>
+      <pv uom="cP">50</pv>
+      <yp uom="lbf/100ft2">30</yp>
+      <gel10Sec uom="lbf/100ft2">14</gel10Sec>
+      <gel10Min uom="lbf/100ft2">24</gel10Min>
+      <gel30Min uom="lbf/100ft2">27</gel30Min>
+      <filterCakeLtlp uom="in/32">1</filterCakeLtlp>
+      <filtrateLtlp uom="mL">2.3</filtrateLtlp>
+      <tempHthp uom="degF">200</tempHthp>
+      <presHthp uom="psi">500</presHthp>
+      <filtrateHthp uom="mL">2.4</filtrateHthp>
+      <filterCakeHthp uom="in/32">1</filterCakeHthp>
+      <solidsPc uom="%">6.1</solidsPc>
+      <waterPc uom="%">32</waterPc>
+      <oilPc uom="%">53</oilPc>
+      <sandPc uom="%">0.3</sandPc>
+      <solidsLowGravPc uom="%">6.1</solidsLowGravPc>
+      <solidsCalcPc uom="%">7.5</solidsCalcPc>
+      <baritePc uom="%">5</baritePc>
+      <lcm uom="lbm/bbl">10</lcm>
+      <mbt uom="meq/g">0.3</mbt>
+      <ph>10.5</ph>
+      <tempPh uom="degC">28</tempPh>
+      <pm uom="mL">0.9</pm>
+      <pmFiltrate uom="mL">1.3</pmFiltrate>
+      <mf uom="mL">1</mf>
+      <alkalinityP1 uom="mL">1.1</alkalinityP1>
+      <alkalinityP2 uom="mL">1.2</alkalinityP2>
+      <chloride uom="mg/L">18750</chloride>
+      <calcium uom="mg/L">7000</calcium>
+      <magnesium uom="mg/L">104.5</magnesium>
+      <potassium uom="mg/L">5000</potassium>
+      <rheometer uid="rheometer-1">
+        <tempRheom uom="degC">25</tempRheom>
+        <presRheom uom="psi">0</presRheom>
+        <vis3Rpm>10</vis3Rpm>
+        <vis6Rpm>12</vis6Rpm>
+        <vis100Rpm>40</vis100Rpm>
+        <vis200Rpm>61</vis200Rpm>
+        <vis300Rpm>80</vis300Rpm>
+        <vis600Rpm>130</vis600Rpm>
+      </rheometer>
+      <rheometer uid="rheometer-2">
+        <tempRheom uom="degC">26</tempRheom>
+        <presRheom uom="psi">1</presRheom>
+        <vis3Rpm>11</vis3Rpm>
+        <vis6Rpm>13</vis6Rpm>
+        <vis100Rpm>42</vis100Rpm>
+        <vis200Rpm>63</vis200Rpm>
+        <vis300Rpm>83</vis300Rpm>
+        <vis600Rpm>135</vis600Rpm>
+      </rheometer>
+      <brinePc uom="%">20</brinePc>
+      <lime uom="lbm/bbl">3.2</lime>
+      <electStab uom="V">360</electStab>
+      <calciumChloride uom="mg/L">5000</calciumChloride>
+      <company>Baker Hughes INTEQ</company>
+      <engineer>Doug Bullivant/Andy Duncombe</engineer>
+      <asg>0.0353</asg>
+      <solidsHiGravPc uom="%">7.22</solidsHiGravPc>
+      <polymer uom="%">2.5</polymer>
+      <polyType>XCD POLYMER</polyType>
+      <solCorPc uom="%">3.53</solCorPc>
+      <oilCtg uom="g/kg">110.3</oilCtg>
+      <hardnessCa uom="ppm">3200</hardnessCa>
+      <sulfide uom="g/L">10.5</sulfide>
+      <comments>Base oil, fluid loss additive and viscosifier to active and reserve mud.</comments>
+    </fluid>
+    <fluid uid="fluid-2">
+      <type>hello</type>
+    </fluid>
+    <commonData>
+      <itemState>plan</itemState>
+      <comments>These are the comments associated with theFluids Report data object.</comments>
+    </commonData>
+  </fluidsReport>
+</fluidsReports>
