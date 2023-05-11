@@ -3,25 +3,24 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import ObjectOnWellbore, { calculateObjectNodeId } from "../../models/objectOnWellbore";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
+import { WellboreItemContext } from "./WellboreItem";
 
 interface ObjectOnWellboreItemProps {
+  key: string;
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
-  well: Well;
-  wellbore: Wellbore;
   selected: boolean;
   ContextMenu: React.ComponentType<ObjectContextMenuProps>;
 }
 
 const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
-  const { objectOnWellbore, objectType, selected, well, wellbore, ContextMenu } = props;
+  const { key, objectOnWellbore, objectType, selected, ContextMenu } = props;
+  const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
@@ -31,11 +30,9 @@ const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElem
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ContextMenu {...contextMenuProps} />, position } });
   };
-  const nodeId = calculateObjectNodeId(objectOnWellbore, objectType);
   return (
     <TreeItem
-      key={nodeId}
-      nodeId={nodeId}
+      nodeId={key}
       labelText={objectOnWellbore.name}
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } })}
