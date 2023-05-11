@@ -233,6 +233,7 @@ it("Should update refreshed log object", () => {
   const initialState = {
     ...getInitialState(),
     selectedObject: LOG_1,
+    selectedObjectGroup: ObjectType.Log,
     wells,
     filteredWells: wells
   };
@@ -247,7 +248,8 @@ it("Should update refreshed log object", () => {
     ...getInitialState(),
     wells: expectedListOfWells,
     filteredWells: expectedListOfWells,
-    selectedObject: refreshedLog
+    selectedObject: refreshedLog,
+    selectedObjectGroup: ObjectType.Log
   };
   expect(afterRefreshLog).toStrictEqual(expectedState);
 });
