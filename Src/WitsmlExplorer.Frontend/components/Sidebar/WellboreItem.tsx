@@ -1,10 +1,9 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import ObjectOnWellbore, { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
@@ -12,16 +11,16 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
-import ObjectsSidebarContextMenu, { ObjectsSidebarContextMenuProps } from "../ContextMenus/ObjectsSidebarContextMenu";
+import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
+import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
+import TubularContextMenu from "../ContextMenus/TubularContextMenu";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
+import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogTypeItem from "./LogTypeItem";
-import MudLogItem from "./MudLogItem";
-import TrajectoryItem from "./TrajectoryItem";
+import ObjectGroupItem from "./ObjectGroupItem";
 import TreeItem from "./TreeItem";
-import TubularItem from "./TubularItem";
-import WbGeometryItem from "./WbGeometryItem";
 
 interface WellboreItemProps {
   well: Well;
@@ -33,7 +32,7 @@ interface WellboreItemProps {
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedObject, selectedObjectGroup, servers, expandedTreeNodes } = navigationState;
+  const { servers, expandedTreeNodes } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
 
@@ -42,13 +41,6 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: WellboreContextMenuProps = { wellbore, servers, dispatchOperation, dispatchNavigation };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
-  };
-
-  const onObjectsContextMenu = (event: React.MouseEvent<HTMLLIElement>, objectType: ObjectType) => {
-    preventContextMenuPropagation(event);
-    const contextMenuProps: ObjectsSidebarContextMenuProps = { dispatchOperation, wellbore, servers, objectType };
-    const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ObjectsSidebarContextMenu {...contextMenuProps} />, position } });
   };
 
   const onLogsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
@@ -128,19 +120,6 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     }
   };
 
-  const isSelected = useCallback(
-    (objectType: ObjectType, objectOnWellbore: ObjectOnWellbore) => {
-      return selectedObject &&
-        selectedObjectGroup === objectType &&
-        selectedObject.uid === objectOnWellbore.uid &&
-        selectedObject.wellboreUid === objectOnWellbore.wellboreUid &&
-        selectedObject.wellUid === objectOnWellbore.wellUid
-        ? true
-        : undefined;
-    },
-    [selectedObject, selectedObjectGroup]
-  );
-
   return (
     <TreeItem
       onContextMenu={(event) => onContextMenu(event, wellbore)}
@@ -153,24 +132,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       isActive={wellbore.isActive}
       isLoading={isFetchingData}
     >
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.BhaRun)}
-        labelText={"BhaRuns"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.BhaRun)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.BhaRun)}
-      />
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.ChangeLog)}
-        labelText={"ChangeLogs"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.ChangeLog)}
-        onContextMenu={preventContextMenuPropagation}
-      />
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.FormationMarker)}
-        labelText={"FormationMarkers"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.FormationMarker)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.FormationMarker)}
-      />
+      <ObjectGroupItem objectType={ObjectType.BhaRun} well={well} wellbore={wellbore} />
+      <ObjectGroupItem objectType={ObjectType.ChangeLog} well={well} wellbore={wellbore} onGroupContextMenu={preventContextMenuPropagation} />
+      <ObjectGroupItem objectType={ObjectType.FormationMarker} well={well} wellbore={wellbore} />
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
         labelText={"Logs"}
@@ -180,100 +144,26 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       >
         <LogTypeItem well={well} wellbore={wellbore} />
       </TreeItem>
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.Message)}
-        labelText={"Messages"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Message)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Message)}
+      <ObjectGroupItem objectType={ObjectType.Message} well={well} wellbore={wellbore} />
+      <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} well={well} wellbore={wellbore} ObjectContextMenu={MudLogContextMenu} />
+      <ObjectGroupItem objectType={ObjectType.Rig} well={well} wellbore={wellbore} />
+      <ObjectGroupItem objectType={ObjectType.Risk} well={well} wellbore={wellbore} />
+      <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} well={well} wellbore={wellbore} ObjectContextMenu={TrajectoryContextMenu} />
+      <ObjectGroupItem
+        objectsOnWellbore={wellbore?.tubulars}
+        objectType={ObjectType.Tubular}
+        well={well}
+        wellbore={wellbore}
+        ObjectContextMenu={TubularContextMenu}
+        onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
       />
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.MudLog)}
-        labelText={"MudLogs"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.MudLog)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.MudLog)}
-      >
-        {wellbore &&
-          wellbore.mudLogs &&
-          wellbore.mudLogs.map((mudLog) => (
-            <MudLogItem
-              key={calculateObjectNodeId(mudLog, ObjectType.MudLog)}
-              mudLog={mudLog}
-              well={well}
-              wellbore={wellbore}
-              nodeId={calculateObjectNodeId(mudLog, ObjectType.MudLog)}
-              selected={isSelected(ObjectType.MudLog, mudLog)}
-            />
-          ))}
-      </TreeItem>
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.Rig)}
-        labelText={"Rigs"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Rig)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Rig)}
+      <ObjectGroupItem
+        objectsOnWellbore={wellbore?.wbGeometrys}
+        objectType={ObjectType.WbGeometry}
+        well={well}
+        wellbore={wellbore}
+        ObjectContextMenu={WbGeometryObjectContextMenu}
       />
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.Risk)}
-        labelText={"Risks"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Risk)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Risk)}
-      />
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.Trajectory)}
-        labelText={"Trajectories"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Trajectory)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.Trajectory)}
-      >
-        {wellbore &&
-          wellbore.trajectories &&
-          wellbore.trajectories.map((trajectory) => (
-            <TrajectoryItem
-              key={calculateObjectNodeId(trajectory, ObjectType.Trajectory)}
-              trajectory={trajectory}
-              well={well}
-              wellbore={wellbore}
-              nodeId={calculateObjectNodeId(trajectory, ObjectType.Trajectory)}
-              selected={isSelected(ObjectType.Trajectory, trajectory)}
-            />
-          ))}
-      </TreeItem>
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.Tubular)}
-        labelText={"Tubulars"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Tubular)}
-        onContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
-      >
-        {wellbore &&
-          wellbore.tubulars &&
-          wellbore.tubulars.map((tubular) => (
-            <TubularItem
-              key={calculateObjectNodeId(tubular, ObjectType.Tubular)}
-              tubular={tubular}
-              well={well}
-              wellbore={wellbore}
-              nodeId={calculateObjectNodeId(tubular, ObjectType.Tubular)}
-              selected={isSelected(ObjectType.Tubular, tubular)}
-            />
-          ))}
-      </TreeItem>
-      <TreeItem
-        nodeId={calculateObjectGroupId(wellbore, ObjectType.WbGeometry)}
-        labelText={"WbGeometries"}
-        onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.WbGeometry)}
-        onContextMenu={(event) => onObjectsContextMenu(event, ObjectType.WbGeometry)}
-      >
-        {wellbore &&
-          wellbore.wbGeometrys &&
-          wellbore.wbGeometrys.map((wbGeometry) => (
-            <WbGeometryItem
-              key={calculateObjectNodeId(wbGeometry, ObjectType.WbGeometry)}
-              wbGeometry={wbGeometry}
-              well={well}
-              wellbore={wellbore}
-              nodeId={calculateObjectNodeId(wbGeometry, ObjectType.WbGeometry)}
-              selected={isSelected(ObjectType.WbGeometry, wbGeometry)}
-            />
-          ))}
-      </TreeItem>
     </TreeItem>
   );
 };
