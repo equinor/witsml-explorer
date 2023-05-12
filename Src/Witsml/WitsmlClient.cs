@@ -33,7 +33,7 @@ namespace Witsml
         private readonly string _clientCapabilities;
         private readonly StoreSoapPortClient _client;
         private readonly Uri _serverUrl;
-        private Logger _queryLogger;
+        private IQueryLogger _queryLogger;
 
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null, bool logQueries = false)
         {
@@ -73,11 +73,14 @@ namespace Witsml
                 return;
             }
 
-            _queryLogger = new LoggerConfiguration()
-                .WriteTo.File("queries.log", rollOnFileSizeLimit: true, retainedFileCountLimit: 1, fileSizeLimitBytes: 50000000)
-                .CreateLogger();
+            SetQueryLogger(new DefaultQueryLogger());
         }
 
+        public void SetQueryLogger(IQueryLogger queryLogger)
+        {
+            _queryLogger = queryLogger;
+        }
+        
         private static BasicHttpsBinding CreateBinding(TimeSpan requestTimeout)
         {
             BasicHttpsBinding binding = new()
@@ -349,14 +352,7 @@ namespace Witsml
                 return;
             }
 
-            if (xmLReceived != null)
-            {
-                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmLReceived, isSuccessful);
-            }
-            else
-            {
-                _queryLogger.Information("Query: \n{Query}\nIsSuccessful: {IsSuccessful}", querySent, isSuccessful);
-            }
+            _queryLogger.LogQuery(querySent, isSuccessful, xmLReceived);
         }
 
         public Uri GetServerHostname()
@@ -375,6 +371,35 @@ namespace Witsml
         {
             IsSuccessful = isSuccessful;
             Reason = reason;
+        }
+    }
+
+    public interface IQueryLogger
+    {
+        void LogQuery(string xmLReceived, bool isSuccessful, string querySent = null);
+    }
+
+    public class DefaultQueryLogger : IQueryLogger
+    {
+        private readonly Logger _queryLogger;
+        
+        public DefaultQueryLogger()
+        {
+            _queryLogger = new LoggerConfiguration()
+                .WriteTo.File("queries.log", rollOnFileSizeLimit: true, retainedFileCountLimit: 1, fileSizeLimitBytes: 50000000)
+                .CreateLogger();
+        }
+
+        public void LogQuery(string xmLReceived, bool isSuccessful, string querySent = null)
+        {
+            if (xmLReceived != null)
+            {
+                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmLReceived, isSuccessful);
+            }
+            else
+            {
+                _queryLogger.Information("Query: \n{Query}\nIsSuccessful: {IsSuccessful}", querySent, isSuccessful);
+            }
         }
     }
 }
