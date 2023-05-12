@@ -62,6 +62,10 @@ const Row = memo(({ data, index, style }: RowProps) => {
         key={"TableRow-" + index}
         hover
         onClick={(event) => onToggleRow(event, item)}
+        className={
+          (index % 2 !== 0 ? "evenrow " : "") +
+          (checkableRows && checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1 ? "selectedrow" : "")
+        }
         onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
       >
         {checkableRows && (
@@ -365,10 +369,6 @@ const TableHeaderCell = styled(MuiTableCell)`
 
 const TableRow = styled.div<{ hover: boolean }>`
   display: contents;
-
-  &:hover div {
-    background-color: ${colors.interactive.tableHeaderFillResting};
-  }
 `;
 
 const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
@@ -382,6 +382,15 @@ const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
   overflow: hidden;
   text-overflow: ellipsis;
   font-feature-settings: "tnum";
+  ${TableRow}.evenrow & {
+    background-color: ${colors.interactive.tableHeaderFillResting};
+  }
+  ${TableRow}.selectedrow & {
+    background-color: ${colors.interactive.textHighlight};
+  }
+  ${TableRow}:hover & {
+    background-color: ${colors.interactive.tableCellFillActivated};
+  }
 `;
 TableDataCell.displayName = "TableDataCell";
 
