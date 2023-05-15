@@ -4,6 +4,7 @@ import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
@@ -19,11 +20,12 @@ export interface MessageComparisonModalProps {
   sourceMessage: MessageObject;
   sourceServer: Server;
   targetServer: Server;
+  targetObject: ObjectOnWellbore;
   dispatchOperation: DispatchOperation;
 }
 
 const MessageComparisonModal = (props: MessageComparisonModalProps): React.ReactElement => {
-  const { sourceMessage, sourceServer, targetServer, dispatchOperation } = props;
+  const { sourceMessage, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
@@ -33,13 +35,11 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
 
   useEffect(() => {
     const fetchTarget = async () => {
-      const wellUid = sourceMessage.wellUid;
-      const wellboreUid = sourceMessage.wellboreUid;
-      const target = await ObjectService.getObjectFromServer(wellUid, wellboreUid, sourceMessage.uid, ObjectType.Message, targetServer);
+      const target = await ObjectService.getObjectFromServer(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ObjectType.Message, targetServer);
       if (target == null) {
         dispatchOperation({ type: OperationType.HideModal });
-        const failureMessageTarget = `Unable to compare the message as either the message with UID ${sourceMessage.uid} does not exist on the target server or it was not possible to fetch the message.`;
-        displayMissingObjectModal(targetServer, wellUid, wellboreUid, sourceMessage.uid, dispatchOperation, failureMessageTarget, ObjectType.Message);
+        const failureMessageTarget = `Unable to compare the message as either the message with UID ${targetObject.uid} does not exist on the target server or it was not possible to fetch the message.`;
+        displayMissingObjectModal(targetServer, targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, dispatchOperation, failureMessageTarget, ObjectType.Message);
       } else {
         setTargetMessage(target);
       }
@@ -114,11 +114,14 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
           {(data && (
             <>
               <LabelsLayout>
-                <TextField readOnly id="wellName" label="Well Name" defaultValue={sourceMessage.wellName} />
                 <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
-                <TextField readOnly id="wellboreName" label="Wellbore Name" defaultValue={sourceMessage.wellboreName} />
                 <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
-                <TextField readOnly id="uid" label="Message UID" defaultValue={sourceMessage.uid} />
+                <TextField readOnly id="sourceWellName" label="Source Well Name" defaultValue={sourceMessage.wellName} />
+                <TextField readOnly id="targetWellName" label="Target Well Name" defaultValue={targetObject.wellName} />
+                <TextField readOnly id="sourceWellboreName" label="Source Wellbore Name" defaultValue={sourceMessage.wellboreName} />
+                <TextField readOnly id="targetWellboreName" label="Target Wellbore Name" defaultValue={targetObject.wellboreName} />
+                <TextField readOnly id="uid" label="Source Message UID" defaultValue={sourceMessage.uid} />
+                <TextField readOnly id="uid" label="Target Message UID" defaultValue={targetObject.uid} />
               </LabelsLayout>
               <TableLayout>
                 <SortableEdsTable

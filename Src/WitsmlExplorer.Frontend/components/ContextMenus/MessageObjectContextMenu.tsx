@@ -5,21 +5,22 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { colors } from "../../styles/Colors";
 import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/MessageComparisonModal";
 import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
+import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
 import ContextMenu from "./ContextMenu";
-import { DispatchOperation, StyledIcon, menuItemText } from "./ContextMenuUtils";
-import NestedMenuItem from "./NestedMenuItem";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
 const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState } = useContext(NavigationContext);
-  const { servers, selectedServer } = navigationState;
+  const { selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
 
   const onClickModify = async () => {
@@ -29,12 +30,19 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const onClickCompareMessageToServer = async (targetServer: Server, sourceServer: Server, messageToCompare: MessageObject, dispatchOperation: DispatchOperation) => {
+  const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const props: MessageComparisonModalProps = { sourceMessage: messageToCompare, sourceServer, targetServer, dispatchOperation };
+    const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
+      const props: MessageComparisonModalProps = { sourceMessage: checkedObjects[0] as MessageObject, sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <MessageComparisonModal {...props} />
+      });
+    };
+    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Message, onPicked };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <MessageComparisonModal {...props} />
+      payload: <ObjectPickerModal {...props} />
     });
   };
 
@@ -42,20 +50,10 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
     <ContextMenu
       menuItems={[
         ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, wellbore),
-        <NestedMenuItem key={"compareToServer"} label={`${menuItemText("Compare", "message", [])} to server`} disabled={checkedObjects.length != 1} icon="compare">
-          {servers.map(
-            (server: Server) =>
-              server.id !== selectedServer.id && (
-                <MenuItem
-                  key={server.name}
-                  onClick={() => onClickCompareMessageToServer(server, selectedServer, checkedObjects[0] as MessageObject, dispatchOperation)}
-                  disabled={checkedObjects.length != 1}
-                >
-                  <Typography color={"primary"}>{server.name}</Typography>
-                </MenuItem>
-              )
-          )}
-        </NestedMenuItem>,
+        <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
+          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
+        </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

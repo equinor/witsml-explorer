@@ -2,27 +2,37 @@ import { useEffect, useState } from "react";
 import ObjectReferences from "../../models/jobs/objectReferences";
 import { ObjectType } from "../../models/objectType";
 
-export const useClipboardReferences: () => ObjectReferences | null = () => {
+export const useClipboardReferences = (pollInterval = 0): ObjectReferences | null => {
   const [objectReferences, setReferences] = useState<ObjectReferences>(null);
 
+  const tryToParseClipboardContent = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      const objectReferences = parseStringToReferences(clipboardText);
+      setReferences(objectReferences);
+    } catch (e) {
+      //Not a valid object on the clipboard? That is fine, we won't use it.
+    }
+  };
+
   useEffect(() => {
-    const tryToParseClipboardContent = async () => {
-      try {
-        const clipboardText = await navigator.clipboard.readText();
-        const objectReferences = parseStringToReferences(clipboardText);
-        setReferences(objectReferences);
-      } catch (e) {
-        //Not a valid object on the clipboard? That is fine, we won't use it.
+    tryToParseClipboardContent();
+    let timer: NodeJS.Timer;
+    if (pollInterval > 0) {
+      timer = setInterval(tryToParseClipboardContent, pollInterval);
+    }
+    return () => {
+      if (timer) {
+        clearInterval(timer);
       }
     };
-    tryToParseClipboardContent();
   }, []);
 
   return objectReferences;
 };
 
-export const useClipboardReferencesOfType = (type: ObjectType): ObjectReferences | null => {
-  const objectReferences = useClipboardReferences();
+export const useClipboardReferencesOfType = (type: ObjectType, pollInterval = 0): ObjectReferences | null => {
+  const objectReferences = useClipboardReferences(pollInterval);
   return objectReferences?.objectType == type ? objectReferences : null;
 };
 

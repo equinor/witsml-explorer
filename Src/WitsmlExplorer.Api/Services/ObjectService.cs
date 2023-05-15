@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IObjectService
     {
         Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
+        Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
     }
 
     public class ObjectService : WitsmlService, IObjectService
@@ -22,11 +23,16 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
         {
+            return await GetObjectIdOnly(wellUid, wellboreUid, "", objectType);
+        }
+
+        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
+        {
             if (EntityTypeHelper.EntityTypeToObjectOnWellbore(objectType) == null)
             {
                 throw new ArgumentException($"{nameof(objectType)} must be a valid type of an object on wellbore");
             }
-            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, "", objectType);
+            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, objectUid, objectType);
             IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.IdOnly));
             if (result?.Objects == null)
             {
