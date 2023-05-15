@@ -80,7 +80,7 @@ namespace Witsml
         {
             _queryLogger = queryLogger;
         }
-        
+
         private static BasicHttpsBinding CreateBinding(TimeSpan requestTimeout)
         {
             BasicHttpsBinding binding = new()
