@@ -382,7 +382,7 @@ namespace Witsml
     public class DefaultQueryLogger : IQueryLogger
     {
         private readonly Logger _queryLogger;
-        
+
         public DefaultQueryLogger()
         {
             _queryLogger = new LoggerConfiguration()
