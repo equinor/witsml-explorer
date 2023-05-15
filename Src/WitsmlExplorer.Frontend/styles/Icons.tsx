@@ -12,6 +12,7 @@ import {
   check,
   chevron_down as chevronDown,
   chevron_right as chevronRight,
+  chevron_up as chevronUp,
   cloud_download as cloudDownload,
   cloud_off as cloudOff,
   compare,
@@ -37,8 +38,9 @@ import {
 const icons = {
   accountCircle,
   arrowDropRight,
-  chevronRight,
   chevronDown,
+  chevronRight,
+  chevronUp,
   isActive,
   launch,
   formatLine,
