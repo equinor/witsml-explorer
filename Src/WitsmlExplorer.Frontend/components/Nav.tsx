@@ -5,7 +5,6 @@ import { NavigationAction } from "../contexts/navigationAction";
 import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState, Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
-import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
@@ -145,35 +144,16 @@ const getLogTypeCrumb = (selectedLogTypeGroup: string, selectedWell: Well, selec
 };
 
 const getObjectCrumb = (navigationState: NavigationState, dispatch: (action: NavigationAction) => void) => {
-  let selectedObject: ObjectOnWellbore = null;
-  switch (navigationState.selectedObjectGroup) {
-    case ObjectType.Log:
-      selectedObject = navigationState.selectedLog;
-      break;
-    case ObjectType.MudLog:
-      selectedObject = navigationState.selectedMudLog;
-      break;
-    case ObjectType.Trajectory:
-      selectedObject = navigationState.selectedTrajectory;
-      break;
-    case ObjectType.Tubular:
-      selectedObject = navigationState.selectedTubular;
-      break;
-    case ObjectType.WbGeometry:
-      selectedObject = navigationState.selectedWbGeometry;
-      break;
-  }
-
-  return selectedObject?.name
+  return navigationState.selectedObject?.name
     ? {
-        name: selectedObject.name,
+        name: navigationState.selectedObject.name,
         onClick: () =>
           dispatch({
             type: NavigationType.SelectObject,
             payload: {
               well: navigationState.selectedWell,
               wellbore: navigationState.selectedWellbore,
-              object: selectedObject,
+              object: navigationState.selectedObject,
               objectType: navigationState.selectedObjectGroup
             }
           })

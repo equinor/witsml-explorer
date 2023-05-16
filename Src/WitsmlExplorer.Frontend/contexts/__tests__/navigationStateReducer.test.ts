@@ -24,7 +24,6 @@ import {
   CHANGELOG_1,
   FILTER_1,
   FORMATIONMARKER_1,
-  getInitialState,
   LOG_1,
   MESSAGE_1,
   MUDLOG_1,
@@ -41,7 +40,8 @@ import {
   WELLS,
   WELL_1,
   WELL_2,
-  WELL_3
+  WELL_3,
+  getInitialState
 } from "../stateReducerTestUtils";
 
 it("Should not update state when selecting current selected server", () => {
@@ -170,7 +170,7 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
     selectedServer: SERVER_1,
     selectedWell: WELL_2,
     selectedWellbore: WELLBORE_2,
-    selectedTrajectory: TRAJECTORY_1,
+    selectedObject: TRAJECTORY_1,
     selectedObjectGroup: ObjectType.Trajectory,
     currentSelected: TRAJECTORY_1,
     servers: [SERVER_1],

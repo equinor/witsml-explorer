@@ -23,20 +23,7 @@ import { WITSML_INDEX_TYPE_MD } from "./Constants";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const {
-    selectedServer,
-    servers,
-    wells,
-    selectedWell,
-    selectedWellbore,
-    selectedLog,
-    selectedMudLog,
-    selectedObjectGroup,
-    selectedTrajectory,
-    selectedTubular,
-    selectedWbGeometry,
-    selectedLogTypeGroup
-  } = navigationState;
+  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
   const [hasSelectedServer, setHasSelectedServer] = useState<boolean>(false);
@@ -58,18 +45,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedLog,
-    selectedTubular,
-    selectedMudLog,
-    selectedObjectGroup,
-    selectedTrajectory,
-    selectedWbGeometry,
-    selectedLogTypeGroup
-  ]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup]);
 
   useEffect(() => {
     //update router on params change
@@ -227,11 +203,7 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
-    ...(state.selectedLog && { objectUid: state.selectedLog.uid }),
-    ...(state.selectedTrajectory && { objectUid: state.selectedTrajectory.uid }),
-    ...(state.selectedTubular && { objectUid: state.selectedTubular.uid }),
-    ...(state.selectedMudLog && { objectUid: state.selectedMudLog.uid }),
-    ...(state.selectedWbGeometry && { objectUid: state.selectedWbGeometry.uid })
+    ...(state.selectedObject && { objectUid: state.selectedObject.uid })
   };
 };
 

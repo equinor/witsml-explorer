@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
+import WbGeometryObject from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -16,10 +17,11 @@ interface WbGeometrySectionRow extends ContentTableRow {
 
 export const WbGeometryView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWbGeometry, selectedServer, servers } = navigationState;
+  const { selectedObject, selectedServer, servers } = navigationState;
   const [wbGeometrySections, setWbGeometrySections] = useState<WbGeometrySection[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedWbGeometry = selectedObject as WbGeometryObject;
 
   useEffect(() => {
     setIsFetchingData(true);

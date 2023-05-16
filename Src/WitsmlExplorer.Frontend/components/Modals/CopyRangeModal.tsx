@@ -4,7 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { CopyRangeClipboard, createComponentReferences } from "../../models/jobs/componentReferences";
-import { indexToNumber } from "../../models/logObject";
+import LogObject, { indexToNumber } from "../../models/logObject";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
@@ -16,12 +16,13 @@ export interface CopyRangeModalProps {
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const {
-    navigationState: { selectedServer, selectedLog }
+    navigationState: { selectedServer, selectedObject }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
+  const selectedLog = selectedObject as LogObject;
 
   const onSubmit = async () => {
     const componentReferences: CopyRangeClipboard = createComponentReferences(props.mnemonics, selectedLog, ComponentType.Mnemonic, selectedServer.url);

@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
+import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -23,10 +24,11 @@ export interface TubularComponentRow extends ContentTableRow {
 
 export const TubularView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedTubular, servers } = navigationState;
+  const { selectedServer, selectedObject, servers } = navigationState;
   const [tubularComponents, setTubularComponents] = useState<TubularComponent[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedTubular = selectedObject as Tubular;
 
   useEffect(() => {
     setIsFetchingData(true);
