@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet(routes[EntityType.Log], LogHandler.GetLogs, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
-            app.MapGet(routes[EntityType.Log] + "/{logUid}/logcurveinfo", LogHandler.GetLogCurveInfo, useOAuth2);
+            app.MapGet(routes[EntityType.Log] + "/{logUid}/" + ComponentTypeHelper.ToPluralLowercase(ComponentType.Mnemonic), LogHandler.GetLogCurveInfo, useOAuth2);
             app.MapPost(routes[EntityType.Log] + "/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
 
             app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet(routes[EntityType.MudLog], MudLogHandler.GetMudLogs, useOAuth2);
             app.MapGet(routes[EntityType.MudLog] + "/{mudlogUid}", MudLogHandler.GetMudLog, useOAuth2);
-            app.MapGet(routes[EntityType.MudLog] + "/{mudlogUid}/geologyintervals", MudLogHandler.GetGeologyIntervals, useOAuth2);
+            app.MapGet(routes[EntityType.MudLog] + "/{mudlogUid}/" + ComponentTypeHelper.ToPluralLowercase(ComponentType.GeologyInterval), MudLogHandler.GetGeologyIntervals, useOAuth2);
 
             app.MapGet(routes[EntityType.Rig], RigHandler.GetRigs, useOAuth2);
             app.MapGet(routes[EntityType.Rig] + "/{rigUid}", RigHandler.GetRig, useOAuth2);
@@ -60,15 +60,15 @@ namespace WitsmlExplorer.Api
 
             app.MapGet(routes[EntityType.Trajectory], TrajectoryHandler.GetTrajectories, useOAuth2);
             app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);
-            app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}/trajectorystations", TrajectoryHandler.GetTrajectoryStations, useOAuth2);
+            app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}/" + ComponentTypeHelper.ToPluralLowercase(ComponentType.TrajectoryStation), TrajectoryHandler.GetTrajectoryStations, useOAuth2);
 
             app.MapGet(routes[EntityType.Tubular], TubularHandler.GetTubulars, useOAuth2);
             app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}", TubularHandler.GetTubular, useOAuth2);
-            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}/tubularcomponents", TubularHandler.GetTubularComponents, useOAuth2);
+            app.MapGet(routes[EntityType.Tubular] + "/{tubularUid}/" + ComponentTypeHelper.ToPluralLowercase(ComponentType.TubularComponent), TubularHandler.GetTubularComponents, useOAuth2);
 
             app.MapGet(routes[EntityType.WbGeometry], WbGeometryHandler.GetWbGeometries, useOAuth2);
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}", WbGeometryHandler.GetWbGeometry, useOAuth2);
-            app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}/wbgeometrysections", WbGeometryHandler.GetWbGeometrySections, useOAuth2);
+            app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}/" + ComponentTypeHelper.ToPluralLowercase(ComponentType.WbGeometrySection), WbGeometryHandler.GetWbGeometrySections, useOAuth2);
 
             app.MapPost("/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
             app.MapGet("/jobs/userjobinfos", JobHandler.GetUserJobInfos, useOAuth2);

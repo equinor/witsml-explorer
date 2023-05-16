@@ -24,9 +24,13 @@ export const StyledIcon = styled(Icon)`
   }
 `;
 
+export const pluralize = (text: string) => {
+  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text + "s";
+};
+
 export const pluralizeIfMultiple = (object: string, array: any[] | null) => {
   const objectLowercase = object.toLowerCase();
-  const objectPlural = objectLowercase.charAt(object.length - 1) == "y" ? objectLowercase.slice(0, object.length - 1) + "ies" : objectLowercase + "s";
+  const objectPlural = pluralize(objectLowercase);
   const isPlural = array ? array.length > 1 : false;
   return isPlural ? objectPlural : objectLowercase;
 };

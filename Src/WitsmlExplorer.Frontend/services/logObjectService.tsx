@@ -1,35 +1,10 @@
 import { ErrorDetails } from "../models/errorDetails";
-import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
-import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
 import AuthorizationService from "./authorizationService";
 import NotificationService from "./notificationService";
 
 export default class LogObjectService {
-  public static async getLogCurveInfo(wellUid: string, wellboreUid: string, logUid: string, abortSignal?: AbortSignal): Promise<LogCurveInfo[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal);
-    if (response.ok) {
-      return response.json();
-    } else {
-      return [];
-    }
-  }
-
-  public static async getLogCurveInfoFromServer(wellUid: string, wellboreUid: string, logUid: string, server: Server, abortSignal?: AbortSignal): Promise<LogCurveInfo[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logcurveinfo`, abortSignal, server);
-    if (response.ok) {
-      const text = await response.text();
-      if (text.length) {
-        return JSON.parse(text);
-      } else {
-        return [];
-      }
-    } else {
-      return [];
-    }
-  }
-
   public static async getLogData(
     wellUid: string,
     wellboreUid: string,

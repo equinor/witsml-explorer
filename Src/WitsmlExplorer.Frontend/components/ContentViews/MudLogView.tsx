@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
-import MudLogService from "../../services/mudLogService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
 import { clipLongString } from "./ViewUtils";
@@ -42,7 +43,16 @@ export const MudLogView = (): React.ReactElement => {
       const abortController = new AbortController();
 
       const getGeologyIntervals = async () => {
-        setGeologyIntervals(await MudLogService.getGeologyIntervals(selectedMudLog.wellUid, selectedMudLog.wellboreUid, selectedMudLog.uid, abortController.signal));
+        setGeologyIntervals(
+          await ComponentService.getComponents(
+            selectedMudLog.wellUid,
+            selectedMudLog.wellboreUid,
+            selectedMudLog.uid,
+            ComponentType.GeologyInterval,
+            undefined,
+            abortController.signal
+          )
+        );
         setIsFetchingData(false);
       };
 

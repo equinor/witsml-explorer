@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import WbGeometrySection from "../../models/wbGeometrySection";
-import WbGeometryService from "../../services/wbGeometryService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, { WbGeometrySectionContextMenuProps } from "../ContextMenus/WbGeometrySectionContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
@@ -27,7 +28,14 @@ export const WbGeometryView = (): React.ReactElement => {
 
       const getWbGeometry = async () => {
         setWbGeometrySections(
-          await WbGeometryService.getWbGeometrySections(selectedWbGeometry.wellUid, selectedWbGeometry.wellboreUid, selectedWbGeometry.uid, abortController.signal)
+          await ComponentService.getComponents(
+            selectedWbGeometry.wellUid,
+            selectedWbGeometry.wellboreUid,
+            selectedWbGeometry.uid,
+            ComponentType.WbGeometrySection,
+            undefined,
+            abortController.signal
+          )
         );
         setIsFetchingData(false);
       };

@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import TubularComponent from "../../models/tubularComponent";
-import TubularService from "../../services/tubularService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, { TubularComponentContextMenuProps } from "../ContextMenus/TubularComponentContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
@@ -33,7 +34,16 @@ export const TubularView = (): React.ReactElement => {
       const abortController = new AbortController();
 
       const getTubular = async () => {
-        setTubularComponents(await TubularService.getTubularComponents(selectedTubular.wellUid, selectedTubular.wellboreUid, selectedTubular.uid, abortController.signal));
+        setTubularComponents(
+          await ComponentService.getComponents(
+            selectedTubular.wellUid,
+            selectedTubular.wellboreUid,
+            selectedTubular.uid,
+            ComponentType.TubularComponent,
+            undefined,
+            abortController.signal
+          )
+        );
         setIsFetchingData(false);
       };
 
