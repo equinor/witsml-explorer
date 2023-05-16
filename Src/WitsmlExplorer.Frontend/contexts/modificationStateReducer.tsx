@@ -2,6 +2,7 @@ import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
 import ObjectOnWellbore from "../models/objectOnWellbore";
+import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
@@ -336,13 +337,13 @@ const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreL
   const { wells } = state;
   const { logs, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { logs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, logs, state.selectedLog, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, logs, state.selectedObject, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     wells: freshWells,
     currentSelected,
-    selectedLog: newSelectedObject
+    selectedObject: newSelectedObject
   };
 };
 
@@ -350,13 +351,12 @@ const updateWellboreLog = (state: NavigationState, { payload }: UpdateWellboreLo
   const { wells } = state;
   const { log } = payload;
   const updatedWells = insertLogIntoWellsStructure(wells, log);
-  const selectedLog = state.selectedLog?.uid === log.uid ? log : state.selectedLog;
-
+  const selectedObject = sameUids(log, state.selectedObject) && state.selectedObjectGroup == ObjectType.Log ? log : state.selectedObject;
   return {
     ...state,
     wells: updatedWells,
     filteredWells: filterWells(updatedWells, state.selectedFilter),
-    selectedLog
+    selectedObject
   };
 };
 
@@ -374,11 +374,11 @@ const updateWellboreMudLogs = (state: NavigationState, { payload }: UpdateWellbo
   const { wells } = state;
   const { mudLogs, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { mudLogs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, mudLogs, state.selectedMudLog, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, mudLogs, state.selectedObject, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedMudLog: newSelectedObject,
+    selectedObject: newSelectedObject,
     currentSelected,
     wells: freshWells
   };
@@ -392,15 +392,15 @@ const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWel
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
   const freshTrajectories = [...wells[wellIndex].wellbores[wellboreIndex].trajectories];
   const trajectoryIndex = freshTrajectories.findIndex((t) => t.uid === trajectory.uid);
-  let selectedTrajectory = null;
+  let selectedObject = null;
   freshTrajectories[trajectoryIndex] = trajectory;
-  selectedTrajectory = state.selectedTrajectory?.uid === trajectory.uid ? trajectory : state.selectedTrajectory;
+  selectedObject = sameUids(trajectory, state.selectedObject) && state.selectedObjectGroup == ObjectType.Trajectory ? trajectory : state.selectedObject;
   wells[wellIndex].wellbores[wellboreIndex].trajectories = freshTrajectories;
   return {
     ...state,
     wells: freshWells,
     filteredWells: filterWells(freshWells, state.selectedFilter),
-    selectedTrajectory
+    selectedObject
   };
 };
 
@@ -408,11 +408,11 @@ const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateW
   const { wells } = state;
   const { trajectories, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { trajectories });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, trajectories, state.selectedTrajectory, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, trajectories, state.selectedObject, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedTrajectory: newSelectedObject,
+    selectedObject: newSelectedObject,
     currentSelected,
     wells: freshWells
   };
@@ -422,11 +422,11 @@ const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellb
   const { wells } = state;
   const { tubulars, wellUid, wellboreUid } = payload;
   const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, tubulars, state.selectedTubular, wellboreUid, wellUid);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, tubulars, state.selectedObject, wellboreUid, wellUid);
   return {
     ...state,
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedTubular: newSelectedObject,
+    selectedObject: newSelectedObject,
     currentSelected,
     wells: freshWells
   };
@@ -440,10 +440,10 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, tubular.wellboreUid);
   const freshTubulars = [...wells[wellIndex].wellbores[wellboreIndex].tubulars];
   const tubularIndex = freshTubulars.findIndex((t) => t.uid === tubular.uid);
-  let selectedTubular = null;
+  let selectedObject = null;
   if (exists) {
     freshTubulars[tubularIndex] = tubular;
-    selectedTubular = state.selectedTubular?.uid === tubular.uid ? tubular : state.selectedTubular;
+    selectedObject = sameUids(tubular, state.selectedObject) && state.selectedObjectGroup == ObjectType.Tubular ? tubular : state.selectedObject;
   } else {
     freshTubulars.splice(tubularIndex, 1);
   }
@@ -453,7 +453,7 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
     ...state,
     wells: freshWells,
     filteredWells: filterWells(freshWells, state.selectedFilter),
-    selectedTubular
+    selectedObject
   };
 };
 
@@ -476,15 +476,15 @@ const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWel
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
   const freshWbGeometries = [...wells[wellIndex].wellbores[wellboreIndex].wbGeometrys];
   const wbGeometryIndex = freshWbGeometries.findIndex((wbg) => wbg.uid === wbGeometry.uid);
-  let selectedWbGeometry = null;
+  let selectedObject = null;
   freshWbGeometries[wbGeometryIndex] = wbGeometry;
-  selectedWbGeometry = state.selectedWbGeometry?.uid === wbGeometry.uid ? wbGeometry : state.selectedWbGeometry;
+  selectedObject = sameUids(wbGeometry, state.selectedObject) && state.selectedObjectGroup == ObjectType.WbGeometry ? wbGeometry : state.selectedObject;
   wells[wellIndex].wellbores[wellboreIndex].wbGeometrys = freshWbGeometries;
   return {
     ...state,
     wells: freshWells,
     filteredWells: filterWells(freshWells, state.selectedFilter),
-    selectedWbGeometry: selectedWbGeometry
+    selectedObject: selectedObject
   };
 };
 
@@ -573,4 +573,8 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
     wells: wells,
     filteredWells: filterWells(wells, state.selectedFilter)
   };
+};
+
+const sameUids = (object1: ObjectOnWellbore, object2: ObjectOnWellbore) => {
+  return object1.uid === object2.uid && object1.wellboreUid === object2.wellboreUid && object1.wellUid === object2.wellUid;
 };

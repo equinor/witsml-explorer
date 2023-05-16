@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
+import MudLog from "../../models/mudLog";
 import MudLogService from "../../services/mudLogService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
@@ -31,10 +32,11 @@ export interface GeologyIntervalRow extends ContentTableRow {
 
 export const MudLogView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedMudLog } = navigationState;
+  const { selectedObject } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedMudLog = selectedObject as MudLog;
 
   useEffect(() => {
     setIsFetchingData(true);

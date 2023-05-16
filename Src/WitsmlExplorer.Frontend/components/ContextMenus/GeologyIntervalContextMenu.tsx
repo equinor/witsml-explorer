@@ -7,11 +7,12 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
+import MudLog from "../../models/mudLog";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -23,9 +24,10 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
   const { checkedGeologyIntervals } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const {
-    navigationState: { selectedServer, selectedMudLog, servers }
+    navigationState: { selectedServer, selectedObject, servers }
   } = useContext(NavigationContext);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
+  const selectedMudLog = selectedObject as MudLog;
 
   const onClickProperties = async () => {
     const geologyIntervalPropertiesModalProps = { geologyInterval: checkedGeologyIntervals[0] };

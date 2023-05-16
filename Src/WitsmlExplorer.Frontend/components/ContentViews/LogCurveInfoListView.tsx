@@ -4,6 +4,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogCurveInfo from "../../models/logCurveInfo";
+import LogObject from "../../models/logObject";
 import { measureToString } from "../../models/measure";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
@@ -33,7 +34,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedLog, selectedCurveThreshold, servers } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedCurveThreshold, servers } = navigationState;
+  const selectedLog = selectedObject as LogObject;
   const { dispatchOperation } = useContext(OperationContext);
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
@@ -98,9 +100,9 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         };
       })
       .sort((curve, curve2) => {
-        if (curve.mnemonic.toLowerCase() === selectedLog.indexCurve.toLowerCase()) {
+        if (curve.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()) {
           return -1;
-        } else if (curve2.mnemonic.toLowerCase() === selectedLog.indexCurve.toLowerCase()) {
+        } else if (curve2.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()) {
           return 1;
         }
         return curve.mnemonic.localeCompare(curve2.mnemonic);

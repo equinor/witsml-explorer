@@ -12,6 +12,7 @@ import { lithologyTypes } from "../../models/lithologyTypes";
 import MaxLength from "../../models/maxLength";
 import Measure from "../../models/measure";
 import MeasureWithDatum from "../../models/measureWithDatum";
+import MudLog from "../../models/mudLog";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
@@ -62,11 +63,12 @@ const GeologyIntervalPropertiesModal = (props: GeologyIntervalPropertiesModalInt
   const { geologyInterval } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const {
-    navigationState: { selectedMudLog }
+    navigationState: { selectedObject }
   } = useContext(NavigationContext);
   const [editable, setEditable] = useState<EditableGeologyInterval>({});
   const [editableLithologies, setEditableLithologies] = useState<Record<string, EditableLithology>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const selectedMudLog = selectedObject as MudLog;
 
   useEffect(() => {
     if (geologyInterval != null) {
