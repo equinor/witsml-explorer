@@ -13,7 +13,7 @@ import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import WbGeometrySectionPropertiesModal from "../Modals/WbGeometrySectionPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -68,11 +68,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "wbGeometry section", wbGeometrySectionReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteWbGeometrySections)}
-          disabled={checkedWbGeometrySections.length === 0}
-        >
+        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedWbGeometrySections.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "wbGeometry section", checkedWbGeometrySections)}</Typography>
         </MenuItem>,

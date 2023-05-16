@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Models
         CopyWithParent,
         CopyObjectsWithParent,
         TrimLogObject,
+        DeleteComponents,
         DeleteCurveValues,
         DeleteGeologyIntervals,
         DeleteMnemonics,
