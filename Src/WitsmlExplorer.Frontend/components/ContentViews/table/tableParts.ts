@@ -2,6 +2,7 @@ import React from "react";
 import { CurveSpecification } from "../../../models/logData";
 import { indexToNumber } from "../../../models/logObject";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
+import { Inset } from "./Inset";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;
@@ -26,6 +27,7 @@ export interface ContentTableProps {
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
   order?: Order;
+  inset?: Inset;
 }
 
 export enum Order {

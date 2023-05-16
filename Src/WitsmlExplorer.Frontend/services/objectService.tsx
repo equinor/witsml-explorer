@@ -50,12 +50,31 @@ export default class ObjectService {
     return null;
   }
 
-  public static async getObjectsIdOnly(wellUid: string, wellboreUid: string, objectType: ObjectType, abortSignal?: AbortSignal): Promise<ObjectOnWellbore[]> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}`, abortSignal);
+  public static async getObjectsIdOnly(wellUid: string, wellboreUid: string, objectType: ObjectType, abortSignal?: AbortSignal, server?: Server): Promise<ObjectOnWellbore[]> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}`, abortSignal, server);
     if (response.ok) {
       return response.json();
     } else {
       return [];
+    }
+  }
+
+  public static async getObjectIdOnly(
+    wellUid: string,
+    wellboreUid: string,
+    objectType: ObjectType,
+    objectUid: string,
+    abortSignal?: AbortSignal,
+    server?: Server
+  ): Promise<ObjectOnWellbore> {
+    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}/${objectUid}`, abortSignal, server);
+    if (response.ok) {
+      const text = await response.text();
+      if (text.length) {
+        return JSON.parse(text);
+      }
+    } else {
+      return null;
     }
   }
 }

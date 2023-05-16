@@ -33,14 +33,14 @@ export const ObjectMenuItems = (
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("copy", objectType, checkedObjects)}</Typography>
     </MenuItem>,
-    <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", objectType, checkedObjects)} to server`} disabled={checkedObjects.length < 1}>
+    <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", objectType, checkedObjects)} to server`} disabled={checkedObjects.length === 0}>
       {servers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
             <MenuItem
               key={server.name}
               onClick={() => onClickCopyToServer(server, selectedServer, checkedObjects, objectType, dispatchOperation)}
-              disabled={checkedObjects.length < 1}
+              disabled={checkedObjects.length === 0}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
@@ -55,7 +55,7 @@ export const ObjectMenuItems = (
       <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("delete", objectType, checkedObjects)}</Typography>
     </MenuItem>,
-    <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedObjects.length < 1}>
+    <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedObjects.length !== 1}>
       {servers.map((server: Server) => (
         <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, objectType, (checkedObjects[0] as LogObject)?.indexType)}>
           <Typography color={"primary"}>{server.name}</Typography>

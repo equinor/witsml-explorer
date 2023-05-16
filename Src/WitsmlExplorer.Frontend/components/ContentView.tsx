@@ -40,38 +40,27 @@ const objectGroupViews: Record<ObjectType, ReactElement> = {
   [ObjectType.WbGeometry]: <WbGeometrysListView />
 };
 
+const objectViews: Partial<Record<ObjectType, ReactElement>> = {
+  [ObjectType.Log]: <LogCurveInfoListView />,
+  [ObjectType.MudLog]: <MudLogView />,
+  [ObjectType.Trajectory]: <TrajectoryView />,
+  [ObjectType.Tubular]: <TubularView />,
+  [ObjectType.WbGeometry]: <WbGeometryView />
+};
+
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected } = navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {
-    const setObjectGroupView = () => {
-      const groupView = objectGroupViews[currentSelected as ObjectType];
-      if (groupView != null) {
-        setView(groupView);
+    const setObjectView = (isGroup: boolean): void => {
+      const views = isGroup ? objectGroupViews : objectViews;
+      const view = views[selectedObjectGroup as ObjectType];
+      if (view != null) {
+        setView(view);
       } else {
-        // eslint-disable-next-line no-console
-        console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
-        setView(undefined);
-      }
-    };
-
-    const setObjectView = () => {
-      if (selectedObjectGroup === ObjectType.Log) {
-        setView(<LogCurveInfoListView />);
-      } else if (selectedObjectGroup === ObjectType.MudLog) {
-        setView(<MudLogView />);
-      } else if (selectedObjectGroup === ObjectType.Trajectory) {
-        setView(<TrajectoryView />);
-      } else if (selectedObjectGroup === ObjectType.Tubular) {
-        setView(<TubularView />);
-      } else if (selectedObjectGroup === ObjectType.WbGeometry) {
-        setView(<WbGeometryView />);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
-        setView(undefined);
+        throw new Error(`No ${isGroup ? "group" : "object"} view is implemented for item: ${JSON.stringify(selectedObjectGroup)}`);
       }
     };
 
@@ -85,11 +74,11 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === selectedWellbore) {
         setView(<WellboreObjectTypesListView />);
       } else if (currentSelected === selectedObjectGroup) {
-        setObjectGroupView();
+        setObjectView(true);
       } else if (currentSelected === selectedLogTypeGroup) {
         setView(<LogsListView />);
       } else if (currentSelected === selectedObject) {
-        setObjectView();
+        setObjectView(false);
       } else if (currentSelected === selectedLogCurveInfo) {
         setView(<CurveValuesView />);
       } else if (currentSelected === selectedJobsFlag) {
@@ -97,9 +86,7 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === selectedServerManagerFlag) {
         setView(<ServerManager />);
       } else {
-        // eslint-disable-next-line no-console
-        console.error(`Don't know how to render this item: ${JSON.stringify(currentSelected)}`);
-        setView(undefined);
+        throw new Error(`No view is implemented for item: ${JSON.stringify(currentSelected)}`);
       }
     }
   }, [currentSelected]);

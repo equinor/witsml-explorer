@@ -8,6 +8,7 @@ import MudLog from "../../models/mudLog";
 import MudLogService from "../../services/mudLogService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
+import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface GeologyIntervalRow extends ContentTableRow {
@@ -85,7 +86,7 @@ export const MudLogView = (): React.ReactElement => {
     return {
       id: index,
       typeLithology: geologyInterval.typeLithology,
-      description: geologyInterval.description,
+      description: clipLongString(geologyInterval.description, 30),
       mdTop: measureToString(geologyInterval.mdTop),
       mdBottom: measureToString(geologyInterval.mdBottom),
       tvdTop: measureToString(geologyInterval.tvdTop),
@@ -103,7 +104,31 @@ export const MudLogView = (): React.ReactElement => {
     };
   });
 
-  return selectedMudLog && !isFetchingData ? <ContentTable columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  const insetColumns: ContentTableColumn[] = [
+    { property: "type", label: "type", type: ContentType.String },
+    { property: "codeLith", label: "codeLith", type: ContentType.Number },
+    { property: "lithPc", label: "lithPc %", type: ContentType.Number }
+  ];
+
+  const lithologyInsetRows = Object.fromEntries(
+    geologyIntervals.map((geologyInterval) => [
+      geologyInterval.uid,
+      geologyInterval.lithologies.map((lithology, index) => {
+        return {
+          id: index,
+          type: lithology.type,
+          codeLith: lithology.codeLith,
+          lithPc: lithology.lithPc
+        };
+      })
+    ])
+  );
+
+  return selectedMudLog && !isFetchingData ? (
+    <ContentTable columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows inset={{ columns: insetColumns, data: lithologyInsetRows }} />
+  ) : (
+    <></>
+  );
 };
 
 export default MudLogView;
