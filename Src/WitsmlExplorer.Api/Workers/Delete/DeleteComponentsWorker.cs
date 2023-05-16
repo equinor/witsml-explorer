@@ -14,7 +14,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
 {
-    public class DeleteComponentsWorker : BaseWorker<DeleteComponentsJob>, IWorker
+    public interface IDeleteComponentsWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteComponentsJob job);
+    }
+
+    public class DeleteComponentsWorker : BaseWorker<DeleteComponentsJob>, IWorker, IDeleteComponentsWorker
     {
         public JobType JobType => JobType.DeleteComponents;
 
