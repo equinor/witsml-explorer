@@ -1,4 +1,5 @@
 import { DotProgress } from "@equinor/eds-core-react";
+import { Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { TreeItem } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
@@ -15,10 +16,11 @@ interface StyledTreeItemProps extends TreeItemProps {
   selected?: boolean;
   isActive?: boolean;
   isLoading?: boolean;
+  indexType?: string;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, isLoading, ...other } = props; // eslint-disable-line
+  const { labelText, selected, isActive, indexType, isLoading, ...other } = props; // eslint-disable-line
   const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
@@ -32,10 +34,15 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
-          {isActive && <Icon name="isActive" color={colors.interactive.primaryResting} />}
-          <NavigationDrawer selected={selected} compactMode={isCompactMode}>
-            {labelText} {isLoading && <DotProgress color={"primary"} size={32} />}
-          </NavigationDrawer>
+          {isActive && labelText == "Logs" && <Icon name="beat" color={colors.interactive.primaryResting} style={{ position: "absolute", right: "-25px", top: "6px" }} />}
+          <Tooltip title={labelText} arrow placement="top" disableHoverListener={labelText === "" || labelText == null}>
+            <NavigationDrawer selected={selected} compactMode={isCompactMode}>
+              {labelText} {isLoading && <DotProgress color={"primary"} size={32} />}
+            </NavigationDrawer>
+          </Tooltip>
+          {isActive && ["measured depth", "date time"].includes(indexType) && (
+            <Icon name="beat" color={colors.interactive.primaryResting} style={{ position: "absolute", right: "-25px", top: "6px" }} />
+          )}
         </Label>
       }
       {...other}
