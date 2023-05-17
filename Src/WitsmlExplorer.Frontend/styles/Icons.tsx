@@ -8,6 +8,7 @@ import {
   arrow_drop_right as arrowDropRight,
   arrow_up as arrowUp,
   assignment,
+  beat,
   calendar,
   check,
   chevron_down as chevronDown,
@@ -69,7 +70,8 @@ const icons = {
   cloudOff,
   activeFilter,
   filter,
-  upload
+  upload,
+  beat
 };
 
 Icon.add(icons);

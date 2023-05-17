@@ -72,6 +72,7 @@ const SeachLayout = styled.div`
   grid-template-columns: 1fr 44px;
   padding: 0.6rem 0rem 0.5rem 1rem;
   position: relative;
+  padding-right: 6px;
 `;
 
 const SearchBarContainer = styled.div`

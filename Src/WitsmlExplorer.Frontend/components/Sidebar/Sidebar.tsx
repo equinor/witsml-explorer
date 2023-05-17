@@ -21,7 +21,7 @@ const Sidebar = (): React.ReactElement => {
   return (
     <React.Fragment>
       <SearchFilter />
-      <SidebarTreeView>
+      <SidebarTreeView className="sideBarView">
         <WellProgress>
           {filteredWells && filteredWells.length > 0 && (
             <TreeView
@@ -60,18 +60,18 @@ const SidebarTreeView = styled.div`
 `;
 
 const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   background-color: ${colors.interactive.successHover};
   border-radius: 50%;
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
 `;
 
 const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
-  background-color: ${colors.interactive.disabledBorder};
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  border: 2px solid ${colors.text.staticIconsTertiary};
 `;
 export default Sidebar;
