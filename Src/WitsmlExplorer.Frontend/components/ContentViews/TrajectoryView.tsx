@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
-import TrajectoryService from "../../services/trajectoryService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "../DateFormatter";
@@ -39,7 +40,14 @@ export const TrajectoryView = (): React.ReactElement => {
 
       const getTrajectory = async () => {
         setTrajectoryStations(
-          await TrajectoryService.getTrajectoryStations(selectedTrajectory.wellUid, selectedTrajectory.wellboreUid, selectedTrajectory.uid, abortController.signal)
+          await ComponentService.getComponents(
+            selectedTrajectory.wellUid,
+            selectedTrajectory.wellboreUid,
+            selectedTrajectory.uid,
+            ComponentType.TrajectoryStation,
+            undefined,
+            abortController.signal
+          )
         );
         setIsFetchingData(false);
       };

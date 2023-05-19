@@ -3,11 +3,12 @@ import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { measureToString } from "../../models/measure";
 import { truncateAbortHandler } from "../../services/apiClient";
-import LogObjectService from "../../services/logObjectService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, { LogCurveInfoContextMenuProps } from "../ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "../DateFormatter";
@@ -47,7 +48,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       const controller = new AbortController();
 
       const getLogCurveInfo = async () => {
-        const logCurveInfo = await LogObjectService.getLogCurveInfo(selectedWell.uid, selectedWellbore.uid, selectedLog.uid, controller.signal);
+        const logCurveInfo = await ComponentService.getComponents(selectedWell.uid, selectedWellbore.uid, selectedLog.uid, ComponentType.Mnemonic, undefined, controller.signal);
         setLogCurveInfoList(logCurveInfo);
         setIsFetchingData(false);
       };

@@ -12,11 +12,11 @@ namespace WitsmlExplorer.Api.Workers
     public class ReplaceLogDataWorker : BaseWorker<ReplaceLogDataJob>, IWorker
     {
         private readonly ICopyLogDataWorker _copyWorker;
-        private readonly IDeleteMnemonicsWorker _deleteWorker;
+        private readonly IDeleteComponentsWorker _deleteWorker;
 
         public JobType JobType => JobType.ReplaceLogData;
 
-        public ReplaceLogDataWorker(ILogger<ReplaceLogDataJob> logger, ICopyLogDataWorker copyWorker, IDeleteMnemonicsWorker deleteWorker) : base(logger)
+        public ReplaceLogDataWorker(ILogger<ReplaceLogDataJob> logger, ICopyLogDataWorker copyWorker, IDeleteComponentsWorker deleteWorker) : base(logger)
         {
             _copyWorker = copyWorker;
             _deleteWorker = deleteWorker;

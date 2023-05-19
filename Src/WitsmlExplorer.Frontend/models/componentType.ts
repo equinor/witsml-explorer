@@ -1,11 +1,16 @@
+import GeologyInterval from "./geologyInterval";
+import LogCurveInfo from "./logCurveInfo";
 import { ObjectType } from "./objectType";
+import TrajectoryStation from "./trajectoryStation";
+import TubularComponent from "./tubularComponent";
+import WbGeometrySection from "./wbGeometrySection";
 
 export enum ComponentType {
-  GeologyInterval = "Geology Interval",
+  GeologyInterval = "GeologyInterval",
   Mnemonic = "Mnemonic",
-  TrajectoryStation = "Trajectory Station",
-  TubularComponent = "Tubular Component",
-  WbGeometrySection = "WbGeometry Section"
+  TrajectoryStation = "TrajectoryStation",
+  TubularComponent = "TubularComponent",
+  WbGeometrySection = "WbGeometrySection"
 }
 
 export const getParentType = (componentType: ComponentType): ObjectType => {
@@ -23,4 +28,12 @@ export const getParentType = (componentType: ComponentType): ObjectType => {
     default:
       return undefined;
   }
+};
+
+export type ComponentTypeToModel = {
+  [ComponentType.GeologyInterval]: GeologyInterval;
+  [ComponentType.Mnemonic]: LogCurveInfo;
+  [ComponentType.TrajectoryStation]: TrajectoryStation;
+  [ComponentType.TubularComponent]: TubularComponent;
+  [ComponentType.WbGeometrySection]: WbGeometrySection;
 };

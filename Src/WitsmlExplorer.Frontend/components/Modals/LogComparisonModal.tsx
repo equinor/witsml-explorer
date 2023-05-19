@@ -3,12 +3,13 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import LogObjectService from "../../services/logObjectService";
+import ComponentService from "../../services/componentService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
@@ -40,8 +41,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   useEffect(() => {
     const setCurves = async () => {
       const fetchCurves = async () => {
-        const fetchSource = LogObjectService.getLogCurveInfo(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid);
-        const fetchTarget = LogObjectService.getLogCurveInfoFromServer(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, targetServer);
+        const fetchSource = ComponentService.getComponents(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, ComponentType.Mnemonic);
+        const fetchTarget = ComponentService.getComponents(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ComponentType.Mnemonic, targetServer);
         return {
           sourceLogCurveInfo: await fetchSource,
           targetLogCurveInfo: await fetchTarget

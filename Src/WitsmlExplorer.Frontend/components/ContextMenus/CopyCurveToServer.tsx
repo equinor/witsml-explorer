@@ -11,8 +11,8 @@ import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import AuthorizationService from "../../services/authorizationService";
+import ComponentService from "../../services/componentService";
 import JobService, { JobType } from "../../services/jobService";
-import LogObjectService from "../../services/logObjectService";
 import ObjectService from "../../services/objectService";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
@@ -40,7 +40,7 @@ export const onClickCopyCurveToServer = async (props: OnClickCopyCurveToServerPr
     return;
   }
 
-  const allCurves = await LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, targetLog.uid, sourceServer);
+  const allCurves = await ComponentService.getComponents(wellUid, wellboreUid, logUid, ComponentType.Mnemonic, targetServer);
   const existingCurves: LogCurveInfo[] = allCurves.filter((curve) => curvesToCopy.find((curveToCopy) => curveToCopy.uid === curve.uid));
   if (existingCurves.length > 0) {
     const onConfirm = () => replaceCurves(targetServer, sourceServer, curvesToCopy, existingCurves, dispatchOperation, targetLog, sourceLog);
