@@ -16,7 +16,7 @@ import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { onClickCopyCurveToServer } from "./CopyCurveToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -108,7 +108,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
               )
           )}
         </NestedMenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteMnemonics)} disabled={checkedLogCurveInfoRows.length === 0}>
+        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "curve", checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
