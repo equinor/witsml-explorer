@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
         {
-            if (EntityTypeHelper.EntityTypeToObjectOnWellbore(objectType) == null)
+            if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
                 throw new ArgumentException($"{nameof(objectType)} must be a valid type of an object on wellbore");
             }

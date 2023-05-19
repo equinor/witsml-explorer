@@ -2,11 +2,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CopyGeologyIntervalsJob : ICopyJob<ComponentReferences, ObjectReference> { }
+    public record CopyComponentsJob : ICopyJob<ComponentReferences, ObjectReference> { }
     public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference> { }
-    public record CopyTrajectoryStationsJob : ICopyJob<ComponentReferences, ObjectReference> { }
-    public record CopyTubularComponentsJob : ICopyJob<ComponentReferences, ObjectReference> { }
-    public record CopyWbGeometrySectionsJob : ICopyJob<ComponentReferences, ObjectReference> { }
 
     public record CopyLogDataJob : ICopyJob<ComponentReferences, ObjectReference>
     {

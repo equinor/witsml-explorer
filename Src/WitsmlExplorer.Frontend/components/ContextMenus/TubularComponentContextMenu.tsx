@@ -67,11 +67,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "tubular component", checkedTubularComponents)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, tubular, JobType.CopyTubularComponents)}
-          disabled={tubularComponentReferences === null}
-        >
+        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, tubular)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
         </MenuItem>,
