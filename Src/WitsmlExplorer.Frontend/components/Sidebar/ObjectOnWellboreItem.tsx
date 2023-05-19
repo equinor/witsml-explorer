@@ -3,45 +3,42 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import MudLog from "../../models/mudLog";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
+import { WellboreItemContext } from "./WellboreItem";
 
-interface MudLogProps {
-  nodeId: string;
-  mudLog: MudLog;
-  well: Well;
-  wellbore: Wellbore;
+interface ObjectOnWellboreItemProps {
+  key: string;
+  objectOnWellbore: ObjectOnWellbore;
+  objectType: ObjectType;
   selected: boolean;
+  ContextMenu: React.ComponentType<ObjectContextMenuProps>;
 }
 
-const MudLogItem = (props: MudLogProps): React.ReactElement => {
-  const { mudLog, selected, well, wellbore, nodeId } = props;
+const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
+  const { key, objectOnWellbore, objectType, selected, ContextMenu } = props;
+  const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: ObjectContextMenuProps = { checkedObjects: [mudLog], wellbore };
+    const contextMenuProps: ObjectContextMenuProps = { checkedObjects: [objectOnWellbore], wellbore };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ContextMenu {...contextMenuProps} />, position } });
   };
-
   return (
     <TreeItem
-      key={nodeId}
-      nodeId={nodeId}
-      labelText={mudLog.name}
+      nodeId={key}
+      labelText={objectOnWellbore.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: mudLog, wellbore, well, objectType: ObjectType.MudLog } })}
+      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } })}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );
 };
 
-export default MudLogItem;
+export default ObjectOnWellboreItem;

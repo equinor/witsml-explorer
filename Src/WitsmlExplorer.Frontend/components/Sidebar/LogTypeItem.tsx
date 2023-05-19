@@ -15,14 +15,10 @@ import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsConte
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogItem from "./LogItem";
 import TreeItem from "./TreeItem";
+import { WellboreItemContext } from "./WellboreItem";
 
-interface LogTypeItemProps {
-  well: Well;
-  wellbore: Wellbore;
-}
-
-const LogTypeItem = (props: LogTypeItemProps): React.ReactElement => {
-  const { well, wellbore } = props;
+const LogTypeItem = (): React.ReactElement => {
+  const { wellbore, well } = useContext(WellboreItemContext);
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedObject, selectedObjectGroup, servers } = navigationState;

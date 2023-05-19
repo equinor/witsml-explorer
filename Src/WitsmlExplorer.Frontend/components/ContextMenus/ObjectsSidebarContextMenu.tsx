@@ -1,25 +1,27 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import React, { useContext } from "react";
+import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
 import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface ObjectsSidebarContextMenuProps {
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
-  servers: Server[];
   wellbore: Wellbore;
   objectType: ObjectType;
 }
 
 const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React.ReactElement => {
-  const { wellbore, dispatchOperation, servers, objectType } = props;
+  const { wellbore, objectType } = props;
+  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    navigationState: { servers }
+  } = useContext(NavigationContext);
   const objectReferences = useClipboardReferencesOfType(objectType);
 
   return (
