@@ -1,16 +1,5 @@
-import BhaRun from "../../models/bhaRun";
-import ChangeLog from "../../models/changeLog";
-import FormationMarker from "../../models/formationMarker";
-import LogObject from "../../models/logObject";
-import MessageObject from "../../models/messageObject";
-import MudLog from "../../models/mudLog";
 import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Rig from "../../models/rig";
-import RiskObject from "../../models/riskObject";
-import Trajectory from "../../models/trajectory";
-import Tubular from "../../models/tubular";
-import WbGeometryObject from "../../models/wbGeometry";
 import { emptyWell, getWellProperties } from "../../models/well";
 import Wellbore, { calculateLogTypeTimeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../../models/wellbore";
 import { EMPTY_FILTER } from "../filter";
@@ -23,6 +12,7 @@ import {
   BHARUN_1,
   CHANGELOG_1,
   FILTER_1,
+  FLUIDSREPORT_1,
   FORMATIONMARKER_1,
   LOG_1,
   MESSAGE_1,
@@ -41,6 +31,7 @@ import {
   WELL_1,
   WELL_2,
   WELL_3,
+  getEmptyWellboreObjects,
   getInitialState
 } from "../stateReducerTestUtils";
 
@@ -80,20 +71,9 @@ it("Should update state when selecting another server", () => {
 });
 
 it("Should also update selected well when a wellbore is selected", () => {
-  const bhaRuns: BhaRun[] = [];
-  const changeLogs: ChangeLog[] = [];
-  const formationMarkers: FormationMarker[] = [];
-  const logs: LogObject[] = [];
-  const rigs: Rig[] = [];
-  const risks: RiskObject[] = [];
-  const messages: MessageObject[] = [];
-  const mudLogs: MudLog[] = [];
-  const tubulars: Tubular[] = [];
-  const trajectories: Trajectory[] = [];
-  const wbGeometries: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometries }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, ...getEmptyWellboreObjects() }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -118,6 +98,7 @@ it("Should add all objects to a wellbore if it is selected for the first time", 
       wellbore: WELLBORE_3,
       bhaRuns: [BHARUN_1],
       changeLogs: [CHANGELOG_1],
+      fluidsReports: [FLUIDSREPORT_1],
       formationMarkers: [FORMATIONMARKER_1],
       logs: [LOG_1],
       rigs: [RIG_1],
@@ -134,6 +115,7 @@ it("Should add all objects to a wellbore if it is selected for the first time", 
     ...WELLBORE_3,
     bhaRuns: [BHARUN_1],
     changeLogs: [CHANGELOG_1],
+    fluidsReports: [FLUIDSREPORT_1],
     formationMarkers: [FORMATIONMARKER_1],
     logs: [LOG_1],
     rigs: [RIG_1],
@@ -275,20 +257,9 @@ it("Selecting a wellbore node that is expanded but currently not selected should
     expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1)],
     currentProperties: getWellProperties(WELL_1)
   };
-  const logs: LogObject[] = [];
-  const bhaRuns: BhaRun[] = [];
-  const changeLogs: ChangeLog[] = [];
-  const formationMarkers: FormationMarker[] = [];
-  const rigs: Rig[] = [];
-  const messages: MessageObject[] = [];
-  const mudLogs: MudLog[] = [];
-  const risks: RiskObject[] = [];
-  const tubulars: Tubular[] = [];
-  const trajectories: Trajectory[] = [];
-  const wbGeometries: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometries }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, ...getEmptyWellboreObjects() }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
