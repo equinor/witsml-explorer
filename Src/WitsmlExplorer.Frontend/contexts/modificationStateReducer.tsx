@@ -8,7 +8,7 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { calculateWellboreNodeId } from "../models/wellbore";
+import Wellbore, { WellboreObjects, calculateWellboreNodeId, objectTypeToWellboreObjects } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import {
@@ -22,21 +22,11 @@ import {
   UpdateServerListAction,
   UpdateWellAction,
   UpdateWellboreAction,
-  UpdateWellboreBhaRunsAction,
-  UpdateWellboreFormationMarkersAction,
   UpdateWellboreLogAction,
-  UpdateWellboreLogsAction,
-  UpdateWellboreMessageAction,
-  UpdateWellboreMessagesAction,
-  UpdateWellboreMudLogsAction,
-  UpdateWellboreRigsAction,
-  UpdateWellboreRisksAction,
-  UpdateWellboreTrajectoriesAction,
+  UpdateWellboreObjectsAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
-  UpdateWellboreTubularsAction,
   UpdateWellboreWbGeometryAction,
-  UpdateWellboreWbGeometrysAction,
   UpdateWellsAction
 } from "./modificationActions";
 import ModificationType from "./modificationType";
@@ -64,36 +54,16 @@ export const performModificationAction = (state: NavigationState, action: Action
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
-    case ModificationType.UpdateBhaRuns:
-      return updateWellboreBhaRuns(state, action);
-    case ModificationType.UpdateFormationMarkers:
-      return updateWellboreFormationMarkers(state, action);
-    case ModificationType.UpdateLogObjects:
-      return updateWellboreLogs(state, action);
     case ModificationType.UpdateLogObject:
       return updateWellboreLog(state, action);
-    case ModificationType.UpdateMessageObjects:
-      return updateWellboreMessages(state, action);
-    case ModificationType.UpdateMessageObject:
-      return updateWellboreMessage(state, action);
-    case ModificationType.UpdateMudLogs:
-      return updateWellboreMudLogs(state, action);
-    case ModificationType.UpdateRigsOnWellbore:
-      return updateWellboreRigs(state, action);
-    case ModificationType.UpdateRiskObjects:
-      return updateWellboreRisks(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
       return updateWellboreTrajectory(state, action);
-    case ModificationType.UpdateTrajectoriesOnWellbore:
-      return updateWellboreTrajectories(state, action);
     case ModificationType.UpdateTubularOnWellbore:
       return updateWellboreTubular(state, action);
-    case ModificationType.UpdateTubularsOnWellbore:
-      return updateWellboreTubulars(state, action);
     case ModificationType.UpdateWbGeometryOnWellbore:
       return updateWellboreWbGeometry(state, action);
-    case ModificationType.UpdateWbGeometryObjects:
-      return updateWellboreWbGeometrys(state, action);
+    case ModificationType.UpdateWellboreObjects:
+      return updateWellboreObjects(state, action);
     case ModificationType.UpdateServerList:
       return updateServerList(state, action);
     case ModificationType.UpdateWells:
@@ -267,86 +237,6 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
-const updateWellboreBhaRuns = (state: NavigationState, { payload }: UpdateWellboreBhaRunsAction) => {
-  const { wells } = state;
-  const { bhaRuns, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { bhaRuns });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
-const updateWellboreFormationMarkers = (state: NavigationState, { payload }: UpdateWellboreFormationMarkersAction) => {
-  const { wells } = state;
-  const { formationMarkers, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { formationMarkers });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
-const updateWellboreMessages = (state: NavigationState, { payload }: UpdateWellboreMessagesAction) => {
-  const { wells } = state;
-  const { messages, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { messages });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
-const updateWellboreMessage = (state: NavigationState, { payload }: UpdateWellboreMessageAction) => {
-  const { wells } = state;
-  const { message } = payload;
-  const updatedWells = insertLogIntoWellsStructure(wells, message);
-  return {
-    ...state,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter)
-  };
-};
-
-const updateWellboreRigs = (state: NavigationState, { payload }: UpdateWellboreRigsAction) => {
-  const { wells } = state;
-  const { rigs, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { rigs });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
-const updateWellboreRisks = (state: NavigationState, { payload }: UpdateWellboreRisksAction) => {
-  const { wells } = state;
-  const { risks, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { risks });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
-const updateWellboreLogs = (state: NavigationState, { payload }: UpdateWellboreLogsAction) => {
-  const { wells } = state;
-  const { logs, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { logs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, logs, state.selectedObject, wellboreUid, wellUid);
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells,
-    currentSelected,
-    selectedObject: newSelectedObject
-  };
-};
-
 const updateWellboreLog = (state: NavigationState, { payload }: UpdateWellboreLogAction) => {
   const { wells } = state;
   const { log } = payload;
@@ -370,20 +260,6 @@ const insertLogIntoWellsStructure = (wells: Well[], log: LogObject): Well[] => {
   return freshWells;
 };
 
-const updateWellboreMudLogs = (state: NavigationState, { payload }: UpdateWellboreMudLogsAction) => {
-  const { wells } = state;
-  const { mudLogs, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { mudLogs });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, mudLogs, state.selectedObject, wellboreUid, wellUid);
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedObject: newSelectedObject,
-    currentSelected,
-    wells: freshWells
-  };
-};
-
 const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWellboreTrajectoryAction) => {
   const { wells } = state;
   const { trajectory, wellUid, wellboreUid } = payload;
@@ -401,34 +277,6 @@ const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWel
     wells: freshWells,
     filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject
-  };
-};
-
-const updateWellboreTrajectories = (state: NavigationState, { payload }: UpdateWellboreTrajectoriesAction) => {
-  const { wells } = state;
-  const { trajectories, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { trajectories });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, trajectories, state.selectedObject, wellboreUid, wellUid);
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedObject: newSelectedObject,
-    currentSelected,
-    wells: freshWells
-  };
-};
-
-const updateWellboreTubulars = (state: NavigationState, { payload }: UpdateWellboreTubularsAction) => {
-  const { wells } = state;
-  const { tubulars, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { tubulars });
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, tubulars, state.selectedObject, wellboreUid, wellUid);
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    selectedObject: newSelectedObject,
-    currentSelected,
-    wells: freshWells
   };
 };
 
@@ -457,34 +305,41 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   };
 };
 
-const updateWellboreWbGeometrys = (state: NavigationState, { payload }: UpdateWellboreWbGeometrysAction) => {
-  const { wells } = state;
-  const { wbGeometrys, wellUid, wellboreUid } = payload;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, { wbGeometrys });
-  return {
-    ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
-    wells: freshWells
-  };
-};
-
 const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWellboreWbGeometryAction) => {
   const { wells } = state;
   const { wbGeometry, wellUid, wellboreUid } = payload;
   const freshWells = [...wells];
   const wellIndex = getWellIndex(freshWells, wellUid);
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
-  const freshWbGeometries = [...wells[wellIndex].wellbores[wellboreIndex].wbGeometrys];
+  const freshWbGeometries = [...wells[wellIndex].wellbores[wellboreIndex].wbGeometries];
   const wbGeometryIndex = freshWbGeometries.findIndex((wbg) => wbg.uid === wbGeometry.uid);
   let selectedObject = null;
   freshWbGeometries[wbGeometryIndex] = wbGeometry;
   selectedObject = sameUids(wbGeometry, state.selectedObject) && state.selectedObjectGroup == ObjectType.WbGeometry ? wbGeometry : state.selectedObject;
-  wells[wellIndex].wellbores[wellboreIndex].wbGeometrys = freshWbGeometries;
+  wells[wellIndex].wellbores[wellboreIndex].wbGeometries = freshWbGeometries;
   return {
     ...state,
     wells: freshWells,
     filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject: selectedObject
+  };
+};
+
+const updateWellboreObjects = (state: NavigationState, { payload }: UpdateWellboreObjectsAction) => {
+  const { wells } = state;
+  const { wellboreObjects, wellUid, wellboreUid, objectType } = payload;
+  const objectsName = objectTypeToWellboreObjects(objectType);
+  const namedObjects: Partial<Record<keyof WellboreObjects, ObjectOnWellbore[]>> = {};
+  namedObjects[objectsName] = wellboreObjects;
+  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, namedObjects);
+  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, wellboreObjects, state.selectedObject, wellboreUid, wellUid, objectType);
+  return {
+    ...state,
+    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    selectedObject: newSelectedObject,
+    currentSelected,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter)
   };
 };
 
@@ -494,12 +349,14 @@ const getCurrentSelectedObjectIfRemoved = (
   objects: ObjectOnWellbore[],
   selectedObject: ObjectOnWellbore,
   updatedWellboreUid: string,
-  updatedWellUid: string
+  updatedWellUid: string,
+  objectType: ObjectType
 ) => {
   const fetchedSelectedObject = objects.find((value) => value.uid === selectedObject?.uid);
   const isCurrentlySelectedObjectRemoved =
     state.selectedWell?.uid == updatedWellUid &&
     state.selectedWellbore?.uid == updatedWellboreUid && // the update happened on the wellbore that is currently being browsed
+    state.selectedObjectGroup == objectType &&
     selectedObject && // there exists a selected object of the same type as the object type that was updated
     !fetchedSelectedObject && // the selected object does not exist among the objects fetched from the server, implying deletion
     state.currentSelected == selectedObject; // the object that is currently selected was deleted, requiring update of currently selected object

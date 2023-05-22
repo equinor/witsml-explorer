@@ -1,20 +1,20 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreTubularsAction } from "../../contexts/modificationActions";
+import { NavigationAction } from "../../contexts/navigationAction";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import { onClickRefreshAll } from "./TubularContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularsContextMenuProps {
-  dispatchNavigation: (action: UpdateWellboreTubularsAction) => void;
+  dispatchNavigation: (action: NavigationAction) => void;
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   wellbore: Wellbore;
   servers?: Server[];

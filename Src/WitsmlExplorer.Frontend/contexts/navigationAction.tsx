@@ -9,21 +9,11 @@ import {
   UpdateServerListAction,
   UpdateWellAction,
   UpdateWellboreAction,
-  UpdateWellboreBhaRunsAction,
-  UpdateWellboreFormationMarkersAction,
   UpdateWellboreLogAction,
-  UpdateWellboreLogsAction,
-  UpdateWellboreMessageAction,
-  UpdateWellboreMessagesAction,
-  UpdateWellboreMudLogsAction,
-  UpdateWellboreRigsAction,
-  UpdateWellboreRisksAction,
-  UpdateWellboreTrajectoriesAction,
+  UpdateWellboreObjectsAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
-  UpdateWellboreTubularsAction,
   UpdateWellboreWbGeometryAction,
-  UpdateWellboreWbGeometrysAction,
   UpdateWellsAction
 } from "./modificationActions";
 import {
@@ -53,21 +43,11 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
-  | UpdateWellboreBhaRunsAction
-  | UpdateWellboreFormationMarkersAction
   | UpdateWellboreLogAction
-  | UpdateWellboreLogsAction
-  | UpdateWellboreMessagesAction
-  | UpdateWellboreMessageAction
-  | UpdateWellboreMudLogsAction
-  | UpdateWellboreRigsAction
-  | UpdateWellboreRisksAction
   | UpdateWellboreTrajectoryAction
-  | UpdateWellboreTrajectoriesAction
   | UpdateWellboreTubularAction
-  | UpdateWellboreTubularsAction
   | UpdateWellboreWbGeometryAction
-  | UpdateWellboreWbGeometrysAction
+  | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
   | SelectJobsAction
   | SelectLogTypeAction

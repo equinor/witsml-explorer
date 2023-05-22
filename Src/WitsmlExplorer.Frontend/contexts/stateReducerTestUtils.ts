@@ -25,7 +25,7 @@ export const WELLBORE_1: Wellbore = {
   mudLogs: [],
   risks: [],
   tubulars: [],
-  wbGeometrys: [],
+  wbGeometries: [],
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -44,7 +44,7 @@ export const WELLBORE_2: Wellbore = {
   mudLogs: [],
   risks: [],
   tubulars: [],
-  wbGeometrys: [],
+  wbGeometries: [],
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -62,7 +62,7 @@ export const WELLBORE_3: Wellbore = {
   mudLogs: [],
   risks: [],
   tubulars: [],
-  wbGeometrys: [],
+  wbGeometries: [],
   wellStatus: "",
   wellType: "",
   isActive: false

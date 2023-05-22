@@ -6,7 +6,7 @@ import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
 import MudLog from "./mudLog";
-import { ObjectType, ObjectTypeToModel } from "./objectType";
+import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "./objectType";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -55,7 +55,7 @@ export interface WellboreObjects {
   mudLogs?: MudLog[];
   tubulars?: Tubular[];
   risks?: RiskObject[];
-  wbGeometrys?: WbGeometryObject[];
+  wbGeometries?: WbGeometryObject[];
 }
 
 export default interface Wellbore extends WellboreProperties, WellboreObjects {}
@@ -85,7 +85,7 @@ export function emptyWellbore(): Wellbore {
     messages: [],
     mudLogs: [],
     risks: [],
-    wbGeometrys: []
+    wbGeometries: []
   };
 }
 
@@ -122,44 +122,12 @@ export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> =
   ]);
 };
 
+export function objectTypeToWellboreObjects(objectType: ObjectType): keyof WellboreObjects {
+  return (objectType.charAt(0).toLowerCase() + pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
+}
+
 export function getObjectsFromWellbore<Key extends ObjectType>(wellbore: Wellbore, objectType: Key): ObjectTypeToModel[Key][] {
-  let objects: any[] = null;
-  switch (objectType) {
-    case ObjectType.BhaRun:
-      objects = wellbore.bhaRuns;
-      break;
-    case ObjectType.ChangeLog:
-      objects = wellbore.changeLogs;
-      break;
-    case ObjectType.FormationMarker:
-      objects = wellbore.formationMarkers;
-      break;
-    case ObjectType.Log:
-      objects = wellbore.logs;
-      break;
-    case ObjectType.Message:
-      objects = wellbore.messages;
-      break;
-    case ObjectType.MudLog:
-      objects = wellbore.mudLogs;
-      break;
-    case ObjectType.Rig:
-      objects = wellbore.rigs;
-      break;
-    case ObjectType.Risk:
-      objects = wellbore.risks;
-      break;
-    case ObjectType.Trajectory:
-      objects = wellbore.trajectories;
-      break;
-    case ObjectType.Tubular:
-      objects = wellbore.tubulars;
-      break;
-    case ObjectType.WbGeometry:
-      objects = wellbore.wbGeometrys;
-      break;
-  }
-  return objects;
+  return wellbore[objectTypeToWellboreObjects(objectType)] as ObjectTypeToModel[Key][];
 }
 
 export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
