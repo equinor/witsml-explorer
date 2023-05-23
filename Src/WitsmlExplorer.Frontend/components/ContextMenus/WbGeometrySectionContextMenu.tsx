@@ -62,7 +62,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, wbGeometry, JobType.CopyWbGeometrySections)}
+          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, wbGeometry)}
           disabled={wbGeometrySectionReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

@@ -37,17 +37,11 @@ export const pasteObjectOnWellbore = async (servers: Server[], objectReferences:
   onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
 };
 
-export const pasteComponents = async (
-  servers: Server[],
-  sourceReferences: ComponentReferences,
-  dispatchOperation: DispatchOperation,
-  target: ObjectOnWellbore,
-  jobType: JobType
-) => {
+export const pasteComponents = async (servers: Server[], sourceReferences: ComponentReferences, dispatchOperation: DispatchOperation, target: ObjectOnWellbore) => {
   const orderCopyJob = () => {
     const targetReference: ObjectReference = toObjectReference(target);
     const copyJob: CopyComponentsJob = { source: sourceReferences, target: targetReference };
-    JobService.orderJob(jobType, copyJob);
+    JobService.orderJob(JobType.CopyComponents, copyJob);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 

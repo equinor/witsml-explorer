@@ -8,6 +8,8 @@ using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
 
+using WitsmlExplorer.Api.Jobs.Common;
+
 namespace WitsmlExplorer.Api.Models
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -30,7 +32,7 @@ namespace WitsmlExplorer.Api.Models
 
     public static class EntityTypeHelper
     {
-        public static Dictionary<EntityType, string> EntityTypeToPluralLowercase()
+        public static Dictionary<EntityType, string> ToPluralLowercase()
         {
             return Enum.GetValues(typeof(EntityType))
                .Cast<EntityType>()
@@ -43,7 +45,7 @@ namespace WitsmlExplorer.Api.Models
                });
         }
 
-        public static WitsmlObjectOnWellbore EntityTypeToObjectOnWellbore(EntityType type)
+        public static WitsmlObjectOnWellbore ToObjectOnWellbore(EntityType type)
         {
             return type switch
             {
@@ -64,7 +66,16 @@ namespace WitsmlExplorer.Api.Models
             };
         }
 
-        public static IWitsmlObjectList EntityTypeToObjectList(EntityType type)
+        public static WitsmlObjectOnWellbore FromObjectReference(EntityType type, ObjectReference reference)
+        {
+            WitsmlObjectOnWellbore objectOnWellbore = ToObjectOnWellbore(type);
+            objectOnWellbore.Uid = reference.Uid;
+            objectOnWellbore.UidWellbore = reference.WellboreUid;
+            objectOnWellbore.UidWell = reference.WellUid;
+            return objectOnWellbore;
+        }
+
+        public static IWitsmlObjectList ToObjectList(EntityType type)
         {
             return type switch
             {

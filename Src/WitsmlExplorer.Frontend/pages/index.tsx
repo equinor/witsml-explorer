@@ -7,6 +7,7 @@ import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
 import { STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
+import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
 import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
@@ -42,29 +43,31 @@ const Home = (): React.ReactElement => {
   }, []);
 
   return (
-    <MsalProvider instance={msalInstance}>
-      {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
-      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
-        <ThemeProvider theme={getTheme(operationState.theme)}>
-          <GlobalStyles />
-          <Head>
-            <title>WITSML Explorer</title>
-            <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
-          </Head>
-          <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
-            <Routing />
-            <AuthorizationManager />
-            <RefreshHandler />
-            <SnackbarProvider>
-              <Snackbar />
-            </SnackbarProvider>
-            <PageLayout />
-            <ContextMenuPresenter />
-            <ModalPresenter />
-          </NavigationContext.Provider>
-        </ThemeProvider>
-      </OperationContext.Provider>
-    </MsalProvider>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <MsalProvider instance={msalInstance}>
+        {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
+        <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+          <ThemeProvider theme={getTheme(operationState.theme)}>
+            <GlobalStyles />
+            <Head>
+              <title>WITSML Explorer</title>
+              <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+            </Head>
+            <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+              <Routing />
+              <AuthorizationManager />
+              <RefreshHandler />
+              <SnackbarProvider>
+                <Snackbar />
+              </SnackbarProvider>
+              <PageLayout />
+              <ContextMenuPresenter />
+              <ModalPresenter />
+            </NavigationContext.Provider>
+          </ThemeProvider>
+        </OperationContext.Provider>
+      </MsalProvider>
+    </ErrorBoundary>
   );
 };
 

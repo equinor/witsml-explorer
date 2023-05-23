@@ -65,7 +65,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory, JobType.CopyTrajectoryStations)}>
+        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory)}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
         </MenuItem>,
