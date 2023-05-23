@@ -114,7 +114,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CopyLog_Empty_EmptyLogAdded()
         {
-            CopyLogJob copyLogJob = CreateJobTemplate();
+            CopyObjectsJob copyLogJob = CreateJobTemplate();
             WitsmlLogs sourceLogs = LogUtils.GetSourceLogsEmpty(WitsmlLog.WITSML_INDEX_TYPE_MD, "Depth");
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
             SetupGetWellbore();

@@ -83,6 +83,24 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task CopyLogData_DepthIndexed_Decreasing()
+        {
+            CopyLogDataJob job = LogUtils.CreateJobTemplate();
+
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogsDecreasing(WitsmlLog.WITSML_INDEX_TYPE_MD, 200, 196, "Depth");
+            LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
+            LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
+
+            LogUtils.SetupGetDepthIndexedDecreasing(_witsmlClient);
+            List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
+
+            await _worker.Execute(job);
+
+            Assert.Equal(string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]), updatedLogs.First().Logs.First().LogData.MnemonicList);
+            Assert.Equal(5, updatedLogs.First().Logs.First().LogData.Data.Count);
+        }
+
+        [Fact]
         public async Task CopyLogData_DepthIndexed_SelectedMnemonics()
         {
             CopyLogDataJob job = LogUtils.CreateJobTemplate();
