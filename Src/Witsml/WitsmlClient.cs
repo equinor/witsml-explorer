@@ -345,14 +345,14 @@ namespace Witsml
             return new QueryResult(true);
         }
 
-        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmLReceived = null)
+        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmlReceived = null)
         {
             if (_queryLogger == null)
             {
                 return;
             }
 
-            _queryLogger.LogQuery(querySent, isSuccessful, xmLReceived);
+            _queryLogger.LogQuery(querySent, isSuccessful, xmlReceived);
         }
 
         public Uri GetServerHostname()
@@ -376,7 +376,7 @@ namespace Witsml
 
     public interface IQueryLogger
     {
-        void LogQuery(string xmLReceived, bool isSuccessful, string querySent = null);
+        void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null);
     }
 
     public class DefaultQueryLogger : IQueryLogger
@@ -390,11 +390,11 @@ namespace Witsml
                 .CreateLogger();
         }
 
-        public void LogQuery(string xmLReceived, bool isSuccessful, string querySent = null)
+        public void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null)
         {
-            if (xmLReceived != null)
+            if (xmlReceived != null)
             {
-                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmLReceived, isSuccessful);
+                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmlReceived, isSuccessful);
             }
             else
             {
