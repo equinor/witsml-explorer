@@ -52,8 +52,8 @@ export default class WellboreService {
     const getRisks = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Risk);
     const getTrajectories = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Trajectory);
     const getTubulars = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Tubular);
-    const getWbGeometrys = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
-    const [bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
+    const getWbGeometries = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
+    const [bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometries] = await Promise.all([
       getBhaRuns,
       getChangeLogs,
       getFormationMarkers,
@@ -64,8 +64,8 @@ export default class WellboreService {
       getRisks,
       getTrajectories,
       getTubulars,
-      getWbGeometrys
+      getWbGeometries
     ]);
-    return { bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys };
+    return { bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometries };
   }
 }

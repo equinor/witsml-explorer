@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { UpdateWellboreLogsAction } from "../../../contexts/modificationActions";
 import ModificationType from "../../../contexts/modificationType";
+import { NavigationAction } from "../../../contexts/navigationAction";
 import { HideModalAction } from "../../../contexts/operationStateReducer";
 import OperationType from "../../../contexts/operationType";
 import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
@@ -17,7 +17,7 @@ import AdjustDateTimeModal from "./AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
 
 export interface TrimLogObjectModalProps {
-  dispatchNavigation: (action: UpdateWellboreLogsAction) => void;
+  dispatchNavigation: (action: NavigationAction) => void;
   dispatchOperation: (action: HideModalAction) => void;
   logObject: LogObject;
 }
@@ -42,7 +42,10 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
 
     async function getLogObject() {
       const freshLogs = await ObjectService.getObjects(log.wellUid, log.wellboreUid, ObjectType.Log, controller.signal);
-      dispatchNavigation({ type: ModificationType.UpdateLogObjects, payload: { wellUid: log.wellUid, wellboreUid: log.wellboreUid, logs: freshLogs } });
+      dispatchNavigation({
+        type: ModificationType.UpdateWellboreObjects,
+        payload: { wellUid: log.wellUid, wellboreUid: log.wellboreUid, wellboreObjects: freshLogs, objectType: ObjectType.Log }
+      });
       setIsLoading(false);
       dispatchOperation({ type: OperationType.HideModal });
     }

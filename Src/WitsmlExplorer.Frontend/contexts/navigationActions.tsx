@@ -53,7 +53,7 @@ export interface SelectWellboreAction extends Action {
     mudLogs: MudLog[];
     risks: RiskObject[];
     tubulars: Tubular[];
-    wbGeometrys: WbGeometryObject[];
+    wbGeometries: WbGeometryObject[];
   };
 }
 

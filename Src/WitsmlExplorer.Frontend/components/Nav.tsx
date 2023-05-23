@@ -104,7 +104,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               mudLogs: selectedWellbore.mudLogs,
               risks: selectedWellbore.risks,
               tubulars: selectedWellbore.tubulars,
-              wbGeometrys: selectedWellbore.wbGeometrys
+              wbGeometries: selectedWellbore.wbGeometries
             }
           })
       }

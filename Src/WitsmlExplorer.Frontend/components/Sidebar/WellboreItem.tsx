@@ -88,10 +88,6 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     };
   }, [isFetchingData]);
 
-  const onSelectObjectGroup = async (well: Well, wellbore: Wellbore, objectType: ObjectType) => {
-    dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType } });
-  };
-
   const onLabelClick = () => {
     const wellboreHasData = wellbore.logs?.length > 0;
     if (wellboreHasData) {
@@ -108,7 +104,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         mudLogs: wellbore.mudLogs,
         risks: wellbore.risks,
         tubulars: wellbore.tubulars,
-        wbGeometrys: wellbore.wbGeometrys
+        wbGeometries: wellbore.wbGeometries
       };
       const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload };
       dispatchNavigation(selectWellbore);
@@ -146,7 +142,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         <TreeItem
           nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
           labelText={"Logs"}
-          onLabelClick={() => onSelectObjectGroup(well, wellbore, ObjectType.Log)}
+          onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType: ObjectType.Log } })}
           onContextMenu={(event) => onLogsContextMenu(event, wellbore)}
           isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
         >
@@ -163,7 +159,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           ObjectContextMenu={TubularContextMenu}
           onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
         />
-        <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometrys} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
+        <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
       </WellboreItemContext.Provider>
     </TreeItem>
   );
