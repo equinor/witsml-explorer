@@ -7,7 +7,6 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import TubularPropertiesModal from "../Modals/TubularPropertiesModal";
@@ -41,7 +40,7 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
         ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0], JobType.CopyTubularComponents)}
+          onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}
           disabled={tubularComponentReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

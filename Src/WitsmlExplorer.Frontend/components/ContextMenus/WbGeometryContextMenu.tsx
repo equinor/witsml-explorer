@@ -7,7 +7,6 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WbGeometryPropertiesModal, { WbGeometryPropertiesModalProps } from "../Modals/WbGeometryPropertiesModal";
@@ -37,7 +36,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
         ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0], JobType.CopyWbGeometrySections)}
+          onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0])}
           disabled={wbGeometrySectionReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

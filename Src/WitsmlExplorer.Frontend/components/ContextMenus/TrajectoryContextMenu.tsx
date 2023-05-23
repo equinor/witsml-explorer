@@ -5,7 +5,6 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
@@ -26,7 +25,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
         ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0], JobType.CopyTrajectoryStations)}
+          onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
           disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

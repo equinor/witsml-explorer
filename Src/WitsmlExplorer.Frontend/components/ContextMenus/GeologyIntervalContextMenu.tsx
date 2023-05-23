@@ -61,7 +61,7 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
         </MenuItem>,
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, selectedMudLog, JobType.CopyGeologyIntervals)}
+          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, selectedMudLog)}
           disabled={geologyIntervalReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

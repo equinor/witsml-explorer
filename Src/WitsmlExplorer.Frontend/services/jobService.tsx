@@ -55,12 +55,9 @@ export default class JobService {
 
 export enum JobType {
   CreateWell = "CreateWell",
-  CopyGeologyIntervals = "CopyGeologyIntervals",
+  CopyComponents = "CopyComponents",
   CopyLogData = "CopyLogData",
   CopyObjects = "CopyObjects",
-  CopyTrajectoryStations = "CopyTrajectoryStations",
-  CopyTubularComponents = "CopyTubularComponents",
-  CopyWbGeometrySections = "CopyWbGeometrySections",
   CopyWell = "CopyWell",
   CopyWellbore = "CopyWellbore",
   CopyWithParent = "CopyWithParent",
