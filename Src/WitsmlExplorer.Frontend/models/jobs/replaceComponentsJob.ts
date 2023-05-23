@@ -1,7 +1,7 @@
 import { CopyComponentsJob } from "./copyJobs";
 import { DeleteComponentsJob } from "./deleteJobs";
 
-export interface ReplaceLogDataJob {
+export interface ReplaceComponentsJob {
   deleteJob: DeleteComponentsJob;
   copyJob: CopyComponentsJob;
 }

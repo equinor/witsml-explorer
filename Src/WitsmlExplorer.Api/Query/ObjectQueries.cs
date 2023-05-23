@@ -111,31 +111,30 @@ namespace WitsmlExplorer.Api.Query
         }
 
         /// <summary>
-        /// Initializes a new WitsmlObjectOnWellbore of the parent type of <paramref name="componentType"/> with UIDs initialized from <paramref name="reference"/>.
-        /// All components of type <paramref name="componentType"/> from <paramref name="source"/> will be set on the return object.
-        /// </summary>
-        /// <param name="source">The WITSML object to set the components list on.</param>
-        /// <param name="componentType">The type of components to set.</param>
-        /// <param name="reference">A list of uids that will be used to initialize the components.</param>
-        public static WitsmlObjectOnWellbore CopyComponents(WitsmlObjectOnWellbore source, ComponentType componentType, ObjectReference reference)
+        /// Returns a query that can be used to copy components of <paramref name="componentType"/> from <paramref name="source"/> havings uids specified by <paramref name="uidsToCopy"/> to an object specified by <paramref name="reference"/>.
+        /// <param name="source">The WITSML object containing the components to copy.</param>
+        /// <param name="componentType">The type of components copy.</param>
+        /// <param name="reference">Reference of the target object that will be used to initialize the query.</param>
+        /// <param name="uidsToCopy">A list of uids that will be used to filter the <paramref name="source"/> components.</param>
+        public static WitsmlObjectOnWellbore CopyComponents(WitsmlObjectOnWellbore source, ComponentType componentType, ObjectReference reference, string[] uidsToCopy)
         {
             WitsmlObjectOnWellbore target = EntityTypeHelper.FromObjectReference(componentType.ToParentType(), reference);
             switch (componentType)
             {
                 case ComponentType.GeologyInterval:
-                    ((WitsmlMudLog)target).GeologyInterval = ((WitsmlMudLog)source).GeologyInterval;
+                    ((WitsmlMudLog)target).GeologyInterval = ((WitsmlMudLog)source).GeologyInterval.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 case ComponentType.Mnemonic:
-                    ((WitsmlLog)target).LogCurveInfo = ((WitsmlLog)source).LogCurveInfo;
+                    ((WitsmlLog)target).LogCurveInfo = ((WitsmlLog)source).LogCurveInfo.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 case ComponentType.TrajectoryStation:
-                    ((WitsmlTrajectory)target).TrajectoryStations = ((WitsmlTrajectory)source).TrajectoryStations;
+                    ((WitsmlTrajectory)target).TrajectoryStations = ((WitsmlTrajectory)source).TrajectoryStations.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 case ComponentType.TubularComponent:
-                    ((WitsmlTubular)target).TubularComponents = ((WitsmlTubular)source).TubularComponents;
+                    ((WitsmlTubular)target).TubularComponents = ((WitsmlTubular)source).TubularComponents.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 case ComponentType.WbGeometrySection:
-                    ((WitsmlWbGeometry)target).WbGeometrySections = ((WitsmlWbGeometry)source).WbGeometrySections;
+                    ((WitsmlWbGeometry)target).WbGeometrySections = ((WitsmlWbGeometry)source).WbGeometrySections.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");

@@ -16,7 +16,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
 {
-    public class CopyComponentsWorker : BaseWorker<CopyComponentsJob>, IWorker
+    public interface ICopyComponentsWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(CopyComponentsJob job);
+    }
+
+    public class CopyComponentsWorker : BaseWorker<CopyComponentsJob>, IWorker, ICopyComponentsWorker
     {
 
         public JobType JobType => JobType.CopyComponents;
@@ -66,14 +71,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             IEnumerable<string> sourceComponentUids = ObjectQueries.GetComponentUids(source.Objects.First(), _componentType);
-            if (sourceComponentUids.Count() != toCopyUids.Length)
+            IEnumerable<string> missingUids = toCopyUids.Except(sourceComponentUids);
+            if (missingUids.Any())
             {
-                string missingUids = string.Join(", ", toCopyUids.Except(sourceComponentUids));
-                string reason = $"Could not retrieve all {_componentType.ToPluralLowercase()}, missing uids: {missingUids}.";
+                string reason = $"Could not retrieve some {_componentType.ToPluralLowercase()}, missing uids: {string.Join(", ", missingUids)}.";
                 return LogErrorAndReturnResult(reason);
             }
 
-            WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects.First(), _componentType, job.Target);
+            WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects.First(), _componentType, job.Target, toCopyUids);
             QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsSingletonWitsmlList());
             if (!copyResult.IsSuccessful)
             {

@@ -13,6 +13,7 @@ import { colors } from "../../styles/Colors";
 import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteComponents } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -59,6 +60,7 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "geology interval", checkedGeologyIntervals)}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.GeologyInterval} componentsToCopy={checkedGeologyIntervals} />,
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, selectedMudLog)}

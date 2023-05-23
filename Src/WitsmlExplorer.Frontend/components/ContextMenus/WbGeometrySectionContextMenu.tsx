@@ -14,6 +14,7 @@ import { colors } from "../../styles/Colors";
 import WbGeometrySectionPropertiesModal from "../Modals/WbGeometrySectionPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -60,6 +61,7 @@ const WbGeometrySectionContextMenu = (props: WbGeometrySectionContextMenuProps):
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "wbGeometry section", checkedWbGeometrySections)}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.WbGeometrySection} componentsToCopy={checkedWbGeometrySections} />,
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, wbGeometry)}
