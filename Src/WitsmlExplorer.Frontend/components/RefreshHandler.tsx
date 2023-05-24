@@ -48,6 +48,9 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.BhaRun:
             await refreshWellboreObjects(refreshAction);
             break;
+          case EntityType.FluidsReport:
+            await refreshWellboreObjects(refreshAction);
+            break;
           case EntityType.FormationMarker:
             await refreshWellboreObjects(refreshAction);
             break;

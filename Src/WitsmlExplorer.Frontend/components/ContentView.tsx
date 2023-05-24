@@ -5,6 +5,7 @@ import { ObjectType } from "../models/objectType";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
+import FluidsReportsListView from "./ContentViews/FluidsReportListView";
 import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
@@ -29,6 +30,7 @@ import { WellsListView } from "./ContentViews/WellsListView";
 const objectGroupViews: Record<ObjectType, ReactElement> = {
   [ObjectType.BhaRun]: <BhaRunsListView />,
   [ObjectType.ChangeLog]: <ChangeLogsListView />,
+  [ObjectType.FluidsReport]: <FluidsReportsListView />,
   [ObjectType.FormationMarker]: <FormationMarkersListView />,
   [ObjectType.Log]: <LogTypeListView />,
   [ObjectType.Message]: <MessagesListView />,

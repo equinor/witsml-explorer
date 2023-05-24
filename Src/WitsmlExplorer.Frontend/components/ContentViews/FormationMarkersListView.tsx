@@ -25,7 +25,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
   const [formationMarkers, setFormationMarkers] = useState<FormationMarker[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.formationMarkers) {
+    if (selectedWellbore?.formationMarkers) {
       setFormationMarkers(selectedWellbore.formationMarkers);
     }
   }, [selectedWellbore]);

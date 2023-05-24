@@ -17,14 +17,14 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
 export const RisksListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [risks, setRisks] = useState<RiskObject[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.risks) {
+    if (selectedWellbore?.risks) {
       setRisks(selectedWellbore.risks);
     }
   }, [selectedWellbore]);

@@ -96,6 +96,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         wellbore,
         bhaRuns: wellbore.bhaRuns,
         changeLogs: wellbore.changeLogs,
+        fluidsReports: wellbore.fluidsReports,
         formationMarkers: wellbore.formationMarkers,
         logs: wellbore.logs,
         rigs: wellbore.rigs,
@@ -138,6 +139,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       <WellboreItemContext.Provider value={{ wellbore, well }}>
         <ObjectGroupItem objectType={ObjectType.BhaRun} />
         <ObjectGroupItem objectType={ObjectType.ChangeLog} onGroupContextMenu={preventContextMenuPropagation} />
+        <ObjectGroupItem objectType={ObjectType.FluidsReport} />
         <ObjectGroupItem objectType={ObjectType.FormationMarker} />
         <TreeItem
           nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}

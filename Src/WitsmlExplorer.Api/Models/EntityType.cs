@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Models
         Well,
         Wellbore,
         BhaRun,
+        FluidsReport,
         FormationMarker,
         Log,
         Message,
@@ -49,6 +50,7 @@ namespace WitsmlExplorer.Api.Models
             return type switch
             {
                 EntityType.BhaRun => new WitsmlBhaRun(),
+                EntityType.FluidsReport => new WitsmlFluidsReport(),
                 EntityType.FormationMarker => new WitsmlFormationMarker(),
                 EntityType.Log => new WitsmlLog(),
                 EntityType.Message => new WitsmlMessage(),
@@ -78,6 +80,7 @@ namespace WitsmlExplorer.Api.Models
             return type switch
             {
                 EntityType.BhaRun => new WitsmlBhaRuns(),
+                EntityType.FluidsReport => new WitsmlFluidsReports(),
                 EntityType.FormationMarker => new WitsmlFormationMarkers(),
                 EntityType.Log => new WitsmlLogs(),
                 EntityType.Message => new WitsmlMessages(),

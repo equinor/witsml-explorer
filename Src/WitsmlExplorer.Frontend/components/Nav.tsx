@@ -35,7 +35,7 @@ const Nav = (): React.ReactElement => {
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected, selectedServer]);
+  }, [currentSelected, selectedServer, selectedWell, selectedWellbore]);
 
   return (
     <nav>
@@ -96,6 +96,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
               wellbore: selectedWellbore,
               bhaRuns: selectedWellbore.bhaRuns,
               changeLogs: selectedWellbore.changeLogs,
+              fluidsReports: selectedWellbore.fluidsReports,
               formationMarkers: selectedWellbore.formationMarkers,
               logs: selectedWellbore.logs,
               rigs: selectedWellbore.rigs,

@@ -17,14 +17,14 @@ export interface MessageObjectRow extends ContentTableRow {
 export const MessagesListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [messages, setMessages] = useState<MessageObject[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.messages) {
+    if (selectedWellbore?.messages) {
       setMessages(selectedWellbore.messages);
     }
   }, [selectedWellbore]);

@@ -1,6 +1,7 @@
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
 import BhaRun from "./bhaRun";
 import ChangeLog from "./changeLog";
+import FluidsReport from "./fluidsReport";
 import FormationMarker from "./formationMarker";
 import LogObject from "./logObject";
 import Measure from "./measure";
@@ -47,6 +48,7 @@ export interface WellboreProperties {
 export interface WellboreObjects {
   bhaRuns?: BhaRun[];
   changeLogs?: ChangeLog[];
+  fluidsReports?: FluidsReport[];
   formationMarkers?: FormationMarker[];
   logs?: LogObject[];
   rigs?: Rig[];
@@ -77,6 +79,7 @@ export function emptyWellbore(): Wellbore {
     itemState: "",
     bhaRuns: [],
     changeLogs: [],
+    fluidsReports: [],
     formationMarkers: [],
     logs: [],
     rigs: [],
