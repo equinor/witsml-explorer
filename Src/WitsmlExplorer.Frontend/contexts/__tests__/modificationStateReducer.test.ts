@@ -5,6 +5,7 @@ import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction } from "../modificationActions";
 import ModificationType from "../modificationType";
+import { NavigationAction } from "../navigationAction";
 import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import { LOG_1, SERVER_1, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3, getInitialState } from "../stateReducerTestUtils";
@@ -57,12 +58,13 @@ it("Should update list of servers when adding a server", () => {
 });
 
 it("Should update logs for selected wellbore", () => {
-  const updateLogOnWellbore = {
-    type: ModificationType.UpdateLogObjects,
+  const updateLogOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      logs: [{ ...LOG_1, name: "Updated" }]
+      wellboreObjects: [{ ...LOG_1, name: "Updated" }],
+      objectType: ObjectType.Log
     }
   };
   const initialState = {
@@ -87,12 +89,13 @@ it("Should update logs for selected wellbore", () => {
 
 it("Should update trajectories for selected wellbore", () => {
   const updatedTrajectory = { ...TRAJECTORY_1, name: "Updated" };
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
+  const updateTrajectoryOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      trajectories: [updatedTrajectory]
+      wellboreObjects: [updatedTrajectory],
+      objectType: ObjectType.Trajectory
     }
   };
   const initialState: NavigationState = {
@@ -119,12 +122,13 @@ it("Should update trajectories for selected wellbore", () => {
 
 it("Should update currentSelected if deleted", () => {
   const newTrajectories: Trajectory[] = [];
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
+  const updateTrajectoryOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      trajectories: newTrajectories
+      wellboreObjects: newTrajectories,
+      objectType: ObjectType.Trajectory
     }
   };
   const initialState: NavigationState = {

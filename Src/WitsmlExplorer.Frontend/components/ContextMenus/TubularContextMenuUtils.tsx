@@ -1,5 +1,6 @@
-import { UpdateWellboreTubularAction, UpdateWellboreTubularsAction } from "../../contexts/modificationActions";
+import { UpdateWellboreTubularAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
+import { NavigationAction } from "../../contexts/navigationAction";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
@@ -19,13 +20,8 @@ export const onClickRefresh = async (tubular: Tubular, dispatchOperation: Dispat
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickRefreshAll = async (
-  wellUid: string,
-  wellboreUid: string,
-  dispatchOperation: DispatchOperation,
-  dispatchNavigation: (action: UpdateWellboreTubularsAction) => void
-) => {
+export const onClickRefreshAll = async (wellUid: string, wellboreUid: string, dispatchOperation: DispatchOperation, dispatchNavigation: (action: NavigationAction) => void) => {
   const tubulars = await ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Tubular);
-  dispatchNavigation({ type: ModificationType.UpdateTubularsOnWellbore, payload: { tubulars, wellUid, wellboreUid } });
+  dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects: tubulars, wellUid, wellboreUid, objectType: ObjectType.Tubular } });
   dispatchOperation({ type: OperationType.HideContextMenu });
 };

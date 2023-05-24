@@ -15,23 +15,23 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;
 }
 
-export const WbGeometrysListView = (): React.ReactElement => {
+export const WbGeometriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
   const { selectedWellbore, selectedWell } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
+  const [wbGeometries, setWbGeometries] = useState<WbGeometryObject[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.wbGeometrys) {
-      setWbGeometrys(selectedWellbore.wbGeometrys);
+    if (selectedWellbore && selectedWellbore.wbGeometries) {
+      setWbGeometries(selectedWellbore.wbGeometries);
     }
-  }, [selectedWellbore, selectedWellbore?.wbGeometrys]);
+  }, [selectedWellbore, selectedWellbore?.wbGeometries]);
 
   const getTableData = () => {
-    return wbGeometrys.map((wbGeometry) => {
+    return wbGeometries.map((wbGeometry) => {
       return {
         ...wbGeometry,
         itemState: wbGeometry.commonData.itemState,
@@ -64,9 +64,9 @@ export const WbGeometrysListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.wbGeometrys, wbGeometrys) && (
+    Object.is(selectedWellbore?.wbGeometries, wbGeometries) && (
       <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows />
     )
   );
 };
-export default WbGeometrysListView;
+export default WbGeometriesListView;

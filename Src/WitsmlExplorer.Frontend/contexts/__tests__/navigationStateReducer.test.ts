@@ -90,10 +90,10 @@ it("Should also update selected well when a wellbore is selected", () => {
   const mudLogs: MudLog[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
-  const wbGeometrys: WbGeometryObject[] = [];
+  const wbGeometries: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometrys }
+    payload: { well: WELL_2, wellbore: WELLBORE_2, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, risks, messages, mudLogs, tubulars, wbGeometries }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_2.uid] }, selectWellboreAction);
   expect(actual).toStrictEqual({
@@ -126,7 +126,7 @@ it("Should add all objects to a wellbore if it is selected for the first time", 
       mudLogs: [MUDLOG_1],
       risks: [RISK_1],
       tubulars: [TUBULAR_1],
-      wbGeometrys: [WBGEOMETRY_1]
+      wbGeometries: [WBGEOMETRY_1]
     }
   };
   const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_3.uid] }, selectWellboreAction);
@@ -142,7 +142,7 @@ it("Should add all objects to a wellbore if it is selected for the first time", 
     mudLogs: [MUDLOG_1],
     risks: [RISK_1],
     tubulars: [TUBULAR_1],
-    wbGeometrys: [WBGEOMETRY_1]
+    wbGeometries: [WBGEOMETRY_1]
   };
   const expectedWell = { ...WELL_3, wellbores: [expectedWellbore] };
   expect(actual).toStrictEqual({
@@ -285,10 +285,10 @@ it("Selecting a wellbore node that is expanded but currently not selected should
   const risks: RiskObject[] = [];
   const tubulars: Tubular[] = [];
   const trajectories: Trajectory[] = [];
-  const wbGeometrys: WbGeometryObject[] = [];
+  const wbGeometries: WbGeometryObject[] = [];
   const selectWellboreAction = {
     type: NavigationType.SelectWellbore,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometrys }
+    payload: { well: WELL_1, wellbore: WELLBORE_1, bhaRuns, changeLogs, formationMarkers, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometries }
   };
   const afterWellboreSelect = reducer(initialState, selectWellboreAction);
   const expected = {
