@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -34,10 +35,13 @@ export const WbGeometriesListView = (): React.ReactElement => {
     return wbGeometries.map((wbGeometry) => {
       return {
         ...wbGeometry,
+        mdBottom: measureToString(wbGeometry.mdBottom),
+        gapAir: measureToString(wbGeometry.gapAir),
+        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone),
         itemState: wbGeometry.commonData.itemState,
-        id: wbGeometry.uid,
         dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone),
         dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone),
+        id: wbGeometry.uid,
         wbGeometry: wbGeometry
       };
     });
@@ -52,11 +56,15 @@ export const WbGeometriesListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
+    { property: "gapAir", label: "gapAir", type: ContentType.Measure },
+    { property: "dTimReport", label: "dTimReport", type: ContentType.DateTime },
     { property: "itemState", label: "commonData.itemState", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
+    { property: "uid", label: "uid", type: ContentType.String }
   ];
+
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
     const contextProps: ObjectContextMenuProps = { checkedObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
