@@ -11,7 +11,7 @@ import TreeItem from "./TreeItem";
 import { WellboreItemContext } from "./WellboreItem";
 
 interface ObjectOnWellboreItemProps {
-  key: string;
+  nodeId: string;
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
   selected: boolean;
@@ -19,7 +19,7 @@ interface ObjectOnWellboreItemProps {
 }
 
 const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
-  const { key, objectOnWellbore, objectType, selected, ContextMenu } = props;
+  const { nodeId, objectOnWellbore, objectType, selected, ContextMenu } = props;
   const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
@@ -32,7 +32,7 @@ const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElem
   };
   return (
     <TreeItem
-      nodeId={key}
+      nodeId={nodeId}
       labelText={objectOnWellbore.name}
       selected={selected}
       onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } })}
