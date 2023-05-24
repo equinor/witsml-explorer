@@ -156,6 +156,7 @@ export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickabl
   position: relative;
   z-index: 0;
   border-right: 1px solid rgba(224, 224, 224, 1);
+  white-space: nowrap;
   && {
     color: ${colors.text.staticIconsDefault};
     font-family: EquinorMedium;
@@ -164,7 +165,6 @@ export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickabl
   ${({ type }) =>
     type === ContentType.String &&
     `
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   `};
@@ -177,7 +177,6 @@ export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickabl
     type === ContentType.DateTime &&
     `
     font-feature-settings: "tnum";
-    white-space: nowrap;
   `};
 `;
 

@@ -35,7 +35,7 @@ const Nav = (): React.ReactElement => {
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected, selectedServer]);
+  }, [currentSelected, selectedServer, selectedWell, selectedWellbore]);
 
   return (
     <nav>

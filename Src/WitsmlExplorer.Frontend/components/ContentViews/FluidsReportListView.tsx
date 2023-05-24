@@ -17,14 +17,14 @@ export interface FluidsReportRow extends ContentTableRow, FluidsReport {
 export const FluidsReportsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [fluidsReports, setFluidsReports] = useState<FluidsReport[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.fluidsReports) {
+    if (selectedWellbore?.fluidsReports) {
       setFluidsReports(selectedWellbore.fluidsReports);
     }
   }, [selectedWellbore]);

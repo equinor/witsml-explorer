@@ -34,7 +34,7 @@ export const MudLogsListView = (): React.ReactElement => {
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.mudLogs) {
+    if (selectedWellbore?.mudLogs) {
       setMudLogs(selectedWellbore.mudLogs);
     }
   }, [selectedWellbore]);

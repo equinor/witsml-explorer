@@ -16,14 +16,14 @@ export interface RigRow extends ContentTableRow, Rig {
 export const RigsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [rigs, setRigs] = useState<Rig[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.rigs) {
+    if (selectedWellbore?.rigs) {
       setRigs(selectedWellbore.rigs);
     }
   }, [selectedWellbore]);
