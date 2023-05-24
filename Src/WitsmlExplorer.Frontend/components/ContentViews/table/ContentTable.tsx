@@ -88,8 +88,8 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
         {data.map((item, index) => {
           return (
             checkVisibility(item.isVisibleFunction) && (
-              <>
-                <TableRow hover key={index} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+              <React.Fragment key={index}>
+                <TableRow hover onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
                   {checkableRows && (
                     <TableDataCell>
                       <Checkbox
@@ -117,7 +117,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                     )}
                 </TableRow>
                 <InsetRow inset={inset} openInsets={openInsets} columnsLength={columns.length} uid={item.uid} />
-              </>
+              </React.Fragment>
             )
           );
         })}
