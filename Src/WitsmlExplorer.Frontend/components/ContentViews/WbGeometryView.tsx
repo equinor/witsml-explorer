@@ -65,16 +65,16 @@ export const WbGeometryView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "typeHoleCasing", label: "typeHoleCasing", type: ContentType.String },
-    { property: "mdTop", label: "mdTop", type: ContentType.String },
-    { property: "mdBottom", label: "mdBottom", type: ContentType.String },
-    { property: "tvdTop", label: "tvdTop", type: ContentType.String },
-    { property: "tvdBottom", label: "tvdBottom", type: ContentType.String },
-    { property: "idSection", label: "idSection", type: ContentType.String },
-    { property: "odSection", label: "odSection", type: ContentType.String },
-    { property: "wtPerLen", label: "wtPerLen", type: ContentType.String },
+    { property: "mdTop", label: "mdTop", type: ContentType.Measure },
+    { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
+    { property: "tvdTop", label: "tvdTop", type: ContentType.Measure },
+    { property: "tvdBottom", label: "tvdBottom", type: ContentType.Measure },
+    { property: "idSection", label: "idSection", type: ContentType.Measure },
+    { property: "odSection", label: "odSection", type: ContentType.Measure },
+    { property: "wtPerLen", label: "wtPerLen", type: ContentType.Measure },
     { property: "grade", label: "grade", type: ContentType.String },
     { property: "curveConductor", label: "curveConductor", type: ContentType.String },
-    { property: "diaDrift", label: "diaDrift", type: ContentType.String },
+    { property: "diaDrift", label: "diaDrift", type: ContentType.Measure },
     { property: "factFric", label: "factFric", type: ContentType.Number }
   ];
 

@@ -124,7 +124,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "maxIndex", label: "maxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
     { property: "classWitsml", label: "classWitsml", type: ContentType.String },
     { property: "unit", label: "unit", type: ContentType.String },
-    { property: "sensorOffset", label: "sensorOffset", type: ContentType.Number },
+    { property: "sensorOffset", label: "sensorOffset", type: ContentType.Measure },
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];

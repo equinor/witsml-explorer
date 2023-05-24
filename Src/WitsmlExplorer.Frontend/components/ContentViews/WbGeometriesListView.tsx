@@ -35,13 +35,13 @@ export const WbGeometriesListView = (): React.ReactElement => {
     return wbGeometries.map((wbGeometry) => {
       return {
         ...wbGeometry,
-        itemState: wbGeometry.commonData.itemState,
-        id: wbGeometry.uid,
-        dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone),
-        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone),
         mdBottom: measureToString(wbGeometry.mdBottom),
         gapAir: measureToString(wbGeometry.gapAir),
+        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone),
+        itemState: wbGeometry.commonData.itemState,
+        dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone),
+        dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone),
+        id: wbGeometry.uid,
         wbGeometry: wbGeometry
       };
     });
@@ -56,9 +56,9 @@ export const WbGeometriesListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "mdBottom", label: "mdBottom", type: ContentType.String },
-    { property: "gapAir", label: "gapAir", type: ContentType.String },
-    { property: "dTimReport", label: "dTimReport", type: ContentType.String },
+    { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
+    { property: "gapAir", label: "gapAir", type: ContentType.Measure },
+    { property: "dTimReport", label: "dTimReport", type: ContentType.DateTime },
     { property: "itemState", label: "commonData.itemState", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
