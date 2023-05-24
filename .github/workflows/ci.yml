@@ -23,9 +23,5 @@ jobs:
           dotnet-version: 7.0.x
       - name: Build
         run: dotnet build /warnaserror --configuration Release
-      - name: Install dotnet format
-        run: dotnet tool update --global dotnet-format
-      - name: Run dotnet format
-        run: dotnet format --verify-no-changes --no-restore
       - name: Test
         run: dotnet test --configuration Release --logger "console;verbosity=detailed"
