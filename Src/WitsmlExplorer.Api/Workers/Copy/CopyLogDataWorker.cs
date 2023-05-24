@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -153,6 +154,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, List<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals)
         {
+            if (sourceLog.IsEmpty())
+            {
+                return new CopyResult { Success = true, NumberOfRowsCopied = 0 };
+            }
+
             if (targetDepthLogDecimals > 0 && targetDepthLogDecimals < sourceDepthLogDecimals && sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
             {
                 return await CopyLogDataWithoutDuplicates(sourceLog, targetLog, job, mnemonics, targetDepthLogDecimals);
@@ -322,12 +328,28 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static void VerifyValidInterval(WitsmlLog sourceLog)
         {
+            // Log may not have any data
+            if (sourceLog.IsEmpty())
+            {
+                return;
+            }
+
             Index sourceStart = Index.Start(sourceLog);
             Index sourceEnd = Index.End(sourceLog);
 
-            if (sourceStart > sourceEnd)
+            if (sourceLog.IsIncreasing())
             {
-                throw new Exception($"Invalid interval. Start must be before End. Start: {sourceStart}, End: {sourceEnd}");
+                if (sourceStart > sourceEnd)
+                {
+                    throw new Exception($"Invalid interval. Start must be less than End for increasing log. Start: {sourceStart}, End: {sourceEnd}");
+                }
+            }
+            else
+            {
+                if (sourceStart < sourceEnd)
+                {
+                    throw new Exception($"Invalid interval. Start must be greater than End for decreasing log. Start: {sourceStart}, End: {sourceEnd}");
+                }
             }
         }
 
