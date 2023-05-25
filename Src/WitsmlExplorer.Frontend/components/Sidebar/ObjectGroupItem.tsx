@@ -59,6 +59,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
         objectsOnWellbore.map((objectOnWellbore) => (
           <ObjectOnWellboreItem
             key={calculateObjectNodeId(objectOnWellbore, objectType)}
+            nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
             objectOnWellbore={objectOnWellbore}
             objectType={objectType}
             selected={isSelected(objectType, objectOnWellbore)}
