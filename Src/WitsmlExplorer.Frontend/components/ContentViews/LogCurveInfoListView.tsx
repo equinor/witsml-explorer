@@ -62,7 +62,18 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   }, [selectedLog]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogCurveInfoRows: LogCurveInfoRow[]) => {
-    const contextMenuProps: LogCurveInfoContextMenuProps = { checkedLogCurveInfoRows, dispatchOperation, dispatchNavigation, selectedLog, selectedServer, servers };
+    const checkedLogCurveInfoAxisDefinitions = logCurveInfoList
+      .filter((curve) => checkedLogCurveInfoRows.some((selectedCurve) => selectedCurve.uid === curve.uid))
+      .map((item) => item.axisDefinitions);
+    const contextMenuProps: LogCurveInfoContextMenuProps = {
+      checkedLogCurveInfoRows,
+      checkedLogCurveInfoAxisDefinitions,
+      dispatchOperation,
+      dispatchNavigation,
+      selectedLog,
+      selectedServer,
+      servers
+    };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogCurveInfoContextMenu {...contextMenuProps} />, position } });
   };
