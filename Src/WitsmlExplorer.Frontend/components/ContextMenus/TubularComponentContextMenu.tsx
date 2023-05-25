@@ -15,6 +15,7 @@ import { TubularComponentRow } from "../ContentViews/TubularView";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { onClickRefresh } from "./TubularContextMenuUtils";
@@ -67,6 +68,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "tubular component", checkedTubularComponents)}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.TubularComponent} componentsToCopy={checkedTubularComponents} />,
         <MenuItem key={"paste"} onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, tubular)} disabled={tubularComponentReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>

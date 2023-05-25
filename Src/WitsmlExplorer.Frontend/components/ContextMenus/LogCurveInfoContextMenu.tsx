@@ -17,7 +17,7 @@ import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
-import { onClickCopyCurveToServer } from "./CopyCurveToServer";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
@@ -80,37 +80,16 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
           disabled={checkedLogCurveInfoRows.length === 0}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "curve", checkedLogCurveInfoRows)}</Typography>
+          <Typography color={"primary"}>{menuItemText("copy", ComponentType.Mnemonic, checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
         <MenuItem key={"copyRange"} onClick={onClickCopyRange} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} with range`}</Typography>
+          <Typography color={"primary"}>{`${menuItemText("copy", ComponentType.Mnemonic, checkedLogCurveInfoRows)} with range`}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"copyToServer"} label={`${menuItemText("copy", "curve", checkedLogCurveInfoRows)} to server`} disabled={checkedLogCurveInfoRows.length < 1}>
-          {servers.map(
-            (server: Server) =>
-              server.id !== selectedServer.id && (
-                <MenuItem
-                  key={server.name}
-                  onClick={() =>
-                    onClickCopyCurveToServer({
-                      targetServer: server,
-                      sourceServer: selectedServer,
-                      curvesToCopy: checkedLogCurveInfoRows,
-                      dispatchOperation,
-                      sourceLog: selectedLog
-                    })
-                  }
-                  disabled={checkedLogCurveInfoRows.length < 1}
-                >
-                  <Typography color={"primary"}>{server.name}</Typography>
-                </MenuItem>
-              )
-          )}
-        </NestedMenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.Mnemonic} componentsToCopy={checkedLogCurveInfoRows} />,
         <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedLogCurveInfoRows.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("delete", "curve", checkedLogCurveInfoRows)}</Typography>
+          <Typography color={"primary"}>{menuItemText("delete", ComponentType.Mnemonic, checkedLogCurveInfoRows)}</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
