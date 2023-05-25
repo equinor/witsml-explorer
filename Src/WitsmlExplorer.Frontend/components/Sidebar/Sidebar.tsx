@@ -21,7 +21,7 @@ const Sidebar = (): React.ReactElement => {
   return (
     <React.Fragment>
       <SearchFilter />
-      <SidebarTreeView className="sideBarView">
+      <SidebarTreeView>
         <WellProgress>
           {filteredWells && filteredWells.length > 0 && (
             <TreeView
@@ -57,6 +57,20 @@ const SidebarTreeView = styled.div`
   height: 70%;
   padding-left: 1em;
   padding-right: 0.3em;
+  .MuiTreeItem-root {
+    min-width: 0;
+    .MuiTreeItem-iconContainer {
+      flex: none;
+    }
+    .MuiTreeItem-label {
+      min-width: 0;
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 `;
 
 const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
