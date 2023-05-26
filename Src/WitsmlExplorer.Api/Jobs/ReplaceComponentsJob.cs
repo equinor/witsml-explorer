@@ -1,9 +1,9 @@
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record ReplaceLogDataJob : Job
+    public record ReplaceComponentsJob : Job
     {
         public DeleteComponentsJob DeleteJob { get; init; }
-        public CopyLogDataJob CopyJob { get; init; }
+        public CopyComponentsJob CopyJob { get; init; }
 
         public override string Description()
         {

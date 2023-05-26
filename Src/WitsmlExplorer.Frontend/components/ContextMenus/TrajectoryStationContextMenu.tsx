@@ -15,6 +15,7 @@ import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -65,6 +66,7 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.TrajectoryStation} componentsToCopy={checkedTrajectoryStations} />,
         <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory)}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>

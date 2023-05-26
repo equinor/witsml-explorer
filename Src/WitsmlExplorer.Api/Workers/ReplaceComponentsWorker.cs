@@ -9,20 +9,20 @@ using WitsmlExplorer.Api.Workers.Delete;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class ReplaceLogDataWorker : BaseWorker<ReplaceLogDataJob>, IWorker
+    public class ReplaceComponentsWorker : BaseWorker<ReplaceComponentsJob>, IWorker
     {
-        private readonly ICopyLogDataWorker _copyWorker;
+        private readonly ICopyComponentsWorker _copyWorker;
         private readonly IDeleteComponentsWorker _deleteWorker;
 
-        public JobType JobType => JobType.ReplaceLogData;
+        public JobType JobType => JobType.ReplaceComponents;
 
-        public ReplaceLogDataWorker(ILogger<ReplaceLogDataJob> logger, ICopyLogDataWorker copyWorker, IDeleteComponentsWorker deleteWorker) : base(logger)
+        public ReplaceComponentsWorker(ILogger<ReplaceComponentsJob> logger, ICopyComponentsWorker copyWorker, IDeleteComponentsWorker deleteWorker) : base(logger)
         {
             _copyWorker = copyWorker;
             _deleteWorker = deleteWorker;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceComponentsJob job)
         {
             (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob);
             if (!result.WorkerResult.IsSuccess)
