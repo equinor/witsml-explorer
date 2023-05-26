@@ -28,6 +28,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
   wellName: string;
   wellboreName: string;
   isActive: boolean;
+  logCurveInfo: LogCurveInfo;
 }
 
 export const LogCurveInfoListView = (): React.ReactElement => {
@@ -62,12 +63,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   }, [selectedLog]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogCurveInfoRows: LogCurveInfoRow[]) => {
-    const checkedLogCurveInfoAxisDefinitions = logCurveInfoList
-      .filter((curve) => checkedLogCurveInfoRows.some((selectedCurve) => selectedCurve.uid === curve.uid))
-      .map((item) => item.axisDefinitions);
     const contextMenuProps: LogCurveInfoContextMenuProps = {
       checkedLogCurveInfoRows,
-      checkedLogCurveInfoAxisDefinitions,
       dispatchOperation,
       dispatchNavigation,
       selectedLog,
@@ -108,7 +105,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           wellName: selectedWell.name,
           wellboreName: selectedWellbore.name,
           isActive: isActive,
-          isVisibleFunction: isVisibleFunction(isActive)
+          isVisibleFunction: isVisibleFunction(isActive),
+          logCurveInfo
         };
       })
       .sort((curve, curve2) => {

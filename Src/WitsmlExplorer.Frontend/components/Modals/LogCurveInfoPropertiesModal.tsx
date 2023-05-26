@@ -4,23 +4,21 @@ import styled from "styled-components";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import RenameMnemonicJob from "../../models/jobs/renameMnemonicJob";
-import LogCurveInfoAxisDefinition from "../../models/logCurveInfoAxisDefinition";
+import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import JobService, { JobType } from "../../services/jobService";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ModalDialog from "./ModalDialog";
 
 export interface LogCurveInfoPropertiesModalProps {
-  logCurveInfo: LogCurveInfoRow;
-  axisDefinitions: LogCurveInfoAxisDefinition[];
+  logCurveInfo: LogCurveInfo;
   dispatchOperation: (action: HideModalAction) => void;
   selectedLog: LogObject;
 }
 
 const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): React.ReactElement => {
-  const { logCurveInfo, axisDefinitions, dispatchOperation, selectedLog } = props;
-  const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfoRow>(null);
+  const { logCurveInfo, dispatchOperation, selectedLog } = props;
+  const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfo>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async () => {
@@ -58,7 +56,7 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, mnemonic: e.target.value })}
               />
-              {axisDefinitions?.map((axisDefinition, index) => {
+              {logCurveInfo?.axisDefinitions?.map((axisDefinition, index) => {
                 return (
                   <React.Fragment key={index}>
                     <Typography style={{ paddingTop: "0.5rem" }}>AxisDefinition {axisDefinition.uid}</Typography>

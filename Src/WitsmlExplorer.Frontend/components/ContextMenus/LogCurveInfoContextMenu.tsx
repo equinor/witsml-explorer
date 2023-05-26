@@ -6,7 +6,6 @@ import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../.
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
-import LogCurveInfoAxisDefinition from "../../models/logCurveInfoAxisDefinition";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -24,7 +23,6 @@ import NestedMenuItem from "./NestedMenuItem";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
-  checkedLogCurveInfoAxisDefinitions: LogCurveInfoAxisDefinition[][];
   dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   selectedLog: LogObject;
@@ -33,7 +31,7 @@ export interface LogCurveInfoContextMenuProps {
 }
 
 const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.ReactElement => {
-  const { checkedLogCurveInfoRows, checkedLogCurveInfoAxisDefinitions, dispatchOperation, dispatchNavigation, selectedLog, selectedServer, servers } = props;
+  const { checkedLogCurveInfoRows, dispatchOperation, dispatchNavigation, selectedLog, selectedServer, servers } = props;
 
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -50,9 +48,8 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
   };
 
   const onClickProperties = () => {
-    const logCurveInfo = checkedLogCurveInfoRows[0];
-    const axisDefinitions = checkedLogCurveInfoAxisDefinitions[0];
-    const logCurveInfoPropertiesModalProps = { logCurveInfo, axisDefinitions, dispatchOperation, selectedLog };
+    const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
+    const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation, selectedLog };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
