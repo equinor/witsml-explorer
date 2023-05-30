@@ -1,4 +1,4 @@
-import LogCurveInfoAxisDefinition from "./logCurveInfoAxisDefinition";
+import AxisDefinition from "./AxisDefinition";
 import Measure from "./measure";
 
 export default interface LogCurveInfo {
@@ -12,5 +12,5 @@ export default interface LogCurveInfo {
   unit: string;
   sensorOffset: Measure;
   mnemAlias: string;
-  axisDefinitions: LogCurveInfoAxisDefinition[];
+  axisDefinitions: AxisDefinition[];
 }

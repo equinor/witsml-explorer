@@ -1,6 +1,6 @@
+import AxisDefinition from "../models/AxisDefinition";
 import CommonData from "../models/commonData";
 import LogCurveInfo from "../models/logCurveInfo";
-import LogCurveInfoAxisDefinition from "../models/logCurveInfoAxisDefinition";
 import LogObject from "../models/logObject";
 import ObjectOnWellbore from "../models/objectOnWellbore";
 
@@ -68,7 +68,7 @@ function getMeasure(overrides?: Partial<Measure>): Measure {
   };
 }
 
-function getAxisDefinition(overrides?: Partial<LogCurveInfoAxisDefinition>): LogCurveInfoAxisDefinition {
+function getAxisDefinition(overrides?: Partial<AxisDefinition>): AxisDefinition {
   return {
     uid: "axisDefinitionUid",
     order: 1,

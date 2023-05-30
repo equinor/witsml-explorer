@@ -1,6 +1,6 @@
 namespace WitsmlExplorer.Api.Models
 {
-    public class LogCurveInfoAxisDefinition
+    public class AxisDefinition
     {
         public string Uid { get; set; }
         public int Order { get; set; }

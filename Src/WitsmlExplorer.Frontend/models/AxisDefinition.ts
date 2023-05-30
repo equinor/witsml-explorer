@@ -1,4 +1,4 @@
-export default interface LogCurveInfoAxisDefinition {
+export default interface AxisDefinition {
   uid: string;
   order: number;
   count: number;

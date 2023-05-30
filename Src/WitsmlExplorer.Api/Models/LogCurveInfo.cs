@@ -16,6 +16,6 @@ namespace WitsmlExplorer.Api.Models
         public string Unit { get; internal set; }
         public LengthMeasure SensorOffset { get; internal set; }
         public string MnemAlias { get; internal set; }
-        public List<LogCurveInfoAxisDefinition> AxisDefinitions { get; internal set; }
+        public List<AxisDefinition> AxisDefinitions { get; internal set; }
     }
 }
