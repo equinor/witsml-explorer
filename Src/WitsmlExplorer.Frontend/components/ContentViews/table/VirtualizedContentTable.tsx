@@ -1,3 +1,4 @@
+import { Typography } from "@equinor/eds-core-react";
 import { Checkbox, TableCell as MuiTableCell, TableSortLabel, Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import orderBy from "lodash/orderBy";
@@ -144,7 +145,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
 innerGridElementType.displayName = "innerGridElementType";
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange, panelElements } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
@@ -247,6 +248,16 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
+              <Panel>
+                {checkableRows ? (
+                  <Typography>
+                    Selected: {checkedContentItems.length}/{data.length}
+                  </Typography>
+                ) : (
+                  <Typography>Items: {data.length}</Typography>
+                )}
+                {panelElements}
+              </Panel>
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);
@@ -376,5 +387,13 @@ const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
   font-feature-settings: "tnum";
 `;
 TableDataCell.displayName = "TableDataCell";
+
+const Panel = styled.div`
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 4px;
+  white-space: nowrap;
+`;
 
 export default VirtualizedContentTable;

@@ -1,3 +1,4 @@
+import { Typography } from "@equinor/eds-core-react";
 import { Checkbox, TableCell as MuiTableCell, TableRow as MuiTableRow, Table, TableBody, TableHead, TableSortLabel } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, Or
 import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, order, inset } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(order ?? Order.Ascending);
@@ -58,71 +59,83 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   };
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {checkableRows && (
-            <TableHeaderCell>
-              <Checkbox
-                onChange={toggleAllRows}
-                checked={checkedContentItems.length === data.length}
-                indeterminate={checkedContentItems.length > 0 && checkedContentItems.length < data.length}
-              />
-            </TableHeaderCell>
-          )}
-          <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} />
-          {columns &&
-            columns.map(
-              (column) =>
-                column && (
-                  <TableHeaderCell key={column.property} align={getColumnAlignment(column)}>
-                    <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
-                      {column.label}
-                    </TableSortLabel>
-                  </TableHeaderCell>
-                )
+    <>
+      <Panel>
+        {checkableRows ? (
+          <Typography>
+            Selected: {checkedContentItems.length}/{data.length}
+          </Typography>
+        ) : (
+          <Typography>Items: {data.length}</Typography>
+        )}
+        {panelElements}
+      </Panel>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {checkableRows && (
+              <TableHeaderCell>
+                <Checkbox
+                  onChange={toggleAllRows}
+                  checked={checkedContentItems.length === data.length}
+                  indeterminate={checkedContentItems.length > 0 && checkedContentItems.length < data.length}
+                />
+              </TableHeaderCell>
             )}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data.map((item, index) => {
-          return (
-            checkVisibility(item.isVisibleFunction) && (
-              <React.Fragment key={index}>
-                <TableRow hover onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
-                  {checkableRows && (
-                    <TableDataCell>
-                      <Checkbox
-                        onClick={(event) => toggleRow(event, item)}
-                        checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
-                      />
-                    </TableDataCell>
-                  )}
-                  <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} />
-                  {columns &&
-                    columns.map(
-                      (column) =>
-                        column && (
-                          <TableDataCell
-                            id={item[column.property] + column.property}
-                            key={item[column.property] + column.property}
-                            clickable={onSelect ? "true" : "false"}
-                            type={column.type}
-                            align={getColumnAlignment(column)}
-                            onClick={(event) => selectRow(event, item)}
-                          >
-                            {formatCell(column.type, item[column.property])}
-                          </TableDataCell>
-                        )
+            <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} />
+            {columns &&
+              columns.map(
+                (column) =>
+                  column && (
+                    <TableHeaderCell key={column.property} align={getColumnAlignment(column)}>
+                      <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
+                        {column.label}
+                      </TableSortLabel>
+                    </TableHeaderCell>
+                  )
+              )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((item, index) => {
+            return (
+              checkVisibility(item.isVisibleFunction) && (
+                <React.Fragment key={index}>
+                  <TableRow hover onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+                    {checkableRows && (
+                      <TableDataCell>
+                        <Checkbox
+                          onClick={(event) => toggleRow(event, item)}
+                          checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                        />
+                      </TableDataCell>
                     )}
-                </TableRow>
-                <InsetRow inset={inset} openInsets={openInsets} columnsLength={columns.length} uid={item.uid} />
-              </React.Fragment>
-            )
-          );
-        })}
-      </TableBody>
-    </Table>
+                    <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} />
+                    {columns &&
+                      columns.map(
+                        (column) =>
+                          column && (
+                            <TableDataCell
+                              id={item[column.property] + column.property}
+                              key={item[column.property] + column.property}
+                              clickable={onSelect ? "true" : "false"}
+                              type={column.type}
+                              align={getColumnAlignment(column)}
+                              onClick={(event) => selectRow(event, item)}
+                            >
+                              {formatCell(column.type, item[column.property])}
+                            </TableDataCell>
+                          )
+                      )}
+                  </TableRow>
+                  <InsetRow inset={inset} openInsets={openInsets} columnsLength={columns.length} uid={item.uid} />
+                </React.Fragment>
+              )
+            );
+          })}
+        </TableBody>
+      </Table>
+    </>
   );
 };
 
@@ -178,6 +191,14 @@ export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickabl
     `
     font-feature-settings: "tnum";
   `};
+`;
+
+const Panel = styled.div`
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 4px;
+  white-space: nowrap;
 `;
 
 export default ContentTable;

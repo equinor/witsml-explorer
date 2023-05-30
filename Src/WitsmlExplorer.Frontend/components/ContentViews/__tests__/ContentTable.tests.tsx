@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ContentTable, ContentTableRow, ContentType } from "../table";
 
 describe("<ContentTable />", () => {
@@ -60,5 +61,39 @@ describe("<ContentTable />", () => {
     bodyRows.forEach((row) => {
       expect(row.querySelectorAll("input")).toHaveLength(1);
     });
+  });
+
+  it("Tables with checkable rows should display the number of checked rows", async () => {
+    const noSelectedRegex = new RegExp(`selected: 0/${data.length}`, "i");
+    const oneSelectedRegex = new RegExp(`selected: 1/${data.length}`, "i");
+    const allSelectedRegex = new RegExp(`selected: ${data.length}/${data.length}`, "i");
+
+    const user = userEvent.setup();
+    render(<ContentTable columns={columns} data={data} checkableRows />);
+    const [toggleAll, ...toggleRows] = screen.getAllByRole("checkbox");
+    const selected = screen.getByText(/selected:/i);
+
+    expect(selected).toHaveTextContent(noSelectedRegex);
+
+    await user.click(toggleRows[0]);
+    expect(selected).toHaveTextContent(oneSelectedRegex);
+
+    await user.click(toggleRows[0]);
+    expect(selected).toHaveTextContent(noSelectedRegex);
+
+    await user.click(toggleAll);
+    expect(selected).toHaveTextContent(allSelectedRegex);
+
+    await user.click(toggleAll);
+    expect(selected).toHaveTextContent(noSelectedRegex);
+  });
+
+  it("Tables without checkable rows should display the number of items", async () => {
+    const numberOfItemsRegex = new RegExp(`items: ${data.length}`, "i");
+
+    render(<ContentTable columns={columns} data={data} />);
+    const selected = screen.getByText(/items:/i);
+
+    expect(selected).toHaveTextContent(numberOfItemsRegex);
   });
 });

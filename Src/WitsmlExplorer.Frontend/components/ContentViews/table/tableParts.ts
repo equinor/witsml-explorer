@@ -28,6 +28,7 @@ export interface ContentTableProps {
   onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
   order?: Order;
   inset?: Inset;
+  panelElements?: React.ReactElement[];
 }
 
 export enum Order {
