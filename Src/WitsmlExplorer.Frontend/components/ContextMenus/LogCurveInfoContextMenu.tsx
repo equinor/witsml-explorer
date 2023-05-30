@@ -48,7 +48,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
   };
 
   const onClickProperties = () => {
-    const logCurveInfo = checkedLogCurveInfoRows[0];
+    const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation, selectedLog };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });

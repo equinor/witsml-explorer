@@ -127,7 +127,14 @@ namespace WitsmlExplorer.Api.Services
                     MinDepthIndex = logCurveInfo.MinIndex?.Value,
                     MnemAlias = logCurveInfo.MnemAlias,
                     SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
-                    Unit = logCurveInfo.Unit
+                    Unit = logCurveInfo.Unit,
+                    AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
+                    {
+                        Uid = a.Uid,
+                        Order = a.Order,
+                        Count = a.Count,
+                        DoubleValues = a.DoubleValues
+                    }).ToList(),
                 });
         }
 
