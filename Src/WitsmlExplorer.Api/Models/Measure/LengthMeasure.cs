@@ -6,7 +6,7 @@ namespace WitsmlExplorer.Api.Models.Measure
 {
     public class LengthMeasure : Measure
     {
-        public decimal Value { get; set; }
+        public decimal Value { get; init; }
 
         public T ToWitsml<T>() where T : Witsml.Data.Measures.Measure, new()
         {

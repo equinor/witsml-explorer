@@ -4,10 +4,10 @@ namespace WitsmlExplorer.Api.Models
 {
     public class WbGeometry : ObjectOnWellbore
     {
-        public string DTimReport { get; set; }
-        public MeasureWithDatum MdBottom { get; set; }
-        public LengthMeasure GapAir { get; set; }
-        public LengthMeasure DepthWaterMean { get; set; }
-        public CommonData CommonData { get; set; }
+        public string DTimReport { get; init; }
+        public MeasureWithDatum MdBottom { get; init; }
+        public LengthMeasure GapAir { get; init; }
+        public LengthMeasure DepthWaterMean { get; init; }
+        public CommonData CommonData { get; init; }
     }
 }

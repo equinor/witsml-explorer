@@ -4,9 +4,9 @@ namespace WitsmlExplorer.Api.Models
     // These fields are set in the API to conform to ObjectOnWellbore
     public class ChangeLog : ObjectOnWellbore
     {
-        public string UidObject { get; set; }
-        public string NameObject { get; set; }
-        public string LastChangeType { get; set; }
-        public CommonData CommonData { get; set; }
+        public string UidObject { get; init; }
+        public string NameObject { get; init; }
+        public string LastChangeType { get; init; }
+        public CommonData CommonData { get; init; }
     }
 }
