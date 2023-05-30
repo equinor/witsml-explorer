@@ -9,7 +9,7 @@ import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, Or
 import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements, showTotalItems = true } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(order ?? Order.Ascending);
@@ -58,18 +58,24 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
     return isVisibleFunction();
   };
 
-  return (
-    <>
+  const renderPanel = () => {
+    if (!showTotalItems && !panelElements) return null;
+
+    const selectedItemsText = checkableRows ? `Selected: ${checkedContentItems.length}/${data.length}` : `Items: ${data.length}`;
+
+    const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
+
+    return (
       <Panel>
-        {checkableRows ? (
-          <Typography>
-            Selected: {checkedContentItems.length}/{data.length}
-          </Typography>
-        ) : (
-          <Typography>Items: {data.length}</Typography>
-        )}
+        {selectedItemsElement}
         {panelElements}
       </Panel>
+    );
+  };
+
+  return (
+    <>
+      {renderPanel()}
       <Table>
         <TableHead>
           <TableRow>

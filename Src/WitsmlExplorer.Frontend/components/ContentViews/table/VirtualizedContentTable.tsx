@@ -145,7 +145,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
 innerGridElementType.displayName = "innerGridElementType";
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange, panelElements } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange, panelElements, showTotalItems = true } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
@@ -228,6 +228,21 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
     [checkableRows, columnRefs.length]
   );
 
+  const renderPanel = () => {
+    if (!showTotalItems && !panelElements) return null;
+
+    const selectedItemsText = checkableRows ? `Selected: ${checkedContentItems.length}/${data.length}` : `Items: ${data.length}`;
+
+    const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
+
+    return (
+      <Panel>
+        {selectedItemsElement}
+        {panelElements}
+      </Panel>
+    );
+  };
+
   return (
     <>
       {columns && (
@@ -248,16 +263,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
-              <Panel>
-                {checkableRows ? (
-                  <Typography>
-                    Selected: {checkedContentItems.length}/{data.length}
-                  </Typography>
-                ) : (
-                  <Typography>Items: {data.length}</Typography>
-                )}
-                {panelElements}
-              </Panel>
+              {renderPanel()}
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);
