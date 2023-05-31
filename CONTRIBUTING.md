@@ -65,7 +65,7 @@ Change the configuration in `mysettings.json` to the following, so that the back
 {
   "LogQueries": false,
   "AllowedHosts": "*",
-  "Host": "http://localhost",
+  "AllowedOrigin": "http://localhost:3000",
   "MongoDb": {
     "Name": "witsml-explorer-db",
     "ConnectionString": "mongodb://<username>:<password>@localhost"
