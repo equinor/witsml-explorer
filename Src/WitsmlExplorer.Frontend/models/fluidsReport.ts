@@ -1,4 +1,5 @@
 import CommonData from "./commonData";
+import Fluid from "./fluid";
 import MeasureWithDatum from "./measureWithDatum";
 import ObjectOnWellbore from "./objectOnWellbore";
 
@@ -8,4 +9,5 @@ export default interface FluidsReport extends ObjectOnWellbore {
   tvd: MeasureWithDatum;
   numReport: string;
   commonData: CommonData;
+  fluids: Fluid[];
 }

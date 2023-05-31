@@ -15,7 +15,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetFluidsReports(string wellUid, string wellboreUid, IFluidsReportService fluidsReportService)
         {
             return TypedResults.Ok(await fluidsReportService.GetFluidsReports(wellUid, wellboreUid));
+        }
 
+        [Produces(typeof(FluidsReport))]
+        public static async Task<IResult> GetFluidsReport(string wellUid, string wellboreUid, string fluidsReportUid, IFluidsReportService fluidsReportService)
+        {
+            return TypedResults.Ok(await fluidsReportService.GetFluidsReport(wellUid, wellboreUid, fluidsReportUid));
+        }
+
+        [Produces(typeof(List<Fluid>))]
+        public static async Task<IResult> GetFluids(string wellUid, string wellboreUid, string fluidsReportUid, IFluidsReportService fluidsReportService)
+        {
+            FluidsReport fluidsReport = await fluidsReportService.GetFluidsReport(wellUid, wellboreUid, fluidsReportUid);
+            return TypedResults.Ok(fluidsReport.Fluids);
         }
     }
 }

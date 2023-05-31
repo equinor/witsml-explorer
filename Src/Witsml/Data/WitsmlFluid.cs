@@ -134,7 +134,7 @@ namespace Witsml.Data
         public Measure Potassium { get; set; }
 
         [XmlElement("rheometer")]
-        public List<WitsmlRheometer> Rheometer { get; set; }
+        public List<WitsmlRheometer> Rheometers { get; set; }
 
         [XmlElement("brinePc")]
         public Measure BrinePc { get; set; }

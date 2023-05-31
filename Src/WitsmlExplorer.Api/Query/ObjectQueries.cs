@@ -92,6 +92,10 @@ namespace WitsmlExplorer.Api.Query
                     ((WitsmlWbGeometry)objectOnWellbore).WbGeometrySections = componentUids.Select(uid =>
                         new WitsmlWbGeometrySection { Uid = uid }).ToList();
                     break;
+                case ComponentType.Fluid:
+                    ((WitsmlFluidsReport)objectOnWellbore).Fluids = componentUids.Select(uid =>
+                        new WitsmlFluid { Uid = uid }).ToList();
+                    break;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");
             }
@@ -106,6 +110,7 @@ namespace WitsmlExplorer.Api.Query
                 ComponentType.TrajectoryStation => ((WitsmlTrajectory)objectOnWellbore).TrajectoryStations.Select(component => component.Uid),
                 ComponentType.TubularComponent => ((WitsmlTubular)objectOnWellbore).TubularComponents.Select(component => component.Uid),
                 ComponentType.WbGeometrySection => ((WitsmlWbGeometry)objectOnWellbore).WbGeometrySections.Select(component => component.Uid),
+                ComponentType.Fluid => ((WitsmlFluidsReport)objectOnWellbore).Fluids.Select(component => component.Uid),
                 _ => throw new ArgumentException($"Invalid component type {componentType}"),
             };
         }
@@ -135,6 +140,9 @@ namespace WitsmlExplorer.Api.Query
                     return target;
                 case ComponentType.WbGeometrySection:
                     ((WitsmlWbGeometry)target).WbGeometrySections = ((WitsmlWbGeometry)source).WbGeometrySections.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
+                    return target;
+                case ComponentType.Fluid:
+                    ((WitsmlFluidsReport)target).Fluids = ((WitsmlFluidsReport)source).Fluids.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");

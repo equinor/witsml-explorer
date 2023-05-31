@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -8,6 +10,7 @@ namespace WitsmlExplorer.Api.Models
         public MeasureWithDatum Md { get; init; }
         public MeasureWithDatum Tvd { get; init; }
         public string NumReport { get; init; }
+        public List<Fluid> Fluids { get; set; }
         public CommonData CommonData { get; init; }
     }
 }
