@@ -31,9 +31,9 @@ witsmlexplorer-api                                      latest          2f1eb2b0
 
 Create a `config.json` file containing the mongodb or cosmosdb credentials you created in the first steps.
 
-`Host` should be set to the domain where the application will be available. For locally run applications, this should be set to `http://localhost` (this is also the default value).
+`AllowedOrigin` should be set to the application (frontend) URL. For locally run applications, this should be set to `http://localhost:3000` (this is also the default value).
 
-This value is used for setting up the notifications feed from the backend/api to the frontend application. 
+This value is used for setting up the allowed origins in CORS policy, so that backend/api can allow cross-origin requests from frontend. 
 
 
 ### **mongodb**
@@ -43,7 +43,7 @@ This value is used for setting up the notifications feed from the backend/api to
     "Name": "witsml-explorer-db",
     "ConnectionString": "mongodb://user:password@host.docker.internal"
   },
-  "Host": "http[s]://<domain-where-witsml-explorer-is-hosted>",
+  "AllowedOrigin": "http[s]://<domain-where-witsml-explorer-is-hosted>:<frontend port number if specified>",
   "OAuth2Enabled": false
 }
 ```
@@ -56,7 +56,7 @@ This value is used for setting up the notifications feed from the backend/api to
     "Name": "<...>", (Container name from relevant Azure Database => DataExplorer || databaseName from config.cfg)
     "AuthKey": "<...>" (PrimaryKey from relevant Azure Database => Setting => Keys )
   },
-  "Host": "http[s]://<domain-where-witsml-explorer-is-hosted>",
+  "AllowedOrigin": "http[s]://<domain-where-witsml-explorer-is-hosted>:<frontend port number if specified>",
   "OAuth2Enabled": false
 }
 ```
