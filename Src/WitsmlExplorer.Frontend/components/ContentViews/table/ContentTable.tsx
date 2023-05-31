@@ -1,4 +1,3 @@
-import { Typography } from "@equinor/eds-core-react";
 import { Checkbox, TableCell as MuiTableCell, TableRow as MuiTableRow, Table, TableBody, TableHead, TableSortLabel } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
 import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, Order, getCheckedRows, getColumnAlignment, getComparatorByColumn, getSelectedRange } from "./";
 import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
+import Panel from "./Panel";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements, showTotalItems = true } = props;
@@ -58,24 +58,15 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
     return isVisibleFunction();
   };
 
-  const renderPanel = () => {
-    if (!showTotalItems && !panelElements) return null;
-
-    const selectedItemsText = checkableRows ? `Selected: ${checkedContentItems.length}/${data.length}` : `Items: ${data.length}`;
-
-    const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
-
-    return (
-      <Panel>
-        {selectedItemsElement}
-        {panelElements}
-      </Panel>
-    );
-  };
-
   return (
     <>
-      {renderPanel()}
+      <Panel
+        showTotalItems={showTotalItems}
+        showCheckedItems={checkableRows}
+        panelElements={panelElements}
+        numberOfCheckedItems={checkedContentItems?.length}
+        numberOfItems={data?.length}
+      />
       <Table>
         <TableHead>
           <TableRow>
@@ -197,14 +188,6 @@ export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickabl
     `
     font-feature-settings: "tnum";
   `};
-`;
-
-const Panel = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  padding: 4px;
-  white-space: nowrap;
 `;
 
 export default ContentTable;

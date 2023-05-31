@@ -1,4 +1,3 @@
-import { Typography } from "@equinor/eds-core-react";
 import { Checkbox, TableCell as MuiTableCell, TableSortLabel, Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import orderBy from "lodash/orderBy";
@@ -11,6 +10,7 @@ import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
 import { formatCell } from "./ContentTable";
+import Panel from "./Panel";
 import {
   ContentTableColumn,
   ContentTableProps,
@@ -228,21 +228,6 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
     [checkableRows, columnRefs.length]
   );
 
-  const renderPanel = () => {
-    if (!showTotalItems && !panelElements) return null;
-
-    const selectedItemsText = checkableRows ? `Selected: ${checkedContentItems.length}/${data.length}` : `Items: ${data.length}`;
-
-    const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
-
-    return (
-      <Panel>
-        {selectedItemsElement}
-        {panelElements}
-      </Panel>
-    );
-  };
-
   return (
     <>
       {columns && (
@@ -263,7 +248,13 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
-              {renderPanel()}
+              <Panel
+                showTotalItems={showTotalItems}
+                showCheckedItems={checkableRows}
+                panelElements={panelElements}
+                numberOfCheckedItems={checkedContentItems?.length}
+                numberOfItems={data?.length}
+              />
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);
@@ -393,13 +384,5 @@ const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
   font-feature-settings: "tnum";
 `;
 TableDataCell.displayName = "TableDataCell";
-
-const Panel = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  padding: 4px;
-  white-space: nowrap;
-`;
 
 export default VirtualizedContentTable;

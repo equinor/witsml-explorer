@@ -121,6 +121,7 @@ export const JobsView = (): React.ReactElement => {
     </Button>,
     msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
       <Switch
+        key="showAllUsersJobs"
         label="Show all users' jobs"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           setShowAll(e.target.checked);
