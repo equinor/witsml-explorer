@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api
 {
     public class Startup
     {
-        private readonly string _myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        private readonly string _allowSpecificOrigin = "_allowSpecificOrigin";
 
         public Startup(IConfiguration configuration)
         {
@@ -44,18 +44,18 @@ namespace WitsmlExplorer.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
-            string host = Configuration["Host"];
-            if (string.IsNullOrEmpty(host) || !host.StartsWith("http"))
+            string allowedOrigin = Configuration["AllowedOrigin"];
+            if (string.IsNullOrEmpty(allowedOrigin) || !allowedOrigin.StartsWith("http"))
             {
                 throw new Exception(
-                    $"Invalid configuration. Missing or invalid value for 'Host': \"{host}\". Valid format is \"http[s]://domain\" Example: (\"http://localhost\")");
+                    $"Invalid configuration. Missing or invalid value for 'AllowedOrigin': \"{allowedOrigin}\". Valid format is \"http[s]://domain\" Example: (\"http://localhost\")");
             }
 
-            Log.Information($"Host: {host}");
+            Log.Information($"AllowedOrigin: {allowedOrigin}");
             services.AddCors(options =>
-                options.AddPolicy(_myAllowSpecificOrigins, builder =>
+                options.AddPolicy(_allowSpecificOrigin, builder =>
                     {
-                        builder.WithOrigins($"{host}:3000");
+                        builder.WithOrigins(allowedOrigin);
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
                         builder.AllowCredentials();
@@ -152,7 +152,7 @@ namespace WitsmlExplorer.Api
             }
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseResponseCompression();
-            app.UseCors(_myAllowSpecificOrigins);
+            app.UseCors(_allowSpecificOrigin);
 
             app.UseRouting();
             bool oAuth2Enabled = StringHelpers.ToBoolean(Configuration[ConfigConstants.OAuth2Enabled]);
