@@ -25,7 +25,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
   const [formationMarkers, setFormationMarkers] = useState<FormationMarker[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.formationMarkers) {
+    if (selectedWellbore?.formationMarkers) {
       setFormationMarkers(selectedWellbore.formationMarkers);
     }
   }, [selectedWellbore]);
@@ -76,17 +76,17 @@ export const FormationMarkersListView = (): React.ReactElement => {
 const columns: ContentTableColumn[] = [
   { property: "name", label: "name", type: ContentType.String },
   { property: "itemState", label: "itemState", type: ContentType.String },
-  { property: "mdPrognosed", label: "mdPrognosed", type: ContentType.String },
-  { property: "tvdPrognosed", label: "tvdPrognosed", type: ContentType.String },
-  { property: "mdTopSample", label: "mdTopSample", type: ContentType.String },
-  { property: "tvdTopSample", label: "tvdTopSample", type: ContentType.String },
-  { property: "thicknessBed", label: "thicknessBed", type: ContentType.String },
-  { property: "thicknessApparent", label: "thicknessApparent", type: ContentType.String },
-  { property: "thicknessPerpen", label: "thicknessPerpen", type: ContentType.String },
-  { property: "mdLogSample", label: "mdLogSample", type: ContentType.String },
-  { property: "tvdLogSample", label: "tvdLogSample", type: ContentType.String },
-  { property: "dip", label: "dip", type: ContentType.String },
-  { property: "dipDirection", label: "dipDirection", type: ContentType.String },
+  { property: "mdPrognosed", label: "mdPrognosed", type: ContentType.Measure },
+  { property: "tvdPrognosed", label: "tvdPrognosed", type: ContentType.Measure },
+  { property: "mdTopSample", label: "mdTopSample", type: ContentType.Measure },
+  { property: "tvdTopSample", label: "tvdTopSample", type: ContentType.Measure },
+  { property: "thicknessBed", label: "thicknessBed", type: ContentType.Measure },
+  { property: "thicknessApparent", label: "thicknessApparent", type: ContentType.Measure },
+  { property: "thicknessPerpen", label: "thicknessPerpen", type: ContentType.Measure },
+  { property: "mdLogSample", label: "mdLogSample", type: ContentType.Measure },
+  { property: "tvdLogSample", label: "tvdLogSample", type: ContentType.Measure },
+  { property: "dip", label: "dip", type: ContentType.Measure },
+  { property: "dipDirection", label: "dipDirection", type: ContentType.Measure },
   { property: "lithostratigraphic", label: "lithostratigraphic", type: ContentType.String },
   { property: "chronostratigraphic", label: "chronostratigraphic", type: ContentType.String },
   { property: "description", label: "description", type: ContentType.String },

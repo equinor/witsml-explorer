@@ -3,14 +3,15 @@ import { CloudUpload } from "@material-ui/icons";
 import React, { useCallback, useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import ImportLogDataJob from "../../models/jobs/importLogDataJob";
 import ObjectReference from "../../models/jobs/objectReference";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
+import ComponentService from "../../services/componentService";
 import JobService, { JobType } from "../../services/jobService";
-import LogObjectService from "../../services/logObjectService";
 import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
@@ -49,7 +50,7 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
     const controller = new AbortController();
 
     const getLogCurveInfo = async () => {
-      const logCurveInfos = await LogObjectService.getLogCurveInfo(targetLog.wellUid, targetLog.wellboreUid, targetLog.uid, controller.signal);
+      const logCurveInfos = await ComponentService.getComponents(targetLog.wellUid, targetLog.wellboreUid, targetLog.uid, ComponentType.Mnemonic, undefined, controller.signal);
       setTargetLogCurveInfos(logCurveInfos);
       setIsLoading(false);
     };

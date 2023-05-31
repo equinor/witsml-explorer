@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -6,8 +7,8 @@ namespace Witsml.Data
 {
     public class WitsmlLogCurveInfo : IWitsmlQueryType
     {
-        public static readonly string LOG_DATA_TYPE_DOUBLE = "double";
-        public static readonly string LOG_DATA_TYPE_DATETIME = "date time";
+        public static readonly string LogDataTypeDouble = "double";
+        public static readonly string LogDataTypeDatetime = "date time";
 
         [XmlAttribute("uid")]
         public string Uid { get; set; }
@@ -70,7 +71,7 @@ namespace Witsml.Data
         public string TypeLogData { get; set; }
 
         [XmlElement("axisDefinition")]
-        public WitsmlAxisDefinition AxisDefinition { get; set; }
+        public List<WitsmlAxisDefinition> AxisDefinitions { get; set; }
 
         public string TypeName => "logCurveInfo";
 

@@ -14,7 +14,7 @@ export const ChangeLogsListView = (): React.ReactElement => {
   const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.changeLogs) {
+    if (selectedWellbore?.changeLogs) {
       setChangeLogs(selectedWellbore.changeLogs);
     }
   }, [selectedWellbore]);

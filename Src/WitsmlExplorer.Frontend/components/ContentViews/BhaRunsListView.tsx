@@ -16,14 +16,14 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
 export const BhaRunsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [bhaRuns, setBhaRuns] = useState<BhaRun[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.bhaRuns) {
+    if (selectedWellbore?.bhaRuns) {
       setBhaRuns(selectedWellbore.bhaRuns);
     }
   }, [selectedWellbore]);

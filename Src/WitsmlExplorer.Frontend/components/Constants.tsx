@@ -6,3 +6,6 @@ export const DateFormat = {
   DATETIME_S: "DD.MM.YYYY HH:mm:ss",
   DATETIME_MS: "DD.MM.YYYY HH:mm:ss.SSS"
 };
+
+export const STORAGE_THEME_KEY = "selectedTheme";
+export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";

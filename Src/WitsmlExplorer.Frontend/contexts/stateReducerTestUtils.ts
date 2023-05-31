@@ -2,49 +2,36 @@ import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
 import FormationMarker from "../models/formationMarker";
 import LogObject from "../models/logObject";
+import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Well from "../models/well";
-import Wellbore from "../models/wellbore";
+import Wellbore, { WellboreObjects, objectTypeToWellboreObjects } from "../models/wellbore";
 import Filter, { EMPTY_FILTER } from "./filter";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
 
 export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", roles: [], depthLogDecimals: 0 };
 export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", roles: [], depthLogDecimals: 0 };
+export const getEmptyWellboreObjects = () => {
+  const labels = Object.values(ObjectType).map((label) => objectTypeToWellboreObjects(label));
+  const wellboreObjects: WellboreObjects = {};
+  labels.forEach((label) => (wellboreObjects[label] = []));
+  return wellboreObjects;
+};
 export const WELLBORE_1: Wellbore = {
   uid: "wellbore1",
   wellUid: "well1",
   name: "Wellbore 1",
-  bhaRuns: [],
-  changeLogs: [],
-  formationMarkers: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  mudLogs: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
   wellStatus: "",
   wellType: "",
-  isActive: false
+  isActive: false,
+  ...getEmptyWellboreObjects()
 };
 export const WELLBORE_2: Wellbore = {
   uid: "wellbore2",
   wellUid: "well2",
   name: "Wellbore 2",
-  bhaRuns: [],
-  changeLogs: [],
-  formationMarkers: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  mudLogs: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
+  ...getEmptyWellboreObjects(),
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -53,16 +40,7 @@ export const WELLBORE_3: Wellbore = {
   uid: "wellbore3",
   wellUid: "well3",
   name: "Wellbore 3",
-  bhaRuns: [],
-  formationMarkers: [],
-  logs: [],
-  rigs: [],
-  trajectories: [],
-  messages: [],
-  mudLogs: [],
-  risks: [],
-  tubulars: [],
-  wbGeometrys: [],
+  ...getEmptyWellboreObjects(),
   wellStatus: "",
   wellType: "",
   isActive: false
@@ -106,6 +84,7 @@ export const CHANGELOG_1: ChangeLog = {
   lastChangeType: "lastChangeType",
   commonData: null
 };
+export const FLUIDSREPORT_1 = { uid: "fluidsreport1", name: "FluidsReport 1" };
 export const FORMATIONMARKER_1: FormationMarker = {
   uid: "formationMarker",
   name: "formationMarker 1",

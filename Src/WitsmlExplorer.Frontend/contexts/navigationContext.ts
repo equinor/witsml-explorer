@@ -3,13 +3,12 @@ import { LogCurveInfoRow } from "../components/ContentViews/LogCurveInfoListView
 import BhaRun from "../models/bhaRun";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
-import MudLog from "../models/mudLog";
+import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
-import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
@@ -34,15 +33,9 @@ export interface NavigationState {
   selectedWell: Well;
   selectedWellbore: Wellbore;
   selectedLogTypeGroup: string;
-  selectedLog: LogObject;
-  selectedMudLog: MudLog;
   selectedObjectGroup: ObjectType;
-  selectedRig: Rig;
-  selectedRisk: RiskObject;
+  selectedObject: ObjectOnWellbore;
   selectedLogCurveInfo: LogCurveInfoRow[];
-  selectedTrajectory: Trajectory;
-  selectedTubular: Tubular;
-  selectedWbGeometry: WbGeometryObject;
   servers: Server[];
   currentSelected: Selectable;
   wells: Well[];
@@ -58,15 +51,9 @@ export const allDeselected: any = {
   selectedWell: null,
   selectedWellbore: null,
   selectedLogTypeGroup: null,
-  selectedLog: null,
-  selectedMudLog: null,
   selectedObjectGroup: null,
-  selectedRisk: null,
+  selectedObject: null,
   selectedLogCurveInfo: null,
-  selectedRig: null,
-  selectedTrajectory: null,
-  selectedTubular: null,
-  selectedWbGeometry: null,
   currentSelected: null,
   currentProperties: new Map()
 };
@@ -76,15 +63,9 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   selectedWell: null,
   selectedWellbore: null,
   selectedLogTypeGroup: null,
-  selectedLog: null,
-  selectedMudLog: null,
   selectedObjectGroup: null,
-  selectedRig: null,
-  selectedRisk: null,
+  selectedObject: null,
   selectedLogCurveInfo: null,
-  selectedTrajectory: null,
-  selectedTubular: null,
-  selectedWbGeometry: null,
   servers: [],
   currentSelected: null,
   wells: [],

@@ -16,16 +16,16 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import {
-  calculateProgress,
   ContentTableColumn,
   ContentTableRow,
   ExportableContentTableColumn,
+  Order,
+  VirtualizedContentTable,
+  calculateProgress,
   getColumnType,
   getComparatorByColumn,
   getIndexRanges,
-  getProgressRange,
-  Order,
-  VirtualizedContentTable
+  getProgressRange
 } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
@@ -33,12 +33,13 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore, selectedLog, selectedLogCurveInfo } = navigationState;
+  const { selectedWell, selectedWellbore, selectedObject, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
+  const selectedLog = selectedObject as LogObject;
   const { exportData, properties: exportOptions } = useExport({
     fileExtension: ".csv",
     newLineCharacter: "\n",

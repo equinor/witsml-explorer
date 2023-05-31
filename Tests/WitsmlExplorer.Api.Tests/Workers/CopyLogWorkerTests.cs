@@ -9,6 +9,7 @@ using Moq;
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -108,6 +109,24 @@ namespace WitsmlExplorer.Api.Tests.Workers
             (WorkerResult Result, RefreshAction) copyTask = await _copyLogWorker.Execute(copyLogJob);
 
             Assert.Contains(errorReason, copyTask.Result.Reason);
+        }
+
+        [Fact]
+        public async Task CopyLog_Empty_EmptyLogAdded()
+        {
+            CopyObjectsJob copyLogJob = CreateJobTemplate();
+            WitsmlLogs sourceLogs = LogUtils.GetSourceLogsEmpty(WitsmlLog.WITSML_INDEX_TYPE_MD, "Depth");
+            SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
+            SetupGetWellbore();
+            IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+                .ReturnsAsync((new WorkerResult(null, true, null), null));
+
+            (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
+
+            WitsmlLog logInQuery = copyLogQuery.First().Logs.First();
+            Assert.True(result.Item1.IsSuccess);
+            Assert.True(logInQuery.IsEmpty());
         }
 
         private void SetupSourceLog(string indexType, WitsmlLogs sourceLogs = null)

@@ -94,6 +94,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 });
         }
 
+        public static void SetupGetDepthIndexedDecreasing(Mock<IWitsmlClient> witsmlClient, WitsmlLogs query = null)
+        {
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+                .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
+                .ReturnsAsync(() =>
+                {
+                    double startIndex = double.Parse(query!.Logs.First().StartIndex.Value);
+                    double endIndex = double.Parse(query.Logs.First().EndIndex.Value);
+                    return GetSourceLogDataDecreasing(startIndex, endIndex);
+                });
+        }
+
         public static CopyLogDataJob CreateJobTemplate(string startIndex = null, string endIndex = null)
         {
             return new CopyLogDataJob
@@ -163,6 +175,57 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Mnemonic = mnemonic.Equals(indexCurveValue, StringComparison.OrdinalIgnoreCase) ? indexCurveValue : mnemonic,
                     MinIndex = minIndex,
                     MaxIndex = maxIndex
+                }).ToList()
+            };
+
+            return new WitsmlLogs
+            {
+                Logs = new List<WitsmlLog> { witsmlLog }
+            };
+        }
+
+        public static WitsmlLogs GetSourceLogsDecreasing(string indexType, double startIndex, double endIndex, string indexCurveValue = null)
+        {
+            WitsmlIndex witsmlStartIndex = new(new DepthIndex(startIndex));
+            WitsmlIndex witsmlEndIndex = new(new DepthIndex(endIndex));
+            WitsmlLog witsmlLog = new()
+            {
+                UidWell = WellUid,
+                UidWellbore = WellboreUid,
+                Uid = SourceLogUid,
+                IndexType = indexType,
+                IndexCurve = new WitsmlIndexCurve { Value = indexCurveValue ?? SourceMnemonics[indexType][0] },
+                Direction = WitsmlLog.WITSML_DIRECTION_DECREASING,
+                StartIndex = witsmlStartIndex,
+                EndIndex = witsmlEndIndex,
+                LogCurveInfo = SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD].Select(mnemonic => new WitsmlLogCurveInfo
+                {
+                    Uid = mnemonic,
+                    Mnemonic = mnemonic.Equals(indexCurveValue, StringComparison.OrdinalIgnoreCase) ? indexCurveValue : mnemonic,
+                    MinIndex = witsmlStartIndex,
+                    MaxIndex = witsmlEndIndex
+                }).ToList()
+            };
+
+            return new WitsmlLogs
+            {
+                Logs = new List<WitsmlLog> { witsmlLog }
+            };
+        }
+
+        public static WitsmlLogs GetSourceLogsEmpty(string indexType, string indexCurveValue = null)
+        {
+            WitsmlLog witsmlLog = new()
+            {
+                UidWell = WellUid,
+                UidWellbore = WellboreUid,
+                Uid = SourceLogUid,
+                IndexType = indexType,
+                IndexCurve = new WitsmlIndexCurve { Value = indexCurveValue ?? SourceMnemonics[indexType][0] },
+                LogCurveInfo = SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD].Select(mnemonic => new WitsmlLogCurveInfo
+                {
+                    Uid = mnemonic,
+                    Mnemonic = mnemonic.Equals(indexCurveValue, StringComparison.OrdinalIgnoreCase) ? indexCurveValue : mnemonic
                 }).ToList()
             };
 
@@ -280,6 +343,44 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         StartIndex = new WitsmlIndex(new DepthIndex(startIndex.Value)),
                         EndIndex = new WitsmlIndex(new DepthIndex(endIndex.Value)),
+                        LogData = new WitsmlLogData
+                        {
+                            MnemonicList = string.Join(",", mnemonics ?? SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),
+                            UnitList = "m,m,m",
+                            Data = data
+                        }
+                    }.AsSingletonList()
+                };
+            }
+
+            return new WitsmlLogs();
+        }
+
+        public static WitsmlLogs GetSourceLogDataDecreasing(double startIndexValue, double endIndexValue, IEnumerable<string> mnemonics = null)
+        {
+            DepthIndex startIndex = new(startIndexValue);
+            DepthIndex endIndex = new(endIndexValue);
+            DepthIndex currentIndex = new(startIndexValue);
+
+            List<WitsmlData> data = new();
+            if (startIndex > endIndex)
+            {
+                while (currentIndex >= endIndex)
+                {
+                    data.Add(new WitsmlData { Data = $"{currentIndex.Value},1,1" });
+                    currentIndex = new DepthIndex(currentIndex.Value - 1);
+                }
+            }
+
+            if (data.Any())
+            {
+                return new WitsmlLogs
+                {
+                    Logs = new WitsmlLog
+                    {
+                        StartIndex = new WitsmlIndex(new DepthIndex(startIndex.Value)),
+                        EndIndex = new WitsmlIndex(new DepthIndex(endIndex.Value)),
+                        Direction = WitsmlLog.WITSML_DIRECTION_DECREASING,
                         LogData = new WitsmlLogData
                         {
                             MnemonicList = string.Join(",", mnemonics ?? SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]),

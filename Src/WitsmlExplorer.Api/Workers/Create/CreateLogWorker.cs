@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                         Uid = Guid.NewGuid().ToString(),
                         Mnemonic = indexType.ToString(),
                         Unit = unit,
-                        TypeLogData = indexType == IndexType.Depth ? WitsmlLogCurveInfo.LOG_DATA_TYPE_DOUBLE : WitsmlLogCurveInfo.LOG_DATA_TYPE_DATETIME
+                        TypeLogData = indexType == IndexType.Depth ? WitsmlLogCurveInfo.LogDataTypeDouble : WitsmlLogCurveInfo.LogDataTypeDatetime
                     }.AsSingletonList()
                 }.AsSingletonList()
             };

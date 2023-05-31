@@ -1,3 +1,4 @@
+import AxisDefinition from "../../../models/AxisDefinition";
 import LogCurveInfo from "../../../models/logCurveInfo";
 import { calculateMismatchedIndexes } from "../LogComparisonUtils";
 
@@ -9,7 +10,8 @@ const irrelevantProperties = {
   sensorOffset: {
     value: 0,
     uom: ""
-  }
+  },
+  axisDefinitions: [{} as AxisDefinition]
 };
 
 const mnemonic = "mnemonic";

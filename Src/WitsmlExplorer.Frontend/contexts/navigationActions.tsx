@@ -1,5 +1,6 @@
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
+import FluidsReport from "../models/fluidsReport";
 import FormationMarker from "../models/formationMarker";
 import LogObject from "../models/logObject";
 import MessageObject from "../models/messageObject";
@@ -45,6 +46,7 @@ export interface SelectWellboreAction extends Action {
     wellbore: Wellbore;
     bhaRuns: BhaRun[];
     changeLogs: ChangeLog[];
+    fluidsReports: FluidsReport[];
     formationMarkers: FormationMarker[];
     logs: LogObject[];
     rigs: Rig[];
@@ -53,7 +55,7 @@ export interface SelectWellboreAction extends Action {
     mudLogs: MudLog[];
     risks: RiskObject[];
     tubulars: Tubular[];
-    wbGeometrys: WbGeometryObject[];
+    wbGeometries: WbGeometryObject[];
   };
 }
 

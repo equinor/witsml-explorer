@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
+import WbGeometryObject from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
-import WbGeometryService from "../../services/wbGeometryService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, { WbGeometrySectionContextMenuProps } from "../ContextMenus/WbGeometrySectionContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
@@ -15,10 +17,11 @@ interface WbGeometrySectionRow extends ContentTableRow {
 
 export const WbGeometryView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWbGeometry, selectedServer, servers } = navigationState;
+  const { selectedObject, selectedServer, servers } = navigationState;
   const [wbGeometrySections, setWbGeometrySections] = useState<WbGeometrySection[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedWbGeometry = selectedObject as WbGeometryObject;
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -27,7 +30,14 @@ export const WbGeometryView = (): React.ReactElement => {
 
       const getWbGeometry = async () => {
         setWbGeometrySections(
-          await WbGeometryService.getWbGeometrySections(selectedWbGeometry.wellUid, selectedWbGeometry.wellboreUid, selectedWbGeometry.uid, abortController.signal)
+          await ComponentService.getComponents(
+            selectedWbGeometry.wellUid,
+            selectedWbGeometry.wellboreUid,
+            selectedWbGeometry.uid,
+            ComponentType.WbGeometrySection,
+            undefined,
+            abortController.signal
+          )
         );
         setIsFetchingData(false);
       };
@@ -55,16 +65,16 @@ export const WbGeometryView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "typeHoleCasing", label: "typeHoleCasing", type: ContentType.String },
-    { property: "mdTop", label: "mdTop", type: ContentType.String },
-    { property: "mdBottom", label: "mdBottom", type: ContentType.String },
-    { property: "tvdTop", label: "tvdTop", type: ContentType.String },
-    { property: "tvdBottom", label: "tvdBottom", type: ContentType.String },
-    { property: "idSection", label: "idSection", type: ContentType.String },
-    { property: "odSection", label: "odSection", type: ContentType.String },
-    { property: "wtPerLen", label: "wtPerLen", type: ContentType.String },
+    { property: "mdTop", label: "mdTop", type: ContentType.Measure },
+    { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
+    { property: "tvdTop", label: "tvdTop", type: ContentType.Measure },
+    { property: "tvdBottom", label: "tvdBottom", type: ContentType.Measure },
+    { property: "idSection", label: "idSection", type: ContentType.Measure },
+    { property: "odSection", label: "odSection", type: ContentType.Measure },
+    { property: "wtPerLen", label: "wtPerLen", type: ContentType.Measure },
     { property: "grade", label: "grade", type: ContentType.String },
     { property: "curveConductor", label: "curveConductor", type: ContentType.String },
-    { property: "diaDrift", label: "diaDrift", type: ContentType.String },
+    { property: "diaDrift", label: "diaDrift", type: ContentType.Measure },
     { property: "factFric", label: "factFric", type: ContentType.Number }
   ];
 

@@ -7,11 +7,13 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
+import MudLog from "../../models/mudLog";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -23,9 +25,10 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
   const { checkedGeologyIntervals } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const {
-    navigationState: { selectedServer, selectedMudLog, servers }
+    navigationState: { selectedServer, selectedObject, servers }
   } = useContext(NavigationContext);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
+  const selectedMudLog = selectedObject as MudLog;
 
   const onClickProperties = async () => {
     const geologyIntervalPropertiesModalProps = { geologyInterval: checkedGeologyIntervals[0] };
@@ -57,19 +60,16 @@ const GeologyIntervalContextMenu = (props: GeologyIntervalContextMenuProps): Rea
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "geology interval", checkedGeologyIntervals)}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.GeologyInterval} componentsToCopy={checkedGeologyIntervals} />,
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, selectedMudLog, JobType.CopyGeologyIntervals)}
+          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, selectedMudLog)}
           disabled={geologyIntervalReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteGeologyIntervals)}
-          disabled={checkedGeologyIntervals.length === 0}
-        >
+        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedGeologyIntervals.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "geology interval", checkedGeologyIntervals)}</Typography>
         </MenuItem>,

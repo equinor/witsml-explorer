@@ -6,22 +6,22 @@ namespace WitsmlExplorer.Api.Models
 {
     public class MudLogGeologyInterval
     {
-        public string Uid { get; set; }
-        public string TypeLithology { get; set; }
-        public MeasureWithDatum MdTop { get; set; }
-        public MeasureWithDatum MdBottom { get; set; }
-        public MeasureWithDatum TvdTop { get; set; }
-        public MeasureWithDatum TvdBase { get; set; }
-        public LengthMeasure RopAv { get; set; }
-        public LengthMeasure WobAv { get; set; }
-        public LengthMeasure TqAv { get; set; }
-        public LengthMeasure CurrentAv { get; set; }
-        public LengthMeasure RpmAv { get; set; }
-        public LengthMeasure WtMudAv { get; set; }
-        public LengthMeasure EcdTdAv { get; set; }
-        public string DxcAv { get; set; }
-        public List<MudLogLithology> Lithologies { get; set; }
-        public string Description { get; set; }
-        public CommonTime CommonTime { get; set; }
+        public string Uid { get; init; }
+        public string TypeLithology { get; init; }
+        public MeasureWithDatum MdTop { get; init; }
+        public MeasureWithDatum MdBottom { get; init; }
+        public MeasureWithDatum TvdTop { get; init; }
+        public MeasureWithDatum TvdBase { get; init; }
+        public LengthMeasure RopAv { get; init; }
+        public LengthMeasure WobAv { get; init; }
+        public LengthMeasure TqAv { get; init; }
+        public LengthMeasure CurrentAv { get; init; }
+        public LengthMeasure RpmAv { get; init; }
+        public LengthMeasure WtMudAv { get; init; }
+        public LengthMeasure EcdTdAv { get; init; }
+        public string DxcAv { get; init; }
+        public List<MudLogLithology> Lithologies { get; init; }
+        public string Description { get; init; }
+        public CommonTime CommonTime { get; init; }
     }
 }

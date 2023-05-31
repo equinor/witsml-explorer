@@ -1,8 +1,6 @@
-import { Typography } from "@equinor/eds-core-react";
-import { ListItemIcon } from "@material-ui/core";
+import { Icon, Typography } from "@equinor/eds-core-react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
-import ArrowRight from "@material-ui/icons/ArrowRight";
 import React, { useImperativeHandle, useRef, useState } from "react";
 import { colors } from "../../styles/Colors";
 import { StyledIcon } from "./ContextMenuUtils";
@@ -92,9 +90,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
       <MenuItem {...MenuItemProps} ref={menuItemRef}>
         <StyledIcon name={icon ?? "launch"} color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>{label}</Typography>
-        <ListItemIcon>
-          <ArrowRight />
-        </ListItemIcon>
+        <Icon name="arrowDropRight" />
       </MenuItem>
       <Menu
         // Set pointer events to 'none' to prevent the invisible Popover div

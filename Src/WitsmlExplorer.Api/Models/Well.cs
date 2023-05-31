@@ -4,20 +4,20 @@ namespace WitsmlExplorer.Api.Models
 {
     public class Well
     {
-        public string Uid { get; set; }
-        public string Name { get; set; }
-        public string Field { get; set; }
-        public string TimeZone { get; set; }
-        public string Operator { get; set; }
-        public string DateTimeCreation { get; set; }
-        public string DateTimeLastChange { get; set; }
-        public string ItemState { get; set; }
+        public string Uid { get; init; }
+        public string Name { get; init; }
+        public string Field { get; init; }
+        public string TimeZone { get; init; }
+        public string Operator { get; init; }
+        public string DateTimeCreation { get; init; }
+        public string DateTimeLastChange { get; init; }
+        public string ItemState { get; init; }
         public IEnumerable<Wellbore> Wellbores { get; set; }
-        public string Country { get; set; }
-        public string StatusWell { get; set; }
-        public string PurposeWell { get; set; }
-        public WellDatum WellDatum { get; set; }
-        public string WaterDepth { get; set; }
-        public WellLocation WellLocation { get; set; }
+        public string Country { get; init; }
+        public string StatusWell { get; init; }
+        public string PurposeWell { get; init; }
+        public WellDatum WellDatum { get; init; }
+        public string WaterDepth { get; init; }
+        public WellLocation WellLocation { get; init; }
     }
 }

@@ -2,6 +2,7 @@ enum EntityType {
   Well = "Well",
   Wellbore = "Wellbore",
   BhaRun = "BhaRun",
+  FluidsReport = "FluidsReport",
   FormationMarker = "FormationMarker",
   Log = "Log",
   Message = "Message",

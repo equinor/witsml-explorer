@@ -14,7 +14,8 @@ import { colors } from "../../styles/Colors";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickDeleteComponents, onClickShowObjectOnServer, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -65,15 +66,12 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,
-        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory, JobType.CopyTrajectoryStations)}>
+        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.TrajectoryStation} componentsToCopy={checkedTrajectoryStations} />,
+        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory)}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"delete"}
-          onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteTrajectoryStations)}
-          disabled={checkedTrajectoryStations.length === 0}
-        >
+        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedTrajectoryStations.length === 0}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("delete", "trajectory station", checkedTrajectoryStations)}</Typography>
         </MenuItem>,

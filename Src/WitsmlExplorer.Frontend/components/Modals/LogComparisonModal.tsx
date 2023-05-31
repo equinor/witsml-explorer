@@ -3,28 +3,31 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
+import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import LogObjectService from "../../services/logObjectService";
+import ComponentService from "../../services/componentService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
 import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import { calculateMismatchedIndexes, Indexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
+import { Indexes, calculateMismatchedIndexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface LogComparisonModalProps {
   sourceLog: LogObject;
   sourceServer: Server;
   targetServer: Server;
+  targetObject: ObjectOnWellbore;
   dispatchOperation: DispatchOperation;
 }
 
 const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
-  const { sourceLog, sourceServer, targetServer, dispatchOperation } = props;
+  const { sourceLog, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
@@ -37,11 +40,9 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
   useEffect(() => {
     const setCurves = async () => {
-      const wellUid = sourceLog.wellUid;
-      const wellboreUid = sourceLog.wellboreUid;
       const fetchCurves = async () => {
-        const fetchSource = LogObjectService.getLogCurveInfo(wellUid, wellboreUid, sourceLog.uid);
-        const fetchTarget = LogObjectService.getLogCurveInfoFromServer(wellUid, wellboreUid, sourceLog.uid, targetServer);
+        const fetchSource = ComponentService.getComponents(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, ComponentType.Mnemonic);
+        const fetchTarget = ComponentService.getComponents(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ComponentType.Mnemonic, targetServer);
         return {
           sourceLogCurveInfo: await fetchSource,
           targetLogCurveInfo: await fetchTarget
@@ -51,12 +52,12 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
       if (sourceLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
-        displayMissingObjectModal(sourceServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
+        displayMissingObjectModal(sourceServer, sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
         return;
       } else if (targetLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
-        displayMissingObjectModal(targetServer, wellUid, wellboreUid, sourceLog.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
+        displayMissingObjectModal(targetServer, targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
         return;
       } else {
         setSourceLogCurveInfo(sourceLogCurveInfo);
@@ -138,11 +139,14 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
           {(indexesToShow && (
             <>
               <LabelsLayout>
-                <TextField readOnly id="wellName" label="Well Name" defaultValue={sourceLog.wellName} />
                 <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
-                <TextField readOnly id="wellboreName" label="Wellbore Name" defaultValue={sourceLog.wellboreName} />
                 <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
-                <TextField readOnly id="name" label="Log" defaultValue={sourceLog.name + (sourceLog.runNumber == null ? "" : ` (${sourceLog.runNumber})`)} />
+                <TextField readOnly id="sourceWellName" label="Source Well Name" defaultValue={sourceLog.wellName} />
+                <TextField readOnly id="targetWellName" label="Target Well Name" defaultValue={targetObject.wellName} />
+                <TextField readOnly id="sourceWellboreName" label="Source Wellbore Name" defaultValue={sourceLog.wellboreName} />
+                <TextField readOnly id="targetWellboreName" label="Target Wellbore Name" defaultValue={targetObject.wellboreName} />
+                <TextField readOnly id="sourceName" label="Source Log" defaultValue={sourceLog.name + (sourceLog.runNumber == null ? "" : ` (${sourceLog.runNumber})`)} />
+                <TextField readOnly id="targetName" label="Target Log" defaultValue={targetObject.name} />
               </LabelsLayout>
               <Accordion>
                 <Accordion.Item>
@@ -150,7 +154,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <Accordion.Panel>
                     <List>
                       <List.Item>
-                        The logs are compared based on the <b>logCurveInfo</b> elements, and does not check the actual <b>logData</b> element.
+                        The logs are compared based on the <b>logCurveInfo</b> elements. The <b>logData</b> element is <b>not</b> compared.
                       </List.Item>
                       <List.Item>The table shows only the mnemonics where the indexes do not match, mnemonics that have equal index values are not shown.</List.Item>
                       <List.Item>Mnemonics that are found in only one of the logs are also included.</List.Item>

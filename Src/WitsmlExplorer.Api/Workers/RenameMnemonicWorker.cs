@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -40,19 +41,22 @@ namespace WitsmlExplorer.Api.Workers
             updatedLog.LogCurveInfo.Find(c => c.Mnemonic == job.Mnemonic)!.Mnemonic = job.NewMnemonic;
             WitsmlLogs updatedLogs = new() { Logs = new() { updatedLog } };
 
-            await using LogDataReader logDataReader = new(client, logHeader, mnemonics, Logger);
-            WitsmlLogData logData = await logDataReader.GetNextBatch();
-            while (logData != null)
+            if (!logHeader.IsEmpty())
             {
-                logData.MnemonicList = string.Join(",", GetMnemonics(logHeader, job.NewMnemonic));
-                updatedLog.LogData = logData;
-                QueryResult result = await client.UpdateInStoreAsync(updatedLogs);
-                if (!result.IsSuccessful)
+                await using LogDataReader logDataReader = new(client, logHeader, mnemonics, Logger);
+                WitsmlLogData logData = await logDataReader.GetNextBatch();
+                while (logData != null)
                 {
-                    Logger.LogError("Failed to rename mnemonic. {jobDescription}", job.Description());
-                    return (new WorkerResult(client.GetServerHostname(), false, $"Failed to rename Mnemonic from {job.Mnemonic} to {job.NewMnemonic}", result.Reason), null);
+                    logData.MnemonicList = string.Join(",", GetMnemonics(logHeader, job.NewMnemonic));
+                    updatedLog.LogData = logData;
+                    QueryResult result = await client.UpdateInStoreAsync(updatedLogs);
+                    if (!result.IsSuccessful)
+                    {
+                        Logger.LogError("Failed to rename mnemonic. {jobDescription}", job.Description());
+                        return (new WorkerResult(client.GetServerHostname(), false, $"Failed to rename Mnemonic from {job.Mnemonic} to {job.NewMnemonic}", result.Reason), null);
+                    }
+                    logData = await logDataReader.GetNextBatch();
                 }
-                logData = await logDataReader.GetNextBatch();
             }
 
             WorkerResult resultDeleteOldMnemonic = await DeleteOldMnemonic(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonic);

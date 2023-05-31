@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -14,6 +16,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, IObjectService objectService)
         {
             return TypedResults.Ok(await objectService.GetObjectsIdOnly(wellUid, wellboreUid, objectType));
+        }
+
+        [Produces(typeof(ObjectOnWellbore))]
+        public static async Task<IResult> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType, IObjectService objectService)
+        {
+            IEnumerable<ObjectOnWellbore> result = await objectService.GetObjectIdOnly(wellUid, wellboreUid, objectUid, objectType);
+            return TypedResults.Ok(result?.First());
         }
     }
 }

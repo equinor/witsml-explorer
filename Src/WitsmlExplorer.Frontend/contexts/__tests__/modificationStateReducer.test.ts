@@ -5,9 +5,10 @@ import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction } from "../modificationActions";
 import ModificationType from "../modificationType";
+import { NavigationAction } from "../navigationAction";
 import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
-import { getInitialState, LOG_1, SERVER_1, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3 } from "../stateReducerTestUtils";
+import { LOG_1, SERVER_1, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3, getInitialState } from "../stateReducerTestUtils";
 
 it("Should only update list of servers if no server selected", () => {
   const editedServer: Server = { ...SERVER_1, description: "Another description" };
@@ -44,7 +45,7 @@ it("Should update list of servers, and current selected, if editing current sele
 });
 
 it("Should update list of servers when adding a server", () => {
-  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", roles: [] };
+  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", roles: [], depthLogDecimals: 0 };
   const selectServerAction = { type: ModificationType.AddServer, payload: { server: newServer } };
   const actual = reducer({ ...getInitialState() }, selectServerAction);
   expect(actual).toStrictEqual({
@@ -57,12 +58,13 @@ it("Should update list of servers when adding a server", () => {
 });
 
 it("Should update logs for selected wellbore", () => {
-  const updateLogOnWellbore = {
-    type: ModificationType.UpdateLogObjects,
+  const updateLogOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      logs: [{ ...LOG_1, name: "Updated" }]
+      wellboreObjects: [{ ...LOG_1, name: "Updated" }],
+      objectType: ObjectType.Log
     }
   };
   const initialState = {
@@ -87,12 +89,13 @@ it("Should update logs for selected wellbore", () => {
 
 it("Should update trajectories for selected wellbore", () => {
   const updatedTrajectory = { ...TRAJECTORY_1, name: "Updated" };
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
+  const updateTrajectoryOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      trajectories: [updatedTrajectory]
+      wellboreObjects: [updatedTrajectory],
+      objectType: ObjectType.Trajectory
     }
   };
   const initialState: NavigationState = {
@@ -100,7 +103,7 @@ it("Should update trajectories for selected wellbore", () => {
     selectedWell: { ...WELL_1 },
     selectedWellbore: { ...WELLBORE_1 },
     selectedObjectGroup: ObjectType.Trajectory,
-    selectedTrajectory: { ...TRAJECTORY_1 }
+    selectedObject: { ...TRAJECTORY_1 }
   };
   const updatedWellbore = { ...WELLBORE_1, trajectories: [updatedTrajectory] };
   const actual = reducer(initialState, updateTrajectoryOnWellbore);
@@ -111,7 +114,7 @@ it("Should update trajectories for selected wellbore", () => {
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
     selectedObjectGroup: ObjectType.Trajectory,
-    selectedTrajectory: updatedTrajectory,
+    selectedObject: updatedTrajectory,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
   });
@@ -119,12 +122,13 @@ it("Should update trajectories for selected wellbore", () => {
 
 it("Should update currentSelected if deleted", () => {
   const newTrajectories: Trajectory[] = [];
-  const updateTrajectoryOnWellbore = {
-    type: ModificationType.UpdateTrajectoriesOnWellbore,
+  const updateTrajectoryOnWellbore: NavigationAction = {
+    type: ModificationType.UpdateWellboreObjects,
     payload: {
       wellUid: WELL_1.uid,
       wellboreUid: WELLBORE_1.uid,
-      trajectories: newTrajectories
+      wellboreObjects: newTrajectories,
+      objectType: ObjectType.Trajectory
     }
   };
   const initialState: NavigationState = {
@@ -132,7 +136,7 @@ it("Should update currentSelected if deleted", () => {
     selectedWell: { ...WELL_1 },
     selectedWellbore: { ...WELLBORE_1 },
     selectedObjectGroup: ObjectType.Trajectory,
-    selectedTrajectory: TRAJECTORY_1,
+    selectedObject: TRAJECTORY_1,
     currentSelected: TRAJECTORY_1
   };
   const updatedWellbore = { ...WELLBORE_1, trajectories: newTrajectories };
@@ -144,7 +148,7 @@ it("Should update currentSelected if deleted", () => {
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
     selectedObjectGroup: ObjectType.Trajectory,
-    selectedTrajectory: null,
+    selectedObject: null,
     currentSelected: ObjectType.Trajectory,
     wells: [updatedWell, WELL_2, WELL_3],
     filteredWells: [updatedWell, WELL_2, WELL_3]
@@ -232,7 +236,8 @@ it("Should update refreshed log object", () => {
   const wells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [LOG_1] }] }, WELL_2, WELL_3];
   const initialState = {
     ...getInitialState(),
-    selectedLog: LOG_1,
+    selectedObject: LOG_1,
+    selectedObjectGroup: ObjectType.Log,
     wells,
     filteredWells: wells
   };
@@ -247,7 +252,8 @@ it("Should update refreshed log object", () => {
     ...getInitialState(),
     wells: expectedListOfWells,
     filteredWells: expectedListOfWells,
-    selectedLog: refreshedLog
+    selectedObject: refreshedLog,
+    selectedObjectGroup: ObjectType.Log
   };
   expect(afterRefreshLog).toStrictEqual(expectedState);
 });

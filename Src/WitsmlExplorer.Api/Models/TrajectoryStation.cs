@@ -5,12 +5,12 @@ namespace WitsmlExplorer.Api.Models
 {
     public class TrajectoryStation
     {
-        public string Uid { get; set; }
-        public string DTimStn { get; set; }
-        public string TypeTrajStation { get; set; }
-        public LengthMeasure Md { get; set; }
-        public LengthMeasure Tvd { get; set; }
-        public LengthMeasure Incl { get; set; }
-        public LengthMeasure Azi { get; set; }
+        public string Uid { get; init; }
+        public string DTimStn { get; init; }
+        public string TypeTrajStation { get; init; }
+        public LengthMeasure Md { get; init; }
+        public LengthMeasure Tvd { get; init; }
+        public LengthMeasure Incl { get; init; }
+        public LengthMeasure Azi { get; init; }
     }
 }

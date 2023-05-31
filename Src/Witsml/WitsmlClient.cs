@@ -33,7 +33,7 @@ namespace Witsml
         private readonly string _clientCapabilities;
         private readonly StoreSoapPortClient _client;
         private readonly Uri _serverUrl;
-        private Logger _queryLogger;
+        private IQueryLogger _queryLogger;
 
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null, bool logQueries = false)
         {
@@ -73,9 +73,12 @@ namespace Witsml
                 return;
             }
 
-            _queryLogger = new LoggerConfiguration()
-                .WriteTo.File("queries.log", rollOnFileSizeLimit: true, retainedFileCountLimit: 1, fileSizeLimitBytes: 50000000)
-                .CreateLogger();
+            SetQueryLogger(new DefaultQueryLogger());
+        }
+
+        public void SetQueryLogger(IQueryLogger queryLogger)
+        {
+            _queryLogger = queryLogger;
         }
 
         private static BasicHttpsBinding CreateBinding(TimeSpan requestTimeout)
@@ -342,21 +345,14 @@ namespace Witsml
             return new QueryResult(true);
         }
 
-        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmLReceived = null)
+        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmlReceived = null)
         {
             if (_queryLogger == null)
             {
                 return;
             }
 
-            if (xmLReceived != null)
-            {
-                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmLReceived, isSuccessful);
-            }
-            else
-            {
-                _queryLogger.Information("Query: \n{Query}\nIsSuccessful: {IsSuccessful}", querySent, isSuccessful);
-            }
+            _queryLogger.LogQuery(querySent, isSuccessful, xmlReceived);
         }
 
         public Uri GetServerHostname()
@@ -375,6 +371,35 @@ namespace Witsml
         {
             IsSuccessful = isSuccessful;
             Reason = reason;
+        }
+    }
+
+    public interface IQueryLogger
+    {
+        void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null);
+    }
+
+    public class DefaultQueryLogger : IQueryLogger
+    {
+        private readonly Logger _queryLogger;
+
+        public DefaultQueryLogger()
+        {
+            _queryLogger = new LoggerConfiguration()
+                .WriteTo.File("queries.log", rollOnFileSizeLimit: true, retainedFileCountLimit: 1, fileSizeLimitBytes: 50000000)
+                .CreateLogger();
+        }
+
+        public void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null)
+        {
+            if (xmlReceived != null)
+            {
+                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmlReceived, isSuccessful);
+            }
+            else
+            {
+                _queryLogger.Information("Query: \n{Query}\nIsSuccessful: {IsSuccessful}", querySent, isSuccessful);
+            }
         }
     }
 }

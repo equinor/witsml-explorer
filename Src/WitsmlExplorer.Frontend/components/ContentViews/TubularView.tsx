@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ComponentType } from "../../models/componentType";
+import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
-import TubularService from "../../services/tubularService";
+import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, { TubularComponentContextMenuProps } from "../ContextMenus/TubularComponentContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
@@ -22,10 +24,11 @@ export interface TubularComponentRow extends ContentTableRow {
 
 export const TubularView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedTubular, servers } = navigationState;
+  const { selectedServer, selectedObject, servers } = navigationState;
   const [tubularComponents, setTubularComponents] = useState<TubularComponent[]>([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const selectedTubular = selectedObject as Tubular;
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -33,7 +36,16 @@ export const TubularView = (): React.ReactElement => {
       const abortController = new AbortController();
 
       const getTubular = async () => {
-        setTubularComponents(await TubularService.getTubularComponents(selectedTubular.wellUid, selectedTubular.wellboreUid, selectedTubular.uid, abortController.signal));
+        setTubularComponents(
+          await ComponentService.getComponents(
+            selectedTubular.wellUid,
+            selectedTubular.wellboreUid,
+            selectedTubular.uid,
+            ComponentType.TubularComponent,
+            undefined,
+            abortController.signal
+          )
+        );
         setIsFetchingData(false);
       };
 

@@ -28,7 +28,7 @@ export const LogsListView = (): React.ReactElement => {
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.logs) {
+    if (selectedWellbore?.logs) {
       setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
     }
   }, [selectedLogTypeGroup, selectedWellbore]);

@@ -1,14 +1,14 @@
 import { Typography } from "@equinor/eds-core-react";
-import { ListItemIcon, MenuItem } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import ContextMenu from "./ContextMenu";
+import { StyledIcon } from "./ContextMenuUtils";
 
 export interface MnemonicsContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
@@ -40,9 +40,7 @@ const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElem
     <ContextMenu
       menuItems={[
         <MenuItem key={"delete"} onClick={onClickDelete}>
-          <ListItemIcon>
-            <Icon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          </ListItemIcon>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}

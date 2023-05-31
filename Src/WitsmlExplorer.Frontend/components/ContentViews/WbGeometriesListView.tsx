@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -15,29 +16,32 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;
 }
 
-export const WbGeometrysListView = (): React.ReactElement => {
+export const WbGeometriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore, selectedWell } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
-  const [wbGeometrys, setWbGeometrys] = useState<WbGeometryObject[]>([]);
+  const [wbGeometries, setWbGeometries] = useState<WbGeometryObject[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.wbGeometrys) {
-      setWbGeometrys(selectedWellbore.wbGeometrys);
+    if (selectedWellbore?.wbGeometries) {
+      setWbGeometries(selectedWellbore.wbGeometries);
     }
-  }, [selectedWellbore, selectedWellbore?.wbGeometrys]);
+  }, [selectedWellbore, selectedWellbore?.wbGeometries]);
 
   const getTableData = () => {
-    return wbGeometrys.map((wbGeometry) => {
+    return wbGeometries.map((wbGeometry) => {
       return {
         ...wbGeometry,
+        mdBottom: measureToString(wbGeometry.mdBottom),
+        gapAir: measureToString(wbGeometry.gapAir),
+        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone),
         itemState: wbGeometry.commonData.itemState,
-        id: wbGeometry.uid,
         dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone),
         dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone),
+        id: wbGeometry.uid,
         wbGeometry: wbGeometry
       };
     });
@@ -52,11 +56,15 @@ export const WbGeometrysListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
+    { property: "gapAir", label: "gapAir", type: ContentType.Measure },
+    { property: "dTimReport", label: "dTimReport", type: ContentType.DateTime },
     { property: "itemState", label: "commonData.itemState", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
+    { property: "uid", label: "uid", type: ContentType.String }
   ];
+
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedWbGeometryObjectRows: WbGeometryObjectRow[]) => {
     const contextProps: ObjectContextMenuProps = { checkedObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
@@ -64,9 +72,9 @@ export const WbGeometrysListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.wbGeometrys, wbGeometrys) && (
+    Object.is(selectedWellbore?.wbGeometries, wbGeometries) && (
       <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows />
     )
   );
 };
-export default WbGeometrysListView;
+export default WbGeometriesListView;

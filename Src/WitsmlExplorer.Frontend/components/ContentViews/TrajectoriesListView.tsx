@@ -14,10 +14,10 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 export const TrajectoriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone },
+    dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
-  const { dispatchOperation } = useContext(OperationContext);
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
 
   useEffect(() => {

@@ -7,7 +7,6 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
-import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import MudLogPropertiesModal, { MudLogPropertiesModalProps } from "../Modals/MudLogPropertiesModal";
 import ContextMenu from "./ContextMenu";
@@ -35,7 +34,7 @@ const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
         ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, wellbore),
         <MenuItem
           key={"paste"}
-          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0], JobType.CopyGeologyIntervals)}
+          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0])}
           disabled={geologyIntervalReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />

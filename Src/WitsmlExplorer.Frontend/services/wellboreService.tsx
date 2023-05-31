@@ -44,6 +44,7 @@ export default class WellboreService {
   public static async getWellboreObjects(wellUid: string, wellboreUid: string): Promise<Concrete<WellboreObjects>> {
     const getBhaRuns = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.BhaRun);
     const getChangeLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.ChangeLog);
+    const getFluidsReports = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.FluidsReport);
     const getFormationMarkers = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.FormationMarker);
     const getLogs = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Log);
     const getMessages = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Message);
@@ -52,10 +53,11 @@ export default class WellboreService {
     const getRisks = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Risk);
     const getTrajectories = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Trajectory);
     const getTubulars = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.Tubular);
-    const getWbGeometrys = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
-    const [bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys] = await Promise.all([
+    const getWbGeometries = ObjectService.getObjects(wellUid, wellboreUid, ObjectType.WbGeometry);
+    const [bhaRuns, changeLogs, fluidsReports, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometries] = await Promise.all([
       getBhaRuns,
       getChangeLogs,
+      getFluidsReports,
       getFormationMarkers,
       getLogs,
       getMessages,
@@ -64,8 +66,8 @@ export default class WellboreService {
       getRisks,
       getTrajectories,
       getTubulars,
-      getWbGeometrys
+      getWbGeometries
     ]);
-    return { bhaRuns, changeLogs, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometrys };
+    return { bhaRuns, changeLogs, fluidsReports, formationMarkers, logs, messages, mudLogs, rigs, risks, trajectories, tubulars, wbGeometries };
   }
 }

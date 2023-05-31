@@ -2,25 +2,17 @@ namespace WitsmlExplorer.Api.Models
 {
     public enum JobType
     {
-        CopyLog = 1,
-        CopyGeologyIntervals,
+        CopyComponents = 1,
+        CopyLog,
         CopyLogData,
         CopyObjects,
-        CopyTrajectoryStations,
-        CopyTubularComponents,
-        CopyWbGeometrySections,
         CopyWell,
         CopyWellbore,
         CopyWithParent,
-        CopyObjectsWithParent,
         TrimLogObject,
+        DeleteComponents,
         DeleteCurveValues,
-        DeleteGeologyIntervals,
-        DeleteMnemonics,
         DeleteObjects,
-        DeleteTrajectoryStations,
-        DeleteTubularComponents,
-        DeleteWbGeometrySections,
         DeleteWell,
         DeleteWellbore,
         RenameMnemonic,
@@ -47,7 +39,7 @@ namespace WitsmlExplorer.Api.Models
         CreateWbGeometry,
         BatchModifyWell,
         ImportLogData,
-        ReplaceLogData,
+        ReplaceComponents,
         ReplaceObjects
     }
 }

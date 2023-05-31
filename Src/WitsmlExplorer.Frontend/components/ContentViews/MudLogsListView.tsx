@@ -34,7 +34,7 @@ export const MudLogsListView = (): React.ReactElement => {
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
 
   useEffect(() => {
-    if (selectedWellbore && selectedWellbore.mudLogs) {
+    if (selectedWellbore?.mudLogs) {
       setMudLogs(selectedWellbore.mudLogs);
     }
   }, [selectedWellbore]);
@@ -67,8 +67,8 @@ export const MudLogsListView = (): React.ReactElement => {
     { property: "name", label: "name", type: ContentType.String },
     { property: "mudLogCompany", label: "mudLogCompany", type: ContentType.String },
     { property: "mudLogEngineers", label: "mudLogEngineers", type: ContentType.String },
-    { property: "startMd", label: "startMd", type: ContentType.String },
-    { property: "endMd", label: "endMd", type: ContentType.String },
+    { property: "startMd", label: "startMd", type: ContentType.Measure },
+    { property: "endMd", label: "endMd", type: ContentType.Measure },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
     { property: "uid", label: "uid", type: ContentType.String }
