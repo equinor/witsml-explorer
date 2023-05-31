@@ -14,15 +14,15 @@ namespace WitsmlExplorer.Api.Models
         }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; init; }
         [JsonPropertyName("url")]
-        public Uri Url { get; set; }
+        public Uri Url { get; init; }
         [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string Description { get; init; }
         [JsonPropertyName("roles")]
-        public IList<string> Roles { get; set; }
+        public IList<string> Roles { get; init; }
         [JsonPropertyName("depthLogDecimals")]
-        public int DepthLogDecimals { get; set; }
+        public int DepthLogDecimals { get; init; }
 
         public override string ToString()
         {
