@@ -11,62 +11,11 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidContextMenu, { FluidContextMenuProps } from "../ContextMenus/FluidContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
-export interface FluidsRow extends ContentTableRow {
-  uid: string;
-  type: string;
-  locationSample: string;
-  dTim: string;
-  md: string;
-  tvd: string;
-  presBopRating: string;
-  mudClass: string;
-  density: string;
-  visFunnel: string;
-  tempVis: string;
-  pv: string;
-  yp: string;
-  gel10Sec: string;
-  gel10Min: string;
-  gel30Min: string;
-  filterCakeLtlp: string;
-  filtrateLtlp: string;
-  tempHthp: string;
-  presHthp: string;
-  filtrateHthp: string;
-  filterCakeHthp: string;
-  solidsPc: string;
-  waterPc: string;
-  oilPc: string;
-  sandPc: string;
-  solidsLowGravPc: string;
-  solidsCalcPc: string;
-  baritePc: string;
-  lcm: string;
-  mbt: string;
-  ph: string;
-  tempPh: string;
-  pm: string;
-  pmFiltrate: string;
-  mf: string;
-  alkalinityP1: string;
-  alkalinityP2: string;
-  chloride: string;
-  calcium: string;
-  magnesium: string;
-  potassium: string;
-  brinePc: string;
-  lime: string;
-  electStab: string;
-  calciumChloride: string;
-  company: string;
-  solidsHiGravPc: string;
-  polymer: string;
-  polyType: string;
-  solCorPc: string;
-  oilCtg: string;
-  hardnessCa: string;
-  sulfide: string;
-  comments: string;
+type FluidAsStrings = {
+  [Property in keyof Fluid as Exclude<Property, "rheometers">]: string;
+};
+
+interface FluidsRow extends ContentTableRow, FluidAsStrings {
   fluid: Fluid;
 }
 

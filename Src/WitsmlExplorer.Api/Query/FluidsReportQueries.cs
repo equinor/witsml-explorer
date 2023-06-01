@@ -1,5 +1,3 @@
-using System.Linq;
-
 using Witsml.Data;
 using Witsml.Data.Measures;
 
@@ -29,21 +27,7 @@ namespace WitsmlExplorer.Api.Query
                     Comments = "",
                     DefaultDatum = ""
                 }
-
             }.AsSingletonWitsmlList();
-        }
-
-        public static WitsmlFluidsReports QueryById(string wellUid, string wellboreUid, string[] fluidsReportUids)
-        {
-            return new WitsmlFluidsReports
-            {
-                FluidsReports = fluidsReportUids.Select(uid => new WitsmlFluidsReport
-                {
-                    Uid = uid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }).ToList()
-            };
         }
     }
 }

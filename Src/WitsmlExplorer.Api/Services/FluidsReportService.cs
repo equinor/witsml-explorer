@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<FluidsReport> GetFluidsReport(string wellUid, string wellboreUid, string fluidsReportUid)
         {
-            WitsmlFluidsReports query = FluidsReportQueries.QueryById(wellUid, wellboreUid, new string[] { fluidsReportUid });
+            WitsmlFluidsReports query = (WitsmlFluidsReports)ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, fluidsReportUid, EntityType.FluidsReport);
             WitsmlFluidsReports result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             WitsmlFluidsReport witsmlFluidsReport = result.FluidsReports.FirstOrDefault();
@@ -40,7 +40,6 @@ namespace WitsmlExplorer.Api.Services
             }
 
             FluidsReport fluidsReport = WitsmlToFluidsReport(witsmlFluidsReport);
-            fluidsReport.Fluids = GetFluids(witsmlFluidsReport.Fluids);
             return fluidsReport;
         }
 
@@ -119,7 +118,6 @@ namespace WitsmlExplorer.Api.Services
                 }
             ).ToList();
         }
-
 
         private static FluidsReport WitsmlToFluidsReport(WitsmlFluidsReport fluidsReport)
         {
