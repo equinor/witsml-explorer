@@ -29,7 +29,7 @@ namespace Witsml.Data
         public string NumReport { get; set; }
 
         [XmlElement("fluid")]
-        public List<WitsmlFluid> Fluid { get; set; }
+        public List<WitsmlFluid> Fluids { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }

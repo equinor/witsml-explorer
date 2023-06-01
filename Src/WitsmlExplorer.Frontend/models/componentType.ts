@@ -1,3 +1,4 @@
+import Fluid from "./fluid";
 import GeologyInterval from "./geologyInterval";
 import LogCurveInfo from "./logCurveInfo";
 import { ObjectType } from "./objectType";
@@ -10,7 +11,8 @@ export enum ComponentType {
   Mnemonic = "Mnemonic",
   TrajectoryStation = "TrajectoryStation",
   TubularComponent = "TubularComponent",
-  WbGeometrySection = "WbGeometrySection"
+  WbGeometrySection = "WbGeometrySection",
+  Fluid = "Fluid"
 }
 
 export const getParentType = (componentType: ComponentType): ObjectType => {
@@ -25,6 +27,8 @@ export const getParentType = (componentType: ComponentType): ObjectType => {
       return ObjectType.Tubular;
     case ComponentType.WbGeometrySection:
       return ObjectType.WbGeometry;
+    case ComponentType.Fluid:
+      return ObjectType.FluidsReport;
     default:
       return undefined;
   }
@@ -36,4 +40,5 @@ export type ComponentTypeToModel = {
   [ComponentType.TrajectoryStation]: TrajectoryStation;
   [ComponentType.TubularComponent]: TubularComponent;
   [ComponentType.WbGeometrySection]: WbGeometrySection;
+  [ComponentType.Fluid]: Fluid;
 };

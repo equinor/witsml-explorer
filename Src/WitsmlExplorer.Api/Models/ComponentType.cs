@@ -11,7 +11,8 @@ namespace WitsmlExplorer.Api.Models
         Mnemonic,
         TrajectoryStation,
         TubularComponent,
-        WbGeometrySection
+        WbGeometrySection,
+        Fluid
     }
 
     public static class ComponentTypeExtensions
@@ -31,6 +32,7 @@ namespace WitsmlExplorer.Api.Models
                 ComponentType.TrajectoryStation => EntityType.Trajectory,
                 ComponentType.TubularComponent => EntityType.Tubular,
                 ComponentType.WbGeometrySection => EntityType.WbGeometry,
+                ComponentType.Fluid => EntityType.FluidsReport,
                 _ => throw new ArgumentException($"Invalid component type {componentType}"),
             };
         }

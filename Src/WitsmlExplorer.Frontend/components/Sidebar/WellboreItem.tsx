@@ -10,6 +10,7 @@ import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
+import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
 import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
 import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
@@ -139,7 +140,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       <WellboreItemContext.Provider value={{ wellbore, well }}>
         <ObjectGroupItem objectType={ObjectType.BhaRun} />
         <ObjectGroupItem objectType={ObjectType.ChangeLog} onGroupContextMenu={preventContextMenuPropagation} />
-        <ObjectGroupItem objectType={ObjectType.FluidsReport} />
+        <ObjectGroupItem objectsOnWellbore={wellbore?.fluidsReports} objectType={ObjectType.FluidsReport} ObjectContextMenu={FluidsReportContextMenu} />
         <ObjectGroupItem objectType={ObjectType.FormationMarker} />
         <TreeItem
           nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}

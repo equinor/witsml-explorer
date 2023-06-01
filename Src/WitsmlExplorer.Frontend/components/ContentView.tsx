@@ -6,6 +6,7 @@ import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import FluidsReportsListView from "./ContentViews/FluidsReportListView";
+import FluidsView from "./ContentViews/FluidsView";
 import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
@@ -47,7 +48,8 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
   [ObjectType.MudLog]: <MudLogView />,
   [ObjectType.Trajectory]: <TrajectoryView />,
   [ObjectType.Tubular]: <TubularView />,
-  [ObjectType.WbGeometry]: <WbGeometryView />
+  [ObjectType.WbGeometry]: <WbGeometryView />,
+  [ObjectType.FluidsReport]: <FluidsView />
 };
 
 const ContentView = (): React.ReactElement => {
