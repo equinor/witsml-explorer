@@ -16,11 +16,10 @@ interface StyledTreeItemProps extends TreeItemProps {
   selected?: boolean;
   isActive?: boolean;
   isLoading?: boolean;
-  indexType?: string;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, indexType, isLoading, ...other } = props; // eslint-disable-line
+  const { labelText, selected, isActive, isLoading, ...other } = props; // eslint-disable-line
   const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
@@ -34,15 +33,13 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       onIconClick={() => toggleTreeNode(props)}
       label={
         <Label>
-          {isActive && labelText == "Logs" && <Icon name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-25px", top: "6px" }} />}
           <Tooltip title={labelText} arrow placement="top" disableHoverListener={labelText === "" || labelText == null}>
             <NavigationDrawer selected={selected} compactMode={isCompactMode}>
-              {labelText} {isLoading && <DotProgress color={"primary"} size={32} />}
+              {labelText}
             </NavigationDrawer>
           </Tooltip>
-          {isActive && ["measured depth", "date time"].includes(indexType) && (
-            <Icon name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-25px", top: "6px" }} />
-          )}
+          {isLoading && <StyledDotProgress color={"primary"} size={32} />}
+          {isActive && <Icon name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-25px", top: "6px" }} />}
         </Label>
       }
       {...other}
@@ -61,6 +58,13 @@ const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean }>`
   line-height: 1rem;
   padding: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
   margin: 0;
+`;
+
+const StyledDotProgress = styled(DotProgress)`
+  z-index: 2;
+  top: 0.75rem;
+  position: relative;
+  left: -0.5rem;
 `;
 
 export default StyledTreeItem;

@@ -39,7 +39,6 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
       labelText={well.name}
       nodeId={well.uid}
       onLabelClick={() => onSelectWell(well)}
-      isActive={well.wellbores.some((wellbore) => wellbore.isActive)}
     >
       {well &&
         well.wellbores &&

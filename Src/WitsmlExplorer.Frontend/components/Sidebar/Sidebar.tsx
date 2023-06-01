@@ -32,7 +32,7 @@ const Sidebar = (): React.ReactElement => {
             >
               {filteredWells.map((well: Well, index: number) => (
                 <React.Fragment key={index}>
-                  <div style={WellListing} className="ListWells">
+                  <div style={WellListing}>
                     <WellItem key={well.uid} well={well} />
                     {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
                       <ActiveWellIndicator compactMode={isCompactMode} />
@@ -73,7 +73,7 @@ const SidebarTreeView = styled.div`
   }
 `;
 
-const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
+export const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
   width: 14px;
   height: 14px;
   background-color: ${colors.interactive.successHover};
@@ -81,7 +81,7 @@ const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
   margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
 `;
 
-const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
+export const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
   width: 14px;
   height: 14px;
   border-radius: 50%;

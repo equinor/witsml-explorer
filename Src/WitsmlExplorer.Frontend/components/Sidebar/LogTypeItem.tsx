@@ -93,7 +93,6 @@ const listLogItemsByType = (logObjects: LogObject[], logType: string, well: Well
       nodeId={calculateObjectNodeId(log, ObjectType.Log)}
       selected={isSelected(log)}
       objectGrowing={log.objectGrowing}
-      indexType={log.indexType}
     />
   ));
 };
