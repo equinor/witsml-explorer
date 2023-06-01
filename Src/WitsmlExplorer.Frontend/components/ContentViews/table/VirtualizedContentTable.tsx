@@ -10,6 +10,7 @@ import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
 import { formatCell } from "./ContentTable";
+import Panel from "./Panel";
 import {
   ContentTableColumn,
   ContentTableProps,
@@ -144,7 +145,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
 innerGridElementType.displayName = "innerGridElementType";
 
 export const VirtualizedContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, onRowSelectionChange, panelElements, showTotalItems = true } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(Order.Ascending);
@@ -247,6 +248,13 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
+              <Panel
+                showTotalItems={showTotalItems}
+                showCheckedItems={checkableRows}
+                panelElements={panelElements}
+                numberOfCheckedItems={checkedContentItems?.length}
+                numberOfItems={data?.length}
+              />
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);

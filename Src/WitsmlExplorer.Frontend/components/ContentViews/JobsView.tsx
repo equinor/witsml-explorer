@@ -1,6 +1,5 @@
 import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -12,8 +11,8 @@ import NotificationService, { Notification } from "../../services/notificationSe
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 import { clipLongString } from "./ViewUtils";
+import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -108,32 +107,31 @@ export const JobsView = (): React.ReactElement => {
     };
   });
 
-  return (
-    <>
-      <Panel>
-        <Button
-          variant="outlined"
-          aria-disabled={shouldRefresh ? true : false}
-          aria-label={shouldRefresh ? "loading data" : null}
-          onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
-          disabled={shouldRefresh}
-        >
-          <Icon name="refresh" />
-          Refresh
-        </Button>
-        {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
-          <Switch
-            label="Show all users' jobs"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setShowAll(e.target.checked);
-            }}
-          />
-        )}
-        <Typography>Last fetched: {lastFetched}</Typography>
-      </Panel>
-      <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />
-    </>
-  );
+  const panelElements = [
+    <Button
+      key="refreshJobs"
+      variant="outlined"
+      aria-disabled={shouldRefresh ? true : false}
+      aria-label={shouldRefresh ? "loading data" : null}
+      onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
+      disabled={shouldRefresh}
+    >
+      <Icon name="refresh" />
+      Refresh
+    </Button>,
+    msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
+      <Switch
+        key="showAllUsersJobs"
+        label="Show all users' jobs"
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          setShowAll(e.target.checked);
+        }}
+      />
+    ) : null,
+    <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
+  ];
+
+  return <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} panelElements={panelElements} />;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {
@@ -143,11 +141,5 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   const server = servers.find((server) => server.url == url);
   return server ? server.name : url;
 };
-
-const Panel = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-`;
 
 export default JobsView;
