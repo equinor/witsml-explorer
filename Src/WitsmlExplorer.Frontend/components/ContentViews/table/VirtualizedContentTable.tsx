@@ -336,7 +336,7 @@ const RowWrapper = styled.div<RowWrapperProps>`
   grid-template-columns: ${(props) => configureTemplateColumns(props.checkableRows, props.isHeader, props.columns)};
   grid-auto-rows: minmax(${(props) => (props.compactMode ? "2rem" : "3rem")}, auto);
   font-size: 0.875rem;
-  width: 100%;
+  width: max-content !important;
 `;
 
 const TableHeader = styled.div`

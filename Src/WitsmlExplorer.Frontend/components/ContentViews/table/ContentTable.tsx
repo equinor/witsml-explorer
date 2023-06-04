@@ -98,7 +98,11 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             return (
               checkVisibility(item.isVisibleFunction) && (
                 <React.Fragment key={index}>
-                  <TableRow hover selected={checkableRows && checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1} onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+                  <TableRow
+                    hover
+                    selected={checkableRows && checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                    onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
+                  >
                     {checkableRows && (
                       <TableDataCell>
                         <Checkbox
@@ -168,7 +172,7 @@ export const TableHeaderCell = styled(MuiTableCell)`
   }
 `;
 
-export const TableDataCell = styled(MuiTableCell) <{ type?: ContentType; clickable?: string }>`
+export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
   position: relative;
   z-index: 0;
   border-right: 1px solid rgba(224, 224, 224, 1);
