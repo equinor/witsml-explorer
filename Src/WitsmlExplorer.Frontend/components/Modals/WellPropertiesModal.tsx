@@ -96,7 +96,7 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 value={editableWell.timeZone}
                 fullWidth
                 error={!validTimeZone(editableWell.timeZone)}
-                helperText={"TimeZone has to be in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"}
+                helperText={"TimeZone has to be 'Z' or in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"}
                 inputProps={{ maxLength: 6 }}
                 onChange={(e) => setEditableWell({ ...editableWell, timeZone: e.target.value })}
               />
