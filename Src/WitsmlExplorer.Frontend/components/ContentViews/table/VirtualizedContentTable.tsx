@@ -62,6 +62,10 @@ const Row = memo(({ data, index, style }: RowProps) => {
         key={"TableRow-" + index}
         hover
         onClick={(event) => onToggleRow(event, item)}
+        className={
+          (index % 2 !== 0 ? "evenrow " : "") +
+          (checkableRows && checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1 ? "selectedrow" : "")
+        }
         onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
       >
         {checkableRows && (
@@ -138,7 +142,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
             ))}
         </RowWrapper>
       </TableHeader>
-      <DataContainer>{children}</DataContainer>
+      <div>{children}</div>
     </div>
   );
 });
@@ -332,7 +336,7 @@ const RowWrapper = styled.div<RowWrapperProps>`
   grid-template-columns: ${(props) => configureTemplateColumns(props.checkableRows, props.isHeader, props.columns)};
   grid-auto-rows: minmax(${(props) => (props.compactMode ? "2rem" : "3rem")}, auto);
   font-size: 0.875rem;
-  width: 100%;
+  width: max-content !important;
 `;
 
 const TableHeader = styled.div`
@@ -341,10 +345,6 @@ const TableHeader = styled.div`
   left: 0;
   line-height: 1.5rem;
   z-index: 3;
-`;
-
-const DataContainer = styled.div`
-  position: absolute;
 `;
 
 const TableHeaderCell = styled(MuiTableCell)`
@@ -361,17 +361,24 @@ const TableHeaderCell = styled(MuiTableCell)`
   & .MuiTableSortLabel-root.MuiTableSortLabel-active {
     color: ${colors.text.staticIconsDefault};
   }
+  &:nth-child(1) {
+    position: sticky;
+    z-index: 3;
+    left: 0;
+  }
+  &:nth-child(2) {
+    position: sticky;
+    z-index: 3;
+    left: 50px;
+  }
 `;
 
 const TableRow = styled.div<{ hover: boolean }>`
   display: contents;
-
-  &:hover div {
-    background-color: ${colors.interactive.tableHeaderFillResting};
-  }
 `;
 
 const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
+  background-color: white;
   border-right: 1px solid rgba(224, 224, 224, 1);
   && {
     color: ${colors.text.staticIconsDefault};
@@ -382,6 +389,25 @@ const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
   overflow: hidden;
   text-overflow: ellipsis;
   font-feature-settings: "tnum";
+  ${TableRow}.evenrow & {
+    background-color: ${colors.interactive.tableHeaderFillResting};
+  }
+  ${TableRow}.selectedrow & {
+    background-color: ${colors.interactive.textHighlight};
+  }
+  ${TableRow}:hover & {
+    background-color: ${colors.interactive.tableCellFillActivated};
+  }
+  &:nth-child(1) {
+    position: sticky;
+    z-index: 2;
+    left: 0;
+  }
+  &:nth-child(2) {
+    position: sticky;
+    z-index: 2;
+    left: 50px;
+  }
 `;
 TableDataCell.displayName = "TableDataCell";
 

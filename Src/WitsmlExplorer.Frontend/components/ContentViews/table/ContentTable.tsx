@@ -98,7 +98,11 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             return (
               checkVisibility(item.isVisibleFunction) && (
                 <React.Fragment key={index}>
-                  <TableRow hover onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}>
+                  <TableRow
+                    hover
+                    selected={checkableRows && checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                    onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
+                  >
                     {checkableRows && (
                       <TableDataCell>
                         <Checkbox
@@ -146,8 +150,14 @@ export const formatCell = (type: ContentType, data: string | boolean) => {
 };
 
 const TableRow = styled(MuiTableRow)`
-  &&&:hover {
+  &&& {
+    background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "")};
+  }
+  &:nth-of-type(even) {
     background-color: ${colors.interactive.tableHeaderFillResting};
+  }
+  &&&:hover {
+    background-color: ${colors.interactive.tableCellFillActivated};
   }
 `;
 
