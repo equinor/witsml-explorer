@@ -43,7 +43,7 @@ export interface WellboreProperties {
   dateTimeLastChange?: string;
   itemState?: string;
   comments?: string;
-  objectCount: ExpandableObjectsCount;
+  objectCount?: ExpandableObjectsCount;
 }
 
 export interface WellboreObjects {
