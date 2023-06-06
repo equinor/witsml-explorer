@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
+import ModificationType from "../contexts/modificationType";
 import {
   SelectLogTypeAction,
   SelectObjectAction,
@@ -123,6 +124,8 @@ const Routing = (): React.ReactElement => {
             payload: { well: selectedWell, wellbore }
           };
           dispatchNavigation(selectWellbore);
+          const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
+          dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer?.url),

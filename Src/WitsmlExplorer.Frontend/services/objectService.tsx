@@ -1,7 +1,7 @@
 import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
-import Wellbore, { getObjectsFromWellbore } from "../models/wellbore";
+import Wellbore, { ExpandableObjectsCount, getObjectsFromWellbore } from "../models/wellbore";
 import { ApiClient } from "./apiClient";
 
 export default class ObjectService {
@@ -85,5 +85,14 @@ export default class ObjectService {
       return await ObjectService.getObjects(wellbore.wellUid, wellbore.uid, objectType, abortSignal);
     }
     return null;
+  }
+
+  public static async getExpandableObjectsCount(wellbore: Wellbore, abortSignal?: AbortSignal): Promise<ExpandableObjectsCount> {
+    const response = await ApiClient.get(`/api/wells/${wellbore.wellUid}/wellbores/${wellbore.uid}/countexpandable`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
+    }
   }
 }

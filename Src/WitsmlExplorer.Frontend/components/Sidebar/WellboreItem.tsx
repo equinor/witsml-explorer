@@ -35,8 +35,6 @@ export interface WellboreItemContextProps {
   wellbore: Wellbore;
 }
 
-export type ExpandableObjectsCount = Partial<Record<ObjectType, number>>;
-
 export const WellboreItemContext = createContext<WellboreItemContextProps>({} as WellboreItemContextProps);
 
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
@@ -45,6 +43,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingLogs, setIsFetchingLogs] = useState(false);
+  const [isFetchingCount, setIsFetchingCount] = useState(false);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
@@ -68,9 +67,25 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularsContextMenu {...contextMenuProps} />, position } });
   };
 
+  const getExpandableObjectCount = useCallback(async () => {
+    if (wellbore.objectCount == null) {
+      setIsFetchingCount(true);
+      const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
+      dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
+      setIsFetchingCount(false);
+    }
+  }, [wellbore]);
+
   const onLabelClick = () => {
     const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore } };
     dispatchNavigation(selectWellbore);
+    getExpandableObjectCount();
+  };
+
+  const onIconClick = () => {
+    const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId } };
+    dispatchNavigation(toggleTreeNode);
+    getExpandableObjectCount();
   };
 
   const onClickLogs = async () => {
@@ -104,7 +119,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       selected={selected}
       labelText={wellbore.name}
       onLabelClick={onLabelClick}
+      onIconClick={onIconClick}
       isActive={wellbore.isActive}
+      isLoading={isFetchingCount}
     >
       <WellboreItemContext.Provider value={{ wellbore, well }}>
         <ObjectGroupItem objectType={ObjectType.BhaRun} />

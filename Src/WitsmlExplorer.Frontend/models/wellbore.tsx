@@ -43,6 +43,7 @@ export interface WellboreProperties {
   dateTimeLastChange?: string;
   itemState?: string;
   comments?: string;
+  objectCount: ExpandableObjectsCount;
 }
 
 export interface WellboreObjects {
@@ -59,6 +60,8 @@ export interface WellboreObjects {
   risks?: RiskObject[];
   wbGeometries?: WbGeometryObject[];
 }
+
+export type ExpandableObjectsCount = Partial<Record<ObjectType, number>>;
 
 export default interface Wellbore extends WellboreProperties, WellboreObjects {}
 
@@ -88,7 +91,8 @@ export function emptyWellbore(): Wellbore {
     messages: [],
     mudLogs: [],
     risks: [],
-    wbGeometries: []
+    wbGeometries: [],
+    objectCount: null
   };
 }
 

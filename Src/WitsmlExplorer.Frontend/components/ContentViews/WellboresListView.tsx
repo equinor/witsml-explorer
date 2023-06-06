@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
+import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
+import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
@@ -38,16 +40,22 @@ export const WellboresListView = (): React.ReactElement => {
         ...wellbore,
         id: wellbore.uid,
         dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone),
-        dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone)
+        dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone),
+        wellbore: wellbore
       };
     });
   };
 
-  const onSelect = async (wellbore: any) => {
+  const onSelect = async (wellboreRow: any) => {
+    const wellbore = wellboreRow.wellbore;
     dispatchNavigation({
       type: NavigationType.SelectWellbore,
       payload: { well: selectedWell, wellbore }
     });
+    if (wellbore.objectCount == null) {
+      const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
+      dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
+    }
   };
 
   return selectedWell && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} />;

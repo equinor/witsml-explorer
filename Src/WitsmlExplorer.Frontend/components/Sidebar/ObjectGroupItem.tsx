@@ -70,7 +70,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
     return onGroupContextMenu == null ? onGenericGroupContextMenu(event, objectType, wellbore, dispatchOperation) : onGroupContextMenu(event, wellbore);
   };
-
+  const showStub = wellbore.objectCount != null && wellbore.objectCount[objectType] != null && wellbore.objectCount[objectType] != 0;
   return (
     <TreeItem
       nodeId={calculateObjectGroupId(wellbore, objectType)}
@@ -80,7 +80,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
       isLoading={isLoading}
       onIconClick={toggleTreeNode}
     >
-      {wellbore &&
+      {(wellbore &&
         objectsOnWellbore &&
         objectsOnWellbore.map((objectOnWellbore) => (
           <ObjectOnWellboreItem
@@ -91,7 +91,8 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
             selected={isSelected(objectType, objectOnWellbore)}
             ContextMenu={ObjectContextMenu}
           />
-        ))}
+        ))) ||
+        (showStub && ["", ""])}
     </TreeItem>
   );
 };

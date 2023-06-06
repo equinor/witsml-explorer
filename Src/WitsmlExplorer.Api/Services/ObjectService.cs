@@ -15,10 +15,13 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
         Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
+        Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
     }
 
     public class ObjectService : WitsmlService, IObjectService
     {
+        private readonly List<EntityType> _expandableObjects = new() { EntityType.FluidsReport, EntityType.MudLog, EntityType.Trajectory, EntityType.Tubular, EntityType.WbGeometry };
+
         public ObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
         public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
@@ -52,5 +55,19 @@ namespace WitsmlExplorer.Api.Services
             );
         }
 
+        public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)
+        {
+            IEnumerable<Task<(EntityType objectType, int count)>> countTasks = _expandableObjects.Select(
+                async (objectType) =>
+                {
+                    IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, "", objectType);
+                    // using ReturnElements.Requested should skip fetching well, wellbore, and object names, as opposed to IdOnly
+                    IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
+                    return (objectType, result?.Objects?.Count() ?? 0);
+                }
+            );
+            await Task.WhenAll(countTasks);
+            return countTasks.ToDictionary((task) => task.Result.objectType, (task) => task.Result.count);
+        }
     }
 }
