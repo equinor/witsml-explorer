@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Witsml.Data;
 using Witsml.ServiceReference;
 
@@ -21,8 +23,12 @@ namespace WitsmlExplorer.Api.Services
     public class ObjectService : WitsmlService, IObjectService
     {
         private readonly List<EntityType> _expandableObjects = new() { EntityType.FluidsReport, EntityType.MudLog, EntityType.Trajectory, EntityType.Tubular, EntityType.WbGeometry };
+        private readonly ILogger<ObjectService> _logger;
 
-        public ObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
+        public ObjectService(IWitsmlClientProvider witsmlClientProvider, ILogger<ObjectService> logger) : base(witsmlClientProvider)
+        {
+            _logger = logger;
+        }
 
         public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
         {
@@ -61,9 +67,17 @@ namespace WitsmlExplorer.Api.Services
                 async (objectType) =>
                 {
                     IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, "", objectType);
-                    // using ReturnElements.Requested should skip fetching well, wellbore, and object names, as opposed to IdOnly
-                    IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
-                    return (objectType, result?.Objects?.Count() ?? 0);
+                    try
+                    {
+                        // using ReturnElements.Requested should skip fetching well, wellbore, and object names, as opposed to IdOnly
+                        IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
+                        return (objectType, result?.Objects?.Count() ?? 0);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogWarning("GetExpandableObjectsCount query failed: {exception}", e);
+                        return (objectType, 0);
+                    }
                 }
             );
             await Task.WhenAll(countTasks);
