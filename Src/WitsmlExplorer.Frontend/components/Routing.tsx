@@ -16,7 +16,7 @@ import NavigationType from "../contexts/navigationType";
 import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore } from "../models/wellbore";
+import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore, getObjectsFromWellbore } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import NotificationService from "../services/notificationService";
 import ObjectService from "../services/objectService";
@@ -146,10 +146,28 @@ const Routing = (): React.ReactElement => {
   }, [selectedWell]);
 
   useEffect(() => {
-    if (isSyncingUrlAndState && selectedWellbore) {
+    if (isSyncingUrlAndState && selectedWellbore && selectedWellbore.objectCount) {
       const group = urlParams?.group as ObjectType;
       const objectUid = urlParams?.objectUid;
-      if (objectUid != null) {
+      if (group != null && getObjectsFromWellbore(selectedWellbore, group) == null) {
+        const fetchAndSelectObjectGroup = async () => {
+          const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
+          const action: SelectObjectGroupAction = {
+            type: NavigationType.SelectObjectGroup,
+            payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore, objects }
+          };
+          dispatchNavigation(action);
+        };
+        fetchAndSelectObjectGroup();
+        if (urlParams.logType == null && objectUid == null) {
+          setIsSyncingUrlAndState(false);
+        }
+      } else if (urlParams.logType != null && objectUid == null) {
+        const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
+        const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
+        dispatchNavigation(action);
+        setIsSyncingUrlAndState(false);
+      } else if (objectUid != null) {
         const object = getObjectFromWellbore(selectedWellbore, objectUid, group);
         if (object != null) {
           const action: SelectObjectAction = {
@@ -164,24 +182,8 @@ const Routing = (): React.ReactElement => {
             isSuccess: false
           });
         }
-      } else if (group != null) {
-        if (urlParams.logType != null) {
-          const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
-          const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
-          dispatchNavigation(action);
-        } else {
-          const fetchAndSelectObjectGroup = async () => {
-            const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
-            const action: SelectObjectGroupAction = {
-              type: NavigationType.SelectObjectGroup,
-              payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore, objects }
-            };
-            dispatchNavigation(action);
-          };
-          fetchAndSelectObjectGroup();
-        }
+        setIsSyncingUrlAndState(false);
       }
-      setIsSyncingUrlAndState(false);
     }
   }, [selectedWellbore]);
 

@@ -206,8 +206,8 @@ const selectObject = (state: NavigationState, { payload }: SelectObjectAction): 
   let expandedTreeNodes = state.expandedTreeNodes;
 
   const objectGroup = calculateObjectGroupId(wellbore, objectType);
-  const shouldExpandLogGroup = shouldExpand(expandedTreeNodes, objectGroup, calculateWellboreNodeId(wellbore));
-  expandedTreeNodes = shouldExpandLogGroup ? toggleTreeNode(expandedTreeNodes, objectGroup) : expandedTreeNodes;
+  const shouldExpandGroup = shouldExpand(expandedTreeNodes, objectGroup, calculateWellboreNodeId(wellbore));
+  expandedTreeNodes = shouldExpandGroup ? toggleTreeNode(expandedTreeNodes, objectGroup) : expandedTreeNodes;
   let logTypeGroup = null;
   if (objectType == ObjectType.Log) {
     logTypeGroup = calculateLogTypeId(wellbore, (object as LogObject).indexType);

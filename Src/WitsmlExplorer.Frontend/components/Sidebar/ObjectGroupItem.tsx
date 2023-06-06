@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { ReactNode, useCallback, useContext, useState } from "react";
 import ModificationType from "../../contexts/modificationType";
 import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
@@ -23,10 +23,12 @@ interface ObjectGroupItemProps {
   objectType: ObjectType;
   ObjectContextMenu?: React.ComponentType<ObjectContextMenuProps>; //required only if objectsOnWellbore array is provided
   onGroupContextMenu?: (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => void;
+  children?: ReactNode;
+  isActive?: boolean;
 }
 
 const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
-  const { objectsOnWellbore, objectType, ObjectContextMenu, onGroupContextMenu } = props;
+  const { objectsOnWellbore, objectType, ObjectContextMenu, onGroupContextMenu, children, isActive } = props;
   const {
     dispatchNavigation,
     navigationState: { selectedObject, selectedObjectGroup }
@@ -79,19 +81,21 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
       onContextMenu={onContextMenu}
       isLoading={isLoading}
       onIconClick={toggleTreeNode}
+      isActive={isActive}
     >
-      {(wellbore &&
-        objectsOnWellbore &&
-        objectsOnWellbore.map((objectOnWellbore) => (
-          <ObjectOnWellboreItem
-            key={calculateObjectNodeId(objectOnWellbore, objectType)}
-            nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
-            objectOnWellbore={objectOnWellbore}
-            objectType={objectType}
-            selected={isSelected(objectType, objectOnWellbore)}
-            ContextMenu={ObjectContextMenu}
-          />
-        ))) ||
+      {children ||
+        (wellbore &&
+          objectsOnWellbore &&
+          objectsOnWellbore.map((objectOnWellbore) => (
+            <ObjectOnWellboreItem
+              key={calculateObjectNodeId(objectOnWellbore, objectType)}
+              nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
+              objectOnWellbore={objectOnWellbore}
+              objectType={objectType}
+              selected={isSelected(objectType, objectOnWellbore)}
+              ContextMenu={ObjectContextMenu}
+            />
+          ))) ||
         (showStub && ["", ""])}
     </TreeItem>
   );
