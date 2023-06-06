@@ -1,4 +1,6 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
+import ModificationType from "../../contexts/modificationType";
+import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -6,7 +8,8 @@ import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore, { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
+import Wellbore, { calculateObjectGroupId, getObjectsFromWellbore } from "../../models/wellbore";
+import ObjectService from "../../services/objectService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -30,9 +33,25 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { wellbore, well } = useContext(WellboreItemContext);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSelectObjectGroup = useCallback(() => {
-    dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType } });
+  const onSelectObjectGroup = useCallback(async () => {
+    setIsLoading(true);
+    const objects = await ObjectService.getObjectsIfMissing(wellbore, objectType);
+    dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType, objects } });
+    setIsLoading(false);
+  }, [well, wellbore, objectType]);
+
+  const toggleTreeNode = useCallback(async () => {
+    const objects = getObjectsFromWellbore(wellbore, objectType);
+    if (objects == null || objects.length == 0) {
+      setIsLoading(true);
+      const fetchedObjects = await ObjectService.getObjects(wellbore.wellUid, wellbore.uid, objectType);
+      dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects: fetchedObjects, wellUid: well.uid, wellboreUid: wellbore.uid, objectType } });
+      setIsLoading(false);
+    }
+    const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: calculateObjectGroupId(wellbore, objectType) } };
+    dispatchNavigation(toggleTreeNode);
   }, [well, wellbore, objectType]);
 
   const isSelected = useCallback(
@@ -53,7 +72,14 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   };
 
   return (
-    <TreeItem nodeId={calculateObjectGroupId(wellbore, objectType)} labelText={pluralize(objectType)} onLabelClick={onSelectObjectGroup} onContextMenu={onContextMenu}>
+    <TreeItem
+      nodeId={calculateObjectGroupId(wellbore, objectType)}
+      labelText={pluralize(objectType)}
+      onLabelClick={onSelectObjectGroup}
+      onContextMenu={onContextMenu}
+      isLoading={isLoading}
+      onIconClick={toggleTreeNode}
+    >
       {wellbore &&
         objectsOnWellbore &&
         objectsOnWellbore.map((objectOnWellbore) => (

@@ -1,6 +1,7 @@
 import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
+import Wellbore, { getObjectsFromWellbore } from "../models/wellbore";
 import { ApiClient } from "./apiClient";
 
 export default class ObjectService {
@@ -76,5 +77,13 @@ export default class ObjectService {
     } else {
       return null;
     }
+  }
+
+  public static async getObjectsIfMissing<Key extends ObjectType>(wellbore: Wellbore, objectType: Key, abortSignal?: AbortSignal): Promise<ObjectTypeToModel[Key][] | null> {
+    const objects = getObjectsFromWellbore(wellbore, objectType);
+    if (objects == null || objects.length == 0) {
+      return await ObjectService.getObjects(wellbore.wellUid, wellbore.uid, objectType, abortSignal);
+    }
+    return null;
   }
 }

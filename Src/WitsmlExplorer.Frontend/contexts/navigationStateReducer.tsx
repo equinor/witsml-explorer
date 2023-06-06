@@ -1,9 +1,16 @@
 import { Dispatch, useReducer } from "react";
 import LogObject from "../models/logObject";
-import { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
+import ObjectOnWellbore, { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import { getWellProperties } from "../models/well";
-import { calculateLogTypeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../models/wellbore";
+import Wellbore, {
+  WellboreObjects,
+  calculateLogTypeId,
+  calculateObjectGroupId,
+  calculateWellboreNodeId,
+  getWellboreProperties,
+  objectTypeToWellboreObjects
+} from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import { filterWells } from "./filter";
 import { performModificationAction } from "./modificationStateReducer";
@@ -93,52 +100,30 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction): 
 };
 
 const selectWell = (state: NavigationState, { payload }: SelectWellAction): NavigationState => {
-  const { well, wellbores } = payload;
+  const { well } = payload;
   const shouldExpandNode = !treeNodeIsExpanded(state.expandedTreeNodes, well.uid);
   const expandedTreeNodes = shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, well.uid) : state.expandedTreeNodes;
-  if (state.selectedWell === well) {
-    return {
-      ...state,
-      ...allDeselected,
-      selectedServer: state.selectedServer,
-      selectedWell: well,
-      currentSelected: well,
-      expandedTreeNodes: expandedTreeNodes,
-      currentProperties: getWellProperties(well)
-    };
-  } else {
-    const wellWithWellbores = { ...well, wellbores };
-    const updatedWells = state.wells.map((w) => (w.uid === wellWithWellbores.uid ? wellWithWellbores : w));
-    return {
-      ...state,
-      ...allDeselected,
-      selectedServer: state.selectedServer,
-      selectedWell: wellWithWellbores,
-      currentSelected: wellWithWellbores,
-      expandedTreeNodes: expandedTreeNodes,
-      wells: updatedWells,
-      filteredWells: filterWells(updatedWells, state.selectedFilter),
-      currentProperties: getWellProperties(well)
-    };
-  }
-};
-
-const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction): NavigationState => {
-  const { well, wellbore, bhaRuns, changeLogs, fluidsReports, formationMarkers, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometries } = payload;
-  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
-  const wellboreWithProperties = { ...wellbore, bhaRuns, changeLogs, fluidsReports, formationMarkers, logs, rigs, trajectories, messages, mudLogs, risks, tubulars, wbGeometries };
-  const updatedWellbores = well.wellbores.map((wB) => (wB.uid === wellboreWithProperties.uid ? wellboreWithProperties : wB));
-  const updatedWell = { ...well, wellbores: updatedWellbores };
-  const updatedWells = state.wells.map((w) => (w.uid === updatedWell.uid ? updatedWell : w));
   return {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
-    selectedWell: updatedWell,
-    selectedWellbore: wellboreWithProperties,
-    wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
-    currentSelected: wellboreWithProperties,
+    selectedWell: well,
+    currentSelected: well,
+    expandedTreeNodes: expandedTreeNodes,
+    currentProperties: getWellProperties(well)
+  };
+};
+
+const selectWellbore = (state: NavigationState, { payload }: SelectWellboreAction): NavigationState => {
+  const { well, wellbore } = payload;
+  const shouldExpandNode = shouldExpand(state.expandedTreeNodes, calculateWellboreNodeId(wellbore), well.uid);
+  return {
+    ...state,
+    ...allDeselected,
+    selectedServer: state.selectedServer,
+    selectedWell: well,
+    selectedWellbore: wellbore,
+    currentSelected: wellbore,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWellboreNodeId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
   };
@@ -163,15 +148,32 @@ const selectServerManager = (state: NavigationState): NavigationState => {
 };
 
 const selectObjectGroup = (state: NavigationState, { payload }: SelectObjectGroupAction): NavigationState => {
-  const { well, wellbore, objectType } = payload;
+  const { well, wellbore, objectType, objects } = payload;
+  let wellAndWellboreState: Partial<NavigationState> = { selectedWell: well, selectedWellbore: wellbore };
+  if (objects != null) {
+    const namedObjects: Partial<Record<keyof WellboreObjects, ObjectOnWellbore[]>> = {};
+    namedObjects[objectTypeToWellboreObjects(objectType)] = objects;
+    const updatedWellbore: Wellbore = { ...wellbore, ...(namedObjects as Partial<WellboreObjects>) };
+    const wellIndex = state.wells.findIndex((w) => w.uid === well.uid);
+    const wellboreIndex = well.wellbores.findIndex((w) => w.uid === wellbore.uid);
+    const updatedWell = { ...well };
+    updatedWell.wellbores.splice(wellboreIndex, 1, updatedWellbore);
+    const freshWells = [...state.wells];
+    freshWells.splice(wellIndex, 1, updatedWell);
+    wellAndWellboreState = {
+      selectedWell: updatedWell,
+      selectedWellbore: updatedWellbore,
+      wells: freshWells,
+      filteredWells: filterWells(freshWells, state.selectedFilter)
+    };
+  }
   const groupId = calculateObjectGroupId(wellbore, objectType);
   const shouldExpandNode = shouldExpand(state.expandedTreeNodes, groupId, calculateWellboreNodeId(wellbore));
   return {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
+    ...wellAndWellboreState,
     selectedObjectGroup: objectType,
     currentSelected: objectType,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, groupId) : state.expandedTreeNodes,

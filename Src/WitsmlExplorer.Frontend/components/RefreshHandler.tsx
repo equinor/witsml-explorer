@@ -131,7 +131,7 @@ const RefreshHandler = (): React.ReactElement => {
         dispatchNavigation({ type: modificationType, payload: { wellbore } });
       }
     } else if (modificationType === ModificationType.UpdateWellbore) {
-      const wellbore = await WellboreService.getCompleteWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
+      const wellbore = await WellboreService.getWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
       dispatchNavigation({
         type: ModificationType.UpdateWellbore,
         payload: { wellbore }

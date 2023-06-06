@@ -18,7 +18,7 @@ import Well from "../models/well";
 import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import NotificationService from "../services/notificationService";
-import WellboreService from "../services/wellboreService";
+import ObjectService from "../services/objectService";
 import { WITSML_INDEX_TYPE_MD } from "./Constants";
 
 const Routing = (): React.ReactElement => {
@@ -85,7 +85,7 @@ const Routing = (): React.ReactElement => {
       if (wellUid != null && !selectedWell && wells.length > 0) {
         const well: Well = wells.find((w: Well) => w.uid === wellUid);
         if (well) {
-          const selectWellAction: SelectWellAction = { type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } };
+          const selectWellAction: SelectWellAction = { type: NavigationType.SelectWell, payload: { well } };
           dispatchNavigation(selectWellAction);
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
@@ -109,7 +109,7 @@ const Routing = (): React.ReactElement => {
   }, [selectedWell]);
 
   useEffect(() => {
-    // fetch wellbore objects once a well is selected
+    // navigate to the wellbore once the well is selected
     const shouldNavigateToWellbore = isSyncingUrlAndState && selectedWell && urlParams?.wellboreUid && !selectedWellbore;
     if (shouldNavigateToWellbore) {
       const wellboreUid = urlParams.wellboreUid.toString();
@@ -118,11 +118,10 @@ const Routing = (): React.ReactElement => {
       const getChildren = async () => {
         const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
         if (wellbore) {
-          const wellboreObjects = await WellboreService.getWellboreObjects(selectedWell.uid, wellboreUid);
           const selectWellbore: SelectWellboreAction = {
             type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore, ...wellboreObjects }
-          } as SelectWellboreAction;
+            payload: { well: selectedWell, wellbore }
+          };
           dispatchNavigation(selectWellbore);
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
@@ -168,11 +167,15 @@ const Routing = (): React.ReactElement => {
           const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
           dispatchNavigation(action);
         } else {
-          const action: SelectObjectGroupAction = {
-            type: NavigationType.SelectObjectGroup,
-            payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore }
+          const fetchAndSelectObjectGroup = async () => {
+            const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
+            const action: SelectObjectGroupAction = {
+              type: NavigationType.SelectObjectGroup,
+              payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore, objects }
+            };
+            dispatchNavigation(action);
           };
-          dispatchNavigation(action);
+          fetchAndSelectObjectGroup();
         }
       }
       setIsSyncingUrlAndState(false);

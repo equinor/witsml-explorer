@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import ModificationType from "../../contexts/modificationType";
+import { SelectObjectGroupAction, SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
-import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
-import { truncateAbortHandler } from "../../services/apiClient";
-import WellboreService from "../../services/wellboreService";
+import Wellbore, { calculateObjectGroupId, getObjectsFromWellbore } from "../../models/wellbore";
+import ObjectService from "../../services/objectService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
@@ -35,14 +35,16 @@ export interface WellboreItemContextProps {
   wellbore: Wellbore;
 }
 
+export type ExpandableObjectsCount = Partial<Record<ObjectType, number>>;
+
 export const WellboreItemContext = createContext<WellboreItemContextProps>({} as WellboreItemContextProps);
 
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, expandedTreeNodes } = navigationState;
+  const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState(false);
+  const [isFetchingLogs, setIsFetchingLogs] = useState(false);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
@@ -66,64 +68,33 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularsContextMenu {...contextMenuProps} />, position } });
   };
 
-  useEffect(() => {
-    if (!isFetchingData) {
-      return;
-    }
-    const controller = new AbortController();
-
-    async function getChildren() {
-      const wellboreObjects = await WellboreService.getWellboreObjects(well.uid, wellbore.uid);
-      const selectWellbore: SelectWellboreAction = {
-        type: NavigationType.SelectWellbore,
-        payload: { well, wellbore, ...wellboreObjects }
-      };
-      dispatchNavigation(selectWellbore);
-      setIsFetchingData(false);
-    }
-
-    getChildren().catch(truncateAbortHandler);
-
-    return () => {
-      controller.abort();
-    };
-  }, [isFetchingData]);
-
   const onLabelClick = () => {
-    const wellboreHasData = wellbore.logs?.length > 0;
-    if (wellboreHasData) {
-      const payload = {
-        well,
-        wellbore,
-        bhaRuns: wellbore.bhaRuns,
-        changeLogs: wellbore.changeLogs,
-        fluidsReports: wellbore.fluidsReports,
-        formationMarkers: wellbore.formationMarkers,
-        logs: wellbore.logs,
-        rigs: wellbore.rigs,
-        trajectories: wellbore.trajectories,
-        messages: wellbore.messages,
-        mudLogs: wellbore.mudLogs,
-        risks: wellbore.risks,
-        tubulars: wellbore.tubulars,
-        wbGeometries: wellbore.wbGeometries
-      };
-      const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload };
-      dispatchNavigation(selectWellbore);
-    } else {
-      setIsFetchingData(true);
-    }
+    const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore } };
+    dispatchNavigation(selectWellbore);
   };
 
-  const onIconClick = () => {
-    const wellboreHasData = wellbore.logs?.length > 0;
-    if (wellboreHasData || expandedTreeNodes?.includes(props.nodeId)) {
-      const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: props.nodeId } };
-      dispatchNavigation(toggleTreeNode);
-    } else {
-      setIsFetchingData(true);
-    }
+  const onClickLogs = async () => {
+    setIsFetchingLogs(true);
+    const objects = await ObjectService.getObjectsIfMissing(wellbore, ObjectType.Log);
+    const action: SelectObjectGroupAction = { type: NavigationType.SelectObjectGroup, payload: { objectType: ObjectType.Log, well, wellbore, objects } };
+    dispatchNavigation(action);
+    setIsFetchingLogs(false);
   };
+
+  const onClickLogsIcon = useCallback(async () => {
+    const objects = getObjectsFromWellbore(wellbore, ObjectType.Log);
+    if (objects == null || objects.length == 0) {
+      setIsFetchingLogs(true);
+      const fetchedObjects = await ObjectService.getObjects(wellbore.wellUid, wellbore.uid, ObjectType.Log);
+      dispatchNavigation({
+        type: ModificationType.UpdateWellboreObjects,
+        payload: { wellboreObjects: fetchedObjects, wellUid: well.uid, wellboreUid: wellbore.uid, objectType: ObjectType.Log }
+      });
+      setIsFetchingLogs(false);
+    }
+    const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: calculateObjectGroupId(wellbore, ObjectType.Log) } };
+    dispatchNavigation(toggleTreeNode);
+  }, [well, wellbore]);
 
   return (
     <TreeItem
@@ -133,9 +104,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       selected={selected}
       labelText={wellbore.name}
       onLabelClick={onLabelClick}
-      onIconClick={onIconClick}
       isActive={wellbore.isActive}
-      isLoading={isFetchingData}
     >
       <WellboreItemContext.Provider value={{ wellbore, well }}>
         <ObjectGroupItem objectType={ObjectType.BhaRun} />
@@ -145,9 +114,11 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         <TreeItem
           nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
           labelText={"Logs"}
-          onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType: ObjectType.Log } })}
+          onLabelClick={onClickLogs}
+          onIconClick={onClickLogsIcon}
           onContextMenu={(event) => onLogsContextMenu(event, wellbore)}
           isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
+          isLoading={isFetchingLogs}
         >
           <LogTypeItem />
         </TreeItem>

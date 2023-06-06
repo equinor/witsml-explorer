@@ -78,7 +78,7 @@ const LogTypeItem = (): React.ReactElement => {
 };
 
 const filterLogsByType = (wellbore: Wellbore, logType: string) => {
-  return wellbore && wellbore.logs && wellbore.logs.filter((log) => log.indexType === logType);
+  return wellbore && wellbore.logs ? wellbore.logs.filter((log) => log.indexType === logType) : [];
 };
 
 const listLogItemsByType = (logObjects: LogObject[], logType: string, well: Well, wellbore: Wellbore, logGroup: string, isSelected: (log: LogObject) => boolean) => {

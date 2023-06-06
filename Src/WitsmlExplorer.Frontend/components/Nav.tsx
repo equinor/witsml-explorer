@@ -79,7 +79,7 @@ const getWellCrumb = (selectedWell: Well, dispatch: (action: SelectWellAction) =
   return selectedWell
     ? {
         name: selectedWell.name,
-        onClick: () => dispatch({ type: NavigationType.SelectWell, payload: { well: selectedWell, wellbores: selectedWell.wellbores } })
+        onClick: () => dispatch({ type: NavigationType.SelectWell, payload: { well: selectedWell } })
       }
     : {};
 };
@@ -88,26 +88,7 @@ const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispat
   return selectedWellbore
     ? {
         name: selectedWellbore.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWellbore,
-            payload: {
-              well: selectedWell,
-              wellbore: selectedWellbore,
-              bhaRuns: selectedWellbore.bhaRuns,
-              changeLogs: selectedWellbore.changeLogs,
-              fluidsReports: selectedWellbore.fluidsReports,
-              formationMarkers: selectedWellbore.formationMarkers,
-              logs: selectedWellbore.logs,
-              rigs: selectedWellbore.rigs,
-              trajectories: selectedWellbore.trajectories,
-              messages: selectedWellbore.messages,
-              mudLogs: selectedWellbore.mudLogs,
-              risks: selectedWellbore.risks,
-              tubulars: selectedWellbore.tubulars,
-              wbGeometries: selectedWellbore.wbGeometries
-            }
-          })
+        onClick: () => dispatch({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore: selectedWellbore } })
       }
     : {};
 };
@@ -125,7 +106,7 @@ const getObjectGroupCrumb = (
         onClick: () =>
           dispatch({
             type: NavigationType.SelectObjectGroup,
-            payload: { well: selectedWell, wellbore: selectedWellbore, objectType }
+            payload: { well: selectedWell, wellbore: selectedWellbore, objectType, objects: null }
           })
       }
     : {};

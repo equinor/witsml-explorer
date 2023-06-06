@@ -100,7 +100,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   };
 
   const onClickRefresh = async () => {
-    const refreshedWellbore = await WellboreService.getCompleteWellbore(wellbore.wellUid, wellbore.uid);
+    const refreshedWellbore = await WellboreService.getWellbore(wellbore.wellUid, wellbore.uid);
     dispatchNavigation({
       type: ModificationType.UpdateWellbore,
       payload: { wellbore: refreshedWellbore }

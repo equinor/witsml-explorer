@@ -4,7 +4,6 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import WellboreService from "../../services/wellboreService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
@@ -45,10 +44,9 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const onSelect = async (wellbore: any) => {
-    const wellboreObjects = await WellboreService.getWellboreObjects(selectedWell.uid, wellbore.uid);
     dispatchNavigation({
       type: NavigationType.SelectWellbore,
-      payload: { well: selectedWell, wellbore, ...wellboreObjects }
+      payload: { well: selectedWell, wellbore }
     });
   };
 
