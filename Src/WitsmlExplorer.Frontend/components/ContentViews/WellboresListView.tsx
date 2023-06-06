@@ -13,7 +13,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, servers } = navigationState;
+  const { selectedWell } = navigationState;
   const {
     dispatchOperation,
     operationState: { timeZone }
@@ -29,7 +29,7 @@ export const WellboresListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
-    const contextMenuProps: WellboreContextMenuProps = { dispatchNavigation, dispatchOperation, servers, wellbore };
+    const contextMenuProps: WellboreContextMenuProps = { wellbore, well: selectedWell };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };

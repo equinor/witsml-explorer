@@ -46,7 +46,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: WellboreContextMenuProps = { wellbore, servers, dispatchOperation, dispatchNavigation };
+    const contextMenuProps: WellboreContextMenuProps = { wellbore, well };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };
