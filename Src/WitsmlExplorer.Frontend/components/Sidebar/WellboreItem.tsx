@@ -1,4 +1,6 @@
+import { useTheme } from "@material-ui/core";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -21,6 +23,7 @@ import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/W
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogTypeItem from "./LogTypeItem";
 import ObjectGroupItem from "./ObjectGroupItem";
+import { ActiveWellIndicator, InactiveWellInidcator } from "./Sidebar";
 import TreeItem from "./TreeItem";
 
 interface WellboreItemProps {
@@ -43,6 +46,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { servers, expandedTreeNodes } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState(false);
+  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
@@ -126,46 +130,54 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   };
 
   return (
-    <TreeItem
-      onContextMenu={(event) => onContextMenu(event, wellbore)}
-      key={nodeId}
-      nodeId={nodeId}
-      selected={selected}
-      labelText={wellbore.name}
-      onLabelClick={onLabelClick}
-      onIconClick={onIconClick}
-      isActive={wellbore.isActive}
-      isLoading={isFetchingData}
-    >
-      <WellboreItemContext.Provider value={{ wellbore, well }}>
-        <ObjectGroupItem objectType={ObjectType.BhaRun} />
-        <ObjectGroupItem objectType={ObjectType.ChangeLog} onGroupContextMenu={preventContextMenuPropagation} />
-        <ObjectGroupItem objectsOnWellbore={wellbore?.fluidsReports} objectType={ObjectType.FluidsReport} ObjectContextMenu={FluidsReportContextMenu} />
-        <ObjectGroupItem objectType={ObjectType.FormationMarker} />
-        <TreeItem
-          nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
-          labelText={"Logs"}
-          onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType: ObjectType.Log } })}
-          onContextMenu={(event) => onLogsContextMenu(event, wellbore)}
-          isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
-        >
-          <LogTypeItem />
-        </TreeItem>
-        <ObjectGroupItem objectType={ObjectType.Message} />
-        <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
-        <ObjectGroupItem objectType={ObjectType.Rig} />
-        <ObjectGroupItem objectType={ObjectType.Risk} />
-        <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
-        <ObjectGroupItem
-          objectsOnWellbore={wellbore?.tubulars}
-          objectType={ObjectType.Tubular}
-          ObjectContextMenu={TubularContextMenu}
-          onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
-        />
-        <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
-      </WellboreItemContext.Provider>
-    </TreeItem>
+    <WellboreLayout>
+      <TreeItem
+        onContextMenu={(event) => onContextMenu(event, wellbore)}
+        key={nodeId}
+        nodeId={nodeId}
+        selected={selected}
+        labelText={wellbore.name}
+        onLabelClick={onLabelClick}
+        onIconClick={onIconClick}
+        isLoading={isFetchingData}
+      >
+        <WellboreItemContext.Provider value={{ wellbore, well }}>
+          <ObjectGroupItem objectType={ObjectType.BhaRun} />
+          <ObjectGroupItem objectType={ObjectType.ChangeLog} onGroupContextMenu={preventContextMenuPropagation} />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.fluidsReports} objectType={ObjectType.FluidsReport} ObjectContextMenu={FluidsReportContextMenu} />
+          <ObjectGroupItem objectType={ObjectType.FormationMarker} />
+          <TreeItem
+            nodeId={calculateObjectGroupId(wellbore, ObjectType.Log)}
+            labelText={"Logs"}
+            onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType: ObjectType.Log } })}
+            onContextMenu={(event) => onLogsContextMenu(event, wellbore)}
+            isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
+          >
+            <LogTypeItem />
+          </TreeItem>
+          <ObjectGroupItem objectType={ObjectType.Message} />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
+          <ObjectGroupItem objectType={ObjectType.Rig} />
+          <ObjectGroupItem objectType={ObjectType.Risk} />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.tubulars}
+            objectType={ObjectType.Tubular}
+            ObjectContextMenu={TubularContextMenu}
+            onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
+          />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
+        </WellboreItemContext.Provider>
+      </TreeItem>
+      {wellbore.isActive ? <ActiveWellIndicator compactMode={isCompactMode} /> : <InactiveWellInidcator compactMode={isCompactMode} />}
+    </WellboreLayout>
   );
 };
 
+const WellboreLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 0px;
+  justify-content: center;
+  align-content: stretch;
+`;
 export default WellboreItem;
