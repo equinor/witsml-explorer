@@ -154,7 +154,7 @@ const Routing = (): React.ReactElement => {
           const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
           const action: SelectObjectGroupAction = {
             type: NavigationType.SelectObjectGroup,
-            payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore, objects }
+            payload: { objectType: group, wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objects }
           };
           dispatchNavigation(action);
         };

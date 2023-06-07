@@ -41,7 +41,7 @@ export interface SelectJobsAction extends Action {
 
 export interface SelectObjectGroupAction extends Action {
   type: NavigationType.SelectObjectGroup;
-  payload: { well: Well; wellbore: Wellbore; objectType: ObjectType; objects: ObjectOnWellbore[] | null };
+  payload: { wellUid: string; wellboreUid: string; objectType: ObjectType; objects: ObjectOnWellbore[] | null };
 }
 
 export interface SelectLogTypeAction extends Action {

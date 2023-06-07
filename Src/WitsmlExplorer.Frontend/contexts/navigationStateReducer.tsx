@@ -148,14 +148,18 @@ const selectServerManager = (state: NavigationState): NavigationState => {
 };
 
 const selectObjectGroup = (state: NavigationState, { payload }: SelectObjectGroupAction): NavigationState => {
-  const { well, wellbore, objectType, objects } = payload;
+  const { wellUid, wellboreUid, objectType, objects } = payload;
+  // find the well and wellbore in state instead of passing them through payload
+  // to avoid updating stale wellbores when multiple object groups are opened before objects are fetched
+  const wellIndex = state.wells.findIndex((w) => w.uid === wellUid);
+  const well = state.wells[wellIndex];
+  const wellboreIndex = well.wellbores.findIndex((w) => w.uid === wellboreUid);
+  const wellbore = well.wellbores[wellboreIndex];
   let wellAndWellboreState: Partial<NavigationState> = { selectedWell: well, selectedWellbore: wellbore };
   if (objects != null) {
     const namedObjects: Partial<Record<keyof WellboreObjects, ObjectOnWellbore[]>> = {};
     namedObjects[objectTypeToWellboreObjects(objectType)] = objects;
     const updatedWellbore: Wellbore = { ...wellbore, ...(namedObjects as Partial<WellboreObjects>) };
-    const wellIndex = state.wells.findIndex((w) => w.uid === well.uid);
-    const wellboreIndex = well.wellbores.findIndex((w) => w.uid === wellbore.uid);
     const updatedWell = { ...well };
     updatedWell.wellbores.splice(wellboreIndex, 1, updatedWellbore);
     const freshWells = [...state.wells];

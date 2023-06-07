@@ -40,7 +40,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   const onSelectObjectGroup = useCallback(async () => {
     setIsLoading(true);
     const objects = await ObjectService.getObjectsIfMissing(wellbore, objectType);
-    dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { well, wellbore, objectType, objects } });
+    dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { wellUid: well.uid, wellboreUid: wellbore.uid, objectType, objects } });
     setIsLoading(false);
   }, [well, wellbore, objectType]);
 

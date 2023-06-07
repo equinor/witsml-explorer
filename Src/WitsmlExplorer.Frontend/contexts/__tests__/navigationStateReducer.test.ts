@@ -221,7 +221,7 @@ it("Selecting an object group node twice should change nothing", () => {
   };
   const action: SelectObjectGroupAction = {
     type: NavigationType.SelectObjectGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Log, objects: null }
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Log, objects: null }
   };
   const afterLogGroupSelect = reducer(initialState, action);
   const expected = { ...initialState };
@@ -261,7 +261,7 @@ it("Selecting a different object group should update the selectedObjectGroup", (
   };
   const action: SelectObjectGroupAction = {
     type: NavigationType.SelectObjectGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Rig, objects: null }
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Rig, objects: null }
   };
   const afterRigGroupSelect = reducer(initialState, action);
   const expected: NavigationState = {
@@ -284,7 +284,7 @@ it("Selecting an object group should update the wellbore if passing objects", ()
   };
   const action: SelectObjectGroupAction = {
     type: NavigationType.SelectObjectGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Log, objects: [LOG_1] }
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Log, objects: [LOG_1] }
   };
   const afterLogGroupSelect = reducer(initialState, action);
   const updatedWellbore = { ...WELLBORE_1, logs: [LOG_1] };

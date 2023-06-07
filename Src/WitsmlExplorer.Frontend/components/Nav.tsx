@@ -106,7 +106,7 @@ const getObjectGroupCrumb = (
         onClick: () =>
           dispatch({
             type: NavigationType.SelectObjectGroup,
-            payload: { well: selectedWell, wellbore: selectedWellbore, objectType, objects: null }
+            payload: { wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objectType, objects: null }
           })
       }
     : {};

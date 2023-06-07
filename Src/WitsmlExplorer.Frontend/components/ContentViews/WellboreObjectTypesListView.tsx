@@ -33,7 +33,7 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
     const objects = await ObjectService.getObjectsIfMissing(selectedWellbore, row.objectType);
     const action: SelectObjectGroupAction = {
       type: NavigationType.SelectObjectGroup,
-      payload: { objectType: row.objectType, well: selectedWell, wellbore: selectedWellbore, objects }
+      payload: { objectType: row.objectType, wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objects }
     };
     dispatchNavigation(action);
   };
