@@ -176,7 +176,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
 
 const WellboreLayout = styled.div`
   display: grid;
-  grid-template-columns: 1fr 25px;
+  grid-template-columns: 1fr 0px;
   justify-content: center;
   align-content: stretch;
 `;

@@ -78,14 +78,14 @@ export const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
   height: 14px;
   background-color: ${colors.interactive.successHover};
   border-radius: 50%;
-  margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
 `;
 
 export const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
   border: 2px solid ${colors.text.staticIconsTertiary};
 `;
 export default Sidebar;
