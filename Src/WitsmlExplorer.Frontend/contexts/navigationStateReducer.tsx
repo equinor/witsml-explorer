@@ -3,13 +3,13 @@ import LogObject from "../models/logObject";
 import { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import { getWellProperties } from "../models/well";
-import { calculateLogTypeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../models/wellbore";
+import { calculateLogTypeDepthId, calculateLogTypeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
-import { filterWells } from "./filter";
 import { performModificationAction } from "./modificationStateReducer";
 import ModificationType from "./modificationType";
 import {
   Action,
+  ExpandTreeNodesAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
   SelectObjectAction,
@@ -18,7 +18,6 @@ import {
   SelectWellAction,
   SelectWellboreAction,
   SetCurveThresholdAction,
-  SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState, allDeselected, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
@@ -40,6 +39,8 @@ export const reducer = (state: NavigationState, action: Action): NavigationState
 
 const performNavigationAction = (state: NavigationState, action: Action): NavigationState => {
   switch (action.type) {
+    case NavigationType.ExpandTreeNodes:
+      return expandTreeNodes(state, action);
     case NavigationType.ToggleTreeNode:
       return selectToggleTreeNode(state, action);
     case NavigationType.SelectServer:
@@ -56,8 +57,6 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
       return selectObject(state, action);
     case NavigationType.SelectObjectGroup:
       return selectObjectGroup(state, action);
-    case NavigationType.SetFilter:
-      return setFilter(state, action);
     case NavigationType.SetCurveThreshold:
       return setCurveThreshold(state, action);
     case NavigationType.ShowCurveValues:
@@ -76,6 +75,31 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
   };
 };
 
+const expandTreeNodes = (state: NavigationState, { payload }: ExpandTreeNodesAction): NavigationState => {
+  const { nodeIds } = payload;
+  const { selectedWell, selectedWellbore, selectedObjectGroup } = state;
+  const treeNodesToExpand: string[] = nodeIds;
+
+  // This makes sure that a selected well/wellbore/object does not toggle expand state
+  if (selectedWell && state.expandedTreeNodes.includes(selectedWell.uid) && !treeNodesToExpand.includes(selectedWell.uid)) {
+    treeNodesToExpand.push(selectedWell.uid);
+  }
+  if (selectedWellbore && state.expandedTreeNodes.includes(calculateWellboreNodeId(selectedWellbore))) {
+    treeNodesToExpand.push(calculateWellboreNodeId(selectedWellbore));
+  }
+  if (selectedObjectGroup && state.expandedTreeNodes.includes(calculateObjectGroupId(selectedWellbore, selectedObjectGroup))) {
+    treeNodesToExpand.push(calculateObjectGroupId(selectedWellbore, selectedObjectGroup));
+  }
+  if (selectedWellbore && state.expandedTreeNodes.includes(calculateLogTypeDepthId(selectedWellbore))) {
+    treeNodesToExpand.push(calculateLogTypeDepthId(selectedWellbore));
+  }
+
+  return {
+    ...state,
+    expandedTreeNodes: treeNodesToExpand
+  };
+};
+
 const selectServer = (state: NavigationState, { payload }: SelectServerAction): NavigationState => {
   const { server } = payload;
   const alreadySelected = server != null && server.id === state.selectedServer?.id;
@@ -87,7 +111,6 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction): 
     currentSelected: server ?? selectedServerManagerFlag,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
-    filteredWells: alreadySelected ? state.filteredWells : [],
     expandedTreeNodes
   };
 };
@@ -117,7 +140,6 @@ const selectWell = (state: NavigationState, { payload }: SelectWellAction): Navi
       currentSelected: wellWithWellbores,
       expandedTreeNodes: expandedTreeNodes,
       wells: updatedWells,
-      filteredWells: filterWells(updatedWells, state.selectedFilter),
       currentProperties: getWellProperties(well)
     };
   }
@@ -137,7 +159,6 @@ const selectWellbore = (state: NavigationState, { payload }: SelectWellboreActio
     selectedWell: updatedWell,
     selectedWellbore: wellboreWithProperties,
     wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
     currentSelected: wellboreWithProperties,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(state.expandedTreeNodes, calculateWellboreNodeId(wellbore)) : state.expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
@@ -233,27 +254,6 @@ const selectLogCurveInfo = (state: NavigationState, { payload }: SelectLogCurveI
     ...state,
     selectedLogCurveInfo: logCurveInfo,
     currentSelected: logCurveInfo
-  };
-};
-
-const setFilter = (state: NavigationState, { payload }: SetFilterAction): NavigationState => {
-  const { filter } = payload;
-  const filteredWells = filterWells(state.wells, filter);
-  const wellIsSelectedAndPassesFilter = state.selectedWell && state.selectedWell.name && filterWells([state.selectedWell], filter).length > 0;
-  if (wellIsSelectedAndPassesFilter) {
-    return {
-      ...state,
-      selectedFilter: filter,
-      filteredWells
-    };
-  }
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    currentSelected: state.selectedServer,
-    selectedFilter: filter,
-    filteredWells
   };
 };
 

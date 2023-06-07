@@ -17,6 +17,7 @@ import {
   UpdateWellsAction
 } from "./modificationActions";
 import {
+  ExpandTreeNodesAction,
   SelectJobsAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
@@ -27,7 +28,6 @@ import {
   SelectWellAction,
   SelectWellboreAction,
   SetCurveThresholdAction,
-  SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
 
@@ -49,6 +49,7 @@ export type NavigationAction =
   | UpdateWellboreWbGeometryAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
+  | ExpandTreeNodesAction
   | SelectJobsAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
@@ -57,6 +58,5 @@ export type NavigationAction =
   | SelectObjectAction
   | SelectObjectGroupAction
   | SelectServerAction
-  | SetFilterAction
   | SetCurveThresholdAction
   | SelectServerManagerAction;
