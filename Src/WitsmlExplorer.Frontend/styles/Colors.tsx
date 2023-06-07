@@ -6,6 +6,7 @@ export const colors = {
   },
   interactive: {
     dangerHighlight: tokens.colors.interactive.danger__highlight.hex,
+    textHighlight: tokens.colors.interactive.text_highlight.hex,
     dangerHover: tokens.colors.interactive.danger__hover.hex,
     dangerResting: tokens.colors.interactive.danger__resting.hex,
     disabledBorder: tokens.colors.interactive.disabled__border.hex,
@@ -13,6 +14,7 @@ export const colors = {
     primaryResting: tokens.colors.interactive.primary__resting.hex,
     successResting: tokens.colors.interactive.success__resting.hex,
     tableHeaderFillResting: tokens.colors.interactive.table__header__fill_resting.hex,
+    tableCellFillActivated: tokens.colors.interactive.table__cell__fill_activated.hex,
     successHover: tokens.colors.interactive.success__hover.hex
   },
   text: {

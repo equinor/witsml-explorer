@@ -70,7 +70,7 @@ const SearchFilter = (): React.ReactElement => {
 const SeachLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 44px;
-  padding: 0.6rem 0rem 0.5rem 1rem;
+  padding: 0.6rem 0.375rem 0.5rem 1rem;
   position: relative;
 `;
 

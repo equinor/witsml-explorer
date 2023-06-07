@@ -32,7 +32,7 @@ const Sidebar = (): React.ReactElement => {
             >
               {filteredWells.map((well: Well, index: number) => (
                 <React.Fragment key={index}>
-                  <div style={WellListing} className="ListWells">
+                  <div style={WellListing}>
                     <WellItem key={well.uid} well={well} />
                     {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
                       <ActiveWellIndicator compactMode={isCompactMode} />
@@ -57,21 +57,35 @@ const SidebarTreeView = styled.div`
   height: 70%;
   padding-left: 1em;
   padding-right: 0.3em;
+  .MuiTreeItem-root {
+    min-width: 0;
+    .MuiTreeItem-iconContainer {
+      flex: none;
+    }
+    .MuiTreeItem-label {
+      min-width: 0;
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 `;
 
-const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
+export const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
+  width: 14px;
+  height: 14px;
   background-color: ${colors.interactive.successHover};
   border-radius: 50%;
-  margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
 `;
 
-const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
-  width: 10px;
-  height: 10px;
-  background-color: ${colors.interactive.disabledBorder};
+export const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  margin-top: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
+  border: 2px solid ${colors.text.staticIconsTertiary};
 `;
 export default Sidebar;
