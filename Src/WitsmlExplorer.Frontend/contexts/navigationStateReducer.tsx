@@ -26,7 +26,8 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction
+  ToggleTreeNodeAction,
+  ToggleTreeNodeChildrenAction
 } from "./navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState, allDeselected, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
@@ -49,6 +50,8 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
   switch (action.type) {
     case NavigationType.ToggleTreeNode:
       return selectToggleTreeNode(state, action);
+    case NavigationType.ToggleTreeNodeChildren:
+      return selectToggleTreeNodeChildren(state, action);
     case NavigationType.SelectServer:
       return selectServer(state, action);
     case NavigationType.SelectWell:
@@ -80,6 +83,17 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
   return {
     ...state,
     expandedTreeNodes: toggleTreeNode(state.expandedTreeNodes, payload.nodeId)
+  };
+};
+
+const selectToggleTreeNodeChildren = (state: NavigationState, { payload }: ToggleTreeNodeChildrenAction): NavigationState => {
+  const { nodeId } = payload;
+  if (!treeNodeIsExpanded(state.expandedTreeNodes, nodeId)) {
+    return state;
+  }
+  return {
+    ...state,
+    expandedTreeNodes: toggleTreeNode(toggleTreeNode(state.expandedTreeNodes, nodeId), nodeId)
   };
 };
 

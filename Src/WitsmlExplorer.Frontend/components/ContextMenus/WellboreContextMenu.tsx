@@ -37,7 +37,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   const { wellbore, well } = props;
   const {
     dispatchNavigation,
-    navigationState: { servers, expandedTreeNodes }
+    navigationState: { servers, expandedTreeNodes, selectedWell, selectedWellbore }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const objectReferences = useClipboardReferences();
@@ -109,19 +109,21 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    // toggle the wellbore node and navigate to parent well to reset the sidebar and content view
+    // toggle the wellbore node and navigate to parent wellbore to reset the sidebar and content view
     //   because we do not load in objects that have been loaded in before the refresh
     const nodeId = calculateWellboreNodeId(wellbore);
     if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
       dispatchNavigation({
-        type: NavigationType.ToggleTreeNode,
+        type: NavigationType.ToggleTreeNodeChildren,
         payload: { nodeId }
       });
     }
-    dispatchNavigation({
-      type: NavigationType.SelectWell,
-      payload: { well }
-    });
+    if (selectedWell?.uid == well.uid && selectedWellbore?.uid == wellbore.uid) {
+      dispatchNavigation({
+        type: NavigationType.SelectWellbore,
+        payload: { well, wellbore }
+      });
+    }
 
     const refreshedWellbore = await WellboreService.getWellbore(wellbore.wellUid, wellbore.uid);
     const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);

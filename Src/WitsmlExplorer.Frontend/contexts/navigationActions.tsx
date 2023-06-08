@@ -22,6 +22,11 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
+export interface ToggleTreeNodeChildrenAction extends Action {
+  type: NavigationType.ToggleTreeNodeChildren;
+  payload: { nodeId: string };
+}
+
 export interface SelectWellAction extends Action {
   type: NavigationType.SelectWell;
   payload: { well: Well };

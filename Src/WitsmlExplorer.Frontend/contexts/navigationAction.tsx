@@ -28,7 +28,8 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction
+  ToggleTreeNodeAction,
+  ToggleTreeNodeChildrenAction
 } from "./navigationActions";
 
 export type NavigationAction =
@@ -49,6 +50,7 @@ export type NavigationAction =
   | UpdateWellboreWbGeometryAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
+  | ToggleTreeNodeChildrenAction
   | SelectJobsAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
