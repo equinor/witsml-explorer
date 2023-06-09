@@ -142,7 +142,7 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
             ))}
         </RowWrapper>
       </TableHeader>
-      <div>{children}</div>
+      <DataContainer>{children}</DataContainer>
     </div>
   );
 });
@@ -330,6 +330,10 @@ interface RowWrapperProps {
   width?: number;
   compactMode: boolean;
 }
+
+const DataContainer = styled.div`
+  position: absolute;
+`;
 
 const RowWrapper = styled.div<RowWrapperProps>`
   display: grid;
