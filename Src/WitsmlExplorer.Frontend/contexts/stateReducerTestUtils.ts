@@ -7,7 +7,6 @@ import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Well from "../models/well";
 import Wellbore, { WellboreObjects, objectTypeToWellboreObjects } from "../models/wellbore";
-import Filter, { EMPTY_FILTER } from "./filter";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
 
 export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", roles: [], depthLogDecimals: 0 };
@@ -146,7 +145,6 @@ export const WBGEOMETRY_1 = {
   wellboreName: "",
   wellboreUid: ""
 };
-export const FILTER_1: Filter = { ...EMPTY_FILTER, wellName: WELL_1.name };
 
 export const getInitialState = (): NavigationState => {
   const well1 = { ...WELL_1, wellbores: [{ ...WELLBORE_1 }] };
@@ -158,7 +156,6 @@ export const getInitialState = (): NavigationState => {
     ...EMPTY_NAVIGATION_STATE,
     selectedServer: SERVER_1,
     wells,
-    filteredWells: wells,
     servers
   };
 };

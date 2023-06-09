@@ -60,7 +60,7 @@ const LogTypeItem = (): React.ReactElement => {
         nodeId={logTypeGroupDepth}
         onLabelClick={() => onSelectType(logTypeGroupDepth)}
         onContextMenu={(event) => onContextMenu(event, wellbore, IndexCurve.Depth)}
-        isActive={depthLogs.some((log) => log.objectGrowing)}
+        isActive={depthLogs?.some((log) => log.objectGrowing)}
       >
         {listLogItemsByType(depthLogs, WITSML_INDEX_TYPE_MD, well, wellbore, logGroup, isSelected)}
       </TreeItem>
@@ -69,7 +69,7 @@ const LogTypeItem = (): React.ReactElement => {
         labelText={"Time"}
         onLabelClick={() => onSelectType(logTypeGroupTime)}
         onContextMenu={(event) => onContextMenu(event, wellbore, IndexCurve.Time)}
-        isActive={timeLogs.some((log) => log.objectGrowing)}
+        isActive={timeLogs?.some((log) => log.objectGrowing)}
       >
         {listLogItemsByType(timeLogs, WITSML_INDEX_TYPE_DATE_TIME, well, wellbore, logGroup, isSelected)}
       </TreeItem>
@@ -78,11 +78,11 @@ const LogTypeItem = (): React.ReactElement => {
 };
 
 const filterLogsByType = (wellbore: Wellbore, logType: string) => {
-  return wellbore && wellbore.logs && wellbore.logs.filter((log) => log.indexType === logType);
+  return wellbore?.logs?.filter((log) => log.indexType === logType);
 };
 
 const listLogItemsByType = (logObjects: LogObject[], logType: string, well: Well, wellbore: Wellbore, logGroup: string, isSelected: (log: LogObject) => boolean) => {
-  return logObjects.map((log) => (
+  return logObjects?.map((log) => (
     <LogItem
       key={calculateObjectNodeId(log, ObjectType.Log)}
       log={log}

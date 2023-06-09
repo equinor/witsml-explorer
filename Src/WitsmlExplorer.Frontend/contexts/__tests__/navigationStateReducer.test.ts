@@ -2,7 +2,6 @@ import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { emptyWell, getWellProperties } from "../../models/well";
 import Wellbore, { calculateLogTypeTimeId, calculateObjectGroupId, calculateWellboreNodeId, getWellboreProperties } from "../../models/wellbore";
-import { EMPTY_FILTER } from "../filter";
 import { sortList } from "../modificationStateReducer";
 import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, ToggleTreeNodeAction } from "../navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
@@ -11,7 +10,6 @@ import NavigationType from "../navigationType";
 import {
   BHARUN_1,
   CHANGELOG_1,
-  FILTER_1,
   FLUIDSREPORT_1,
   FORMATIONMARKER_1,
   LOG_1,
@@ -40,8 +38,6 @@ it("Should not update state when selecting current selected server", () => {
     ...getInitialState(),
     currentSelected: SERVER_1,
     wells: [WELL_1],
-    filteredWells: [WELL_1],
-    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_1 } };
@@ -55,8 +51,6 @@ it("Should update state when selecting another server", () => {
   const initialState = {
     ...getInitialState(),
     wells: [WELL_1],
-    filteredWells: [WELL_1],
-    selectedFilter: FILTER_1,
     servers: [SERVER_1, SERVER_2]
   };
   const selectServerAction: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: SERVER_2 } };
@@ -65,8 +59,7 @@ it("Should update state when selecting another server", () => {
     ...initialState,
     selectedServer: SERVER_2,
     currentSelected: SERVER_2,
-    wells: [],
-    filteredWells: []
+    wells: []
   });
 });
 
@@ -84,7 +77,6 @@ it("Should also update selected well when a wellbore is selected", () => {
     currentSelected: WELLBORE_2,
     servers: [SERVER_1],
     wells: WELLS,
-    filteredWells: WELLS,
     expandedTreeNodes: [WELL_2.uid, "well2wellbore2"],
     currentProperties: getWellboreProperties(WELLBORE_2)
   });
@@ -135,7 +127,6 @@ it("Should add all objects to a wellbore if it is selected for the first time", 
     currentSelected: expectedWellbore,
     servers: [SERVER_1],
     wells: [WELL_1, WELL_2, expectedWell],
-    filteredWells: [WELL_1, WELL_2, expectedWell],
     expandedTreeNodes: ["well3", "well3wellbore3"],
     currentProperties: getWellboreProperties(WELLBORE_3)
   });
@@ -157,28 +148,9 @@ it("Should also update well and wellbore when a trajectory is selected", () => {
     currentSelected: TRAJECTORY_1,
     servers: [SERVER_1],
     wells: WELLS,
-    filteredWells: WELLS,
-    selectedFilter: EMPTY_FILTER,
     currentProperties: getObjectOnWellboreProperties(TRAJECTORY_1, ObjectType.Trajectory)
   };
   expect(actual).toStrictEqual(expected);
-});
-
-it("Should filter wells", () => {
-  const setFilterAction = {
-    type: NavigationType.SetFilter,
-    payload: { filter: { ...EMPTY_FILTER, wellName: "2" } }
-  };
-  const actual = reducer(getInitialState(), setFilterAction);
-  expect(actual).toStrictEqual({
-    ...EMPTY_NAVIGATION_STATE,
-    selectedServer: SERVER_1,
-    currentSelected: SERVER_1,
-    servers: [SERVER_1],
-    wells: WELLS,
-    filteredWells: [WELL_2],
-    selectedFilter: { ...EMPTY_FILTER, wellName: "2" }
-  });
 });
 
 it("Should sort a list on name attrb. when adding new well/wellbore", () => {
@@ -191,21 +163,6 @@ it("Should sort a list on name attrb. when adding new well/wellbore", () => {
   const wellList = [wellC, wellA, wellB];
   sortList(wellList);
   expect(wellList).toStrictEqual([wellA, wellB, wellC]);
-});
-
-it("Should not reset selected wellbore if it is included in filter", () => {
-  const selectWellAction = {
-    type: NavigationType.SelectWell,
-    payload: { well: WELL_3 }
-  };
-  const unfiltered = reducer(getInitialState(), selectWellAction);
-  expect(unfiltered.selectedWell.uid).toStrictEqual(WELL_3.uid);
-  const setFilterAction = {
-    type: NavigationType.SetFilter,
-    payload: { filter: "3" }
-  };
-  const filtered = reducer(unfiltered, setFilterAction);
-  expect(filtered.selectedWell.uid).toStrictEqual(WELL_3.uid);
 });
 
 it("Selecting a well node twice should not change anything", () => {

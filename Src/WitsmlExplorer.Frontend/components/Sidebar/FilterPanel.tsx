@@ -3,6 +3,7 @@ import { Divider } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
+import { FilterContext } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { WellboreObjects } from "../../contexts/wellboreObjects";
@@ -10,7 +11,8 @@ import { colors } from "../../styles/Colors";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedFilter, selectedCurveThreshold } = navigationState;
+  const { selectedCurveThreshold } = navigationState;
+  const { selectedFilter, updateSelectedFilter } = React.useContext(FilterContext);
 
   const [showMore, setShowmore] = useState<boolean>(false);
   const ListWellborObj = {
@@ -74,9 +76,7 @@ const FilterPanel = (): React.ReactElement => {
               id="filter-wellLimit"
               type="number"
               min={0}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, wellLimit: Number(event.target.value) } } })
-              }
+              onChange={(event: ChangeEvent<HTMLInputElement>) => updateSelectedFilter({ wellLimit: Number(event.target.value) })}
               value={selectedFilter.wellLimit}
               autoComplete={"off"}
             />
@@ -88,14 +88,14 @@ const FilterPanel = (): React.ReactElement => {
               value={"Show active Wells / Wellbores"}
               color={"primary"}
               checked={selectedFilter.isActive}
-              onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, isActive: event.target.checked } } })}
+              onChange={(event) => updateSelectedFilter({ isActive: event.target.checked })}
               style={{ height: "0.625rem", userSelect: "none" }}
               label={"Show active Wells / Wellbores"}
             />
           </div>
           <div style={{ userSelect: "none" }}>
             <Checkbox
-              onChange={(event) => dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...selectedFilter, objectGrowing: event.target.checked } } })}
+              onChange={(event) => updateSelectedFilter({ objectGrowing: event.target.checked })}
               checked={selectedFilter.objectGrowing}
               id="filter-objectGrowing"
               value={"Show growing logs"}

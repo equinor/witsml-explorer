@@ -16,7 +16,6 @@ import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
 import CurveThreshold from "./curveThreshold";
-import Filter from "./filter";
 import NavigationType from "./navigationType";
 
 export interface Action {
@@ -32,6 +31,11 @@ export interface SelectServerAction extends Action {
 export interface ToggleTreeNodeAction extends Action {
   type: NavigationType.ToggleTreeNode;
   payload: { nodeId: string };
+}
+
+export interface ExpandTreeNodesAction extends Action {
+  type: NavigationType.ExpandTreeNodes;
+  payload: { nodeIds: string[] };
 }
 
 export interface SelectWellAction extends Action {
@@ -81,11 +85,6 @@ export interface SelectLogCurveInfoAction extends Action {
 export interface SelectObjectAction extends Action {
   type: NavigationType.SelectObject;
   payload: { object: ObjectOnWellbore; well: Well; wellbore: Wellbore; objectType: ObjectType };
-}
-
-export interface SetFilterAction extends Action {
-  type: NavigationType.SetFilter;
-  payload: { filter: Filter };
 }
 
 export interface SetCurveThresholdAction extends Action {
