@@ -15,7 +15,7 @@ export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, servers } = navigationState;
   const [selectedWellFiltered] = useWellFilter(
-    React.useMemo(() => [selectedWell], [selectedWell]),
+    React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
     React.useMemo(() => ({ filterWellbores: true }), [])
   );
   const {
