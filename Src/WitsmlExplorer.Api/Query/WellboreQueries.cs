@@ -52,7 +52,6 @@ namespace WitsmlExplorer.Api.Query
             {
                 Uid = wellbore.Uid,
                 UidWell = wellbore.WellUid,
-                CommonData = new()
             };
 
             if (!string.IsNullOrEmpty(wellbore.Name))
@@ -132,6 +131,7 @@ namespace WitsmlExplorer.Api.Query
 
             if (!string.IsNullOrEmpty(wellbore.Comments))
             {
+                witsmlWellbore.CommonData ??= new WitsmlCommonData();
                 witsmlWellbore.CommonData.Comments = wellbore.Comments;
             }
 
