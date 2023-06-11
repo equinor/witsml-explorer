@@ -4,7 +4,7 @@ import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
 import { ObjectType } from "../models/objectType";
-import { getObjectsFromWellbore } from "../models/wellbore";
+import { getObjectsFromWellbore, objectTypeToWellboreObjects } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
 import ObjectService from "../services/objectService";
 import WellService from "../services/wellService";
@@ -132,6 +132,16 @@ const RefreshHandler = (): React.ReactElement => {
       }
     } else if (modificationType === ModificationType.UpdateWellbore) {
       const wellbore = await WellboreService.getWellbore(refreshAction.wellUid, refreshAction.wellboreUid);
+      const previousWellbore = wells?.find((well) => well.uid === refreshAction.wellUid)?.wellbores?.find((wellbore) => wellbore.uid === refreshAction.wellboreUid);
+      if (previousWellbore) {
+        // keep the wellbore objects that have been already loaded in
+        Object.values(ObjectType).forEach((objectType) => {
+          const label = objectTypeToWellboreObjects(objectType);
+          // @ts-ignore
+          wellbore[label] = previousWellbore[label];
+        });
+        wellbore.objectCount = previousWellbore.objectCount;
+      }
       dispatchNavigation({
         type: ModificationType.UpdateWellbore,
         payload: { wellbore }

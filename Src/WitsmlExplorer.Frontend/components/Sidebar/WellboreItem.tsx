@@ -74,7 +74,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     if (wellbore.objectCount == null) {
       setIsFetchingCount(true);
       const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-      dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
+      dispatchNavigation({ type: ModificationType.UpdateWellborePartial, payload: { wellboreUid: wellbore.uid, wellUid: well.uid, wellboreProperties: { objectCount } } });
       setIsFetchingCount(false);
     }
   }, [wellbore]);

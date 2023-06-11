@@ -11,12 +11,14 @@ import {
   UpdateWellboreAction,
   UpdateWellboreLogAction,
   UpdateWellboreObjectsAction,
+  UpdateWellborePartialAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
   UpdateWellboreWbGeometryAction,
   UpdateWellsAction
 } from "./modificationActions";
 import {
+  CollapseTreeNodeChildrenAction,
   SelectJobsAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
@@ -28,8 +30,7 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction,
-  ToggleTreeNodeChildrenAction
+  ToggleTreeNodeAction
 } from "./navigationActions";
 
 export type NavigationAction =
@@ -44,13 +45,14 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
+  | UpdateWellborePartialAction
   | UpdateWellboreLogAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | UpdateWellboreWbGeometryAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
-  | ToggleTreeNodeChildrenAction
+  | CollapseTreeNodeChildrenAction
   | SelectJobsAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction

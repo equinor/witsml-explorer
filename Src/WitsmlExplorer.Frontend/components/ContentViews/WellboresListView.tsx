@@ -47,14 +47,14 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    const wellbore = wellboreRow.wellbore;
+    const wellbore: Wellbore = wellboreRow.wellbore;
     dispatchNavigation({
       type: NavigationType.SelectWellbore,
       payload: { well: selectedWell, wellbore }
     });
     if (wellbore.objectCount == null) {
       const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-      dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
+      dispatchNavigation({ type: ModificationType.UpdateWellborePartial, payload: { wellboreUid: wellbore.uid, wellUid: wellbore.wellUid, wellboreProperties: { objectCount } } });
     }
   };
 

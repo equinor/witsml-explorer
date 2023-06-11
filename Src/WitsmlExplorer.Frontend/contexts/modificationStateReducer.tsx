@@ -24,6 +24,7 @@ import {
   UpdateWellboreAction,
   UpdateWellboreLogAction,
   UpdateWellboreObjectsAction,
+  UpdateWellborePartialAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
   UpdateWellboreWbGeometryAction,
@@ -54,6 +55,8 @@ export const performModificationAction = (state: NavigationState, action: Action
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
+    case ModificationType.UpdateWellborePartial:
+      return updateWellborePartial(state, action);
     case ModificationType.UpdateLogObject:
       return updateWellboreLog(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
@@ -166,6 +169,29 @@ const updateWellbore = (state: NavigationState, { payload }: UpdateWellboreActio
     wells,
     filteredWells: filterWells(wells, state.selectedFilter),
     selectedWellbore: refreshedWellboreIsSelected ? wells[wellIndex].wellbores[wellboreIndex] : state.selectedWellbore
+  };
+};
+
+const updateWellborePartial = (state: NavigationState, { payload }: UpdateWellborePartialAction) => {
+  const { wellboreUid, wellUid, wellboreProperties } = payload;
+  const wellIndex = state.wells.findIndex((w) => w.uid === wellUid);
+  const well = state.wells[wellIndex];
+  const wellboreIndex = well.wellbores.findIndex((w) => w.uid === wellboreUid);
+  const wellbore = well.wellbores[wellboreIndex];
+  const updatedWellbore: Wellbore = { ...wellboreProperties, ...wellbore };
+  const updatedWell = { ...well };
+  updatedWell.wellbores.splice(wellboreIndex, 1, updatedWellbore);
+  const freshWells = [...state.wells];
+  freshWells.splice(wellIndex, 1, updatedWell);
+
+  const refreshedWellboreIsSelected = state.selectedWellbore?.uid === wellbore.uid;
+  const refreshedWellIsSelected = state.selectedWell?.uid === wellbore.wellUid;
+  return {
+    ...state,
+    wells: freshWells,
+    filteredWells: filterWells(freshWells, state.selectedFilter),
+    selectedWellbore: refreshedWellboreIsSelected ? updatedWellbore : state.selectedWellbore,
+    selectedWell: refreshedWellIsSelected ? updatedWell : state.selectedWellbore
   };
 };
 

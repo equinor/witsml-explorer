@@ -1,6 +1,6 @@
 enum NavigationType {
   ToggleTreeNode = "ToggleTreeNode",
-  ToggleTreeNodeChildren = "ToggleTreeNodeChildren",
+  CollapseTreeNodeChildren = "CollapseTreeNodeChildren",
   SelectServer = "SelectServer",
   SelectWell = "SelectWell",
   SelectWellbore = "SelectWellbore",

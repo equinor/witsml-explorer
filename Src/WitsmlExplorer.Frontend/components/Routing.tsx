@@ -125,7 +125,10 @@ const Routing = (): React.ReactElement => {
           };
           dispatchNavigation(selectWellbore);
           const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-          dispatchNavigation({ type: ModificationType.UpdateWellbore, payload: { wellbore: { ...wellbore, objectCount } } });
+          dispatchNavigation({
+            type: ModificationType.UpdateWellborePartial,
+            payload: { wellboreUid: wellbore.uid, wellUid: wellbore.wellUid, wellboreProperties: { objectCount } }
+          });
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer?.url),
@@ -146,7 +149,7 @@ const Routing = (): React.ReactElement => {
   }, [selectedWell]);
 
   useEffect(() => {
-    if (isSyncingUrlAndState && selectedWellbore && selectedWellbore.objectCount) {
+    if (isSyncingUrlAndState && selectedWellbore) {
       const group = urlParams?.group as ObjectType;
       const objectUid = urlParams?.objectUid;
       if (group != null && getObjectsFromWellbore(selectedWellbore, group) == null) {
@@ -182,6 +185,8 @@ const Routing = (): React.ReactElement => {
             isSuccess: false
           });
         }
+        setIsSyncingUrlAndState(false);
+      } else {
         setIsSyncingUrlAndState(false);
       }
     }

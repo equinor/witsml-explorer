@@ -114,7 +114,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     const nodeId = calculateWellboreNodeId(wellbore);
     if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
       dispatchNavigation({
-        type: NavigationType.ToggleTreeNodeChildren,
+        type: NavigationType.CollapseTreeNodeChildren,
         payload: { nodeId }
       });
     }

@@ -17,6 +17,7 @@ import { performModificationAction } from "./modificationStateReducer";
 import ModificationType from "./modificationType";
 import {
   Action,
+  CollapseTreeNodeChildrenAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
   SelectObjectAction,
@@ -26,8 +27,7 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   SetFilterAction,
-  ToggleTreeNodeAction,
-  ToggleTreeNodeChildrenAction
+  ToggleTreeNodeAction
 } from "./navigationActions";
 import { EMPTY_NAVIGATION_STATE, NavigationState, allDeselected, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
 import NavigationType from "./navigationType";
@@ -50,8 +50,8 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
   switch (action.type) {
     case NavigationType.ToggleTreeNode:
       return selectToggleTreeNode(state, action);
-    case NavigationType.ToggleTreeNodeChildren:
-      return selectToggleTreeNodeChildren(state, action);
+    case NavigationType.CollapseTreeNodeChildren:
+      return collapseTreeNodeChildren(state, action);
     case NavigationType.SelectServer:
       return selectServer(state, action);
     case NavigationType.SelectWell:
@@ -86,7 +86,7 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
   };
 };
 
-const selectToggleTreeNodeChildren = (state: NavigationState, { payload }: ToggleTreeNodeChildrenAction): NavigationState => {
+const collapseTreeNodeChildren = (state: NavigationState, { payload }: CollapseTreeNodeChildrenAction): NavigationState => {
   const { nodeId } = payload;
   if (!treeNodeIsExpanded(state.expandedTreeNodes, nodeId)) {
     return state;
