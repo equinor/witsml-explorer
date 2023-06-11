@@ -10,7 +10,6 @@ import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { WellboreObjects, calculateWellboreNodeId, objectTypeToWellboreObjects } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
-import { filterWells } from "./filter";
 import {
   AddServerAction,
   AddWellAction,
@@ -119,8 +118,7 @@ const addWell = (state: NavigationState, { payload }: AddWellAction) => {
 
   return {
     ...state,
-    wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells
   };
 };
 
@@ -136,7 +134,6 @@ const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     selectedWell: refreshedWellIsSelected ? wells[wellIndex] : state.selectedWell
   };
 };
@@ -151,8 +148,7 @@ const addWellbore = (state: NavigationState, { payload }: AddWellboreAction) => 
 
   return {
     ...state,
-    wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells
   };
 };
 
@@ -167,7 +163,6 @@ const updateWellbore = (state: NavigationState, { payload }: UpdateWellboreActio
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     selectedWellbore: refreshedWellboreIsSelected ? wells[wellIndex].wellbores[wellboreIndex] : state.selectedWellbore
   };
 };
@@ -189,7 +184,6 @@ const updateWellborePartial = (state: NavigationState, { payload }: UpdateWellbo
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedWellbore: refreshedWellboreIsSelected ? updatedWellbore : state.selectedWellbore,
     selectedWell: refreshedWellIsSelected ? updatedWell : state.selectedWellbore
   };
@@ -211,7 +205,6 @@ const removeWell = (state: NavigationState, { payload }: RemoveWellAction) => {
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     ...updatedSelectState
   };
 };
@@ -238,7 +231,6 @@ const removeWellbore = (state: NavigationState, { payload }: RemoveWellboreActio
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     expandedTreeNodes: shouldCollapseWellbore ? toggleTreeNode(state.expandedTreeNodes, wellboreNodeId) : state.expandedTreeNodes,
     ...updatedSelectState
   };
@@ -271,7 +263,6 @@ const updateWellboreLog = (state: NavigationState, { payload }: UpdateWellboreLo
   return {
     ...state,
     wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -301,7 +292,6 @@ const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWel
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -326,7 +316,6 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -346,7 +335,6 @@ const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWel
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject: selectedObject
   };
 };
@@ -364,8 +352,7 @@ const updateWellboreObjects = (state: NavigationState, { payload }: UpdateWellbo
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedObject: newSelectedObject,
     currentSelected,
-    wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter)
+    wells: freshWells
   };
 };
 
@@ -453,8 +440,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   const { wells } = payload;
   return {
     ...state,
-    wells: wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells: wells
   };
 };
 

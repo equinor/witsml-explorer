@@ -3,6 +3,7 @@ import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
 import React, { useContext } from "react";
 import styled, { CSSProp } from "styled-components";
+import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
@@ -13,8 +14,12 @@ import SearchFilter from "./SearchFilter";
 import WellItem from "./WellItem";
 
 const Sidebar = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { filteredWells, expandedTreeNodes } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { wells, expandedTreeNodes } = navigationState;
+  const filteredWells = useWellFilter(
+    wells,
+    React.useMemo(() => ({ dispatchNavigation }), [])
+  );
   const WellListing: CSSProp = { display: "grid", gridTemplateColumns: "1fr 25px", justifyContent: "center", alignContent: "stretch" };
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
@@ -30,17 +35,17 @@ const Sidebar = (): React.ReactElement => {
               defaultEndIcon={<div style={{ width: 24 }} />}
               expanded={expandedTreeNodes}
             >
-              {filteredWells.map((well: Well, index: number) => (
-                <React.Fragment key={index}>
+              {filteredWells.map((well: Well) => (
+                <React.Fragment key={well.uid}>
                   <div style={WellListing}>
-                    <WellItem key={well.uid} well={well} />
+                    <WellItem well={well} />
                     {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
                       <ActiveWellIndicator compactMode={isCompactMode} />
                     ) : (
                       <InactiveWellInidcator compactMode={isCompactMode} />
                     )}
                   </div>
-                  <Divider style={{ margin: "0px" }} key={index} />
+                  <Divider style={{ margin: "0px" }} />
                 </React.Fragment>
               ))}
             </TreeView>

@@ -15,6 +15,7 @@ import RefreshHandler from "../components/RefreshHandler";
 import Routing from "../components/Routing";
 import AuthorizationManager from "../components/Sidebar/AuthorizationManager";
 import Snackbar from "../components/Snackbar";
+import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
@@ -54,15 +55,17 @@ const Home = (): React.ReactElement => {
               <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
             </Head>
             <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
-              <Routing />
-              <AuthorizationManager />
-              <RefreshHandler />
-              <SnackbarProvider>
-                <Snackbar />
-              </SnackbarProvider>
-              <PageLayout />
-              <ContextMenuPresenter />
-              <ModalPresenter />
+              <FilterContextProvider>
+                <Routing />
+                <AuthorizationManager />
+                <RefreshHandler />
+                <SnackbarProvider>
+                  <Snackbar />
+                </SnackbarProvider>
+                <PageLayout />
+                <ContextMenuPresenter />
+                <ModalPresenter />
+              </FilterContextProvider>
             </NavigationContext.Provider>
           </ThemeProvider>
         </OperationContext.Provider>

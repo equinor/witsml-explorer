@@ -19,6 +19,7 @@ import {
 } from "./modificationActions";
 import {
   CollapseTreeNodeChildrenAction,
+  ExpandTreeNodesAction,
   SelectJobsAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
@@ -29,7 +30,6 @@ import {
   SelectWellAction,
   SelectWellboreAction,
   SetCurveThresholdAction,
-  SetFilterAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
 
@@ -53,6 +53,7 @@ export type NavigationAction =
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
   | CollapseTreeNodeChildrenAction
+  | ExpandTreeNodesAction
   | SelectJobsAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
@@ -61,6 +62,5 @@ export type NavigationAction =
   | SelectObjectAction
   | SelectObjectGroupAction
   | SelectServerAction
-  | SetFilterAction
   | SetCurveThresholdAction
   | SelectServerManagerAction;

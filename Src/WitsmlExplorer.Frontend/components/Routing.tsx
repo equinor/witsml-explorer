@@ -1,16 +1,9 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
+import { FilterContext } from "../contexts/filter";
 import ModificationType from "../contexts/modificationType";
-import {
-  SelectLogTypeAction,
-  SelectObjectAction,
-  SelectObjectGroupAction,
-  SelectServerAction,
-  SelectWellAction,
-  SelectWellboreAction,
-  SetFilterAction
-} from "../contexts/navigationActions";
+import { SelectLogTypeAction, SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import { ObjectType } from "../models/objectType";
@@ -24,6 +17,7 @@ import { WITSML_INDEX_TYPE_MD } from "./Constants";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
+  const { updateSelectedFilter } = React.useContext(FilterContext);
   const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
@@ -104,8 +98,7 @@ const Routing = (): React.ReactElement => {
 
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWell) {
-      const setFilterAction: SetFilterAction = { type: NavigationType.SetFilter, payload: { filter: { ...navigationState.selectedFilter, wellName: selectedWell.name } } };
-      dispatchNavigation(setFilterAction);
+      updateSelectedFilter({ name: selectedWell.name });
     }
   }, [selectedWell]);
 
@@ -165,7 +158,7 @@ const Routing = (): React.ReactElement => {
         if (urlParams.logType == null && objectUid == null) {
           setIsSyncingUrlAndState(false);
         }
-      } else if (urlParams.logType != null && objectUid == null) {
+      } else if (urlParams?.logType != null && objectUid == null) {
         const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
         const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
         dispatchNavigation(action);

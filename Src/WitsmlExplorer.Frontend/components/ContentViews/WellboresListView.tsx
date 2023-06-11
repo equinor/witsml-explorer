@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useWellFilter } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -14,6 +15,10 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell } = navigationState;
+  const [selectedWellFiltered] = useWellFilter(
+    React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
+    React.useMemo(() => ({ filterWellbores: true }), [])
+  );
   const {
     dispatchOperation,
     operationState: { timeZone }
@@ -35,7 +40,7 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const getTableData = () => {
-    return selectedWell.wellbores.map((wellbore) => {
+    return selectedWellFiltered?.wellbores?.map((wellbore) => {
       return {
         ...wellbore,
         id: wellbore.uid,
