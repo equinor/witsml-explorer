@@ -32,7 +32,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
   };
 
   const onSelectWell = async (well: Well) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } });
+    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
   };
 
   return (

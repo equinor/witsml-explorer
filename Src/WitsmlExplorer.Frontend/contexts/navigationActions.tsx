@@ -1,18 +1,6 @@
-import BhaRun from "../models/bhaRun";
-import ChangeLog from "../models/changeLog";
-import FluidsReport from "../models/fluidsReport";
-import FormationMarker from "../models/formationMarker";
-import LogObject from "../models/logObject";
-import MessageObject from "../models/messageObject";
-import MudLog from "../models/mudLog";
 import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
-import Rig from "../models/rig";
-import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
-import Trajectory from "../models/trajectory";
-import Tubular from "../models/tubular";
-import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
 import CurveThreshold from "./curveThreshold";
@@ -33,6 +21,11 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
+export interface CollapseTreeNodeChildrenAction extends Action {
+  type: NavigationType.CollapseTreeNodeChildren;
+  payload: { nodeId: string };
+}
+
 export interface ExpandTreeNodesAction extends Action {
   type: NavigationType.ExpandTreeNodes;
   payload: { nodeIds: string[] };
@@ -40,7 +33,7 @@ export interface ExpandTreeNodesAction extends Action {
 
 export interface SelectWellAction extends Action {
   type: NavigationType.SelectWell;
-  payload: { well: Well; wellbores: Wellbore[] };
+  payload: { well: Well };
 }
 
 export interface SelectWellboreAction extends Action {
@@ -48,18 +41,6 @@ export interface SelectWellboreAction extends Action {
   payload: {
     well: Well;
     wellbore: Wellbore;
-    bhaRuns: BhaRun[];
-    changeLogs: ChangeLog[];
-    fluidsReports: FluidsReport[];
-    formationMarkers: FormationMarker[];
-    logs: LogObject[];
-    rigs: Rig[];
-    trajectories: Trajectory[];
-    messages: MessageObject[];
-    mudLogs: MudLog[];
-    risks: RiskObject[];
-    tubulars: Tubular[];
-    wbGeometries: WbGeometryObject[];
   };
 }
 
@@ -69,7 +50,7 @@ export interface SelectJobsAction extends Action {
 
 export interface SelectObjectGroupAction extends Action {
   type: NavigationType.SelectObjectGroup;
-  payload: { well: Well; wellbore: Wellbore; objectType: ObjectType };
+  payload: { wellUid: string; wellboreUid: string; objectType: ObjectType; objects: ObjectOnWellbore[] | null };
 }
 
 export interface SelectLogTypeAction extends Action {

@@ -2,16 +2,17 @@ import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
 import { FilterContext } from "../contexts/filter";
+import ModificationType from "../contexts/modificationType";
 import { SelectLogTypeAction, SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore } from "../models/wellbore";
+import Wellbore, { calculateLogTypeDepthId, calculateLogTypeTimeId, getObjectFromWellbore, getObjectsFromWellbore } from "../models/wellbore";
 import { truncateAbortHandler } from "../services/apiClient";
 import NotificationService from "../services/notificationService";
-import WellboreService from "../services/wellboreService";
+import ObjectService from "../services/objectService";
 import { WITSML_INDEX_TYPE_MD } from "./Constants";
 
 const Routing = (): React.ReactElement => {
@@ -79,7 +80,7 @@ const Routing = (): React.ReactElement => {
       if (wellUid != null && !selectedWell && wells.length > 0) {
         const well: Well = wells.find((w: Well) => w.uid === wellUid);
         if (well) {
-          const selectWellAction: SelectWellAction = { type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } };
+          const selectWellAction: SelectWellAction = { type: NavigationType.SelectWell, payload: { well } };
           dispatchNavigation(selectWellAction);
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
@@ -102,7 +103,7 @@ const Routing = (): React.ReactElement => {
   }, [selectedWell]);
 
   useEffect(() => {
-    // fetch wellbore objects once a well is selected
+    // navigate to the wellbore once the well is selected
     const shouldNavigateToWellbore = isSyncingUrlAndState && selectedWell && urlParams?.wellboreUid && !selectedWellbore;
     if (shouldNavigateToWellbore) {
       const wellboreUid = urlParams.wellboreUid.toString();
@@ -111,12 +112,16 @@ const Routing = (): React.ReactElement => {
       const getChildren = async () => {
         const wellbore: Wellbore = selectedWell.wellbores.find((wb: Wellbore) => wb.uid === wellboreUid);
         if (wellbore) {
-          const wellboreObjects = await WellboreService.getWellboreObjects(selectedWell.uid, wellboreUid);
           const selectWellbore: SelectWellboreAction = {
             type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore, ...wellboreObjects }
-          } as SelectWellboreAction;
+            payload: { well: selectedWell, wellbore }
+          };
           dispatchNavigation(selectWellbore);
+          const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
+          dispatchNavigation({
+            type: ModificationType.UpdateWellborePartial,
+            payload: { wellboreUid: wellbore.uid, wellUid: wellbore.wellUid, wellboreProperties: { objectCount } }
+          });
         } else {
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(selectedServer?.url),
@@ -140,7 +145,25 @@ const Routing = (): React.ReactElement => {
     if (isSyncingUrlAndState && selectedWellbore) {
       const group = urlParams?.group as ObjectType;
       const objectUid = urlParams?.objectUid;
-      if (objectUid != null) {
+      if (group != null && getObjectsFromWellbore(selectedWellbore, group) == null) {
+        const fetchAndSelectObjectGroup = async () => {
+          const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
+          const action: SelectObjectGroupAction = {
+            type: NavigationType.SelectObjectGroup,
+            payload: { objectType: group, wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objects }
+          };
+          dispatchNavigation(action);
+        };
+        fetchAndSelectObjectGroup();
+        if (urlParams.logType == null && objectUid == null) {
+          setIsSyncingUrlAndState(false);
+        }
+      } else if (urlParams?.logType != null && objectUid == null) {
+        const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
+        const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
+        dispatchNavigation(action);
+        setIsSyncingUrlAndState(false);
+      } else if (objectUid != null) {
         const object = getObjectFromWellbore(selectedWellbore, objectUid, group);
         if (object != null) {
           const action: SelectObjectAction = {
@@ -155,20 +178,10 @@ const Routing = (): React.ReactElement => {
             isSuccess: false
           });
         }
-      } else if (group != null) {
-        if (urlParams.logType != null) {
-          const logTypeGroup = urlParams.logType == "depth" ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
-          const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
-          dispatchNavigation(action);
-        } else {
-          const action: SelectObjectGroupAction = {
-            type: NavigationType.SelectObjectGroup,
-            payload: { objectType: group, well: selectedWell, wellbore: selectedWellbore }
-          };
-          dispatchNavigation(action);
-        }
+        setIsSyncingUrlAndState(false);
+      } else {
+        setIsSyncingUrlAndState(false);
       }
-      setIsSyncingUrlAndState(false);
     }
   }, [selectedWellbore]);
 

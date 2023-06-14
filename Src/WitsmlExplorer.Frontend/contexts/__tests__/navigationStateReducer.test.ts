@@ -7,31 +7,7 @@ import { SelectObjectAction, SelectObjectGroupAction, SelectServerAction, Toggle
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
 import NavigationType from "../navigationType";
-import {
-  BHARUN_1,
-  CHANGELOG_1,
-  FLUIDSREPORT_1,
-  FORMATIONMARKER_1,
-  LOG_1,
-  MESSAGE_1,
-  MUDLOG_1,
-  RIG_1,
-  RISK_1,
-  SERVER_1,
-  SERVER_2,
-  TRAJECTORY_1,
-  TUBULAR_1,
-  WBGEOMETRY_1,
-  WELLBORE_1,
-  WELLBORE_2,
-  WELLBORE_3,
-  WELLS,
-  WELL_1,
-  WELL_2,
-  WELL_3,
-  getEmptyWellboreObjects,
-  getInitialState
-} from "../stateReducerTestUtils";
+import { LOG_1, SERVER_1, SERVER_2, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, getEmptyWellboreObjects, getInitialState } from "../stateReducerTestUtils";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {
@@ -79,56 +55,6 @@ it("Should also update selected well when a wellbore is selected", () => {
     wells: WELLS,
     expandedTreeNodes: [WELL_2.uid, "well2wellbore2"],
     currentProperties: getWellboreProperties(WELLBORE_2)
-  });
-});
-
-it("Should add all objects to a wellbore if it is selected for the first time", () => {
-  const selectWellboreAction = {
-    type: NavigationType.SelectWellbore,
-    payload: {
-      well: WELL_3,
-      wellbore: WELLBORE_3,
-      bhaRuns: [BHARUN_1],
-      changeLogs: [CHANGELOG_1],
-      fluidsReports: [FLUIDSREPORT_1],
-      formationMarkers: [FORMATIONMARKER_1],
-      logs: [LOG_1],
-      rigs: [RIG_1],
-      trajectories: [TRAJECTORY_1],
-      messages: [MESSAGE_1],
-      mudLogs: [MUDLOG_1],
-      risks: [RISK_1],
-      tubulars: [TUBULAR_1],
-      wbGeometries: [WBGEOMETRY_1]
-    }
-  };
-  const actual = reducer({ ...getInitialState(), expandedTreeNodes: [WELL_3.uid] }, selectWellboreAction);
-  const expectedWellbore = {
-    ...WELLBORE_3,
-    bhaRuns: [BHARUN_1],
-    changeLogs: [CHANGELOG_1],
-    fluidsReports: [FLUIDSREPORT_1],
-    formationMarkers: [FORMATIONMARKER_1],
-    logs: [LOG_1],
-    rigs: [RIG_1],
-    trajectories: [TRAJECTORY_1],
-    messages: [MESSAGE_1],
-    mudLogs: [MUDLOG_1],
-    risks: [RISK_1],
-    tubulars: [TUBULAR_1],
-    wbGeometries: [WBGEOMETRY_1]
-  };
-  const expectedWell = { ...WELL_3, wellbores: [expectedWellbore] };
-  expect(actual).toStrictEqual({
-    ...EMPTY_NAVIGATION_STATE,
-    selectedServer: SERVER_1,
-    selectedWell: expectedWell,
-    selectedWellbore: expectedWellbore,
-    currentSelected: expectedWellbore,
-    servers: [SERVER_1],
-    wells: [WELL_1, WELL_2, expectedWell],
-    expandedTreeNodes: ["well3", "well3wellbore3"],
-    currentProperties: getWellboreProperties(WELLBORE_3)
   });
 });
 
@@ -240,7 +166,7 @@ it("Selecting an object group node twice should change nothing", () => {
   };
   const action: SelectObjectGroupAction = {
     type: NavigationType.SelectObjectGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Log }
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Log, objects: null }
   };
   const afterLogGroupSelect = reducer(initialState, action);
   const expected = { ...initialState };
@@ -280,7 +206,7 @@ it("Selecting a different object group should update the selectedObjectGroup", (
   };
   const action: SelectObjectGroupAction = {
     type: NavigationType.SelectObjectGroup,
-    payload: { well: WELL_1, wellbore: WELLBORE_1, objectType: ObjectType.Rig }
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Rig, objects: null }
   };
   const afterRigGroupSelect = reducer(initialState, action);
   const expected: NavigationState = {
@@ -290,6 +216,34 @@ it("Selecting a different object group should update the selectedObjectGroup", (
     expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log), calculateObjectGroupId(WELLBORE_1, ObjectType.Rig)]
   };
   expect(afterRigGroupSelect).toStrictEqual(expected);
+});
+
+it("Selecting an object group should update the wellbore if passing objects", () => {
+  const initialState: NavigationState = {
+    ...getInitialState(),
+    selectedWell: WELL_1,
+    selectedWellbore: WELLBORE_1,
+    currentSelected: WELLBORE_1,
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1)],
+    currentProperties: getWellboreProperties(WELLBORE_1)
+  };
+  const action: SelectObjectGroupAction = {
+    type: NavigationType.SelectObjectGroup,
+    payload: { wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, objectType: ObjectType.Log, objects: [LOG_1] }
+  };
+  const afterLogGroupSelect = reducer(initialState, action);
+  const updatedWellbore = { ...WELLBORE_1, logs: [LOG_1] };
+  const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
+  const expected: NavigationState = {
+    ...initialState,
+    wells: [updatedWell, initialState.wells[1], initialState.wells[2]],
+    selectedWell: updatedWell,
+    selectedWellbore: updatedWellbore,
+    selectedObjectGroup: ObjectType.Log,
+    currentSelected: ObjectType.Log,
+    expandedTreeNodes: [WELL_1.uid, calculateWellboreNodeId(WELLBORE_1), calculateObjectGroupId(WELLBORE_1, ObjectType.Log)]
+  };
+  expect(afterLogGroupSelect).toStrictEqual(expected);
 });
 
 it("Should expand (not select) a collapsed node when toggled", () => {

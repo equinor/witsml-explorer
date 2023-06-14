@@ -11,12 +11,14 @@ import {
   UpdateWellboreAction,
   UpdateWellboreLogAction,
   UpdateWellboreObjectsAction,
+  UpdateWellborePartialAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
   UpdateWellboreWbGeometryAction,
   UpdateWellsAction
 } from "./modificationActions";
 import {
+  CollapseTreeNodeChildrenAction,
   ExpandTreeNodesAction,
   SelectJobsAction,
   SelectLogCurveInfoAction,
@@ -43,12 +45,14 @@ export type NavigationAction =
   | UpdateWellAction
   | UpdateWellsAction
   | UpdateWellboreAction
+  | UpdateWellborePartialAction
   | UpdateWellboreLogAction
   | UpdateWellboreTrajectoryAction
   | UpdateWellboreTubularAction
   | UpdateWellboreWbGeometryAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
+  | CollapseTreeNodeChildrenAction
   | ExpandTreeNodesAction
   | SelectJobsAction
   | SelectLogTypeAction

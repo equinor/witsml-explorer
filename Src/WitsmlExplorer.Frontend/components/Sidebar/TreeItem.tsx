@@ -64,7 +64,6 @@ const StyledDotProgress = styled(DotProgress)`
   z-index: 2;
   top: 0.75rem;
   position: relative;
-  left: -0.5rem;
 `;
 
 export default StyledTreeItem;

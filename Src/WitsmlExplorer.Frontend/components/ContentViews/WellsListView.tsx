@@ -33,7 +33,7 @@ export const WellsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (well: any) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } });
+    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
   };
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well, checkedWellRows: WellRow[]) => {

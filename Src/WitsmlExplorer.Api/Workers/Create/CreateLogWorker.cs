@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             }
 
             Logger.LogInformation("Log object created. {jobDescription}", job.Description());
-            RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, RefreshType.Update);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.LogObject.WellUid, job.LogObject.WellboreUid, EntityType.Log);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Log object {job.LogObject.Name} created for {targetWellbore.Name}");
 
             return (workerResult, refreshAction);
