@@ -30,6 +30,7 @@ export interface ContentTableProps {
   inset?: Inset;
   panelElements?: React.ReactElement[];
   showTotalItems?: boolean;
+  stickyLeftColumns?: boolean;
 }
 
 export enum Order {
@@ -44,6 +45,8 @@ export enum ContentType {
   Icon,
   Measure
 }
+
+export const selectId = "select";
 
 export const getColumnAlignment = (column: { type: ContentType }) => {
   return column.type === ContentType.Number || column.type == ContentType.Measure ? "right" : "left";

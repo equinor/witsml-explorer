@@ -62,7 +62,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
     <>
       <Panel
         showTotalItems={showTotalItems}
-        showCheckedItems={checkableRows}
+        checkableRows={checkableRows}
         panelElements={panelElements}
         numberOfCheckedItems={checkedContentItems?.length}
         numberOfItems={data?.length}

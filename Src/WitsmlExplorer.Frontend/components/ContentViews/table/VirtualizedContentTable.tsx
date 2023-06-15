@@ -254,7 +254,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
             >
               <Panel
                 showTotalItems={showTotalItems}
-                showCheckedItems={checkableRows}
+                checkableRows={checkableRows}
                 panelElements={panelElements}
                 numberOfCheckedItems={checkedContentItems?.length}
                 numberOfItems={data?.length}
