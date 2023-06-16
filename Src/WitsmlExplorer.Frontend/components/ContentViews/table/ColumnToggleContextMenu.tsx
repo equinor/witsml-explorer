@@ -19,7 +19,8 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
       </div>
       {table.getAllLeafColumns().map((column) => {
         return (
-          column.id != selectId && (
+          column.id != selectId &&
+          column.id != "expander" && (
             <div key={column.id}>
               <label>
                 <input
@@ -35,6 +36,7 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
                     onClick: () => {
                       const order = table.getAllLeafColumns().map((d) => d.id);
                       const index = order.findIndex((value) => value == column.id);
+                      //NEED TO FIX SO THAT YOU CAN'T CHANGE PLACE WITH EXPANDER
                       if (index > (props.checkableRows ? 1 : 0)) {
                         order[index] = order[index - 1];
                         order[index - 1] = column.id;

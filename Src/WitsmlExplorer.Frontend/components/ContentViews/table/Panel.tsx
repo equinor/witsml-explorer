@@ -16,6 +16,8 @@ export interface PanelProps {
 const Panel = (props: PanelProps) => {
   const { showTotalItems, checkableRows, panelElements, numberOfCheckedItems, numberOfItems, table } = props;
 
+  if (!showTotalItems && !panelElements) return null;
+
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
   const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
 

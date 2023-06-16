@@ -3,7 +3,7 @@ import * as React from "react";
 import { TableBody, TableHead } from "@material-ui/core";
 import { ColumnDef, Row, Table, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Panel from "./Panel";
@@ -11,7 +11,7 @@ import { ContentTableProps, selectId } from "./tableParts";
 
 /* eslint-disable react/prop-types */
 export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
-  const { data, columns, onSelect, onContextMenu, checkableRows, panelElements, onRowSelectionChange, showTotalItems = true, stickyLeftColumns = false } = props;
+  const { data, columns, onSelect, onContextMenu, checkableRows, panelElements, onRowSelectionChange, inset, showTotalItems = true, stickyLeftColumns = false } = props;
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -56,6 +56,41 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         header: column.label
       };
     });
+    if (inset != null) {
+      columnDef = [
+        {
+          id: "expander",
+          header: ({ table }: { table: Table<any> }) => (
+            <button
+              {...{
+                onClick: () => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded()),
+                style: { cursor: "pointer" }
+              }}
+            >
+              {table.getIsSomeRowsExpanded() ? "👇" : "👉"}
+            </button>
+          ),
+          cell: ({ row }) => {
+            return row.getCanExpand() ? (
+              <button
+                {...{
+                  onClick: (event) => {
+                    event.stopPropagation();
+                    row.getToggleExpandedHandler()();
+                  },
+                  style: { cursor: "pointer" }
+                }}
+              >
+                {row.getIsExpanded() ? "👇" : "👉"}
+              </button>
+            ) : (
+              ""
+            );
+          }
+        },
+        ...columnDef
+      ];
+    }
     if (checkableRows) {
       columnDef = [
         {
@@ -96,6 +131,8 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
       rowSelection
     },
     enableRowSelection: checkableRows,
+    enableExpanding: inset != null,
+    getRowCanExpand: inset != null ? (row) => !!row.original.inset?.length : undefined,
     columnResizeMode: "onChange",
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -106,7 +143,6 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     enableSorting: true,
     enableSortingRemoval: true,
     enableColumnFilters: false,
-    enableExpanding: false,
     enableFilters: false,
     enableGlobalFilter: false,
     enableGrouping: false,
@@ -136,7 +172,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   });
 
   return (
-    <div style={{ display: "grid", gridTemplateRows: "50px 1fr", overflowY: "auto", height: "100%" }}>
+    <div style={{ display: showTotalItems ? "grid" : "", gridTemplateRows: showTotalItems ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
       <Panel
         showTotalItems={showTotalItems}
         checkableRows={checkableRows}
@@ -151,7 +187,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
             style={{
               position: "sticky",
               top: 0,
-              zIndex: 1
+              zIndex: inset != null ? 2 : 1
             }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
@@ -188,39 +224,64 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index] as Row<any>;
               return (
-                <StyledTr
-                  key={row.id}
-                  selected={row.getIsSelected()}
-                  onContextMenu={
-                    onContextMenu
-                      ? (event) =>
-                          onContextMenu(
-                            event,
-                            row.original,
-                            table.getSelectedRowModel().flatRows.map((r) => r.original)
-                          )
-                      : (e) => e.preventDefault()
-                  }
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <StyledTd
-                      key={cell.id}
-                      style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
-                      onClick={cell.column.id != selectId ? (event) => selectRow(event, row, table) : undefined}
-                      clickable={onSelect && cell.column.id != selectId}
-                      stickyLeftColumns={stickyLeftColumns}
+                <Fragment key={row.id}>
+                  <StyledTr
+                    selected={row.getIsSelected()}
+                    onContextMenu={
+                      onContextMenu
+                        ? (event) =>
+                            onContextMenu(
+                              event,
+                              row.original,
+                              table.getSelectedRowModel().flatRows.map((r) => r.original)
+                            )
+                        : (e) => e.preventDefault()
+                    }
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      height: `${row.getIsExpanded() ? 60 + 30 * row.original.inset?.length ?? 0 : 30}px`,
+                      transform: `translateY(${virtualRow.start}px)`
+                    }}
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <StyledTd
+                        key={cell.id}
+                        style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
+                        onClick={(event) => selectRow(event, row, table)}
+                        clickable={onSelect && cell.column.id != selectId}
+                        stickyLeftColumns={stickyLeftColumns}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </StyledTd>
+                    ))}
+                  </StyledTr>
+                  {row.getIsExpanded() && (
+                    <InsetTr
+                      style={{
+                        position: "absolute",
+                        background: "white",
+                        width: "100%",
+                        top: `${virtualRow.start + 30}px`,
+                        left: 0,
+                        border: 0
+                      }}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </StyledTd>
-                  ))}
-                </StyledTr>
+                      <td
+                        colSpan={row.getVisibleCells().length}
+                        style={{
+                          height: `${30 * row.original.inset.length + 30}px`,
+                          padding: 0
+                        }}
+                      >
+                        <TanstackTable columns={inset.columns} data={row.original.inset} showTotalItems={false} />
+                      </td>
+                    </InsetTr>
+                  )}
+                </Fragment>
               );
             })}
           </TableBody>
@@ -244,14 +305,7 @@ function IndeterminateCheckbox({ indeterminate, ...rest }: { indeterminate?: boo
 
 const StyledTable = styled.table`
   width: 100%;
-
-  th,
-  .th,
-  td,
-  .td {
-    box-shadow: inset 0 0 0 1px lightgray;
-    height: 30px;
-  }
+  border-spacing: 0;
 
   .resizer {
     right: 0;
@@ -280,6 +334,19 @@ const StyledTable = styled.table`
   }
 `;
 
+const InsetTr = styled.tr`
+  @keyframes rollout {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  animation: rollout 0.3s;
+  transition: top 100ms ease-out;
+`;
+
 const StyledTr = styled.tr<{ selected?: boolean }>`
   &&& {
     background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
@@ -293,9 +360,12 @@ const StyledTr = styled.tr<{ selected?: boolean }>`
   display: flex;
   width: fit-content;
   height: 30px;
+  transition: transform 100ms ease-out;
 `;
 
 const StyledTh = styled.th<{ stickyLeftColumns: boolean }>`
+  box-shadow: inset 0 0 0 1px lightgray;
+  height: 30px;
   && {
     border-bottom-width: 2px;
     background-color: ${colors.interactive.tableHeaderFillResting};
@@ -315,6 +385,8 @@ const StyledTh = styled.th<{ stickyLeftColumns: boolean }>`
 `;
 
 const StyledTd = styled.td<{ clickable: boolean; stickyLeftColumns: boolean }>`
+  box-shadow: inset 0 0 0 1px lightgray;
+  height: 30px;
   background-color: inherit;
   z-index: 0;
   && {
