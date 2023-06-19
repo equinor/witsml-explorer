@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
-import { FilterContext } from "../contexts/filter";
+import { FilterContext, WellFilterType } from "../contexts/filter";
 import ModificationType from "../contexts/modificationType";
 import { SelectLogTypeAction, SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
@@ -98,7 +98,7 @@ const Routing = (): React.ReactElement => {
 
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWell) {
-      updateSelectedFilter({ name: selectedWell.name });
+      updateSelectedFilter({ name: selectedWell.name, filterType: WellFilterType.Well });
     }
   }, [selectedWell]);
 
