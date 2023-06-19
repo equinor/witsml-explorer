@@ -31,6 +31,7 @@ export interface ContentTableProps {
   panelElements?: React.ReactElement[];
   showTotalItems?: boolean;
   stickyLeftColumns?: boolean;
+  viewId?: string; //id that will be used to save view settings to local storage
 }
 
 export enum Order {
@@ -47,6 +48,10 @@ export enum ContentType {
 }
 
 export const selectId = "select";
+export const expanderId = "expander";
+export const widthsStorageKey = "-widths";
+export const hiddenStorageKey = "-hidden";
+export const orderingStorageKey = "-ordering";
 
 export const getColumnAlignment = (column: { type: ContentType }) => {
   return column.type === ContentType.Number || column.type == ContentType.Measure ? "right" : "left";

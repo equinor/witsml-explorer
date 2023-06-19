@@ -1,8 +1,10 @@
+import { Button } from "@equinor/eds-core-react";
 import { Table } from "@tanstack/react-table";
-import { selectId } from "./tableParts";
+import { ContentTableColumn, expanderId, orderingStorageKey, selectId } from "./tableParts";
 
-export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean }): React.ReactElement => {
-  const { table } = props;
+export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean; expandableRows: boolean; viewId: string; columns: ContentTableColumn[] }): React.ReactElement => {
+  const { table, checkableRows, expandableRows, viewId, columns } = props;
+  const firstToggleableIndex = (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0);
   return (
     <div>
       <div>
@@ -20,7 +22,7 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
       {table.getAllLeafColumns().map((column) => {
         return (
           column.id != selectId &&
-          column.id != "expander" && (
+          column.id != expanderId && (
             <div key={column.id}>
               <label>
                 <input
@@ -36,12 +38,14 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
                     onClick: () => {
                       const order = table.getAllLeafColumns().map((d) => d.id);
                       const index = order.findIndex((value) => value == column.id);
-                      //NEED TO FIX SO THAT YOU CAN'T CHANGE PLACE WITH EXPANDER
-                      if (index > (props.checkableRows ? 1 : 0)) {
+                      if (index > firstToggleableIndex) {
                         order[index] = order[index - 1];
                         order[index - 1] = column.id;
                       }
                       table.setColumnOrder(order);
+                      if (viewId != null) {
+                        localStorage.setItem(viewId + orderingStorageKey, JSON.stringify(order));
+                      }
                     },
                     value: "^"
                   }}
@@ -57,6 +61,9 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
                         order[index + 1] = column.id;
                       }
                       table.setColumnOrder(order);
+                      if (viewId != null) {
+                        localStorage.setItem(viewId + orderingStorageKey, JSON.stringify(order));
+                      }
                     },
                     value: "v"
                   }}
@@ -67,6 +74,16 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean 
           )
         );
       })}
+      <Button
+        onClick={() => {
+          table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
+          if (viewId != null) {
+            localStorage.removeItem(viewId + orderingStorageKey);
+          }
+        }}
+      >
+        Reset ordering
+      </Button>
     </div>
   );
 };

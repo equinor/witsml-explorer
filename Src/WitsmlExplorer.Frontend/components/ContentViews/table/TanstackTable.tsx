@@ -7,13 +7,22 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Panel from "./Panel";
-import { ContentTableProps, selectId } from "./tableParts";
+import { ContentTableProps, expanderId, hiddenStorageKey, orderingStorageKey, selectId, widthsStorageKey } from "./tableParts";
+
+const initializeColumnVisibility = (viewId: string | null) => {
+  if (viewId == null) {
+    return {};
+  }
+  const hiddenColumns: string[] | null = JSON.parse(localStorage.getItem(viewId + hiddenStorageKey));
+  return hiddenColumns == null ? {} : Object.assign({}, ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false })));
+};
 
 /* eslint-disable react/prop-types */
 export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
-  const { data, columns, onSelect, onContextMenu, checkableRows, panelElements, onRowSelectionChange, inset, showTotalItems = true, stickyLeftColumns = false } = props;
+  const { data, columns, onSelect, onContextMenu, checkableRows, panelElements, onRowSelectionChange, inset, showTotalItems = true, stickyLeftColumns = false, viewId } = props;
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = React.useState(initializeColumnVisibility(viewId));
 
   const selectRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: Row<any>, table: Table<any>) => {
     if (onSelect) {
@@ -50,16 +59,31 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   };
 
   const columnDef = useMemo(() => {
+    const savedWidths = JSON.parse(localStorage.getItem(viewId + widthsStorageKey));
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
       return {
+        id: column.label,
         accessorKey: column.property,
-        header: column.label
+        header: column.label,
+        size: savedWidths?.[column.label]
       };
     });
+    const savedOrder: string[] | null = JSON.parse(localStorage.getItem(viewId + orderingStorageKey));
+    //can extract this into a function and write a test
+    if (savedOrder) {
+      const sortedColumns = savedOrder.flatMap((label) => {
+        const foundColumn = columnDef.find((col) => col.id == label);
+        return foundColumn == null ? [] : foundColumn;
+      });
+      const columnsWithoutOrder = columnDef.filter((col) => !savedOrder.includes(col.id));
+      columnDef = sortedColumns.concat(columnsWithoutOrder);
+    }
+
     if (inset != null) {
       columnDef = [
         {
-          id: "expander",
+          id: expanderId,
+          enableHiding: false,
           header: ({ table }: { table: Table<any> }) => (
             <button
               {...{
@@ -95,6 +119,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
       columnDef = [
         {
           id: selectId,
+          enableHiding: false,
           header: ({ table }: { table: Table<any> }) => (
             <IndeterminateCheckbox
               {...{
@@ -111,7 +136,10 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                   checked: row.getIsSelected(),
                   disabled: !row.getCanSelect(),
                   indeterminate: row.getIsSomeSelected(),
-                  onClick: (event) => toggleRow(event, row, table),
+                  onClick: (event) => {
+                    toggleRow(event, row, table);
+                    event.stopPropagation();
+                  },
                   readOnly: true
                 }}
               />
@@ -128,15 +156,17 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     data: data ?? [],
     columns: columnDef,
     state: {
-      rowSelection
+      rowSelection,
+      columnVisibility
     },
-    enableRowSelection: checkableRows,
-    enableExpanding: inset != null,
-    getRowCanExpand: inset != null ? (row) => !!row.original.inset?.length : undefined,
     columnResizeMode: "onChange",
-    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getRowCanExpand: inset != null ? (row) => !!row.original.inset?.length : undefined,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    enableExpanding: inset != null,
+    enableRowSelection: checkableRows,
     enableColumnResizing: true,
     enableHiding: true,
     enableMultiRowSelection: true,
@@ -162,6 +192,13 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     }
   }, [rowSelection]);
 
+  useEffect(() => {
+    if (viewId != null) {
+      const hiddenColumns = Object.entries(columnVisibility).flatMap(([columnId, isVisible]) => (isVisible ? [] : columnId));
+      localStorage.setItem(viewId + hiddenStorageKey, JSON.stringify(hiddenColumns));
+    }
+  }, [columnVisibility]);
+
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtualizer({
@@ -170,6 +207,13 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     overscan: 5,
     estimateSize: () => 30
   });
+
+  useEffect(() => {
+    if (viewId != null) {
+      const widths = Object.assign({}, ...table.getLeafHeaders().map((header) => ({ [header.id]: header.getSize() })));
+      localStorage.setItem(viewId + widthsStorageKey, JSON.stringify(widths));
+    }
+  }, [table.getTotalSize()]);
 
   return (
     <div style={{ display: showTotalItems ? "grid" : "", gridTemplateRows: showTotalItems ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
@@ -180,6 +224,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         numberOfCheckedItems={Object.keys(rowSelection).length}
         numberOfItems={data?.length}
         table={table}
+        viewId={viewId}
+        columns={columns}
+        expandableRows={inset != null}
       />
       <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>
         <StyledTable>
@@ -202,16 +249,22 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                         onClick: header.column.getToggleSortingHandler()
                       }}
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
                         asc: " 🔼",
                         desc: " 🔽"
                       }[header.column.getIsSorted() as string] ?? null}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                     <div
                       {...{
-                        onMouseDown: header.getResizeHandler(),
-                        onTouchStart: header.getResizeHandler(),
+                        onMouseDown: (event) => {
+                          header.getResizeHandler()(event);
+                          event.stopPropagation();
+                        },
+                        onTouchStart: (event) => {
+                          header.getResizeHandler()(event);
+                          event.stopPropagation();
+                        },
                         className: `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`
                       }}
                     />
