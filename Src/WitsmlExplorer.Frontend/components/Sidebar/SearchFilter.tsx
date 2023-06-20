@@ -51,7 +51,7 @@ const SearchFilter = (): React.ReactElement => {
       } else if (Object.values<string>(ObjectType).includes(newValue)) {
         setIsLoading(true);
         try {
-          const objects = await ObjectService.getAllObjects(newValue as ObjectType);
+          const objects = await ObjectService.getAllObjects(newValue as unknown as ObjectType);
           updateSelectedFilter({ filterType: newValue, objectsOnWellbore: objects });
         } catch (error) {
           NotificationService.Instance.alertDispatcher.dispatch({

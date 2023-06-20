@@ -20,8 +20,13 @@ export enum WellFilterType {
   WellOrWellbore = "Wells / Wellbores"
 }
 
-export type FilterType = WellFilterType | ObjectType;
-export const FilterType = { ...WellFilterType, ...ObjectType };
+export enum ObjectFilterType {
+  Rig = "Rig"
+  // Add any other objects from ObjectType you want to search for by name here.
+}
+
+export type FilterType = WellFilterType | ObjectFilterType;
+export const FilterType = { ...WellFilterType, ...ObjectFilterType };
 
 export const EMPTY_FILTER: Filter = {
   name: "",
