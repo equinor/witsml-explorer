@@ -1,8 +1,39 @@
+import { ThemeProvider } from "@material-ui/core";
+import { render } from "@testing-library/react";
+import { SnackbarProvider } from "notistack";
+import React from "react";
+import { FilterContextProvider } from "../contexts/filter";
+import NavigationContext from "../contexts/navigationContext";
+import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
+import OperationContext from "../contexts/operationContext";
+import { initOperationStateReducer } from "../contexts/operationStateReducer";
 import AxisDefinition from "../models/AxisDefinition";
 import CommonData from "../models/commonData";
 import LogCurveInfo from "../models/logCurveInfo";
 import LogObject from "../models/logObject";
 import ObjectOnWellbore from "../models/objectOnWellbore";
+import { getTheme } from "../styles/material-eds";
+
+export function renderWithContexts(ui: React.ReactElement, { ...options } = {}) {
+  const Wrapper = ({ children }: { children: React.ReactElement }) => {
+    const [operationState, dispatchOperation] = initOperationStateReducer();
+    const [navigationState, dispatchNavigation] = initNavigationStateReducer();
+
+    return (
+      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        <ThemeProvider theme={getTheme(operationState.theme)}>
+          <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+            <FilterContextProvider>
+              <SnackbarProvider>{children}</SnackbarProvider>
+            </FilterContextProvider>
+          </NavigationContext.Provider>
+        </ThemeProvider>
+      </OperationContext.Provider>
+    );
+  };
+
+  return render(ui, { wrapper: Wrapper, ...options });
+}
 
 function getObjectOnWellbore(): ObjectOnWellbore {
   return {
@@ -83,4 +114,4 @@ export default interface Measure {
   uom: string;
 }
 
-export { getLogObject, getCommonData, getLogCurveInfo, getMeasure, getAxisDefinition };
+export { getAxisDefinition, getCommonData, getLogCurveInfo, getLogObject, getMeasure };

@@ -63,7 +63,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   });
 
   return selectedWellbore && trajectories == selectedWellbore.trajectories ? (
-    <ContentTable columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+    <ContentTable columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
   ) : (
     <></>
   );

@@ -29,7 +29,9 @@ export interface ContentTableProps {
   order?: Order;
   inset?: Inset;
   panelElements?: React.ReactElement[];
+  showPanel?: boolean;
   showTotalItems?: boolean;
+  showRefresh?: boolean;
 }
 
 export enum Order {

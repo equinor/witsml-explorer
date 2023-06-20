@@ -76,7 +76,9 @@ export const RigsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigContextMenu {...contextProps} />, position } });
   };
 
-  return selectedWellbore && Object.is(selectedWellbore.rigs, rigs) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    selectedWellbore && Object.is(selectedWellbore.rigs, rigs) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+  );
 };
 
 export default RigsListView;

@@ -1,7 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import NavigationContext from "../../contexts/navigationContext";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
@@ -12,7 +13,7 @@ import { colors } from "../../styles/Colors";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
@@ -25,6 +26,7 @@ export interface LogsContextMenuProps {
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const { dispatchOperation, wellbore, servers, indexCurve } = props;
+  const { dispatchNavigation } = useContext(NavigationContext);
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
 
   const onClickNewLog = () => {
@@ -45,6 +47,10 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, ObjectType.Log)}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>

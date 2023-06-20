@@ -1,6 +1,8 @@
 import { TextField } from "@equinor/eds-core-react";
 import { Fragment } from "react";
 import styled from "styled-components";
+import ModificationType from "../../contexts/modificationType";
+import { Action } from "../../contexts/navigationActions";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getParentType } from "../../models/componentType";
@@ -12,11 +14,14 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
+import ObjectService from "../../services/objectService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { logTypeToQuery } from "../Routing";
 
 export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+
+export type DispatchNavigation = (action: Action) => void;
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -97,6 +102,18 @@ export const onClickDeleteComponents = async (dispatchOperation: DispatchOperati
     componentReferences.parent.name,
     getParentType(componentReferences.componentType)
   );
+};
+
+export const onClickRefresh = async (
+  dispatchOperation: DispatchOperation,
+  dispatchNavigation: DispatchNavigation,
+  wellUid: string,
+  wellboreUid: string,
+  objectType: ObjectType
+) => {
+  const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, objectType);
+  dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType } });
+  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 const displayDeleteModal = (
