@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IObjectService
     {
-        Task<IEnumerable<ObjectOnWellbore>> GetAllObjects(EntityType objectType);
+        Task<IEnumerable<ObjectOnWellbore>> GetObjectsByType(EntityType objectType);
         Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
         Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetAllObjects(EntityType objectType)
+        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsByType(EntityType objectType)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {

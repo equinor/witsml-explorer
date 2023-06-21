@@ -3,7 +3,7 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { EMPTY_FILTER, Filter, FilterOptions, WellFilterType, filterWells } from "../filter";
+import { EMPTY_FILTER, Filter, FilterOptions, ObjectFilterType, WellFilterType, filterWells } from "../filter";
 
 describe("Filter", () => {
   let filter: Filter;
@@ -176,11 +176,13 @@ describe("Filter", () => {
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
-    Object.values(ObjectType).forEach((objectType) => {
+    Object.values(ObjectFilterType).forEach((objectType) => {
       it(`Should match on name when FilterType is ${objectType}`, () => {
         filter.name = `test${objectType}`;
         filter.filterType = objectType;
-        filter.objectsOnWellbore = [getObject(objectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` })];
+        filter.objectsOnWellbore = [
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` })
+        ];
         const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
         const expectedWells = [WELL_6];
         expect(modifiedWells).toStrictEqual(expectedWells);

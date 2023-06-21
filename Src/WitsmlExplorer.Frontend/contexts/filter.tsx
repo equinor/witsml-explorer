@@ -191,7 +191,6 @@ export const filterWells = (wells: Well[], filter: Filter, filterOptions: Filter
  * The returned filtered wells will be updated if wells, filter or options changes.
  *
  * @param wells - The array of wells to filter.
- * @param filter - The filter object containing the criteria for filtering.
  * @param options - Additional options for filtering (optional).
  *                  - filterWellbores: If true, filter the wellbores of the wells that don't match. Default: false.
  *                  - dispatchNavigation: A function to dispatch an action to expand tree nodes every time the filter changes (optional).

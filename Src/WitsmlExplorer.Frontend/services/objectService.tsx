@@ -97,7 +97,7 @@ export default class ObjectService {
     }
   }
 
-  public static async getAllObjects(type: ObjectType, abortSignal?: AbortSignal): Promise<ObjectOnWellbore[]> {
+  public static async getObjectsByType(type: ObjectType, abortSignal?: AbortSignal): Promise<ObjectOnWellbore[]> {
     const response = await ApiClient.get(`/api/objects/${type}`, abortSignal);
     if (response.ok) {
       return response.json();

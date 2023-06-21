@@ -1,30 +1,34 @@
-import { Button, DotProgress, Icon } from "@equinor/eds-core-react";
+import { Button, DotProgress, EdsProvider, Icon } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled, { CSSProp } from "styled-components";
 import { FilterContext, FilterType, WellFilterType } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
+import OperationContext from "../../contexts/operationContext";
+import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import NotificationService from "../../services/notificationService";
 import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
+import OptionsContextMenu, { OptionsContextMenuProps } from "../ContextMenus/OptionsContextMenu";
 import FilterPanel from "./FilterPanel";
 
 const searchOptions = Object.values(FilterType);
 
 const SearchFilter = (): React.ReactElement => {
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const [selectedOption, setSelectedOption] = useState<FilterType>(selectedFilter.filterType);
-  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "7rem", minWidth: "174px", paddingRight: "0.1em" };
+  const textFieldRef = useRef<HTMLInputElement>(null);
+
+  const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6.3rem", minWidth: "174px", paddingRight: "0.1em" };
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
@@ -41,79 +45,79 @@ const SearchFilter = (): React.ReactElement => {
     }
   }, [selectedFilter.name]);
 
-  const handleOptionChange = async (event: any, newValue: FilterType) => {
-    setOptionsOpen(false);
-    if (event?.target.classList.contains("MuiAutocomplete-option")) {
-      // Don't update option if the event is triggered by anything other than an option
-      setSelectedOption(newValue);
-      if (Object.values<string>(WellFilterType).includes(newValue)) {
-        updateSelectedFilter({ filterType: newValue, objectsOnWellbore: [] });
-      } else if (Object.values<string>(ObjectType).includes(newValue)) {
-        setIsLoading(true);
-        try {
-          const objects = await ObjectService.getAllObjects(newValue as unknown as ObjectType);
-          updateSelectedFilter({ filterType: newValue, objectsOnWellbore: objects });
-        } catch (error) {
-          NotificationService.Instance.alertDispatcher.dispatch({
-            serverUrl: new URL(selectedServer.url),
-            message: error.message,
-            isSuccess: false
-          });
-        }
-        setIsLoading(false);
+  const handleOptionChange = async (newValue: FilterType) => {
+    setSelectedOption(newValue);
+    if (Object.values<string>(WellFilterType).includes(newValue)) {
+      updateSelectedFilter({ filterType: newValue, objectsOnWellbore: [] });
+    } else if (Object.values<string>(ObjectType).includes(newValue)) {
+      setIsLoading(true);
+      try {
+        const objects = await ObjectService.getObjectsByType(newValue as unknown as ObjectType);
+        updateSelectedFilter({ filterType: newValue, objectsOnWellbore: objects });
+      } catch (error) {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(selectedServer.url),
+          message: error.message,
+          isSuccess: false
+        });
       }
+      setIsLoading(false);
     }
   };
 
-  const handleInputChange = (event: any, newInputValue: string | null) => {
-    if (event?.target?.classList && !event.target.classList.contains("MuiAutocomplete-option") && !(event.key === "Enter")) {
-      // Don't update filter if the event is triggered by a change of options
-      setNameFilter(newInputValue ?? "");
-    }
+  const openOptions = () => {
+    const contextMenuProps: OptionsContextMenuProps = { dispatchOperation, options: searchOptions, onOptionChange: handleOptionChange };
+    const textFieldRect = textFieldRef.current?.getBoundingClientRect();
+    const position = {
+      mouseY: textFieldRect?.bottom ?? 0,
+      mouseX: textFieldRect?.left ?? 0
+    };
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <OptionsContextMenu {...contextMenuProps} />, position } });
   };
 
   return (
     <>
       <SearchLayout>
         <SearchBarContainer>
-          <Autocomplete
-            inputValue={nameFilter}
-            onInputChange={handleInputChange}
-            value={selectedOption}
-            onChange={handleOptionChange}
-            freeSolo
-            disableClearable
-            filterOptions={(x) => x}
-            open={optionsOpen}
-            options={searchOptions}
-            renderOption={(option) => <OptionsLayout>{pluralize(option)}</OptionsLayout>}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                label={`Search ${pluralize(selectedOption)}`}
-                variant="outlined"
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      <Button variant="ghost_icon" disabled={!selectedServer || isLoading} onClick={() => setOptionsOpen(!optionsOpen)}>
-                        <Icon name={optionsOpen ? "chevronUp" : "chevronDown"} color={colors.interactive.primaryResting} />
-                      </Button>
-                      {isLoading && <DotProgress color={"primary"} size={32} />}
-                    </>
-                  ),
-                  endAdornment: <Icon name="search" color={colors.interactive.primaryResting} />
-                }}
-              />
-            )}
-          />
+          <EdsProvider density="compact">
+            <TextField
+              value={nameFilter}
+              onChange={(event) => setNameFilter(event.target.value ?? "")}
+              id="searchField"
+              ref={textFieldRef}
+              variant="outlined"
+              size="small"
+              label={`Search ${pluralize(selectedOption)}`}
+              InputProps={{
+                startAdornment: (
+                  <SearchIconLayout>
+                    <Button variant="ghost_icon" disabled={!selectedServer || isLoading} onClick={openOptions}>
+                      <Icon name={"chevronDown"} color={colors.interactive.primaryResting} />
+                    </Button>
+                    {isLoading && <DotProgress color={"primary"} size={32} />}
+                  </SearchIconLayout>
+                ),
+                endAdornment: (
+                  <SearchIconLayout>
+                    <Button variant="ghost_icon" onClick={() => setNameFilter("")}>
+                      <Icon name={"clear"} color={colors.interactive.primaryResting} size={18} />
+                    </Button>
+                    <Icon name="search" color={colors.interactive.primaryResting} />
+                  </SearchIconLayout>
+                ),
+                classes: {
+                  adornedStart: "small-padding-left",
+                  adornedEnd: "small-padding-right"
+                }
+              }}
+            />
+          </EdsProvider>
         </SearchBarContainer>
         <Icons
           onClick={() => setExpanded(!expanded)}
           name={expanded ? "activeFilter" : "filter"}
           color={colors.interactive.primaryResting}
-          size={40}
+          size={32}
           style={{ cursor: "pointer" }}
         />
       </SearchLayout>
@@ -137,14 +141,20 @@ const SearchLayout = styled.div`
   position: relative;
 `;
 
-const SearchBarContainer = styled.div`
-  width: 85%;
+const SearchIconLayout = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
-const OptionsLayout = styled.div`
-  line-height: 0.6;
-  padding: 0.1rem;
-  pointer-events: none;
+const SearchBarContainer = styled.div`
+  width: 85%;
+
+  .small-padding-left {
+    padding-left: 4px;
+  }
+  .small-padding-right {
+    padding-right: 4px;
+  }
 `;
 
 export default SearchFilter;

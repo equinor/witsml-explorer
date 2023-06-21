@@ -48,9 +48,7 @@ namespace WitsmlExplorer.Api.Query
             IWitsmlObjectList list = EntityTypeHelper.ToObjectList(type);
             WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
             o.UidWell = "";
-            o.NameWell = "";
             o.UidWellbore = "";
-            o.NameWellbore = "";
             o.Uid = "";
             o.Name = "";
             list.Objects = new[] { o };
