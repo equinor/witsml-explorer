@@ -1,8 +1,8 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
-import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import ConfirmModal from "./ConfirmModal";
 import { ModalContentLayout } from "./ModalDialog";
 

@@ -2,8 +2,8 @@ import { TextField } from "@equinor/eds-core-react";
 import { Fragment } from "react";
 import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
-import { Action } from "../../contexts/navigationActions";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { DispatchNavigation } from "../../contexts/navigationAction";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
@@ -18,10 +18,6 @@ import ObjectService from "../../services/objectService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { logTypeToQuery } from "../Routing";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
-
-export type DispatchNavigation = (action: Action) => void;
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -109,11 +105,14 @@ export const onClickRefresh = async (
   dispatchNavigation: DispatchNavigation,
   wellUid: string,
   wellboreUid: string,
-  objectType: ObjectType
+  objectType: ObjectType,
+  setIsLoading?: (arg: boolean) => void
 ) => {
+  if (setIsLoading) setIsLoading(true);
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, objectType);
   dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType } });
-  dispatchOperation({ type: OperationType.HideContextMenu });
+  if (setIsLoading) setIsLoading(false);
 };
 
 const displayDeleteModal = (

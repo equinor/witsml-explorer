@@ -22,10 +22,11 @@ export interface LogsContextMenuProps {
   wellbore: Wellbore;
   servers: Server[];
   indexCurve: IndexCurve;
+  setIsLoading?: (arg: boolean) => void;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, indexCurve } = props;
+  const { dispatchOperation, wellbore, servers, indexCurve, setIsLoading } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
 
@@ -47,10 +48,12 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, ObjectType.Log)}>
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
-        </MenuItem>,
+        setIsLoading ? (
+          <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, ObjectType.Log, setIsLoading)}>
+            <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+          </MenuItem>
+        ) : null,
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>

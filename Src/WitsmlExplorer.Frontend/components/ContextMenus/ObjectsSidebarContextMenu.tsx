@@ -14,10 +14,11 @@ import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 export interface ObjectsSidebarContextMenuProps {
   wellbore: Wellbore;
   objectType: ObjectType;
+  setIsLoading?: (arg: boolean) => void;
 }
 
 const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React.ReactElement => {
-  const { wellbore, objectType } = props;
+  const { wellbore, objectType, setIsLoading } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const {
@@ -28,7 +29,7 @@ const ObjectsSidebarContextMenu = (props: ObjectsSidebarContextMenuProps): React
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, objectType)}>
+        <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, objectType, setIsLoading)}>
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`Refresh ${pluralize(objectType)}`}</Typography>
         </MenuItem>,
