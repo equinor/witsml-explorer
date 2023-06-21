@@ -37,7 +37,6 @@ it("Should update list of servers, and current selected, if editing current sele
   expect(actual).toStrictEqual({
     ...EMPTY_NAVIGATION_STATE,
     wells: WELLS,
-    filteredWells: WELLS,
     currentSelected: editedServer,
     selectedServer: editedServer,
     servers: [editedServer]
@@ -51,7 +50,6 @@ it("Should update list of servers when adding a server", () => {
   expect(actual).toStrictEqual({
     ...EMPTY_NAVIGATION_STATE,
     wells: WELLS,
-    filteredWells: WELLS,
     selectedServer: SERVER_1,
     servers: [SERVER_1, newServer]
   });
@@ -81,8 +79,7 @@ it("Should update logs for selected wellbore", () => {
     ...getInitialState(),
     selectedWell: updatedWell,
     selectedWellbore: updatedWellbore,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
+    wells: [updatedWell, WELL_2, WELL_3]
   };
   expect(actual).toStrictEqual(expected);
 });
@@ -115,8 +112,7 @@ it("Should update trajectories for selected wellbore", () => {
     selectedWellbore: updatedWellbore,
     selectedObjectGroup: ObjectType.Trajectory,
     selectedObject: updatedTrajectory,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
+    wells: [updatedWell, WELL_2, WELL_3]
   });
 });
 
@@ -150,8 +146,7 @@ it("Should update currentSelected if deleted", () => {
     selectedObjectGroup: ObjectType.Trajectory,
     selectedObject: null,
     currentSelected: ObjectType.Trajectory,
-    wells: [updatedWell, WELL_2, WELL_3],
-    filteredWells: [updatedWell, WELL_2, WELL_3]
+    wells: [updatedWell, WELL_2, WELL_3]
   };
   expect(actual).toStrictEqual(expected);
 });
@@ -176,7 +171,6 @@ it("Should update refreshed well", () => {
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
     selectedWell: refreshedWellWithLogs
   };
 
@@ -200,7 +194,6 @@ it("Should update added well", () => {
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
     selectedWell: WELL_1
   };
   expect(afterRefreshWell).toStrictEqual(expectedState);
@@ -226,7 +219,6 @@ it("Should update refreshed wellbore", () => {
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
     selectedWellbore: refreshedWellboreWithLogs
   };
   expect(afterRefreshWellbore).toStrictEqual(expectedState);
@@ -238,8 +230,7 @@ it("Should update refreshed log object", () => {
     ...getInitialState(),
     selectedObject: LOG_1,
     selectedObjectGroup: ObjectType.Log,
-    wells,
-    filteredWells: wells
+    wells
   };
   const refreshedLog = { ...LOG_1, name: "renamed log" };
   const refreshLogAction = {
@@ -251,7 +242,6 @@ it("Should update refreshed log object", () => {
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,
-    filteredWells: expectedListOfWells,
     selectedObject: refreshedLog,
     selectedObjectGroup: ObjectType.Log
   };
@@ -271,8 +261,7 @@ it("Should update wells", () => {
 
   const expectedState = {
     ...getInitialState(),
-    wells: newWells,
-    filteredWells: newWells
+    wells: newWells
   };
   expect(afterUpdateWells).toStrictEqual(expectedState);
 });
@@ -293,7 +282,6 @@ it("Should remove wellbore from list of wellbores and update selected items", ()
   const expectedState = {
     ...getInitialState(),
     wells: expectedWellsList,
-    filteredWells: expectedWellsList,
     selectedWell: WELL_2
   };
   expect(afterRemoveWellbore).toStrictEqual(expectedState);
@@ -319,7 +307,6 @@ it("Should remove well from list of wells and update selected items", () => {
   const expectedState: NavigationState = {
     ...getInitialState(),
     wells: expectedWellsList,
-    filteredWells: expectedWellsList,
     selectedWell,
     selectedWellbore,
     currentSelected

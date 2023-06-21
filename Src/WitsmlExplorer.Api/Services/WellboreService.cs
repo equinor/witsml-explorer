@@ -42,6 +42,7 @@ namespace WitsmlExplorer.Api.Services
                     SuffixAPI = witsmlWellbore.SuffixAPI,
                     NumGovt = witsmlWellbore.NumGovt,
                     WellStatus = witsmlWellbore.StatusWellbore,
+                    IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
                     WellborePurpose = witsmlWellbore.PurposeWellbore,
                     WellboreParentUid = witsmlWellbore.ParentWellbore?.UidRef,
                     WellboreParentName = witsmlWellbore.ParentWellbore?.Value,

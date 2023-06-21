@@ -1,16 +1,21 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { UpdateWellboreAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import NavigationContext from "../../contexts/navigationContext";
+import { treeNodeIsExpanded } from "../../contexts/navigationStateReducer";
+import NavigationType from "../../contexts/navigationType";
+import OperationContext from "../../contexts/operationContext";
+import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
 import LogObject from "../../models/logObject";
 import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
+import Well from "../../models/well";
+import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
+import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
 import ConfirmModal from "../Modals/ConfirmModal";
@@ -24,14 +29,17 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
 export interface WellboreContextMenuProps {
-  dispatchNavigation: (action: UpdateWellboreAction) => void;
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
   wellbore: Wellbore;
-  servers?: Server[];
+  well: Well;
 }
 
 const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, wellbore, servers } = props;
+  const { wellbore, well } = props;
+  const {
+    dispatchNavigation,
+    navigationState: { servers, expandedTreeNodes, selectedWell, selectedWellbore }
+  } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const objectReferences = useClipboardReferences();
 
   const onClickNewWellbore = () => {
@@ -100,12 +108,29 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
   };
 
   const onClickRefresh = async () => {
-    const refreshedWellbore = await WellboreService.getCompleteWellbore(wellbore.wellUid, wellbore.uid);
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    // toggle the wellbore node and navigate to parent wellbore to reset the sidebar and content view
+    //   because we do not load in objects that have been loaded in before the refresh
+    const nodeId = calculateWellboreNodeId(wellbore);
+    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
+      dispatchNavigation({
+        type: NavigationType.CollapseTreeNodeChildren,
+        payload: { nodeId }
+      });
+    }
+    if (selectedWell?.uid == well.uid && selectedWellbore?.uid == wellbore.uid) {
+      dispatchNavigation({
+        type: NavigationType.SelectWellbore,
+        payload: { well, wellbore }
+      });
+    }
+
+    const refreshedWellbore = await WellboreService.getWellbore(wellbore.wellUid, wellbore.uid);
+    const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
     dispatchNavigation({
       type: ModificationType.UpdateWellbore,
-      payload: { wellbore: refreshedWellbore }
+      payload: { wellbore: { ...refreshedWellbore, objectCount } }
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickProperties = async () => {

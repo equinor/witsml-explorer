@@ -15,6 +15,7 @@ enum ModificationType {
   UpdateWellboreObjects = "UpdateWellboreObjects",
   UpdateWell = "UpdateWell",
   UpdateWellbore = "UpdateWellbore",
+  UpdateWellborePartial = "UpdateWellborePartial",
   UpdateWells = "UpdateWells"
 }
 

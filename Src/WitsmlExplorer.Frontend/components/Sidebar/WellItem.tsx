@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -19,7 +20,10 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedWell, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-
+  const [wellWithFilteredWellbores] = useWellFilter(
+    React.useMemo(() => [well], [well]),
+    React.useMemo(() => ({ filterWellbores: true }), [])
+  );
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellContextMenuProps = { well, servers, dispatchOperation };
@@ -28,7 +32,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
   };
 
   const onSelectWell = async (well: Well) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } });
+    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
   };
 
   return (
@@ -39,19 +43,16 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
       labelText={well.name}
       nodeId={well.uid}
       onLabelClick={() => onSelectWell(well)}
-      isActive={well.wellbores.some((wellbore) => wellbore.isActive)}
     >
-      {well &&
-        well.wellbores &&
-        well.wellbores.map((wellbore: Wellbore) => (
-          <WellboreItem
-            well={well}
-            wellbore={wellbore}
-            selected={selectedWellbore?.uid === wellbore.uid ? true : undefined}
-            key={calculateWellboreNodeId(wellbore)}
-            nodeId={calculateWellboreNodeId(wellbore)}
-          />
-        ))}
+      {wellWithFilteredWellbores?.wellbores?.map((wellbore: Wellbore) => (
+        <WellboreItem
+          well={well}
+          wellbore={wellbore}
+          selected={selectedWellbore?.uid === wellbore.uid ? true : undefined}
+          key={calculateWellboreNodeId(wellbore)}
+          nodeId={calculateWellboreNodeId(wellbore)}
+        />
+      ))}
     </TreeItem>
   );
 };

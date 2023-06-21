@@ -10,7 +10,6 @@ import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore, { WellboreObjects, calculateWellboreNodeId, objectTypeToWellboreObjects } from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
-import { filterWells } from "./filter";
 import {
   AddServerAction,
   AddWellAction,
@@ -24,6 +23,7 @@ import {
   UpdateWellboreAction,
   UpdateWellboreLogAction,
   UpdateWellboreObjectsAction,
+  UpdateWellborePartialAction,
   UpdateWellboreTrajectoryAction,
   UpdateWellboreTubularAction,
   UpdateWellboreWbGeometryAction,
@@ -54,6 +54,8 @@ export const performModificationAction = (state: NavigationState, action: Action
       return addWellbore(state, action);
     case ModificationType.UpdateWellbore:
       return updateWellbore(state, action);
+    case ModificationType.UpdateWellborePartial:
+      return updateWellborePartial(state, action);
     case ModificationType.UpdateLogObject:
       return updateWellboreLog(state, action);
     case ModificationType.UpdateTrajectoryOnWellbore:
@@ -116,8 +118,7 @@ const addWell = (state: NavigationState, { payload }: AddWellAction) => {
 
   return {
     ...state,
-    wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells
   };
 };
 
@@ -133,7 +134,6 @@ const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     selectedWell: refreshedWellIsSelected ? wells[wellIndex] : state.selectedWell
   };
 };
@@ -148,8 +148,7 @@ const addWellbore = (state: NavigationState, { payload }: AddWellboreAction) => 
 
   return {
     ...state,
-    wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells
   };
 };
 
@@ -164,8 +163,29 @@ const updateWellbore = (state: NavigationState, { payload }: UpdateWellboreActio
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     selectedWellbore: refreshedWellboreIsSelected ? wells[wellIndex].wellbores[wellboreIndex] : state.selectedWellbore
+  };
+};
+
+const updateWellborePartial = (state: NavigationState, { payload }: UpdateWellborePartialAction) => {
+  const { wellboreUid, wellUid, wellboreProperties } = payload;
+  const wellIndex = state.wells.findIndex((w) => w.uid === wellUid);
+  const well = state.wells[wellIndex];
+  const wellboreIndex = well.wellbores.findIndex((w) => w.uid === wellboreUid);
+  const wellbore = well.wellbores[wellboreIndex];
+  const updatedWellbore: Wellbore = { ...wellboreProperties, ...wellbore };
+  const updatedWell = { ...well };
+  updatedWell.wellbores.splice(wellboreIndex, 1, updatedWellbore);
+  const freshWells = [...state.wells];
+  freshWells.splice(wellIndex, 1, updatedWell);
+
+  const refreshedWellboreIsSelected = state.selectedWellbore?.uid === wellbore.uid;
+  const refreshedWellIsSelected = state.selectedWell?.uid === wellbore.wellUid;
+  return {
+    ...state,
+    wells: freshWells,
+    selectedWellbore: refreshedWellboreIsSelected ? updatedWellbore : state.selectedWellbore,
+    selectedWell: refreshedWellIsSelected ? updatedWell : state.selectedWellbore
   };
 };
 
@@ -185,7 +205,6 @@ const removeWell = (state: NavigationState, { payload }: RemoveWellAction) => {
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     ...updatedSelectState
   };
 };
@@ -212,7 +231,6 @@ const removeWellbore = (state: NavigationState, { payload }: RemoveWellboreActio
   return {
     ...state,
     wells,
-    filteredWells: filterWells(wells, state.selectedFilter),
     expandedTreeNodes: shouldCollapseWellbore ? toggleTreeNode(state.expandedTreeNodes, wellboreNodeId) : state.expandedTreeNodes,
     ...updatedSelectState
   };
@@ -245,7 +263,6 @@ const updateWellboreLog = (state: NavigationState, { payload }: UpdateWellboreLo
   return {
     ...state,
     wells: updatedWells,
-    filteredWells: filterWells(updatedWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -275,7 +292,6 @@ const updateWellboreTrajectory = (state: NavigationState, { payload }: UpdateWel
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -300,7 +316,6 @@ const updateWellboreTubular = (state: NavigationState, { payload }: UpdateWellbo
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject
   };
 };
@@ -320,7 +335,6 @@ const updateWellboreWbGeometry = (state: NavigationState, { payload }: UpdateWel
   return {
     ...state,
     wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter),
     selectedObject: selectedObject
   };
 };
@@ -338,8 +352,7 @@ const updateWellboreObjects = (state: NavigationState, { payload }: UpdateWellbo
     ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
     selectedObject: newSelectedObject,
     currentSelected,
-    wells: freshWells,
-    filteredWells: filterWells(freshWells, state.selectedFilter)
+    wells: freshWells
   };
 };
 
@@ -427,8 +440,7 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
   const { wells } = payload;
   return {
     ...state,
-    wells: wells,
-    filteredWells: filterWells(wells, state.selectedFilter)
+    wells: wells
   };
 };
 

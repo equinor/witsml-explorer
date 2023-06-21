@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("FormationMarker modified. {jobDescription}", job.Description());
-                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), formationMarker.WellUid, formationMarker.WellboreUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), formationMarker.WellUid, formationMarker.WellboreUid, EntityType.FormationMarker);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"FormationMarker updated ({formationMarker.Name} [{formationMarker.Uid}])"), refreshAction);
 
             }

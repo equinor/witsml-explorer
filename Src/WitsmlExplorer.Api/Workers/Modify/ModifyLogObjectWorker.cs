@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Log modified. {jobDescription}", job.Description());
-                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Update);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Log);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Log updated ({job.LogObject.Name} [{logUid}])"), refreshAction);
             }
 

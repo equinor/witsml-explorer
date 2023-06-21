@@ -2,40 +2,35 @@ import { Search } from "@equinor/eds-core-react";
 import { Divider } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import styled, { CSSProp } from "styled-components";
-import Filter, { EMPTY_FILTER } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
+import { FilterContext } from "../../contexts/filter";
 import { colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import FilterPanel from "./FilterPanel";
 
 const SearchFilter = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedFilter } = navigationState;
-  const [filter, setFilter] = useState<Filter>(EMPTY_FILTER);
+  const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [wellNameFilter, setWellNameFilter] = useState<string>(selectedFilter.wellName);
+  const [wellNameFilter, setWellNameFilter] = useState<string>(selectedFilter.name);
   const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6rem", minWidth: "174px", paddingRight: "0.1em" };
-  useEffect(() => {
-    setFilter(selectedFilter);
-  }, [selectedFilter]);
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
-      dispatchNavigation({ type: NavigationType.SetFilter, payload: { filter: { ...filter, wellName: wellNameFilter } } });
+      if (wellNameFilter !== selectedFilter.name) {
+        updateSelectedFilter({ name: wellNameFilter });
+      }
     }, 400);
     return () => clearTimeout(dispatch);
   }, [wellNameFilter]);
 
   useEffect(() => {
     if (wellNameFilter === "") {
-      setWellNameFilter(selectedFilter.wellName);
+      setWellNameFilter(selectedFilter.name);
     }
-  }, [selectedFilter.wellName]);
+  }, [selectedFilter.name]);
 
   return (
     <>
-      <SeachLayout>
+      <SearchLayout>
         <SearchBarContainer>
           <Search
             width={10}
@@ -55,7 +50,7 @@ const SearchFilter = (): React.ReactElement => {
           size={32}
           style={{ cursor: "pointer" }}
         />
-      </SeachLayout>
+      </SearchLayout>
       {expanded ? (
         <div style={FilterPopup}>
           <FilterPanel />
@@ -67,10 +62,11 @@ const SearchFilter = (): React.ReactElement => {
     </>
   );
 };
-const SeachLayout = styled.div`
+
+const SearchLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 44px;
-  padding: 0.6rem 0rem 0.5rem 1rem;
+  padding: 0.6rem 0.375rem 0.5rem 1rem;
   position: relative;
 `;
 

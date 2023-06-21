@@ -24,5 +24,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
             IEnumerable<ObjectOnWellbore> result = await objectService.GetObjectIdOnly(wellUid, wellboreUid, objectUid, objectType);
             return TypedResults.Ok(result?.First());
         }
+
+        [Produces(typeof(Dictionary<EntityType, int>))]
+        public static async Task<IResult> GetExpandableObjectsCount(string wellUid, string wellboreUid, IObjectService objectService)
+        {
+            Dictionary<EntityType, int> result = await objectService.GetExpandableObjectsCount(wellUid, wellboreUid);
+            return TypedResults.Ok(result);
+        }
     }
 }

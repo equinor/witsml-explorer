@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using Witsml;
@@ -26,7 +28,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            _service = new ObjectService(witsmlClientProvider.Object);
+            Mock<ILogger<ObjectService>> logger = new();
+            _service = new ObjectService(witsmlClientProvider.Object, logger.Object);
         }
 
         [Fact]
@@ -118,5 +121,62 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.Empty(result);
         }
 
+        [Fact]
+        public async Task GetExpandableObjectsCount_FourTypesExist_ReturnCount()
+        {
+            SetupReturnsObjectList(EntityType.FluidsReport, 0);
+            SetupReturnsObjectList(EntityType.MudLog, 2);
+            SetupReturnsObjectList(EntityType.Trajectory, 3);
+            SetupReturnsObjectList(EntityType.Tubular, 4);
+            SetupReturnsObjectList(EntityType.WbGeometry, 5);
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(5, result.Count);
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+            Assert.Equal(2, result[EntityType.MudLog]);
+            Assert.Equal(3, result[EntityType.Trajectory]);
+            Assert.Equal(4, result[EntityType.Tubular]);
+            Assert.Equal(5, result[EntityType.WbGeometry]);
+        }
+
+        private void SetupReturnsObjectList(EntityType type, int count)
+        {
+            IWitsmlObjectList objectList = EntityTypeHelper.ToObjectList(type);
+            for (int i = 0; i < count; i++)
+            {
+                objectList.Objects = objectList.Objects.Append(EntityTypeHelper.ToObjectOnWellbore(type));
+            }
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == objectList.TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(objectList);
+        }
+
+        [Fact]
+        public async Task GetExpandableObjectsCount_NullResult_ReturnZero()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => null);
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+        }
+
+        [Fact]
+        public async Task GetExpandableObjectsCount_FetchingThrows_ReturnZero()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .Throws(new SystemException());
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+        }
     }
 }

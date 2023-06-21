@@ -45,6 +45,11 @@ export interface UpdateWellboreAction extends Action {
   payload: { wellbore: Wellbore };
 }
 
+export interface UpdateWellborePartialAction extends Action {
+  type: ModificationType.UpdateWellborePartial;
+  payload: { wellUid: string; wellboreUid: string; wellboreProperties: Partial<Wellbore> };
+}
+
 export interface RemoveWellAction extends Action {
   type: ModificationType.RemoveWell;
   payload: { wellUid: string };
