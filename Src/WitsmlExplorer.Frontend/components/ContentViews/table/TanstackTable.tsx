@@ -1,8 +1,8 @@
-import * as React from "react";
-
-import { TableBody, TableHead } from "@material-ui/core";
+import { Icon } from "@equinor/eds-core-react";
+import { Checkbox, IconButton, TableBody, TableCell, TableHead, useTheme } from "@material-ui/core";
 import { ColumnDef, Row, Table, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
@@ -23,6 +23,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState(initializeColumnVisibility(viewId));
+  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const cellHeight = isCompactMode ? 30 : 53;
+  const headCellHeight = isCompactMode ? 35 : 55;
 
   const selectRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: Row<any>, table: Table<any>) => {
     if (onSelect) {
@@ -84,29 +87,19 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         {
           id: expanderId,
           enableHiding: false,
+          size: isCompactMode ? 40 : 60,
           header: ({ table }: { table: Table<any> }) => (
-            <button
-              {...{
-                onClick: () => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded()),
-                style: { cursor: "pointer" }
-              }}
-            >
-              {table.getIsSomeRowsExpanded() ? "👇" : "👉"}
-            </button>
+            <IconButton onClick={() => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())} size="small" style={{ padding: 0 }}>
+              <Icon name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"} />
+            </IconButton>
           ),
           cell: ({ row }) => {
             return row.getCanExpand() ? (
-              <button
-                {...{
-                  onClick: (event) => {
-                    event.stopPropagation();
-                    row.getToggleExpandedHandler()();
-                  },
-                  style: { cursor: "pointer" }
-                }}
-              >
-                {row.getIsExpanded() ? "👇" : "👉"}
-              </button>
+              <div style={{ display: "flex" }}>
+                <IconButton onClick={row.getToggleExpandedHandler()} size="small" style={{ margin: "auto", padding: 0 }}>
+                  <Icon name={row.getIsExpanded() ? "chevronUp" : "chevronDown"} />
+                </IconButton>
+              </div>
             ) : (
               ""
             );
@@ -120,8 +113,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         {
           id: selectId,
           enableHiding: false,
+          size: isCompactMode ? 36 : 60,
           header: ({ table }: { table: Table<any> }) => (
-            <IndeterminateCheckbox
+            <Checkbox
               {...{
                 checked: table.getIsAllRowsSelected(),
                 indeterminate: table.getIsSomeRowsSelected(),
@@ -130,12 +124,12 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
             />
           ),
           cell: ({ row, table }: { row: Row<any>; table: Table<any> }) => (
-            <div>
-              <IndeterminateCheckbox
+            <div style={{ display: "flex" }}>
+              <Checkbox
+                style={{ margin: "auto" }}
                 {...{
                   checked: row.getIsSelected(),
                   disabled: !row.getCanSelect(),
-                  indeterminate: row.getIsSomeSelected(),
                   onClick: (event) => {
                     toggleRow(event, row, table);
                     event.stopPropagation();
@@ -205,7 +199,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     getScrollElement: () => tableContainerRef.current,
     count: table.getRowModel().rows.length,
     overscan: 5,
-    estimateSize: () => 30
+    estimateSize: () => cellHeight
   });
 
   useEffect(() => {
@@ -240,16 +234,14 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
             {table.getHeaderGroups().map((headerGroup) => (
               <StyledTr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <StyledTh key={header.id} style={{ width: header.getSize(), left: header.getStart() }} stickyLeftColumns={stickyLeftColumns}>
+                  <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns}>
                     <div
+                      style={{ cursor: "pointer" }}
                       {...{
-                        className: header.column.getCanSort()
-                          ? "cursor-pointer select-none" //does not work, move to styled component
-                          : "",
                         onClick: header.column.getCanSort()
                           ? (event) => {
                               header.column.getToggleSortingHandler()(event);
-                              //avoid wrong height calculations when sorting expanded rows by collapsing all
+                              //collapse all rows to avoid wrong height calculations when sorting expanded rows
                               table.toggleAllRowsExpanded(false);
                               rowVirtualizer.measure();
                             }
@@ -257,24 +249,26 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       }}
                     >
                       {{
-                        asc: " 🔼",
-                        desc: " 🔽"
+                        asc: <Icon size={16} name="arrowUp" style={{ position: "relative", top: 3 }} />,
+                        desc: <Icon size={16} name="arrowDown" style={{ position: "relative", top: 3 }} />
                       }[header.column.getIsSorted() as string] ?? null}
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
-                    <div
-                      {...{
-                        onMouseDown: (event) => {
-                          header.getResizeHandler()(event);
-                          event.stopPropagation();
-                        },
-                        onTouchStart: (event) => {
-                          header.getResizeHandler()(event);
-                          event.stopPropagation();
-                        },
-                        className: `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`
-                      }}
-                    />
+                    {header.id != selectId && header.id != expanderId && (
+                      <div
+                        {...{
+                          onMouseDown: (event) => {
+                            header.getResizeHandler()(event);
+                            event.stopPropagation();
+                          },
+                          onTouchStart: (event) => {
+                            header.getResizeHandler()(event);
+                            event.stopPropagation();
+                          },
+                          className: `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`
+                        }}
+                      />
+                    )}
                   </StyledTh>
                 ))}
               </StyledTr>
@@ -301,7 +295,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       position: "absolute",
                       top: 0,
                       left: 0,
-                      height: `${row.getIsExpanded() && row.original.inset?.length != 0 ? 60 + 30 * row.original.inset?.length ?? 0 : 30}px`,
+                      height: `${
+                        row.getIsExpanded() && row.original.inset?.length != 0 ? headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0 : cellHeight
+                      }px`,
                       transform: `translateY(${virtualRow.start}px)`
                     }}
                     data-index={virtualRow.index}
@@ -313,7 +309,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                         style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
                         onClick={(event) => selectRow(event, row, table)}
                         clickable={onSelect && cell.column.id != selectId}
-                        stickyLeftColumns={stickyLeftColumns}
+                        sticky={stickyLeftColumns}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </StyledTd>
@@ -325,7 +321,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                         position: "absolute",
                         background: "white",
                         width: "100%",
-                        top: `${virtualRow.start + 30}px`,
+                        top: `${virtualRow.start + cellHeight}px`,
                         left: 0,
                         border: 0
                       }}
@@ -333,7 +329,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       <td
                         colSpan={row.getVisibleCells().length}
                         style={{
-                          height: `${30 * row.original.inset.length + 30}px`,
+                          height: `${cellHeight * row.original.inset.length + headCellHeight}px`,
                           padding: 0
                         }}
                       >
@@ -351,18 +347,6 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   );
 };
 
-function IndeterminateCheckbox({ indeterminate, ...rest }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-
-  return <input type="checkbox" ref={ref} style={{ cursor: "pointer" }} {...rest} />;
-}
-
 const StyledTable = styled.table`
   width: 100%;
   border-spacing: 0;
@@ -370,6 +354,7 @@ const StyledTable = styled.table`
   .resizer {
     right: 0;
     top: 0;
+    position: absolute;
     height: 100%;
     width: 7px;
     background: rgba(0, 0, 0, 0.5);
@@ -379,7 +364,7 @@ const StyledTable = styled.table`
   }
 
   .resizer.isResizing {
-    background: blue;
+    background: ${colors.infographic.primaryMossGreen};
     opacity: 1;
   }
 
@@ -406,20 +391,17 @@ const StyledTr = styled.tr<{ selected?: boolean }>`
   }
   display: flex;
   width: fit-content;
-  height: 30px;
 `;
 
-const StyledTh = styled.th<{ stickyLeftColumns: boolean }>`
-  box-shadow: inset 0 0 0 1px lightgray;
-  height: 30px;
+const StyledTh = styled(TableCell)<{ sticky: boolean }>`
   && {
+    border-right: 1px solid rgba(224, 224, 224, 1);
     border-bottom-width: 2px;
     background-color: ${colors.interactive.tableHeaderFillResting};
     color: ${colors.text.staticIconsDefault};
-    font-weight: bold;
     text-align: center;
-    display: grid;
-    grid-template-columns: 1fr 7px;
+    font-family: EquinorMedium, Arial, sans-serif;
+    position: relative;
   }
   > div {
     font-feature-settings: "tnum";
@@ -427,12 +409,11 @@ const StyledTh = styled.th<{ stickyLeftColumns: boolean }>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ${(props) => (props.stickyLeftColumns ? "&:nth-child(1) { position: sticky; z-index: 3; } &:nth-child(2) { position: sticky; z-index: 3; }" : "")}
+  ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 3; } &:nth-child(2) { position: sticky; z-index: 3; }" : "")}
 `;
 
-const StyledTd = styled.td<{ clickable: boolean; stickyLeftColumns: boolean }>`
-  box-shadow: inset 0 0 0 1px lightgray;
-  height: 30px;
+const StyledTd = styled(TableCell)<{ clickable: boolean; sticky: boolean }>`
+  border-right: 1px solid rgba(224, 224, 224, 1);
   background-color: inherit;
   z-index: 0;
   && {
@@ -444,5 +425,5 @@ const StyledTd = styled.td<{ clickable: boolean; stickyLeftColumns: boolean }>`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  ${(props) => (props.stickyLeftColumns ? "&:nth-child(1) { position: sticky; z-index: 2; } &:nth-child(2) { position: sticky; z-index: 2; }" : "")}
+  ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 2; } &:nth-child(2) { position: sticky; z-index: 2; }" : "")}
 `;
