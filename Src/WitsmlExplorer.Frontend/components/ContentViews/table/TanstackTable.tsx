@@ -246,7 +246,14 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                         className: header.column.getCanSort()
                           ? "cursor-pointer select-none" //does not work, move to styled component
                           : "",
-                        onClick: header.column.getToggleSortingHandler()
+                        onClick: header.column.getCanSort()
+                          ? (event) => {
+                              header.column.getToggleSortingHandler()(event);
+                              //avoid wrong height calculations when sorting expanded rows by collapsing all
+                              table.toggleAllRowsExpanded(false);
+                              rowVirtualizer.measure();
+                            }
+                          : undefined
                       }}
                     >
                       {{
@@ -294,7 +301,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       position: "absolute",
                       top: 0,
                       left: 0,
-                      height: `${row.getIsExpanded() ? 60 + 30 * row.original.inset?.length ?? 0 : 30}px`,
+                      height: `${row.getIsExpanded() && row.original.inset?.length != 0 ? 60 + 30 * row.original.inset?.length ?? 0 : 30}px`,
                       transform: `translateY(${virtualRow.start}px)`
                     }}
                     data-index={virtualRow.index}
@@ -312,8 +319,8 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       </StyledTd>
                     ))}
                   </StyledTr>
-                  {row.getIsExpanded() && (
-                    <InsetTr
+                  {row.getIsExpanded() && row.original.inset?.length != 0 && (
+                    <tr
                       style={{
                         position: "absolute",
                         background: "white",
@@ -332,7 +339,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       >
                         <TanstackTable columns={inset.columns} data={row.original.inset} showTotalItems={false} />
                       </td>
-                    </InsetTr>
+                    </tr>
                   )}
                 </Fragment>
               );
@@ -387,19 +394,6 @@ const StyledTable = styled.table`
   }
 `;
 
-const InsetTr = styled.tr`
-  @keyframes rollout {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  animation: rollout 0.3s;
-  transition: top 100ms ease-out;
-`;
-
 const StyledTr = styled.tr<{ selected?: boolean }>`
   &&& {
     background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
@@ -413,7 +407,6 @@ const StyledTr = styled.tr<{ selected?: boolean }>`
   display: flex;
   width: fit-content;
   height: 30px;
-  transition: transform 100ms ease-out;
 `;
 
 const StyledTh = styled.th<{ stickyLeftColumns: boolean }>`
