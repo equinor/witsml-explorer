@@ -25,7 +25,7 @@ export const StyledIcon = styled(Icon)`
 `;
 
 export const pluralize = (text: string) => {
-  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text + "s";
+  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text.charAt(text.length - 1) == "s" ? text : text + "s";
 };
 
 export const pluralizeIfMultiple = (object: string, array: any[] | null) => {

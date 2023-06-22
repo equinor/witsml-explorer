@@ -413,7 +413,7 @@ const replacePropertiesInWellbore = (
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
-  const well = wells[wellIndex];
+  const well = { ...wells[wellIndex] };
   const wellbore = { ...well.wellbores[wellboreIndex], ...wellboreProperties };
   well.wellbores.splice(wellboreIndex, 1, wellbore);
   wells.splice(wellIndex, 1, well);
