@@ -20,7 +20,7 @@ const Sidebar = (): React.ReactElement => {
     wells,
     React.useMemo(() => ({ dispatchNavigation }), [])
   );
-  const WellListing: CSSProp = { display: "grid", gridTemplateColumns: "1fr 25px", justifyContent: "center", alignContent: "stretch" };
+  const WellListing: CSSProp = { display: "grid", gridTemplateColumns: "1fr 18px", justifyContent: "center", alignContent: "stretch" };
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
 
   return (
@@ -39,11 +39,7 @@ const Sidebar = (): React.ReactElement => {
                 <React.Fragment key={well.uid}>
                   <div style={WellListing}>
                     <WellItem well={well} />
-                    {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
-                      <ActiveWellIndicator compactMode={isCompactMode} />
-                    ) : (
-                      <InactiveWellInidcator compactMode={isCompactMode} />
-                    )}
+                    <WellIndicator compactMode={isCompactMode} active={well.wellbores.some((wellbore: Wellbore) => wellbore.isActive)} />
                   </div>
                   <Divider style={{ margin: "0px" }} />
                 </React.Fragment>
@@ -78,19 +74,12 @@ const SidebarTreeView = styled.div`
   }
 `;
 
-export const ActiveWellIndicator = styled.div<{ compactMode: boolean }>`
-  width: 14px;
-  height: 14px;
-  background-color: ${colors.interactive.successHover};
+export const WellIndicator = styled.div<{ compactMode: boolean; active: boolean }>`
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
+  margin: ${(props) => (props.compactMode ? "0.5rem 0 0 0.5rem" : "1rem 0 0 0.5rem")};
+  ${(props) => (props.active ? `background-color: ${colors.interactive.successHover};` : `border: 2px solid ${colors.text.staticIconsTertiary};`)}
 `;
 
-export const InactiveWellInidcator = styled.div<{ compactMode: boolean }>`
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  margin: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0 0.5rem" : "1rem 0.5rem 0 0.5rem")};
-  border: 2px solid ${colors.text.staticIconsTertiary};
-`;
 export default Sidebar;
