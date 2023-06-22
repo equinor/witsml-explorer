@@ -82,6 +82,7 @@ const SearchFilter = (): React.ReactElement => {
           <EdsProvider density="compact">
             <TextField
               value={nameFilter}
+              style={{ width: "100%" }}
               onChange={(event) => setNameFilter(event.target.value ?? "")}
               id="searchField"
               ref={textFieldRef}
@@ -99,9 +100,11 @@ const SearchFilter = (): React.ReactElement => {
                 ),
                 endAdornment: (
                   <SearchIconLayout>
-                    <Button variant="ghost_icon" onClick={() => setNameFilter("")}>
-                      <Icon name={"clear"} color={colors.interactive.primaryResting} size={18} />
-                    </Button>
+                    {nameFilter && (
+                      <Button variant="ghost_icon" onClick={() => setNameFilter("")}>
+                        <Icon name={"clear"} color={colors.interactive.primaryResting} size={18} />
+                      </Button>
+                    )}
                     <Icon name="search" color={colors.interactive.primaryResting} />
                   </SearchIconLayout>
                 ),

@@ -51,8 +51,6 @@ namespace WitsmlExplorer.Api.Services
                     WellboreUid = obj.UidWellbore,
                     WellUid = obj.UidWell,
                     Name = obj.Name,
-                    WellboreName = obj.NameWellbore,
-                    WellName = obj.NameWell
                 }
             );
         }

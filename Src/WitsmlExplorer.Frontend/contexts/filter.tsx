@@ -66,7 +66,7 @@ export function FilterContextProvider({ children }: React.PropsWithChildren) {
 }
 
 export interface FilterOptions {
-  filterWellbores?: boolean; // Filter the wellbores (if the well itself doesn't match). Setting this to true will remove wellbores that doesn't match.
+  filterWellbores?: boolean; // Filter the wellbores (if the well itself doesn't match). Setting this to true will remove wellbores that don't match.
   dispatchNavigation?: (action: NavigationAction) => void; //A function to dispatch an action to expand tree nodes every time the filter changes.
 }
 
