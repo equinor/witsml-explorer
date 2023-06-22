@@ -9,7 +9,7 @@ import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
 import Panel from "./Panel";
 
 export const ContentTable = (props: ContentTableProps): React.ReactElement => {
-  const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements, showPanel = true, showTotalItems = true, showRefresh = false } = props;
+  const { columns, onSelect, onContextMenu, checkableRows, order, inset, panelElements, showPanel = true, showRefresh = false } = props;
   const [data, setData] = useState<any[]>(props.data ?? []);
   const [checkedContentItems, setCheckedContentItems] = useState<ContentTableRow[]>([]);
   const [sortOrder, setSortOrder] = useState<Order>(order ?? Order.Ascending);
@@ -62,7 +62,6 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
     <>
       {showPanel ? (
         <Panel
-          showTotalItems={showTotalItems}
           showCheckedItems={checkableRows}
           panelElements={panelElements}
           numberOfCheckedItems={checkedContentItems?.length}

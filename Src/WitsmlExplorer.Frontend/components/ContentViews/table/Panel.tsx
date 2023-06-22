@@ -6,25 +6,22 @@ import NavigationContext from "../../../contexts/navigationContext";
 import ObjectService from "../../../services/objectService";
 
 export interface PanelProps {
-  showTotalItems: boolean;
   showCheckedItems: boolean;
+  numberOfItems: number;
   showRefresh?: boolean;
   panelElements?: React.ReactElement[];
   numberOfCheckedItems?: number;
-  numberOfItems?: number;
 }
 
 const Panel = (props: PanelProps) => {
-  const { showTotalItems, showCheckedItems, panelElements, numberOfCheckedItems, numberOfItems, showRefresh } = props;
+  const { showCheckedItems, panelElements, numberOfCheckedItems, numberOfItems, showRefresh } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  if (!showTotalItems && !panelElements && !showRefresh) return null;
-
   const selectedItemsText = showCheckedItems ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
-  const selectedItemsElement = showTotalItems ? <Typography>{selectedItemsText}</Typography> : null;
+  const selectedItemsElement = <Typography>{selectedItemsText}</Typography>;
 
   const onClickRefresh = async () => {
     setIsRefreshing(true);
@@ -37,7 +34,7 @@ const Panel = (props: PanelProps) => {
 
   const refreshElement = (
     <Button
-      key="refreshJobs"
+      key="refreshObject"
       variant="outlined"
       aria-disabled={isRefreshing ? true : false}
       aria-label={isRefreshing ? "loading data" : null}

@@ -30,7 +30,6 @@ export interface ContentTableProps {
   inset?: Inset;
   panelElements?: React.ReactElement[];
   showPanel?: boolean;
-  showTotalItems?: boolean;
   showRefresh?: boolean;
 }
 
