@@ -1,14 +1,16 @@
 import { Icon } from "@equinor/eds-core-react";
 import { Checkbox, IconButton, TableBody, TableCell, TableHead, useTheme } from "@material-ui/core";
-import { ColumnDef, Row, Table, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, Row, SortingFns, Table, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+import { indexToNumber } from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
 import Panel from "./Panel";
 import {
   ContentTableProps,
+  ContentType,
   activeId,
   calculateColumnWidth,
   constantTableOptions,
@@ -89,6 +91,11 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
               cell: ({ row }) => {
                 return row.original.isActive ? <Icon name="isActive" /> : "";
               }
+            }
+          : {}),
+        ...(column.type == ContentType.Measure
+          ? {
+              sortingFn: "measure" as keyof SortingFns
             }
           : {})
       };
@@ -181,6 +188,13 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     state: {
       rowSelection,
       columnVisibility
+    },
+    sortingFns: {
+      measure: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+        const a = indexToNumber(rowA.getValue(columnId));
+        const b = indexToNumber(rowB.getValue(columnId));
+        return a > b ? -1 : a < b ? 1 : 0;
+      }
     },
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
@@ -281,7 +295,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                     {header.id != selectId && header.id != expanderId && (
-                      <div
+                      <Resizer
                         {...{
                           onMouseDown: (event) => {
                             header.getResizeHandler()(event);
@@ -291,7 +305,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                             header.getResizeHandler()(event);
                             event.stopPropagation();
                           },
-                          className: `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`
+                          isResizing: header.column.getIsResizing() ? 1 : 0
                         }}
                       />
                     )}
@@ -376,32 +390,28 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
 const StyledTable = styled.table`
   width: 100%;
   border-spacing: 0;
+`;
 
-  .resizer {
-    right: 0;
-    top: 0;
-    position: absolute;
-    height: 100%;
-    width: 7px;
-    background: rgba(0, 0, 0, 0.5);
-    cursor: col-resize;
-    user-select: none;
-    touch-action: none;
-  }
-
-  .resizer.isResizing {
+const Resizer = styled.div<{ isResizing?: number }>`
+  right: 0;
+  top: 0;
+  position: absolute;
+  height: 100%;
+  width: 7px;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+  ${(props) =>
+    props.isResizing
+      ? `&{
     background: ${colors.infographic.primaryMossGreen};
     opacity: 1;
-  }
-
-  @media (hover: hover) {
-    .resizer {
-      opacity: 0;
-    }
-
-    *:hover > .resizer {
-      opacity: 1;
-    }
+  }`
+      : ""}
+  &:hover {
+    opacity: 1;
   }
 `;
 
@@ -410,7 +420,7 @@ const StyledTr = styled.tr<{ selected?: number }>`
     background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
   }
   &&&:nth-of-type(even) {
-    background-color: ${colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : colors.interactive.tableHeaderFillResting)};
   }
   &&&:hover {
     background-color: ${colors.interactive.tableCellFillActivated};
