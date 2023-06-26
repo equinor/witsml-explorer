@@ -49,9 +49,16 @@ export enum ContentType {
 
 export const selectId = "select";
 export const expanderId = "expander";
+export const activeId = "active"; //implemented specifically for LogCurveInfoListView, needs rework if other views will also use filtering
 export const widthsStorageKey = "-widths";
 export const hiddenStorageKey = "-hidden";
 export const orderingStorageKey = "-ordering";
+type StorageKey = typeof widthsStorageKey | typeof hiddenStorageKey | typeof orderingStorageKey;
+type StorageKeyToPreference = {
+  [widthsStorageKey]: { [label: string]: number };
+  [hiddenStorageKey]: string[];
+  [orderingStorageKey]: string[];
+};
 
 export const getColumnAlignment = (column: { type: ContentType }) => {
   return column.type === ContentType.Number || column.type == ContentType.Measure ? "right" : "left";
@@ -136,4 +143,50 @@ export const getColumnType = (curveSpecification: CurveSpecification) => {
     default:
       return ContentType.Number;
   }
+};
+
+export function saveToStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key, preference: StorageKeyToPreference[Key]): void {
+  try {
+    if (viewId != null) {
+      localStorage.setItem(viewId + storageKey, JSON.stringify(preference));
+    }
+  } catch {
+    // disregard unavailable local storage
+  }
+}
+
+export function getFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): StorageKeyToPreference[Key] | null {
+  try {
+    if (viewId != null) {
+      return JSON.parse(localStorage.getItem(viewId + storageKey));
+    }
+  } catch {
+    return null;
+  }
+}
+
+export function removeFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): void {
+  try {
+    if (viewId != null) {
+      localStorage.removeItem(viewId + storageKey);
+    }
+  } catch {
+    // disregard unavailable local storage
+  }
+}
+
+export const constantTableOptions = {
+  enableColumnResizing: true,
+  enableHiding: true,
+  enableMultiRowSelection: true,
+  enableSorting: true,
+  enableSortingRemoval: true,
+  enableColumnFilters: false,
+  enableFilters: false,
+  enableGlobalFilter: false,
+  enableGrouping: false,
+  enableMultiRemove: false,
+  enableMultiSort: false,
+  enablePinning: false,
+  enableSubRowSelection: false
 };

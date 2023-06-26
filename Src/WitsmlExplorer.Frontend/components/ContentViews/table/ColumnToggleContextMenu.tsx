@@ -1,6 +1,6 @@
 import { Button } from "@equinor/eds-core-react";
 import { Table } from "@tanstack/react-table";
-import { ContentTableColumn, expanderId, orderingStorageKey, selectId } from "./tableParts";
+import { ContentTableColumn, expanderId, orderingStorageKey, removeFromStorage, saveToStorage, selectId } from "./tableParts";
 
 export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean; expandableRows: boolean; viewId: string; columns: ContentTableColumn[] }): React.ReactElement => {
   const { table, checkableRows, expandableRows, viewId, columns } = props;
@@ -43,9 +43,7 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean;
                         order[index - 1] = column.id;
                       }
                       table.setColumnOrder(order);
-                      if (viewId != null) {
-                        localStorage.setItem(viewId + orderingStorageKey, JSON.stringify(order));
-                      }
+                      saveToStorage(viewId, orderingStorageKey, order);
                     },
                     value: "^"
                   }}
@@ -61,9 +59,7 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean;
                         order[index + 1] = column.id;
                       }
                       table.setColumnOrder(order);
-                      if (viewId != null) {
-                        localStorage.setItem(viewId + orderingStorageKey, JSON.stringify(order));
-                      }
+                      saveToStorage(viewId, orderingStorageKey, order);
                     },
                     value: "v"
                   }}
@@ -77,9 +73,7 @@ export const ColumnToggle = (props: { table: Table<any>; checkableRows: boolean;
       <Button
         onClick={() => {
           table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
-          if (viewId != null) {
-            localStorage.removeItem(viewId + orderingStorageKey);
-          }
+          removeFromStorage(viewId, orderingStorageKey);
         }}
       >
         Reset ordering

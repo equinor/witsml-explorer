@@ -1,19 +1,30 @@
 import { Icon } from "@equinor/eds-core-react";
 import { Checkbox, IconButton, TableBody, TableCell, TableHead, useTheme } from "@material-ui/core";
-import { ColumnDef, Row, Table, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, Row, Table, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
 import Panel from "./Panel";
-import { ContentTableProps, expanderId, hiddenStorageKey, orderingStorageKey, selectId, widthsStorageKey } from "./tableParts";
+import {
+  ContentTableProps,
+  activeId,
+  constantTableOptions,
+  expanderId,
+  getFromStorage,
+  hiddenStorageKey,
+  orderingStorageKey,
+  saveToStorage,
+  selectId,
+  widthsStorageKey
+} from "./tableParts";
 
 const initializeColumnVisibility = (viewId: string | null) => {
   if (viewId == null) {
     return {};
   }
-  const hiddenColumns: string[] | null = JSON.parse(localStorage.getItem(viewId + hiddenStorageKey));
+  const hiddenColumns = getFromStorage(viewId, hiddenStorageKey);
   return hiddenColumns == null ? {} : Object.assign({}, ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false })));
 };
 
@@ -62,16 +73,26 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   };
 
   const columnDef = useMemo(() => {
-    const savedWidths = JSON.parse(localStorage.getItem(viewId + widthsStorageKey));
+    const savedWidths = getFromStorage(viewId, widthsStorageKey);
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
       return {
         id: column.label,
         accessorKey: column.property,
         header: column.label,
-        size: savedWidths?.[column.label]
+        size: savedWidths?.[column.label],
+        enableColumnFilter: true,
+        meta: { type: column.type }, //will I use it?
+        ...(column.label == activeId
+          ? {
+              filterFn: (row) => row.original.isVisibleFunction(),
+              cell: ({ row }) => {
+                return row.original.isActive ? <Icon name="isActive" /> : "";
+              }
+            }
+          : {})
       };
     });
-    const savedOrder: string[] | null = JSON.parse(localStorage.getItem(viewId + orderingStorageKey));
+    const savedOrder = getFromStorage(viewId, orderingStorageKey);
     //can extract this into a function and write a test
     if (savedOrder) {
       const sortedColumns = savedOrder.flatMap((label) => {
@@ -156,24 +177,13 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getRowCanExpand: inset != null ? (row) => !!row.original.inset?.length : undefined,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     enableExpanding: inset != null,
     enableRowSelection: checkableRows,
-    enableColumnResizing: true,
-    enableHiding: true,
-    enableMultiRowSelection: true,
-    enableSorting: true,
-    enableSortingRemoval: true,
-    enableColumnFilters: false,
-    enableFilters: false,
-    enableGlobalFilter: false,
-    enableGrouping: false,
-    enableMultiRemove: false,
-    enableMultiSort: false,
-    enablePinning: false,
-    enableSubRowSelection: false
+    ...constantTableOptions
   });
 
   useEffect(() => {
@@ -189,7 +199,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   useEffect(() => {
     if (viewId != null) {
       const hiddenColumns = Object.entries(columnVisibility).flatMap(([columnId, isVisible]) => (isVisible ? [] : columnId));
-      localStorage.setItem(viewId + hiddenStorageKey, JSON.stringify(hiddenColumns));
+      saveToStorage(viewId, hiddenStorageKey, hiddenColumns);
     }
   }, [columnVisibility]);
 
@@ -203,11 +213,19 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   });
 
   useEffect(() => {
+    //use debounce
     if (viewId != null) {
       const widths = Object.assign({}, ...table.getLeafHeaders().map((header) => ({ [header.id]: header.getSize() })));
-      localStorage.setItem(viewId + widthsStorageKey, JSON.stringify(widths));
+      saveToStorage(viewId, widthsStorageKey, widths);
     }
   }, [table.getTotalSize()]);
+
+  useEffect(() => {
+    table
+      .getVisibleLeafColumns()
+      .find((col) => col.columnDef.id == activeId)
+      ?.setFilterValue(false);
+  }, [table]);
 
   return (
     <div style={{ display: showTotalItems ? "grid" : "", gridTemplateRows: showTotalItems ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
