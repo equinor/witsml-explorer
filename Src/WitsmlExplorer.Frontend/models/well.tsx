@@ -6,6 +6,7 @@ export default interface Well {
   field: string;
   operator: string;
   country: string;
+  numLicense?: string;
   timeZone?: string;
   dateTimeCreation?: string;
   dateTimeLastChange?: string;
@@ -20,6 +21,7 @@ export function emptyWell(): Well {
     field: "",
     operator: "",
     country: "",
+    numLicense: "",
     timeZone: "",
     dateTimeCreation: "",
     dateTimeLastChange: "",

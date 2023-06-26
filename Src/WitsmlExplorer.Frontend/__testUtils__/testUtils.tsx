@@ -2,11 +2,11 @@ import { ThemeProvider } from "@material-ui/core";
 import { render } from "@testing-library/react";
 import { SnackbarProvider } from "notistack";
 import React from "react";
-import { FilterContextProvider } from "../contexts/filter";
-import NavigationContext from "../contexts/navigationContext";
-import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
+import { Filter, FilterContextProvider } from "../contexts/filter";
+import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../contexts/navigationContext";
+import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { initOperationStateReducer } from "../contexts/operationStateReducer";
+import { EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
@@ -20,9 +20,11 @@ import MeasureWithDatum from "../models/measureWithDatum";
 import MessageObject from "../models/messageObject";
 import MudLog from "../models/mudLog";
 import ObjectOnWellbore from "../models/objectOnWellbore";
+import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel } from "../models/objectType";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
+import { Server } from "../models/server";
 import StratigraphicStruct from "../models/stratigraphicStruct";
 import Trajectory from "../models/trajectory";
 import Tubular from "../models/tubular";
@@ -31,16 +33,29 @@ import Well, { emptyWell } from "../models/well";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
 import { getTheme } from "../styles/material-eds";
 
-export function renderWithContexts(ui: React.ReactElement, { ...options } = {}) {
+interface RenderWithContextsOptions {
+  initialNavigationState?: Partial<NavigationState>;
+  initialOperationState?: Partial<OperationState>;
+  initialFilter?: Partial<Filter>;
+}
+
+export function renderWithContexts(ui: React.ReactElement, { initialNavigationState, initialOperationState, initialFilter, ...options }: RenderWithContextsOptions = {}) {
   const Wrapper = ({ children }: { children: React.ReactElement }) => {
-    const [operationState, dispatchOperation] = initOperationStateReducer();
-    const [navigationState, dispatchNavigation] = initNavigationStateReducer();
+    const [operationState, dispatchOperation] = React.useReducer(operationReducer, {
+      contextMenu: EMPTY_CONTEXT_MENU,
+      progressIndicatorValue: 0,
+      modals: [],
+      theme: UserTheme.Compact,
+      timeZone: TimeZone.Local,
+      ...initialOperationState
+    });
+    const [navigationState, dispatchNavigation] = React.useReducer(navigationReducer, { ...EMPTY_NAVIGATION_STATE, ...initialNavigationState });
 
     return (
       <OperationContext.Provider value={{ operationState, dispatchOperation }}>
         <ThemeProvider theme={getTheme(operationState.theme)}>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
-            <FilterContextProvider>
+            <FilterContextProvider initialFilter={initialFilter}>
               <SnackbarProvider>{children}</SnackbarProvider>
             </FilterContextProvider>
           </NavigationContext.Provider>
@@ -50,6 +65,34 @@ export function renderWithContexts(ui: React.ReactElement, { ...options } = {}) 
   };
 
   return render(ui, { wrapper: Wrapper, ...options });
+}
+
+interface Deferred<T> {
+  promise: Promise<T>;
+  resolve: (value?: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+}
+
+export function deferred<T>(): Deferred<T> {
+  let resolve: (value?: T | PromiseLike<T>) => void;
+  let reject: (reason?: any) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
+export function getServer(overrides?: Partial<Server>): Server {
+  return {
+    id: "serverId",
+    name: "serverName",
+    description: "serverDescription",
+    url: "serverUrl",
+    roles: [],
+    depthLogDecimals: 0,
+    ...overrides
+  };
 }
 
 export function getWell(overrides?: Partial<Well>): Well {
@@ -74,6 +117,14 @@ export function getObjectOnWellbore(overrides?: Partial<ObjectOnWellbore>): Obje
     name: "name",
     wellboreName: "wellboreName",
     wellName: "wellName",
+    ...overrides
+  };
+}
+
+export function getObjectSearchResult(overrides?: Partial<ObjectSearchResult>): ObjectSearchResult {
+  return {
+    ...getObjectOnWellbore(),
+    searchProperty: "searchProperty",
     ...overrides
   };
 }
@@ -220,6 +271,7 @@ export function getTrajectory(overrides?: Partial<Trajectory>): Trajectory {
     aziRef: "",
     dTimTrajStart: "",
     dTimTrajEnd: "",
+    serviceCompany: "",
     dateTimeCreation: "",
     dateTimeLastChange: "",
     trajectoryStations: [],

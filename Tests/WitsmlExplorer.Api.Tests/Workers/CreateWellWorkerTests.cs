@@ -30,6 +30,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string Field = "SomeField";
         private const string Country = "Norway";
         private const string Operator = "Equinor";
+        private const string NumLicense = "123";
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly CreateWellWorker _worker;
 
@@ -88,7 +89,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<WitsmlWells> createdWells = new();
             _witsmlClient.Setup(client =>
                 client.AddToStoreAsync(It.IsAny<WitsmlWells>()))
-                .Callback<WitsmlWells>(wells => createdWells.Add(wells))
+                .Callback<WitsmlWells>(createdWells.Add)
                 .ReturnsAsync(new QueryResult(true));
             _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
                 .ReturnsAsync(new WitsmlWells() { Wells = new List<WitsmlWell>() { new WitsmlWell() } });
@@ -103,11 +104,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(Field, createdWell.Field);
             Assert.Equal(Country, createdWell.Country);
             Assert.Equal(Operator, createdWell.Operator);
+            Assert.Equal(NumLicense, createdWell.NumLicense);
             Assert.Equal(TimeZone, createdWell.TimeZone);
         }
 
         private static CreateWellJob CreateJobTemplate(string uid = WellUid, string name = WellName, string timeZone = TimeZone,
-            string field = Field, string country = Country, string @operator = Operator)
+            string field = Field, string country = Country, string @operator = Operator, string numLicense = NumLicense)
         {
             return new CreateWellJob
             {
@@ -118,6 +120,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Field = field,
                     Country = country,
                     Operator = @operator,
+                    NumLicense = numLicense,
                     TimeZone = timeZone
                 }
             };

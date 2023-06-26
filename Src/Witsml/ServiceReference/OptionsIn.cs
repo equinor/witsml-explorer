@@ -4,14 +4,18 @@ using System.Text;
 namespace Witsml.ServiceReference
 {
     public record OptionsIn(
-        ReturnElements ReturnElements,
+        ReturnElements? ReturnElements = null,
         int? MaxReturnNodes = null,
-        int? RequestLatestValues = null)
+        int? RequestLatestValues = null,
+        bool? RequestObjectSelectionCapability = null)
     {
         public string GetKeywords()
         {
             StringBuilder keywords = new();
-            keywords.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
+            if (ReturnElements != null)
+            {
+                keywords.Append($"returnElements={ReturnElements.Value.GetEnumMemberValue()}");
+            }
             if (MaxReturnNodes is > 0)
             {
                 keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
@@ -19,6 +23,10 @@ namespace Witsml.ServiceReference
             if (RequestLatestValues is > 0)
             {
                 keywords.Append($";requestLatestValues={RequestLatestValues.Value}");
+            }
+            if (RequestObjectSelectionCapability == true)
+            {
+                keywords.Append($";requestObjectSelectionCapability=true");
             }
 
             return keywords.ToString();

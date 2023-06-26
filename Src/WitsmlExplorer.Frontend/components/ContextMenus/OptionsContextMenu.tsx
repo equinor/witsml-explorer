@@ -1,19 +1,22 @@
-import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { Icon, Typography } from "@equinor/eds-core-react";
+import { MenuItem, Tooltip } from "@material-ui/core";
 import React, { useMemo } from "react";
+import styled from "styled-components";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
 import { pluralize } from "./ContextMenuUtils";
 
 export interface OptionsContextMenuProps {
   dispatchOperation: (action: HideModalAction) => void;
   options: string[];
+  getOptionInformation?: (option: string) => string | null;
   onOptionChange: (newValue: string) => void;
 }
 
 const OptionsContextMenu = (props: OptionsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, options, onOptionChange } = props;
+  const { dispatchOperation, options, onOptionChange, getOptionInformation } = props;
 
   const handleOptionChange = (option: string) => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -23,12 +26,30 @@ const OptionsContextMenu = (props: OptionsContextMenuProps): React.ReactElement 
   const menuItems = useMemo(() => {
     return options.map((option) => (
       <MenuItem key={option} onClick={() => handleOptionChange(option)}>
-        <Typography color={"primary"}>{pluralize(option)}</Typography>
+        <OptionLayout>
+          <Typography color={"primary"}>{pluralize(option)}</Typography>
+          {getOptionInformation?.(option) && (
+            <Tooltip title={<TooltipLayout>{getOptionInformation(option)}</TooltipLayout>}>
+              <Icon name="infoCircle" color={colors.interactive.primaryResting} size={18} data-testid={`${option}-info-icon`} />
+            </Tooltip>
+          )}
+        </OptionLayout>
       </MenuItem>
     ));
   }, [options, onOptionChange]);
 
   return <ContextMenu menuItems={menuItems} />;
 };
+
+const OptionLayout = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+`;
+
+const TooltipLayout = styled.div`
+  white-space: pre-line;
+`;
 
 export default OptionsContextMenu;

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using Witsml.Data;
 using Witsml.Data.MudLog;
 using Witsml.Data.Tubular;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 
@@ -45,14 +47,31 @@ namespace WitsmlExplorer.Api.Query
 
         public static IWitsmlObjectList GetWitsmlObjectsByType(EntityType type)
         {
-            IWitsmlObjectList list = EntityTypeHelper.ToObjectList(type);
             WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
             o.UidWell = "";
             o.UidWellbore = "";
             o.Uid = "";
             o.Name = "";
-            list.Objects = new[] { o };
-            return list;
+            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
+        }
+
+        public static IWitsmlObjectList GetWitsmlObjectsWithParamByType(EntityType type, string objectProperty, string objectPropertyValue)
+        {
+            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
+            o.UidWell = "";
+            o.UidWellbore = "";
+            o.Uid = "";
+            o.Name = "";
+            if (objectProperty != null)
+            {
+                PropertyInfo property = o.GetType().GetProperty(objectProperty.CapitalizeFirstLetter());
+                if (property == null || !property.CanWrite)
+                {
+                    throw new ArgumentException($"{objectProperty} must be a supported property of a {type}.");
+                }
+                property.SetValue(o, objectPropertyValue);
+            }
+            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)

@@ -1,5 +1,6 @@
 import { ErrorDetails } from "../models/errorDetails";
 import ObjectOnWellbore from "../models/objectOnWellbore";
+import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Wellbore, { ExpandableObjectsCount, getObjectsFromWellbore } from "../models/wellbore";
@@ -97,8 +98,18 @@ export default class ObjectService {
     }
   }
 
-  public static async getObjectsByType(type: ObjectType, abortSignal?: AbortSignal): Promise<ObjectOnWellbore[]> {
+  public static async getObjectsByType(type: ObjectType, abortSignal?: AbortSignal): Promise<ObjectSearchResult[]> {
     const response = await ApiClient.get(`/api/objects/${type}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
+    }
+  }
+
+  public static async getObjectsWithParamByType(type: ObjectType, propertyName: string, propertyValue: string, abortSignal?: AbortSignal): Promise<ObjectSearchResult[]> {
+    const response = await ApiClient.get(`/api/objects/${type}/${propertyName}/${propertyValue}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {

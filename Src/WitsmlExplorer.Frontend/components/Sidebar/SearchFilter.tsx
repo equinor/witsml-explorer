@@ -2,10 +2,22 @@ import { Button, DotProgress, EdsProvider, Icon } from "@equinor/eds-core-react"
 import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled, { CSSProp } from "styled-components";
-import { FilterContext, FilterType, WellFilterType } from "../../contexts/filter";
+import {
+  FilterContext,
+  FilterType,
+  ObjectPropertyFilterType,
+  filterTypeToProperty,
+  getFilterTypeInformation,
+  isObjectFilterType,
+  isObjectPropertyFilterType,
+  isWellFilterType,
+  isWellPropertyFilterType,
+  objectPropertyFilterTypeToObjects
+} from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import ObjectSearchResult from "../../models/objectSearchResult";
 import { ObjectType } from "../../models/objectType";
 import NotificationService from "../../services/notificationService";
 import ObjectService from "../../services/objectService";
@@ -32,7 +44,7 @@ const SearchFilter = (): React.ReactElement => {
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
-      if (nameFilter !== selectedFilter.name) {
+      if (nameFilter !== selectedFilter.name && !isObjectPropertyFilterType(selectedOption)) {
         updateSelectedFilter({ name: nameFilter });
       }
     }, 400);
@@ -45,15 +57,52 @@ const SearchFilter = (): React.ReactElement => {
     }
   }, [selectedFilter.name]);
 
+  const fetchObjectProperties = async () => {
+    setIsLoading(true);
+    const searchResults: ObjectSearchResult[] = [];
+    const errors: Error[] = [];
+    const objectTypes = objectPropertyFilterTypeToObjects[selectedOption as ObjectPropertyFilterType];
+    const objectPromises = objectTypes.map(async (objectType) => {
+      try {
+        const objects = await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], nameFilter);
+        searchResults.push(...objects);
+      } catch (error) {
+        errors.push(error);
+      }
+    });
+    await Promise.all(objectPromises);
+    if (errors.length > 0) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: new URL(selectedServer.url),
+        message: errors.map((error) => error.message).join("\n"),
+        isSuccess: false,
+        severity: errors.length === objectTypes.length ? "error" : "info"
+      });
+    }
+    if (errors.length !== objectTypes.length) {
+      updateSelectedFilter({ name: nameFilter, filterType: selectedOption, searchResults });
+    }
+    setIsLoading(false);
+  };
+
+  const handleSearch = () => {
+    // This is triggered when the 'Enter' key is pressed or the search icon is clicked
+    if (!isLoading && nameFilter.length > 0) {
+      if (isObjectPropertyFilterType(selectedOption)) {
+        fetchObjectProperties();
+      }
+    }
+  };
+
   const handleOptionChange = async (newValue: FilterType) => {
     setSelectedOption(newValue);
-    if (Object.values<string>(WellFilterType).includes(newValue)) {
-      updateSelectedFilter({ filterType: newValue, objectsOnWellbore: [] });
-    } else if (Object.values<string>(ObjectType).includes(newValue)) {
+    if (isWellFilterType(newValue) || isWellPropertyFilterType(newValue)) {
+      updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults: [] });
+    } else if (isObjectFilterType(newValue)) {
       setIsLoading(true);
       try {
-        const objects = await ObjectService.getObjectsByType(newValue as unknown as ObjectType);
-        updateSelectedFilter({ filterType: newValue, objectsOnWellbore: objects });
+        const searchResults = await ObjectService.getObjectsByType(newValue as unknown as ObjectType);
+        updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults });
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
           serverUrl: new URL(selectedServer.url),
@@ -66,7 +115,12 @@ const SearchFilter = (): React.ReactElement => {
   };
 
   const openOptions = () => {
-    const contextMenuProps: OptionsContextMenuProps = { dispatchOperation, options: searchOptions, onOptionChange: handleOptionChange };
+    const contextMenuProps: OptionsContextMenuProps = {
+      dispatchOperation,
+      options: searchOptions,
+      onOptionChange: handleOptionChange,
+      getOptionInformation: getFilterTypeInformation
+    };
     const textFieldRect = textFieldRef.current?.getBoundingClientRect();
     const position = {
       mouseY: textFieldRect?.bottom ?? 0,
@@ -89,23 +143,26 @@ const SearchFilter = (): React.ReactElement => {
               variant="outlined"
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
+              onKeyDown={(e) => (e.key == "Enter" ? handleSearch() : null)}
               InputProps={{
                 startAdornment: (
                   <SearchIconLayout>
-                    <Button variant="ghost_icon" disabled={!selectedServer || isLoading} onClick={openOptions}>
+                    <Button variant="ghost_icon" disabled={!selectedServer || isLoading} onClick={openOptions} aria-label="Show Search Options">
                       <Icon name={"chevronDown"} color={colors.interactive.primaryResting} />
                     </Button>
-                    {isLoading && <DotProgress color={"primary"} size={32} />}
+                    {isLoading && <DotProgress color={"primary"} size={32} aria-label="Loading Options" />}
                   </SearchIconLayout>
                 ),
                 endAdornment: (
                   <SearchIconLayout>
                     {nameFilter && (
-                      <Button variant="ghost_icon" onClick={() => setNameFilter("")}>
+                      <Button variant="ghost_icon" onClick={() => setNameFilter("")} aria-label="Clear">
                         <Icon name={"clear"} color={colors.interactive.primaryResting} size={18} />
                       </Button>
                     )}
-                    <Icon name="search" color={colors.interactive.primaryResting} />
+                    <Button variant="ghost_icon" onClick={handleSearch} aria-label="Search">
+                      <Icon name="search" color={colors.interactive.primaryResting} />
+                    </Button>
                   </SearchIconLayout>
                 ),
                 classes: {

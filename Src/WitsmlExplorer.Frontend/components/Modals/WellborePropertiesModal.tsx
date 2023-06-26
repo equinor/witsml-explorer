@@ -100,14 +100,14 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                     <TextField
                       id={"number"}
                       label={"number"}
-                      value={editableWellbore.number}
+                      value={editableWellbore.number || ""}
                       fullWidth
                       onChange={(e) => setEditableWellbore({ ...editableWellbore, number: e.target.value })}
                     />
                     <TextField
                       id={"suffixAPI"}
                       label={"suffix api"}
-                      value={editableWellbore.suffixAPI}
+                      value={editableWellbore.suffixAPI || ""}
                       fullWidth
                       onChange={(e) => setEditableWellbore({ ...editableWellbore, suffixAPI: e.target.value })}
                     />
@@ -115,12 +115,12 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                   <TextField
                     id={"numGovt"}
                     label={"num govt"}
-                    value={editableWellbore.numGovt}
+                    value={editableWellbore.numGovt || ""}
                     fullWidth
                     onChange={(e) => setEditableWellbore({ ...editableWellbore, numGovt: e.target.value })}
                   />
                   <DateTimeField
-                    value={editableWellbore.dTimeKickoff}
+                    value={editableWellbore.dTimeKickoff || ""}
                     label="dTimeKickoff"
                     updateObject={(dateTime: string, valid: boolean) => {
                       setEditableWellbore({ ...editableWellbore, dTimeKickoff: dateTime });
@@ -298,7 +298,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                     error={invalidStringInput(wellbore.comments, editableWellbore.comments, MaxLength.Comment)}
                     helperText={invalidStringInput(wellbore.comments, editableWellbore.comments, MaxLength.Comment) ? `A comment must be 1-${MaxLength.Comment} characters` : ""}
                     inputProps={{ maxLength: MaxLength.Comment }}
-                    value={editableWellbore.comments}
+                    value={editableWellbore.comments || ""}
                     fullWidth
                     onChange={(e) => {
                       setEditableWellbore({

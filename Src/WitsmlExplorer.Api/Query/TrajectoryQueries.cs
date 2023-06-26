@@ -29,6 +29,7 @@ namespace WitsmlExplorer.Api.Query
                     MdMin = new WitsmlMeasuredDepthCoord(),
                     MdMax = new WitsmlMeasuredDepthCoord(),
                     AziRef = "",
+                    ServiceCompany = "",
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
                     CommonData = new WitsmlCommonData()

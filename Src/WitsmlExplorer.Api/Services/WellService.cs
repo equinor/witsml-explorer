@@ -58,6 +58,7 @@ namespace WitsmlExplorer.Api.Services
                     Name = well.Name,
                     Field = well.Field,
                     Operator = well.Operator,
+                    NumLicense = well.NumLicense,
                     TimeZone = well.TimeZone,
                     DateTimeCreation = well.CommonData.DTimCreation,
                     DateTimeLastChange = well.CommonData.DTimLastChange,

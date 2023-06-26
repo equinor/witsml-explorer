@@ -1,4 +1,4 @@
-import { Divider } from "@equinor/eds-core-react";
+import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
 import React, { useContext } from "react";
@@ -28,28 +28,31 @@ const Sidebar = (): React.ReactElement => {
       <SearchFilter />
       <SidebarTreeView>
         <WellProgress>
-          {filteredWells && filteredWells.length > 0 && (
-            <TreeView
-              defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}
-              defaultExpandIcon={<Icon name="chevronRight" color={colors.interactive.primaryResting} />}
-              defaultEndIcon={<div style={{ width: 24 }} />}
-              expanded={expandedTreeNodes}
-            >
-              {filteredWells.map((well: Well) => (
-                <React.Fragment key={well.uid}>
-                  <div style={WellListing}>
-                    <WellItem well={well} />
-                    {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
-                      <ActiveWellIndicator compactMode={isCompactMode} />
-                    ) : (
-                      <InactiveWellInidcator compactMode={isCompactMode} />
-                    )}
-                  </div>
-                  <Divider style={{ margin: "0px" }} />
-                </React.Fragment>
-              ))}
-            </TreeView>
-          )}
+          {filteredWells &&
+            (filteredWells.length === 0 ? (
+              <Typography>No wells match the current filter</Typography>
+            ) : (
+              <TreeView
+                defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}
+                defaultExpandIcon={<Icon name="chevronRight" color={colors.interactive.primaryResting} />}
+                defaultEndIcon={<div style={{ width: 24 }} />}
+                expanded={expandedTreeNodes}
+              >
+                {filteredWells.map((well: Well) => (
+                  <React.Fragment key={well.uid}>
+                    <div style={WellListing}>
+                      <WellItem well={well} />
+                      {well.wellbores.some((wellbore: Wellbore) => wellbore.isActive) ? (
+                        <ActiveWellIndicator compactMode={isCompactMode} />
+                      ) : (
+                        <InactiveWellInidcator compactMode={isCompactMode} />
+                      )}
+                    </div>
+                    <Divider style={{ margin: "0px" }} />
+                  </React.Fragment>
+                ))}
+              </TreeView>
+            ))}
         </WellProgress>
       </SidebarTreeView>
     </React.Fragment>

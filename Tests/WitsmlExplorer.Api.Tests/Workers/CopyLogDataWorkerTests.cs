@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, _witsmlClient);
             List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() => LogUtils.GetSourceLogData(query.Logs.First().StartDateTimeIndex, query.Logs.First().EndDateTimeIndex));
 
@@ -109,7 +109,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -139,7 +139,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
 
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -184,7 +184,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient);
 
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -215,7 +215,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, targetLog);
 
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -285,7 +285,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, _witsmlClient);
             List<WitsmlLogs> updatedLogs = LogUtils.SetupUpdateInStoreAsync(_witsmlClient);
             WitsmlLogs query = null;
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() => LogUtils.GetSourceLogData(query.Logs.First().StartDateTimeIndex, query.Logs.First().EndDateTimeIndex));
 
