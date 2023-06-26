@@ -33,7 +33,7 @@ export const LogTypeListView = (): React.ReactElement => {
     });
   };
 
-  return <ContentTable columns={columns} data={logTypes} onSelect={onSelect} />;
+  return <ContentTable columns={columns} data={logTypes} onSelect={onSelect} showRefresh />;
 };
 
 export default LogTypeListView;

@@ -1,3 +1,12 @@
+import { ThemeProvider } from "@material-ui/core";
+import { render } from "@testing-library/react";
+import { SnackbarProvider } from "notistack";
+import React from "react";
+import { FilterContextProvider } from "../contexts/filter";
+import NavigationContext from "../contexts/navigationContext";
+import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
+import OperationContext from "../contexts/operationContext";
+import { initOperationStateReducer } from "../contexts/operationStateReducer";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
@@ -20,6 +29,28 @@ import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well, { emptyWell } from "../models/well";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
+import { getTheme } from "../styles/material-eds";
+
+export function renderWithContexts(ui: React.ReactElement, { ...options } = {}) {
+  const Wrapper = ({ children }: { children: React.ReactElement }) => {
+    const [operationState, dispatchOperation] = initOperationStateReducer();
+    const [navigationState, dispatchNavigation] = initNavigationStateReducer();
+
+    return (
+      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        <ThemeProvider theme={getTheme(operationState.theme)}>
+          <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+            <FilterContextProvider>
+              <SnackbarProvider>{children}</SnackbarProvider>
+            </FilterContextProvider>
+          </NavigationContext.Provider>
+        </ThemeProvider>
+      </OperationContext.Provider>
+    );
+  };
+
+  return render(ui, { wrapper: Wrapper, ...options });
+}
 
 export function getWell(overrides?: Partial<Well>): Well {
   return {

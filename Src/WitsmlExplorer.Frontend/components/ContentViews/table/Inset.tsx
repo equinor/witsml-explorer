@@ -86,7 +86,7 @@ export const InsetRow = (props: InsetRowProps): ReactElement => {
       <MuiTableCell colSpan={1} padding="none"></MuiTableCell>
       <MuiTableCell colSpan={columnsLength} padding="none">
         <div style={{ maxWidth: "400px" }}>
-          <ContentTable columns={inset.columns} data={inset.data[uid]} showTotalItems={false} />
+          <ContentTable columns={inset.columns} data={inset.data[uid]} showPanel={false} />
         </div>
       </MuiTableCell>
     </MuiTableRow>

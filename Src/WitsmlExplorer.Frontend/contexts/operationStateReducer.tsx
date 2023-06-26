@@ -154,3 +154,5 @@ const setTimeZone = (state: OperationState, { payload }: SetTimeZoneAction) => {
 };
 
 export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction;
+
+export type DispatchOperation = (action: OperationAction) => void;

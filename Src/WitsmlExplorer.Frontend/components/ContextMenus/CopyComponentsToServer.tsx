@@ -3,6 +3,7 @@ import { MenuItem } from "@material-ui/core";
 import { Fragment, useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentReferences, { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -19,7 +20,7 @@ import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { DispatchOperation, menuItemText, pluralize } from "./ContextMenuUtils";
+import { menuItemText, pluralize } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface CopyComponentsToServerMenuItemProps {

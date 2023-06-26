@@ -80,7 +80,11 @@ export const MudLogsListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MudLogContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore?.mudLogs, mudLogs) && <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    Object.is(selectedWellbore?.mudLogs, mudLogs) && (
+      <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+    )
+  );
 };
 
 export default MudLogsListView;
