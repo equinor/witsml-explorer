@@ -31,7 +31,7 @@ export interface ContentTableProps {
   panelElements?: React.ReactElement[];
   showTotalItems?: boolean;
   stickyLeftColumns?: boolean;
-  viewId?: string; //id that will be used to save view settings to local storage
+  viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
 }
 
 export enum Order {
@@ -190,3 +190,36 @@ export const constantTableOptions = {
   enablePinning: false,
   enableSubRowSelection: false
 };
+
+const sortingIconSize = 16;
+export function calculateColumnWidth(label: string, isCompactMode: boolean, type?: ContentType): number {
+  const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
+  switch (label) {
+    case "name":
+      return 220 + padding;
+    case "uid":
+      return 280 + padding;
+    case selectId:
+      return isCompactMode ? 36 : 60;
+    case expanderId:
+      return isCompactMode ? 40 : 60;
+    case activeId:
+      return 40 + padding;
+    case "startIndex":
+    case "endIndex":
+    case "minIndex":
+    case "maxIndex":
+      // indexes will reuse width between depth and time logs so we set the width to the larger DateTime length
+      return 180 + padding;
+    case "mnemonic":
+      return 150 + padding;
+  }
+
+  const estimatedLabelLength = label.length * 8;
+  if (type == ContentType.DateTime) {
+    return Math.max(180, estimatedLabelLength) + padding;
+  } else if (type == ContentType.Measure || type == ContentType.Number) {
+    return Math.max(80, estimatedLabelLength) + padding;
+  }
+  return Math.max(estimatedLabelLength + padding, 100);
+}

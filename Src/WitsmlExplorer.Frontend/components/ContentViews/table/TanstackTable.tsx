@@ -10,6 +10,7 @@ import Panel from "./Panel";
 import {
   ContentTableProps,
   activeId,
+  calculateColumnWidth,
   constantTableOptions,
   expanderId,
   getFromStorage,
@@ -79,9 +80,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         id: column.label,
         accessorKey: column.property,
         header: column.label,
-        size: savedWidths?.[column.label],
+        size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         enableColumnFilter: true,
-        meta: { type: column.type }, //will I use it?
+        meta: { type: column.type },
         ...(column.label == activeId
           ? {
               filterFn: (row) => row.original.isVisibleFunction(),
@@ -108,7 +109,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         {
           id: expanderId,
           enableHiding: false,
-          size: isCompactMode ? 40 : 60,
+          size: calculateColumnWidth(expanderId, isCompactMode),
           header: ({ table }: { table: Table<any> }) => (
             <IconButton onClick={() => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())} size="small" style={{ padding: 0 }}>
               <Icon name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"} />
@@ -117,7 +118,14 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
           cell: ({ row }) => {
             return row.getCanExpand() ? (
               <div style={{ display: "flex" }}>
-                <IconButton onClick={row.getToggleExpandedHandler()} size="small" style={{ margin: "auto", padding: 0 }}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    row.getToggleExpandedHandler()();
+                  }}
+                  size="small"
+                  style={{ margin: "auto", padding: 0 }}
+                >
                   <Icon name={row.getIsExpanded() ? "chevronUp" : "chevronDown"} />
                 </IconButton>
               </div>
@@ -134,7 +142,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
         {
           id: selectId,
           enableHiding: false,
-          size: isCompactMode ? 36 : 60,
+          size: calculateColumnWidth(selectId, isCompactMode),
           header: ({ table }: { table: Table<any> }) => (
             <Checkbox
               {...{
@@ -252,7 +260,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
             {table.getHeaderGroups().map((headerGroup) => (
               <StyledTr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns}>
+                  <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0}>
                     <div
                       style={{ cursor: "pointer" }}
                       {...{
@@ -298,7 +306,7 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
               return (
                 <Fragment key={row.id}>
                   <StyledTr
-                    selected={row.getIsSelected()}
+                    selected={row.getIsSelected() ? 1 : 0}
                     onContextMenu={
                       onContextMenu
                         ? (event) =>
@@ -325,9 +333,9 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
                       <StyledTd
                         key={cell.id}
                         style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
-                        onClick={(event) => selectRow(event, row, table)}
-                        clickable={onSelect && cell.column.id != selectId}
-                        sticky={stickyLeftColumns}
+                        onClick={checkableRows ? (event) => selectRow(event, row, table) : undefined}
+                        clickable={onSelect && cell.column.id != selectId ? 1 : 0}
+                        sticky={stickyLeftColumns ? 1 : 0}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </StyledTd>
@@ -397,11 +405,11 @@ const StyledTable = styled.table`
   }
 `;
 
-const StyledTr = styled.tr<{ selected?: boolean }>`
+const StyledTr = styled.tr<{ selected?: number }>`
   &&& {
     background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
   }
-  &:nth-of-type(even) {
+  &&&:nth-of-type(even) {
     background-color: ${colors.interactive.tableHeaderFillResting};
   }
   &&&:hover {
@@ -411,7 +419,7 @@ const StyledTr = styled.tr<{ selected?: boolean }>`
   width: fit-content;
 `;
 
-const StyledTh = styled(TableCell)<{ sticky: boolean }>`
+const StyledTh = styled(TableCell)<{ sticky?: number }>`
   && {
     border-right: 1px solid rgba(224, 224, 224, 1);
     border-bottom-width: 2px;
@@ -430,7 +438,7 @@ const StyledTh = styled(TableCell)<{ sticky: boolean }>`
   ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 3; } &:nth-child(2) { position: sticky; z-index: 3; }" : "")}
 `;
 
-const StyledTd = styled(TableCell)<{ clickable: boolean; sticky: boolean }>`
+const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number }>`
   border-right: 1px solid rgba(224, 224, 224, 1);
   background-color: inherit;
   z-index: 0;
