@@ -74,7 +74,7 @@ export const FluidsReportsListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.fluidsReports, fluidsReports) && (
-      <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+      <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
     )
   );
 };

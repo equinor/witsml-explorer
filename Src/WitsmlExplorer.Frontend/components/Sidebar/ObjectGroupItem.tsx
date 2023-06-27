@@ -22,7 +22,7 @@ interface ObjectGroupItemProps {
   objectsOnWellbore?: ObjectOnWellbore[] | undefined; //a tree item for each object will be generated if this array is provided
   objectType: ObjectType;
   ObjectContextMenu?: React.ComponentType<ObjectContextMenuProps>; //required only if objectsOnWellbore array is provided
-  onGroupContextMenu?: (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => void;
+  onGroupContextMenu?: (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => void;
   children?: ReactNode;
   isActive?: boolean;
 }
@@ -70,7 +70,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   );
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
-    return onGroupContextMenu == null ? onGenericGroupContextMenu(event, objectType, wellbore, dispatchOperation) : onGroupContextMenu(event, wellbore);
+    return onGroupContextMenu == null ? onGenericGroupContextMenu(event, objectType, wellbore, dispatchOperation, setIsLoading) : onGroupContextMenu(event, wellbore, setIsLoading);
   };
   const showStub = wellbore.objectCount != null && wellbore.objectCount[objectType] != null && wellbore.objectCount[objectType] != 0;
   return (
@@ -101,9 +101,15 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   );
 };
 
-const onGenericGroupContextMenu = (event: React.MouseEvent<HTMLLIElement>, objectType: ObjectType, wellbore: Wellbore, dispatchOperation: (action: OperationAction) => void) => {
+const onGenericGroupContextMenu = (
+  event: React.MouseEvent<HTMLLIElement>,
+  objectType: ObjectType,
+  wellbore: Wellbore,
+  dispatchOperation: (action: OperationAction) => void,
+  setIsLoading: (arg: boolean) => void
+) => {
   preventContextMenuPropagation(event);
-  const contextMenuProps: ObjectsSidebarContextMenuProps = { wellbore, objectType };
+  const contextMenuProps: ObjectsSidebarContextMenuProps = { wellbore, objectType, setIsLoading };
   const position = getContextMenuPosition(event);
   dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ObjectsSidebarContextMenu {...contextMenuProps} />, position } });
 };

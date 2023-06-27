@@ -55,10 +55,10 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };
 
-  const onLogsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+  const onLogsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
     preventContextMenuPropagation(event);
     const indexCurve = IndexCurve.Depth;
-    const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve };
+    const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve, setIsLoading };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
   };
@@ -110,7 +110,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           <ObjectGroupItem objectType={ObjectType.FormationMarker} />
           <ObjectGroupItem
             objectType={ObjectType.Log}
-            onGroupContextMenu={(event) => onLogsContextMenu(event, wellbore)}
+            onGroupContextMenu={(event, _, setIsLoading) => onLogsContextMenu(event, wellbore, setIsLoading)}
             isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
           >
             <LogTypeItem />

@@ -1,3 +1,4 @@
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { CopyObjectsJob, CopyWellboreJob, CopyWellJob, CopyWithParentJob } from "../../models/jobs/copyJobs";
 import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
@@ -15,7 +16,6 @@ import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { displayCopyWellboreModal } from "../Modals/CopyWellboreModal";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { DispatchOperation } from "./ContextMenuUtils";
 
 export const onClickCopyToServer = async (targetServer: Server, sourceServer: Server, toCopy: ObjectOnWellbore[], objectType: ObjectType, dispatchOperation: DispatchOperation) => {
   dispatchOperation({ type: OperationType.HideContextMenu });

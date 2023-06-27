@@ -1,5 +1,5 @@
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import ConfirmModal from "./ConfirmModal";
 
 export function displayReplaceModal(
