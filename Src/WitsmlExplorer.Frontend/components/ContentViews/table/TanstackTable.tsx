@@ -33,7 +33,20 @@ const initializeColumnVisibility = (viewId: string | null) => {
 
 /* eslint-disable react/prop-types */
 export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
-  const { data, columns, onSelect, onContextMenu, checkableRows, panelElements, onRowSelectionChange, inset, showTotalItems = true, stickyLeftColumns = false, viewId } = props;
+  const {
+    data,
+    columns,
+    onSelect,
+    onContextMenu,
+    checkableRows,
+    panelElements,
+    onRowSelectionChange,
+    inset,
+    stickyLeftColumns = false,
+    viewId,
+    showPanel = true,
+    showRefresh = false
+  } = props;
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState(initializeColumnVisibility(viewId));
@@ -250,18 +263,20 @@ export const TanstackTable = (props: ContentTableProps): React.ReactElement => {
   }, [table]);
 
   return (
-    <div style={{ display: showTotalItems ? "grid" : "", gridTemplateRows: showTotalItems ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
-      <Panel
-        showTotalItems={showTotalItems}
-        checkableRows={checkableRows}
-        panelElements={panelElements}
-        numberOfCheckedItems={Object.keys(rowSelection).length}
-        numberOfItems={data?.length}
-        table={table}
-        viewId={viewId}
-        columns={columns}
-        expandableRows={inset != null}
-      />
+    <div style={{ display: showPanel ? "grid" : "", gridTemplateRows: showPanel ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
+      {showPanel ? (
+        <Panel
+          checkableRows={checkableRows}
+          panelElements={panelElements}
+          numberOfCheckedItems={Object.keys(rowSelection).length}
+          numberOfItems={data?.length}
+          table={table}
+          viewId={viewId}
+          columns={columns}
+          expandableRows={inset != null}
+          showRefresh={showRefresh}
+        />
+      ) : null}
       <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>
         <StyledTable>
           <TableHead

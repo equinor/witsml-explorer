@@ -1,7 +1,9 @@
 import { TextField } from "@equinor/eds-core-react";
 import { Fragment } from "react";
 import styled from "styled-components";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import ModificationType from "../../contexts/modificationType";
+import { DispatchNavigation } from "../../contexts/navigationAction";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
@@ -12,11 +14,10 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
+import ObjectService from "../../services/objectService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { logTypeToQuery } from "../Routing";
-
-export type DispatchOperation = (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -25,7 +26,7 @@ export const StyledIcon = styled(Icon)`
 `;
 
 export const pluralize = (text: string) => {
-  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text + "s";
+  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text.charAt(text.length - 1) == "s" ? text : text + "s";
 };
 
 export const pluralizeIfMultiple = (object: string, array: any[] | null) => {
@@ -97,6 +98,21 @@ export const onClickDeleteComponents = async (dispatchOperation: DispatchOperati
     componentReferences.parent.name,
     getParentType(componentReferences.componentType)
   );
+};
+
+export const onClickRefresh = async (
+  dispatchOperation: DispatchOperation,
+  dispatchNavigation: DispatchNavigation,
+  wellUid: string,
+  wellboreUid: string,
+  objectType: ObjectType,
+  setIsLoading?: (arg: boolean) => void
+) => {
+  if (setIsLoading) setIsLoading(true);
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, objectType);
+  dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType } });
+  if (setIsLoading) setIsLoading(false);
 };
 
 const displayDeleteModal = (

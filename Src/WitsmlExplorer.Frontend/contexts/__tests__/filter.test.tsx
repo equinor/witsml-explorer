@@ -1,8 +1,9 @@
-﻿import { getLogObject } from "../../__testUtils__/testUtils";
+﻿import { getLogObject, getObject, getWell, getWellbore } from "../../__testUtils__/testUtils";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { EMPTY_FILTER, Filter, FilterOptions, filterWells } from "../filter";
+import { EMPTY_FILTER, Filter, FilterOptions, ObjectFilterType, WellFilterType, filterWells } from "../filter";
 
 describe("Filter", () => {
   let filter: Filter;
@@ -15,7 +16,8 @@ describe("Filter", () => {
       { ...WELL_2, wellbores: [WELLBORE_2A, WELLBORE_2B] },
       { ...WELL_3, wellbores: [WELLBORE_3A, WELLBORE_3B, WELLBORE_3C, WELLBORE_3D] },
       { ...WELL_4, wellbores: [WELLBORE_4A] },
-      { ...WELL_5, wellbores: [WELLBORE_5A, WELLBORE_5B] }
+      { ...WELL_5, wellbores: [WELLBORE_5A, WELLBORE_5B] },
+      { ...WELL_6, wellbores: [WELLBORE_6] }
     ];
   });
 
@@ -91,7 +93,8 @@ describe("Filter", () => {
         { ...WELL_2, wellbores: [{ ...WELLBORE_2A, logs: [LOG_2A2, LOG_2A3] }, WELLBORE_2B] },
         WELL_3,
         WELL_4,
-        WELL_5
+        WELL_5,
+        WELL_6
       ];
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
@@ -144,7 +147,7 @@ describe("Filter", () => {
     it("Should match all 'Well X' using wildcard '?' for a single character", () => {
       filter.name = "Well ?";
       const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
-      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
+      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5, WELL_6];
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
@@ -156,35 +159,57 @@ describe("Filter", () => {
     });
   });
 
-  describe("Filter options", () => {
-    it("Should only match on wellName when matchOnlyWell is true", () => {
+  describe("Filter Type", () => {
+    it("Should only match on wellName when FilterType is Well", () => {
       filter.name = "Well*1";
-      const modifiedWells = filterWells(wells, filter, {
-        ...FILTER_OPTIONS,
-        matchOnlyWell: true
-      });
+      filter.filterType = WellFilterType.Well;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
       const expectedWells = [WELL_1];
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
-    it("Should only match on both wellName and wellboreName when matchOnlyWell is false", () => {
+    it("Should match on both wellName and wellboreName when FilterType is WellOrWellbore", () => {
       filter.name = "Well*1";
-      const modifiedWells = filterWells(wells, filter, {
-        ...FILTER_OPTIONS,
-        matchOnlyWell: false
-      });
+      filter.filterType = WellFilterType.WellOrWellbore;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
       const expectedWells = [WELL_1, WELL_5];
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
-    it("Should filter on wellName and wellboreName when filterWellbores is true", () => {
+    Object.values(ObjectFilterType).forEach((objectType) => {
+      it(`Should match on name when FilterType is ${objectType}`, () => {
+        filter.name = `test${objectType}`;
+        filter.filterType = objectType;
+        filter.objectsOnWellbore = [
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` })
+        ];
+        const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+        const expectedWells = [WELL_6];
+        expect(modifiedWells).toStrictEqual(expectedWells);
+      });
+    });
+  });
+
+  describe("Filter options", () => {
+    it("Should remove any wellbores that doesn't match when filterWellbores is true", () => {
       filter.name = "Well*1";
+      filter.filterType = WellFilterType.WellOrWellbore;
       const modifiedWells = filterWells(wells, filter, {
         ...FILTER_OPTIONS,
-        matchOnlyWell: false,
         filterWellbores: true
       });
       const expectedWells = [WELL_1, { ...WELL_5, wellbores: [WELLBORE_5A] }];
+      expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+
+    it("Should not remove any wellbores (but still keep wells that matches) when filterWellbores is false", () => {
+      filter.name = "Well*1";
+      filter.filterType = WellFilterType.WellOrWellbore;
+      const modifiedWells = filterWells(wells, filter, {
+        ...FILTER_OPTIONS,
+        filterWellbores: false
+      });
+      const expectedWells = [WELL_1, WELL_5];
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
   });
@@ -197,50 +222,44 @@ const LOG_2A1: LogObject = getLogObject({ uid: "log2A1", wellUid: "well2", wellb
 const LOG_2A2: LogObject = getLogObject({ uid: "log2A2", wellUid: "well2", wellboreUid: "wellbore2A", name: "Log 2A2", objectGrowing: true });
 const LOG_2A3: LogObject = getLogObject({ uid: "log2A3", wellUid: "well2", wellboreUid: "wellbore2A", name: "Log 2A3", objectGrowing: true });
 
-const WELLBORE_1A: Wellbore = {
+const WELLBORE_1A: Wellbore = getWellbore({
   uid: "wellbore1A",
   wellUid: "well1",
   name: "Wellbore 1A",
   logs: [LOG_1A1, LOG_1A2],
-  rigs: [],
-  trajectories: [],
-  wellStatus: "",
-  wellType: "",
   isActive: false
-};
-const WELLBORE_1B: Wellbore = { uid: "wellbore1B", wellUid: "well1", name: "Wellbore 1B", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
-const WELLBORE_1C: Wellbore = { uid: "wellbore1C", wellUid: "well1", name: "Wellbore 1C", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
+});
+const WELLBORE_1B: Wellbore = getWellbore({ uid: "wellbore1B", wellUid: "well1", name: "Wellbore 1B", isActive: false });
+const WELLBORE_1C: Wellbore = getWellbore({ uid: "wellbore1C", wellUid: "well1", name: "Wellbore 1C", isActive: false });
 
-const WELLBORE_2A: Wellbore = {
+const WELLBORE_2A: Wellbore = getWellbore({
   uid: "wellbore2A",
   wellUid: "well2",
   name: "Wellbore 2A",
   logs: [LOG_2A1, LOG_2A2, LOG_2A3],
-  rigs: [],
-  trajectories: [],
-  wellStatus: "",
-  wellType: "",
   isActive: true
-};
-const WELLBORE_2B: Wellbore = { uid: "wellbore2B", wellUid: "well2", name: "Wellbore 2B", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: true };
+});
+const WELLBORE_2B: Wellbore = getWellbore({ uid: "wellbore2B", wellUid: "well2", name: "Wellbore 2B", isActive: true });
 
-const WELLBORE_3A: Wellbore = { uid: "wellbore3A", wellUid: "well3", name: "Wellbore 3A", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: true };
-const WELLBORE_3B: Wellbore = { uid: "wellbore3B", wellUid: "well3", name: "Wellbore 3B", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
-const WELLBORE_3C: Wellbore = { uid: "wellbore3C", wellUid: "well3", name: "Wellbore 3C", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: true };
-const WELLBORE_3D: Wellbore = { uid: "wellbore3D", wellUid: "well3", name: "Wellbore 3D", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
+const WELLBORE_3A: Wellbore = getWellbore({ uid: "wellbore3A", wellUid: "well3", name: "Wellbore 3A", isActive: true });
+const WELLBORE_3B: Wellbore = getWellbore({ uid: "wellbore3B", wellUid: "well3", name: "Wellbore 3B", isActive: false });
+const WELLBORE_3C: Wellbore = getWellbore({ uid: "wellbore3C", wellUid: "well3", name: "Wellbore 3C", isActive: true });
+const WELLBORE_3D: Wellbore = getWellbore({ uid: "wellbore3D", wellUid: "well3", name: "Wellbore 3D", isActive: false });
 
-const WELLBORE_4A: Wellbore = { uid: "wellbore4A", wellUid: "well4", name: "Wellbore 4A", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
+const WELLBORE_4A: Wellbore = getWellbore({ uid: "wellbore4A", wellUid: "well4", name: "Wellbore 4A", isActive: false });
 
-const WELLBORE_5A: Wellbore = { uid: "wellbore5A", wellUid: "well5", name: "Wellbore 5A1", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
-const WELLBORE_5B: Wellbore = { uid: "wellbore5B", wellUid: "well5", name: "Wellbore 5B", logs: [], rigs: [], trajectories: [], wellStatus: "", wellType: "", isActive: false };
+const WELLBORE_5A: Wellbore = getWellbore({ uid: "wellbore5A", wellUid: "well5", name: "Wellbore 5A1", isActive: false });
+const WELLBORE_5B: Wellbore = getWellbore({ uid: "wellbore5B", wellUid: "well5", name: "Wellbore 5B", isActive: false });
 
-const WELL_1: Well = { uid: "well1", name: "Well 1", wellbores: [WELLBORE_1A, WELLBORE_1B, WELLBORE_1C], field: "", operator: "", country: "" };
-const WELL_2: Well = { uid: "well2", name: "Well 2", wellbores: [WELLBORE_2A, WELLBORE_2B], field: "", operator: "", country: "" };
-const WELL_3: Well = { uid: "well3", name: "Well 3", wellbores: [WELLBORE_3A, WELLBORE_3B, WELLBORE_3C, WELLBORE_3D], field: "", operator: "", country: "" };
-const WELL_4: Well = { uid: "well4", name: "Well 4", wellbores: [WELLBORE_4A], field: "", operator: "", country: "" };
-const WELL_5: Well = { uid: "well5", name: "Well 5", wellbores: [WELLBORE_5A, WELLBORE_5B], field: "", operator: "", country: "" };
+const WELLBORE_6: Wellbore = getWellbore({ uid: "wellbore6", wellUid: "well6", name: "Wellbore 6", isActive: false });
+
+const WELL_1: Well = getWell({ uid: "well1", name: "Well 1", wellbores: [WELLBORE_1A, WELLBORE_1B, WELLBORE_1C] });
+const WELL_2: Well = getWell({ uid: "well2", name: "Well 2", wellbores: [WELLBORE_2A, WELLBORE_2B] });
+const WELL_3: Well = getWell({ uid: "well3", name: "Well 3", wellbores: [WELLBORE_3A, WELLBORE_3B, WELLBORE_3C, WELLBORE_3D] });
+const WELL_4: Well = getWell({ uid: "well4", name: "Well 4", wellbores: [WELLBORE_4A] });
+const WELL_5: Well = getWell({ uid: "well5", name: "Well 5", wellbores: [WELLBORE_5A, WELLBORE_5B] });
+const WELL_6: Well = getWell({ uid: "well6", name: "Well 6", wellbores: [WELLBORE_6] });
 
 const FILTER_OPTIONS: FilterOptions = {
-  matchOnlyWell: false,
   filterWellbores: false
 };

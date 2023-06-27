@@ -26,6 +26,8 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells", WellHandler.GetAllWells, useOAuth2);
             app.MapGet("/wells/{wellUid}", WellHandler.GetWell, useOAuth2);
 
+            app.MapGet("/objects/{objectType}", ObjectHandler.GetObjectsByType, useOAuth2);
+
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);

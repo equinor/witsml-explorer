@@ -29,6 +29,8 @@ export interface ContentTableProps {
   order?: Order;
   inset?: Inset;
   panelElements?: React.ReactElement[];
+  showPanel?: boolean;
+  showRefresh?: boolean;
   showTotalItems?: boolean;
   stickyLeftColumns?: boolean;
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save

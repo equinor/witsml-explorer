@@ -2,6 +2,7 @@ import { Accordion, List, TextField, Typography } from "@equinor/eds-core-react"
 import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -11,7 +12,6 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
-import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";

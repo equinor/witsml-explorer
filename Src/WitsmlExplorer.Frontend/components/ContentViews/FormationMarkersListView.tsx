@@ -70,7 +70,11 @@ export const FormationMarkersListView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FormationMarkerContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore?.formationMarkers, formationMarkers) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    Object.is(selectedWellbore?.formationMarkers, formationMarkers) && (
+      <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+    )
+  );
 };
 
 const columns: ContentTableColumn[] = [

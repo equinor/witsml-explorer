@@ -1,11 +1,11 @@
 import { UpdateWellboreTubularAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
 import { NavigationAction } from "../../contexts/navigationAction";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import ObjectService from "../../services/objectService";
-import { DispatchOperation } from "./ContextMenuUtils";
 
 export const onClickRefresh = async (tubular: Tubular, dispatchOperation: DispatchOperation, dispatchNavigation: (action: UpdateWellboreTubularAction) => void) => {
   let freshTubular = await ObjectService.getObject(tubular.wellUid, tubular.wellboreUid, tubular.uid, ObjectType.Tubular);
