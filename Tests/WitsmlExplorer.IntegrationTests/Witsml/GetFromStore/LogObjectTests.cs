@@ -16,7 +16,6 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
     public class LogObjectTests
     {
         private readonly WitsmlClient _client;
-        private readonly WitsmlClientCapabilities _clientCapabilities = new();
         private const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         private const string UidWell = "bbd34996-a1f6-4767-8b02-5e3b46a990e8";
@@ -30,7 +29,11 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public LogObjectTests()
         {
             var config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
+            _client = new WitsmlClient(new WitsmlClientOptions
+            {
+                Hostname = config.Hostname,
+                Credentials = new WitsmlCredentials(config.Username, config.Password)
+            });
         }
 
         [Fact(Skip = "Should only be run manually")]
