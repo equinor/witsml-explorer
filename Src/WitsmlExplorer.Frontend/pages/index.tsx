@@ -49,7 +49,7 @@ const Home = (): React.ReactElement => {
         {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
         <OperationContext.Provider value={{ operationState, dispatchOperation }}>
           <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles />
+            <GlobalStyles colors={operationState.colors} />
             <Head>
               <title>WITSML Explorer</title>
               <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />

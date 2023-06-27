@@ -8,6 +8,7 @@ import OperationType from "../contexts/operationType";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
 import { getAccountInfo, msalEnabled, signOut } from "../msal/MsalAuthProvider";
 import AuthorizationService from "../services/authorizationService";
+import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import ContextMenu from "./ContextMenus/ContextMenu";
 import JobsButton from "./JobsButton";
@@ -20,7 +21,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
     navigationState: { selectedServer },
     dispatchNavigation
   } = useContext(NavigationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    operationState: { colors },
+    dispatchOperation
+  } = useContext(OperationContext);
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
 
@@ -70,17 +74,17 @@ const TopRightCornerMenu = (): React.ReactElement => {
   return (
     <Layout>
       {selectedServer?.currentUsername && (
-        <StyledButton variant={showLabels ? "ghost" : "ghost_icon"} onClick={openCredentialsModal}>
+        <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openCredentialsModal}>
           <Icon name="person" />
           {showLabels && selectedServer.currentUsername}
         </StyledButton>
       )}
       <ServerManagerButton showLabels={showLabels} />
       <JobsButton showLabels={showLabels} />
-      <Button variant={showLabels ? "ghost" : "ghost_icon"} onClick={openSettingsMenu}>
+      <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openSettingsMenu}>
         <Icon name="settings" />
         {showLabels && "Settings"}
-      </Button>
+      </StyledButton>
       {msalEnabled && (
         <Button variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event) => onOpenMenu(event, accountMenu)}>
           <Icon name="accountCircle" />
@@ -99,7 +103,8 @@ const Layout = styled.div`
   width: auto;
 `;
 
-const StyledButton = styled(Button)`
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
   white-space: nowrap;
 `;
 

@@ -5,6 +5,7 @@ import { NavigationAction } from "../contexts/navigationAction";
 import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState, Selectable, selectedJobsFlag } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
+import OperationContext from "../contexts/operationContext";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
@@ -16,6 +17,9 @@ import TopRightCornerMenu from "./TopRightCornerMenu";
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedWell, selectedWellbore, selectedLogTypeGroup, selectedObjectGroup, currentSelected } = navigationState;
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const createBreadcrumbContent = () => {
@@ -41,7 +45,7 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <NavContainer>
-          <Title>WITSML Explorer</Title>
+          <Title style={{ color: colors.infographic.primaryMossGreen }}>WITSML Explorer</Title>
           {breadcrumbContent.length != 0 && <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} style={{ minWidth: "18" }} />}
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
@@ -51,7 +55,7 @@ const Nav = (): React.ReactElement => {
                 onClick={breadCrumb.onClick}
                 style={{
                   fontFamily: breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
-                  color: `${colors.interactive.primaryResting}`
+                  color: `${colors.infographic.primaryMossGreen}`
                 }}
                 maxWidth={180}
               >
@@ -175,12 +179,10 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
 `;
 
 const NavContainer = styled.div`
-   {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    height: 2.5rem;
-  }
+  display: flex;
+  width: 100%;
+  align-items: center;
+  height: 2.5rem;
 `;
 
 export default Nav;
