@@ -113,8 +113,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 label={"yearEntService"}
                 type="number"
                 value={editableRig.yearEntService ? editableRig.yearEntService : ""}
-                error={!yearEntServiceValid}
-                helperText={!yearEntServiceValid ? "The rig yearEntService must be a 4 digit integer number" : ""}
+                error={editMode && !yearEntServiceValid}
+                helperText={editMode && !yearEntServiceValid ? "The rig yearEntService must be a 4 digit integer number" : ""}
                 fullWidth
                 inputProps={{ minLength: 4, maxLength: 4 }}
                 onChange={(e) => setEditableRig({ ...editableRig, yearEntService: e.target.value })}
@@ -123,11 +123,12 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"telNumber"}
                 label={"telNumber"}
                 value={editableRig.telNumber ? editableRig.telNumber : ""}
-                error={!validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8}
+                error={editMode && (!validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8)}
                 helperText={
-                  !validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8
+                  editMode &&
+                  (!validPhoneNumber(editableRig.telNumber) || editableRig.telNumber?.length < 8
                     ? "telNumber must be an integer of min 8 characters, however whitespace, dash and plus is accepted"
-                    : ""
+                    : "")
                 }
                 fullWidth
                 inputProps={{ minLength: 8, maxLength: 16 }}
@@ -137,8 +138,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"faxNumber"}
                 label={"faxNumber"}
                 value={editableRig.faxNumber ? editableRig.faxNumber : ""}
-                error={!validPhoneNumber(editableRig.faxNumber)}
-                helperText={!validPhoneNumber(editableRig.faxNumber) ? "faxNumber must be an integer, however whitespace, dash and plus is accepted" : ""}
+                error={editMode && !validPhoneNumber(editableRig.faxNumber)}
+                helperText={editMode && !validPhoneNumber(editableRig.faxNumber) ? "faxNumber must be an integer, however whitespace, dash and plus is accepted" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 16 }}
                 onChange={(e) => setEditableRig({ ...editableRig, faxNumber: e.target.value })}
@@ -147,8 +148,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"emailAddress"}
                 label={"emailAddress"}
                 value={editableRig.emailAddress ? editableRig.emailAddress : ""}
-                error={editableRig.emailAddress?.length === 0}
-                helperText={editableRig.emailAddress?.length === 0 ? "The emailAddress must be at least 1 character long" : ""}
+                error={editMode && editableRig.emailAddress?.length === 0}
+                helperText={editMode && editableRig.emailAddress?.length === 0 ? "The emailAddress must be at least 1 character long" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e) => setEditableRig({ ...editableRig, emailAddress: e.target.value })}
@@ -157,8 +158,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 id={"nameContact"}
                 label={"nameContact"}
                 value={editableRig.nameContact ? editableRig.nameContact : ""}
-                error={editableRig.nameContact?.length === 0}
-                helperText={editableRig.nameContact?.length === 0 ? "The nameContact must be at least 1 character long" : ""}
+                error={editMode && editableRig.nameContact?.length === 0}
+                helperText={editMode && editableRig.nameContact?.length === 0 ? "The nameContact must be at least 1 character long" : ""}
                 fullWidth
                 inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e) => setEditableRig({ ...editableRig, nameContact: e.target.value })}

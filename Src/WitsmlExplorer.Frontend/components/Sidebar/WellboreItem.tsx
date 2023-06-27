@@ -65,9 +65,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
   };
 
-  const onRigsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+  const onRigsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: RigsContextMenuProps = { dispatchOperation, wellbore };
+    const contextMenuProps: RigsContextMenuProps = { dispatchOperation, wellbore, servers, setIsLoading };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigsContextMenu {...contextMenuProps} />, position } });
   };
@@ -126,7 +126,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.rigs} objectType={ObjectType.Rig} ObjectContextMenu={RigContextMenu} onGroupContextMenu={(event) => onRigsContextMenu(event, wellbore)} />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.rigs}
+            objectType={ObjectType.Rig}
+            ObjectContextMenu={RigContextMenu}
+            onGroupContextMenu={(event, _, setIsLoading) => onRigsContextMenu(event, wellbore, setIsLoading)}
+          />
           <ObjectGroupItem objectType={ObjectType.Risk} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
           <ObjectGroupItem
