@@ -1,4 +1,3 @@
-import { Icon } from "@equinor/eds-core-react";
 import { Checkbox, IconButton, TableBody, TableCell, TableHead, useTheme } from "@material-ui/core";
 import { ColumnDef, Row, SortingFns, Table, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -7,6 +6,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { indexToNumber } from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
+import Icon from "../../../styles/Icons";
 import Panel from "./Panel";
 import {
   ContentTableProps,
@@ -50,7 +50,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState(initializeColumnVisibility(viewId));
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
   const cellHeight = isCompactMode ? 30 : 53;
   const headCellHeight = isCompactMode ? 35 : 55;
 
@@ -291,6 +291,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                 {headerGroup.headers.map((header) => (
                   <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0}>
                     <div
+                      role="button"
                       style={{ cursor: "pointer" }}
                       {...{
                         onClick: header.column.getCanSort()
@@ -362,7 +363,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                       <StyledTd
                         key={cell.id}
                         style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
-                        onClick={checkableRows ? (event) => selectRow(event, row, table) : undefined}
+                        onClick={onSelect && cell.column.id != selectId ? (event) => selectRow(event, row, table) : undefined}
                         clickable={onSelect && cell.column.id != selectId ? 1 : 0}
                         sticky={stickyLeftColumns ? 1 : 0}
                       >

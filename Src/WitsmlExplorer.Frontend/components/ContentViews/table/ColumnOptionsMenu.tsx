@@ -17,7 +17,7 @@ export const ColumnOptionsMenu = (props: {
   const firstToggleableIndex = (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0);
   const [draggedId, setDraggedId] = useState<string | null>();
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();

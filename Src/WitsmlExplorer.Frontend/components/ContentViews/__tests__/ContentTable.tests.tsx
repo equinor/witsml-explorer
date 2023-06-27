@@ -4,7 +4,21 @@ import userEvent from "@testing-library/user-event";
 import { renderWithContexts } from "../../../__testUtils__/testUtils";
 import { ContentTable, ContentTableRow, ContentType } from "../table";
 
+class ResizeObserver {
+  observe() {
+    /**/
+  }
+  unobserve() {
+    /**/
+  }
+  disconnect() {
+    /**/
+  }
+}
+
 describe("<ContentTable />", () => {
+  //mock ResizeObserver to enable testing virtualized components
+  window.ResizeObserver = ResizeObserver;
   const columns = [
     { property: "name", label: "Name", type: ContentType.String },
     { property: "field", label: "Field", type: ContentType.String }
@@ -32,11 +46,11 @@ describe("<ContentTable />", () => {
 
     fireEvent.click(screen.queryAllByRole("button")[0]);
     firstRow = container.querySelector("tbody").querySelector("tr");
-    expect(firstRow.querySelector("td")).toHaveTextContent(data[1].name);
+    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
 
     fireEvent.click(screen.queryAllByRole("button")[0]);
     firstRow = container.querySelector("tbody").querySelector("tr");
-    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
+    expect(firstRow.querySelector("td")).toHaveTextContent(data[1].name);
   });
 
   it("Should be possible to select single rows", () => {
