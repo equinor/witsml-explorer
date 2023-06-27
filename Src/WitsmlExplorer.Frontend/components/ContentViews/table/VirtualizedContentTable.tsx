@@ -9,7 +9,6 @@ import styled from "styled-components";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { colors } from "../../../styles/Colors";
-import { formatCell } from "./ContentTable";
 import Panel from "./Panel";
 import {
   ContentTableColumn,
@@ -94,7 +93,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
                 clickable={onSelect ? "true" : "false"}
                 align={getColumnAlignment(column)}
               >
-                {formatCell(column.type, item[column.property])}
+                {item[column.property]}
               </TableDataCell>
             </Tooltip>
           ))}

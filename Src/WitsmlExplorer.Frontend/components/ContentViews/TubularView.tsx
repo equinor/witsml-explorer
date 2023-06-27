@@ -96,7 +96,11 @@ export const TubularView = (): React.ReactElement => {
     };
   });
 
-  return selectedTubular && !isFetchingData ? <ContentTable columns={columns} data={tubularComponentRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedTubular && !isFetchingData ? (
+    <ContentTable viewId="tubularView" columns={columns} data={tubularComponentRows} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default TubularView;

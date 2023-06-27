@@ -2,7 +2,6 @@ import React from "react";
 import { CurveSpecification } from "../../../models/logData";
 import { indexToNumber } from "../../../models/logObject";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
-import { Inset } from "./Inset";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;
@@ -12,7 +11,6 @@ export interface ContentTableColumn {
   property: string;
   label: string;
   type: ContentType;
-  format?: string;
 }
 
 export interface ContentTableRow {
@@ -26,12 +24,10 @@ export interface ContentTableProps {
   onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
-  order?: Order;
-  inset?: Inset;
+  insetColumns?: ContentTableColumn[];
   panelElements?: React.ReactElement[];
   showPanel?: boolean;
   showRefresh?: boolean;
-  showTotalItems?: boolean;
   stickyLeftColumns?: boolean;
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
 }
@@ -45,7 +41,6 @@ export enum ContentType {
   String,
   Number,
   DateTime,
-  Icon,
   Measure
 }
 
@@ -198,6 +193,7 @@ export function calculateColumnWidth(label: string, isCompactMode: boolean, type
   const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
   switch (label) {
     case "name":
+    case "Name":
       return 220 + padding;
     case "uid":
       return 280 + padding;

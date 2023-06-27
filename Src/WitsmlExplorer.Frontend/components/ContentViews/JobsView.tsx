@@ -12,7 +12,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
 import { clipLongString } from "./ViewUtils";
-import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
@@ -131,7 +131,7 @@ export const JobsView = (): React.ReactElement => {
     <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
   ];
 
-  return <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} panelElements={panelElements} />;
+  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} />;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {

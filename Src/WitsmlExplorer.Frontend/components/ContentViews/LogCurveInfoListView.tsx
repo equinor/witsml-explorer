@@ -127,7 +127,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    ...(!isDepthIndex ? [{ property: "isActive", label: "active", type: ContentType.Icon }] : []),
+    ...(!isDepthIndex ? [{ property: "isActive", label: "active", type: ContentType.String }] : []),
     { property: "mnemonic", label: "mnemonic", type: ContentType.String },
     { property: "minIndex", label: "minIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
     { property: "maxIndex", label: "maxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
@@ -138,7 +138,17 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  return selectedLog && !isFetchingData ? <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedLog && !isFetchingData ? (
+    <ContentTable
+      viewId={isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"}
+      columns={columns}
+      data={getTableData()}
+      onContextMenu={onContextMenu}
+      checkableRows
+    />
+  ) : (
+    <></>
+  );
 };
 
 export default LogCurveInfoListView;
