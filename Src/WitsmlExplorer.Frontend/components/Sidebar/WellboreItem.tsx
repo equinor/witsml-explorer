@@ -14,6 +14,7 @@ import ObjectService from "../../services/objectService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
+import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
 import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
 import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
 import TubularContextMenu from "../ContextMenus/TubularContextMenu";
@@ -61,6 +62,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve, setIsLoading };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
+  };
+
+  const onRigsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: RigsContextMenuProps = { dispatchOperation, wellbore };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigsContextMenu {...contextMenuProps} />, position } });
   };
 
   const onTubularsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
@@ -117,7 +125,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
-          <ObjectGroupItem objectType={ObjectType.Rig} />
+          <ObjectGroupItem objectType={ObjectType.Rig} onGroupContextMenu={(event) => onRigsContextMenu(event, wellbore)} />
           <ObjectGroupItem objectType={ObjectType.Risk} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
           <ObjectGroupItem
