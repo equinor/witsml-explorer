@@ -205,12 +205,6 @@ export function calculateColumnWidth(label: string, isCompactMode: boolean, type
       return isCompactMode ? 40 : 60;
     case activeId:
       return 40 + padding;
-    case "startIndex":
-    case "endIndex":
-    case "minIndex":
-    case "maxIndex":
-      // indexes will reuse width between depth and time logs so we set the width to the larger DateTime length
-      return 180 + padding;
     case "mnemonic":
       return 150 + padding;
   }
