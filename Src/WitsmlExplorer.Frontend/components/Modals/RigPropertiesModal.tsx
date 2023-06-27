@@ -40,7 +40,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
     const wellboreRigJob = {
       rig: updatedRig
     };
-    await JobService.orderJob(JobType.ModifyRig, wellboreRigJob);
+    await JobService.orderJob(editMode ? JobType.ModifyRig : JobType.CreateRig, wellboreRigJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -51,14 +51,25 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
     <>
       {editableRig && (
         <ModalDialog
-          heading={editMode ? `Edit properties for ${editableRig.name}` : `New Log`}
+          heading={editMode ? `Edit properties for ${editableRig.name}` : `New Rig`}
           content={
             <>
+              <TextField
+                disabled={editMode}
+                id="uid"
+                label="rig uid"
+                required
+                value={editableRig.uid}
+                fullWidth
+                error={!validText(editableRig.uid)}
+                helperText={editableRig.uid.length === 0 ? "A rig uid must be 1-64 characters" : ""}
+                inputProps={{ minLength: 1, maxLength: 64 }}
+                onChange={(e) => setEditableRig({ ...editableRig, uid: e.target.value })}
+              />
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableRig.wellUid} fullWidth />
               <TextField disabled id="wellName" label="well name" defaultValue={editableRig.wellName} fullWidth />
               <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableRig.wellboreUid} fullWidth />
               <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableRig.wellboreName} fullWidth />
-              <TextField disabled id="uid" label="rig uid" required defaultValue={editableRig.uid} fullWidth />
               <TextField
                 id={"name"}
                 label={"name"}
@@ -153,8 +164,8 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 onChange={(e) => setEditableRig({ ...editableRig, nameContact: e.target.value })}
               />
               <TextField
-                id={"RatingDrillDepth"}
-                label={"RatingDrillDepth"}
+                id={"ratingDrillDepth"}
+                label={"ratingDrillDepth"}
                 type="number"
                 fullWidth
                 value={editableRig.ratingDrillDepth ? editableRig.ratingDrillDepth.value : ""}
@@ -203,7 +214,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
               />
             </>
           }
-          confirmDisabled={!validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid || !yearEntServiceValid}
+          confirmDisabled={!validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid}
           onSubmit={() => onSubmit(editableRig)}
           isLoading={isLoading}
         />
