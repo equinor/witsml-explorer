@@ -117,7 +117,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
-          <ObjectGroupItem objectType={ObjectType.Rig} />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.rigs} objectType={ObjectType.Rig} />
           <ObjectGroupItem objectType={ObjectType.Risk} />
           <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
           <ObjectGroupItem
