@@ -14,12 +14,15 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
     public partial class TrajectoryTests
     {
         private readonly WitsmlClient _client;
-        private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
         public TrajectoryTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
+            _client = new WitsmlClient(new WitsmlClientOptions
+            {
+                Hostname = config.Hostname,
+                Credentials = new WitsmlCredentials(config.Username, config.Password)
+            });
         }
 
         [Fact(Skip = "Should only be run manually")]

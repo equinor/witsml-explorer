@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.ServiceModel;
 using System.ServiceModel.Security;
 using System.Threading.Tasks;
 using System.Xml;
 
 using Serilog;
-using Serilog.Core;
 
 using Witsml.Data;
 using Witsml.Extensions;
@@ -28,50 +26,43 @@ namespace Witsml
         Uri GetServerHostname();
     }
 
-    public class WitsmlClient : IWitsmlClient
+    public class WitsmlClient : WitsmlClientBase, IWitsmlClient
     {
         private readonly string _clientCapabilities;
         private readonly StoreSoapPortClient _client;
         private readonly Uri _serverUrl;
         private IQueryLogger _queryLogger;
 
-        public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null, bool logQueries = false)
+        [Obsolete("Use the WitsmlClientOptions based constructor instead")]
+        public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null,
+            bool logQueries = false)
+            : this(new WitsmlClientOptions
+            {
+                Hostname = hostname,
+                Credentials = new WitsmlCredentials(username, password),
+                ClientCapabilities = clientCapabilities,
+                RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1),
+                LogQueries = logQueries
+            }) { }
+
+        public WitsmlClient(WitsmlClientOptions options)
         {
-            if (string.IsNullOrEmpty(hostname))
-            {
-                throw new ArgumentNullException(nameof(hostname), "Hostname is required");
-            }
+            ArgumentNullException.ThrowIfNull(options.Hostname);
+            ArgumentNullException.ThrowIfNull(options.Credentials.Username);
+            ArgumentNullException.ThrowIfNull(options.Credentials.Password);
 
-            if (string.IsNullOrEmpty(username))
-            {
-                throw new ArgumentNullException(nameof(username), "Username is required");
-            }
+            _clientCapabilities = options.ClientCapabilities.ToXml();
+            _serverUrl = new Uri(options.Hostname);
 
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new ArgumentNullException(nameof(password), "Password is required");
-            }
+            _client = CreateSoapClient(options);
 
-            _clientCapabilities = clientCapabilities.ToXml();
-
-            BasicHttpsBinding serviceBinding = CreateBinding(requestTimeout ?? TimeSpan.FromMinutes(1));
-            EndpointAddress endpointAddress = new(hostname);
-
-            _client = new StoreSoapPortClient(serviceBinding, endpointAddress);
-            _client.ClientCredentials.UserName.UserName = username;
-            _client.ClientCredentials.UserName.Password = password;
-            _serverUrl = new Uri(hostname);
-
-            _client.Endpoint.EndpointBehaviors.Add(new EndpointBehavior());
-            SetupQueryLogging(logQueries);
+            SetupQueryLogging(options.LogQueries);
         }
 
         private void SetupQueryLogging(bool logQueries)
         {
             if (!logQueries)
-            {
                 return;
-            }
 
             SetQueryLogger(new DefaultQueryLogger());
         }
@@ -79,24 +70,6 @@ namespace Witsml
         public void SetQueryLogger(IQueryLogger queryLogger)
         {
             _queryLogger = queryLogger;
-        }
-
-        private static BasicHttpsBinding CreateBinding(TimeSpan requestTimeout)
-        {
-            BasicHttpsBinding binding = new()
-            {
-                Security =
-                {
-                    Mode = BasicHttpsSecurityMode.Transport,
-                    Transport =
-                    {
-                        ClientCredentialType = HttpClientCredentialType.Basic
-                    }
-                },
-                MaxReceivedMessageSize = int.MaxValue,
-                SendTimeout = requestTimeout
-            };
-            return binding;
         }
 
         /// <summary>
@@ -154,9 +127,7 @@ namespace Witsml
             LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
 
             if (response.IsSuccessful())
-            {
                 return XmlHelper.Deserialize(response.XMLout, query);
-            }
 
             WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
             throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
@@ -186,9 +157,7 @@ namespace Witsml
                 LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
 
                 if (response.IsSuccessful())
-                {
                     return (XmlHelper.Deserialize(response.XMLout, query), response.Result);
-                }
 
                 WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
                 throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
@@ -221,9 +190,7 @@ namespace Witsml
             WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
 
             if (response.IsSuccessful())
-            {
                 return response.XMLout;
-            }
 
             WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
             throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
@@ -246,9 +213,7 @@ namespace Witsml
                 LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
 
                 if (response.IsSuccessful())
-                {
                     return new QueryResult(true);
-                }
 
                 WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
                 string message = $"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}";
@@ -278,9 +243,7 @@ namespace Witsml
                 LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
 
                 if (response.IsSuccessful())
-                {
                     return new QueryResult(true);
-                }
 
                 WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
                 string message = $"Error while updating store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}";
@@ -310,9 +273,7 @@ namespace Witsml
                 LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful());
 
                 if (response.IsSuccessful())
-                {
                     return new QueryResult(true);
-                }
 
                 WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
                 string message = $"Error while deleting from store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}";
@@ -335,71 +296,18 @@ namespace Witsml
             }
 
             // Spec requires a comma-seperated list of supported versions without spaces
-            string[] versions = response.Result.Split(',');
-
-            if (!versions.Any(v => v == "1.4.1.1"))
-            {
+            var versions = response.Result.Split(',');
+            if (versions.All(v => v != "1.4.1.1"))
                 throw new Exception("Error while testing connection: Server does not indicate support for WITSML 1.4.1.1");
-            }
 
             return new QueryResult(true);
         }
 
         private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmlReceived = null)
         {
-            if (_queryLogger == null)
-            {
-                return;
-            }
-
-            _queryLogger.LogQuery(querySent, isSuccessful, xmlReceived);
+            _queryLogger?.LogQuery(querySent, isSuccessful, xmlReceived);
         }
 
-        public Uri GetServerHostname()
-        {
-            return _serverUrl;
-        }
-
-    }
-
-    public class QueryResult
-    {
-        public bool IsSuccessful { get; }
-        public string Reason { get; }
-
-        public QueryResult(bool isSuccessful, string reason = null)
-        {
-            IsSuccessful = isSuccessful;
-            Reason = reason;
-        }
-    }
-
-    public interface IQueryLogger
-    {
-        void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null);
-    }
-
-    public class DefaultQueryLogger : IQueryLogger
-    {
-        private readonly Logger _queryLogger;
-
-        public DefaultQueryLogger()
-        {
-            _queryLogger = new LoggerConfiguration()
-                .WriteTo.File("queries.log", rollOnFileSizeLimit: true, retainedFileCountLimit: 1, fileSizeLimitBytes: 50000000)
-                .CreateLogger();
-        }
-
-        public void LogQuery(string querySent, bool isSuccessful, string xmlReceived = null)
-        {
-            if (xmlReceived != null)
-            {
-                _queryLogger.Information("Query: \n{Query}\nReceived: \n{Response}\nIsSuccessful: {IsSuccessful}", querySent, xmlReceived, isSuccessful);
-            }
-            else
-            {
-                _queryLogger.Information("Query: \n{Query}\nIsSuccessful: {IsSuccessful}", querySent, isSuccessful);
-            }
-        }
+        public Uri GetServerHostname() => _serverUrl;
     }
 }

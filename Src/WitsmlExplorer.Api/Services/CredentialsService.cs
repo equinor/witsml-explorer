@@ -69,7 +69,12 @@ namespace WitsmlExplorer.Api.Services
                 cacheId = httpContext.CreateWitsmlExplorerCookie();
             }
 
-            WitsmlClient witsmlClient = new(creds.Host.ToString(), creds.UserId, creds.Password, _clientCapabilities);
+            var witsmlClient = new WitsmlClient(new WitsmlClientOptions
+            {
+                Hostname = creds.Host.ToString(),
+                Credentials = new WitsmlCredentials(creds.UserId, creds.Password),
+                ClientCapabilities = _clientCapabilities
+            });
             await witsmlClient.TestConnectionAsync();
 
             double ttl = keep ? 24.0 : 1.0; // hours
