@@ -1,5 +1,17 @@
 import { Checkbox, IconButton, TableBody, TableCell, TableHead, useTheme } from "@material-ui/core";
-import { ColumnDef, Row, SortingFns, Table, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  Header,
+  Row,
+  SortDirection,
+  SortingFns,
+  Table,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable
+} from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -9,6 +21,7 @@ import { colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
 import Panel from "./Panel";
 import {
+  ContentTableColumn,
   ContentTableProps,
   ContentType,
   activeId,
@@ -31,22 +44,21 @@ const initializeColumnVisibility = (viewId: string | null) => {
   return hiddenColumns == null ? {} : Object.assign({}, ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false })));
 };
 
-/* eslint-disable react/prop-types */
-export const ContentTable = (props: ContentTableProps): React.ReactElement => {
+export const ContentTable = (contentTableProps: ContentTableProps): React.ReactElement => {
   const {
-    data,
     columns,
+    data,
     onSelect,
     onContextMenu,
     checkableRows,
-    panelElements,
     onRowSelectionChange,
     insetColumns,
-    stickyLeftColumns = false,
-    viewId,
+    panelElements,
     showPanel = true,
-    showRefresh = false
-  } = props;
+    showRefresh = false,
+    stickyLeftColumns = false,
+    viewId
+  } = contentTableProps;
   const [activeIndex, setActiveIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState(initializeColumnVisibility(viewId));
@@ -57,7 +69,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const selectRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: Row<any>, table: Table<any>) => {
     if (onSelect) {
       onSelect(currentRow.original);
-    } else {
+    } else if (checkableRows) {
       toggleRow(e, currentRow, table);
     }
   };
@@ -262,13 +274,32 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
       ?.setFilterValue(false);
   }, [table]);
 
+  const onRowContextMenu = (e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, row: Row<any>) => {
+    if (onContextMenu) {
+      onContextMenu(
+        e,
+        row.original,
+        table.getSelectedRowModel().flatRows.map((r) => r.original)
+      );
+    }
+  };
+
+  const onHeaderClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, header: Header<any, unknown>) => {
+    if (header.column.getCanSort()) {
+      header.column.getToggleSortingHandler()(e);
+      //collapse all rows to avoid wrong height calculations when sorting expanded rows
+      table.toggleAllRowsExpanded(false);
+      rowVirtualizer.measure();
+    }
+  };
+
   return (
-    <div style={{ display: showPanel ? "grid" : "", gridTemplateRows: showPanel ? "50px 1fr" : "", overflowY: "auto", height: "100%" }}>
+    <TableContainer showPanel={showPanel}>
       {showPanel ? (
         <Panel
           checkableRows={checkableRows}
           panelElements={panelElements}
-          numberOfCheckedItems={Object.keys(rowSelection).length}
+          numberOfCheckedItems={Object.keys(rowSelection).length} //these two can be computed from table prop
           numberOfItems={data?.length}
           table={table}
           viewId={viewId}
@@ -287,47 +318,17 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
             }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
-              <StyledTr key={headerGroup.id}>
+              <tr key={headerGroup.id} style={{ display: "flex" }}>
                 {headerGroup.headers.map((header) => (
                   <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0}>
-                    <div
-                      role="button"
-                      style={{ cursor: "pointer" }}
-                      {...{
-                        onClick: header.column.getCanSort()
-                          ? (event) => {
-                              header.column.getToggleSortingHandler()(event);
-                              //collapse all rows to avoid wrong height calculations when sorting expanded rows
-                              table.toggleAllRowsExpanded(false);
-                              rowVirtualizer.measure();
-                            }
-                          : undefined
-                      }}
-                    >
-                      {{
-                        asc: <Icon size={16} name="arrowUp" style={{ position: "relative", top: 3 }} />,
-                        desc: <Icon size={16} name="arrowDown" style={{ position: "relative", top: 3 }} />
-                      }[header.column.getIsSorted() as string] ?? null}
+                    <div role="button" style={{ cursor: "pointer" }} onClick={(e) => onHeaderClick(e, header)}>
+                      {header.column.getIsSorted() && sortingIcons[header.column.getIsSorted() as SortDirection]}
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
-                    {header.id != selectId && header.id != expanderId && (
-                      <Resizer
-                        {...{
-                          onMouseDown: (event) => {
-                            header.getResizeHandler()(event);
-                            event.stopPropagation();
-                          },
-                          onTouchStart: (event) => {
-                            header.getResizeHandler()(event);
-                            event.stopPropagation();
-                          },
-                          isResizing: header.column.getIsResizing() ? 1 : 0
-                        }}
-                      />
-                    )}
+                    {header.id != selectId && header.id != expanderId && <Resizer header={header} />}
                   </StyledTh>
                 ))}
-              </StyledTr>
+              </tr>
             ))}
           </TableHead>
           <TableBody style={{ height: rowVirtualizer.getTotalSize() + "px", position: "relative" }}>
@@ -336,62 +337,32 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
               return (
                 <Fragment key={row.id}>
                   <StyledTr
-                    selected={row.getIsSelected() ? 1 : 0}
-                    onContextMenu={
-                      onContextMenu
-                        ? (event) =>
-                            onContextMenu(
-                              event,
-                              row.original,
-                              table.getSelectedRowModel().flatRows.map((r) => r.original)
-                            )
-                        : (e) => e.preventDefault()
-                    }
+                    selected={row.getIsSelected()}
+                    onContextMenu={(e) => onRowContextMenu(e, row)}
                     style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      height: `${
-                        row.getIsExpanded() && row.original.inset?.length != 0 ? headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0 : cellHeight
-                      }px`,
+                      height: `${calculateRowHeight(row, headCellHeight, cellHeight)}px`,
                       transform: `translateY(${virtualRow.start}px)`
                     }}
                     data-index={virtualRow.index}
                     ref={rowVirtualizer.measureElement}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <StyledTd
-                        key={cell.id}
-                        style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
-                        onClick={onSelect && cell.column.id != selectId ? (event) => selectRow(event, row, table) : undefined}
-                        clickable={onSelect && cell.column.id != selectId ? 1 : 0}
-                        sticky={stickyLeftColumns ? 1 : 0}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </StyledTd>
-                    ))}
+                    {row.getVisibleCells().map((cell) => {
+                      const clickable = isClickable(onSelect, cell.column.id, checkableRows);
+                      return (
+                        <StyledTd
+                          key={cell.id}
+                          style={{ width: cell.column.getSize(), left: cell.column.getStart() }}
+                          onClick={clickable ? (event) => selectRow(event, row, table) : undefined}
+                          clickable={clickable ? 1 : 0}
+                          sticky={stickyLeftColumns ? 1 : 0}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </StyledTd>
+                      );
+                    })}
                   </StyledTr>
                   {row.getIsExpanded() && row.original.inset?.length != 0 && (
-                    <tr
-                      style={{
-                        position: "absolute",
-                        background: "white",
-                        width: "100%",
-                        top: `${virtualRow.start + cellHeight}px`,
-                        left: 0,
-                        border: 0
-                      }}
-                    >
-                      <td
-                        colSpan={row.getVisibleCells().length}
-                        style={{
-                          height: `${cellHeight * row.original.inset.length + headCellHeight}px`,
-                          padding: 0
-                        }}
-                      >
-                        <ContentTable columns={insetColumns} data={row.original.inset} showPanel={false} />
-                      </td>
-                    </tr>
+                    <Inset parentStart={virtualRow.start} cellHeight={cellHeight} headCellHeight={headCellHeight} data={row.original.inset} columns={insetColumns} />
                   )}
                 </Fragment>
               );
@@ -399,16 +370,96 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
           </TableBody>
         </StyledTable>
       </div>
-    </div>
+    </TableContainer>
   );
 };
+
+const sortingIcons = {
+  asc: <Icon size={16} name="arrowUp" style={{ position: "relative", top: 3 }} />,
+  desc: <Icon size={16} name="arrowDown" style={{ position: "relative", top: 3 }} />
+};
+
+function isClickable(onSelect: any, id: string, checkableRows: boolean): boolean {
+  return (onSelect != null || checkableRows) && id != selectId && id != expanderId;
+}
+
+function calculateRowHeight(row: Row<any>, headCellHeight: number, cellHeight: number): number {
+  if (row.getIsExpanded() && row.original.inset?.length != 0) {
+    return headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0;
+  }
+  return cellHeight;
+}
+
+const Resizer = (props: { header: Header<any, unknown> }): React.ReactElement => {
+  const { header } = props;
+  return (
+    <StyledResizer
+      {...{
+        onMouseDown: (event) => {
+          header.getResizeHandler()(event);
+          event.stopPropagation();
+        },
+        onTouchStart: (event) => {
+          header.getResizeHandler()(event);
+          event.stopPropagation();
+        },
+        isResizing: header.column.getIsResizing()
+      }}
+    />
+  );
+};
+
+interface InsetProps {
+  parentStart: number;
+  cellHeight: number;
+  headCellHeight: number;
+  data: any[];
+  columns: ContentTableColumn[];
+}
+
+const Inset = (props: InsetProps): React.ReactElement => {
+  const { parentStart, cellHeight, headCellHeight, data, columns } = props;
+  return (
+    <tr
+      style={{
+        position: "absolute",
+        background: "white",
+        width: "100%",
+        top: `${parentStart + cellHeight}px`,
+        left: 0,
+        border: 0
+      }}
+    >
+      <td
+        style={{
+          height: `${cellHeight * data.length + headCellHeight}px`,
+          padding: 0
+        }}
+      >
+        <ContentTable columns={columns} data={data} showPanel={false} />
+      </td>
+    </tr>
+  );
+};
+
+const TableContainer = styled.div<{ showPanel?: boolean }>`
+  overflow-y: auto;
+  height: 100%;
+  ${(props) =>
+    props.showPanel
+      ? `
+    display: grid;
+    grid-template-rows: 50px 1fr;
+  `
+      : ""}
+`;
 
 const StyledTable = styled.table`
   width: 100%;
   border-spacing: 0;
 `;
 
-const Resizer = styled.div<{ isResizing?: number }>`
+const StyledResizer = styled.div<{ isResizing?: boolean }>`
   right: 0;
   top: 0;
   position: absolute;
@@ -431,7 +482,12 @@ const Resizer = styled.div<{ isResizing?: number }>`
   }
 `;
 
-const StyledTr = styled.tr<{ selected?: number }>`
+const StyledTr = styled.tr<{ selected?: boolean }>`
+  display: flex;
+  width: fit-content;
+  position: absolute;
+  top: 0;
+  left: 0;
   &&& {
     background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
   }
@@ -441,8 +497,6 @@ const StyledTr = styled.tr<{ selected?: number }>`
   &&&:hover {
     background-color: ${colors.interactive.tableCellFillActivated};
   }
-  display: flex;
-  width: fit-content;
 `;
 
 const StyledTh = styled(TableCell)<{ sticky?: number }>`
