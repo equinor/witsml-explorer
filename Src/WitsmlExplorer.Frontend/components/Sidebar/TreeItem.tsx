@@ -39,7 +39,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
             </NavigationDrawer>
           </Tooltip>
           {isLoading && <StyledDotProgress color={"primary"} size={32} />}
-          {isActive && <Icon name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-25px", top: "6px" }} />}
+          {isActive && <Icon size={16} name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-20px", top: isCompactMode ? "6px" : "14px" }} />}
         </Label>
       }
       {...other}
@@ -56,7 +56,7 @@ const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean }>`
   font-family: EquinorMedium, sans-serif;
   font-size: 0.75rem;
   line-height: 1rem;
-  padding: ${(props) => (props.compactMode ? "0.5rem" : "1rem")};
+  padding: ${(props) => (props.compactMode ? "0.5rem 0.5rem 0.5rem 0" : "1rem")};
   margin: 0;
 `;
 

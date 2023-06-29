@@ -25,7 +25,7 @@ import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/W
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogTypeItem from "./LogTypeItem";
 import ObjectGroupItem from "./ObjectGroupItem";
-import { ActiveWellIndicator, InactiveWellInidcator } from "./Sidebar";
+import { WellIndicator } from "./Sidebar";
 import TreeItem from "./TreeItem";
 
 interface WellboreItemProps {
@@ -143,7 +143,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
         </WellboreItemContext.Provider>
       </TreeItem>
-      {wellbore.isActive ? <ActiveWellIndicator compactMode={isCompactMode} /> : <InactiveWellInidcator compactMode={isCompactMode} />}
+      <WellIndicator compactMode={isCompactMode} active={wellbore.isActive} />
     </WellboreLayout>
   );
 };
