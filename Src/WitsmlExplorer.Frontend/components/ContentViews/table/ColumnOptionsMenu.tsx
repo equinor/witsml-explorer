@@ -4,7 +4,9 @@ import { Table } from "@tanstack/react-table";
 import { useState } from "react";
 import styled from "styled-components";
 import { colors } from "../../../styles/Colors";
-import { ContentTableColumn, ContentType, calculateColumnWidth, expanderId, orderingStorageKey, removeFromStorage, saveToStorage, selectId } from "./tableParts";
+import { orderingStorageKey, removeFromStorage, saveToStorage } from "./contentTableStorage";
+import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
+import { ContentTableColumn, ContentType } from "./tableParts";
 
 export const ColumnOptionsMenu = (props: {
   table: Table<any>;

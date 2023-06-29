@@ -44,19 +44,6 @@ export enum ContentType {
   Measure
 }
 
-export const selectId = "select";
-export const expanderId = "expander";
-export const activeId = "active"; //implemented specifically for LogCurveInfoListView, needs rework if other views will also use filtering
-export const widthsStorageKey = "-widths";
-export const hiddenStorageKey = "-hidden";
-export const orderingStorageKey = "-ordering";
-type StorageKey = typeof widthsStorageKey | typeof hiddenStorageKey | typeof orderingStorageKey;
-type StorageKeyToPreference = {
-  [widthsStorageKey]: { [label: string]: number };
-  [hiddenStorageKey]: string[];
-  [orderingStorageKey]: string[];
-};
-
 export const getColumnAlignment = (column: { type: ContentType }) => {
   return column.type === ContentType.Number || column.type == ContentType.Measure ? "right" : "left";
 };
@@ -141,77 +128,3 @@ export const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
-
-export function saveToStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key, preference: StorageKeyToPreference[Key]): void {
-  try {
-    if (viewId != null) {
-      localStorage.setItem(viewId + storageKey, JSON.stringify(preference));
-    }
-  } catch {
-    // disregard unavailable local storage
-  }
-}
-
-export function getFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): StorageKeyToPreference[Key] | null {
-  try {
-    if (viewId != null) {
-      return JSON.parse(localStorage.getItem(viewId + storageKey));
-    }
-  } catch {
-    return null;
-  }
-}
-
-export function removeFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): void {
-  try {
-    if (viewId != null) {
-      localStorage.removeItem(viewId + storageKey);
-    }
-  } catch {
-    // disregard unavailable local storage
-  }
-}
-
-export const constantTableOptions = {
-  enableColumnResizing: true,
-  enableHiding: true,
-  enableMultiRowSelection: true,
-  enableSorting: true,
-  enableSortingRemoval: true,
-  enableColumnFilters: false,
-  enableFilters: false,
-  enableGlobalFilter: false,
-  enableGrouping: false,
-  enableMultiRemove: false,
-  enableMultiSort: false,
-  enablePinning: false,
-  enableSubRowSelection: false
-};
-
-const sortingIconSize = 16;
-export function calculateColumnWidth(label: string, isCompactMode: boolean, type?: ContentType): number {
-  const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
-  switch (label) {
-    case "name":
-    case "Name":
-      return 220 + padding;
-    case "uid":
-      return 280 + padding;
-    case selectId:
-      return isCompactMode ? 36 : 60;
-    case expanderId:
-      return isCompactMode ? 40 : 60;
-    case activeId:
-      return 40 + padding;
-    case "mnemonic":
-      return 150 + padding;
-  }
-
-  const estimatedLabelLength = label.length * 8;
-  if (type == ContentType.DateTime) {
-    return Math.max(180, estimatedLabelLength) + padding;
-  } else if (type == ContentType.Measure || type == ContentType.Number) {
-    return Math.max(80, estimatedLabelLength) + padding;
-  }
-  return Math.max(estimatedLabelLength + padding, 100);
-}
