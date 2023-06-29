@@ -78,7 +78,7 @@ export const WellIndicator = styled.div<{ compactMode: boolean; active: boolean 
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin: ${(props) => (props.compactMode ? "0.5rem 0 0 0.5rem" : "1rem 0 0 0.5rem")};
+  margin: ${(props) => (props.compactMode ? "0.625rem 0 0 0.5rem" : "1.125rem 0 0 0.5rem")};
   ${(props) => (props.active ? `background-color: ${colors.interactive.successHover};` : `border: 2px solid ${colors.text.staticIconsTertiary};`)}
 `;
 

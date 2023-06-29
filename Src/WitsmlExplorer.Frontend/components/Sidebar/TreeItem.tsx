@@ -39,7 +39,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
             </NavigationDrawer>
           </Tooltip>
           {isLoading && <StyledDotProgress color={"primary"} size={32} />}
-          {isActive && <Icon size={16} name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-20px", top: "6px" }} />}
+          {isActive && <Icon size={16} name="beat" color={colors.interactive.successHover} style={{ position: "absolute", right: "-20px", top: isCompactMode ? "6px" : "14px" }} />}
         </Label>
       }
       {...other}
