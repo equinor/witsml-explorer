@@ -93,7 +93,7 @@ const indexToNumber = (index: string): number => {
   return Number(index.replace(/[^\d.-]/g, ""));
 };
 
-const formatIndexValue = (value: string | number): string => {
+export const formatIndexValue = (value: string | number): string => {
   return typeof value === "number" ? String(value) : value;
 };
 
