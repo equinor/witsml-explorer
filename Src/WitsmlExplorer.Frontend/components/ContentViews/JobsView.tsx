@@ -1,5 +1,6 @@
 import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -8,6 +9,7 @@ import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
+import { Colors } from "../../styles/Colors";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
@@ -18,7 +20,7 @@ export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const { servers, selectedServer } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
@@ -108,19 +110,21 @@ export const JobsView = (): React.ReactElement => {
   });
 
   const panelElements = [
-    <Button
+    <StyledButton
       key="refreshJobs"
       variant="outlined"
       aria-disabled={shouldRefresh ? true : false}
       aria-label={shouldRefresh ? "loading data" : null}
       onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
       disabled={shouldRefresh}
+      colors={colors}
     >
       <Icon name="refresh" />
       Refresh
-    </Button>,
+    </StyledButton>,
     msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
-      <Switch
+      <StyledSwitch
+        colors={colors}
         key="showAllUsersJobs"
         label="Show all users' jobs"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -128,7 +132,9 @@ export const JobsView = (): React.ReactElement => {
         }}
       />
     ) : null,
-    <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
+    <Typography style={{ color: colors.text.staticIconsDefault }} key="lastFetched">
+      Last fetched: {lastFetched}
+    </Typography>
   ];
 
   return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} />;
@@ -141,5 +147,17 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   const server = servers.find((server) => server.url == url);
   return server ? server.name : url;
 };
+
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  white-space: nowrap;
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
+
+const StyledSwitch = styled(Switch)<{ colors: Colors }>`
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+    margin-left: 0;
+  }
+`;
 
 export default JobsView;

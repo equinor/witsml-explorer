@@ -14,6 +14,7 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import {
   ContentTableColumn,
@@ -174,14 +175,17 @@ export const CurveValuesView = (): React.ReactElement => {
       {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
-        <VirtualizedContentTable
-          columns={columns}
-          onRowSelectionChange={rowSelectionCallback}
-          onContextMenu={onContextMenu}
-          data={tableData}
-          checkableRows={true}
-          panelElements={panelElements}
-        />
+        <>
+          <EditInterval />
+          <VirtualizedContentTable
+            columns={columns}
+            onRowSelectionChange={rowSelectionCallback}
+            onContextMenu={onContextMenu}
+            data={tableData}
+            checkableRows={true}
+            panelElements={panelElements}
+          />
+        </>
       )}
     </Container>
   );

@@ -8,9 +8,10 @@ import { preventContextMenuPropagation } from "../components/ContextMenus/Contex
 import Nav from "../components/Nav";
 import Sidebar from "../components/Sidebar/Sidebar";
 import NavigationContext from "../contexts/navigationContext";
+import OperationContext from "../contexts/operationContext";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
 import { msalEnabled } from "../msal/MsalAuthProvider";
-import { colors } from "../styles/Colors";
+import { Colors } from "../styles/Colors";
 import PropertiesPanel from "./PropertiesPanel";
 
 const PageLayout = (): ReactElement => {
@@ -22,6 +23,8 @@ const PageLayout = (): ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { currentProperties } = navigationState;
   const version = process.env.NEXT_PUBLIC_WEX_VERSION;
+  const { operationState } = useContext(OperationContext);
+  const { colors } = operationState;
 
   const startResizing = useCallback(() => {
     setIsResizing(true);
@@ -61,18 +64,18 @@ const PageLayout = (): ReactElement => {
 
   return isVisible ? (
     <Layout onContextMenu={preventContextMenuPropagation}>
-      <NavLayout>
+      <NavLayout colors={colors}>
         <Nav />
       </NavLayout>
-      <SidebarLayout ref={sidebarRef} style={{ width: sidebarWidth }}>
+      <SidebarLayout colors={colors} ref={sidebarRef} style={{ width: sidebarWidth }}>
         <Sidebar />
       </SidebarLayout>
-      <Divider onMouseDown={startResizing} />
+      <Divider onMouseDown={startResizing} colors={colors} />
       <ContentViewLayout style={{ width: contentWidth }}>
         <Alerts />
         <ContentView />
       </ContentViewLayout>
-      <PropertyBar>
+      <PropertyBar colors={colors}>
         <Properties>
           <PropertiesPanel properties={currentProperties} />
         </Properties>
@@ -95,31 +98,31 @@ const Layout = styled.div`
   grid-template-rows: 40px 1fr 40px;
 `;
 
-const NavLayout = styled.div`
+const NavLayout = styled.div<{ colors: Colors }>`
   grid-area: header;
   height: 40px;
-  border-bottom: 1px solid ${colors.interactive.disabledBorder};
+  border-bottom: 1px solid ${(prop) => prop.colors.interactive.disabledBorder};
 `;
 
-const SidebarLayout = styled.div`
+const SidebarLayout = styled.div<{ colors: Colors }>`
   grid-area: sidebar;
-  border: solid 0.1em ${colors.ui.backgroundLight};
+  border: solid 0.1em ${(prop) => prop.colors.ui.backgroundLight};
   display: flex;
   flex-direction: column;
   min-width: 174px;
   overflow: hidden;
 `;
 
-const Divider = styled.div`
+const Divider = styled.div<{ colors: Colors }>`
   justify-self: flex-end;
   cursor: col-resize;
   resize: horizontal;
   width: 0.2rem;
   margin-right: 0.6rem;
-  background: ${colors.interactive.primaryResting};
+  background: ${(props) => props.colors.interactive.sidebarDivider};
   border-radius: 0px 5px 5px 0px;
   &:hover {
-    background: ${colors.interactive.primaryHover};
+    background: ${(props) => props.colors.interactive.sidebarDivider};
     width: 0.6rem;
     margin-right: 0.2rem;
   }
@@ -132,10 +135,10 @@ const ContentViewLayout = styled.div`
   word-wrap: wrap;
 `;
 
-const PropertyBar = styled.div`
+const PropertyBar = styled.div<{ colors: Colors }>`
   width: 100vw;
   height: 40px;
-  background-color: ${colors.ui.backgroundLight};
+  background-color: ${(props) => props.colors.ui.backgroundLight};
   grid-area: footer;
   display: flex;
   align-items: center;

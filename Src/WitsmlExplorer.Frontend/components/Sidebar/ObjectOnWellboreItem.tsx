@@ -35,7 +35,13 @@ const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElem
       nodeId={nodeId}
       labelText={objectOnWellbore.name}
       selected={selected}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } })}
+      onLabelClick={() => {
+        if (objectType === ObjectType.Rig) {
+          dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { wellUid: well.uid, wellboreUid: wellbore.uid, objectType: objectType, objects: null } });
+        } else {
+          dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } });
+        }
+      }}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );

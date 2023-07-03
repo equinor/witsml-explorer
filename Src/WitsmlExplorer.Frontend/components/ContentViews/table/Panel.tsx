@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
+import OperationContext from "../../../contexts/operationContext";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
@@ -23,6 +24,9 @@ export interface PanelProps {
 const Panel = (props: PanelProps) => {
   const { checkableRows, panelElements, numberOfCheckedItems, numberOfItems, showRefresh, table, viewId, columns, expandableRows = false } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -52,7 +56,7 @@ const Panel = (props: PanelProps) => {
           </Menu>
         </>
       )}
-      <Typography>{selectedItemsText}</Typography>
+      <Typography style={{ color: colors.text.staticIconsDefault }}>{selectedItemsText}</Typography>
       {showRefresh && (
         <Button
           key="refreshObject"
