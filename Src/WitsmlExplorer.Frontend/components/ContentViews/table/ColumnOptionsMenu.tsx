@@ -9,6 +9,8 @@ import { orderingStorageKey, removeFromStorage, saveToStorage } from "./contentT
 import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
+const lastId = "dummyLastId";
+
 export const ColumnOptionsMenu = (props: {
   table: Table<any>;
   checkableRows: boolean;
@@ -29,12 +31,16 @@ export const ColumnOptionsMenu = (props: {
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (draggedId != null && draggedOverId != null) {
+    if (draggedId != null && draggedOverId != null && draggedId != draggedOverId) {
       const order = table.getAllLeafColumns().map((d) => d.id);
       const dragItemIndex = order.findIndex((value) => value == draggedId);
-      const dragOverItemIndex = order.findIndex((value) => value == draggedOverId);
-      order[dragItemIndex] = draggedOverId;
-      order[dragOverItemIndex] = draggedId;
+      order.splice(dragItemIndex, 1);
+      if (draggedOverId != lastId) {
+        const dragOverItemIndex = order.findIndex((value) => value == draggedOverId);
+        order.splice(dragOverItemIndex, 0, draggedId);
+      } else {
+        order.push(draggedId);
+      }
       table.setColumnOrder(order);
       saveToStorage(viewId, orderingStorageKey, order);
     }
@@ -76,7 +82,7 @@ export const ColumnOptionsMenu = (props: {
   return (
     <>
       <Button ref={setMenuAnchor} id="anchor-default" aria-haspopup="true" aria-expanded={isMenuOpen} aria-controls="menu-default" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        Columns {table.getVisibleLeafColumns().length}/{table.getAllLeafColumns().length}
+        Columns {table.getVisibleLeafColumns().length - firstToggleableIndex}/{table.getAllLeafColumns().length - firstToggleableIndex}
       </Button>
       <StyledMenu
         open={isMenuOpen}
@@ -129,6 +135,9 @@ export const ColumnOptionsMenu = (props: {
               )
             );
           })}
+          <DummyDrop onDragEnter={() => setDraggedOverId(lastId)} onDragEnd={drop} isDraggedOver={lastId == draggedOverId ? 1 : 0} colors={colors} style={{ marginLeft: "70px" }}>
+            <div style={{ visibility: "hidden", height: "15px" }}></div>
+          </DummyDrop>
         </div>
         <ResetContainer>
           <ResetButton
@@ -165,13 +174,28 @@ const OrderingLabel = styled(Typography)`
   font-size: 0.875rem;
 `;
 
+const DummyDrop = styled.div<{ isDraggedOver?: number; colors: Colors }>`
+  border-top: 2px solid ${(props) => props.colors.ui.backgroundLight};
+  ${(props) =>
+    props.isDraggedOver
+      ? `&&&{
+    border-top: 2px solid ${props.colors.infographic.primaryMossGreen};
+  }`
+      : ""}
+`;
+
 const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number; colors: Colors }>`
   cursor: grab;
   user-select: none;
   height: 100%;
   display: flex;
   ${(props) => (props.isDragged ? `&&&{ background: ${props.colors.interactive.textHighlight}; }` : "")}
-  ${(props) => (props.isDraggedOver ? `&&&{ background: ${props.colors.interactive.tableCellFillActivated}; }` : "")}
+  ${(props) =>
+    props.isDraggedOver
+      ? `&&&{
+    border-top: 2px solid ${props.colors.infographic.primaryMossGreen};
+}`
+      : ""}
   ${(props) => (props.draggingStarted ? "" : `&:hover { background: ${props.colors.interactive.textHighlight}; }`)}
 `;
 
@@ -190,4 +214,6 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
     color: ${(props) => props.colors.text.staticIconsDefault};
   }
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  max-height: 90vh;
+  overflow-y: scroll;
 `;

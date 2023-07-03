@@ -141,7 +141,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
         <Panel
           checkableRows={checkableRows}
           panelElements={panelElements}
-          numberOfCheckedItems={Object.keys(rowSelection).length} //these two can be computed from table prop
+          numberOfCheckedItems={Object.keys(rowSelection).length}
           numberOfItems={data?.length}
           table={table}
           viewId={viewId}
