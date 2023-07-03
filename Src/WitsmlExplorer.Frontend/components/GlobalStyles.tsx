@@ -1,8 +1,8 @@
 import { createGlobalStyle } from "styled-components";
-import { colors } from "../styles/Colors";
+import { Colors } from "../styles/Colors";
 import { AssetsLoader } from "./AssetsLoader";
 
-const GlobalStyles = createGlobalStyle`
+const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   @font-face {
     font-family: "Equinor";
     src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
@@ -41,16 +41,23 @@ const GlobalStyles = createGlobalStyle`
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: ${colors.interactive.disabledBorder};
+    background-color: ${(props) => props.colors.interactive.disabledBorder};
   }
 
   ::-webkit-scrollbar-track {
     background-color: transparent;
   }
 
+  ::-webkit-scrollbar-corner{
+    background-color:transparent;
+  }
+  ::placeholder {
+  color: ${(props) => props.colors.text.staticIconsDefault} !important;
+  }
+
   body {
     font-family: EquinorRegular, sans-serif;
-    background: #FFFFFF;
+    background:${(props) => props.colors.ui.backgroundDefault};
     font-size: 16px;
     margin: 0;
     height: 100vh;
@@ -95,6 +102,42 @@ const GlobalStyles = createGlobalStyle`
       .MuiListItemSecondaryAction-root {
         display: block;
       }
+    }
+  }
+
+  .MuiFormControl-root {
+    .MuiFormLabel-root {
+     color:${(props) => props.colors.text.staticTextLabel}
+    }
+    .MuiFormLabel-root.Mui-focused {
+      color:${(props) => props.colors.text.staticPropertyValue};
+    }
+    .MuiInput-underline:before {
+      border-bottom: 1px solid #9CA6AC;
+    }
+    .Mui-disabled {
+      color: #999999 !important;
+    }
+    .MuiTypography-colorTextSecondary {
+      color:${(props) => props.colors.text.staticIconsDefault};
+    }
+  }
+  input[type=text],input[type=password],input[type=number],textarea {
+    color:${(props) => props.colors.text.staticIconsDefault} ;
+  }
+
+  input[type=checkbox] + svg {
+    fill:${(props) => props.colors.infographic.primaryMossGreen}
+  }
+  ul[class*="List__StyledList"] {
+    background: ${(props) => props.colors.ui.backgroundLight};
+    li {
+      color: ${(props) => props.colors.text.staticIconsDefault} ;
+      background: ${(props) => props.colors.ui.backgroundLight};
+    }
+    li:hover {
+     text-decoration: none;
+     background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
     }
   }
 `;

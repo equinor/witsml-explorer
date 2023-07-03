@@ -9,7 +9,7 @@ import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import NotificationService from "../../services/notificationService";
 import ObjectService from "../../services/objectService";
-import { colors } from "../../styles/Colors";
+import { Colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, { OptionsContextMenuProps } from "../ContextMenus/OptionsContextMenu";
@@ -23,6 +23,9 @@ const SearchFilter = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const [selectedOption, setSelectedOption] = useState<FilterType>(selectedFilter.filterType);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -77,7 +80,7 @@ const SearchFilter = (): React.ReactElement => {
 
   return (
     <>
-      <SearchLayout>
+      <SearchLayout colors={colors}>
         <SearchBarContainer>
           <EdsProvider density="compact">
             <TextField
@@ -136,12 +139,14 @@ const SearchFilter = (): React.ReactElement => {
   );
 };
 
-const SearchLayout = styled.div`
+const SearchLayout = styled.div<{ colors: Colors }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.6rem 0.375rem 0.5rem 1rem;
   position: relative;
+  padding-right: 6px;
+  border-bottom: 1px solid ${(props) => props.colors.interactive.disabledBorder};
 `;
 
 const SearchIconLayout = styled.div`
@@ -151,7 +156,6 @@ const SearchIconLayout = styled.div`
 
 const SearchBarContainer = styled.div`
   width: 85%;
-
   .small-padding-left {
     padding-left: 4px;
   }

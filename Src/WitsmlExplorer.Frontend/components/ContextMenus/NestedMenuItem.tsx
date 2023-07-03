@@ -1,8 +1,8 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
-import Menu from "@material-ui/core/Menu";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
-import React, { useImperativeHandle, useRef, useState } from "react";
-import { colors } from "../../styles/Colors";
+import React, { useContext, useImperativeHandle, useRef, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
+import { StyledMenu } from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
@@ -13,6 +13,9 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
 
 const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props: NestedMenuItemProps, ref) {
   const { label, children, icon, tabIndex: tabIndexProp, ContainerProps: ContainerPropsProp = {}, ...MenuItemProps } = props;
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp;
 
@@ -92,7 +95,7 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
         <Typography color={"primary"}>{label}</Typography>
         <Icon name="arrowDropRight" />
       </MenuItem>
-      <Menu
+      <StyledMenu
         // Set pointer events to 'none' to prevent the invisible Popover div
         // from capturing events for clicks and hovers
         style={{ pointerEvents: "none" }}
@@ -112,11 +115,12 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
         onClose={() => {
           setIsSubMenuOpen(false);
         }}
+        colors={colors}
       >
         <div ref={menuContainerRef} style={{ pointerEvents: "auto" }}>
           {children}
         </div>
-      </Menu>
+      </StyledMenu>
     </div>
   );
 });

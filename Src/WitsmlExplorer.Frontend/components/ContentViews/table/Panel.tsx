@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
+import OperationContext from "../../../contexts/operationContext";
 import ObjectService from "../../../services/objectService";
 
 export interface PanelProps {
@@ -16,12 +17,15 @@ export interface PanelProps {
 const Panel = (props: PanelProps) => {
   const { showCheckedItems, panelElements, numberOfCheckedItems, numberOfItems, showRefresh } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const selectedItemsText = showCheckedItems ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
-  const selectedItemsElement = <Typography>{selectedItemsText}</Typography>;
+  const selectedItemsElement = <Typography style={{ color: colors.text.staticIconsDefault }}>{selectedItemsText}</Typography>;
 
   const onClickRefresh = async () => {
     setIsRefreshing(true);

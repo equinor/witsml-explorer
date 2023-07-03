@@ -14,9 +14,9 @@ import ObjectService from "../../services/objectService";
 import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
-import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
 import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
 import RigContextMenu from "../ContextMenus/RigContextMenu";
+import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
 import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
 import TubularContextMenu from "../ContextMenus/TubularContextMenu";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
@@ -49,6 +49,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingCount, setIsFetchingCount] = useState(false);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
     preventContextMenuPropagation(event);
@@ -143,7 +146,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
         </WellboreItemContext.Provider>
       </TreeItem>
-      <WellIndicator compactMode={isCompactMode} active={wellbore.isActive} />
+      <WellIndicator compactMode={isCompactMode} active={wellbore.isActive} colors={colors} />
     </WellboreLayout>
   );
 };

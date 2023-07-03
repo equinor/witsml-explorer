@@ -8,7 +8,8 @@ import styled from "styled-components";
 import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { colors } from "../../styles/Colors";
+import OperationContext from "../../contexts/operationContext";
+import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 
 interface StyledTreeItemProps extends TreeItemProps {
@@ -27,6 +28,9 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
     const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: props.nodeId } };
     dispatchNavigation(toggleTreeNode);
   };
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   return (
     <TreeItem
@@ -34,7 +38,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
       label={
         <Label>
           <Tooltip title={labelText} arrow placement="top" disableHoverListener={labelText === "" || labelText == null}>
-            <NavigationDrawer selected={selected} compactMode={isCompactMode}>
+            <NavigationDrawer colors={colors} selected={selected} compactMode={isCompactMode}>
               {labelText}
             </NavigationDrawer>
           </Tooltip>
@@ -51,8 +55,8 @@ const Label = styled.div`
   display: flex;
 `;
 
-const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean }>`
-  color: ${(props) => (props.selected ? colors.interactive.primaryResting : colors.text.staticIconsDefault)};
+const NavigationDrawer = styled.p<{ selected: boolean; compactMode: boolean; colors: Colors }>`
+  color: ${(props) => (props.selected ? props.colors.interactive.primaryResting : props.colors.text.staticIconsDefault)};
   font-family: EquinorMedium, sans-serif;
   font-size: 0.75rem;
   line-height: 1rem;

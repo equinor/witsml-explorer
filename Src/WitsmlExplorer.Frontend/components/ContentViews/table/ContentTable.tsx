@@ -1,8 +1,9 @@
 import { Checkbox, TableCell as MuiTableCell, TableRow as MuiTableRow, Table, TableBody, TableHead, TableSortLabel } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { colors } from "../../../styles/Colors";
+import OperationContext from "../../../contexts/operationContext";
+import { Colors, light } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
 import { ContentTableColumn, ContentTableProps, ContentTableRow, ContentType, Order, getCheckedRows, getColumnAlignment, getComparatorByColumn, getSelectedRange } from "./";
 import { InsetHeader, InsetRow, InsetToggle } from "./Inset";
@@ -16,6 +17,8 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
   const [sortedColumn, setSortedColumn] = useState<ContentTableColumn>(columns[0]);
   const [activeIndexRange, setActiveIndexRange] = useState<number[]>([]);
   const [openInsets, setOpenInsets] = useState<string[]>([]);
+  const { operationState } = useContext(OperationContext);
+  const colors: Colors = operationState?.colors || light;
 
   useEffect(() => {
     setData(orderBy(props.data, getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
@@ -71,9 +74,9 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
       ) : null}
       <Table>
         <TableHead>
-          <TableRow>
+          <TableRow colors={colors}>
             {checkableRows && (
-              <TableHeaderCell>
+              <TableHeaderCell colors={colors}>
                 <Checkbox
                   onChange={toggleAllRows}
                   checked={checkedContentItems.length === data.length}
@@ -81,13 +84,18 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                 />
               </TableHeaderCell>
             )}
-            <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} />
+            <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} colors={colors} />
             {columns &&
               columns.map(
                 (column) =>
                   column && (
-                    <TableHeaderCell key={column.property} align={getColumnAlignment(column)}>
-                      <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
+                    <TableHeaderCell colors={colors} key={column.property} align={getColumnAlignment(column)}>
+                      <TableSortLabel
+                        style={{ color: colors.text.staticIconsTertiary }}
+                        active={sortedColumn === column}
+                        direction={sortOrder}
+                        onClick={() => sortByColumn(column)}
+                      >
                         {column.label}
                       </TableSortLabel>
                     </TableHeaderCell>
@@ -103,22 +111,24 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                   <TableRow
                     hover
                     selected={checkableRows && checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
+                    colors={colors}
                     onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
                   >
                     {checkableRows && (
-                      <TableDataCell>
+                      <TableDataCell colors={colors}>
                         <Checkbox
                           onClick={(event) => toggleRow(event, item)}
                           checked={checkedContentItems?.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
                         />
                       </TableDataCell>
                     )}
-                    <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} />
+                    <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} colors={colors} />
                     {columns &&
                       columns.map(
                         (column) =>
                           column && (
                             <TableDataCell
+                              colors={colors}
                               id={item[column.property] + column.property}
                               key={item[column.property] + column.property}
                               clickable={onSelect ? "true" : "false"}
@@ -151,36 +161,36 @@ export const formatCell = (type: ContentType, data: string | boolean) => {
   }
 };
 
-const TableRow = styled(MuiTableRow)`
+const TableRow = styled(MuiTableRow)<{ colors: Colors }>`
   &&& {
-    background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "")};
+    background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : "")};
   }
   &:nth-of-type(even) {
-    background-color: ${colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
   }
   &&&:hover {
-    background-color: ${colors.interactive.tableCellFillActivated};
+    background-color: ${(props) => props.colors.interactive.tableCellFillActivated};
   }
 `;
 
-export const TableHeaderCell = styled(MuiTableCell)`
+export const TableHeaderCell = styled(MuiTableCell)<{ colors: Colors }>`
   && {
-    border-bottom-width: 2px;
+    border-bottom: 2px solid ${(props) => props.colors?.interactive?.disabledBorder};
     position: sticky;
     top: 0;
-    background-color: ${colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) => props.colors?.interactive?.tableHeaderFillResting};
     z-index: 1;
-    color: ${colors.text.staticIconsDefault};
   }
 `;
 
-export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string }>`
+export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string; colors: Colors }>`
   position: relative;
   z-index: 0;
-  border-right: 1px solid rgba(224, 224, 224, 1);
+  border-right: 1px solid ${(props) => props.colors.interactive.tableBorder};
   white-space: nowrap;
   && {
-    color: ${colors.text.staticIconsDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
+    border-bottom: 1px solid ${(props) => props.colors.interactive.tableBorder};
     font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};

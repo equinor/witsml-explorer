@@ -14,7 +14,7 @@ import { Server } from "../../models/server";
 import { msalEnabled } from "../../msal/MsalAuthProvider";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
-import { colors } from "../../styles/Colors";
+import { Colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import ModalDialog, { ControlButtonPosition, ModalWidth } from "./ModalDialog";
 import UserCredentialsModal, { UserCredentialsModalProps } from "./UserCredentialsModal";
@@ -29,7 +29,8 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     navigationState: { selectedServer },
     dispatchNavigation
   } = useContext(NavigationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { colors } = operationState;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
   const [displayUrlError, setDisplayUrlError] = useState<boolean>(false);
@@ -37,7 +38,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const isAddingNewServer = props.server.id === undefined;
-
+  const labelStyle: CSSProperties = { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" };
   const onSubmit = async () => {
     const abortController = new AbortController();
 
@@ -166,9 +167,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             />
             <ButtonWrapper>
               {connectionVerified && <Icons name="done" color={colors.interactive.primaryResting} size={32} />}
-              <Button disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} variant="outlined">
+              <StyledButton disabled={displayUrlError || connectionVerified} onClick={showCredentialsModal} color={"primary"} colors={colors} variant="outlined">
                 {"Test connection"}
-              </Button>
+              </StyledButton>
             </ButtonWrapper>
           </ContentWrapper>
         </>
@@ -235,8 +236,6 @@ const isUrlValid = (url: string) => {
   }
 };
 
-const labelStyle: CSSProperties = { fontSize: "1rem", fontWeight: 500, color: colors.text.staticIconsDefault, paddingLeft: "0.9rem" };
-
 const ContentWrapper = styled.div`
   display: grid;
   grid-template-columns: 12em 1fr;
@@ -250,6 +249,11 @@ const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+`;
+
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  white-space: nowrap;
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default ServerModal;

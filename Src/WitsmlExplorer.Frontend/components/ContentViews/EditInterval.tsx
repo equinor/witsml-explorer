@@ -40,7 +40,7 @@ const EditInterval = (): React.ReactElement => {
       </Typography>
       <StartEndIndex>
         <StyledLabel label="Start Index" />
-        <TextField
+        <StyledTextField
           id="startIndex"
           defaultValue={startIndex}
           onChange={(e: any) => {
@@ -51,7 +51,7 @@ const EditInterval = (): React.ReactElement => {
       </StartEndIndex>
       <StartEndIndex>
         <StyledLabel label="End Index" />
-        <TextField
+        <StyledTextField
           id="endIndex"
           defaultValue={endIndex}
           onChange={(e: any) => {
@@ -81,6 +81,12 @@ const StyledLabel = styled(Label)`
   width: 5rem;
   align-items: center;
   font-style: italic;
+`;
+
+const StyledTextField = styled(TextField)`
+  div {
+    background-color: transparent;
+  }
 `;
 
 const StyledButton = styled(Button)`

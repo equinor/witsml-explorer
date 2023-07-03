@@ -6,13 +6,17 @@ import styled from "styled-components";
 import { FilterContext } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import OperationContext from "../../contexts/operationContext";
 import { WellboreObjects } from "../../contexts/wellboreObjects";
-import { colors } from "../../styles/Colors";
+import { Colors } from "../../styles/Colors";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedCurveThreshold } = navigationState;
   const { selectedFilter, updateSelectedFilter } = React.useContext(FilterContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   const [showMore, setShowmore] = useState<boolean>(false);
   const ListWellborObj = {
@@ -52,18 +56,19 @@ const FilterPanel = (): React.ReactElement => {
   ];
   const wellObjectList = Object.values(WellboreObjects).map((wellObj: string) => {
     return (
-      <Checkbox
+      <StyledCheckbox
         label={wellObj}
         disabled={true} //disabling everything for now as checking objects does not do anything yet, should use DisabledWellObj when implemented
         style={{ height: "0.75rem" }}
         defaultChecked={defaultCheckedValues.includes(wellObj)}
         key={wellObj}
+        colors={colors}
       />
     );
   });
 
   return (
-    <Container style={{ boxShadow: !showMore ? "1px 4px 5px 0px #8888" : "none" }}>
+    <Container style={{ boxShadow: !showMore ? "1px 4px 5px 0px #8888" : "none", background: colors.ui.backgroundLight }}>
       {
         <>
           <div style={WellboreObject}>
@@ -72,29 +77,31 @@ const FilterPanel = (): React.ReactElement => {
               <Typography token={{ fontStyle: "italic", fontFamily: "EquinorRegular", fontSize: "0.75rem", color: colors.text.staticIconsTertiary }}>(0 for no limit)</Typography>
             </span>
 
-            <TextField
+            <StyledTextField
               id="filter-wellLimit"
               type="number"
               min={0}
               onChange={(event: ChangeEvent<HTMLInputElement>) => updateSelectedFilter({ wellLimit: Number(event.target.value) })}
               value={selectedFilter.wellLimit}
               autoComplete={"off"}
+              colors={colors}
             />
           </div>
           <Divider />
-          <div style={{ paddingTop: "0.75rem" }}>
-            <Checkbox
+          <div style={{ paddingTop: "0.75rem", color: "pink !important" }}>
+            <StyledCheckbox
               id="filter-isActive"
               value={"Show active Wells / Wellbores"}
               color={"primary"}
               checked={selectedFilter.isActive}
               onChange={(event) => updateSelectedFilter({ isActive: event.target.checked })}
-              style={{ height: "0.625rem", userSelect: "none" }}
+              style={{ height: "0.625rem", userSelect: "none", color: "pink !important" }}
               label={"Show active Wells / Wellbores"}
+              colors={colors}
             />
           </div>
           <div style={{ userSelect: "none" }}>
-            <Checkbox
+            <StyledCheckbox
               onChange={(event) => updateSelectedFilter({ objectGrowing: event.target.checked })}
               checked={selectedFilter.objectGrowing}
               id="filter-objectGrowing"
@@ -102,6 +109,7 @@ const FilterPanel = (): React.ReactElement => {
               color={"primary"}
               label={"Show growing logs"}
               style={{ userSelect: "none" }}
+              colors={colors}
             />
           </div>
           <div
@@ -122,7 +130,8 @@ const FilterPanel = (): React.ReactElement => {
               <Typography token={{ fontStyle: "italic", fontFamily: "EquinorRegular", fontSize: "0.75rem", color: colors.text.staticIconsTertiary }}> (minutes) </Typography>
             </span>
 
-            <TextField
+            <StyledTextField
+              style={{ background: "transparent" }}
               id="curveThreshold-time"
               type="number"
               min={0}
@@ -134,11 +143,12 @@ const FilterPanel = (): React.ReactElement => {
               }
               value={selectedCurveThreshold.timeInMinutes}
               autoComplete={"off"}
+              colors={colors}
             />
           </div>
 
           <div style={{ userSelect: "none" }}>
-            <Checkbox
+            <StyledCheckbox
               id="curveThreshold-hideInactive"
               onChange={(event) =>
                 dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...selectedCurveThreshold, hideInactiveCurves: event.target.checked } } })
@@ -148,6 +158,7 @@ const FilterPanel = (): React.ReactElement => {
               color={"primary"}
               style={{ height: "10px" }}
               label={"Hide inactive time curves"}
+              colors={colors}
             />
           </div>
         </>
@@ -179,8 +190,25 @@ const FilterPanel = (): React.ReactElement => {
 };
 
 const Container = styled.div`
-  background-color: ${colors.ui.backgroundLight};
   padding-bottom: 0.5em;
+`;
+
+const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  span:hover {
+    background: ${(props) => props.colors.interactive.checkBoxHover};
+  }
+`;
+
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: ${(props) => props.colors.text.staticTextLabel};
+  }
+  div {
+    background: ${(props) => props.colors.text.staticTextFeildDefault};
+  }
 `;
 
 export default FilterPanel;

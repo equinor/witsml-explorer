@@ -4,9 +4,9 @@ import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import { colors } from "../../styles/Colors";
+import { Colors, dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
+import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
 import { getOffsetFromTimeZone } from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 
@@ -23,7 +23,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const SettingsModal = (): React.ReactElement => {
   const {
-    operationState: { theme, timeZone },
+    operationState: { theme, timeZone, colors },
     dispatchOperation
   } = useContext(OperationContext);
 
@@ -32,7 +32,16 @@ const SettingsModal = (): React.ReactElement => {
     localStorage.setItem(STORAGE_THEME_KEY, selectedTheme);
     dispatchOperation({ type: OperationType.SetTheme, payload: selectedTheme });
   };
-
+  const onChangeMode = (event: any) => {
+    let selectedMode;
+    if (event.target.value == "light") {
+      selectedMode = light;
+    } else {
+      selectedMode = dark;
+    }
+    localStorage.setItem(STORAGE_MODE_KEY, event.target.value);
+    dispatchOperation({ type: OperationType.SetMode, payload: selectedMode });
+  };
   const onChangeTimeZone = (event: any) => {
     const selectedTimeZone = event.target.value;
     localStorage.setItem(STORAGE_TIMEZONE_KEY, selectedTimeZone);
@@ -45,21 +54,28 @@ const SettingsModal = (): React.ReactElement => {
       content={
         <div style={{ display: "flex", gap: "1rem", flexDirection: "column" }}>
           <HorizontalLayout>
-            <Icon name="accessible" size={32} color={colors.interactive.primaryResting} />
-            <NativeSelect label="Theme" id="native-select-theme" onChange={onChangeTheme} defaultValue={theme}>
+            <Icon name="accessible" size={32} color={colors.infographic.primaryMossGreen} />
+            <StyledNativeSelect label="Theme" id="native-select-theme" onChange={onChangeTheme} defaultValue={theme} colors={colors}>
               <option value={UserTheme.Comfortable}>Comfortable</option>
               <option value={UserTheme.Compact}>Compact</option>
-            </NativeSelect>
+            </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon name="world" size={32} color={colors.interactive.primaryResting} />
-            <NativeSelect label="Time Zone" id="native-select-timezone" onChange={onChangeTimeZone} defaultValue={timeZone}>
+            <Icon name="inProgress" size={32} color={colors.infographic.primaryMossGreen} />
+            <StyledNativeSelect id={"native-select-mode"} label={"Mode"} onChange={onChangeMode} defaultValue={colors === light ? "light" : "dark"} colors={colors}>
+              <option value={"light"}>Light Mode</option>
+              <option value={"dark"}>Dark Mode</option>
+            </StyledNativeSelect>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <Icon name="world" size={32} color={colors.infographic.primaryMossGreen} />
+            <StyledNativeSelect label="Time Zone" id="native-select-timezone" onChange={onChangeTimeZone} defaultValue={timeZone} colors={colors}>
               {Object.entries(timeZoneLabels).map(([timeZoneKey, timeZoneLabel]) => (
                 <option key={timeZoneKey} value={timeZoneKey}>
                   {timeZoneLabel}
                 </option>
               ))}
-            </NativeSelect>
+            </StyledNativeSelect>
           </HorizontalLayout>
         </div>
       }
@@ -76,6 +92,20 @@ const HorizontalLayout = styled.div`
     display: flex;
     flex-direction: row;
     align-items: flex-end;
+  }
+`;
+
+const StyledNativeSelect = styled(NativeSelect)<{ colors: Colors }>`
+  select {
+    background: ${(props) => props.colors.text.staticTextFeildDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
+    option {
+      background: ${(props) => props.colors.ui.backgroundLight};
+      color: ${(props) => props.colors.text.staticIconsDefault};
+    }
+  }
+  label {
+    color: ${(props) => props.colors.text.staticIconsDefault};
   }
 `;
 
