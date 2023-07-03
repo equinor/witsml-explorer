@@ -123,7 +123,8 @@ export const JobsView = (): React.ReactElement => {
       Refresh
     </StyledButton>,
     msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
-      <Switch
+      <StyledSwitch
+        colors={colors}
         key="showAllUsersJobs"
         label="Show all users' jobs"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -147,9 +148,16 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   return server ? server.name : url;
 };
 
-const StyledButton = styled(Button)<{ colors?: Colors }>`
+const StyledButton = styled(Button)<{ colors: Colors }>`
   white-space: nowrap;
   color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
+
+const StyledSwitch = styled(Switch)<{ colors: Colors }>`
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+    margin-left: 0;
+  }
 `;
 
 export default JobsView;

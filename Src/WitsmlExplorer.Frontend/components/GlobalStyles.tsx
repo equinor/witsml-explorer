@@ -122,7 +122,7 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
       color:${(props) => props.colors.text.staticIconsDefault};
     }
   }
-  input[type=text],input[type=password],input[type=number] {
+  input[type=text],input[type=password],input[type=number],textarea {
     color:${(props) => props.colors.text.staticIconsDefault} ;
   }
 

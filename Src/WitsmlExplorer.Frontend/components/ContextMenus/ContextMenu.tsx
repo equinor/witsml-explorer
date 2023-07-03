@@ -45,7 +45,7 @@ const ContextMenu = (props: ContextMenuProps): React.ReactElement => {
   );
 };
 
-const StyledMenu = styled(Menu)<{ colors: Colors }>`
+export const StyledMenu = styled(Menu)<{ colors: Colors }>`
   .MuiPaper-root {
     background: ${(props) => props.colors.ui.backgroundLight};
     p {

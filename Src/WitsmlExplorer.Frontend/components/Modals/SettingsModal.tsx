@@ -6,7 +6,7 @@ import { TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { Colors, dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
+import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
 import { getOffsetFromTimeZone } from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
 
@@ -39,6 +39,7 @@ const SettingsModal = (): React.ReactElement => {
     } else {
       selectedMode = dark;
     }
+    localStorage.setItem(STORAGE_MODE_KEY, event.target.value);
     dispatchOperation({ type: OperationType.SetMode, payload: selectedMode });
   };
   const onChangeTimeZone = (event: any) => {

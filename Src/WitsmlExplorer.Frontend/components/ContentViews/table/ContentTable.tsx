@@ -84,7 +84,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                 />
               </TableHeaderCell>
             )}
-            <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} />
+            <InsetHeader inset={inset} openInsets={openInsets} data={data} setOpenInsets={setOpenInsets} colors={colors} />
             {columns &&
               columns.map(
                 (column) =>
@@ -122,7 +122,7 @@ export const ContentTable = (props: ContentTableProps): React.ReactElement => {
                         />
                       </TableDataCell>
                     )}
-                    <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} />
+                    <InsetToggle inset={inset} openInsets={openInsets} uid={item.uid} setOpenInsets={setOpenInsets} colors={colors} />
                     {columns &&
                       columns.map(
                         (column) =>
@@ -161,7 +161,7 @@ export const formatCell = (type: ContentType, data: string | boolean) => {
   }
 };
 
-const TableRow = styled(MuiTableRow)<{ colors?: Colors }>`
+const TableRow = styled(MuiTableRow)<{ colors: Colors }>`
   &&& {
     background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : "")};
   }
@@ -173,7 +173,7 @@ const TableRow = styled(MuiTableRow)<{ colors?: Colors }>`
   }
 `;
 
-export const TableHeaderCell = styled(MuiTableCell)<{ colors?: Colors }>`
+export const TableHeaderCell = styled(MuiTableCell)<{ colors: Colors }>`
   && {
     border-bottom: 2px solid ${(props) => props.colors?.interactive?.disabledBorder};
     position: sticky;
@@ -183,14 +183,14 @@ export const TableHeaderCell = styled(MuiTableCell)<{ colors?: Colors }>`
   }
 `;
 
-export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string; colors?: Colors }>`
+export const TableDataCell = styled(MuiTableCell)<{ type?: ContentType; clickable?: string; colors: Colors }>`
   position: relative;
   z-index: 0;
-  border-right: 1px solid ${(props) => (JSON.stringify(props.colors) == JSON.stringify(light) ? "rgba(224, 224, 224, 1)" : "#007079")};
+  border-right: 1px solid ${(props) => props.colors.interactive.tableBorder};
   white-space: nowrap;
   && {
     color: ${(props) => props.colors.text.staticIconsDefault};
-    border-bottom: 1px solid ${(props) => (JSON.stringify(props.colors) == JSON.stringify(light) ? "rgba(224, 224, 224, 1)" : "#007079")};
+    border-bottom: 1px solid ${(props) => props.colors.interactive.tableBorder};
     font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};

@@ -1,6 +1,7 @@
 import { tokens } from "@equinor/eds-tokens";
 
-export const light = {
+export const light: Colors = {
+  mode: "light",
   infographic: {
     primaryMossGreen: tokens.colors.infographic.primary__moss_green_100.hex
   },
@@ -18,7 +19,8 @@ export const light = {
     successHover: tokens.colors.interactive.success__hover.hex,
     sidebarDivider: tokens.colors.interactive.primary__resting.hex,
     checkBoxHover: "",
-    contextMenuItemHover: ""
+    contextMenuItemHover: "",
+    tableBorder: "#E0E0E0"
   },
   text: {
     staticIconsDefault: tokens.colors.text.static_icons__default.hex,
@@ -38,7 +40,8 @@ export const light = {
   }
 };
 
-export const dark = {
+export const dark: Colors = {
+  mode: "dark",
   infographic: {
     primaryMossGreen: "#ffffff"
   },
@@ -56,7 +59,8 @@ export const dark = {
     sidebarDivider: "#243746",
     checkBoxHover: "#FFFFFF33",
     textHighlight: "#004F55",
-    contextMenuItemHover: "#007079"
+    contextMenuItemHover: "#007079",
+    tableBorder: "#007079"
   },
   text: {
     staticIconsDefault: "#FFFFFF",
@@ -78,6 +82,7 @@ export const dark = {
 
 export const colors = light;
 export interface Colors {
+  mode: "light" | "dark";
   infographic: {
     primaryMossGreen: string;
   };
@@ -96,6 +101,7 @@ export interface Colors {
     sidebarDivider: string;
     checkBoxHover: string;
     contextMenuItemHover: string;
+    tableBorder: string;
   };
   text: {
     staticIconsDefault: string;

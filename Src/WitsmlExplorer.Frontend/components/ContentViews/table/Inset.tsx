@@ -1,6 +1,7 @@
 import { Icon } from "@equinor/eds-core-react";
 import { IconButton, TableCell as MuiTableCell, TableRow as MuiTableRow } from "@material-ui/core";
 import { ReactElement } from "react";
+import { Colors } from "../../../styles/Colors";
 import ContentTable, { TableDataCell, TableHeaderCell } from "./ContentTable";
 import { ContentTableColumn } from "./tableParts";
 
@@ -14,12 +15,13 @@ export interface InsetHeaderProps {
   openInsets: string[];
   data: any[];
   setOpenInsets: (openInsets: string[]) => void;
+  colors: Colors;
 }
 
 export const InsetHeader = (props: InsetHeaderProps): ReactElement => {
-  const { inset, openInsets, data, setOpenInsets } = props;
+  const { inset, openInsets, data, setOpenInsets, colors } = props;
   return inset ? (
-    <TableHeaderCell>
+    <TableHeaderCell colors={colors}>
       <IconButton
         size="small"
         onClick={() => {
@@ -43,12 +45,13 @@ export interface InsetToggleProps {
   openInsets: string[];
   uid: string;
   setOpenInsets: (openInsets: string[]) => void;
+  colors: Colors;
 }
 
 export const InsetToggle = (props: InsetToggleProps): ReactElement => {
-  const { inset, openInsets, uid, setOpenInsets } = props;
+  const { inset, openInsets, uid, setOpenInsets, colors } = props;
   return inset ? (
-    <TableDataCell>
+    <TableDataCell colors={colors}>
       {inset.data[uid]?.length != 0 && (
         <IconButton
           size="small"

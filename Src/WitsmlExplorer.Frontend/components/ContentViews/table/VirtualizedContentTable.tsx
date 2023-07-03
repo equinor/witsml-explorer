@@ -9,7 +9,7 @@ import styled from "styled-components";
 import OperationContext from "../../../contexts/operationContext";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
-import { Colors, light } from "../../../styles/Colors";
+import { Colors } from "../../../styles/Colors";
 import { formatCell } from "./ContentTable";
 import Panel from "./Panel";
 import {
@@ -385,11 +385,11 @@ const TableRow = styled.div<{ hover: boolean }>`
 `;
 
 const TableDataCell = styled(MuiTableCell)<{ clickable?: string; colors: Colors }>`
-  border-right: 1px solid ${(props) => (JSON.stringify(props.colors) == JSON.stringify(light) ? "rgba(224, 224, 224, 1)" : "#007079")};
+  border-right: 1px solid ${(props) => props.colors.interactive.tableBorder};
   && {
     color: ${(props) => props.colors.text.staticIconsDefault};
     font-family: EquinorMedium;
-    border-bottom: 1px solid ${(props) => (JSON.stringify(props.colors) == JSON.stringify(light) ? "rgba(224, 224, 224, 1)" : "#007079")};
+    border-bottom: 1px solid ${(props) => props.colors.interactive.tableBorder};
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
   white-space: nowrap;

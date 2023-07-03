@@ -45,7 +45,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
             dispatchOperation({ type: OperationType.HideContextMenu });
           }}
         >
-          Logout
+          <Typography>Logout</Typography>
         </StyledMenuItem>
       ]}
     />
@@ -86,10 +86,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
         {showLabels && "Settings"}
       </StyledButton>
       {msalEnabled && (
-        <Button variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event) => onOpenMenu(event, accountMenu)}>
+        <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={(event: React.MouseEvent<HTMLButtonElement>) => onOpenMenu(event, accountMenu)}>
           <Icon name="accountCircle" />
           {showLabels && "Account"}
-        </Button>
+        </StyledButton>
       )}
     </Layout>
   );
