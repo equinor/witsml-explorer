@@ -1,9 +1,10 @@
-import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { Button, Icon, Menu, Typography } from "@equinor/eds-core-react";
 import { Checkbox, useTheme } from "@material-ui/core";
 import { Table } from "@tanstack/react-table";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
-import { colors } from "../../../styles/Colors";
+import OperationContext from "../../../contexts/operationContext";
+import { Colors } from "../../../styles/Colors";
 import { orderingStorageKey, removeFromStorage, saveToStorage } from "./contentTableStorage";
 import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
@@ -17,8 +18,13 @@ export const ColumnOptionsMenu = (props: {
 }): React.ReactElement => {
   const { table, checkableRows, expandableRows, viewId, columns } = props;
   const firstToggleableIndex = (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const [draggedId, setDraggedId] = useState<string | null>();
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -68,61 +74,75 @@ export const ColumnOptionsMenu = (props: {
   };
 
   return (
-    <div style={{ padding: "0.25rem 0.5rem 0.25rem 0.5rem" }}>
-      <div style={{ display: "flex" }}>
-        <Checkbox checked={table.getIsAllColumnsVisible()} onChange={table.getToggleAllColumnsVisibilityHandler()} />
-        <Typography style={{ fontFamily: "EquinorMedium", fontSize: "0.875rem", padding: "0.25rem 0 0 0.25rem" }}>Toggle all</Typography>
-      </div>
-      {/* set onDragOver and onDrop on an outer div so that the mouse cursor properly detect a drop area, has an annoying flicker tho */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-        }}
-        style={{ padding: "0.125rem 0 0.25rem 0" }}
+    <>
+      <Button ref={setMenuAnchor} id="anchor-default" aria-haspopup="true" aria-expanded={isMenuOpen} aria-controls="menu-default" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        Columns {table.getVisibleLeafColumns().length}/{table.getAllLeafColumns().length}
+      </Button>
+      <StyledMenu
+        open={isMenuOpen}
+        id="menu-default"
+        aria-labelledby="anchor-default"
+        onClose={() => setIsMenuOpen(false)}
+        anchorEl={menuAnchor}
+        placement="left-end"
+        colors={colors}
       >
-        {table.getAllLeafColumns().map((column, index) => {
-          return (
-            column.id != selectId &&
-            column.id != expanderId && (
-              <OrderingRow key={column.id}>
-                <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()} />
-                <OrderingButton variant={"ghost_icon"} onClick={() => onMoveUp(column.id)} disabled={index == firstToggleableIndex}>
-                  <Icon name="chevronUp" />
-                </OrderingButton>
-                <OrderingButton variant={"ghost_icon"} onClick={() => onMoveDown(column.id)} disabled={index == table.getAllLeafColumns().length - 1}>
-                  <Icon name="chevronDown" />
-                </OrderingButton>
-                <Draggable
-                  onDragStart={() => setDraggedId(column.id)}
-                  onDragEnter={() => setDraggedOverId(column.id)}
-                  onDragEnd={drop}
-                  draggable
-                  isDragged={column.id == draggedId ? 1 : 0}
-                  isDraggedOver={column.id == draggedOverId ? 1 : 0}
-                  draggingStarted={draggedId != null ? 1 : 0}
-                >
-                  <OrderingLabel>{column.columnDef.header.toString()}</OrderingLabel>
-                </Draggable>
-              </OrderingRow>
-            )
-          );
-        })}
-      </div>
-      <ResetContainer>
-        <ResetButton
-          onClick={() => {
-            table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
-            removeFromStorage(viewId, orderingStorageKey);
+        <div style={{ display: "flex" }}>
+          <Checkbox checked={table.getIsAllColumnsVisible()} onChange={table.getToggleAllColumnsVisibilityHandler()} />
+          <Typography style={{ fontFamily: "EquinorMedium", fontSize: "0.875rem", padding: "0.25rem 0 0 0.25rem" }}>Toggle all</Typography>
+        </div>
+        {/* set onDragOver and onDrop on an outer div so that the mouse cursor properly detect a drop area, has an annoying flicker tho */}
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
           }}
+          onDrop={(e) => {
+            e.preventDefault();
+          }}
+          style={{ padding: "0.125rem 0 0.25rem 0" }}
         >
-          Reset ordering
-        </ResetButton>
-        <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
-      </ResetContainer>
-    </div>
+          {table.getAllLeafColumns().map((column, index) => {
+            return (
+              column.id != selectId &&
+              column.id != expanderId && (
+                <OrderingRow key={column.id}>
+                  <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()} />
+                  <OrderingButton variant={"ghost_icon"} onClick={() => onMoveUp(column.id)} disabled={index == firstToggleableIndex}>
+                    <Icon name="chevronUp" />
+                  </OrderingButton>
+                  <OrderingButton variant={"ghost_icon"} onClick={() => onMoveDown(column.id)} disabled={index == table.getAllLeafColumns().length - 1}>
+                    <Icon name="chevronDown" />
+                  </OrderingButton>
+                  <Draggable
+                    onDragStart={() => setDraggedId(column.id)}
+                    onDragEnter={() => setDraggedOverId(column.id)}
+                    onDragEnd={drop}
+                    draggable
+                    isDragged={column.id == draggedId ? 1 : 0}
+                    isDraggedOver={column.id == draggedOverId ? 1 : 0}
+                    draggingStarted={draggedId != null ? 1 : 0}
+                    colors={colors}
+                  >
+                    <OrderingLabel>{column.columnDef.header.toString()}</OrderingLabel>
+                  </Draggable>
+                </OrderingRow>
+              )
+            );
+          })}
+        </div>
+        <ResetContainer>
+          <ResetButton
+            onClick={() => {
+              table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
+              removeFromStorage(viewId, orderingStorageKey);
+            }}
+          >
+            Reset ordering
+          </ResetButton>
+          <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
+        </ResetContainer>
+      </StyledMenu>
+    </>
   );
 };
 
@@ -145,14 +165,14 @@ const OrderingLabel = styled(Typography)`
   font-size: 0.875rem;
 `;
 
-const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number }>`
+const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number; colors: Colors }>`
   cursor: grab;
   user-select: none;
   height: 100%;
   display: flex;
-  ${(props) => (props.isDragged ? `&&&{ background: ${colors.interactive.textHighlight}; }` : "")}
-  ${(props) => (props.isDraggedOver ? `&&&{ background: ${colors.interactive.tableCellFillActivated}; }` : "")}
-  ${(props) => (props.draggingStarted ? "" : `&:hover { background: ${colors.interactive.textHighlight}; }`)}
+  ${(props) => (props.isDragged ? `&&&{ background: ${props.colors.interactive.textHighlight}; }` : "")}
+  ${(props) => (props.isDraggedOver ? `&&&{ background: ${props.colors.interactive.tableCellFillActivated}; }` : "")}
+  ${(props) => (props.draggingStarted ? "" : `&:hover { background: ${props.colors.interactive.textHighlight}; }`)}
 `;
 
 const ResetContainer = styled.div`
@@ -162,4 +182,12 @@ const ResetContainer = styled.div`
 
 const ResetButton = styled(Button)`
   width: 125px;
+`;
+
+const StyledMenu = styled(Menu)<{ colors: Colors }>`
+  background: ${(props) => props.colors.ui.backgroundLight};
+  p {
+    color: ${(props) => props.colors.text.staticIconsDefault};
+  }
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 `;

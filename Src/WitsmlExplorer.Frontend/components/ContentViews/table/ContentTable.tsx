@@ -14,8 +14,10 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
+import OperationContext from "../../../contexts/operationContext";
 import { indexToNumber } from "../../../models/logObject";
+import { Colors } from "../../../styles/Colors";
 import Icon from "../../../styles/Icons";
 import { useColumnDef } from "./ColumnDef";
 import Panel from "./Panel";
@@ -29,6 +31,7 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     previousIndex: number;
     setPreviousIndex: (index: number) => void;
+    colors: Colors;
   }
 }
 
@@ -46,6 +49,9 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     stickyLeftColumns = false,
     viewId
   } = contentTableProps;
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const [previousIndex, setPreviousIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState(initializeColumnVisibility(viewId));
@@ -81,7 +87,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     },
     meta: {
       previousIndex,
-      setPreviousIndex
+      setPreviousIndex,
+      colors
     },
     enableExpanding: insetColumns != null,
     enableRowSelection: checkableRows,
@@ -155,7 +162,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} style={{ display: "flex" }}>
                 {headerGroup.headers.map((header) => (
-                  <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0}>
+                  <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0} colors={colors}>
                     <div role="button" style={{ cursor: "pointer" }} onClick={(e) => onHeaderClick(e, header)}>
                       {header.column.getIsSorted() && sortingIcons[header.column.getIsSorted() as SortDirection]}
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -180,6 +187,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     }}
                     data-index={virtualRow.index}
                     ref={rowVirtualizer.measureElement}
+                    colors={colors}
                   >
                     {row.getVisibleCells().map((cell) => {
                       const clickable = isClickable(onSelect, cell.column.id, checkableRows);
@@ -190,6 +198,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                           onClick={clickable ? (event) => onSelectRow(event, row, table) : undefined}
                           clickable={clickable ? 1 : 0}
                           sticky={stickyLeftColumns ? 1 : 0}
+                          colors={colors}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </StyledTd>
@@ -197,7 +206,14 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     })}
                   </StyledTr>
                   {row.getIsExpanded() && row.original.inset?.length != 0 && (
-                    <Inset parentStart={virtualRow.start} cellHeight={cellHeight} headCellHeight={headCellHeight} data={row.original.inset} columns={insetColumns} />
+                    <Inset
+                      parentStart={virtualRow.start}
+                      cellHeight={cellHeight}
+                      headCellHeight={headCellHeight}
+                      data={row.original.inset}
+                      columns={insetColumns}
+                      colors={colors}
+                    />
                   )}
                 </Fragment>
               );
@@ -239,19 +255,21 @@ interface InsetProps {
   headCellHeight: number;
   data: any[];
   columns: ContentTableColumn[];
+  colors: Colors;
 }
 
 const Inset = (props: InsetProps): React.ReactElement => {
-  const { parentStart, cellHeight, headCellHeight, data, columns } = props;
+  const { parentStart, cellHeight, headCellHeight, data, columns, colors } = props;
   return (
     <tr
       style={{
         position: "absolute",
-        background: "white",
+        background: colors.ui.backgroundDefault,
         width: "100%",
         top: `${parentStart + cellHeight}px`,
         left: 0,
-        border: 0
+        border: 0,
+        paddingLeft: 75
       }}
     >
       <td

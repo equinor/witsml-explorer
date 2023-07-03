@@ -72,10 +72,10 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     size: calculateColumnWidth(expanderId, isCompactMode),
     header: ({ table }: { table: Table<any> }) => (
       <IconButton onClick={() => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())} size="small" style={{ padding: 0 }}>
-        <Icon name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"} />
+        <Icon name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"} style={{ color: table.options.meta.colors.infographic.primaryMossGreen }} />
       </IconButton>
     ),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       return row.getCanExpand() ? (
         <div style={{ display: "flex" }}>
           <IconButton
@@ -86,7 +86,7 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
             size="small"
             style={{ margin: "auto", padding: 0 }}
           >
-            <Icon name={row.getIsExpanded() ? "chevronUp" : "chevronDown"} />
+            <Icon name={row.getIsExpanded() ? "chevronUp" : "chevronDown"} style={{ color: table.options.meta.colors.infographic.primaryMossGreen }} />
           </IconButton>
         </div>
       ) : (

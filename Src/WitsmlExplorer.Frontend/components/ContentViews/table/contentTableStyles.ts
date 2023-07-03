@@ -1,6 +1,6 @@
 import { TableCell } from "@material-ui/core";
 import styled from "styled-components";
-import { colors } from "../../../styles/Colors";
+import { Colors, light } from "../../../styles/Colors";
 
 export const TableContainer = styled.div<{ showPanel?: boolean }>`
   overflow-y: auto;
@@ -33,7 +33,7 @@ export const StyledResizer = styled.div<{ isResizing?: boolean }>`
   ${(props) =>
     props.isResizing
       ? `&{
-    background: ${colors.infographic.primaryMossGreen};
+    background: ${light.infographic.primaryMossGreen};
     opacity: 1;
   }`
       : ""}
@@ -42,29 +42,29 @@ export const StyledResizer = styled.div<{ isResizing?: boolean }>`
   }
 `;
 
-export const StyledTr = styled.tr<{ selected?: boolean }>`
+export const StyledTr = styled.tr<{ selected?: boolean; colors: Colors }>`
   display: flex;
   width: fit-content;
   position: absolute;
   top: 0;
   left: 0;
   &&& {
-    background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : "white")};
+    background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : props.colors.ui.backgroundDefault)};
   }
   &&&:nth-of-type(even) {
-    background-color: ${(props) => (props.selected ? colors.interactive.textHighlight : colors.interactive.tableHeaderFillResting)};
+    background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : props.colors.interactive.tableHeaderFillResting)};
   }
   &&&:hover {
-    background-color: ${colors.interactive.tableCellFillActivated};
+    background-color: ${(props) => props.colors.interactive.tableCellFillActivated};
   }
 `;
 
-export const StyledTh = styled(TableCell)<{ sticky?: number }>`
+export const StyledTh = styled(TableCell)<{ sticky?: number; colors: Colors }>`
   && {
     border-right: 1px solid rgba(224, 224, 224, 1);
     border-bottom-width: 2px;
-    background-color: ${colors.interactive.tableHeaderFillResting};
-    color: ${colors.text.staticIconsDefault};
+    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+    color: ${(props) => props.colors.text.staticIconsDefault};
     text-align: center;
     font-family: EquinorMedium, Arial, sans-serif;
     position: relative;
@@ -78,12 +78,12 @@ export const StyledTh = styled(TableCell)<{ sticky?: number }>`
   ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 3; } &:nth-child(2) { position: sticky; z-index: 3; }" : "")}
 `;
 
-export const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number }>`
+export const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number; colors: Colors }>`
   border-right: 1px solid rgba(224, 224, 224, 1);
   background-color: inherit;
   z-index: 0;
   && {
-    color: ${colors.text.staticIconsDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
     font-family: EquinorMedium;
   }
   cursor: ${(props) => (props.clickable ? "pointer" : "arrow")};

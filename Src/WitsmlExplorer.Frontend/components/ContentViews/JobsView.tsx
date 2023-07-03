@@ -1,5 +1,5 @@
 import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
@@ -94,20 +94,28 @@ export const JobsView = (): React.ReactElement => {
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
-  const jobInfoRows = jobInfos.map((jobInfo) => {
-    return {
-      ...jobInfo,
-      failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
-      wellName: clipLongString(jobInfo.wellName, 20, "-"),
-      wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
-      objectName: clipLongString(jobInfo.objectName, 30, "-"),
-      startTime: formatDateString(jobInfo.startTime, timeZone),
-      endTime: formatDateString(jobInfo.endTime, timeZone),
-      targetServer: serverUrlToName(servers, jobInfo.targetServer),
-      sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
-      jobInfo: jobInfo
-    };
-  });
+  const jobInfoRows = useMemo(
+    () =>
+      jobInfos
+        .map((jobInfo) => {
+          return {
+            ...jobInfo,
+            failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
+            wellName: clipLongString(jobInfo.wellName, 20, "-"),
+            wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
+            objectName: clipLongString(jobInfo.objectName, 30, "-"),
+            startTime: formatDateString(jobInfo.startTime, timeZone),
+            endTime: formatDateString(jobInfo.endTime, timeZone),
+            targetServer: serverUrlToName(servers, jobInfo.targetServer),
+            sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
+            jobInfo: jobInfo
+          };
+        })
+        .sort((obj1, obj2) => {
+          return obj2.startTime.localeCompare(obj1.startTime);
+        }),
+    [jobInfos]
+  );
 
   const panelElements = [
     <StyledButton

@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithContexts } from "../../../__testUtils__/testUtils";
 import { ContentTable, ContentTableRow, ContentType } from "../table";
@@ -30,7 +30,7 @@ describe("<ContentTable />", () => {
   ];
 
   it("Should render a plain table", () => {
-    const { container } = render(<ContentTable columns={columns} data={data} showPanel={false} />);
+    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
     expect(container.querySelectorAll("table")).toHaveLength(1);
     expect(container.querySelectorAll("th")).toHaveLength(columns.length);
     data.forEach((element) => {
@@ -40,7 +40,7 @@ describe("<ContentTable />", () => {
   });
 
   it("Should have sortable columns", () => {
-    const { container } = render(<ContentTable columns={columns} data={data} showPanel={false} />);
+    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
     let firstRow = container.querySelector("tbody").querySelector("tr");
     expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
 
@@ -60,7 +60,7 @@ describe("<ContentTable />", () => {
       selectedRow = row;
       selections++;
     };
-    const { container } = render(<ContentTable columns={columns} data={data} onSelect={onSelect} showPanel={false} />);
+    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} onSelect={onSelect} showPanel={false} />);
     const rowToSelect = 1;
     const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[rowToSelect].children[0];
     fireEvent.click(cellToClick);
@@ -69,7 +69,7 @@ describe("<ContentTable />", () => {
   });
 
   it("Should render a table with checkable rows", () => {
-    const { container } = render(<ContentTable columns={columns} data={data} checkableRows showPanel={false} />);
+    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} checkableRows showPanel={false} />);
 
     const bodyRows = container.querySelector("tbody").querySelectorAll("tr");
     expect(bodyRows).toHaveLength(data.length);
