@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Witsml.ServiceReference
 {
@@ -11,25 +11,25 @@ namespace Witsml.ServiceReference
     {
         public string GetKeywords()
         {
-            StringBuilder keywords = new();
+            List<string> keywords = new();
             if (ReturnElements != null)
             {
-                keywords.Append($"returnElements={ReturnElements.Value.GetEnumMemberValue()}");
+                keywords.Add($"returnElements={ReturnElements.Value.GetEnumMemberValue()}");
             }
             if (MaxReturnNodes is > 0)
             {
-                keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+                keywords.Add($"maxReturnNodes={MaxReturnNodes.Value}");
             }
             if (RequestLatestValues is > 0)
             {
-                keywords.Append($";requestLatestValues={RequestLatestValues.Value}");
+                keywords.Add($"requestLatestValues={RequestLatestValues.Value}");
             }
             if (RequestObjectSelectionCapability == true)
             {
-                keywords.Append($";requestObjectSelectionCapability=true");
+                keywords.Add($"requestObjectSelectionCapability=true");
             }
 
-            return keywords.ToString();
+            return string.Join(";", keywords);
         }
     }
 

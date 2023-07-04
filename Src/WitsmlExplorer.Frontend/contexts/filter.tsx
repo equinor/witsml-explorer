@@ -66,18 +66,22 @@ export const filterTypeToProperty = {
 // Return null for types that should not have any description.
 export const getFilterTypeInformation = (filterType: FilterType): string => {
   const wildCardString = "Use wildcard ? for one unknown character.\nUse wildcard * for x unknown characters.";
-  const emptySearchString = `Use keyword *IS_EMPTY* to search for empty ${pluralize(filterType)}.`;
+  const emptySearchStringWellbores = `Use keyword *IS_EMPTY* to search for wellbores without ${pluralize(filterType)}.`;
+  const emptySearchStringWells = `Use keyword *IS_EMPTY* to search for wells without a ${filterType}.`;
   const exactSearchString = `Searching by ${filterType} only returns exact matches.`;
-  if (filterType == WellFilterType.Well || filterType == WellFilterType.WellOrWellbore) {
+  if (isWellFilterType(filterType)) {
     return wildCardString;
+  } else if (isWellPropertyFilterType(filterType)) {
+    return `${wildCardString}\n${emptySearchStringWells}`;
+  } else if (isObjectFilterType(filterType)) {
+    return `${wildCardString}\n${emptySearchStringWellbores}`;
   } else if (isObjectPropertyFilterType(filterType)) {
     const lf = new Intl.ListFormat("en-US");
     return `${filterType} is a parameter under ${lf.format(
       objectPropertyFilterTypeToObjects[filterType as ObjectPropertyFilterType]
     )}, and will be fetched on demand by typing 'Enter' or clicking the search icon.\n${exactSearchString}`;
-  } else {
-    return `${wildCardString}\n${emptySearchString}`;
   }
+  return null;
 };
 
 export type FilterType = WellFilterType | WellPropertyFilterType | ObjectFilterType | ObjectPropertyFilterType;
