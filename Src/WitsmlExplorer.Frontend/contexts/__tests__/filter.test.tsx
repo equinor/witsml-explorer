@@ -1,9 +1,20 @@
-﻿import { getLogObject, getObject, getWell, getWellbore } from "../../__testUtils__/testUtils";
+﻿import { getLogObject, getObject, getObjectSearchResult, getWell, getWellbore } from "../../__testUtils__/testUtils";
+import { pluralize } from "../../components/ContextMenus/ContextMenuUtils";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { EMPTY_FILTER, Filter, FilterOptions, ObjectFilterType, WellFilterType, filterWells } from "../filter";
+import {
+  EMPTY_FILTER,
+  Filter,
+  FilterOptions,
+  ObjectFilterType,
+  ObjectPropertyFilterType,
+  WellFilterType,
+  WellPropertyFilterType,
+  filterTypeToProperty,
+  filterWells
+} from "../filter";
 
 describe("Filter", () => {
   let filter: Filter;
@@ -176,13 +187,40 @@ describe("Filter", () => {
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
+    it("Should only match on field when FilterType is Field", () => {
+      filter.name = "testField";
+      filter.filterType = WellPropertyFilterType.Field;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+      const expectedWells = [WELL_5];
+      expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+
+    it("Should only match on numLicense when FilterType is License", () => {
+      filter.name = "543";
+      filter.filterType = WellPropertyFilterType.License;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+      const expectedWells = [WELL_6];
+      expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+
     Object.values(ObjectFilterType).forEach((objectType) => {
       it(`Should match on name when FilterType is ${objectType}`, () => {
         filter.name = `test${objectType}`;
         filter.filterType = objectType;
-        filter.objectsOnWellbore = [
+        filter.searchResults = [
           getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` })
         ];
+        const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+        const expectedWells = [WELL_6];
+        expect(modifiedWells).toStrictEqual(expectedWells);
+      });
+    });
+
+    Object.values(ObjectPropertyFilterType).forEach((filterType) => {
+      it(`Should match on ${filterTypeToProperty[filterType]} property when FilterType is ${filterType}`, () => {
+        filter.name = `test${filterTypeToProperty[filterType]}`;
+        filter.filterType = filterType;
+        filter.searchResults = [getObjectSearchResult({ wellUid: "well6", wellboreUid: "wellbore6", searchProperty: `test${filterTypeToProperty[filterType]}` })];
         const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
         const expectedWells = [WELL_6];
         expect(modifiedWells).toStrictEqual(expectedWells);
@@ -211,6 +249,56 @@ describe("Filter", () => {
       });
       const expectedWells = [WELL_1, WELL_5];
       expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+  });
+
+  describe("Filter special keywords", () => {
+    it("Should only match on empty fields when filterType is Field and the special keyword *IS_EMPTY* is used", () => {
+      filter.name = "*IS_EMPTY*";
+      filter.filterType = WellPropertyFilterType.Field;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_6];
+      expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+
+    it("Should only match on empty licenses when filterType is License and the special keyword *IS_EMPTY* is used", () => {
+      filter.name = "*IS_EMPTY*";
+      filter.filterType = WellPropertyFilterType.License;
+      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
+      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
+      expect(modifiedWells).toStrictEqual(expectedWells);
+    });
+
+    Object.values(ObjectFilterType).forEach((objectType) => {
+      it(`Should only match on empty ${pluralize(objectType)} when filterType is ${objectType} and the special keyword *IS_EMPTY* is used`, () => {
+        filter.name = "*IS_EMPTY*";
+        filter.filterType = objectType;
+        filter.searchResults = [
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` }),
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well5", wellboreUid: "wellbore5A", name: `test${objectType}` })
+        ];
+        const modifiedWells = filterWells(wells, filter, {
+          ...FILTER_OPTIONS,
+          filterWellbores: false
+        });
+        const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
+        expect(modifiedWells).toStrictEqual(expectedWells);
+      });
+
+      it(`Should only match on empty ${pluralize(objectType)} with filtered wellbores when filterType is ${objectType} and the special keyword *IS_EMPTY* is used `, () => {
+        filter.name = "*IS_EMPTY*";
+        filter.filterType = objectType;
+        filter.searchResults = [
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` }),
+          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well5", wellboreUid: "wellbore5A", name: `test${objectType}` })
+        ];
+        const modifiedWells = filterWells(wells, filter, {
+          ...FILTER_OPTIONS,
+          filterWellbores: true
+        });
+        const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, { ...WELL_5, wellbores: [WELLBORE_5B] }];
+        expect(modifiedWells).toStrictEqual(expectedWells);
+      });
     });
   });
 });
@@ -257,8 +345,8 @@ const WELL_1: Well = getWell({ uid: "well1", name: "Well 1", wellbores: [WELLBOR
 const WELL_2: Well = getWell({ uid: "well2", name: "Well 2", wellbores: [WELLBORE_2A, WELLBORE_2B] });
 const WELL_3: Well = getWell({ uid: "well3", name: "Well 3", wellbores: [WELLBORE_3A, WELLBORE_3B, WELLBORE_3C, WELLBORE_3D] });
 const WELL_4: Well = getWell({ uid: "well4", name: "Well 4", wellbores: [WELLBORE_4A] });
-const WELL_5: Well = getWell({ uid: "well5", name: "Well 5", wellbores: [WELLBORE_5A, WELLBORE_5B] });
-const WELL_6: Well = getWell({ uid: "well6", name: "Well 6", wellbores: [WELLBORE_6] });
+const WELL_5: Well = getWell({ uid: "well5", name: "Well 5", field: "testField", wellbores: [WELLBORE_5A, WELLBORE_5B] });
+const WELL_6: Well = getWell({ uid: "well6", name: "Well 6", numLicense: "543", wellbores: [WELLBORE_6] });
 
 const FILTER_OPTIONS: FilterOptions = {
   filterWellbores: false

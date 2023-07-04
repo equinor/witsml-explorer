@@ -81,7 +81,7 @@ export interface ContextMenu {
   position: MousePosition;
 }
 
-const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+export const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
 
 const Light: Colors = light;
 
