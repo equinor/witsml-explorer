@@ -29,7 +29,7 @@ public class CreateRigWorker : BaseWorker<CreateRigJob>, IWorker
     public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRigJob job)
     {
         Verify(job.Rig);
-        
+
         WitsmlRigs rigToCreate = RigQueries.CreateRig(job.Rig);
 
         QueryResult addToStoreResult = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(rigToCreate);

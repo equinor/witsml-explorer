@@ -43,7 +43,8 @@ namespace Witsml
                 ClientCapabilities = clientCapabilities,
                 RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1),
                 LogQueries = logQueries
-            }) { }
+            })
+        { }
 
         public WitsmlClient(WitsmlClientOptions options)
         {

@@ -72,7 +72,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.formationMarkers, formationMarkers) && (
-      <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="formationMarkersListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
     )
   );
 };

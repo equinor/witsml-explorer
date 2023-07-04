@@ -38,7 +38,7 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
     dispatchNavigation(action);
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={getRows()} onSelect={onSelect} /> : <></>;
+  return selectedWellbore ? <ContentTable columns={columns} data={getRows()} onSelect={onSelect} showPanel={false} /> : <></>;
 };
 
 export default WellboreObjectTypesListView;

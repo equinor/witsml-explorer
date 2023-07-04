@@ -98,7 +98,11 @@ export const WbGeometryView = (): React.ReactElement => {
     };
   });
 
-  return selectedWbGeometry && !isFetchingData ? <ContentTable columns={columns} data={wbGeometrySectionRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedWbGeometry && !isFetchingData ? (
+    <ContentTable viewId="wbGeometryView" columns={columns} data={wbGeometrySectionRows} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default WbGeometryView;

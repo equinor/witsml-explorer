@@ -10,7 +10,6 @@ import OperationContext from "../../../contexts/operationContext";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
 import { Colors } from "../../../styles/Colors";
-import { formatCell } from "./ContentTable";
 import Panel from "./Panel";
 import {
   ContentTableColumn,
@@ -100,7 +99,7 @@ const Row = memo(({ data, index, style }: RowProps) => {
                 align={getColumnAlignment(column)}
                 colors={colors}
               >
-                {formatCell(column.type, item[column.property])}
+                {item[column.property]}
               </TableDataCell>
             </Tooltip>
           ))}
@@ -261,7 +260,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
-              <Panel showCheckedItems={checkableRows} panelElements={panelElements} numberOfCheckedItems={checkedContentItems?.length} numberOfItems={data?.length} />
+              <Panel checkableRows={checkableRows} panelElements={panelElements} numberOfCheckedItems={checkedContentItems?.length} numberOfItems={data?.length} />
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);

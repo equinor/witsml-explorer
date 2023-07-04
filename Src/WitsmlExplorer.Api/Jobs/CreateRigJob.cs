@@ -29,7 +29,7 @@ public record CreateRigJob : Job
     {
         return Rig.Name;
     }
-    
+
     /// <summary>
     /// Getting name of wellbore.
     /// </summary>

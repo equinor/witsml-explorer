@@ -178,6 +178,19 @@ export const FluidsView = (): React.ReactElement => {
       hardnessCa: measureToString(fluid.hardnessCa),
       sulfide: measureToString(fluid.sulfide),
       comments: fluid.comments,
+      inset: fluid.rheometers.map((rheometer) => {
+        return {
+          uid: rheometer.uid,
+          tempRheom: measureToString(rheometer.tempRheom),
+          presRheom: measureToString(rheometer.presRheom),
+          vis3Rpm: rheometer.vis3Rpm,
+          vis6Rpm: rheometer.vis6Rpm,
+          vis100Rpm: rheometer.vis100Rpm,
+          vis200Rpm: rheometer.vis200Rpm,
+          vis300Rpm: rheometer.vis300Rpm,
+          vis600Rpm: rheometer.vis600Rpm
+        };
+      }),
       fluid: fluid
     };
   });
@@ -194,27 +207,8 @@ export const FluidsView = (): React.ReactElement => {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  const fluidInsetRows = Object.fromEntries(
-    fluids.map((fluid) => [
-      fluid.uid,
-      fluid.rheometers.map((rheometer) => {
-        return {
-          uid: rheometer.uid,
-          tempRheom: measureToString(rheometer.tempRheom),
-          presRheom: measureToString(rheometer.presRheom),
-          vis3Rpm: rheometer.vis3Rpm,
-          vis6Rpm: rheometer.vis6Rpm,
-          vis100Rpm: rheometer.vis100Rpm,
-          vis200Rpm: rheometer.vis200Rpm,
-          vis300Rpm: rheometer.vis300Rpm,
-          vis600Rpm: rheometer.vis600Rpm
-        };
-      })
-    ])
-  );
-
   return selectedFluidsReport && !isFetchingData ? (
-    <ContentTable columns={columns} data={fluidRows} onContextMenu={onContextMenu} checkableRows inset={{ columns: insetColumns, data: fluidInsetRows }} />
+    <ContentTable viewId="fluidView" columns={columns} data={fluidRows} onContextMenu={onContextMenu} checkableRows insetColumns={insetColumns} />
   ) : (
     <></>
   );

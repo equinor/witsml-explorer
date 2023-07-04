@@ -110,6 +110,14 @@ export const MudLogView = (): React.ReactElement => {
       ecdTdAv: measureToString(geologyInterval.ecdTdAv),
       dxcAv: geologyInterval.dxcAv,
       uid: geologyInterval.uid,
+      inset: geologyInterval.lithologies.map((lithology, index) => {
+        return {
+          id: index,
+          type: lithology.type,
+          codeLith: lithology.codeLith,
+          lithPc: lithology.lithPc
+        };
+      }),
       geologyInterval
     };
   });
@@ -120,22 +128,8 @@ export const MudLogView = (): React.ReactElement => {
     { property: "lithPc", label: "lithPc %", type: ContentType.Number }
   ];
 
-  const lithologyInsetRows = Object.fromEntries(
-    geologyIntervals.map((geologyInterval) => [
-      geologyInterval.uid,
-      geologyInterval.lithologies.map((lithology, index) => {
-        return {
-          id: index,
-          type: lithology.type,
-          codeLith: lithology.codeLith,
-          lithPc: lithology.lithPc
-        };
-      })
-    ])
-  );
-
   return selectedMudLog && !isFetchingData ? (
-    <ContentTable columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows inset={{ columns: insetColumns, data: lithologyInsetRows }} />
+    <ContentTable viewId="mudLogView" columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows insetColumns={insetColumns} />
   ) : (
     <></>
   );

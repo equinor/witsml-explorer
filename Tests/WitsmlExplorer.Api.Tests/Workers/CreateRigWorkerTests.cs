@@ -34,7 +34,7 @@ public class CreateRigWorkerTests
 
     private readonly Mock<IWitsmlClient> _witsmlClient;
     private readonly CreateRigWorker _worker;
-    
+
     public CreateRigWorkerTests()
     {
         Mock<IWitsmlClientProvider> witsmlClientProvider = new();
@@ -45,7 +45,7 @@ public class CreateRigWorkerTests
         ILogger<CreateRigJob> logger = loggerFactory.CreateLogger<CreateRigJob>();
         _worker = new CreateRigWorker(logger, witsmlClientProvider.Object);
     }
-    
+
     [Fact]
     public async Task CreateRig_Execute_MissingUid_InvalidOperationException()
     {
@@ -57,7 +57,7 @@ public class CreateRigWorkerTests
         Assert.Equal("Uid cannot be empty", exception.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);
     }
-    
+
     [Fact]
     public async Task CreateRig_Execute_MissingName_InvalidOperationException()
     {
@@ -69,14 +69,14 @@ public class CreateRigWorkerTests
         Assert.Equal("Name cannot be empty", exception.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);
     }
-    
+
 
     [Fact]
     public async Task CreateRig_Execute_ValidResults()
     {
         CreateRigJob job = CreateJobTemplate();
         List<WitsmlRigs> createdRigs = new();
-        
+
         _witsmlClient.Setup(client =>
                 client.AddToStoreAsync(It.IsAny<WitsmlRigs>()))
             .Callback<WitsmlRigs>(rig => createdRigs.Add(rig))
