@@ -36,6 +36,7 @@ namespace WitsmlExplorer.Api.Models
         CreateWellbore,
         CreateRisk,
         CreateMudLog,
+        CreateRig,
         CreateWbGeometry,
         BatchModifyWell,
         ImportLogData,

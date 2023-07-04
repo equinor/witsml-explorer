@@ -12,7 +12,6 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
     public class FormationMarkersTests
     {
         private readonly WitsmlClient _client;
-        private readonly WitsmlClientCapabilities _clientCapabilities = new();
 
         private const string UidWell = "94f01089-84d3-4cec-9448-303c508ddb9e";
         private const string UidWellbore = "c4ef4f85-5692-4f62-91b2-f26dce721501";
@@ -20,7 +19,11 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public FormationMarkersTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, _clientCapabilities);
+            _client = new WitsmlClient(new WitsmlClientOptions
+            {
+                Hostname = config.Hostname,
+                Credentials = new WitsmlCredentials(config.Username, config.Password)
+            });
         }
 
         [Fact(Skip = "Should only be run manually")]

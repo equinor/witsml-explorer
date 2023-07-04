@@ -31,6 +31,7 @@ import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well, { emptyWell } from "../models/well";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
+import { light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
 
 interface RenderWithContextsOptions {
@@ -47,6 +48,7 @@ export function renderWithContexts(ui: React.ReactElement, { initialNavigationSt
       modals: [],
       theme: UserTheme.Compact,
       timeZone: TimeZone.Local,
+      colors: light,
       ...initialOperationState
     });
     const [navigationState, dispatchNavigation] = React.useReducer(navigationReducer, { ...EMPTY_NAVIGATION_STATE, ...initialNavigationState });

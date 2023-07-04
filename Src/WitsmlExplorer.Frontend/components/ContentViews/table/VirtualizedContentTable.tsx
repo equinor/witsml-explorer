@@ -6,10 +6,10 @@ import React, { forwardRef, memo, useCallback, useContext, useEffect, useState }
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList as List } from "react-window";
 import styled from "styled-components";
+import OperationContext from "../../../contexts/operationContext";
 import { IndexRange } from "../../../models/jobs/deleteLogCurveValuesJob";
 import LogObject from "../../../models/logObject";
-import { colors } from "../../../styles/Colors";
-import { formatCell } from "./ContentTable";
+import { Colors } from "../../../styles/Colors";
 import Panel from "./Panel";
 import {
   ContentTableColumn,
@@ -56,6 +56,10 @@ const Row = memo(({ data, index, style }: RowProps) => {
   const { columns, width, items, onContextMenu, onSelect, onToggleRow } = data;
   const { checkableRows, isCompactMode, checkedContentItems } = useContext(TableContext);
   const item = items[index];
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
+
   return (
     <RowWrapper key={"Row-" + index} style={style} columns={columns} checkableRows={checkableRows} width={width} compactMode={isCompactMode}>
       <TableRow
@@ -63,13 +67,13 @@ const Row = memo(({ data, index, style }: RowProps) => {
         hover
         onClick={(event) => onToggleRow(event, item)}
         className={
-          (index % 2 !== 0 ? "evenrow " : "") +
+          (index % 2 !== 0 ? "evenrow " : "oddrow") +
           (checkableRows && checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1 ? "selectedrow" : "")
         }
         onContextMenu={onContextMenu ? (event) => onContextMenu(event, item, checkedContentItems) : (e) => e.preventDefault()}
       >
         {checkableRows && (
-          <TableDataCell key={`${index}-checkbox`} component={"div"}>
+          <TableDataCell key={`${index}-checkbox`} component={"div"} colors={colors}>
             <Checkbox
               onClick={(event) => onToggleRow(event, item)}
               checked={checkedContentItems.length > 0 && checkedContentItems.findIndex((checkedRow: ContentTableRow) => item.id === checkedRow.id) !== -1}
@@ -93,8 +97,9 @@ const Row = memo(({ data, index, style }: RowProps) => {
                 component={"div"}
                 clickable={onSelect ? "true" : "false"}
                 align={getColumnAlignment(column)}
+                colors={colors}
               >
-                {formatCell(column.type, item[column.property])}
+                {item[column.property]}
               </TableDataCell>
             </Tooltip>
           ))}
@@ -118,13 +123,16 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
     sortByColumn,
     storeColumnReference
   } = useContext(TableContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   return (
     <div ref={ref} style={rest.style}>
       <TableHeader>
         <RowWrapper columns={columns} checkableRows={checkableRows} isHeader compactMode={isCompactMode}>
           {checkableRows && (
-            <TableHeaderCell component={"div"} ref={storeCheckboxColumnReference}>
+            <TableHeaderCell component={"div"} ref={storeCheckboxColumnReference} colors={colors}>
               <Checkbox
                 onChange={toggleAllRows}
                 checked={checkedContentItems.length === data.length}
@@ -134,8 +142,8 @@ const innerGridElementType = forwardRef<HTMLDivElement, any>(({ children, ...res
           )}
           {columns &&
             columns.map((column: ContentTableColumn, index: number) => (
-              <TableHeaderCell component={"div"} key={column.property} align={getColumnAlignment(column)} ref={(ref: any) => storeColumnReference(ref, index)}>
-                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)}>
+              <TableHeaderCell colors={colors} component={"div"} key={column.property} align={getColumnAlignment(column)} ref={(ref: any) => storeColumnReference(ref, index)}>
+                <TableSortLabel active={sortedColumn === column} direction={sortOrder} onClick={() => sortByColumn(column)} style={{ color: colors.text.staticIconsTertiary }}>
                   {column.label}
                 </TableSortLabel>
               </TableHeaderCell>
@@ -252,7 +260,7 @@ export const VirtualizedContentTable = (props: ContentTableProps): React.ReactEl
                 toggleAllRows: toggleAllRows
               }}
             >
-              <Panel showCheckedItems={checkableRows} panelElements={panelElements} numberOfCheckedItems={checkedContentItems?.length} numberOfItems={data?.length} />
+              <Panel checkableRows={checkableRows} panelElements={panelElements} numberOfCheckedItems={checkedContentItems?.length} numberOfItems={data?.length} />
               <AutoSizer>
                 {({ height, width }) => {
                   const itemData = getItemData(columns, width, data, onContextMenu, onSelect, toggleRow);
@@ -345,19 +353,19 @@ const TableHeader = styled.div`
   z-index: 3;
 `;
 
-const TableHeaderCell = styled(MuiTableCell)`
-  color: ${colors.text.staticIconsDefault};
-  background-color: ${colors.interactive.tableHeaderFillResting};
+const TableHeaderCell = styled(MuiTableCell)<{ colors?: Colors }>`
+  color: ${(props) => props.colors.text.staticIconsDefault};
+  background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
   && {
-    border-bottom-width: 2px;
+    border-bottom: 2px solid ${(props) => props.colors.interactive.disabledBorder};
   }
 
   & .MuiTableSortLabel-root {
-    color: ${colors.text.staticIconsDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
   }
 
   & .MuiTableSortLabel-root.MuiTableSortLabel-active {
-    color: ${colors.text.staticIconsDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
   }
   &:nth-child(1) {
     position: sticky;
@@ -375,26 +383,29 @@ const TableRow = styled.div<{ hover: boolean }>`
   display: contents;
 `;
 
-const TableDataCell = styled(MuiTableCell)<{ clickable?: string }>`
-  background-color: white;
-  border-right: 1px solid rgba(224, 224, 224, 1);
+const TableDataCell = styled(MuiTableCell)<{ clickable?: string; colors: Colors }>`
+  border-right: 1px solid ${(props) => props.colors.interactive.tableBorder};
   && {
-    color: ${colors.text.staticIconsDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
     font-family: EquinorMedium;
+    border-bottom: 1px solid ${(props) => props.colors.interactive.tableBorder};
   }
   cursor: ${(props) => (props.clickable === "true" ? "pointer" : "arrow")};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-feature-settings: "tnum";
-  ${TableRow}.evenrow & {
-    background-color: ${colors.interactive.tableHeaderFillResting};
+  ${TableRow}.evenrow &&& {
+    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+  }
+  ${TableRow}.oddrow &&& {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
   }
   ${TableRow}.selectedrow & {
-    background-color: ${colors.interactive.textHighlight};
+    background-color: ${(props) => props.colors.interactive.textHighlight};
   }
   ${TableRow}:hover & {
-    background-color: ${colors.interactive.tableCellFillActivated};
+    background-color: ${(props) => props.colors.interactive.tableCellFillActivated};
   }
   &:nth-child(1) {
     position: sticky;

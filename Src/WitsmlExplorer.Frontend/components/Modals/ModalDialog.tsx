@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { colors } from "../../styles/Colors";
+import { Colors, dark, light } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 
 interface ModalDialogProps {
@@ -43,6 +43,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   } = props;
   const context = React.useContext(OperationContext);
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] = useState<boolean>(false);
+  const { operationState } = context;
+  const colors: Colors = operationState?.colors || light;
   const confirmButtonIsDisabled = isLoading || confirmDisabled;
 
   const onCancel =
@@ -75,6 +77,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           onClick={onSubmit}
           color={confirmColor ?? "primary"}
           variant="contained"
+          confirmButtonIsDisabled={confirmButtonIsDisabled}
+          colors={colors}
         >
           {ButtonPosition == ControlButtonPosition.TOP ? <Icons name="save" /> : ""}
           {confirmText ?? "Save"}
@@ -84,7 +88,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       <></>
     ),
     showCancelButton ? (
-      <StyledButton key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+      <StyledButton colors={colors} key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
         Cancel
       </StyledButton>
     ) : (
@@ -104,9 +108,12 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   ];
 
   const top = (
-    <HeadTitle>
+    <HeadTitle colors={colors}>
       <Typography
         color="primary"
+        style={{
+          color: colors.infographic.primaryMossGreen
+        }}
         token={{
           fontSize: "1.5rem",
           fontWeight: 600
@@ -129,14 +136,20 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     </Dialog.Actions>
   );
   const header = (
-    <Dialog.Header>
-      <Dialog.Title>{heading}</Dialog.Title>
-    </Dialog.Header>
+    <DialogHeader colors={colors}>
+      <Dialog.Title style={{ color: colors.text.staticIconsDefault }}>{heading}</Dialog.Title>
+    </DialogHeader>
   );
+  const dialogStyle = {
+    width: width,
+    background: colors.ui.backgroundDefault,
+    color: colors.text.staticIconsDefault
+  };
+
   return (
-    <Dialog onKeyDown={onKeyPress} open={true} style={{ width: width }}>
+    <Dialog onKeyDown={onKeyPress} open={true} style={dialogStyle}>
       {ButtonPosition == ControlButtonPosition.TOP ? top : header}
-      <Content>
+      <Content colors={colors}>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
@@ -151,13 +164,13 @@ export enum ModalWidth {
   LARGE = "960px" // md
 }
 
-const HeadTitle = styled.div`
+const HeadTitle = styled.div<{ colors?: Colors }>`
   margin-top: 0.5rem;
   display: flex;
   padding: 0.5rem 2rem;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2px solid ${colors.interactive.disabledBorder};
+  border-bottom: 2px solid ${(props) => props.colors.interactive.disabledBorder};
 `;
 
 export const ModalContentLayout = styled.div`
@@ -171,11 +184,12 @@ export enum ControlButtonPosition {
   BOTTOM = "bottom"
 }
 
-const Content = styled(Dialog.CustomContent)`
+const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
 
+  color: ${(props) => props.colors.text.staticIconsDefault};
   --track-color: #dddddd;
   --thumb-color: #bbbbbb;
   scrollbar-color: var(--track-color) var(--thumb-color);
@@ -197,9 +211,70 @@ const Content = styled(Dialog.CustomContent)`
   & ::-webkit-scrollbar-track {
     background: var(--track-color);
   }
+
+  div[class*="InputWrapper__Container"] {
+    label.dHhldd {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="Input__Container"][disabled] {
+    background: ${(props) => props.colors.text.staticTextFeildDefault};
+    border-bottom: 1px solid #9ca6ac;
+  }
+
+  div[class*="Input__Container"] {
+    background-color: ${(props) => props.colors.text.staticTextFeildDefault};
+  }
+
+  div[class*="DateTimeField__Layout"] {
+    svg {
+      fill: ${(props) => props.colors.text.staticIconsDefault};
+    }
+    label {
+      color: ${(props) => props.colors.text.staticIconsDefault};
+    }
+  }
+
+  div[class*="Autocomplete__Container"] {
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="MuiButtonGroup-root"] {
+    button {
+      background-color: transparent;
+      color: ${(props) => props.colors.infographic.primaryMossGreen};
+    }
+  }
+
+  input[type="datetime-local"] {
+    color-scheme: ${({ colors }) => (colors === dark ? "dark" : "")};
+  }
+
+  ${({ colors }) =>
+    colors === dark
+      ? `
+        button[disabled] {
+        background: #565656;
+        border:1px solid #565656;
+        color:#9CA6AC;
+      }`
+      : ""};
 `;
 
-const StyledButton = styled(Button)<{ align?: string }>`
+const StyledButton = styled(Button)<{ align?: string; colors?: Colors; confirmButtonIsDisabled: boolean }>`
+  ${(props) => (props.colors === dark ? `color:white` : "")};
+  ${(props) =>
+    props.confirmButtonIsDisabled && props.colors === dark
+      ? `
+        &&:disabled {
+        background: #565656;
+        border:1px solid #565656;
+        color:#9CA6AC;
+      }`
+      : ""};
   &&& {
     ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
   }
@@ -209,6 +284,12 @@ const ErrorMessage = styled.div`
   margin-top: 0.5em;
   color: red;
   line-break: auto;
+`;
+
+const DialogHeader = styled(Dialog.Header)<{ colors: Colors }>`
+  hr {
+    background-color: ${(props) => props.colors.interactive.disabledBorder};
+  }
 `;
 
 export default ModalDialog;

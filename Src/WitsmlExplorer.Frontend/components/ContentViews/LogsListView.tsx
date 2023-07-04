@@ -86,7 +86,15 @@ export const LogsListView = (): React.ReactElement => {
   }, [selectedWellbore, selectedLogTypeGroup]);
 
   return selectedWellbore && !resetCheckedItems ? (
-    <ContentTable columns={columns} onSelect={onSelect} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+    <ContentTable
+      viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
+      columns={columns}
+      onSelect={onSelect}
+      data={getTableData()}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+    />
   ) : (
     <></>
   );

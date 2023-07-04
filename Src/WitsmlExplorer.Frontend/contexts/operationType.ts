@@ -7,7 +7,8 @@ enum OperationType {
   AddToClipboard,
   ClearClipboard,
   SetTheme,
-  SetTimeZone
+  SetTimeZone,
+  SetMode
 }
 
 export default OperationType;
