@@ -1,6 +1,8 @@
 using System;
 using System.Text.Json.Serialization;
 
+using WitsmlExplorer.Api.Models.Reports;
+
 namespace WitsmlExplorer.Api.Jobs
 {
     public record JobInfo
@@ -41,6 +43,8 @@ namespace WitsmlExplorer.Api.Jobs
         public DateTime KillTime { get; set; }
 
         public string FailedReason { get; set; }
+
+        public BaseReport Report { get; set; }
 
         private JobStatus _status;
 

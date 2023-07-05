@@ -54,6 +54,7 @@ export default class JobService {
 }
 
 export enum JobType {
+  CheckLogHeader = "CheckLogHeader",
   CreateWell = "CreateWell",
   CopyComponents = "CopyComponents",
   CopyLogData = "CopyLogData",

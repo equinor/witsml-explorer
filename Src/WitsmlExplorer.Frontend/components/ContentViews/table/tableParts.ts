@@ -41,7 +41,8 @@ export enum ContentType {
   String,
   Number,
   DateTime,
-  Measure
+  Measure,
+  Report
 }
 
 export const getColumnAlignment = (column: { type: ContentType }) => {
@@ -95,13 +96,13 @@ export const getCheckedRows = (currentRow: ContentTableRow, data: ContentTableRo
 export const getProgressRange = (startIndex: string, endIndex: string, indexType: string) => {
   return indexType === WITSML_INDEX_TYPE_DATE_TIME
     ? {
-        minIndex: new Date(startIndex).getTime(),
-        maxIndex: new Date(endIndex).getTime()
-      }
+      minIndex: new Date(startIndex).getTime(),
+      maxIndex: new Date(endIndex).getTime()
+    }
     : {
-        minIndex: Number(startIndex),
-        maxIndex: Number(endIndex)
-      };
+      minIndex: Number(startIndex),
+      maxIndex: Number(endIndex)
+    };
 };
 
 export const calculateProgress = (index: string, minIndex: number, maxIndex: number, indexType: string) => {

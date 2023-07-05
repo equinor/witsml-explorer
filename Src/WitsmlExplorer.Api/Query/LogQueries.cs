@@ -148,5 +148,30 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+
+        public static WitsmlLogs GetLogHeaderIndexes(string wellUid, string wellboreUid, string logUid)
+        {
+            return new WitsmlLogs
+            {
+                Logs = new WitsmlLog
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = logUid,
+                    StartIndex = new WitsmlIndex(),
+                    EndIndex = new WitsmlIndex(),
+                    StartDateTimeIndex = "",
+                    EndDateTimeIndex = "",
+                    LogCurveInfo = new WitsmlLogCurveInfo
+                    {
+                        Mnemonic = "",
+                        MinIndex = new WitsmlIndex(),
+                        MaxIndex = new WitsmlIndex(),
+                        MinDateTimeIndex = "",
+                        MaxDateTimeIndex = ""
+                    }.AsSingletonList(),
+                }.AsSingletonList()
+            };
+        }
     }
 }

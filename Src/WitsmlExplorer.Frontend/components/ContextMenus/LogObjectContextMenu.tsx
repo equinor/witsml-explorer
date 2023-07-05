@@ -6,6 +6,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
+import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
 import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import ObjectReference from "../../models/jobs/objectReference";
@@ -22,7 +23,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -89,6 +90,13 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     });
   };
 
+  const onClickCheckHeader = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logReference: ObjectReference = toObjectReference(checkedObjects[0]);
+    const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
+    JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -116,6 +124,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
           <StyledIcon name="upload" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Import log data from .csv</Typography>
+        </MenuItem>,
+        <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
+          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
