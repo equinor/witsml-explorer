@@ -445,5 +445,8 @@ const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => 
 };
 
 const sameUids = (object1: ObjectOnWellbore, object2: ObjectOnWellbore) => {
+  if (object1 == null || object2 == null) {
+    return false;
+  }
   return object1.uid === object2.uid && object1.wellboreUid === object2.wellboreUid && object1.wellUid === object2.wellUid;
 };
