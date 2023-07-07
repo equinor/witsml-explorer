@@ -10,6 +10,7 @@ import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
 import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import ObjectReference from "../../models/jobs/objectReference";
+import LogObject from "../../models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -93,7 +94,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
 
   const onClickCheckHeader = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const logReference: ObjectReference = toObjectReference(checkedObjects[0]);
+    const logReference: LogObject = checkedObjects[0];
     const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
     const jobId = await JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
     const reportModalProps = { jobId };

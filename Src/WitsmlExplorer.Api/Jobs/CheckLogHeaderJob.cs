@@ -1,10 +1,10 @@
-using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
     public record CheckLogHeaderJob : Job
     {
-        public ObjectReference LogReference { get; init; }
+        public LogObject LogReference { get; init; }
 
         public override string Description()
         {

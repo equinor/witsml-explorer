@@ -1,5 +1,5 @@
-import ObjectReference from "./objectReference";
+import LogObject from "../logObject";
 
 export default interface CheckLogHeaderJob {
-  logReference: ObjectReference;
+  logReference: LogObject;
 }

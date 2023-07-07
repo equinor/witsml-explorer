@@ -1,10 +1,8 @@
-using WitsmlExplorer.Api.Jobs.Common;
-
 namespace WitsmlExplorer.Api.Models.Reports
 {
     public class CheckLogHeaderReport : BaseReport
     {
-        public ObjectReference LogReference { get; init; }
+        public LogObject LogReference { get; init; }
     }
 
     public class CheckLogHeaderReportItem

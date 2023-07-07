@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,9 +26,11 @@ namespace WitsmlExplorer.Api.Workers
             string wellUid = job.LogReference.WellUid;
             string wellboreUid = job.LogReference.WellboreUid;
             string logUid = job.LogReference.Uid;
+            string indexType = job.LogReference.IndexType;
+            bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
             // Get the data for the data end and start indexes
-            WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, Enumerable.Empty<string>(), null, null);
+            WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
             WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.Requested, MaxReturnNodes: 1));
             if (dataStartResult == null)
             {
@@ -72,21 +75,21 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
             WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
             WitsmlLog headerResultLog = (WitsmlLog)headerResult.Objects.First();
-            WitsmlIndex headerEndIndex = headerResultLog.EndIndex;
-            WitsmlIndex headerStartIndex = headerResultLog.StartIndex;
-            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => l.MinIndex?.Value ?? "");
-            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => l.MaxIndex?.Value ?? "");
+            string headerEndIndex = isDepthLog ? headerResultLog.EndIndex.Value : headerResultLog.EndDateTimeIndex;
+            string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
+            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
+            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
 
             List<CheckLogHeaderReportItem> mismatchingIndexes = new();
             string firstMnemonic = mnemonics[0];
             // Check the header indexes
-            if (headerEndIndex.Value != dataEndValues[firstMnemonic] || headerStartIndex.Value != dataStartValues[firstMnemonic])
+            if (HasMismatch(isDepthLog, headerStartIndex, dataStartValues[firstMnemonic], headerEndIndex, dataEndValues[firstMnemonic]))
             {
                 mismatchingIndexes.Add(new CheckLogHeaderReportItem()
                 {
                     Mnemonic = "Log Header",
-                    HeaderStartIndex = headerStartIndex.Value,
-                    HeaderEndIndex = headerEndIndex.Value,
+                    HeaderStartIndex = headerStartIndex,
+                    HeaderEndIndex = headerEndIndex,
                     DataStartIndex = dataStartIndexes.First(),
                     DataEndIndex = dataEndIndexes.First(),
                 });
@@ -95,7 +98,7 @@ namespace WitsmlExplorer.Api.Workers
             // Check the header logCurveInfo indexes
             foreach (string mnemonic in dataStartValues.Keys)
             {
-                if (dataStartValues[mnemonic] != headerStartValues[mnemonic] || dataEndValues[mnemonic] != headerEndValues[mnemonic])
+                if (HasMismatch(isDepthLog, headerStartValues[mnemonic], dataStartValues[mnemonic], headerEndValues[mnemonic], dataEndValues[mnemonic]))
                 {
                     mismatchingIndexes.Add(new CheckLogHeaderReportItem()
                     {
@@ -112,7 +115,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 Title = $"Check Log Header Index Report - {job.LogReference.Name}",
                 Summary = mismatchingIndexes.Count > 0
-                    ? $"Found {mismatchingIndexes.Count} header index mismatches:"
+                    ? $"Found {mismatchingIndexes.Count} header index mismatches for {(isDepthLog ? "depth" : "time")} log '{job.LogReference.Name}':"
                     : "No mismatches were found in the header indexes.",
                 LogReference = job.LogReference,
                 ReportItems = mismatchingIndexes
@@ -122,6 +125,18 @@ namespace WitsmlExplorer.Api.Workers
 
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Checked header consistency for log: {logUid}", jobId: job.JobInfo.Id);
             return (workerResult, null);
+        }
+
+        private static bool HasMismatch(bool isDepthLog, string startIndex1, string startIndex2, string endIndex1, string endIndex2)
+        {
+            if (isDepthLog || string.IsNullOrEmpty(startIndex1) || string.IsNullOrEmpty(endIndex1) || string.IsNullOrEmpty(startIndex2) || string.IsNullOrEmpty(endIndex2))
+            {
+                return startIndex1 != startIndex2 || endIndex1 != endIndex2;
+            }
+            else
+            {
+                return DateTime.Parse(startIndex1) != DateTime.Parse(startIndex2) || DateTime.Parse(endIndex1) != DateTime.Parse(endIndex2);
+            }
         }
 
         private static IEnumerable<string> ExtractColumnIndexes(IEnumerable<IEnumerable<string>> data, int indexColumn = 0)

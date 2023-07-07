@@ -74,12 +74,12 @@ namespace WitsmlExplorer.Api.Query
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    queryLog.StartIndex = new WitsmlIndex((DepthIndex)startIndex);
-                    queryLog.EndIndex = new WitsmlIndex((DepthIndex)endIndex);
+                    queryLog.StartIndex = startIndex != null ? new WitsmlIndex((DepthIndex)startIndex) : new WitsmlIndex();
+                    queryLog.EndIndex = endIndex != null ? new WitsmlIndex((DepthIndex)endIndex) : new WitsmlIndex();
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
-                    queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
-                    queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
+                    queryLog.StartDateTimeIndex = startIndex?.GetValueAsString() ?? "";
+                    queryLog.EndDateTimeIndex = endIndex?.GetValueAsString() ?? "";
                     break;
                 default:
                     break;
