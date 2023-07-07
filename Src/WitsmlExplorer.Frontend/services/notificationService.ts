@@ -65,30 +65,30 @@ export default class NotificationService {
       .withUrl(`${notificationURL}notifications`, {
         accessTokenFactory: msalEnabled ? () => NotificationService.getToken() : undefined
       })
-      .withAutomaticReconnect([3000, 5000, 10000])
-      .configureLogging(signalR.LogLevel.None)
-      .build();
+      ?.withAutomaticReconnect([3000, 5000, 10000])
+      ?.configureLogging(signalR.LogLevel.None)
+      ?.build();
 
-    this.hubConnection.on("jobFinished", (notification: Notification) => {
+    this.hubConnection?.on("jobFinished", (notification: Notification) => {
       notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
     });
 
-    this.hubConnection.on("refresh", (refreshAction: RefreshAction) => {
+    this.hubConnection?.on("refresh", (refreshAction: RefreshAction) => {
       this._refreshDispatcher.dispatch(refreshAction);
     });
 
-    this.hubConnection.onreconnecting(() => {
+    this.hubConnection?.onreconnecting(() => {
       this._onConnectionStateChanged.dispatch(false);
     });
-    this.hubConnection.onreconnected(() => {
+    this.hubConnection?.onreconnected(() => {
       this._onConnectionStateChanged.dispatch(true);
     });
-    this.hubConnection.onclose(() => {
+    this.hubConnection?.onclose(() => {
       NotificationService.token = null;
       setTimeout(() => this.hubConnection.start(), 5000);
     });
 
-    this.hubConnection.start();
+    this.hubConnection?.start();
   }
 
   public get snackbarDispatcher(): SimpleEventDispatcher<Notification> {

@@ -118,4 +118,5 @@ const ContentLayout = styled.div`
   gap: 0.5em;
   justify-content: space-between;
   margin: 1em 0.2em 1em 0.2em;
+  max-height: 65vh;
 `;
