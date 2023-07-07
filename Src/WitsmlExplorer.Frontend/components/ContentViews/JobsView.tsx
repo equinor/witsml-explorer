@@ -14,7 +14,7 @@ import { Colors } from "../../styles/Colors";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
-import ReportModal from "../Modals/ReportModal";
+import { ReportModal } from "../Modals/ReportModal";
 import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
@@ -94,7 +94,7 @@ export const JobsView = (): React.ReactElement => {
     { property: "wellboreName", label: "Wellbore Name", type: ContentType.String },
     { property: "objectName", label: "Object Name(s)", type: ContentType.String },
     { property: "status", label: "Status", type: ContentType.String },
-    { property: "report", label: "Report", type: ContentType.Report },
+    { property: "report", label: "Report", type: ContentType.Component },
     { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
@@ -165,12 +165,12 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   return server ? server.name : url;
 };
 
-const StyledButton = styled(Button) <{ colors: Colors }>`
+const StyledButton = styled(Button)<{ colors: Colors }>`
   white-space: nowrap;
   color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
-const StyledSwitch = styled(Switch) <{ colors: Colors }>`
+const StyledSwitch = styled(Switch)<{ colors: Colors }>`
   span {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
     margin-left: 0;

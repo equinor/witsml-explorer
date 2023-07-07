@@ -21,6 +21,7 @@ import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataIm
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
+import { ReportModal } from "../Modals/ReportModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
@@ -90,11 +91,13 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     });
   };
 
-  const onClickCheckHeader = () => {
+  const onClickCheckHeader = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logReference: ObjectReference = toObjectReference(checkedObjects[0]);
     const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
-    JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
+    const jobId = await JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
+    const reportModalProps = { jobId };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
   };
 
   return (

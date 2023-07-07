@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,6 +49,28 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
             }
             return TypedResults.Ok(jobCache.GetJobInfosByUser(userName));
+        }
+
+        [Produces(typeof(IEnumerable<JobInfo>))]
+        public static IResult GetUserJobInfo(string jobId, IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
+        {
+            EssentialHeaders eh = new(httpRequest);
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "upn") : eh.TargetUsername;
+            if (!useOAuth2)
+            {
+                credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
+            }
+
+            try
+            {
+                JobInfo job = jobCache.GetJobInfoByUserAndId(userName, jobId);
+                return TypedResults.Ok(job);
+            }
+            catch (ArgumentException)
+            {
+                return TypedResults.Forbid();
+            }
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]

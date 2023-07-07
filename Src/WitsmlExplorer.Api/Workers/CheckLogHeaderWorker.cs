@@ -32,11 +32,16 @@ namespace WitsmlExplorer.Api.Workers
             if (dataStartResult == null)
             {
                 string reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason, jobId: job.JobInfo.Id), null);
             }
             WitsmlLogs dataEndResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.Requested, RequestLatestValues: 1));
             WitsmlLog dataStartResultLog = (WitsmlLog)dataStartResult.Objects.First();
             WitsmlLog dataEndResultLog = (WitsmlLog)dataEndResult.Objects.First();
+            if (dataStartResultLog.LogData == null || dataEndResultLog.LogData == null)
+            {
+                string reason = $"The log with wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid} does not contain any data";
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "No log data", reason, jobId: job.JobInfo.Id), null);
+            }
             IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data.Select(data => data.Data.Split(","));
             string[] startResultLogData = dataStartResultLog.LogData.Data.First().Data.Split(",");
             IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
@@ -54,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers
                 IEnumerable<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested, MaxReturnNodes: 1)));
                 await Task.WhenAll(missingDataResults);
                 IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
-                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data.First().Data.Split(",")[0]);
+                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
                 List<string> list = missingDataIndexes.ToList();
                 // Insert the indexes from the missing mnemonics to the original dict.
                 missingDataIndexes
@@ -79,7 +84,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 mismatchingIndexes.Add(new CheckLogHeaderReportItem()
                 {
-                    Mnemonic = "Header",
+                    Mnemonic = "Log Header",
                     HeaderStartIndex = headerStartIndex.Value,
                     HeaderEndIndex = headerEndIndex.Value,
                     DataStartIndex = dataStartIndexes.First(),
@@ -115,7 +120,7 @@ namespace WitsmlExplorer.Api.Workers
             job.JobInfo.Report = report;
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Checked header consistency for log: {logUid}");
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Checked header consistency for log: {logUid}", jobId: job.JobInfo.Id);
             return (workerResult, null);
         }
 

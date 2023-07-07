@@ -12,6 +12,7 @@ export interface Notification {
   severity?: AlertSeverity;
   reason?: string;
   description?: ObjectDescription;
+  jobId?: string;
 }
 
 interface ObjectDescription {

@@ -23,7 +23,17 @@ import { useColumnDef } from "./ColumnDef";
 import Panel from "./Panel";
 import { initializeColumnVisibility, useStoreVisibilityEffect, useStoreWidthsEffect } from "./contentTableStorage";
 import { StyledResizer, StyledTable, StyledTd, StyledTh, StyledTr, TableContainer } from "./contentTableStyles";
-import { calculateRowHeight, constantTableOptions, expanderId, isClickable, measureSortingFn, selectId, toggleRow, useInitActiveCurveFiltering } from "./contentTableUtils";
+import {
+  calculateRowHeight,
+  componentSortingFn,
+  constantTableOptions,
+  expanderId,
+  isClickable,
+  measureSortingFn,
+  selectId,
+  toggleRow,
+  useInitActiveCurveFiltering
+} from "./contentTableUtils";
 import { ContentTableColumn, ContentTableProps } from "./tableParts";
 
 declare module "@tanstack/react-table" {
@@ -47,6 +57,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     showPanel = true,
     showRefresh = false,
     stickyLeftColumns = false,
+    downloadToCsvFileName = null,
     viewId
   } = contentTableProps;
   const {
@@ -72,6 +83,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
         const a = indexToNumber(rowA.getValue(columnId));
         const b = indexToNumber(rowB.getValue(columnId));
         return a > b ? -1 : a < b ? 1 : 0;
+      },
+      [componentSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+        const a = rowA.getValue(columnId) == null;
+        const b = rowB.getValue(columnId) == null;
+        return a === b ? 0 : a ? -1 : 1;
       }
     },
     columnResizeMode: "onChange",
@@ -148,6 +164,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
           columns={columns}
           expandableRows={insetColumns != null}
           showRefresh={showRefresh}
+          downloadToCsvFileName={downloadToCsvFileName}
         />
       ) : null}
       <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>

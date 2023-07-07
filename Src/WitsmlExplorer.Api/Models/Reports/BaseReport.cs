@@ -8,7 +8,4 @@ namespace WitsmlExplorer.Api.Models.Reports
         public string Summary { get; init; }
         public IEnumerable<object> ReportItems { get; init; }
     }
-
-
-
 }

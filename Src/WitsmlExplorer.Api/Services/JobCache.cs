@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Services
     {
         void CacheJob(JobInfo jobInfo);
         IEnumerable<JobInfo> GetJobInfosByUser(string username);
+        JobInfo GetJobInfoByUserAndId(string username, string jobId);
         IEnumerable<JobInfo> GetAllJobInfos();
     }
 
@@ -49,6 +50,15 @@ namespace WitsmlExplorer.Api.Services
         public IEnumerable<JobInfo> GetJobInfosByUser(string username)
         {
             return _jobs.Values.Where(job => job.Username == username);
+        }
+
+        public JobInfo GetJobInfoByUserAndId(string username, string jobId)
+        {
+            if (_jobs[jobId].Username != username)
+            {
+                throw new ArgumentException($"User {username} does not have access to job {jobId}");
+            }
+            return _jobs[jobId];
         }
 
         public IEnumerable<JobInfo> GetAllJobInfos()

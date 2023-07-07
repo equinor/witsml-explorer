@@ -30,6 +30,7 @@ export interface ContentTableProps {
   showRefresh?: boolean;
   stickyLeftColumns?: boolean;
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
+  downloadToCsvFileName?: string;
 }
 
 export enum Order {
@@ -42,7 +43,7 @@ export enum ContentType {
   Number,
   DateTime,
   Measure,
-  Report
+  Component
 }
 
 export const getColumnAlignment = (column: { type: ContentType }) => {
@@ -96,13 +97,13 @@ export const getCheckedRows = (currentRow: ContentTableRow, data: ContentTableRo
 export const getProgressRange = (startIndex: string, endIndex: string, indexType: string) => {
   return indexType === WITSML_INDEX_TYPE_DATE_TIME
     ? {
-      minIndex: new Date(startIndex).getTime(),
-      maxIndex: new Date(endIndex).getTime()
-    }
+        minIndex: new Date(startIndex).getTime(),
+        maxIndex: new Date(endIndex).getTime()
+      }
     : {
-      minIndex: Number(startIndex),
-      maxIndex: Number(endIndex)
-    };
+        minIndex: Number(startIndex),
+        maxIndex: Number(endIndex)
+      };
 };
 
 export const calculateProgress = (index: string, minIndex: number, maxIndex: number, indexType: string) => {
