@@ -64,3 +64,5 @@ export type NavigationAction =
   | SelectServerAction
   | SetCurveThresholdAction
   | SelectServerManagerAction;
+
+export type DispatchNavigation = (action: NavigationAction) => void;

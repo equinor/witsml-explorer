@@ -73,9 +73,9 @@ export const TubularView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "sequence", label: "sequence", type: ContentType.Number },
     { property: "typeTubularComponent", label: "typeTubularComp", type: ContentType.String },
-    { property: "innerDiameter", label: "id", type: ContentType.String },
-    { property: "od", label: "od", type: ContentType.String },
-    { property: "len", label: "len", type: ContentType.String },
+    { property: "innerDiameter", label: "id", type: ContentType.Measure },
+    { property: "od", label: "od", type: ContentType.Measure },
+    { property: "len", label: "len", type: ContentType.Measure },
     { property: "tubularName", label: "tubular.name", type: ContentType.String },
     { property: "typeTubularAssy", label: "tubular.typeTubularAssy", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
@@ -96,7 +96,11 @@ export const TubularView = (): React.ReactElement => {
     };
   });
 
-  return selectedTubular && !isFetchingData ? <ContentTable columns={columns} data={tubularComponentRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedTubular && !isFetchingData ? (
+    <ContentTable viewId="tubularView" columns={columns} data={tubularComponentRows} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default TubularView;

@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Query
                     Field = well.Field.NullIfEmpty(),
                     Country = well.Country.NullIfEmpty(),
                     Operator = well.Operator.NullIfEmpty(),
+                    NumLicense = well.NumLicense.NullIfEmpty(),
                     TimeZone = well.TimeZone
                 }.AsSingletonList()
             };
@@ -61,7 +62,8 @@ namespace WitsmlExplorer.Api.Query
                     Field = well.Field,
                     TimeZone = well.TimeZone,
                     Country = well.Country,
-                    Operator = well.Operator
+                    Operator = well.Operator,
+                    NumLicense = well.NumLicense
                 }.AsSingletonList()
             };
         }
@@ -82,6 +84,7 @@ namespace WitsmlExplorer.Api.Query
                     Field = "",
                     Country = "",
                     Operator = "",
+                    NumLicense = "",
                     TimeZone = "",
                     StatusWell = "",
                     PurposeWell = "",

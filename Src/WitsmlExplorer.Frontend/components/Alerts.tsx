@@ -1,14 +1,22 @@
 import { Collapse, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
 import NotificationService from "../services/notificationService";
 import { colors } from "../styles/Colors";
 
+interface AlertState {
+  severity?: AlertSeverity;
+  content: string | React.ReactNode;
+}
+
+export type AlertSeverity = "error" | "info" | "success" | "warning";
+
 const Alerts = (): React.ReactElement => {
-  const [alert, setAlert] = useState<string | React.ReactNode>();
+  const [alert, setAlert] = useState<AlertState>(null);
   const { navigationState } = useContext(NavigationContext);
 
   useEffect(() => {
@@ -16,7 +24,7 @@ const Alerts = (): React.ReactElement => {
       if (connected) {
         setAlert(null);
       } else {
-        setAlert("Lost connection to notifications service. Please wait for reconnection or refresh browser");
+        setAlert({ content: "Lost connection to notifications service. Please wait for reconnection or refresh browser" });
       }
     });
     const unsubscribeOnJobFinished = NotificationService.Instance.alertDispatcherAsEvent.subscribe((notification) => {
@@ -39,7 +47,7 @@ const Alerts = (): React.ReactElement => {
             )}
           </>
         );
-        setAlert(content);
+        setAlert({ severity: notification.severity, content });
       } else {
         const content = (
           <>
@@ -47,7 +55,7 @@ const Alerts = (): React.ReactElement => {
             {notification.reason && <span style={{ whiteSpace: "pre-wrap" }}>Reason: {notification.reason}</span>}
           </>
         );
-        setAlert(content);
+        setAlert({ severity: notification.severity, content });
       }
     });
 
@@ -61,7 +69,7 @@ const Alerts = (): React.ReactElement => {
     <Collapse in={!!alert}>
       <AlertContainer>
         <Alert
-          severity={"error"}
+          severity={alert?.severity ?? "error"}
           action={
             <IconButton
               aria-label="close"
@@ -75,8 +83,8 @@ const Alerts = (): React.ReactElement => {
             </IconButton>
           }
         >
-          <AlertTitle>Error</AlertTitle>
-          {alert}
+          <AlertTitle>{alert?.severity ? capitalize(alert.severity) : "Error"}</AlertTitle>
+          {alert?.content}
         </Alert>
       </AlertContainer>
     </Collapse>

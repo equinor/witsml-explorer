@@ -5,7 +5,7 @@ import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
-import { STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
+import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
@@ -19,9 +19,11 @@ import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { SetThemeAction, SetTimeZoneAction, TimeZone, UserTheme, initOperationStateReducer } from "../contexts/operationStateReducer";
+import { SetModeAction, SetThemeAction, SetTimeZoneAction, TimeZone, UserTheme, initOperationStateReducer } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
+import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
+import { dark, light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
 
 const Home = (): React.ReactElement => {
@@ -40,6 +42,14 @@ const Home = (): React.ReactElement => {
         const action: SetTimeZoneAction = { type: OperationType.SetTimeZone, payload: storedTimeZone };
         dispatchOperation(action);
       }
+      const storedMode = localStorage.getItem(STORAGE_MODE_KEY) as "light" | "dark";
+      if (storedMode) {
+        const action: SetModeAction = { type: OperationType.SetMode, payload: storedMode == "light" ? light : dark };
+        dispatchOperation(action);
+      }
+    }
+    if (process.env.NEXT_PUBLIC_DARK_MODE_DEBUG) {
+      enableDarkModeDebug(dispatchOperation);
     }
   }, []);
 
@@ -49,7 +59,7 @@ const Home = (): React.ReactElement => {
         {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
         <OperationContext.Provider value={{ operationState, dispatchOperation }}>
           <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles />
+            <GlobalStyles colors={operationState.colors} />
             <Head>
               <title>WITSML Explorer</title>
               <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />

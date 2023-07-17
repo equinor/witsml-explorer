@@ -40,6 +40,9 @@ namespace Witsml.Data
         [XmlElement("operator")]
         public string Operator { get; set; }
 
+        [XmlElement("numLicense")]
+        public string NumLicense { get; set; }
+
         [XmlElement("statusWell")]
         public string StatusWell { get; set; }
 

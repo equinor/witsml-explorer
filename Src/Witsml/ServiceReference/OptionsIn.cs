@@ -1,27 +1,35 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Witsml.ServiceReference
 {
     public record OptionsIn(
-        ReturnElements ReturnElements,
+        ReturnElements? ReturnElements = null,
         int? MaxReturnNodes = null,
-        int? RequestLatestValues = null)
+        int? RequestLatestValues = null,
+        bool? RequestObjectSelectionCapability = null)
     {
         public string GetKeywords()
         {
-            StringBuilder keywords = new();
-            keywords.Append($"returnElements={ReturnElements.GetEnumMemberValue()}");
+            List<string> keywords = new();
+            if (ReturnElements != null)
+            {
+                keywords.Add($"returnElements={ReturnElements.Value.GetEnumMemberValue()}");
+            }
             if (MaxReturnNodes is > 0)
             {
-                keywords.Append($";maxReturnNodes={MaxReturnNodes.Value}");
+                keywords.Add($"maxReturnNodes={MaxReturnNodes.Value}");
             }
             if (RequestLatestValues is > 0)
             {
-                keywords.Append($";requestLatestValues={RequestLatestValues.Value}");
+                keywords.Add($"requestLatestValues={RequestLatestValues.Value}");
+            }
+            if (RequestObjectSelectionCapability == true)
+            {
+                keywords.Add($"requestObjectSelectionCapability=true");
             }
 
-            return keywords.ToString();
+            return string.Join(";", keywords);
         }
     }
 

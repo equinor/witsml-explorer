@@ -1,3 +1,4 @@
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import ComponentReferences, { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -11,7 +12,6 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
-import { DispatchOperation } from "./ContextMenuUtils";
 
 export const onClickPaste = (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
   const sourceServer = servers.find((server) => server.url === sourceServerUrl);

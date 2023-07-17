@@ -64,6 +64,7 @@ export enum JobType {
   CopyObjectsWithParent = "CopyObjectsWithParent",
   CreateWellbore = "CreateWellbore",
   CreateLogObject = "CreateLogObject",
+  CreateRig = "CreateRig",
   DeleteComponents = "DeleteComponents",
   DeleteCurveValues = "DeleteCurveValues",
   DeleteObjects = "DeleteObjects",

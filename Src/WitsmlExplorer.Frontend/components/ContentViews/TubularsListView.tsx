@@ -57,7 +57,7 @@ export const TubularsListView = (): React.ReactElement => {
   });
 
   return selectedWellbore && tubulars == selectedWellbore.tubulars ? (
-    <ContentTable columns={columns} data={tubularRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+    <ContentTable viewId="tubularsListView" columns={columns} data={tubularRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
   ) : (
     <></>
   );

@@ -39,6 +39,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
     { property: "aziRef", label: "aziRef", type: ContentType.String },
     { property: "dTimTrajStart", label: "dTimTrajStart", type: ContentType.DateTime },
     { property: "dTimTrajEnd", label: "dTimTrajEnd", type: ContentType.DateTime },
+    { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
     { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
@@ -63,7 +64,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   });
 
   return selectedWellbore && trajectories == selectedWellbore.trajectories ? (
-    <ContentTable columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+    <ContentTable viewId="trajectoriesListView" columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
   ) : (
     <></>
   );

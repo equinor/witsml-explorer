@@ -12,6 +12,18 @@ namespace WitsmlExplorer.Api.HttpHandlers
 {
     public static class ObjectHandler
     {
+        [Produces(typeof(ObjectSearchResult[]))]
+        public static async Task<IResult> GetObjectsByType(EntityType objectType, IObjectService objectService)
+        {
+            return TypedResults.Ok(await objectService.GetObjectsByType(objectType));
+        }
+
+        [Produces(typeof(ObjectSearchResult[]))]
+        public static async Task<IResult> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue, IObjectService objectService)
+        {
+            return TypedResults.Ok(await objectService.GetObjectsWithParamByType(objectType, objectProperty, objectPropertyValue));
+        }
+
         [Produces(typeof(ObjectOnWellbore[]))]
         public static async Task<IResult> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, IObjectService objectService)
         {

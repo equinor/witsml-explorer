@@ -74,6 +74,7 @@ namespace WitsmlExplorer.Api.Services
                 AziRef = trajectory.AziRef,
                 DTimTrajStart = trajectory.DTimTrajStart,
                 DTimTrajEnd = trajectory.DTimTrajEnd,
+                ServiceCompany = trajectory.ServiceCompany,
                 DateTimeCreation = trajectory.CommonData?.DTimCreation,
                 DateTimeLastChange = trajectory.CommonData?.DTimLastChange
             };
