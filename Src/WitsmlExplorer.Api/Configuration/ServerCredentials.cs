@@ -1,4 +1,7 @@
 using System;
+
+using Witsml.Extensions;
+
 namespace WitsmlExplorer.Api.Configuration
 {
     public class ServerCredentials : ICredentials, IEquatable<ServerCredentials>
@@ -26,9 +29,9 @@ namespace WitsmlExplorer.Api.Configuration
         }
         public bool Equals(ServerCredentials other)
         {
-            return (Host.ToString() == other.Host.ToString()) &&
-            (UserId == other.UserId) &&
-            (Password == other.Password);
+            return (Host.ToString().EqualsIgnoreCase(other.Host.ToString())) &&
+                   (UserId == other.UserId) &&
+                   (Password == other.Password);
         }
 
         public override bool Equals(object obj)
