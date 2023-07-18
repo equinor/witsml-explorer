@@ -11,7 +11,7 @@ import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
-import { LogsListView } from "./ContentViews/LogsListView";
+import LogsGraph from "./ContentViews/LogsGraph";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import MudLogView from "./ContentViews/MudLogView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";
@@ -80,7 +80,7 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === selectedObjectGroup) {
         setObjectView(true);
       } else if (currentSelected === selectedLogTypeGroup) {
-        setView(<LogsListView />);
+        setView(<LogsGraph />);
       } else if (currentSelected === selectedObject) {
         setObjectView(false);
       } else if (currentSelected === selectedLogCurveInfo) {
