@@ -24,7 +24,7 @@ public interface IQueryLogger
     /// <param name="suppMsgOut">Result message from the witsml server</param>
     /// <typeparam name="T">IWitsmlQueryType</typeparam>
     void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful, 
-        string xmlReceived, short resultCode, string suppMsgOut = null) where T : IWitsmlQueryType;
+        string xmlReceived, short resultCode, string suppMsgOut) where T : IWitsmlQueryType;
 }
 
 public class DefaultQueryLogger : IQueryLogger
