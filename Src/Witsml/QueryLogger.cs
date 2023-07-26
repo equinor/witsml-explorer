@@ -39,7 +39,7 @@ public class DefaultQueryLogger : IQueryLogger
     }
 
     public void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful, 
-        string xmlReceived, short resultCode, string suppMsgOut = null) where T : IWitsmlQueryType
+        string xmlReceived, short resultCode, string suppMsgOut) where T : IWitsmlQueryType
     {
         if (xmlReceived != null)
         {
