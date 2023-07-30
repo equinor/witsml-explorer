@@ -25,8 +25,8 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         header: column.label,
         size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
-        ...addActiveCurveFiltering(column.label),
-        ...addMeasureSorting(column.type)
+        sortingFn: column.type == ContentType.Measure ? measureSortingFn : "text",
+        ...addActiveCurveFiltering(column.label)
       };
     });
 
@@ -53,14 +53,6 @@ const addActiveCurveFiltering = (columnLabel: string): Partial<ColumnDef<any, an
           return row.original.isActive ? <Icon name="isActive" /> : "";
         },
         enableColumnFilter: true
-      }
-    : {};
-};
-
-const addMeasureSorting = (contentType: ContentType): Partial<ColumnDef<any, any>> => {
-  return contentType == ContentType.Measure
-    ? {
-        sortingFn: measureSortingFn
       }
     : {};
 };
