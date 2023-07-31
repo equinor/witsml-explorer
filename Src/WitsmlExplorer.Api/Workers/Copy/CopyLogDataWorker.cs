@@ -41,8 +41,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
             IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
-            int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.ToString().EqualsIgnoreCase(targetHostname.ToString()))?.DepthLogDecimals ?? 0;
-            int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.ToString().EqualsIgnoreCase(sourceHostname.ToString()))?.DepthLogDecimals ?? 0;
+            int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url == targetHostname)?.DepthLogDecimals ?? 0;
+            int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url == sourceHostname)?.DepthLogDecimals ?? 0;
 
             (WitsmlLog sourceLog, WitsmlLog targetLog) = await GetLogs(job);
             List<string> mnemonicsToCopy = job.Source.ComponentUids.Any()
