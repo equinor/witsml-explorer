@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Configuration
         }
         public bool Equals(ServerCredentials other)
         {
-            return (Host == other.Host) &&
+            return (Host.EqualsIgnoreCase(other.Host)) &&
                    (UserId == other.UserId) &&
                    (Password == other.Password);
         }
