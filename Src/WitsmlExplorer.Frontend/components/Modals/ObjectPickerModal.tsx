@@ -44,6 +44,10 @@ const ObjectPickerModal = (props: ObjectPickerProps): React.ReactElement => {
   };
 
   const onPaste = () => {
+    if (objectReference.serverUrl) {
+      const server = servers.find((server) => server.url.toLowerCase() == objectReference.serverUrl.toLowerCase());
+      setTargetServer(server);
+    }
     setWellUid(objectReference.wellUid);
     setWellboreUid(objectReference.wellboreUid);
     setObjectUid(objectReference.objectUids[0]);
