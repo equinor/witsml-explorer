@@ -5,8 +5,9 @@ import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
+import OperationContext from "../contexts/operationContext";
 import NotificationService from "../services/notificationService";
-import { colors } from "../styles/Colors";
+import { Colors } from "../styles/Colors";
 
 interface AlertState {
   severity?: AlertSeverity;
@@ -18,6 +19,9 @@ export type AlertSeverity = "error" | "info" | "success" | "warning";
 const Alerts = (): React.ReactElement => {
   const [alert, setAlert] = useState<AlertState>(null);
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   useEffect(() => {
     const unsubscribeOnConnectionStateChanged = NotificationService.Instance.onConnectionStateChanged.subscribe((connected) => {
@@ -67,7 +71,7 @@ const Alerts = (): React.ReactElement => {
 
   return (
     <Collapse in={!!alert}>
-      <AlertContainer>
+      <AlertContainer colors={colors}>
         <Alert
           severity={alert?.severity ?? "error"}
           action={
@@ -91,9 +95,10 @@ const Alerts = (): React.ReactElement => {
   );
 };
 
-const AlertContainer = styled.div`
+const AlertContainer = styled.div<{ colors: Colors }>`
   & .MuiAlert-root {
-    background-color: ${colors.ui.backgroundDefault};
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+    color: ${(props) => props.colors.text.staticIconsDefault};
   }
   & .MuiAlert-action {
     align-items: start;
