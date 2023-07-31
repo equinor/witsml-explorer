@@ -180,7 +180,10 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                 <Fragment key={row.id}>
                   <StyledTr
                     selected={row.getIsSelected()}
-                    onContextMenu={(e) => onRowContextMenu(e, row)}
+                    onContextMenu={async (e) => {
+                      await row.toggleSelected(true);
+                      onRowContextMenu(e, row);
+                    }}
                     style={{
                       height: `${calculateRowHeight(row, headCellHeight, cellHeight)}px`,
                       transform: `translateY(${virtualRow.start}px)`
