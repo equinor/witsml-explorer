@@ -18,7 +18,7 @@ const RefreshHandler = (): React.ReactElement => {
 
   useEffect(() => {
     const unsubscribe = NotificationService.Instance.refreshDispatcher.subscribe(async (refreshAction: RefreshAction) => {
-      const shouldTryRefresh = refreshAction?.serverUrl.toString() === selectedServer?.url;
+      const shouldTryRefresh = refreshAction?.serverUrl.toString().toLowerCase() === selectedServer?.url?.toLowerCase();
       if (!shouldTryRefresh) {
         return;
       }
