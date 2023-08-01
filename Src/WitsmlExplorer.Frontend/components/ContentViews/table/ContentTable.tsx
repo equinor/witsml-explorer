@@ -154,18 +154,6 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     }
   };
 
-  const [lastScroll, setLastScroll] = useState(0);
-  const [beforeLastScroll, setBeforeLastScroll] = useState(0);
-  if (tableContainerRef?.current?.scrollLeft != lastScroll) {
-    setLastScroll(tableContainerRef?.current?.scrollLeft);
-    setBeforeLastScroll(lastScroll);
-  }
-  if (lastScroll > tableContainerRef?.current?.scrollLeft && beforeLastScroll < lastScroll) {
-    console.log(tableContainerRef?.current?.scrollLeft);
-  }
-  if (lastScroll < tableContainerRef?.current?.scrollLeft && beforeLastScroll > lastScroll) {
-    console.log(tableContainerRef?.current?.scrollLeft);
-  }
   return (
     <TableContainer showPanel={showPanel}>
       {showPanel ? (

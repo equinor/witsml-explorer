@@ -65,6 +65,7 @@ const Panel = (props: PanelProps) => {
 
 const Div = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: center;
   padding: 4px;

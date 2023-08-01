@@ -9,7 +9,7 @@ export const TableContainer = styled.div<{ showPanel?: boolean }>`
     props.showPanel
       ? `
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: auto 1fr;
   `
       : ""}
 `;

@@ -143,6 +143,7 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [selectedLogCurveInfo, selectedLog]);
 
   const panelElements = [
+    <EditInterval key="editinterval" />,
     <Button key="downloadall" disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
       Download all as .csv
     </Button>,
@@ -152,12 +153,11 @@ export const CurveValuesView = (): React.ReactElement => {
   ];
 
   return (
-    <Container>
+    <>
       {isLoading && <ProgressSpinner message="Fetching data" />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
         <>
-          <EditInterval />
           <ContentTable
             columns={columns}
             onRowSelectionChange={rowSelectionCallback}
@@ -168,15 +168,9 @@ export const CurveValuesView = (): React.ReactElement => {
           />
         </>
       )}
-    </Container>
+    </>
   );
 };
-
-const Container = styled.div`
-  height: calc(100% - 65px);
-  width: calc(100% - 14px);
-`;
-
 const Message = styled.div`
   margin: 10px;
   padding: 10px;
