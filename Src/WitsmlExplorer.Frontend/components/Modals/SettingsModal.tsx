@@ -1,9 +1,12 @@
-import { NativeSelect } from "@equinor/eds-core-react";
+import { Button, NativeSelect } from "@equinor/eds-core-react";
+import { Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { getAccountInfo, msalEnabled, signOut } from "../../msal/MsalAuthProvider";
+import AuthorizationService from "../../services/authorizationService";
 import { Colors, dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
@@ -77,6 +80,22 @@ const SettingsModal = (): React.ReactElement => {
               ))}
             </StyledNativeSelect>
           </HorizontalLayout>
+          {msalEnabled && (
+            <HorizontalLayout>
+              <Typography style={{ margin: "auto 1rem auto 0" }}>Logged in to Azure AD as {getAccountInfo()?.name}</Typography>
+              <Button
+                onClick={() => {
+                  const logout = async () => {
+                    await AuthorizationService.deauthorize();
+                    signOut();
+                  };
+                  logout();
+                }}
+              >
+                <Typography>Logout</Typography>
+              </Button>
+            </HorizontalLayout>
+          )}
         </div>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}

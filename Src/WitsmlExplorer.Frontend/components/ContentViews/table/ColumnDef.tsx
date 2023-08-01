@@ -26,9 +26,9 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         header: column.label,
         size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
+        sortingFn: column.type == ContentType.Measure ? measureSortingFn : "text",
         ...addComponentCell(column.type),
-        ...addActiveCurveFiltering(column.label),
-        ...addMeasureSorting(column.type)
+        ...addActiveCurveFiltering(column.label)
       };
     });
 
@@ -64,14 +64,6 @@ const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>>
     ? {
         cell: (props) => props.getValue(),
         sortingFn: componentSortingFn
-      }
-    : {};
-};
-
-const addMeasureSorting = (contentType: ContentType): Partial<ColumnDef<any, any>> => {
-  return contentType == ContentType.Measure
-    ? {
-        sortingFn: measureSortingFn
       }
     : {};
 };
