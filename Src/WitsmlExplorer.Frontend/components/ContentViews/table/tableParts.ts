@@ -1,7 +1,6 @@
 import React from "react";
 import { CurveSpecification } from "../../../models/logData";
 import { indexToNumber } from "../../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../../Constants";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;
@@ -90,27 +89,6 @@ export const getCheckedRows = (currentRow: ContentTableRow, data: ContentTableRo
   const shouldCheck = checkedContentItems.findIndex((checkedItem) => checkedItem.id == currentRow.id) === -1;
   const checkedRows = updateCheckedRows(checkedContentItems, rowsInRange, shouldCheck);
   return checkedRows;
-};
-
-export const getProgressRange = (startIndex: string, endIndex: string, indexType: string) => {
-  return indexType === WITSML_INDEX_TYPE_DATE_TIME
-    ? {
-        minIndex: new Date(startIndex).getTime(),
-        maxIndex: new Date(endIndex).getTime()
-      }
-    : {
-        minIndex: Number(startIndex),
-        maxIndex: Number(endIndex)
-      };
-};
-
-export const calculateProgress = (index: string, minIndex: number, maxIndex: number, indexType: string) => {
-  const normalize = (value: number) => ((value - minIndex) * 100) / (maxIndex - minIndex);
-  if (indexType === WITSML_INDEX_TYPE_DATE_TIME) {
-    return normalize(new Date(index).getTime());
-  } else {
-    return normalize(Number(index));
-  }
 };
 
 export const getColumnType = (curveSpecification: CurveSpecification) => {

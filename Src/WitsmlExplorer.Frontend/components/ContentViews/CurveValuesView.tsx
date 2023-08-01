@@ -1,4 +1,4 @@
-import { Button, LinearProgress } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -14,20 +14,10 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
 import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import {
-  ContentTableColumn,
-  ContentTableRow,
-  ExportableContentTableColumn,
-  Order,
-  VirtualizedContentTable,
-  calculateProgress,
-  getColumnType,
-  getComparatorByColumn,
-  getIndexRanges,
-  getProgressRange
-} from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ExportableContentTableColumn, Order, getColumnType, getComparatorByColumn, getIndexRanges } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -38,7 +28,6 @@ export const CurveValuesView = (): React.ReactElement => {
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [progress, setProgress] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
   const selectedLog = selectedObject as LogObject;
   const { exportData, properties: exportOptions } = useExport({
@@ -113,40 +102,32 @@ export const CurveValuesView = (): React.ReactElement => {
 
     async function getLogData() {
       const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
-      let startIndex = String(selectedLogCurveInfo[0].minIndex);
+      const startIndex = String(selectedLogCurveInfo[0].minIndex);
       const endIndex = String(selectedLogCurveInfo[0].maxIndex);
-      const { minIndex, maxIndex } = getProgressRange(startIndex, endIndex, selectedLog.indexType);
 
       let completeData: CurveValueRow[] = [];
-      let fetchData = true;
-      while (fetchData) {
-        const logData: LogData = await LogObjectService.getLogData(
-          selectedWell.uid,
-          selectedWellbore.uid,
-          selectedLog.uid,
-          mnemonics,
-          completeData.length === 0,
-          startIndex,
-          endIndex,
-          controller.signal
-        );
-        if (logData && logData.data) {
-          setProgress(calculateProgress(logData.endIndex, minIndex, maxIndex, selectedLog.indexType));
-          updateColumns(logData.curveSpecifications);
+      const logData: LogData = await LogObjectService.getLogData(
+        selectedWell.uid,
+        selectedWellbore.uid,
+        selectedLog.uid,
+        mnemonics,
+        completeData.length === 0,
+        startIndex,
+        endIndex,
+        controller.signal
+      );
+      if (logData && logData.data) {
+        updateColumns(logData.curveSpecifications);
 
-          const logDataRows = logData.data.map((data, index) => {
-            const row: CurveValueRow = {
-              id: completeData.length + index,
-              ...data
-            };
-            return row;
-          });
-          completeData = [...completeData, ...logDataRows];
-          setTableData(completeData);
-          startIndex = logData.endIndex;
-        } else {
-          fetchData = false;
-        }
+        const logDataRows = logData.data.map((data, index) => {
+          const row: CurveValueRow = {
+            id: completeData.length + index,
+            ...data
+          };
+          return row;
+        });
+        completeData = [...completeData, ...logDataRows];
+        setTableData(completeData);
       }
     }
 
@@ -172,12 +153,12 @@ export const CurveValuesView = (): React.ReactElement => {
 
   return (
     <Container>
-      {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
+      {isLoading && <ProgressSpinner message="Fetching data" />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
         <>
           <EditInterval />
-          <VirtualizedContentTable
+          <ContentTable
             columns={columns}
             onRowSelectionChange={rowSelectionCallback}
             onContextMenu={onContextMenu}

@@ -1,5 +1,6 @@
 import { TableBody, TableHead, useTheme } from "@material-ui/core";
 import {
+  ColumnSizingState,
   Header,
   Row,
   RowData,
@@ -14,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import OperationContext from "../../../contexts/operationContext";
 import { indexToNumber } from "../../../models/logObject";
 import { Colors } from "../../../styles/Colors";
@@ -55,6 +56,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
   const [previousIndex, setPreviousIndex] = useState<number>(null);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState(initializeColumnVisibility(viewId));
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
   const cellHeight = isCompactMode ? 30 : 53;
   const headCellHeight = isCompactMode ? 35 : 55;
@@ -65,7 +67,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     columns: columnDef,
     state: {
       rowSelection,
-      columnVisibility
+      columnVisibility,
+      columnSizing
     },
     sortingFns: {
       [measureSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
@@ -80,6 +83,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     getFilteredRowModel: getFilteredRowModel(),
     getRowCanExpand: insetColumns != null ? (row) => !!row.original.inset?.length : undefined,
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnSizingChange: setColumnSizing,
     onRowSelectionChange: (updaterOrValue) => {
       const newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(rowSelection) : updaterOrValue;
       setRowSelection(newRowSelection);
@@ -108,6 +112,21 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     estimateSize: () => cellHeight
   });
 
+  const columnVirtualizer = useVirtualizer({
+    horizontal: true,
+    count: table.getVisibleLeafColumns().length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: (index: number) => table.getLeafHeaders()[index].getSize(),
+    overscan: 0
+  });
+
+  useEffect(() => {
+    columnVirtualizer.measure();
+  }, [columnSizing]);
+
+  const columnItems = columnVirtualizer.getVirtualItems();
+  const [before, after] = columnItems.length > 0 ? [columnItems[0].start, columnVirtualizer.getTotalSize() - columnItems[columnItems.length - 1].end] : [0, 0];
+
   const onHeaderClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, header: Header<any, unknown>) => {
     if (header.column.getCanSort()) {
       header.column.getToggleSortingHandler()(e);
@@ -135,6 +154,18 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     }
   };
 
+  const [lastScroll, setLastScroll] = useState(0);
+  const [beforeLastScroll, setBeforeLastScroll] = useState(0);
+  if (tableContainerRef?.current?.scrollLeft != lastScroll) {
+    setLastScroll(tableContainerRef?.current?.scrollLeft);
+    setBeforeLastScroll(lastScroll);
+  }
+  if (lastScroll > tableContainerRef?.current?.scrollLeft && beforeLastScroll < lastScroll) {
+    console.log(tableContainerRef?.current?.scrollLeft);
+  }
+  if (lastScroll < tableContainerRef?.current?.scrollLeft && beforeLastScroll > lastScroll) {
+    console.log(tableContainerRef?.current?.scrollLeft);
+  }
   return (
     <TableContainer showPanel={showPanel}>
       {showPanel ? (
@@ -159,9 +190,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
               zIndex: insetColumns != null ? 2 : 1
             }}
           >
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} style={{ display: "flex" }}>
-                {headerGroup.headers.map((header) => (
+            <tr style={{ display: "flex" }}>
+              <div style={{ width: `${before}px` }} />
+              {columnItems.map((column) => {
+                const header = table.getLeafHeaders()[column.index];
+                return (
                   <StyledTh key={header.id} style={{ width: header.getSize() }} sticky={stickyLeftColumns ? 1 : 0} colors={colors}>
                     <div role="button" style={{ cursor: "pointer" }} onClick={(e) => onHeaderClick(e, header)}>
                       {header.column.getIsSorted() && sortingIcons[header.column.getIsSorted() as SortDirection]}
@@ -169,9 +202,10 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     </div>
                     {header.id != selectId && header.id != expanderId && <Resizer header={header} />}
                   </StyledTh>
-                ))}
-              </tr>
-            ))}
+                );
+              })}
+              <div style={{ width: `${after}px` }} />
+            </tr>
           </TableHead>
           <TableBody style={{ height: rowVirtualizer.getTotalSize() + "px", position: "relative" }}>
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -189,12 +223,14 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     ref={rowVirtualizer.measureElement}
                     colors={colors}
                   >
-                    {row.getVisibleCells().map((cell) => {
+                    <div style={{ width: `${before}px` }} />
+                    {columnItems.map((column) => {
+                      const cell = row.getVisibleCells()[column.index];
                       const clickable = isClickable(onSelect, cell.column.id, checkableRows);
                       return (
                         <StyledTd
                           key={cell.id}
-                          style={{ width: cell.column.getSize(), left: cell.column.getStart(), height: cellHeight }}
+                          style={{ width: cell.column.getSize(), height: cellHeight }}
                           onClick={clickable ? (event) => onSelectRow(event, row, table) : undefined}
                           clickable={clickable ? 1 : 0}
                           sticky={stickyLeftColumns ? 1 : 0}
@@ -204,6 +240,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                         </StyledTd>
                       );
                     })}
+                    <div style={{ width: `${after}px` }} />
                   </StyledTr>
                   {row.getIsExpanded() && row.original.inset?.length != 0 && (
                     <Inset
