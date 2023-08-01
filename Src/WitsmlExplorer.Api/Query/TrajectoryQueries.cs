@@ -90,6 +90,34 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
+        
+        /// <summary>
+        /// Create trajectories witsml model. 
+        /// </summary>
+        /// <param name="trajectory">API model of trajectory data.</param>
+        /// <returns>New instance of WitsmlTrajectories model with added trajectory data.</returns>
+        public static WitsmlTrajectories CreateTrajectory(Trajectory trajectory)
+        {
+            return new()
+            {
+                Trajectories = new WitsmlTrajectory
+                {
+                    UidWell = trajectory.WellUid,
+                    NameWell = trajectory.WellName,
+                    NameWellbore = trajectory.WellboreName,
+                    Uid = trajectory.Uid,
+                    Name = trajectory.Name,
+                    UidWellbore = trajectory.WellboreUid,
+                    MdMin = trajectory.MdMin != null ? new WitsmlMeasuredDepthCoord() { Value = trajectory.MdMin.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    MdMax = trajectory.MdMax != null ? new WitsmlMeasuredDepthCoord() { Value = trajectory.MdMax.Value.ToString(CultureInfo.InvariantCulture) } : null,
+                    AziRef = trajectory.AziRef.NullIfEmpty(),
+                    ServiceCompany = trajectory.ServiceCompany.NullIfEmpty(),
+                    DTimTrajStart = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajStart),
+                    DTimTrajEnd = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajEnd),
+                }.AsSingletonList()
+            };
+        }
+        
         public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, ObjectReference trajectoryReference)
         {
             WitsmlTrajectoryStation ts = new()
