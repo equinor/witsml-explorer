@@ -181,6 +181,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                   <StyledTr
                     selected={row.getIsSelected()}
                     onContextMenu={async (e) => {
+                      // await selection to ensure that the context menu detects that a row has been selected
                       await row.toggleSelected(true);
                       onRowContextMenu(e, row);
                     }}
