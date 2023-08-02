@@ -127,10 +127,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetFromStoreAsync(ComponentType componentType, string[] sourceComponentUids, string[] targetComponentUids)
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(query => query.Objects.First().Uid == SourceUid), new OptionsIn(ReturnElements.All, null, null)))
+                client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(query => query.Objects.First().Uid == SourceUid), new OptionsIn(ReturnElements.All, null, null, null)))
             .ReturnsAsync(GetWitsmlObject(sourceComponentUids, SourceUid, componentType));
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(query => query.Objects.First().Uid == TargetUid), new OptionsIn(ReturnElements.Requested, null, null)))
+                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(query => query.Objects.First().Uid == TargetUid), new OptionsIn(ReturnElements.Requested, null, null, null)))
             .ReturnsAsync(GetWitsmlObject(targetComponentUids, TargetUid, componentType));
         }
 

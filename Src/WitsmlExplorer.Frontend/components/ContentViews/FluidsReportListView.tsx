@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import FluidsReport from "../../models/fluidsReport";
 import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -15,12 +17,12 @@ export interface FluidsReportRow extends ContentTableRow, FluidsReport {
 }
 
 export const FluidsReportsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
+  const { selectedWell, selectedWellbore } = navigationState;
   const [fluidsReports, setFluidsReports] = useState<FluidsReport[]>([]);
 
   useEffect(() => {
@@ -57,13 +59,24 @@ export const FluidsReportsListView = (): React.ReactElement => {
     { property: "defaultDatum", label: "defaultDatum", type: ContentType.String }
   ];
 
+  const onSelect = (fluidsReportRow: FluidsReportRow) => {
+    dispatchNavigation({
+      type: NavigationType.SelectObject,
+      payload: { well: selectedWell, wellbore: selectedWellbore, object: fluidsReportRow.fluidsReport, objectType: ObjectType.FluidsReport }
+    });
+  };
+
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedFluidsReportRows: FluidsReportRow[]) => {
     const contextProps: ObjectContextMenuProps = { checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport), wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FluidsReportContextMenu {...contextProps} />, position } });
   };
 
-  return Object.is(selectedWellbore?.fluidsReports, fluidsReports) && <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows />;
+  return (
+    Object.is(selectedWellbore?.fluidsReports, fluidsReports) && (
+      <ContentTable viewId="fluidsReportsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+    )
+  );
 };
 
 export default FluidsReportsListView;

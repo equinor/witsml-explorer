@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnection } from "@microsoft/signalr";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
+import { AlertSeverity } from "../components/Alerts";
 import { msalEnabled } from "../msal/MsalAuthProvider";
 import { ApiClient, getBaseUrl } from "./apiClient";
 
@@ -8,6 +9,7 @@ export interface Notification {
   serverUrl: URL;
   isSuccess: boolean;
   message: string;
+  severity?: AlertSeverity;
   reason?: string;
   description?: ObjectDescription;
 }

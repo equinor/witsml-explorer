@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.Rig;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -26,7 +29,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            _service = new ObjectService(witsmlClientProvider.Object);
+            Mock<ILogger<ObjectService>> logger = new();
+            _service = new ObjectService(witsmlClientProvider.Object, logger.Object);
         }
 
         [Fact]
@@ -118,5 +122,165 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.Empty(result);
         }
 
+        [Fact]
+        public async Task GetExpandableObjectsCount_FourTypesExist_ReturnCount()
+        {
+            SetupReturnsObjectList(EntityType.FluidsReport, 0);
+            SetupReturnsObjectList(EntityType.MudLog, 2);
+            SetupReturnsObjectList(EntityType.Rig, 3);
+            SetupReturnsObjectList(EntityType.Trajectory, 4);
+            SetupReturnsObjectList(EntityType.Tubular, 5);
+            SetupReturnsObjectList(EntityType.WbGeometry, 6);
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(6, result.Count);
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+            Assert.Equal(2, result[EntityType.MudLog]);
+            Assert.Equal(3, result[EntityType.Rig]);
+            Assert.Equal(4, result[EntityType.Trajectory]);
+            Assert.Equal(5, result[EntityType.Tubular]);
+            Assert.Equal(6, result[EntityType.WbGeometry]);
+        }
+
+        private void SetupReturnsObjectList(EntityType type, int count)
+        {
+            IWitsmlObjectList objectList = EntityTypeHelper.ToObjectList(type);
+            for (int i = 0; i < count; i++)
+            {
+                objectList.Objects = objectList.Objects.Append(EntityTypeHelper.ToObjectOnWellbore(type));
+            }
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == objectList.TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(objectList);
+        }
+
+        [Fact]
+        public async Task GetExpandableObjectsCount_NullResult_ReturnZero()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => null);
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+        }
+
+        [Fact]
+        public async Task GetExpandableObjectsCount_FetchingThrows_ReturnZero()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .Throws(new SystemException());
+
+            Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
+            Assert.Equal(0, result[EntityType.FluidsReport]);
+        }
+
+        [Fact]
+        public async Task GetObjectsByType_ReturnsObjects()
+        {
+            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(EntityType.Rig);
+            o.UidWell = "";
+            o.UidWellbore = "";
+            o.Uid = "";
+            o.Name = "";
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.Objects.Count() == 1 && queryIn.Objects.All((o) => o is WitsmlRig)),
+                    It.Is<OptionsIn>((optionsIn) => optionsIn.ReturnElements == ReturnElements.Requested)))
+                .ReturnsAsync(() => objectList);
+
+            IEnumerable<ObjectSearchResult> result = await _service.GetObjectsByType(EntityType.Rig);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async Task GetObjectsByType_NullResult_ReturnZero()
+        {
+            _witsmlClient.Setup(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlRigs().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => null);
+
+            IEnumerable<ObjectSearchResult> result = await _service.GetObjectsByType(EntityType.Rig);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetObjectsWithParamByType_ReturnsObjects()
+        {
+            WitsmlLog log = new()
+            {
+                UidWell = "",
+                UidWellbore = "",
+                Uid = "",
+                Name = "",
+                ServiceCompany = "myCompany"
+            };
+            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+
+            _witsmlClient.SetupSequence(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => objectList)
+                .ReturnsAsync(() => objectList);
+
+            IEnumerable<ObjectSearchResult> result = await _service.GetObjectsWithParamByType(EntityType.Log, "serviceCompany", "myCompany");
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async Task GetObjectsWithParamByType_NullResult_ReturnZero()
+        {
+            WitsmlLog log = new()
+            {
+                UidWell = "",
+                UidWellbore = "",
+                Uid = "",
+                Name = "",
+                ServiceCompany = "myCompany"
+            };
+            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+
+            _witsmlClient.SetupSequence(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => objectList)
+                .ReturnsAsync(() => null);
+
+            IEnumerable<ObjectSearchResult> result = await _service.GetObjectsWithParamByType(EntityType.Log, "serviceCompany", "myCompany");
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetObjectsWithParamByType_Uncapable_ThrowsError()
+        {
+            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(EntityType.Rig);
+            o.UidWell = "";
+            o.UidWellbore = "";
+            o.Uid = "";
+            o.Name = "";
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+
+            _witsmlClient.SetupSequence(client =>
+                client.GetFromStoreNullableAsync(
+                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
+                    It.IsAny<OptionsIn>()))
+                .ReturnsAsync(() => objectList)
+                .ReturnsAsync(() => objectList);
+
+            await Assert.ThrowsAsync<Middleware.WitsmlUnsupportedCapabilityException>(async () => await _service.GetObjectsWithParamByType(EntityType.Log, "serviceCompany", "myCompany"));
+        }
     }
 }

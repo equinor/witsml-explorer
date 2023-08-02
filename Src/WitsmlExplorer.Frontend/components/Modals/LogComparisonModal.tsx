@@ -2,6 +2,7 @@ import { Accordion, List, TextField, Typography } from "@equinor/eds-core-react"
 import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -10,11 +11,12 @@ import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
+import { Colors } from "../../styles/Colors";
 import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
-import { DispatchOperation } from "../ContextMenus/ContextMenuUtils";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
+import { ComparisonCell, LabelsLayout, StyledTypography, TableLayout } from "./ComparisonModalStyles";
 import { Indexes, calculateMismatchedIndexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
@@ -29,7 +31,7 @@ export interface LogComparisonModalProps {
 const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
   const { sourceLog, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const [sourceLogCurveInfo, setSourceLogCurveInfo] = useState<LogCurveInfo[]>(null);
   const [targetLogCurveInfo, setTargetLogCurveInfo] = useState<LogCurveInfo[]>(null);
@@ -109,16 +111,16 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
           endIndexes: indexes.sourceEnd,
           mnemonicValue: <Typography>{indexes.mnemonic}</Typography>,
           startIndexesValue: (
-            <TableCell type={sourceType}>
+            <ComparisonCell type={sourceType}>
               <Typography>{markedSourceStart}</Typography>
               <Typography>{markedTargetStart}</Typography>
-            </TableCell>
+            </ComparisonCell>
           ),
           endIndexesValue: (
-            <TableCell type={sourceType}>
+            <ComparisonCell type={sourceType}>
               <Typography>{markedSourceEnd}</Typography>
               <Typography>{markedTargetEnd}</Typography>
-            </TableCell>
+            </ComparisonCell>
           )
         };
       }),
@@ -150,8 +152,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
               </LabelsLayout>
               <Accordion>
                 <Accordion.Item>
-                  <Accordion.Header>How are the logs compared?</Accordion.Header>
-                  <Accordion.Panel>
+                  <StyledAccordionHeader colors={colors}>How are the logs compared?</StyledAccordionHeader>
+                  <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
                     <List>
                       <List.Item>
                         The logs are compared based on the <b>logCurveInfo</b> elements. The <b>logData</b> element is <b>not</b> compared.
@@ -182,7 +184,11 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <SortableEdsTable
                     columns={columns}
                     data={data}
-                    caption={<StyledTypography variant="h5">Listing of Log Curves where the source indexes and end indexes do not match</StyledTypography>}
+                    caption={
+                      <StyledTypography colors={colors} variant="h5">
+                        Listing of Log Curves where indexes do not match
+                      </StyledTypography>
+                    }
                   />
                 </TableLayout>
               )}
@@ -205,30 +211,14 @@ const columns: Column[] = [
   { name: "Source/target end", accessor: "endIndexes" }
 ];
 
-const LabelsLayout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 0.8rem;
-`;
-
-const TableCell = styled.div<{ type?: string }>`
-  font-feature-settings: "tnum";
-  p {
-    text-align: ${({ type }) => (type == "depth" ? "right" : "left")};
+const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  &:hover {
+    background-color: ${(props) => props.colors.ui.backgroundLight};
   }
-  mark {
-    background: #e6faec;
-    background-blend-mode: darken;
-    font-weight: 600;
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
   }
 `;
 
-const TableLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StyledTypography = styled(Typography)`
-  padding: 1rem 0 1rem 0;
-`;
 export default LogComparisonModal;

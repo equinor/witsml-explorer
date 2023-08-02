@@ -1,7 +1,10 @@
+import { ErrorDetails } from "../models/errorDetails";
 import ObjectOnWellbore from "../models/objectOnWellbore";
+import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
-import { ApiClient } from "./apiClient";
+import Wellbore, { ExpandableObjectsCount, getObjectsFromWellbore } from "../models/wellbore";
+import { ApiClient, throwError } from "./apiClient";
 
 export default class ObjectService {
   public static async getObjects<Key extends ObjectType>(wellUid: string, wellboreUid: string, objectType: Key, abortSignal?: AbortSignal): Promise<ObjectTypeToModel[Key][]> {
@@ -75,6 +78,43 @@ export default class ObjectService {
       }
     } else {
       return null;
+    }
+  }
+
+  public static async getObjectsIfMissing<Key extends ObjectType>(wellbore: Wellbore, objectType: Key, abortSignal?: AbortSignal): Promise<ObjectTypeToModel[Key][] | null> {
+    const objects = getObjectsFromWellbore(wellbore, objectType);
+    if (objects == null || objects.length == 0) {
+      return await ObjectService.getObjects(wellbore.wellUid, wellbore.uid, objectType, abortSignal);
+    }
+    return null;
+  }
+
+  public static async getExpandableObjectsCount(wellbore: Wellbore, abortSignal?: AbortSignal): Promise<ExpandableObjectsCount> {
+    const response = await ApiClient.get(`/api/wells/${wellbore.wellUid}/wellbores/${wellbore.uid}/countexpandable`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
+    }
+  }
+
+  public static async getObjectsByType(type: ObjectType, abortSignal?: AbortSignal): Promise<ObjectSearchResult[]> {
+    const response = await ApiClient.get(`/api/objects/${type}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
+    }
+  }
+
+  public static async getObjectsWithParamByType(type: ObjectType, propertyName: string, propertyValue: string, abortSignal?: AbortSignal): Promise<ObjectSearchResult[]> {
+    const response = await ApiClient.get(`/api/objects/${type}/${propertyName}/${propertyValue}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
     }
   }
 }

@@ -3,6 +3,7 @@ export enum WellboreObjects {
   Wellbore = "Wellbore",
   bhaRun = "bhaRun",
   changeLog = "changeLog",
+  fluidsReport = "fluidsReport",
   formationMarker = "formationMarker",
   log = "log",
   message = "message",

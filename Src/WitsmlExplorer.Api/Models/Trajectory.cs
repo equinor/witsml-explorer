@@ -12,6 +12,7 @@ namespace WitsmlExplorer.Api.Models
         public string DTimTrajStart { get; internal init; }
         public string DTimTrajEnd { get; internal init; }
         public List<TrajectoryStation> TrajectoryStations { get; internal init; }
+        public string ServiceCompany { get; internal init; }
         public string DateTimeCreation { get; internal init; }
         public string DateTimeLastChange { get; internal init; }
     }

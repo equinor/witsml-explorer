@@ -69,7 +69,7 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
               <TextField
                 id={"field"}
                 label={"field"}
-                value={editableWell.field}
+                value={editableWell.field || ""}
                 fullWidth
                 inputProps={{ maxLength: 64 }}
                 onChange={(e) => setEditableWell({ ...editableWell, field: e.target.value })}
@@ -77,7 +77,7 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
               <TextField
                 id={"country"}
                 label={"country"}
-                value={editableWell.country}
+                value={editableWell.country || ""}
                 fullWidth
                 inputProps={{ maxLength: 32 }}
                 onChange={(e) => setEditableWell({ ...editableWell, country: e.target.value })}
@@ -85,7 +85,7 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
               <TextField
                 id={"operator"}
                 label={"operator"}
-                value={editableWell.operator}
+                value={editableWell.operator || ""}
                 fullWidth
                 inputProps={{ maxLength: 64 }}
                 onChange={(e) => setEditableWell({ ...editableWell, operator: e.target.value })}
@@ -96,10 +96,11 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
                 value={editableWell.timeZone}
                 fullWidth
                 error={!validTimeZone(editableWell.timeZone)}
-                helperText={"TimeZone has to be in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"}
+                helperText={"TimeZone has to be 'Z' or in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"}
                 inputProps={{ maxLength: 6 }}
                 onChange={(e) => setEditableWell({ ...editableWell, timeZone: e.target.value })}
               />
+              <TextField disabled id={"numLicense"} label={"numLicense"} defaultValue={well.numLicense} fullWidth />
               {mode !== PropertiesModalMode.New && (
                 <>
                   <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone)} fullWidth />

@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Models
         public string Field { get; init; }
         public string TimeZone { get; init; }
         public string Operator { get; init; }
+        public string NumLicense { get; init; }
         public string DateTimeCreation { get; init; }
         public string DateTimeLastChange { get; init; }
         public string ItemState { get; init; }

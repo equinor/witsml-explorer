@@ -18,7 +18,11 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public MessageTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(config.Hostname, config.Username, config.Password, new WitsmlClientCapabilities());
+            _client = new WitsmlClient(new WitsmlClientOptions
+            {
+                Hostname = config.Hostname,
+                Credentials = new WitsmlCredentials(config.Username, config.Password)
+            });
         }
 
         [Fact(Skip = "Should only be run manually")]

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -14,11 +15,12 @@ export interface WellRow extends ContentTableRow, Well {}
 
 export const WellsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, filteredWells, wells } = navigationState;
+  const { servers, wells } = navigationState;
   const {
     dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
+  const filteredWells = useWellFilter(wells);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
@@ -31,7 +33,7 @@ export const WellsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (well: any) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well, wellbores: well.wellbores } });
+    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
   };
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well, checkedWellRows: WellRow[]) => {
@@ -56,7 +58,7 @@ export const WellsListView = (): React.ReactElement => {
       {wells.length > 0 && filteredWells.length == 0 ? (
         <>No wells match the current filter</>
       ) : (
-        <ContentTable columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+        <ContentTable viewId="wellsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
       )}
     </WellProgress>
   );

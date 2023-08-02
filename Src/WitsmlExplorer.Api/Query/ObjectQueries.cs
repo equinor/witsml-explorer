@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using Witsml.Data;
 using Witsml.Data.MudLog;
 using Witsml.Data.Tubular;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 
@@ -41,6 +43,35 @@ namespace WitsmlExplorer.Api.Query
                 o.NameWellbore = targetWellbore.Name;
                 return o;
             });
+        }
+
+        public static IWitsmlObjectList GetWitsmlObjectsByType(EntityType type)
+        {
+            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
+            o.UidWell = "";
+            o.UidWellbore = "";
+            o.Uid = "";
+            o.Name = "";
+            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
+        }
+
+        public static IWitsmlObjectList GetWitsmlObjectsWithParamByType(EntityType type, string objectProperty, string objectPropertyValue)
+        {
+            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
+            o.UidWell = "";
+            o.UidWellbore = "";
+            o.Uid = "";
+            o.Name = "";
+            if (objectProperty != null)
+            {
+                PropertyInfo property = o.GetType().GetProperty(objectProperty.CapitalizeFirstLetter());
+                if (property == null || !property.CanWrite)
+                {
+                    throw new ArgumentException($"{objectProperty} must be a supported property of a {type}.");
+                }
+                property.SetValue(o, objectPropertyValue);
+            }
+            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
@@ -92,6 +123,10 @@ namespace WitsmlExplorer.Api.Query
                     ((WitsmlWbGeometry)objectOnWellbore).WbGeometrySections = componentUids.Select(uid =>
                         new WitsmlWbGeometrySection { Uid = uid }).ToList();
                     break;
+                case ComponentType.Fluid:
+                    ((WitsmlFluidsReport)objectOnWellbore).Fluids = componentUids.Select(uid =>
+                        new WitsmlFluid { Uid = uid }).ToList();
+                    break;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");
             }
@@ -106,6 +141,7 @@ namespace WitsmlExplorer.Api.Query
                 ComponentType.TrajectoryStation => ((WitsmlTrajectory)objectOnWellbore).TrajectoryStations.Select(component => component.Uid),
                 ComponentType.TubularComponent => ((WitsmlTubular)objectOnWellbore).TubularComponents.Select(component => component.Uid),
                 ComponentType.WbGeometrySection => ((WitsmlWbGeometry)objectOnWellbore).WbGeometrySections.Select(component => component.Uid),
+                ComponentType.Fluid => ((WitsmlFluidsReport)objectOnWellbore).Fluids.Select(component => component.Uid),
                 _ => throw new ArgumentException($"Invalid component type {componentType}"),
             };
         }
@@ -135,6 +171,9 @@ namespace WitsmlExplorer.Api.Query
                     return target;
                 case ComponentType.WbGeometrySection:
                     ((WitsmlWbGeometry)target).WbGeometrySections = ((WitsmlWbGeometry)source).WbGeometrySections.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
+                    return target;
+                case ComponentType.Fluid:
+                    ((WitsmlFluidsReport)target).Fluids = ((WitsmlFluidsReport)source).Fluids.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");

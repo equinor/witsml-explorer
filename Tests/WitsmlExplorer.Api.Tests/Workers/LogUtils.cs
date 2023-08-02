@@ -41,12 +41,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlSourceClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, DepthStart, DepthEnd));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlSourceClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == SourceLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null, null)))
                         .ReturnsAsync(sourceLogs ?? GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, TimeStart, TimeEnd));
                     break;
                 default:
@@ -60,12 +60,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
                     witsmlTargetClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null, null)))
                         .ReturnsAsync(targetLogs ?? GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_MD));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
                     witsmlTargetClient.Setup(client =>
-                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null)))
+                            client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == TargetLogUid), new OptionsIn(ReturnElements.HeaderOnly, null, null, null)))
                         .ReturnsAsync(targetLogs ?? GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
                     break;
                 default:
@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public static void SetupGetDepthIndexed(Mock<IWitsmlClient> witsmlClient, WitsmlLogs query = null)
         {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public static void SetupGetDepthIndexedDecreasing(Mock<IWitsmlClient> witsmlClient, WitsmlLogs query = null)
         {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .Callback<WitsmlLogs, OptionsIn>((logs, _) => query = logs)
                 .ReturnsAsync(() =>
                 {
@@ -396,7 +396,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public static void SetupGetDepthIndexed(Mock<IWitsmlClient> witsmlClient, Func<WitsmlLogs, bool> predicate, List<WitsmlData> data)
         {
-            witsmlClient.Setup(client => client.GetFromStoreAsync(It.Is<WitsmlLogs>(logs => predicate(logs)), new OptionsIn(ReturnElements.DataOnly, null, null)))
+            witsmlClient.Setup(client => client.GetFromStoreAsync(It.Is<WitsmlLogs>(logs => predicate(logs)), new OptionsIn(ReturnElements.DataOnly, null, null, null)))
                 .ReturnsAsync(() => new WitsmlLogs
                 {
                     Logs = new WitsmlLog

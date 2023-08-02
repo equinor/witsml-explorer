@@ -73,7 +73,7 @@ export const WbGeometriesListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.wbGeometries, wbGeometries) && (
-      <ContentTable columns={columns} data={getTableData()} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows />
+      <ContentTable viewId="wbGeometriesListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} onSelect={onSelect} checkableRows showRefresh />
     )
   );
 };

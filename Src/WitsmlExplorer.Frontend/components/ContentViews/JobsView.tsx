@@ -1,5 +1,5 @@
 import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
@@ -9,17 +9,18 @@ import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
 import NotificationService, { Notification } from "../../services/notificationService";
+import { Colors } from "../../styles/Colors";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType, Order } from "./table";
 import { clipLongString } from "./ViewUtils";
+import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const { servers, selectedServer } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
@@ -44,7 +45,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldFetch = notification.serverUrl.toString().toLowerCase() === navigationState.selectedServer?.url?.toLowerCase();
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -93,61 +94,78 @@ export const JobsView = (): React.ReactElement => {
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
-  const jobInfoRows = jobInfos.map((jobInfo) => {
-    return {
-      ...jobInfo,
-      failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
-      wellName: clipLongString(jobInfo.wellName, 20, "-"),
-      wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
-      objectName: clipLongString(jobInfo.objectName, 30, "-"),
-      startTime: formatDateString(jobInfo.startTime, timeZone),
-      endTime: formatDateString(jobInfo.endTime, timeZone),
-      targetServer: serverUrlToName(servers, jobInfo.targetServer),
-      sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
-      jobInfo: jobInfo
-    };
-  });
-
-  return (
-    <>
-      <Panel>
-        <Button
-          variant="outlined"
-          aria-disabled={shouldRefresh ? true : false}
-          aria-label={shouldRefresh ? "loading data" : null}
-          onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
-          disabled={shouldRefresh}
-        >
-          <Icon name="refresh" />
-          Refresh
-        </Button>
-        {msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) && (
-          <Switch
-            label="Show all users' jobs"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setShowAll(e.target.checked);
-            }}
-          />
-        )}
-        <Typography>Last fetched: {lastFetched}</Typography>
-      </Panel>
-      <ContentTable columns={columns} data={jobInfoRows} order={Order.Descending} onContextMenu={onContextMenu} />
-    </>
+  const jobInfoRows = useMemo(
+    () =>
+      jobInfos
+        .map((jobInfo) => {
+          return {
+            ...jobInfo,
+            failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
+            wellName: clipLongString(jobInfo.wellName, 20, "-"),
+            wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
+            objectName: clipLongString(jobInfo.objectName, 30, "-"),
+            startTime: formatDateString(jobInfo.startTime, timeZone),
+            endTime: formatDateString(jobInfo.endTime, timeZone),
+            targetServer: serverUrlToName(servers, jobInfo.targetServer),
+            sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
+            jobInfo: jobInfo
+          };
+        })
+        .sort((obj1, obj2) => {
+          return obj2.startTime.localeCompare(obj1.startTime);
+        }),
+    [jobInfos]
   );
+
+  const panelElements = [
+    <StyledButton
+      key="refreshJobs"
+      variant="outlined"
+      aria-disabled={shouldRefresh ? true : false}
+      aria-label={shouldRefresh ? "loading data" : null}
+      onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
+      disabled={shouldRefresh}
+      colors={colors}
+    >
+      <Icon name="refresh" />
+      Refresh
+    </StyledButton>,
+    msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
+      <StyledSwitch
+        colors={colors}
+        key="showAllUsersJobs"
+        label="Show all users' jobs"
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          setShowAll(e.target.checked);
+        }}
+      />
+    ) : null,
+    <Typography style={{ color: colors.text.staticIconsDefault }} key="lastFetched">
+      Last fetched: {lastFetched}
+    </Typography>
+  ];
+
+  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} />;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {
   if (!url) {
     return "-";
   }
-  const server = servers.find((server) => server.url == url);
+  const server = servers.find((server) => server.url.toLowerCase() == url.toLowerCase());
   return server ? server.name : url;
 };
 
-const Panel = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  white-space: nowrap;
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
+
+const StyledSwitch = styled(Switch)<{ colors: Colors }>`
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+    margin-left: 0;
+  }
 `;
 
 export default JobsView;

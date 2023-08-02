@@ -69,6 +69,11 @@ namespace WitsmlExplorer.Api.Middleware
                 Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
                 await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
             }
+            catch (WitsmlUnsupportedCapabilityException ex)
+            {
+                Log.Error($"Got status code: {ex.StatusCode} and message: {ex.Message}");
+                await HandleExceptionAsync(httpContext, new() { StatusCode = ex.StatusCode, Message = ex.Message });
+            }
             catch (Exception ex)
             {
                 Log.Fatal($"Something went wrong: {ex}");

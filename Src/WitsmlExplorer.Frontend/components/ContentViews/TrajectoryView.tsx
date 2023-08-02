@@ -97,7 +97,11 @@ export const TrajectoryView = (): React.ReactElement => {
     };
   });
 
-  return selectedTrajectory && !isFetchingData ? <ContentTable columns={columns} data={trajectoryStationRows} onContextMenu={onContextMenu} checkableRows /> : <></>;
+  return selectedTrajectory && !isFetchingData ? (
+    <ContentTable viewId="trajectoryView" columns={columns} data={trajectoryStationRows} onContextMenu={onContextMenu} checkableRows />
+  ) : (
+    <></>
+  );
 };
 
 export default TrajectoryView;

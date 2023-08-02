@@ -26,9 +26,13 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells", WellHandler.GetAllWells, useOAuth2);
             app.MapGet("/wells/{wellUid}", WellHandler.GetWell, useOAuth2);
 
+            app.MapGet("/objects/{objectType}", ObjectHandler.GetObjectsByType, useOAuth2);
+            app.MapGet("/objects/{objectType}/{objectProperty}/{objectPropertyValue}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
+
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
@@ -39,6 +43,8 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
 
             app.MapGet(routes[EntityType.FluidsReport], FluidsReportHandler.GetFluidsReports, useOAuth2);
+            app.MapGet(routes[EntityType.FluidsReport] + "/{fluidsReportUid}", FluidsReportHandler.GetFluidsReport, useOAuth2);
+            app.MapGet(routes[EntityType.FluidsReport] + "/{fluidsReportUid}/" + ComponentType.Fluid.ToPluralLowercase(), FluidsReportHandler.GetFluids, useOAuth2);
 
             app.MapGet(routes[EntityType.FormationMarker], FormationMarkerHandler.GetFormationMarkers, useOAuth2);
             app.MapGet(routes[EntityType.FormationMarker] + "/{formationMarkerUid}", FormationMarkerHandler.GetFormationMarker, useOAuth2);

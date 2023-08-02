@@ -1,4 +1,4 @@
-import { Button, Grid, LinearProgress } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -6,27 +6,18 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import useExport from "../../hooks/useExport";
-import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import { DeleteLogCurveValuesJob, IndexRange } from "../../models/jobs/deleteLogCurveValuesJob";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import LogObject from "../../models/logObject";
+import LogObject, { indexToNumber } from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
+import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import {
-  ContentTableColumn,
-  ContentTableRow,
-  ExportableContentTableColumn,
-  Order,
-  VirtualizedContentTable,
-  calculateProgress,
-  getColumnType,
-  getComparatorByColumn,
-  getIndexRanges,
-  getProgressRange
-} from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -37,7 +28,6 @@ export const CurveValuesView = (): React.ReactElement => {
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [progress, setProgress] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
   const selectedLog = selectedObject as LogObject;
   const { exportData, properties: exportOptions } = useExport({
@@ -60,10 +50,6 @@ export const CurveValuesView = (): React.ReactElement => {
     };
     return deleteLogCurveValuesJob;
   };
-
-  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => {
-    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
-  }, []);
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
@@ -112,40 +98,32 @@ export const CurveValuesView = (): React.ReactElement => {
 
     async function getLogData() {
       const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
-      let startIndex = String(selectedLogCurveInfo[0].minIndex);
+      const startIndex = String(selectedLogCurveInfo[0].minIndex);
       const endIndex = String(selectedLogCurveInfo[0].maxIndex);
-      const { minIndex, maxIndex } = getProgressRange(startIndex, endIndex, selectedLog.indexType);
 
       let completeData: CurveValueRow[] = [];
-      let fetchData = true;
-      while (fetchData) {
-        const logData: LogData = await LogObjectService.getLogData(
-          selectedWell.uid,
-          selectedWellbore.uid,
-          selectedLog.uid,
-          mnemonics,
-          completeData.length === 0,
-          startIndex,
-          endIndex,
-          controller.signal
-        );
-        if (logData && logData.data) {
-          setProgress(calculateProgress(logData.endIndex, minIndex, maxIndex, selectedLog.indexType));
-          updateColumns(logData.curveSpecifications);
+      const logData: LogData = await LogObjectService.getLogData(
+        selectedWell.uid,
+        selectedWellbore.uid,
+        selectedLog.uid,
+        mnemonics,
+        completeData.length === 0,
+        startIndex,
+        endIndex,
+        controller.signal
+      );
+      if (logData && logData.data) {
+        updateColumns(logData.curveSpecifications);
 
-          const logDataRows = logData.data.map((data, index) => {
-            const row: CurveValueRow = {
-              id: completeData.length + index,
-              ...data
-            };
-            return row;
-          });
-          completeData = [...completeData, ...logDataRows];
-          setTableData(completeData);
-          startIndex = logData.endIndex;
-        } else {
-          fetchData = false;
-        }
+        const logDataRows = logData.data.map((data, index) => {
+          const row: CurveValueRow = {
+            id: completeData.length + index,
+            ...data
+          };
+          return row;
+        });
+        completeData = [...completeData, ...logDataRows];
+        setTableData(completeData);
       }
     }
 
@@ -160,47 +138,91 @@ export const CurveValuesView = (): React.ReactElement => {
     };
   }, [selectedLogCurveInfo, selectedLog]);
 
+  const panelElements = [
+    <EditInterval key="editinterval" />,
+    <Button key="downloadall" disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
+      Download all as .csv
+    </Button>,
+    <Button key="downloadselected" disabled={isLoading || !selectedRows.length} onClick={() => exportSelectedDataPoints()}>
+      Download selected as .csv
+    </Button>
+  ];
+
   return (
-    <Container>
-      {Boolean(tableData.length) && (
-        <ExportButtonGrid container spacing={1}>
-          <Grid item>
-            {
-              <Button disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
-                Download all as .csv
-              </Button>
-            }
-          </Grid>
-          {Boolean(selectedRows.length) && (
-            <Grid item>
-              {
-                <Button disabled={isLoading} onClick={() => exportSelectedDataPoints()}>
-                  Download selected as .csv
-                </Button>
-              }
-            </Grid>
-          )}
-        </ExportButtonGrid>
-      )}
-      {isLoading && <LinearProgress variant={"determinate"} value={progress} />}
+    <>
+      {isLoading && <ProgressSpinner message="Fetching data" />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
-        <VirtualizedContentTable columns={columns} onRowSelectionChange={rowSelectionCallback} onContextMenu={onContextMenu} data={tableData} checkableRows={true} />
+        <>
+          <ContentTable
+            columns={columns}
+            onRowSelectionChange={(rows) => setSelectedRows(rows as CurveValueRow[])}
+            onContextMenu={onContextMenu}
+            data={tableData}
+            checkableRows={true}
+            panelElements={panelElements}
+            stickyLeftColumns={2}
+          />
+        </>
       )}
-    </Container>
+    </>
   );
 };
-
-const Container = styled.div`
-  height: calc(100% - 65px);
-  width: calc(100% - 14px);
-`;
-
-const ExportButtonGrid = styled(Grid)`
-  padding: 10px;
-`;
-
 const Message = styled.div`
   margin: 10px;
   padding: 10px;
 `;
+
+const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedLog: LogObject): IndexRange[] => {
+  const sortedItems = checkedContentItems.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const indexCurve = selectedLog.indexCurve;
+
+  return sortedItems.reduce((accumulator: IndexRange[], currentElement: any, currentIndex) => {
+    const currentId = currentElement["id"];
+    const indexValue = String(currentElement[indexCurve]);
+
+    if (accumulator.length === 0) {
+      accumulator.push({ startIndex: indexValue, endIndex: indexValue });
+    } else {
+      const inSameRange = currentId - sortedItems[currentIndex - 1].id === 1;
+      if (inSameRange) {
+        accumulator[accumulator.length - 1].endIndex = indexValue;
+      } else {
+        accumulator.push({ startIndex: indexValue, endIndex: indexValue });
+      }
+    }
+    return accumulator;
+  }, []);
+};
+
+const getComparatorByColumn = (column: ContentTableColumn): [(row: any) => any, string] => {
+  let comparator;
+  switch (column.type) {
+    case ContentType.Number:
+      comparator = (row: any): number => Number(row[column.property]);
+      break;
+    case ContentType.Measure:
+      comparator = (row: any): number => Number(indexToNumber(row[column.property]));
+      break;
+    default:
+      comparator = (row: any): string => row[column.property];
+      break;
+  }
+  return [comparator, column.property];
+};
+
+const getColumnType = (curveSpecification: CurveSpecification) => {
+  const isTimeMnemonic = (mnemonic: string) => ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
+  if (isTimeMnemonic(curveSpecification.mnemonic)) {
+    return ContentType.DateTime;
+  }
+  switch (curveSpecification.unit.toLowerCase()) {
+    case "time":
+    case "datetime":
+      return ContentType.DateTime;
+    case "unitless":
+      return ContentType.String;
+    default:
+      return ContentType.Number;
+  }
+};

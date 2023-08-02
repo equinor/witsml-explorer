@@ -1,4 +1,5 @@
 import { Dispatch, ReactElement, useReducer } from "react";
+import { Colors, light } from "../styles/Colors";
 import OperationType from "./operationType";
 
 export enum UserTheme {
@@ -56,12 +57,18 @@ export interface SetTimeZoneAction extends PayloadAction {
   payload: TimeZone;
 }
 
+export interface SetModeAction extends PayloadAction {
+  type: OperationType.SetMode;
+  payload: Colors;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
   modals: ReactElement[];
   theme: UserTheme;
   timeZone: TimeZone;
+  colors: Colors;
 }
 
 export interface MousePosition {
@@ -74,7 +81,9 @@ export interface ContextMenu {
   position: MousePosition;
 }
 
-const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+export const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+
+const Light: Colors = light;
 
 export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
   const initialState: OperationState = {
@@ -82,7 +91,8 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     progressIndicatorValue: 0,
     modals: [],
     theme: UserTheme.Compact,
-    timeZone: TimeZone.Local
+    timeZone: TimeZone.Local,
+    colors: Light
   };
   return useReducer(reducer, initialState);
 };
@@ -101,6 +111,8 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return setTheme(state, action as SetThemeAction);
     case OperationType.SetTimeZone:
       return setTimeZone(state, action as SetTimeZoneAction);
+    case OperationType.SetMode:
+      return setMode(state, action as SetModeAction);
     default:
       throw new Error();
   }
@@ -153,4 +165,13 @@ const setTimeZone = (state: OperationState, { payload }: SetTimeZoneAction) => {
   };
 };
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction;
+const setMode = (state: OperationState, { payload }: SetModeAction) => {
+  return {
+    ...state,
+    colors: payload
+  };
+};
+
+export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetModeAction;
+
+export type DispatchOperation = (action: OperationAction) => void;
