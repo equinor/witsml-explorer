@@ -9,7 +9,7 @@ export const TableContainer = styled.div<{ showPanel?: boolean }>`
     props.showPanel
       ? `
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: auto 1fr;
   `
       : ""}
 `;
@@ -75,7 +75,7 @@ export const StyledTh = styled(TableCell)<{ sticky?: number; colors: Colors }>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 3; } &:nth-child(2) { position: sticky; z-index: 3; }" : "")}
+  ${(props) => (props.sticky ? "&&&{ position: sticky; z-index: 3; }" : "")}
 `;
 
 export const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number; colors: Colors }>`
@@ -91,5 +91,5 @@ export const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  ${(props) => (props.sticky ? "&:nth-child(1) { position: sticky; z-index: 2; } &:nth-child(2) { position: sticky; z-index: 2; }" : "")}
+  ${(props) => (props.sticky ? "&&&{ position: sticky; z-index: 2; }" : "")}
 `;
