@@ -32,7 +32,7 @@ describe("<ContentTable />", () => {
   it("Should render a plain table", () => {
     const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
     expect(container.querySelectorAll("table")).toHaveLength(1);
-    expect(container.querySelectorAll("th")).toHaveLength(columns.length);
+    expect(container.querySelectorAll("th")).toHaveLength(columns.length + 2);
     data.forEach((element) => {
       expect(container.querySelector("tbody")).toHaveTextContent(element.name);
       expect(container.querySelector("tbody")).toHaveTextContent(element.field);
@@ -42,15 +42,15 @@ describe("<ContentTable />", () => {
   it("Should have sortable columns", () => {
     const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
     let firstRow = container.querySelector("tbody").querySelector("tr");
-    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
+    expect(firstRow.querySelectorAll("td")[1]).toHaveTextContent(data[0].name);
 
     fireEvent.click(screen.queryAllByRole("button")[0]);
     firstRow = container.querySelector("tbody").querySelector("tr");
-    expect(firstRow.querySelector("td")).toHaveTextContent(data[0].name);
+    expect(firstRow.querySelectorAll("td")[1]).toHaveTextContent(data[0].name);
 
     fireEvent.click(screen.queryAllByRole("button")[0]);
     firstRow = container.querySelector("tbody").querySelector("tr");
-    expect(firstRow.querySelector("td")).toHaveTextContent(data[1].name);
+    expect(firstRow.querySelectorAll("td")[1]).toHaveTextContent(data[1].name);
   });
 
   it("Should be possible to select single rows", () => {
@@ -62,7 +62,7 @@ describe("<ContentTable />", () => {
     };
     const { container } = renderWithContexts(<ContentTable columns={columns} data={data} onSelect={onSelect} showPanel={false} />);
     const rowToSelect = 1;
-    const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[rowToSelect].children[0];
+    const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[rowToSelect].children[1];
     fireEvent.click(cellToClick);
     expect(selections).toBe(1);
     expect(selectedRow).toBe(data[rowToSelect]);
