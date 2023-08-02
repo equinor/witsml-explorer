@@ -58,7 +58,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     showPanel = true,
     showRefresh = false,
     stickyLeftColumns = 0,
-    viewId
+    viewId,
+    onRowSelectionChange
   } = contentTableProps;
   const {
     operationState: { colors }
@@ -97,7 +98,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     onRowSelectionChange: (updaterOrValue) => {
       const newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(rowSelection) : updaterOrValue;
       setRowSelection(newRowSelection);
-      // call onRowSelectionChange here with original rows filtered on newRowSelection once VirtualizedContentTable is replaced
+      onRowSelectionChange?.(data.filter((_, index) => newRowSelection[index]));
     },
     meta: {
       previousIndex,

@@ -25,7 +25,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         header: column.label,
         size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
-        sortingFn: column.type == ContentType.Measure ? measureSortingFn : "text",
+        sortingFn: getSortingFn(column.type),
         ...addActiveCurveFiltering(column.label)
       };
     });
@@ -115,4 +115,13 @@ const getCheckableRowsColumnDef = (isCompactMode: boolean): ColumnDef<any, any> 
       </div>
     )
   };
+};
+
+const getSortingFn = (contentType: ContentType) => {
+  if (contentType == ContentType.Measure) {
+    return measureSortingFn;
+  } else if (contentType == ContentType.Number) {
+    return "alphanumeric";
+  }
+  return "text";
 };

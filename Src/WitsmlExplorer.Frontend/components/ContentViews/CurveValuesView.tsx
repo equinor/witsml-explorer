@@ -17,7 +17,7 @@ import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import ProgressSpinner from "../ProgressSpinner";
 import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import { ContentTable, ContentTableColumn, ContentTableRow, ExportableContentTableColumn, Order, getColumnType, getComparatorByColumn, getIndexRanges } from "./table";
+import { ContentTable, ContentTableRow, ExportableContentTableColumn, Order, getColumnType, getComparatorByColumn, getIndexRanges } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -50,10 +50,6 @@ export const CurveValuesView = (): React.ReactElement => {
     };
     return deleteLogCurveValuesJob;
   };
-
-  const rowSelectionCallback = useCallback((rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => {
-    setSelectedRows(orderBy([...rows.map((row) => row as CurveValueRow)], getComparatorByColumn(sortedColumn), [sortOrder, sortOrder]));
-  }, []);
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns.map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`).join(exportOptions.separator);
@@ -160,7 +156,7 @@ export const CurveValuesView = (): React.ReactElement => {
         <>
           <ContentTable
             columns={columns}
-            onRowSelectionChange={rowSelectionCallback}
+            onRowSelectionChange={(rows) => setSelectedRows(rows as CurveValueRow[])}
             onContextMenu={onContextMenu}
             data={tableData}
             checkableRows={true}

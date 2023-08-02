@@ -22,7 +22,7 @@ export interface ContentTableProps {
   onSelect?: (row: ContentTableRow) => void;
   onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
   checkableRows?: boolean;
-  onRowSelectionChange?: (rows: ContentTableRow[], sortOrder: Order, sortedColumn: ContentTableColumn) => void;
+  onRowSelectionChange?: (rows: ContentTableRow[]) => void;
   insetColumns?: ContentTableColumn[];
   panelElements?: React.ReactElement[];
   showPanel?: boolean;
