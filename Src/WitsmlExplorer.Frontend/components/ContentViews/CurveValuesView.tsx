@@ -165,6 +165,7 @@ export const CurveValuesView = (): React.ReactElement => {
             data={tableData}
             checkableRows={true}
             panelElements={panelElements}
+            stickyLeftColumns={2}
           />
         </>
       )}

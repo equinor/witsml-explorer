@@ -13,7 +13,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean) => {
+export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean, stickyLeftColumns: number) => {
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   return useMemo(() => {
@@ -41,6 +41,10 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
     }
 
     columnDef = [...(checkableRows ? [getCheckableRowsColumnDef(isCompactMode)] : []), ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []), ...columnDef];
+    const firstToggleableIndex = Math.max((checkableRows ? 1 : 0) + (insetColumns ? 1 : 0), stickyLeftColumns);
+    for (let i = 0; i < firstToggleableIndex; i++) {
+      columnDef[i].enableHiding = false;
+    }
     return columnDef;
   }, [columns]);
 };
