@@ -6,9 +6,9 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import useExport from "../../hooks/useExport";
-import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
+import { DeleteLogCurveValuesJob, IndexRange } from "../../models/jobs/deleteLogCurveValuesJob";
 import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import LogObject from "../../models/logObject";
+import LogObject, { indexToNumber } from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
@@ -17,7 +17,7 @@ import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import ProgressSpinner from "../ProgressSpinner";
 import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import { ContentTable, ContentTableRow, ExportableContentTableColumn, Order, getColumnType, getComparatorByColumn, getIndexRanges } from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -172,3 +172,57 @@ const Message = styled.div`
   margin: 10px;
   padding: 10px;
 `;
+
+const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedLog: LogObject): IndexRange[] => {
+  const sortedItems = checkedContentItems.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const indexCurve = selectedLog.indexCurve;
+
+  return sortedItems.reduce((accumulator: IndexRange[], currentElement: any, currentIndex) => {
+    const currentId = currentElement["id"];
+    const indexValue = String(currentElement[indexCurve]);
+
+    if (accumulator.length === 0) {
+      accumulator.push({ startIndex: indexValue, endIndex: indexValue });
+    } else {
+      const inSameRange = currentId - sortedItems[currentIndex - 1].id === 1;
+      if (inSameRange) {
+        accumulator[accumulator.length - 1].endIndex = indexValue;
+      } else {
+        accumulator.push({ startIndex: indexValue, endIndex: indexValue });
+      }
+    }
+    return accumulator;
+  }, []);
+};
+
+const getComparatorByColumn = (column: ContentTableColumn): [(row: any) => any, string] => {
+  let comparator;
+  switch (column.type) {
+    case ContentType.Number:
+      comparator = (row: any): number => Number(row[column.property]);
+      break;
+    case ContentType.Measure:
+      comparator = (row: any): number => Number(indexToNumber(row[column.property]));
+      break;
+    default:
+      comparator = (row: any): string => row[column.property];
+      break;
+  }
+  return [comparator, column.property];
+};
+
+const getColumnType = (curveSpecification: CurveSpecification) => {
+  const isTimeMnemonic = (mnemonic: string) => ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
+  if (isTimeMnemonic(curveSpecification.mnemonic)) {
+    return ContentType.DateTime;
+  }
+  switch (curveSpecification.unit.toLowerCase()) {
+    case "time":
+    case "datetime":
+      return ContentType.DateTime;
+    case "unitless":
+      return ContentType.String;
+    default:
+      return ContentType.Number;
+  }
+};
