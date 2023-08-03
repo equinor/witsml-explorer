@@ -29,15 +29,24 @@ namespace WitsmlExplorer.Api.Workers
             string indexType = job.LogReference.IndexType;
             bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
-            // Get the data for the data end and start indexes
-            WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
-            WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.Requested, MaxReturnNodes: 1));
-            if (dataStartResult == null)
+            // Get the header indexes
+            WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
+            WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
+            if (headerResult == null)
             {
                 string reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason, jobId: job.JobInfo.Id), null);
             }
-            WitsmlLogs dataEndResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.Requested, RequestLatestValues: 1));
+            WitsmlLog headerResultLog = (WitsmlLog)headerResult.Objects.First();
+            string headerEndIndex = isDepthLog ? headerResultLog.EndIndex.Value : headerResultLog.EndDateTimeIndex;
+            string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
+            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
+            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
+
+            // Get the data for the data end and start indexes
+            WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
+            WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1));
+            WitsmlLogs dataEndResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, RequestLatestValues: 1));
             WitsmlLog dataStartResultLog = (WitsmlLog)dataStartResult.Objects.First();
             WitsmlLog dataEndResultLog = (WitsmlLog)dataEndResult.Objects.First();
             if (dataStartResultLog.LogData == null || dataEndResultLog.LogData == null)
@@ -49,17 +58,18 @@ namespace WitsmlExplorer.Api.Workers
             string[] startResultLogData = dataStartResultLog.LogData.Data.First().Data.Split(",");
             IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
             IEnumerable<string> dataEndIndexes = ExtractColumnIndexes(endResultLogData);
-            string[] mnemonics = dataStartResultLog.LogData.MnemonicList.Split(",");
-            Dictionary<string, string> dataStartValues = dataStartIndexes.Select((value, index) => new { mnemonic = mnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
-            Dictionary<string, string> dataEndValues = dataEndIndexes.Select((value, index) => new { mnemonic = mnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
+            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList.Split(",");
+            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList.Split(",");
+            Dictionary<string, string> dataStartValues = dataStartIndexes.Select((value, index) => new { mnemonic = startMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
+            Dictionary<string, string> dataEndValues = dataEndIndexes.Where(value => !string.IsNullOrEmpty(value)).Select((value, index) => new { mnemonic = endMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
 
             // Get the data for the data start indexes for the mnemonics without values in the first data point of the log
-            string[] missingMnemonics = mnemonics.Where(mnemonic => dataStartValues[mnemonic] == "").ToArray();
+            string[] missingMnemonics = endMnemonics.Where(mnemonic => !startMnemonics.Contains(mnemonic)).ToArray();
             if (missingMnemonics.Any())
             {
                 IEnumerable<WitsmlLogs> missingIndexQueries = missingMnemonics.Select(mnemonic => LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, new List<string>() { mnemonic }, null, null));
                 // Request a data row for each mnemonic to get the start indexes of that mnemonic
-                IEnumerable<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested, MaxReturnNodes: 1)));
+                List<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1))).ToList();
                 await Task.WhenAll(missingDataResults);
                 IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
                 IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
@@ -71,17 +81,11 @@ namespace WitsmlExplorer.Api.Workers
                     .ForEach(item => dataStartValues[item.mnemonic] = item.value);
             }
 
-            // Get the header indexes
-            WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
-            WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
-            WitsmlLog headerResultLog = (WitsmlLog)headerResult.Objects.First();
-            string headerEndIndex = isDepthLog ? headerResultLog.EndIndex.Value : headerResultLog.EndDateTimeIndex;
-            string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
-            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
-            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
 
+
+            // Check for mismatches
             List<CheckLogHeaderReportItem> mismatchingIndexes = new();
-            string firstMnemonic = mnemonics[0];
+            string firstMnemonic = endMnemonics[0];
             // Check the header indexes
             if (HasMismatch(isDepthLog, headerStartIndex, dataStartValues[firstMnemonic], headerEndIndex, dataEndValues[firstMnemonic]))
             {

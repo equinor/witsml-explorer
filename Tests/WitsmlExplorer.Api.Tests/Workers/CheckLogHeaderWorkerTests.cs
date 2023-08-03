@@ -28,11 +28,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string LogName = "Test log";
         private const string WellUid = "W-5209671";
         private const string WellboreUid = "B-5209671";
-        private const string DepthDataRow1 = "100,,501";
+        private const string DepthDataRow1 = "100,501";
         private const string DepthDataRow2 = "101,51,502";
         private const string DepthDataRow3 = "102,52,";
         private const string DepthDataFirstRowForTQ = "101,51";
-        private const string TimeDataRow1 = "2023-04-19T00:00:00Z,,501";
+        private const string TimeDataRow1 = "2023-04-19T00:00:00Z,501";
         private const string TimeDataRow2 = "2023-04-19T00:00:01Z,51,502";
         private const string TimeDataRow3 = "2023-04-19T00:00:02Z,52,";
         private const string TimeDataFirstRowForTQ = "2023-04-19T00:00:01Z,51";
@@ -232,7 +232,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         MnemonicList = "Depth,TQ,ROP",
                         Data = new List<WitsmlData>()
                         {
-                            new WitsmlData(){Data = isDepthLog ? DepthDataRow1 : TimeDataRow1},
                             new WitsmlData(){Data = isDepthLog ? DepthDataRow2 : TimeDataRow2},
                             new WitsmlData(){Data = isDepthLog ? DepthDataRow3 : TimeDataRow3}
                         }
@@ -253,7 +252,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Uid = LogUid,
                     LogData = new WitsmlLogData()
                     {
-                        MnemonicList = "Depth,TQ,ROP",
+                        MnemonicList = "Depth,ROP",
                         Data = new List<WitsmlData>()
                         {
                             new WitsmlData(){Data = isDepthLog ? DepthDataRow1 : TimeDataRow1},
