@@ -51,6 +51,93 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task CheckLogHeader_Depth_GetHeaderValues_ReturnsIndexes()
+        {
+            SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, shouldBeConsistent: true);
+
+            (Dictionary<string, string>, Dictionary<string, string>, string, string)? result = await _worker.GetHeaderValues(WellUid, WellboreUid, LogUid, true);
+            Assert.NotNull(result);
+            (Dictionary<string, string> headerStartValues, Dictionary<string, string> headerEndValues, string headerStartIndex, string headerEndIndex) = result.Value;
+            Assert.Equal(3, headerStartValues.Count);
+            Assert.Equal(3, headerEndValues.Count);
+            Assert.Equal("100", headerStartIndex);
+            Assert.Equal("102", headerEndIndex);
+            Assert.Equal("101", headerStartValues["TQ"]);
+        }
+
+        [Fact]
+        public async Task CheckLogHeader_Depth_GetDataValues_ReturnsIndexes()
+        {
+            SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, shouldBeConsistent: true);
+
+            (Dictionary<string, string>, Dictionary<string, string>, string, string)? result = await _worker.GetDataValues(WellUid, WellboreUid, LogUid, WitsmlLog.WITSML_INDEX_TYPE_MD);
+            Assert.NotNull(result);
+            (Dictionary<string, string> dataStartValues, Dictionary<string, string> dataEndValues, string dataStartIndex, string dataEndIndex) = result.Value;
+            Assert.Equal(3, dataStartValues.Count);
+            Assert.Equal(3, dataEndValues.Count);
+            Assert.Equal("100", dataStartIndex);
+            Assert.Equal("102", dataEndIndex);
+            Assert.Equal("101", dataStartValues["TQ"]);
+        }
+
+        [Fact]
+        public void CheckLogHeader_Depth_GetMismatchingIndexes_NoMismatch_IsEmpty()
+        {
+            Dictionary<string, string> headerStartValues = new()
+            {
+                { "Depth", "0" },
+                { "Curve", "1" }
+            };
+            Dictionary<string, string> headerEndValues = new()
+            {
+                { "Depth", "2" },
+                { "Curve", "2" }
+            };
+            Dictionary<string, string> dataStartValues = headerStartValues;
+            Dictionary<string, string> dataEndValues = headerEndValues;
+            const string headerStartIndex = "0";
+            const string headerEndIndex = "2";
+            const string dataStartIndex = headerStartIndex;
+            const string dataEndIndex = headerEndIndex;
+
+            List<CheckLogHeaderReportItem> mismatchingIndexes = CheckLogHeaderWorker.GetMismatchingIndexes(headerStartValues, headerEndValues, dataStartValues, dataEndValues, headerStartIndex, headerEndIndex, dataStartIndex, dataEndIndex, true);
+            Assert.Empty(mismatchingIndexes);
+        }
+
+        [Fact]
+        public void CheckLogHeader_Depth_GetMismatchingIndexes_AddsMismatches()
+        {
+            Dictionary<string, string> headerStartValues = new()
+            {
+                { "Depth", "0" },
+                { "Curve", "1" }
+            };
+            Dictionary<string, string> headerEndValues = new()
+            {
+                { "Depth", "2" },
+                { "Curve", "2" }
+            };
+            Dictionary<string, string> dataStartValues = new()
+            {
+                { "Depth", "0" },
+                { "Curve", "1" }
+            };
+            Dictionary<string, string> dataEndValues = new()
+            {
+                { "Depth", "1" },
+                { "Curve", "1" }
+            };
+            const string headerStartIndex = "0";
+            const string headerEndIndex = "1";
+            const string dataStartIndex = "0";
+            const string dataEndIndex = "1";
+
+            List<CheckLogHeaderReportItem> mismatchingIndexes = CheckLogHeaderWorker.GetMismatchingIndexes(headerStartValues, headerEndValues, dataStartValues, dataEndValues, headerStartIndex, headerEndIndex, dataStartIndex, dataEndIndex, true);
+
+            Assert.Equal(2, mismatchingIndexes.Count);
+        }
+
+        [Fact]
         public async Task CheckLogHeader_Depth_CorrectData_IsValid()
         {
             CheckLogHeaderJob job = CreateJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
