@@ -22,7 +22,7 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -48,7 +48,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   };
 
   const onClickImport = async () => {
-    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0], dispatchOperation };
+    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0] };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
   };
 

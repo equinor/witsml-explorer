@@ -137,8 +137,8 @@ namespace WitsmlExplorer.Api.Workers
                                 {
                                     Mnemonic = job.Mnemonics.ElementAt(i),
                                     Unit = string.IsNullOrEmpty(job.Units.ElementAt(i)) ? "unitless" : job.Units.ElementAt(i), // Can't updateInStore with an empty unit
-                                    Uid = Guid.NewGuid().ToString(),
-                                    TypeLogData = (i == 0 && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME) ? WitsmlLogCurveInfo.LogDataTypeDatetime : WitsmlLogCurveInfo.LogDataTypeDouble
+                                    Uid = job.Mnemonics.ElementAt(i),
+                                    TypeLogData = WitsmlLogCurveInfo.LogDataTypeDouble
                                 }).ToList(),
                 }.AsSingletonList()
             };

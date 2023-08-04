@@ -1,8 +1,9 @@
-﻿import { Button, Tooltip, Typography } from "@material-ui/core";
+﻿import { Accordion, List } from "@equinor/eds-core-react";
+import { Button, Tooltip, Typography } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import ImportLogDataJob from "../../models/jobs/importLogDataJob";
@@ -13,12 +14,11 @@ import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import ComponentService from "../../services/componentService";
 import JobService, { JobType } from "../../services/jobService";
-import Icon from "../../styles/Icons";
+import { StyledAccordionHeader } from "./LogComparisonModal";
 import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
-  dispatchOperation: (action: HideModalAction) => void;
 }
 interface ImportColumn {
   index: number;
@@ -31,7 +31,11 @@ const MISSING_INDEX_CURVE = "The target index curve needs to be present in the c
 const UNITLESS_UNIT = "unitless";
 
 const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement => {
-  const { targetLog, dispatchOperation } = props;
+  const { targetLog } = props;
+  const {
+    dispatchOperation,
+    operationState: { colors }
+  } = useContext(OperationContext);
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<ImportColumn[]>([]);
@@ -113,40 +117,39 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
         <ModalDialog
           heading={`Import data into "${targetLog.name}"`}
           content={
-            <FileContainer>
-              <Button
-                variant="contained"
-                color={"primary"}
-                component="label"
-                startIcon={<CloudUpload />}
-                endIcon={
-                  <Tooltip
-                    placement="right"
-                    title={
-                      <div>
-                        Currently, only double values are supported as TypeLogData.
-                        <br />
+            <Container>
+              <FileContainer>
+                <Button variant="contained" color={"primary"} component="label" startIcon={<CloudUpload />}>
+                  <Typography noWrap>Upload File</Typography>
+                  <input type="file" accept=".csv,text/csv" hidden onChange={handleFileChange} />
+                </Button>
+                <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
+                  <Typography noWrap>{uploadedFile?.name ?? "No file chosen"}</Typography>
+                </Tooltip>
+              </FileContainer>
+              <Accordion>
+                <Accordion.Item>
+                  <StyledAccordionHeader colors={colors}>Limitations</StyledAccordionHeader>
+                  <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
+                    <List>
+                      <List.Item>Currently, only double values are supported as TypeLogData.</List.Item>
+                      <List.Item>
                         The csv is expected to have this format:
-                        <br />
-                        IndexCurve[unit],Curve1[unit],Curve2[unit]
-                        <br />
-                        195.99,,2500
-                        <br />
-                        196.00,1,2501
-                      </div>
-                    }
-                  >
-                    <Icon name="infoCircle" size={18} />
-                  </Tooltip>
-                }
-              >
-                <Typography noWrap>Upload File</Typography>
-                <input type="file" accept=".csv,text/csv" hidden onChange={handleFileChange} />
-              </Button>
-              <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                <Typography noWrap>{uploadedFile?.name ?? "No file chosen"}</Typography>
-              </Tooltip>
-            </FileContainer>
+                        <List>
+                          <List.Item>
+                            IndexCurve[unit],Curve1[unit],Curve2[unit]
+                            <br />
+                            195.99,,2500
+                            <br />
+                            196.00,1,2501
+                          </List.Item>
+                        </List>
+                      </List.Item>
+                    </List>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Accordion>
+            </Container>
           }
           confirmDisabled={!uploadedFile || !!error}
           confirmText={"Import"}
@@ -167,6 +170,12 @@ const FileContainer = styled.div`
   .MuiButton-root {
     min-width: 160px;
   }
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
 export default LogDataImportModal;
