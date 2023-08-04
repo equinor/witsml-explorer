@@ -47,7 +47,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldFetch = notification.serverUrl.toString().toLowerCase() === navigationState.selectedServer?.url?.toLowerCase();
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -161,7 +161,7 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   if (!url) {
     return "-";
   }
-  const server = servers.find((server) => server.url == url);
+  const server = servers.find((server) => server.url.toLowerCase() == url.toLowerCase());
   return server ? server.name : url;
 };
 

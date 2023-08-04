@@ -56,9 +56,9 @@ describe("Report Modal", () => {
       // Test the data
       REPORT_ITEMS.forEach((reportItem, rowIndex) => {
         const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
-        expect(cells).toHaveLength(Object.keys(reportItem).length);
+        expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
         Object.values(reportItem).forEach((value, cellIndex) => {
-          expect(within(cells[cellIndex]).getByText(value)).toBeInTheDocument();
+          expect(within(cells[cellIndex + 1]).getByText(value)).toBeInTheDocument(); // +1 for the same reason
         });
       });
     });

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
@@ -87,8 +88,8 @@ namespace WitsmlExplorer.Api.Services
             bool result = true;
             IEnumerable<Server> allServers = await _allServers;
 
-            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host == host);
-            IEnumerable<Server> hostServer = allServers.Where(n => n.Url.ToString() == host.ToString());
+            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.EqualsIgnoreCase(host));
+            IEnumerable<Server> hostServer = allServers.Where(n => n.Url.EqualsIgnoreCase(host));
             bool validRole = hostServer.Any(n =>
              n.Roles != null && n.Roles.Intersect(roles).Any()
              );
@@ -139,7 +140,7 @@ namespace WitsmlExplorer.Api.Services
             _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
             if (await UserHasRoleForHost(userRoles, server))
             {
-                result = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host == server);
+                result = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host.EqualsIgnoreCase(server));
                 if (!result.IsCredsNullOrEmpty())
                 {
                     CacheCredentials(GetClaimFromToken(token, SUBJECT), result, 1.0);

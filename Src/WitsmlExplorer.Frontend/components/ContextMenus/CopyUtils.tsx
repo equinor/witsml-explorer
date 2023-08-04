@@ -14,7 +14,7 @@ import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 
 export const onClickPaste = (servers: Server[], sourceServerUrl: string, orderCopyJob: () => void) => {
-  const sourceServer = servers.find((server) => server.url === sourceServerUrl);
+  const sourceServer = servers.find((server) => server.url.toLowerCase() === sourceServerUrl.toLowerCase());
   if (sourceServer !== null) {
     AuthorizationService.setSourceServer(sourceServer);
     orderCopyJob();

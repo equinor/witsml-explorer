@@ -16,6 +16,7 @@ import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
+import { ComparisonCell, LabelsLayout, StyledTypography, TableLayout } from "./ComparisonModalStyles";
 import { Indexes, calculateMismatchedIndexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
@@ -110,16 +111,16 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
           endIndexes: indexes.sourceEnd,
           mnemonicValue: <Typography>{indexes.mnemonic}</Typography>,
           startIndexesValue: (
-            <TableCell type={sourceType}>
+            <ComparisonCell type={sourceType}>
               <Typography>{markedSourceStart}</Typography>
               <Typography>{markedTargetStart}</Typography>
-            </TableCell>
+            </ComparisonCell>
           ),
           endIndexesValue: (
-            <TableCell type={sourceType}>
+            <ComparisonCell type={sourceType}>
               <Typography>{markedSourceEnd}</Typography>
               <Typography>{markedTargetEnd}</Typography>
-            </TableCell>
+            </ComparisonCell>
           )
         };
       }),
@@ -185,7 +186,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                     data={data}
                     caption={
                       <StyledTypography colors={colors} variant="h5">
-                        Listing of Log Curves where the source indexes and end indexes do not match
+                        Listing of Log Curves where indexes do not match
                       </StyledTypography>
                     }
                   />
@@ -209,34 +210,6 @@ const columns: Column[] = [
   { name: "Source/target start", accessor: "startIndexes" },
   { name: "Source/target end", accessor: "endIndexes" }
 ];
-
-const LabelsLayout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 0.8rem;
-`;
-
-const TableCell = styled.div<{ type?: string }>`
-  font-feature-settings: "tnum";
-  p {
-    text-align: ${({ type }) => (type == "depth" ? "right" : "left")};
-  }
-  mark {
-    background: #e6faec;
-    background-blend-mode: darken;
-    font-weight: 600;
-  }
-`;
-
-const TableLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StyledTypography = styled(Typography)<{ colors: Colors }>`
-  padding: 1rem 0 1rem 0;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};

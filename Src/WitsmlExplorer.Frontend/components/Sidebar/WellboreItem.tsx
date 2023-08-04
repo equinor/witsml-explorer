@@ -22,6 +22,7 @@ import TubularContextMenu from "../ContextMenus/TubularContextMenu";
 import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
 import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
+import TrajectoriesContextMenu, { TrajectoriesContextMenuProps } from "../ContextMenus/TrajectoriesContextMenu";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogTypeItem from "./LogTypeItem";
 import ObjectGroupItem from "./ObjectGroupItem";
@@ -82,6 +83,13 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularsContextMenu {...contextMenuProps} />, position } });
   };
 
+  const onTrajectoryContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
+    preventContextMenuPropagation(event);
+    const contextMenuProps: TrajectoriesContextMenuProps = { dispatchOperation, wellbore, servers, setIsLoading };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoriesContextMenu {...contextMenuProps} />, position } });
+  };
+
   const getExpandableObjectCount = useCallback(async () => {
     if (wellbore.objectCount == null) {
       setIsFetchingCount(true);
@@ -136,7 +144,12 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) => onRigsContextMenu(event, wellbore, setIsLoading)}
           />
           <ObjectGroupItem objectType={ObjectType.Risk} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.trajectories} objectType={ObjectType.Trajectory} ObjectContextMenu={TrajectoryContextMenu} />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.trajectories}
+            objectType={ObjectType.Trajectory}
+            ObjectContextMenu={TrajectoryContextMenu}
+            onGroupContextMenu={(event, _, setIsLoading) => onTrajectoryContextMenu(event, wellbore, setIsLoading)}
+          />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.tubulars}
             objectType={ObjectType.Tubular}

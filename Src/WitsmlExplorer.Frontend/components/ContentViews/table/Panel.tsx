@@ -16,15 +16,28 @@ export interface PanelProps {
   showRefresh?: boolean;
   panelElements?: React.ReactElement[];
   numberOfCheckedItems?: number;
-  table?: Table<any>;
+  table: Table<any>;
   viewId?: string;
   columns?: ContentTableColumn[];
   expandableRows?: boolean;
+  stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
 }
 
 const Panel = (props: PanelProps) => {
-  const { checkableRows, panelElements, numberOfCheckedItems, numberOfItems, showRefresh, table, viewId, columns, downloadToCsvFileName, expandableRows = false } = props;
+  const {
+    checkableRows,
+    panelElements,
+    numberOfCheckedItems,
+    numberOfItems,
+    showRefresh,
+    table,
+    viewId,
+    columns,
+    expandableRows = false,
+    downloadToCsvFileName = null,
+    stickyLeftColumns
+  } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { colors }
@@ -63,7 +76,7 @@ const Panel = (props: PanelProps) => {
 
   return (
     <Div>
-      {table && <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} />}
+      <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
       <Typography style={{ color: colors.text.staticIconsDefault }}>{selectedItemsText}</Typography>
       {showRefresh && (
         <Button
@@ -90,6 +103,7 @@ const Panel = (props: PanelProps) => {
 
 const Div = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: center;
   padding: 4px;
