@@ -29,6 +29,7 @@ namespace WitsmlExplorer.Api.Workers
             string indexType = job.LogReference.IndexType;
             string jobId = job.JobInfo.Id;
             bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
+            string indexCurve;
             // Dictionaries that maps from a mnemonic to the mnemonics start or end index
             Dictionary<string, string> headerStartValues;
             Dictionary<string, string> headerEndValues;
@@ -41,16 +42,16 @@ namespace WitsmlExplorer.Api.Workers
             string dataEndIndex;
 
             // Get the header indexes
-            (Dictionary<string, string>, Dictionary<string, string>, string, string)? headerResult = await GetHeaderValues(wellUid, wellboreUid, logUid, isDepthLog);
+            (Dictionary<string, string>, Dictionary<string, string>, string, string, string)? headerResult = await GetHeaderValues(wellUid, wellboreUid, logUid, isDepthLog);
             if (headerResult == null)
             {
                 string reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason, jobId: jobId), null);
             }
-            (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex) = headerResult.Value;
+            (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex, indexCurve) = headerResult.Value;
 
             // Get the data indexes
-            (Dictionary<string, string>, Dictionary<string, string>, string, string)? dataResult = await GetDataValues(wellUid, wellboreUid, logUid, indexType);
+            (Dictionary<string, string>, Dictionary<string, string>, string, string)? dataResult = await GetDataValues(wellUid, wellboreUid, logUid, indexType, indexCurve);
             if (dataResult == null)
             {
                 string reason = $"The log with wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid} does not contain any data";
@@ -69,7 +70,7 @@ namespace WitsmlExplorer.Api.Workers
             return (workerResult, null);
         }
 
-        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string)?> GetHeaderValues(string wellUid, string wellboreUid, string logUid, bool isDepthLog)
+        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string, string)?> GetHeaderValues(string wellUid, string wellboreUid, string logUid, bool isDepthLog)
         {
             WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
             WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
@@ -82,10 +83,10 @@ namespace WitsmlExplorer.Api.Workers
             string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
             Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
             Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
-            return (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex);
+            return (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex, headerResultLog.IndexCurve.Value);
         }
 
-        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string)?> GetDataValues(string wellUid, string wellboreUid, string logUid, string indexType)
+        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string)?> GetDataValues(string wellUid, string wellboreUid, string logUid, string indexType, string indexCurve)
         {
             WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
             WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1));
@@ -105,30 +106,31 @@ namespace WitsmlExplorer.Api.Workers
             Dictionary<string, string> dataStartValues = dataStartIndexes.Select((value, index) => new { mnemonic = startMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
             Dictionary<string, string> dataEndValues = dataEndIndexes.Where(value => !string.IsNullOrEmpty(value)).Select((value, index) => new { mnemonic = endMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
 
-            // Only the first data row is fetched for the start indexes. The mnemonics that doesn't have a value at the start index needs to fetch its start index individually.
-            AddStartIndexForMissingMnemonics(wellUid, wellboreUid, logUid, dataStartValues, startMnemonics, endMnemonics);
+            // Only the first data row is fetched for the start indexes. The mnemonics that don't have a value at the start index need to fetch their start index individually.
+            dataStartValues = await AddStartIndexForMissingMnemonics(wellUid, wellboreUid, logUid, dataStartValues, startMnemonics, endMnemonics, indexCurve);
 
             return (dataStartValues, dataEndValues, dataStartIndexes.First(), dataEndIndexes.First());
         }
 
-        private async void AddStartIndexForMissingMnemonics(string wellUid, string wellboreUid, string logUid, Dictionary<string, string> dataStartValues, string[] startMnemonics, string[] endMnemonics)
+        private async Task<Dictionary<string, string>> AddStartIndexForMissingMnemonics(string wellUid, string wellboreUid, string logUid, Dictionary<string, string> dataStartValues, string[] startMnemonics, string[] endMnemonics, string indexCurve)
         {
-            string[] missingMnemonics = endMnemonics.Where(mnemonic => !startMnemonics.Contains(mnemonic)).ToArray();
+            string[] missingMnemonics = endMnemonics.Where(mnemonic => !startMnemonics.Contains(mnemonic))
+                .Concat(dataStartValues.Where((entry) => entry.Value == "").Select((entry) => entry.Key)).Distinct().ToArray();
             if (missingMnemonics.Any())
             {
-                IEnumerable<WitsmlLogs> missingIndexQueries = missingMnemonics.Select(mnemonic => LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, new List<string>() { mnemonic }, null, null));
+                IEnumerable<WitsmlLogs> missingIndexQueries = missingMnemonics.Select(mnemonic => LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, new List<string>() { indexCurve, mnemonic }, null, null));
                 // Request a data row for each mnemonic to get the start indexes of that mnemonic
                 List<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1))).ToList();
                 await Task.WhenAll(missingDataResults);
                 IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
                 IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
-                List<string> list = missingDataIndexes.ToList();
                 // Insert the indexes from the missing mnemonics to the original dict.
                 missingDataIndexes
                     .Select((value, index) => new { mnemonic = missingMnemonics[index], value })
                     .ToList()
                     .ForEach(item => dataStartValues[item.mnemonic] = item.value);
             }
+            return dataStartValues;
         }
 
         public static List<CheckLogHeaderReportItem> GetMismatchingIndexes(Dictionary<string, string> headerStartValues, Dictionary<string, string> headerEndValues, Dictionary<string, string> dataStartValues, Dictionary<string, string> dataEndValues, string headerStartIndex, string headerEndIndex, string dataStartIndex, string dataEndIndex, bool isDepthLog)

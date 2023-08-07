@@ -162,6 +162,7 @@ namespace WitsmlExplorer.Api.Query
                     EndIndex = new WitsmlIndex(),
                     StartDateTimeIndex = "",
                     EndDateTimeIndex = "",
+                    IndexCurve = new WitsmlIndexCurve(),
                     LogCurveInfo = new WitsmlLogCurveInfo
                     {
                         Mnemonic = "",

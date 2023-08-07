@@ -1,5 +1,6 @@
-using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
@@ -61,16 +63,20 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
             }
-
-            try
-            {
-                JobInfo job = jobCache.GetJobInfoByUserAndId(userName, jobId);
-                return TypedResults.Ok(job);
-            }
-            catch (ArgumentException)
+            JobInfo job = jobCache.GetJobInfoById(jobId);
+            if (job.Username != userName && (!useOAuth2 || !IsAdminOrDeveloper(eh.GetBearerToken())))
             {
                 return TypedResults.Forbid();
             }
+            return TypedResults.Ok(job);
+        }
+
+        private static bool IsAdminOrDeveloper(string token)
+        {
+            JwtSecurityTokenHandler handler = new();
+            JwtSecurityToken jwt = handler.ReadJwtToken(token);
+            IEnumerable<string> userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value);
+            return userRoles.Contains(AuthorizationPolicyRoles.ADMIN) || userRoles.Contains(AuthorizationPolicyRoles.DEVELOPER);
         }
 
         [Produces(typeof(IEnumerable<JobInfo>))]

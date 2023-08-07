@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     {
         void CacheJob(JobInfo jobInfo);
         IEnumerable<JobInfo> GetJobInfosByUser(string username);
-        JobInfo GetJobInfoByUserAndId(string username, string jobId);
+        JobInfo GetJobInfoById(string jobId);
         IEnumerable<JobInfo> GetAllJobInfos();
     }
 
@@ -52,12 +52,8 @@ namespace WitsmlExplorer.Api.Services
             return _jobs.Values.Where(job => job.Username == username);
         }
 
-        public JobInfo GetJobInfoByUserAndId(string username, string jobId)
+        public JobInfo GetJobInfoById(string jobId)
         {
-            if (_jobs[jobId].Username != username)
-            {
-                throw new ArgumentException($"User {username} does not have access to job {jobId}");
-            }
             return _jobs[jobId];
         }
 
@@ -89,6 +85,5 @@ namespace WitsmlExplorer.Api.Services
             }
             _logger.LogInformation("JobCache cleanup finished, deleted: {deleted}, failed: {failed}, remaining: {remaining}", deleted, failed, _jobs.Count);
         }
-
     }
 }

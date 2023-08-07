@@ -66,10 +66,10 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
           ) : (
             <ContentLayout>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem", color: colors.text.staticIconsDefault }}>Waiting for job to finish.</Typography>
+                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem", color: colors.text.staticIconsDefault }}>Waiting for the job to finish.</Typography>
                 <DotProgress />
               </div>
-              <Typography style={{ color: colors.text.staticIconsDefault }}>The report can also be found in the Jobs view.</Typography>
+              <Typography style={{ color: colors.text.staticIconsDefault }}>The report will also be available in the jobs view once the job is finished.</Typography>
             </ContentLayout>
           )}
         </>

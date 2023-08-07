@@ -55,14 +55,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, shouldBeConsistent: true);
 
-            (Dictionary<string, string>, Dictionary<string, string>, string, string)? result = await _worker.GetHeaderValues(WellUid, WellboreUid, LogUid, true);
+            (Dictionary<string, string>, Dictionary<string, string>, string, string, string)? result = await _worker.GetHeaderValues(WellUid, WellboreUid, LogUid, true);
             Assert.NotNull(result);
-            (Dictionary<string, string> headerStartValues, Dictionary<string, string> headerEndValues, string headerStartIndex, string headerEndIndex) = result.Value;
+            (Dictionary<string, string> headerStartValues, Dictionary<string, string> headerEndValues, string headerStartIndex, string headerEndIndex, string indexCurve) = result.Value;
             Assert.Equal(3, headerStartValues.Count);
             Assert.Equal(3, headerEndValues.Count);
             Assert.Equal("100", headerStartIndex);
             Assert.Equal("102", headerEndIndex);
             Assert.Equal("101", headerStartValues["TQ"]);
+            Assert.Equal("Depth", indexCurve);
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, shouldBeConsistent: true);
 
-            (Dictionary<string, string>, Dictionary<string, string>, string, string)? result = await _worker.GetDataValues(WellUid, WellboreUid, LogUid, WitsmlLog.WITSML_INDEX_TYPE_MD);
+            (Dictionary<string, string>, Dictionary<string, string>, string, string)? result = await _worker.GetDataValues(WellUid, WellboreUid, LogUid, WitsmlLog.WITSML_INDEX_TYPE_MD, "Depth");
             Assert.NotNull(result);
             (Dictionary<string, string> dataStartValues, Dictionary<string, string> dataEndValues, string dataStartIndex, string dataEndIndex) = result.Value;
             Assert.Equal(3, dataStartValues.Count);
@@ -273,6 +274,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     EndIndex = new WitsmlIndex("102"),
                     StartDateTimeIndex = "2023-04-19T00:00:00Z",
                     EndDateTimeIndex = "2023-04-19T00:00:02Z",
+                    IndexCurve = new WitsmlIndexCurve() { Value = "Depth" },
                     LogCurveInfo = new List<WitsmlLogCurveInfo>()
                     {
                         new WitsmlLogCurveInfo()
