@@ -1,6 +1,5 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
 import { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -13,6 +12,7 @@ import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
+import { ComparisonCell, LabelsLayout, StyledTypography, TableLayout } from "./ComparisonModalStyles";
 import { markDateTimeStringDifferences } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
@@ -27,7 +27,7 @@ export interface MessageComparisonModalProps {
 const MessageComparisonModal = (props: MessageComparisonModalProps): React.ReactElement => {
   const { sourceMessage, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const [targetMessage, setTargetMessage] = useState<MessageObject>(null);
   const [differenceFound, setDifferenceFound] = useState(false);
@@ -61,19 +61,19 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
       source: sourceDTimDiff,
       target: targetDTimDiff,
       elementValue: (
-        <TableCell>
+        <ComparisonCell>
           <Typography>{sourceDTim != targetDTim ? <mark>dTim</mark> : "dTim"}</Typography>
-        </TableCell>
+        </ComparisonCell>
       ),
       sourceValue: (
-        <TableCell>
+        <ComparisonCell>
           <Typography>{sourceDTimDiff}</Typography>
-        </TableCell>
+        </ComparisonCell>
       ),
       targetValue: (
-        <TableCell>
+        <ComparisonCell>
           <Typography>{targetDTimDiff}</Typography>
-        </TableCell>
+        </ComparisonCell>
       )
     });
     const pushRow = (element: string, source: string, target: string) => {
@@ -84,9 +84,9 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
         source,
         target,
         elementValue: (
-          <TableCell>
+          <ComparisonCell>
             <Typography>{diff ? <mark>{element}</mark> : element}</Typography>
-          </TableCell>
+          </ComparisonCell>
         ),
         sourceValue: <Typography>{source}</Typography>,
         targetValue: <Typography>{target}</Typography>
@@ -128,7 +128,7 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
                   columns={columns}
                   data={data}
                   caption={
-                    <StyledTypography variant="h5">
+                    <StyledTypography colors={colors} variant="h5">
                       {differenceFound ? "Listing of message properties with differing elements marked." : "All the shown fields are equal."}
                     </StyledTypography>
                   }
@@ -148,27 +148,4 @@ const columns: Column[] = [
   { name: "Target message", accessor: "target" }
 ];
 
-const LabelsLayout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 0.8rem;
-`;
-
-const TableCell = styled.div`
-  font-feature-settings: "tnum";
-  mark {
-    background: #e6faec;
-    background-blend-mode: darken;
-    font-weight: 600;
-  }
-`;
-
-const TableLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StyledTypography = styled(Typography)`
-  padding: 1rem 0 1rem 0;
-`;
 export default MessageComparisonModal;

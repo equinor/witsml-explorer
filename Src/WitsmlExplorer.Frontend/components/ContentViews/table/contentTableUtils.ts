@@ -1,4 +1,5 @@
 import { Row, Table } from "@tanstack/react-table";
+import { VirtualItem } from "@tanstack/react-virtual";
 import React, { useEffect } from "react";
 import { ContentType } from "./tableParts";
 
@@ -92,4 +93,16 @@ export const useInitActiveCurveFiltering = (table: Table<any>) => {
       .find((col) => col.columnDef.id == activeId)
       ?.setFilterValue(false);
   }, [table]);
+};
+
+export const calculateHorizontalSpace = (columnItems: VirtualItem[], totalSize: number, stickyLeftColumns: number) => {
+  if (columnItems.length <= stickyLeftColumns) {
+    return [0, 0];
+  }
+  const spaceRight = totalSize - columnItems[columnItems.length - 1].end;
+  if (stickyLeftColumns > 0) {
+    const spaceLeft = columnItems[stickyLeftColumns].start - columnItems[stickyLeftColumns - 1].start - columnItems[stickyLeftColumns - 1].size;
+    return [spaceLeft, spaceRight];
+  }
+  return [columnItems[0].start, spaceRight];
 };
