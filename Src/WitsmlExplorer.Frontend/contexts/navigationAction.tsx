@@ -23,6 +23,7 @@ import {
   SelectJobsAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
+  SelectLogTypeActionGraph,
   SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
@@ -63,6 +64,7 @@ export type NavigationAction =
   | SelectObjectGroupAction
   | SelectServerAction
   | SetCurveThresholdAction
-  | SelectServerManagerAction;
+  | SelectServerManagerAction
+  | SelectLogTypeActionGraph;
 
 export type DispatchNavigation = (action: NavigationAction) => void;

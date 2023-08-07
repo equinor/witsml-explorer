@@ -41,6 +41,7 @@ export interface NavigationState {
   selectedCurveThreshold: CurveThreshold;
   expandedTreeNodes: string[];
   currentProperties: Map<string, string>;
+  displayGraph: Selectable;
 }
 
 export const allDeselected: any = {
@@ -68,7 +69,8 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   wells: [],
   selectedCurveThreshold: DEFAULT_CURVE_THRESHOLD,
   expandedTreeNodes: [],
-  currentProperties: new Map<string, string>()
+  currentProperties: new Map<string, string>(),
+  displayGraph: null
 };
 
 export default NavigationContext;

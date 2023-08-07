@@ -4,6 +4,7 @@ import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "
 import { ObjectType } from "../models/objectType";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
+import LogsGraph from "./ContentViews/Charts/LogsGraph";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import FluidsReportsListView from "./ContentViews/FluidsReportListView";
 import FluidsView from "./ContentViews/FluidsView";
@@ -11,7 +12,7 @@ import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
-import LogsGraph from "./ContentViews/LogsGraph";
+import LogsListView from "./ContentViews/LogsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import MudLogView from "./ContentViews/MudLogView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";
@@ -54,7 +55,7 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected } = navigationState;
+  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected, displayGraph } = navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {
@@ -80,6 +81,8 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === selectedObjectGroup) {
         setObjectView(true);
       } else if (currentSelected === selectedLogTypeGroup) {
+        setView(<LogsListView />);
+      } else if (currentSelected === displayGraph) {
         setView(<LogsGraph />);
       } else if (currentSelected === selectedObject) {
         setObjectView(false);

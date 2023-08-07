@@ -1,8 +1,12 @@
 
-import React, { useRef, useEffect } from "react";
-import { init, getInstanceByDom } from "echarts";
+import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
+import { getInstanceByDom, init } from "echarts";
 import type { CSSProperties } from "react";
-import type { EChartsOption, ECharts, SetOptionOpts } from "echarts";
+import { useContext, useEffect, useRef } from "react";
+import NavigationContext from "../../../contexts/navigationContext";
+import NavigationType from "../../../contexts/navigationType";
+import { ObjectType } from "../../../models/objectType";
+import { LogObjectRow } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;
@@ -13,7 +17,7 @@ export interface ReactEChartsProps {
   size: string
 }
 
-export  function ReactECharts({
+export function ReactLogChart({
   option,
   style,
   settings,
@@ -30,7 +34,15 @@ export  function ReactECharts({
       chart = init(chartRef.current, theme);
     }
 
-    // Add chart resize listener
+    chart?.on('click', params => {
+      console.log("clicke on")
+      console.log(params)
+      const myLog = selectedWellbore.logs[2];
+      const myLogObject: LogObjectRow = { name: '', id: 1, uid: '1', wellboreName: '', wellboreUid: '', wellName: '', wellUid: '2', logObject: myLog };
+      onSelect(myLogObject);
+    })
+
+    // Add chart resize listener  
     // ResizeObserver is leading to a bit janky UX
     function resizeChart() {
       chart?.resize();
@@ -61,5 +73,22 @@ export  function ReactECharts({
     }
   }, [loading, theme]);
 
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+
+  const { selectedWell, selectedWellbore } = navigationState;
+
+
+  const onSelect = (log: LogObjectRow) => {
+    dispatchNavigation({
+      type: NavigationType.SelectObject,
+      payload: { object: log.logObject, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
+    });
+  };
+
+
+
   return <div ref={chartRef} style={{ width: size, height: "647px", ...style }} />;
 }
+
+
+

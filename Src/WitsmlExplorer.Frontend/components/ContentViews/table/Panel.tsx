@@ -4,7 +4,9 @@ import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
+import { SelectLogTypeActionGraph } from "../../../contexts/navigationActions";
 import NavigationContext from "../../../contexts/navigationContext";
+import NavigationType from "../../../contexts/navigationType";
 import OperationContext from "../../../contexts/operationContext";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
@@ -27,7 +29,7 @@ const Panel = (props: PanelProps) => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedObjectGroup } = navigationState;
+  const { selectedWellbore, selectedWell, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
@@ -39,6 +41,12 @@ const Panel = (props: PanelProps) => {
     const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, selectedObjectGroup);
     dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
     setIsRefreshing(false);
+  };
+
+  const onClickGraph = async () => {
+
+    const action: SelectLogTypeActionGraph = { type: NavigationType.SelectLogTypeGraph, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true } };
+    dispatchNavigation(action);
   };
 
   return (
@@ -58,6 +66,17 @@ const Panel = (props: PanelProps) => {
           Refresh
         </Button>
       )}
+      <Button
+        key="showGraph"
+        variant="outlined"
+        aria-disabled={isRefreshing ? true : false}
+        aria-label={isRefreshing ? "loading data" : null}
+        onClick={onClickGraph}
+        disabled={isRefreshing}
+      >
+        <Icon name="refresh" />
+        Display Graph
+      </Button>
       {panelElements}
     </Div>
   );

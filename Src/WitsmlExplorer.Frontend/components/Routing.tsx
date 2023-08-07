@@ -18,7 +18,7 @@ import { WITSML_INDEX_TYPE_MD } from "./Constants";
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { updateSelectedFilter } = React.useContext(FilterContext);
-  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
+  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup, displayGraph } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
   const [hasSelectedServer, setHasSelectedServer] = useState<boolean>(false);
@@ -40,7 +40,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup, displayGraph]);
 
   useEffect(() => {
     //update router on params change
@@ -209,7 +209,8 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
-    ...(state.selectedObject && { objectUid: state.selectedObject.uid })
+    ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
+    //...(state.displayGraph && { graph: `${state.displayGraph}` }),
   };
 };
 
@@ -221,6 +222,7 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.group && { group: query.group.toString() }),
     ...(query.logType && { logType: query.logType.toString() }),
     ...(query.objectUid && { objectUid: query.objectUid.toString() })
+    //...(query.displayGraph && { graph: query.graph.toString() })
   };
 };
 
