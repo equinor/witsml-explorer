@@ -3,17 +3,18 @@ import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
 import { useMemo } from "react";
 import Icon from "../../../styles/Icons";
 import { getFromStorage, orderingStorageKey, widthsStorageKey } from "./contentTableStorage";
-import { activeId, calculateColumnWidth, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
+import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface SortingFns {
     [measureSortingFn]: SortingFn<unknown>;
+    [componentSortingFn]: SortingFn<unknown>;
   }
 }
 
-export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean) => {
+export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean, stickyLeftColumns: number) => {
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   return useMemo(() => {
@@ -25,8 +26,9 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         header: column.label,
         size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
-        ...addActiveCurveFiltering(column.label),
-        ...addMeasureSorting(column.type)
+        sortingFn: getSortingFn(column.type),
+        ...addComponentCell(column.type),
+        ...addActiveCurveFiltering(column.label)
       };
     });
 
@@ -41,6 +43,10 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
     }
 
     columnDef = [...(checkableRows ? [getCheckableRowsColumnDef(isCompactMode)] : []), ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []), ...columnDef];
+    const firstToggleableIndex = Math.max((checkableRows ? 1 : 0) + (insetColumns ? 1 : 0), stickyLeftColumns);
+    for (let i = 0; i < firstToggleableIndex; i++) {
+      columnDef[i].enableHiding = false;
+    }
     return columnDef;
   }, [columns]);
 };
@@ -57,10 +63,11 @@ const addActiveCurveFiltering = (columnLabel: string): Partial<ColumnDef<any, an
     : {};
 };
 
-const addMeasureSorting = (contentType: ContentType): Partial<ColumnDef<any, any>> => {
-  return contentType == ContentType.Measure
+const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>> => {
+  return columnType == ContentType.Component
     ? {
-        sortingFn: measureSortingFn
+        cell: (props) => props.getValue(),
+        sortingFn: componentSortingFn
       }
     : {};
 };
@@ -119,4 +126,13 @@ const getCheckableRowsColumnDef = (isCompactMode: boolean): ColumnDef<any, any> 
       </div>
     )
   };
+};
+
+const getSortingFn = (contentType: ContentType) => {
+  if (contentType == ContentType.Measure) {
+    return measureSortingFn;
+  } else if (contentType == ContentType.Number) {
+    return "alphanumeric";
+  }
+  return "text";
 };

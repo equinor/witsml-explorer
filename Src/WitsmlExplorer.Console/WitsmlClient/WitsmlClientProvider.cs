@@ -33,11 +33,11 @@ namespace WitsmlExplorer.Console.WitsmlClient
             try
             {
                 (string serverUrl, string username, string password) = GetCredentialsFromConfiguration();
-                _witsmlClient = new Witsml.WitsmlClient(new WitsmlClientOptions
+                _witsmlClient = new Witsml.WitsmlClient(options =>
                 {
-                    Hostname = serverUrl,
-                    Credentials = new WitsmlCredentials(username, password),
-                    ClientCapabilities = _clientCapabilities
+                    options.Hostname = serverUrl;
+                    options.Credentials = new WitsmlCredentials(username, password);
+                    options.ClientCapabilities = _clientCapabilities;
                 });
             }
             catch (Exception e)

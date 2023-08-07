@@ -87,6 +87,7 @@ const StyledTextField = styled(TextField)`
   div {
     background-color: transparent;
   }
+  min-width: 210px;
 `;
 
 const StyledButton = styled(Button)`
@@ -110,6 +111,8 @@ const StyledButton = styled(Button)`
   display:flex;
   height: 2rem;
   width: 2rem;
+  min-height: 2rem;
+  min-width: 2rem;
   padding: 0;
   border-radius: 50%;
   align-items: center;

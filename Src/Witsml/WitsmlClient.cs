@@ -36,28 +36,31 @@ namespace Witsml
         [Obsolete("Use the WitsmlClientOptions based constructor instead")]
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null,
             bool logQueries = false)
-            : this(new WitsmlClientOptions
+            : this(options =>
             {
-                Hostname = hostname,
-                Credentials = new WitsmlCredentials(username, password),
-                ClientCapabilities = clientCapabilities,
-                RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1),
-                LogQueries = logQueries
+                options.Hostname = hostname;
+                options.Credentials = new WitsmlCredentials(username, password);
+                options.ClientCapabilities = clientCapabilities;
+                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1);
+                options.LogQueries = logQueries;
             })
         { }
 
-        public WitsmlClient(WitsmlClientOptions options)
+        public WitsmlClient(Action<WitsmlClientOptions> options)
         {
-            ArgumentNullException.ThrowIfNull(options.Hostname);
-            ArgumentNullException.ThrowIfNull(options.Credentials.Username);
-            ArgumentNullException.ThrowIfNull(options.Credentials.Password);
+            var witsmlClientOptions = new WitsmlClientOptions();
+            options(witsmlClientOptions);
 
-            _clientCapabilities = options.ClientCapabilities.ToXml();
-            _serverUrl = new Uri(options.Hostname);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Hostname);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Credentials.Username);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Credentials.Password);
 
-            _client = CreateSoapClient(options);
+            _clientCapabilities = witsmlClientOptions.ClientCapabilities.ToXml();
+            _serverUrl = new Uri(witsmlClientOptions.Hostname);
 
-            SetupQueryLogging(options.LogQueries);
+            _client = CreateSoapClient(witsmlClientOptions);
+
+            SetupQueryLogging(witsmlClientOptions.LogQueries);
         }
 
         private void SetupQueryLogging(bool logQueries)
@@ -125,7 +128,9 @@ namespace Witsml
             };
 
             WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-            LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
+
+            LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn,
+                response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
             if (response.IsSuccessful())
                 return XmlHelper.Deserialize(response.XMLout, query);
@@ -155,7 +160,9 @@ namespace Witsml
                 };
 
                 WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-                LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn,
+                    request.QueryIn, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return (XmlHelper.Deserialize(response.XMLout, query), response.Result);
@@ -211,7 +218,9 @@ namespace Witsml
                 };
 
                 WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
-                LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_AddToStoreAsync), this._serverUrl, query, optionsIn,
+                    request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -241,7 +250,9 @@ namespace Witsml
                 };
 
                 WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
-                LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_UpdateInStoreAsync), this._serverUrl, query, null,
+                    request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -271,7 +282,9 @@ namespace Witsml
                 };
 
                 WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
-                LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_DeleteFromStoreAsync), this._serverUrl, query, null,
+                    request.QueryIn, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -304,9 +317,10 @@ namespace Witsml
             return new QueryResult(true);
         }
 
-        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmlReceived = null)
+        private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn,
+            string querySent, bool isSuccessful, string xmlReceived, short resultCode, string suppMsgOut = null) where T : IWitsmlQueryType
         {
-            _queryLogger?.LogQuery(querySent, isSuccessful, xmlReceived);
+            _queryLogger?.LogQuery(function, serverUrl, query, optionsIn, querySent, isSuccessful, xmlReceived, resultCode, suppMsgOut);
         }
 
         public Uri GetServerHostname() => _serverUrl;

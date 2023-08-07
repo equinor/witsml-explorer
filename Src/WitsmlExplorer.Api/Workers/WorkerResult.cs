@@ -4,13 +4,14 @@ namespace WitsmlExplorer.Api.Workers
 {
     public class WorkerResult
     {
-        public WorkerResult(Uri serverUrl, bool isSuccess, string message, string reason = null, EntityDescription description = null)
+        public WorkerResult(Uri serverUrl, bool isSuccess, string message, string reason = null, EntityDescription description = null, string jobId = null)
         {
             ServerUrl = serverUrl;
             IsSuccess = isSuccess;
             Message = message;
             Reason = reason;
             Description = description;
+            JobId = jobId;
         }
 
         public Uri ServerUrl { get; }
@@ -18,6 +19,7 @@ namespace WitsmlExplorer.Api.Workers
         public string Message { get; }
         public string Reason { get; }
         public EntityDescription Description { get; }
+        public string JobId { get; }
     }
 
     public class EntityDescription

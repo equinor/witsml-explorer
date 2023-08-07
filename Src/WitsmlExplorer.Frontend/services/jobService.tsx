@@ -23,7 +23,7 @@ export default class JobService {
         message: `Ordered ${jobType} job`,
         isSuccess: true
       });
-      return response.body;
+      return response.json();
     } else {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),
@@ -31,6 +31,15 @@ export default class JobService {
         isSuccess: false
       });
       return "";
+    }
+  }
+
+  public static async getUserJobInfo(jobId: string, abortSignal?: AbortSignal): Promise<JobInfo> {
+    const response = await ApiClient.get(`/api/jobs/userjobinfo/${jobId}`, abortSignal);
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
     }
   }
 
@@ -54,6 +63,7 @@ export default class JobService {
 }
 
 export enum JobType {
+  CheckLogHeader = "CheckLogHeader",
   CreateWell = "CreateWell",
   CopyComponents = "CopyComponents",
   CopyLogData = "CopyLogData",
@@ -65,6 +75,7 @@ export enum JobType {
   CreateWellbore = "CreateWellbore",
   CreateLogObject = "CreateLogObject",
   CreateRig = "CreateRig",
+  CreateTrajectory = "CreateTrajectory",
   DeleteComponents = "DeleteComponents",
   DeleteCurveValues = "DeleteCurveValues",
   DeleteObjects = "DeleteObjects",
@@ -77,6 +88,7 @@ export enum JobType {
   ModifyMessageObject = "ModifyMessageObject",
   ModifyMudLog = "ModifyMudLog",
   ModifyRig = "ModifyRig",
+  ModifyTrajectory = "ModifyTrajectory",
   ModifyRisk = "ModifyRisk",
   RenameMnemonic = "RenameMnemonic",
   ModifyTrajectoryStation = "ModifyTrajectoryStation",
