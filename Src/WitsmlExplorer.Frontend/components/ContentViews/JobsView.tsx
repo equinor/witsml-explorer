@@ -5,6 +5,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
+import BaseReport from "../../models/reports/BaseReport";
 import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
@@ -13,6 +14,7 @@ import { Colors } from "../../styles/Colors";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
+import { ReportModal } from "../Modals/ReportModal";
 import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
@@ -45,7 +47,7 @@ export const JobsView = (): React.ReactElement => {
 
   useEffect(() => {
     const eventHandler = (notification: Notification) => {
-      const shouldFetch = notification.serverUrl.toString() === navigationState.selectedServer?.url;
+      const shouldFetch = notification.serverUrl.toString().toLowerCase() === navigationState.selectedServer?.url?.toLowerCase();
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -80,6 +82,11 @@ export const JobsView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <JobInfoContextMenu {...contextMenuProps} />, position } });
   };
 
+  const onClickReport = (report: BaseReport) => {
+    const reportModalProps = { report };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "startTime", label: "Start time", type: ContentType.DateTime },
     { property: "jobType", label: "Job Type", type: ContentType.String },
@@ -87,6 +94,7 @@ export const JobsView = (): React.ReactElement => {
     { property: "wellboreName", label: "Wellbore Name", type: ContentType.String },
     { property: "objectName", label: "Object Name(s)", type: ContentType.String },
     { property: "status", label: "Status", type: ContentType.String },
+    { property: "report", label: "Report", type: ContentType.Component },
     { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
@@ -108,6 +116,7 @@ export const JobsView = (): React.ReactElement => {
             endTime: formatDateString(jobInfo.endTime, timeZone),
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
+            report: jobInfo.report ? <ReportButton onClick={() => onClickReport(jobInfo.report)}>Report</ReportButton> : null,
             jobInfo: jobInfo
           };
         })
@@ -152,7 +161,7 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   if (!url) {
     return "-";
   }
-  const server = servers.find((server) => server.url == url);
+  const server = servers.find((server) => server.url.toLowerCase() == url.toLowerCase());
   return server ? server.name : url;
 };
 
@@ -166,6 +175,10 @@ const StyledSwitch = styled(Switch)<{ colors: Colors }>`
     color: ${(props) => props.colors.infographic.primaryMossGreen};
     margin-left: 0;
   }
+`;
+const ReportButton = styled.div`
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 export default JobsView;

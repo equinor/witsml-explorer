@@ -19,10 +19,10 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public FormationMarkersTests()
         {
             WitsmlConfiguration config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(new WitsmlClientOptions
+            _client = new WitsmlClient(options =>
             {
-                Hostname = config.Hostname,
-                Credentials = new WitsmlCredentials(config.Username, config.Password)
+                options.Hostname = config.Hostname;
+                options.Credentials = new WitsmlCredentials(config.Username, config.Password);
             });
         }
 

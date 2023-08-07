@@ -6,9 +6,11 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
+import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
 import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import ObjectReference from "../../models/jobs/objectReference";
+import LogObject from "../../models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -20,9 +22,10 @@ import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataIm
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
+import { ReportModal } from "../Modals/ReportModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { menuItemText, StyledIcon } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -48,7 +51,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   };
 
   const onClickImport = async () => {
-    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0], dispatchOperation };
+    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0] };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
   };
 
@@ -89,6 +92,15 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     });
   };
 
+  const onClickCheckHeader = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logReference: LogObject = checkedObjects[0];
+    const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
+    const jobId = await JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
+    const reportModalProps = { jobId };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -116,6 +128,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
           <StyledIcon name="upload" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Import log data from .csv</Typography>
+        </MenuItem>,
+        <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
+          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>

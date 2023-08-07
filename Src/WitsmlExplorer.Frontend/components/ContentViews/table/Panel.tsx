@@ -1,11 +1,12 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
 import { Table } from "@tanstack/react-table";
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
 import OperationContext from "../../../contexts/operationContext";
+import useExport from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
@@ -15,20 +16,35 @@ export interface PanelProps {
   showRefresh?: boolean;
   panelElements?: React.ReactElement[];
   numberOfCheckedItems?: number;
-  table?: Table<any>;
+  table: Table<any>;
   viewId?: string;
   columns?: ContentTableColumn[];
   expandableRows?: boolean;
+  stickyLeftColumns?: number;
+  downloadToCsvFileName?: string;
 }
 
 const Panel = (props: PanelProps) => {
-  const { checkableRows, panelElements, numberOfCheckedItems, numberOfItems, showRefresh, table, viewId, columns, expandableRows = false } = props;
+  const {
+    checkableRows,
+    panelElements,
+    numberOfCheckedItems,
+    numberOfItems,
+    showRefresh,
+    table,
+    viewId,
+    columns,
+    expandableRows = false,
+    downloadToCsvFileName = null,
+    stickyLeftColumns
+  } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const { exportData, exportOptions } = useExport();
 
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
@@ -41,9 +57,26 @@ const Panel = (props: PanelProps) => {
     setIsRefreshing(false);
   };
 
+  const exportAsCsv = useCallback(() => {
+    const exportColumns = table
+      .getVisibleLeafColumns()
+      .map((c) => c.id)
+      .join(exportOptions.separator);
+    const csvString = table
+      .getRowModel()
+      .rows.map((row) =>
+        row
+          .getVisibleCells()
+          .map((cell) => cell.getValue())
+          .join(exportOptions.separator)
+      )
+      .join(exportOptions.newLineCharacter);
+    exportData(downloadToCsvFileName, exportColumns, csvString);
+  }, [columns, table]);
+
   return (
     <Div>
-      {table && <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} />}
+      <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
       <Typography style={{ color: colors.text.staticIconsDefault }}>{selectedItemsText}</Typography>
       {showRefresh && (
         <Button
@@ -58,6 +91,11 @@ const Panel = (props: PanelProps) => {
           Refresh
         </Button>
       )}
+      {downloadToCsvFileName != null && (
+        <Button key="download" variant="outlined" aria-label="download as csv" onClick={exportAsCsv}>
+          Download as .csv
+        </Button>
+      )}
       {panelElements}
     </Div>
   );
@@ -65,6 +103,7 @@ const Panel = (props: PanelProps) => {
 
 const Div = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: center;
   padding: 4px;
