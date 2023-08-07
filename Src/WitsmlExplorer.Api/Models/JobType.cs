@@ -42,6 +42,7 @@ namespace WitsmlExplorer.Api.Models
         BatchModifyWell,
         ImportLogData,
         ReplaceComponents,
-        ReplaceObjects
+        ReplaceObjects,
+        CheckLogHeader
     }
 }

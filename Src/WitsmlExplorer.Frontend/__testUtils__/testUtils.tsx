@@ -13,6 +13,7 @@ import ChangeLog from "../models/changeLog";
 import CommonData from "../models/commonData";
 import FluidsReport from "../models/fluidsReport";
 import FormationMarker from "../models/formationMarker";
+import JobInfo from "../models/jobs/jobInfo";
 import LogCurveInfo from "../models/logCurveInfo";
 import LogObject from "../models/logObject";
 import Measure from "../models/measure";
@@ -31,6 +32,7 @@ import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well, { emptyWell } from "../models/well";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
+import { Notification } from "../services/notificationService";
 import { light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
 
@@ -107,6 +109,38 @@ export function getWell(overrides?: Partial<Well>): Well {
 export function getWellbore(overrides?: Partial<Wellbore>): Wellbore {
   return {
     ...emptyWellbore(),
+    ...overrides
+  };
+}
+
+export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
+  return {
+    jobType: "",
+    description: "",
+    id: "",
+    username: "",
+    witsmlTargetUsername: "",
+    witsmlSourceUsername: "",
+    sourceServer: "",
+    targetServer: "",
+    wellName: "",
+    wellboreName: "",
+    objectName: "",
+    startTime: "",
+    endTime: "",
+    killTime: "",
+    status: "",
+    failedReason: "",
+    report: null,
+    ...overrides
+  };
+}
+
+export function getNotification(overrides?: Partial<Notification>): Notification {
+  return {
+    serverUrl: new URL("http://example.com"),
+    isSuccess: true,
+    message: "",
     ...overrides
   };
 }

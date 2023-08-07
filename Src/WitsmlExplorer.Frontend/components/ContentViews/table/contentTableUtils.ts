@@ -7,6 +7,7 @@ export const selectId = "select";
 export const expanderId = "expander";
 export const activeId = "active"; //implemented specifically for LogCurveInfoListView, needs rework if other views will also use filtering
 export const measureSortingFn = "measure";
+export const componentSortingFn = "component";
 
 export const constantTableOptions = {
   enableColumnResizing: true,

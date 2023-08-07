@@ -74,12 +74,12 @@ namespace WitsmlExplorer.Api.Query
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    queryLog.StartIndex = new WitsmlIndex((DepthIndex)startIndex);
-                    queryLog.EndIndex = new WitsmlIndex((DepthIndex)endIndex);
+                    queryLog.StartIndex = startIndex != null ? new WitsmlIndex((DepthIndex)startIndex) : new WitsmlIndex();
+                    queryLog.EndIndex = endIndex != null ? new WitsmlIndex((DepthIndex)endIndex) : new WitsmlIndex();
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
-                    queryLog.StartDateTimeIndex = startIndex.GetValueAsString();
-                    queryLog.EndDateTimeIndex = endIndex.GetValueAsString();
+                    queryLog.StartDateTimeIndex = startIndex?.GetValueAsString() ?? "";
+                    queryLog.EndDateTimeIndex = endIndex?.GetValueAsString() ?? "";
                     break;
                 default:
                     break;
@@ -145,6 +145,32 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Mnemonic = mnemonic
                     }).ToList()
+                }.AsSingletonList()
+            };
+        }
+
+        public static WitsmlLogs GetLogHeaderIndexes(string wellUid, string wellboreUid, string logUid)
+        {
+            return new WitsmlLogs
+            {
+                Logs = new WitsmlLog
+                {
+                    UidWell = wellUid,
+                    UidWellbore = wellboreUid,
+                    Uid = logUid,
+                    StartIndex = new WitsmlIndex(),
+                    EndIndex = new WitsmlIndex(),
+                    StartDateTimeIndex = "",
+                    EndDateTimeIndex = "",
+                    IndexCurve = new WitsmlIndexCurve(),
+                    LogCurveInfo = new WitsmlLogCurveInfo
+                    {
+                        Mnemonic = "",
+                        MinIndex = new WitsmlIndex(),
+                        MaxIndex = new WitsmlIndex(),
+                        MinDateTimeIndex = "",
+                        MaxDateTimeIndex = ""
+                    }.AsSingletonList(),
                 }.AsSingletonList()
             };
         }

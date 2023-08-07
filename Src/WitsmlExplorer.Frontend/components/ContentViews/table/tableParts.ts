@@ -27,6 +27,7 @@ export interface ContentTableProps {
   showRefresh?: boolean;
   stickyLeftColumns?: number; // how many columns should be sticky
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
+  downloadToCsvFileName?: string;
 }
 
 export enum Order {
@@ -38,5 +39,6 @@ export enum ContentType {
   String,
   Number,
   DateTime,
-  Measure
+  Measure,
+  Component
 }

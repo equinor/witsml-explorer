@@ -1,11 +1,12 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
 import { Table } from "@tanstack/react-table";
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
 import OperationContext from "../../../contexts/operationContext";
+import useExport from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
@@ -20,16 +21,30 @@ export interface PanelProps {
   columns?: ContentTableColumn[];
   expandableRows?: boolean;
   stickyLeftColumns?: number;
+  downloadToCsvFileName?: string;
 }
 
 const Panel = (props: PanelProps) => {
-  const { checkableRows, panelElements, numberOfCheckedItems, numberOfItems, showRefresh, table, viewId, columns, expandableRows = false, stickyLeftColumns } = props;
+  const {
+    checkableRows,
+    panelElements,
+    numberOfCheckedItems,
+    numberOfItems,
+    showRefresh,
+    table,
+    viewId,
+    columns,
+    expandableRows = false,
+    downloadToCsvFileName = null,
+    stickyLeftColumns
+  } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const { exportData, exportOptions } = useExport();
 
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
@@ -41,6 +56,23 @@ const Panel = (props: PanelProps) => {
     dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
     setIsRefreshing(false);
   };
+
+  const exportAsCsv = useCallback(() => {
+    const exportColumns = table
+      .getVisibleLeafColumns()
+      .map((c) => c.id)
+      .join(exportOptions.separator);
+    const csvString = table
+      .getRowModel()
+      .rows.map((row) =>
+        row
+          .getVisibleCells()
+          .map((cell) => cell.getValue())
+          .join(exportOptions.separator)
+      )
+      .join(exportOptions.newLineCharacter);
+    exportData(downloadToCsvFileName, exportColumns, csvString);
+  }, [columns, table]);
 
   return (
     <Div>
@@ -57,6 +89,11 @@ const Panel = (props: PanelProps) => {
         >
           <Icon name="refresh" />
           Refresh
+        </Button>
+      )}
+      {downloadToCsvFileName != null && (
+        <Button key="download" variant="outlined" aria-label="download as csv" onClick={exportAsCsv}>
+          Download as .csv
         </Button>
       )}
       {panelElements}

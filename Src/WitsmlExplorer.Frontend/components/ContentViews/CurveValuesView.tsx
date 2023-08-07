@@ -30,14 +30,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
   const selectedLog = selectedObject as LogObject;
-  const { exportData, properties: exportOptions } = useExport({
-    fileExtension: ".csv",
-    newLineCharacter: "\n",
-    outputMimeType: "text/csv",
-    separator: ",",
-    omitSpecialCharactersFromFilename: true,
-    appendDateTime: true
-  });
+  const { exportData, exportOptions } = useExport();
 
   const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
     const indexRanges = getIndexRanges(checkedContentItems, selectedLog);

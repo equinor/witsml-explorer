@@ -27,6 +27,7 @@ import { StyledResizer, StyledTable, StyledTd, StyledTh, StyledTr, TableContaine
 import {
   calculateHorizontalSpace,
   calculateRowHeight,
+  componentSortingFn,
   constantTableOptions,
   expanderId,
   isClickable,
@@ -59,6 +60,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     showRefresh = false,
     stickyLeftColumns = 0,
     viewId,
+    downloadToCsvFileName = null,
     onRowSelectionChange
   } = contentTableProps;
   const {
@@ -86,6 +88,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
         const a = indexToNumber(rowA.getValue(columnId));
         const b = indexToNumber(rowB.getValue(columnId));
         return a > b ? -1 : a < b ? 1 : 0;
+      },
+      [componentSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+        const a = rowA.getValue(columnId) == null;
+        const b = rowB.getValue(columnId) == null;
+        return a === b ? 0 : a ? -1 : 1;
       }
     },
     columnResizeMode: "onChange",
@@ -181,6 +188,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
           columns={columns}
           expandableRows={insetColumns != null}
           showRefresh={showRefresh}
+          downloadToCsvFileName={downloadToCsvFileName}
           stickyLeftColumns={stickyLeftColumns}
         />
       ) : null}

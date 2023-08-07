@@ -3,13 +3,14 @@ import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
 import { useMemo } from "react";
 import Icon from "../../../styles/Icons";
 import { getFromStorage, orderingStorageKey, widthsStorageKey } from "./contentTableStorage";
-import { activeId, calculateColumnWidth, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
+import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface SortingFns {
     [measureSortingFn]: SortingFn<unknown>;
+    [componentSortingFn]: SortingFn<unknown>;
   }
 }
 
@@ -26,6 +27,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
+        ...addComponentCell(column.type),
         ...addActiveCurveFiltering(column.label)
       };
     });
@@ -57,6 +59,15 @@ const addActiveCurveFiltering = (columnLabel: string): Partial<ColumnDef<any, an
           return row.original.isActive ? <Icon name="isActive" /> : "";
         },
         enableColumnFilter: true
+      }
+    : {};
+};
+
+const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>> => {
+  return columnType == ContentType.Component
+    ? {
+        cell: (props) => props.getValue(),
+        sortingFn: componentSortingFn
       }
     : {};
 };

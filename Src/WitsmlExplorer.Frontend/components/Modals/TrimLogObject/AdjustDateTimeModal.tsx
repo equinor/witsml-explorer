@@ -74,7 +74,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
       </ButtonGroup>
 
       <LogHeaderDateTimeField
-        value={startIndex}
+        value={startIndex ?? ""}
         label="Start index"
         updateObject={(dateTime: string, valid: boolean) => {
           setStartIndex(dateTime);
@@ -84,7 +84,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
         maxValue={endIndex}
       />
       <LogHeaderDateTimeField
-        value={endIndex}
+        value={endIndex ?? ""}
         label="End index"
         updateObject={(dateTime: string, valid: boolean) => {
           setEndIndex(dateTime);

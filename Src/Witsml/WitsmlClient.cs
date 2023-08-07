@@ -125,8 +125,8 @@ namespace Witsml
             };
 
             WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-            
-            LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn, 
+
+            LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn,
                 response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
             if (response.IsSuccessful())
@@ -157,8 +157,8 @@ namespace Witsml
                 };
 
                 WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-                
-                LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, 
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn,
                     request.QueryIn, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
@@ -216,7 +216,7 @@ namespace Witsml
 
                 WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
 
-                LogQueriesSentAndReceived(nameof(_client.WMLS_AddToStoreAsync), this._serverUrl, query, optionsIn, 
+                LogQueriesSentAndReceived(nameof(_client.WMLS_AddToStoreAsync), this._serverUrl, query, optionsIn,
                     request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
@@ -248,7 +248,7 @@ namespace Witsml
 
                 WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
 
-                LogQueriesSentAndReceived(nameof(_client.WMLS_UpdateInStoreAsync), this._serverUrl, query, null, 
+                LogQueriesSentAndReceived(nameof(_client.WMLS_UpdateInStoreAsync), this._serverUrl, query, null,
                     request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
@@ -280,7 +280,7 @@ namespace Witsml
 
                 WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
 
-                LogQueriesSentAndReceived(nameof(_client.WMLS_DeleteFromStoreAsync), this._serverUrl, query, null, 
+                LogQueriesSentAndReceived(nameof(_client.WMLS_DeleteFromStoreAsync), this._serverUrl, query, null,
                     request.QueryIn, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
@@ -314,7 +314,7 @@ namespace Witsml
             return new QueryResult(true);
         }
 
-        private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, 
+        private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn,
             string querySent, bool isSuccessful, string xmlReceived, short resultCode, string suppMsgOut = null) where T : IWitsmlQueryType
         {
             _queryLogger?.LogQuery(function, serverUrl, query, optionsIn, querySent, isSuccessful, xmlReceived, resultCode, suppMsgOut);
