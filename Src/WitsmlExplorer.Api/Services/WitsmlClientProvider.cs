@@ -50,11 +50,11 @@ namespace WitsmlExplorer.Api.Services
         {
             (string serverUrl, string username, string password) = GetCredentialsFromConfiguration(configuration);
             _witsmlClient = new WitsmlClient(
-                new WitsmlClientOptions
+                options =>
                 {
-                    Hostname = serverUrl,
-                    Credentials = new WitsmlCredentials(username, password),
-                    LogQueries = true
+                    options.Hostname = serverUrl;
+                    options.Credentials = new WitsmlCredentials(username, password);
+                    options.LogQueries = true;
                 });
         }
 
@@ -73,12 +73,12 @@ namespace WitsmlExplorer.Api.Services
             {
                 _targetCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
-                    ? new WitsmlClient(new WitsmlClientOptions
+                    ? new WitsmlClient(options =>
                     {
-                        Hostname = _targetCreds.Host.ToString(),
-                        Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password),
-                        ClientCapabilities = _clientCapabilities,
-                        LogQueries = _logQueries
+                        options.Hostname = _targetCreds.Host.ToString();
+                        options.Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password);
+                        options.ClientCapabilities = _clientCapabilities;
+                        options.LogQueries = _logQueries;
                     })
                     : null;
             }
@@ -91,12 +91,12 @@ namespace WitsmlExplorer.Api.Services
             {
                 _sourceCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
                 _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsCredsNullOrEmpty())
-                    ? new WitsmlClient(new WitsmlClientOptions
+                    ? new WitsmlClient(options =>
                     {
-                        Hostname = _sourceCreds.Host.ToString(),
-                        Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password),
-                        ClientCapabilities = _clientCapabilities,
-                        LogQueries = _logQueries
+                        options.Hostname = _sourceCreds.Host.ToString();
+                        options.Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password);
+                        options.ClientCapabilities = _clientCapabilities;
+                        options.LogQueries = _logQueries;
                     })
                     : null;
             }
