@@ -34,9 +34,7 @@ export function ReactLogChart({
       chart = init(chartRef.current, theme);
     }
 
-    chart?.on('click', params => {
-      console.log("clicke on")
-      console.log(params)
+    chart?.on('click', () => {
       const myLog = selectedWellbore.logs[2];
       const myLogObject: LogObjectRow = { name: '', id: 1, uid: '1', wellboreName: '', wellboreUid: '', wellName: '', wellUid: '2', logObject: myLog };
       onSelect(myLogObject);
@@ -60,7 +58,7 @@ export function ReactLogChart({
     // Update chart
     if (chartRef.current !== null) {
       const chart = getInstanceByDom(chartRef.current);
-      chart!.setOption(option, settings);
+      chart?.setOption(option, settings);
     }
   }, [option, settings, theme]); // Whenever theme changes we need to add option and setting due to it being deleted in cleanup function
 
@@ -69,7 +67,7 @@ export function ReactLogChart({
     if (chartRef.current !== null) {
       const chart = getInstanceByDom(chartRef.current);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      loading === true ? chart!.showLoading() : chart!.hideLoading();
+      loading === true ? chart?.showLoading() : chart?.hideLoading();
     }
   }, [loading, theme]);
 

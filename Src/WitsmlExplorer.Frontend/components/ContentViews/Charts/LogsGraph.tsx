@@ -135,7 +135,7 @@ export const LogsGraph = (): React.ReactElement => {
     const barHeight = 30;
     const x = start[0];
     const y = end[1];
-    const itemText = data[itemIndex].name;
+    const itemText = data[itemIndex as number].name;
     const textWidth = echarts.format.getTextRect(itemText).width;
     const text =
       barLength > textWidth + 40 && x + barLength >= 180
