@@ -42,16 +42,17 @@ interface LogItem {
 }
 
 export const LogsGraph = (): React.ReactElement => {
-  const DIM_ITEM_INDEX = 0;
-  const DIM_START = 1;
-  const DIM_END = 2;
-  const _cartesianXBounds = [];
-  const _cartesianYBounds = [];
+  const dimItemIndex = 0;
+  const dimStart = 1;
+  const dimEnd = 2;
+  const cartesianXBounds = [];
+  const cartesianYBounds = [];
   const data: DataItem[] = [];
   const categories: number[] = [];
   const { navigationState } = useContext(NavigationContext);
   const { selectedWellbore, selectedLogTypeGroup } = navigationState;
 
+  // dedicated colors for items containing specific names
   const reservedColours: Map<string, string> = new Map([
     ['#0000FF', 'surface'],
     ['#FF0000', 'downhole'],
@@ -91,8 +92,26 @@ export const LogsGraph = (): React.ReactElement => {
     return a.start - b.start;
   });
 
-  const verticalAxixsMaxValue = () => {
-    return 100;
+  // calculates equal vertical distribution
+  // needs to be more tuned
+  const verticalAxisZoomMaxValue = () => {
+    const numberOfCategories = categories.length;
+    if (numberOfCategories < 13) {
+      return 100
+    }
+    const a = 0.00358858;
+    const b = 1.02584;
+    const c = 70.3405;
+    const result = a * Math.pow(numberOfCategories, 2) - (b * numberOfCategories) + c;
+    return result;
+  }
+
+  const gridMaxHeight = () => {
+    const numberOfCategories = categories.length;
+    if (numberOfCategories < 13) {
+      return numberOfCategories * 50;
+    }
+    return 600;
   }
 
 
@@ -149,19 +168,21 @@ export const LogsGraph = (): React.ReactElement => {
   const renderGanttItem: CustomSeriesRenderItem = (
     params: CustomSeriesRenderItemParams,
     api: CustomSeriesRenderItemAPI) => {
-    const itemIndex = api.value(DIM_ITEM_INDEX);
-    const start = api.coord([api.value(DIM_START), itemIndex]);
-    const end = api.coord([api.value(DIM_END), itemIndex]);
+    const itemIndex = api.value(dimItemIndex);
+    const start = api.coord([api.value(dimStart), itemIndex]);
+    const end = api.coord([api.value(dimEnd), itemIndex]);
     const coordSys = params.coordSys;
 
     const retypedSys = coordSys as MyCoordSys;
-    _cartesianXBounds[0] = retypedSys.x;
-    _cartesianXBounds[1] = retypedSys.width;
-    _cartesianYBounds[0] = retypedSys.y;
-    _cartesianYBounds[1] = retypedSys.height;
+    cartesianXBounds[0] = retypedSys.x;
+    cartesianXBounds[1] = retypedSys.width;
+    cartesianYBounds[0] = retypedSys.y;
+    cartesianYBounds[1] = retypedSys.height;
     let barLength = end[0] - start[0];
-    if (barLength < 30) {
-      barLength = 30
+
+    //assures minimum bar lenght to be visible in graph
+    if (barLength < 40) {
+      barLength = 40
     }
     const barHeight = 30;
     const x = start[0];
@@ -235,15 +256,15 @@ export const LogsGraph = (): React.ReactElement => {
         width: 0,
         right: '8%',
         top: 60,
-        bottom: 60,
+        bottom: 640 - gridMaxHeight(),
         start: 0,
-        end: verticalAxixsMaxValue(),
+        end: verticalAxisZoomMaxValue(),
         handleSize: 0,
         showDetail: false
       },
     ],
     grid: {
-      height: 600,
+      height: gridMaxHeight(),
       show: true,
     },
     xAxis: {
@@ -276,7 +297,7 @@ export const LogsGraph = (): React.ReactElement => {
         encode: {
           x: [1, 2],
           y: 0,
-          tooltip: [DIM_START, DIM_END]
+          tooltip: [dimStart, dimEnd]
         },
         data: data
       }
@@ -295,7 +316,6 @@ export const LogsGraph = (): React.ReactElement => {
   }, [selectedWellbore, selectedLogTypeGroup]);
 
   return selectedWellbore && !resetCheckedItems ? (
-
     <ReactLogChart option={option} width='100%' height='700px' ></ReactLogChart>
   ) : (
     <></>

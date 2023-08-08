@@ -245,7 +245,6 @@ const selectLogType = (state: NavigationState, { payload }: SelectLogTypeAction)
 };
 
 const selectLogTypeGraph = (state: NavigationState, { payload }: SelectLogTypeActionGraph): NavigationState => {
-  console.log(" in select log type graph")
   const { well, wellbore, logTypeGroup, displayGraph } = payload;
   const groupId = calculateObjectGroupId(wellbore, ObjectType.Log);
   const shouldExpandLogNode = shouldExpand(state.expandedTreeNodes, groupId, calculateWellboreNodeId(wellbore));
