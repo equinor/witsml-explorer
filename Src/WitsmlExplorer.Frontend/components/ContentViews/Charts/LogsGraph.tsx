@@ -1,9 +1,5 @@
-import * as echarts from 'echarts';
-import {
-  CustomSeriesRenderItem,
-  CustomSeriesRenderItemAPI,
-  CustomSeriesRenderItemParams,
-} from 'echarts';
+import * as echarts from "echarts";
+import { CustomSeriesRenderItem, CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams } from "echarts";
 
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../../contexts/navigationContext";
@@ -12,18 +8,18 @@ import LogObject from "../../../models/logObject";
 import { calculateLogTypeId, calculateLogTypeTimeId } from "../../../models/wellbore";
 import formatDateString from "../../DateFormatter";
 import { ContentTableRow } from "../table";
-import { ReactEChartsProps, ReactLogChart } from './ReactLogChart';
+import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
 }
 
 export interface DataItem {
-  key: number,
-  name: string,
-  value: number[],
-  uid: string,
-  itemStyle: { normal: { color: string; } }
+  key: number;
+  name: string;
+  value: number[];
+  uid: string;
+  itemStyle: { normal: { color: string } };
 }
 
 interface MyCoordSys {
@@ -35,10 +31,10 @@ interface MyCoordSys {
 }
 
 interface LogItem {
-  name: string,
-  start: number,
-  end: number,
-  uid: string,
+  name: string;
+  start: number;
+  end: number;
+  uid: string;
 }
 
 export const LogsGraph = (): React.ReactElement => {
@@ -54,9 +50,9 @@ export const LogsGraph = (): React.ReactElement => {
 
   // dedicated colors for items containing specific names
   const reservedColours: Map<string, string> = new Map([
-    ['#0000FF', 'surface'],
-    ['#FF0000', 'downhole'],
-    ['#FFFF00', 'memory']
+    ["#0000FF", "surface"],
+    ["#FF0000", "downhole"],
+    ["#FFFF00", "memory"]
   ]);
 
   const {
@@ -75,13 +71,12 @@ export const LogsGraph = (): React.ReactElement => {
     return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
   };
 
-
   const getTableData = (): LogItem[] => {
     return logs.map((log) => {
       return {
         name: log.name,
-        start: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace('m', ''),
-        end: selectedWellbore && isTimeIndexed() ? + new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace('m', ''),
+        start: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", ""),
+        end: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", ""),
         uid: log.uid,
         category: null
       };
@@ -97,14 +92,14 @@ export const LogsGraph = (): React.ReactElement => {
   const verticalAxisZoomMaxValue = () => {
     const numberOfCategories = categories.length;
     if (numberOfCategories < 13) {
-      return 100
+      return 100;
     }
     const a = 0.00358858;
     const b = 1.02584;
     const c = 70.3405;
-    const result = a * Math.pow(numberOfCategories, 2) - (b * numberOfCategories) + c;
+    const result = a * Math.pow(numberOfCategories, 2) - b * numberOfCategories + c;
     return result;
-  }
+  };
 
   const gridMaxHeight = () => {
     const numberOfCategories = categories.length;
@@ -112,31 +107,29 @@ export const LogsGraph = (): React.ReactElement => {
       return numberOfCategories * 50;
     }
     return 600;
-  }
-
+  };
 
   const randomColor = (name: string): string => {
-    let result = '';
+    let result = "";
     reservedColours.forEach(function (value, key) {
       if (name.includes(value)) {
-        result = key
+        result = key;
       }
     });
-    // returns reserved colours 
-    if (result !== '') {
+    // returns reserved colours
+    if (result !== "") {
       return result;
     }
     return generateColor(name);
   };
 
   const generateColor = (name: string): string => {
-
-    let result = '';
+    let result = "";
     for (let i = 0; i < 6; ++i) {
       const value = Math.floor(16 * Math.random());
       result += value.toString(16);
     }
-    result = '#' + result;
+    result = "#" + result;
     // recursion to avoid duplicities with reserved colours
     if (reservedColours.has(name)) {
       return generateColor(name);
@@ -148,9 +141,7 @@ export const LogsGraph = (): React.ReactElement => {
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
-    categories.push(
-      i
-    );
+    categories.push(i);
     data.push({
       key: i,
       name: log.name,
@@ -160,14 +151,11 @@ export const LogsGraph = (): React.ReactElement => {
         normal: {
           color: randomColor(log.name)
         }
-      },
+      }
     });
-
   }
 
-  const renderGanttItem: CustomSeriesRenderItem = (
-    params: CustomSeriesRenderItemParams,
-    api: CustomSeriesRenderItemAPI) => {
+  const renderGanttItem: CustomSeriesRenderItem = (params: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI) => {
     const itemIndex = api.value(dimItemIndex);
     const start = api.coord([api.value(dimStart), itemIndex]);
     const end = api.coord([api.value(dimEnd), itemIndex]);
@@ -182,17 +170,14 @@ export const LogsGraph = (): React.ReactElement => {
 
     //assures minimum bar lenght to be visible in graph
     if (barLength < 40) {
-      barLength = 40
+      barLength = 40;
     }
     const barHeight = 30;
     const x = start[0];
     const y = end[1];
     const itemText = data[itemIndex as number].name;
     const textWidth = echarts.format.getTextRect(itemText).width;
-    const text =
-      barLength > textWidth + 40 && x + barLength >= 180
-        ? itemText
-        : '';
+    const text = barLength > textWidth + 40 && x + barLength >= 180 ? itemText : "";
     const rectText = clipRectByRect(params, {
       x: x,
       y: y,
@@ -201,30 +186,31 @@ export const LogsGraph = (): React.ReactElement => {
     });
 
     return {
-      type: 'group',
+      type: "group",
       // children due to have a possibility to have more different rectangles
       children: [
         {
-          type: 'rect',
+          type: "rect",
           ignore: !rectText,
           shape: rectText,
           style: {
-            fill: api.visual('color')
+            fill: api.visual("color")
           },
           textConfig: {
-            position: 'insideLeft'
+            position: "insideLeft"
           },
           textContent: {
-            type: 'text',
+            type: "text",
             style: {
               text: text,
               fontSize: 12,
-              textFill: '#fff'
-            },
-          },
-        }]
+              textFill: "#fff"
+            }
+          }
+        }
+      ]
     };
-  }
+  };
 
   function clipRectByRect(params: any, rect: any) {
     return echarts.graphic.clipRectByRect(rect, {
@@ -239,43 +225,43 @@ export const LogsGraph = (): React.ReactElement => {
     tooltip: {},
     dataZoom: [
       {
-        type: 'slider',
-        filterMode: 'weakFilter',
+        type: "slider",
+        filterMode: "weakFilter",
         showDataShadow: false,
         top: 15,
-        labelFormatter: ''
+        labelFormatter: ""
       },
       {
-        type: 'inside',
-        filterMode: 'weakFilter'
+        type: "inside",
+        filterMode: "weakFilter"
       },
       {
-        type: 'slider',
+        type: "slider",
         yAxisIndex: 0,
         zoomLock: true,
         width: 0,
-        right: '8%',
+        right: "8%",
         top: 60,
         bottom: 640 - gridMaxHeight(),
         start: 0,
         end: verticalAxisZoomMaxValue(),
         handleSize: 0,
         showDetail: false
-      },
+      }
     ],
     grid: {
       height: gridMaxHeight(),
-      show: true,
+      show: true
     },
     xAxis: {
-      type: isTimeIndexed() ? 'time' : 'value',
-      position: 'bottom',
+      type: isTimeIndexed() ? "time" : "value",
+      position: "bottom",
       splitLine: {
         show: true,
         lineStyle: {
-          color: ['#D3D3D3']
+          color: ["#D3D3D3"]
         }
-      },
+      }
     },
     yAxis: {
       data: categories,
@@ -286,7 +272,7 @@ export const LogsGraph = (): React.ReactElement => {
     },
     series: [
       {
-        type: 'custom',
+        type: "custom",
         renderItem: renderGanttItem,
         itemStyle: {
           opacity: 0.8
@@ -315,13 +301,7 @@ export const LogsGraph = (): React.ReactElement => {
     setResetCheckedItems(true);
   }, [selectedWellbore, selectedLogTypeGroup]);
 
-  return selectedWellbore && !resetCheckedItems ? (
-    <ReactLogChart option={option} width='100%' height='700px' ></ReactLogChart>
-  ) : (
-    <></>
-  );
+  return selectedWellbore && !resetCheckedItems ? <ReactLogChart option={option} width="100%" height="700px"></ReactLogChart> : <></>;
 };
 
 export default LogsGraph;
-
-
