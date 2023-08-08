@@ -24,6 +24,7 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
+  showGraph?: boolean;
 }
 
 const Panel = (props: PanelProps) => {
@@ -38,7 +39,8 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns
+    stickyLeftColumns,
+    showGraph = false,
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
@@ -104,17 +106,18 @@ const Panel = (props: PanelProps) => {
           Download as .csv
         </Button>
       )}
-      <Button
-        key="showGraph"
-        variant="outlined"
-        aria-disabled={isRefreshing ? true : false}
-        aria-label={isRefreshing ? "loading data" : null}
-        onClick={onClickGraph}
-        disabled={isRefreshing}
-      >
-        <Icon name="refresh" />
-        Display Graph
-      </Button>
+      {showGraph && (
+        <Button
+          key="showGraph"
+          variant="outlined"
+          aria-disabled={isRefreshing ? true : false}
+          aria-label={isRefreshing ? "loading data" : null}
+          onClick={onClickGraph}
+          disabled={isRefreshing}
+        >
+          Display Graph
+        </Button>
+      )}
       {panelElements}
     </Div>
   );

@@ -20,6 +20,7 @@ export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedWell, selectedLogTypeGroup } = navigationState;
 
+  const showGraph = true;
   const {
     dispatchOperation,
     operationState: { timeZone }
@@ -94,6 +95,7 @@ export const LogsListView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
+      showGraph={showGraph}
     />
   ) : (
     <></>

@@ -18,6 +18,14 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
 }
 
+export interface DataItem {
+  key: number,
+  name: string,
+  value: number[],
+  uid: string,
+  itemStyle: { normal: { color: string; } }
+}
+
 interface MyCoordSys {
   height: number;
   type: string;
@@ -33,32 +41,22 @@ interface LogItem {
   uid: string,
 }
 
-interface DataItem {
-  key: number,
-  name: string,
-  value: number[],
-  itemStyle: { normal: { color: string; } }
-}
-
 export const LogsGraph = (): React.ReactElement => {
   const DIM_ITEM_INDEX = 0;
   const DIM_START = 1;
   const DIM_END = 2;
-  // const DIM_CATEGORY_INDEX = 3;
   const _cartesianXBounds = [];
   const _cartesianYBounds = [];
   const data: DataItem[] = [];
   const categories: number[] = [];
-  const types = [
-    { name: 'JS Heap', color: '#7b9ce1' },
-    { name: 'Documents', color: '#bd6d6c' },
-    { name: 'Nodes', color: '#75d874' },
-    { name: 'Listeners', color: '#e0bc78' },
-    { name: 'GPU Memory', color: '#dc77dc' },
-    { name: 'GPU', color: '#72b362' }
-  ];
   const { navigationState } = useContext(NavigationContext);
   const { selectedWellbore, selectedLogTypeGroup } = navigationState;
+
+  const reservedColours: Map<string, string> = new Map([
+    ['#0000FF', 'surface'],
+    ['#FF0000', 'downhole'],
+    ['#FFFF00', 'memory']
+  ]);
 
   const {
     operationState: { timeZone }
@@ -81,8 +79,8 @@ export const LogsGraph = (): React.ReactElement => {
     return logs.map((log) => {
       return {
         name: log.name,
-        start: selectedWellbore && isTimeIndexed() ? log.startIndex === null ? +new Date() : +new Date(formatDateString(log.startIndex, timeZone)) : +log.startIndex?.replace('m', ''),
-        end: selectedWellbore && isTimeIndexed() ? log.endIndex === null ? +new Date() : + new Date(formatDateString(log.endIndex, timeZone)) : +log.endIndex?.replace('m', ''),
+        start: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace('m', ''),
+        end: selectedWellbore && isTimeIndexed() ? + new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace('m', ''),
         uid: log.uid,
         category: null
       };
@@ -93,8 +91,41 @@ export const LogsGraph = (): React.ReactElement => {
     return a.start - b.start;
   });
 
+  const verticalAxixsMaxValue = () => {
+    return 100;
+  }
+
+
+  const randomColor = (name: string): string => {
+    let result = '';
+    reservedColours.forEach(function (value, key) {
+      if (name.includes(value)) {
+        result = key
+      }
+    });
+    // returns reserved colours 
+    if (result !== '') {
+      return result;
+    }
+    return generateColor(name);
+  };
+
+  const generateColor = (name: string): string => {
+
+    let result = '';
+    for (let i = 0; i < 6; ++i) {
+      const value = Math.floor(16 * Math.random());
+      result += value.toString(16);
+    }
+    result = '#' + result;
+    // recursion to avoid duplicities with reserved colours
+    if (reservedColours.has(name)) {
+      return generateColor(name);
+    }
+    return result;
+  };
+
   for (let i = 0; i < sortedLogs.length; i++) {
-    const typeItem = types[Math.round(Math.random() * (types.length - 1))];
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
@@ -104,10 +135,11 @@ export const LogsGraph = (): React.ReactElement => {
     data.push({
       key: i,
       name: log.name,
+      uid: log.uid,
       value: [i, start, end],
       itemStyle: {
         normal: {
-          color: typeItem.color
+          color: randomColor(log.name)
         }
       },
     });
@@ -116,8 +148,7 @@ export const LogsGraph = (): React.ReactElement => {
 
   const renderGanttItem: CustomSeriesRenderItem = (
     params: CustomSeriesRenderItemParams,
-    api: CustomSeriesRenderItemAPI
-  ) => {
+    api: CustomSeriesRenderItemAPI) => {
     const itemIndex = api.value(DIM_ITEM_INDEX);
     const start = api.coord([api.value(DIM_START), itemIndex]);
     const end = api.coord([api.value(DIM_END), itemIndex]);
@@ -156,6 +187,9 @@ export const LogsGraph = (): React.ReactElement => {
           type: 'rect',
           ignore: !rectText,
           shape: rectText,
+          style: {
+            fill: api.visual('color')
+          },
           textConfig: {
             position: 'insideLeft'
           },
@@ -180,15 +214,8 @@ export const LogsGraph = (): React.ReactElement => {
     });
   }
 
-
-
-
   const option: ReactEChartsProps["option"] = {
     tooltip: {},
-    title: {
-      text: 'Profile',
-      left: 'center'
-    },
     dataZoom: [
       {
         type: 'slider',
@@ -207,16 +234,16 @@ export const LogsGraph = (): React.ReactElement => {
         zoomLock: true,
         width: 0,
         right: '8%',
-        top: 70,
-        bottom: 20,
+        top: 60,
+        bottom: 60,
         start: 0,
-        end: 60,
+        end: verticalAxixsMaxValue(),
         handleSize: 0,
-        showDetail: true
+        showDetail: false
       },
     ],
     grid: {
-      height: 500,
+      height: 600,
       show: true,
     },
     xAxis: {
@@ -231,10 +258,10 @@ export const LogsGraph = (): React.ReactElement => {
     },
     yAxis: {
       data: categories,
-      show: true,
+      show: false,
       inverse: true,
       min: 0,
-      max: 15
+      max: categories.length
     },
     series: [
       {
@@ -269,7 +296,7 @@ export const LogsGraph = (): React.ReactElement => {
 
   return selectedWellbore && !resetCheckedItems ? (
 
-    <ReactLogChart option={option} size='100%' ></ReactLogChart>
+    <ReactLogChart option={option} width='100%' height='700px' ></ReactLogChart>
   ) : (
     <></>
   );

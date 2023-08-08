@@ -6,7 +6,7 @@ import { useContext, useEffect, useRef } from "react";
 import NavigationContext from "../../../contexts/navigationContext";
 import NavigationType from "../../../contexts/navigationType";
 import { ObjectType } from "../../../models/objectType";
-import { LogObjectRow } from "./LogsGraph";
+import { DataItem, LogObjectRow } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;
@@ -14,7 +14,8 @@ export interface ReactEChartsProps {
   settings?: SetOptionOpts;
   loading?: boolean;
   theme?: "light" | "dark";
-  size: string
+  width: string,
+  height: string
 }
 
 export function ReactLogChart({
@@ -23,7 +24,8 @@ export function ReactLogChart({
   settings,
   loading,
   theme,
-  size
+  width,
+  height
 }: ReactEChartsProps): JSX.Element {
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -34,9 +36,22 @@ export function ReactLogChart({
       chart = init(chartRef.current, theme);
     }
 
-    chart?.on('click', () => {
-      const myLog = selectedWellbore.logs[2];
-      const myLogObject: LogObjectRow = { name: '', id: 1, uid: '1', wellboreName: '', wellboreUid: '', wellName: '', wellUid: '2', logObject: myLog };
+    chart?.on('click', (params) => {
+      const uid = (params.data as DataItem).uid;
+      const id = (params.data as DataItem).key;
+      const myLog = selectedWellbore.logs.filter(x => x.uid === uid)[0];
+      const myLogObject: LogObjectRow =
+      {
+        name: myLog.name,
+        id: id,
+        uid: myLog.uid,
+        wellboreName: selectedWellbore.name,
+        wellboreUid: selectedWellbore.uid,
+        wellName: selectedWell.name,
+        wellUid: selectedWell.uid,
+        logObject: myLog
+      };
+
       onSelect(myLogObject);
     })
 
@@ -85,7 +100,7 @@ export function ReactLogChart({
 
 
 
-  return <div ref={chartRef} style={{ width: size, height: "647px", ...style }} />;
+  return <div ref={chartRef} style={{ width: width, height: height, ...style }} />;
 }
 
 
