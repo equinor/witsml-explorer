@@ -1,4 +1,3 @@
-
 import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
 import { getInstanceByDom, init } from "echarts";
 import type { CSSProperties } from "react";
@@ -14,19 +13,11 @@ export interface ReactEChartsProps {
   settings?: SetOptionOpts;
   loading?: boolean;
   theme?: "light" | "dark";
-  width: string,
-  height: string
+  width: string;
+  height: string;
 }
 
-export function ReactLogChart({
-  option,
-  style,
-  settings,
-  loading,
-  theme,
-  width,
-  height
-}: ReactEChartsProps): JSX.Element {
+export function ReactLogChart({ option, style, settings, loading, theme, width, height }: ReactEChartsProps): JSX.Element {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,12 +27,11 @@ export function ReactLogChart({
       chart = init(chartRef.current, theme);
     }
 
-    chart?.on('click', (params) => {
+    chart?.on("click", (params) => {
       const uid = (params.data as DataItem).uid;
       const id = (params.data as DataItem).key;
-      const myLog = selectedWellbore.logs.filter(x => x.uid === uid)[0];
-      const myLogObject: LogObjectRow =
-      {
+      const myLog = selectedWellbore.logs.filter((x) => x.uid === uid)[0];
+      const myLogObject: LogObjectRow = {
         name: myLog.name,
         id: id,
         uid: myLog.uid,
@@ -53,9 +43,9 @@ export function ReactLogChart({
       };
 
       onSelect(myLogObject);
-    })
+    });
 
-    // Add chart resize listener  
+    // Add chart resize listener
     // ResizeObserver is leading to a bit janky UX
     function resizeChart() {
       chart?.resize();
@@ -90,7 +80,6 @@ export function ReactLogChart({
 
   const { selectedWell, selectedWellbore } = navigationState;
 
-
   const onSelect = (log: LogObjectRow) => {
     dispatchNavigation({
       type: NavigationType.SelectObject,
@@ -98,10 +87,5 @@ export function ReactLogChart({
     });
   };
 
-
-
   return <div ref={chartRef} style={{ width: width, height: height, ...style }} />;
 }
-
-
-

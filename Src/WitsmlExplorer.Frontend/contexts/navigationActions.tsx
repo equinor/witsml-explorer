@@ -60,7 +60,7 @@ export interface SelectLogTypeAction extends Action {
 
 export interface SelectLogTypeActionGraph extends Action {
   type: NavigationType.SelectLogTypeGraph;
-  payload: { well: Well; wellbore: Wellbore; logTypeGroup: any, displayGraph: any };
+  payload: { well: Well; wellbore: Wellbore; logTypeGroup: any; displayGraph: any };
 }
 
 export interface SelectLogCurveInfoAction extends Action {

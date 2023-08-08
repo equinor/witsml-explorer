@@ -12,7 +12,7 @@ enum NavigationType {
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues",
   SelectServerManager = "SelectServerManager",
-  SelectLogTypeGraph = "SelectLogTypeGraph",
+  SelectLogTypeGraph = "SelectLogTypeGraph"
 }
 
 export default NavigationType;

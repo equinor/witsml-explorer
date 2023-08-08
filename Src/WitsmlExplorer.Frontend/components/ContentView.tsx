@@ -55,7 +55,8 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected, displayGraph } = navigationState;
+  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected, displayGraph } =
+    navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {

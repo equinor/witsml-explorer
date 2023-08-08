@@ -209,7 +209,7 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
-    ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
+    ...(state.selectedObject && { objectUid: state.selectedObject.uid })
     //...(state.displayGraph && { graph: `${state.displayGraph}` }),
   };
 };

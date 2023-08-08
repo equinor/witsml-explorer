@@ -66,7 +66,7 @@ export const LogsListView = (): React.ReactElement => {
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
+    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
   const onSelect = (log: LogObjectRow) => {

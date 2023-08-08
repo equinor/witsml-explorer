@@ -40,7 +40,7 @@ const Panel = (props: PanelProps) => {
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
-    showGraph = false,
+    showGraph = false
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
@@ -79,8 +79,10 @@ const Panel = (props: PanelProps) => {
   }, [columns, table]);
 
   const onClickGraph = async () => {
-
-    const action: SelectLogTypeActionGraph = { type: NavigationType.SelectLogTypeGraph, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true } };
+    const action: SelectLogTypeActionGraph = {
+      type: NavigationType.SelectLogTypeGraph,
+      payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true }
+    };
     dispatchNavigation(action);
   };
 
