@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Middleware
             }
             catch (TimeoutException ex)
             {
-                Log.Debug($"Connection failed, timeout occured: {ex}");
+                Log.Error($"Connection failed, timeout occured: {ex}");
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.GatewayTimeout,
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Middleware
             }
             catch (ProtocolException ex)
             {
-                Log.Debug($"Invalid response from server: {ex}");
+                Log.Error($"Invalid response from server: {ex}");
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.BadGateway,
