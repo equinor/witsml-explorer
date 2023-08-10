@@ -1,4 +1,6 @@
+import { Button } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
+import { SelectLogTypeActionGraph } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -20,7 +22,6 @@ export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedWell, selectedLogTypeGroup } = navigationState;
 
-  const showGraph = true;
   const {
     dispatchOperation,
     operationState: { timeZone }
@@ -76,6 +77,20 @@ export const LogsListView = (): React.ReactElement => {
     });
   };
 
+  const onClickGraph = async () => {
+    const action: SelectLogTypeActionGraph = {
+      type: NavigationType.SelectLogTypeGraph,
+      payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true }
+    };
+    dispatchNavigation(action);
+  };
+
+  const panelElements = [
+    <Button key="showGraph" onClick={onClickGraph}>
+      Display Graph
+    </Button>
+  ];
+
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
@@ -95,7 +110,7 @@ export const LogsListView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      showGraph={showGraph}
+      panelElements={panelElements}
     />
   ) : (
     <></>

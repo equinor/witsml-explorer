@@ -61,7 +61,6 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     stickyLeftColumns = 0,
     viewId,
     downloadToCsvFileName = null,
-    showGraph = contentTableProps.showGraph,
     onRowSelectionChange
   } = contentTableProps;
   const {
@@ -191,7 +190,6 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
           showRefresh={showRefresh}
           downloadToCsvFileName={downloadToCsvFileName}
           stickyLeftColumns={stickyLeftColumns}
-          showGraph={showGraph}
         />
       ) : null}
       <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>

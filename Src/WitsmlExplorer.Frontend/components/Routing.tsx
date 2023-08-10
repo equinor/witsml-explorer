@@ -210,7 +210,6 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
     ...(state.selectedObject && { objectUid: state.selectedObject.uid })
-    //...(state.displayGraph && { graph: `${state.displayGraph}` }),
   };
 };
 
@@ -222,7 +221,6 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.group && { group: query.group.toString() }),
     ...(query.logType && { logType: query.logType.toString() }),
     ...(query.objectUid && { objectUid: query.objectUid.toString() })
-    //...(query.displayGraph && { graph: query.graph.toString() })
   };
 };
 

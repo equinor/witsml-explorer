@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { useContext, useEffect, useRef } from "react";
 import NavigationContext from "../../../contexts/navigationContext";
 import NavigationType from "../../../contexts/navigationType";
+import LogObject from "../../../models/logObject";
 import { ObjectType } from "../../../models/objectType";
 import { DataItem, LogObjectRow } from "./LogsGraph";
 
@@ -80,10 +81,10 @@ export function ReactLogChart({ option, style, settings, loading, theme, width, 
 
   const { selectedWell, selectedWellbore } = navigationState;
 
-  const onSelect = (log: LogObjectRow) => {
+  const onSelect = (log: LogObject) => {
     dispatchNavigation({
       type: NavigationType.SelectObject,
-      payload: { object: log.logObject, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
+      payload: { object: log, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
     });
   };
 

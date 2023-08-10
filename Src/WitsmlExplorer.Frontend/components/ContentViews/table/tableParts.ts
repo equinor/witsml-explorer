@@ -28,7 +28,6 @@ export interface ContentTableProps {
   stickyLeftColumns?: number; // how many columns should be sticky
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;
-  showGraph?: boolean;
 }
 
 export enum Order {

@@ -22,14 +22,6 @@ export interface DataItem {
   itemStyle: { normal: { color: string } };
 }
 
-interface MyCoordSys {
-  height: number;
-  type: string;
-  width: number;
-  x: number;
-  y: number;
-}
-
 interface LogItem {
   name: string;
   start: number;
@@ -41,8 +33,6 @@ export const LogsGraph = (): React.ReactElement => {
   const dimItemIndex = 0;
   const dimStart = 1;
   const dimEnd = 2;
-  const cartesianXBounds = [];
-  const cartesianYBounds = [];
   const data: DataItem[] = [];
   const categories: number[] = [];
   const { navigationState } = useContext(NavigationContext);
@@ -59,7 +49,7 @@ export const LogsGraph = (): React.ReactElement => {
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
-  const [resetCheckedItems, setResetCheckedItems] = useState(false);
+  const [resetCheckedItems] = useState(false);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -89,22 +79,16 @@ export const LogsGraph = (): React.ReactElement => {
 
   // calculates equal vertical distribution
   // needs to be more tuned
+  const barHeight = 30;
+  const spacing = 30;
   const verticalAxisZoomMaxValue = () => {
-    const numberOfCategories = categories.length;
-    if (numberOfCategories < 13) {
-      return 100;
-    }
-    const a = 0.00358858;
-    const b = 1.02584;
-    const c = 70.3405;
-    const result = a * Math.pow(numberOfCategories, 2) - b * numberOfCategories + c;
-    return result;
+    return (gridMaxHeight() / (categories.length * (barHeight + spacing))) * 100;
   };
 
   const gridMaxHeight = () => {
     const numberOfCategories = categories.length;
     if (numberOfCategories < 13) {
-      return numberOfCategories * 50;
+      return numberOfCategories * (barHeight + spacing);
     }
     return 600;
   };
@@ -112,7 +96,7 @@ export const LogsGraph = (): React.ReactElement => {
   const randomColor = (name: string): string => {
     let result = "";
     reservedColours.forEach(function (value, key) {
-      if (name.includes(value)) {
+      if (name.toLowerCase().includes(value)) {
         result = key;
       }
     });
@@ -159,13 +143,6 @@ export const LogsGraph = (): React.ReactElement => {
     const itemIndex = api.value(dimItemIndex);
     const start = api.coord([api.value(dimStart), itemIndex]);
     const end = api.coord([api.value(dimEnd), itemIndex]);
-    const coordSys = params.coordSys;
-
-    const retypedSys = coordSys as MyCoordSys;
-    cartesianXBounds[0] = retypedSys.x;
-    cartesianXBounds[1] = retypedSys.width;
-    cartesianYBounds[0] = retypedSys.y;
-    cartesianYBounds[1] = retypedSys.height;
     let barLength = end[0] - start[0];
 
     //assures minimum bar lenght to be visible in graph
@@ -289,17 +266,6 @@ export const LogsGraph = (): React.ReactElement => {
       }
     ]
   };
-
-  useEffect(() => {
-    if (resetCheckedItems) {
-      setResetCheckedItems(false);
-      getTableData();
-    }
-  }, [resetCheckedItems]);
-
-  useEffect(() => {
-    setResetCheckedItems(true);
-  }, [selectedWellbore, selectedLogTypeGroup]);
 
   return selectedWellbore && !resetCheckedItems ? <ReactLogChart option={option} width="100%" height="700px"></ReactLogChart> : <></>;
 };
