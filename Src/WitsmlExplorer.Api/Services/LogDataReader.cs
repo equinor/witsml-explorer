@@ -14,6 +14,7 @@ using Witsml.Data.Curves;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Workers;
 
 using Index = Witsml.Data.Curves.Index;
 
@@ -27,6 +28,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly string _uidLog;
         private readonly string _indexType;
         private readonly IEnumerable<string> _mnemonics;
+        private readonly ILogger _logger;
         private Index _startIndex;
         private readonly Index _endIndex;
         private bool _dropFirstRow;
@@ -60,6 +62,7 @@ namespace WitsmlExplorer.Api.Services
             _startIndex = Index.Start(sourceLog);
             _endIndex = Index.End(sourceLog);
             _mnemonics = mnemonics ?? throw new ArgumentNullException(nameof(mnemonics));
+            _logger = logger;
             if (!mnemonics.Any())
             {
                 _finished = true;
@@ -104,7 +107,7 @@ namespace WitsmlExplorer.Api.Services
         private async Task<WitsmlLogData> FetchNextBatch()
         {
             WitsmlLogs query = LogQueries.GetLogContent(_uidWell, _uidWellbore, _uidLog, _indexType, _mnemonics, _startIndex, _endIndex);
-            WitsmlLogs sourceData = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+            WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), _logger);
             if (!sourceData.Logs.Any() || sourceData.Logs.First().LogData == null || !sourceData.Logs.First().LogData.Data.Any())
             {
                 return null;
