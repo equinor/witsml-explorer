@@ -1,4 +1,4 @@
-import { Checkbox, Typography } from "@equinor/eds-core-react";
+import { Switch, Typography } from "@equinor/eds-core-react";
 import { Button } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -151,14 +151,14 @@ export const CurveValuesView = (): React.ReactElement => {
       {isLoading && <ProgressSpinner message="Fetching data" />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
-        <>
-          <Container>
-            <EditInterval key="editinterval" />,
-            <Checkbox checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
+        <ContentContainer>
+          <CommonPanelContainer>
+            <EditInterval key="editinterval" />
+            <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
             <Typography style={{ color: colors.text.staticIconsDefault }}>Show Plot</Typography>
-          </Container>
+          </CommonPanelContainer>
           {showPlot ? (
-            <CurveValuesPlot data={tableData} columns={columns} name={selectedLog.name} />
+            <CurveValuesPlot data={tableData} columns={columns} name={selectedLog?.name} />
           ) : (
             <ContentTable
               columns={columns}
@@ -170,7 +170,7 @@ export const CurveValuesView = (): React.ReactElement => {
               stickyLeftColumns={2}
             />
           )}
-        </>
+        </ContentContainer>
       )}
     </>
   );
@@ -234,12 +234,18 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
   }
 };
 
-const Container = styled.div`
+const CommonPanelContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   > p {
-    margin-left: -0.5rem;
+    margin-left: -1rem;
   }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
