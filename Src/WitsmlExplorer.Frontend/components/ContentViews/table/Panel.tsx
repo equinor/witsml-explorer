@@ -4,9 +4,7 @@ import React, { useCallback, useContext, useState } from "react";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
-import { SelectLogTypeActionGraph } from "../../../contexts/navigationActions";
 import NavigationContext from "../../../contexts/navigationContext";
-import NavigationType from "../../../contexts/navigationType";
 import OperationContext from "../../../contexts/operationContext";
 import useExport from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
@@ -24,7 +22,6 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
-  showGraph?: boolean;
 }
 
 const Panel = (props: PanelProps) => {
@@ -39,14 +36,13 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns,
-    showGraph = false
+    stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedWell, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
+  const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
 
@@ -78,14 +74,6 @@ const Panel = (props: PanelProps) => {
     exportData(downloadToCsvFileName, exportColumns, csvString);
   }, [columns, table]);
 
-  const onClickGraph = async () => {
-    const action: SelectLogTypeActionGraph = {
-      type: NavigationType.SelectLogTypeGraph,
-      payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true }
-    };
-    dispatchNavigation(action);
-  };
-
   return (
     <Div>
       <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
@@ -106,18 +94,6 @@ const Panel = (props: PanelProps) => {
       {downloadToCsvFileName != null && (
         <Button key="download" variant="outlined" aria-label="download as csv" onClick={exportAsCsv}>
           Download as .csv
-        </Button>
-      )}
-      {showGraph && (
-        <Button
-          key="showGraph"
-          variant="outlined"
-          aria-disabled={isRefreshing ? true : false}
-          aria-label={isRefreshing ? "loading data" : null}
-          onClick={onClickGraph}
-          disabled={isRefreshing}
-        >
-          Display Graph
         </Button>
       )}
       {panelElements}
