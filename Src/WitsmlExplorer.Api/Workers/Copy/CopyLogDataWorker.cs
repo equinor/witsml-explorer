@@ -170,7 +170,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             while (sourceLogData != null)
             {
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
-                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
+                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += sourceLogData.Data.Count;
@@ -201,7 +201,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     sourceLog.IndexType, mnemonics,
                     Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
                     Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
-                WitsmlLogs sourceData = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly));
+                WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
                 if (!sourceData.Logs.Any())
                 {
                     break;
@@ -239,7 +239,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 sourceLogWithData.LogData.Data = newData;
 
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData.LogData);
-                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery);
+                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += newData.Count;
