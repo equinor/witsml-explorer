@@ -21,7 +21,6 @@ import {
   ExpandTreeNodesAction,
   SelectLogCurveInfoAction,
   SelectLogTypeAction,
-  SelectLogTypeActionGraph,
   SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
@@ -75,8 +74,6 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
       return selectLogCurveInfo(state, action);
     case NavigationType.SelectServerManager:
       return selectServerManager(state);
-    case NavigationType.SelectLogTypeGraph:
-      return selectLogTypeGraph(state, action);
     default:
       throw new Error();
   }
@@ -241,27 +238,6 @@ const selectLogType = (state: NavigationState, { payload }: SelectLogTypeAction)
     currentSelected: logTypeGroup,
     expandedTreeNodes: shouldExpandNode ? toggleTreeNode(expandedTreeNodes, logTypeGroup) : expandedTreeNodes,
     currentProperties: getWellboreProperties(wellbore)
-  };
-};
-
-const selectLogTypeGraph = (state: NavigationState, { payload }: SelectLogTypeActionGraph): NavigationState => {
-  const { well, wellbore, logTypeGroup, displayGraph } = payload;
-  const groupId = calculateObjectGroupId(wellbore, ObjectType.Log);
-  const shouldExpandLogNode = shouldExpand(state.expandedTreeNodes, groupId, calculateWellboreNodeId(wellbore));
-  const expandedTreeNodes = shouldExpandLogNode ? toggleTreeNode(state.expandedTreeNodes, groupId) : state.expandedTreeNodes;
-  const shouldExpandNode = shouldExpand(expandedTreeNodes, logTypeGroup, calculateWellboreNodeId(wellbore));
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    selectedWell: well,
-    selectedWellbore: wellbore,
-    selectedObjectGroup: ObjectType.Log,
-    selectedLogTypeGroup: logTypeGroup,
-    currentSelected: displayGraph,
-    expandedTreeNodes: shouldExpandNode ? toggleTreeNode(expandedTreeNodes, logTypeGroup) : expandedTreeNodes,
-    currentProperties: getWellboreProperties(wellbore),
-    displayGraph: true
   };
 };
 

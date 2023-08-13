@@ -148,7 +148,7 @@ export const LogsGraph = (): React.ReactElement => {
     let x = start[0];
     const y = end[1];
     //assures minimum bar lenght to be visible in graph
-    const originalX = sortedLogs[itemIndex].start;
+    const originalX = sortedLogs[itemIndex as number].start;
     console.log(originalX);
     if (barLength < 20) {
       barLength = 20;

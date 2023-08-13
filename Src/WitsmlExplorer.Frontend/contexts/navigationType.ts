@@ -11,8 +11,7 @@ enum NavigationType {
   SelectObjectGroup = "SelectObjectGroup",
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues",
-  SelectServerManager = "SelectServerManager",
-  SelectLogTypeGraph = "SelectLogTypeGraph"
+  SelectServerManager = "SelectServerManager"
 }
 
 export default NavigationType;

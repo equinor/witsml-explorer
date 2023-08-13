@@ -1,6 +1,6 @@
-import { Button } from "@material-ui/core";
+import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
-import { SelectLogTypeActionGraph } from "../../contexts/navigationActions";
+import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -12,6 +12,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
+import LogsGraph from "./Charts/LogsGraph";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
@@ -24,10 +25,11 @@ export const LogsListView = (): React.ReactElement => {
 
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
+  const [showGraph, setShowGraph] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -77,20 +79,6 @@ export const LogsListView = (): React.ReactElement => {
     });
   };
 
-  const onClickGraph = async () => {
-    const action: SelectLogTypeActionGraph = {
-      type: NavigationType.SelectLogTypeGraph,
-      payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup, displayGraph: true }
-    };
-    dispatchNavigation(action);
-  };
-
-  const panelElements = [
-    <Button key="showGraph" onClick={onClickGraph}>
-      Display Graph
-    </Button>
-  ];
-
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
@@ -102,19 +90,44 @@ export const LogsListView = (): React.ReactElement => {
   }, [selectedWellbore, selectedLogTypeGroup]);
 
   return selectedWellbore && !resetCheckedItems ? (
-    <ContentTable
-      viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
-      columns={columns}
-      onSelect={onSelect}
-      data={getTableData()}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      panelElements={panelElements}
-    />
+    <ContentContainer>
+      <CommonPanelContainer>
+        <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
+        <Typography style={{ color: colors.text.staticIconsDefault }}>Show Graph</Typography>
+      </CommonPanelContainer>
+      {showGraph ? (
+        <LogsGraph />
+      ) : (
+        <ContentTable
+          viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
+          columns={columns}
+          onSelect={onSelect}
+          data={getTableData()}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+        />
+      )}
+    </ContentContainer>
   ) : (
     <></>
   );
 };
+
+const CommonPanelContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  > p {
+    margin-left: -1rem;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
 
 export default LogsListView;
