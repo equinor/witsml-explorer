@@ -144,14 +144,19 @@ export const LogsGraph = (): React.ReactElement => {
     const start = api.coord([api.value(dimStart), itemIndex]);
     const end = api.coord([api.value(dimEnd), itemIndex]);
     let barLength = end[0] - start[0];
-
-    //assures minimum bar lenght to be visible in graph
-    if (barLength < 40) {
-      barLength = 40;
-    }
     const barHeight = 30;
-    const x = start[0];
+    let x = start[0];
     const y = end[1];
+    //assures minimum bar lenght to be visible in graph
+    const originalX = sortedLogs[itemIndex].start;
+    console.log(originalX);
+    if (barLength < 20) {
+      barLength = 20;
+      // should not be located outside graph
+      if (originalX - barLength > 0) {
+        x = x - barLength;
+      }
+    }
     const itemText = data[itemIndex as number].name;
     const textWidth = echarts.format.getTextRect(itemText).width;
     const text = barLength > textWidth + 40 && x + barLength >= 180 ? itemText : "";
