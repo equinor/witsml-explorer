@@ -194,6 +194,8 @@ export function throwError(statusCode: number, message: string) {
     case 403:
     case 404:
     case 500:
+    case 502:
+    case 504:
       throw new Error(message);
     default:
       throw new Error(`Something unexpected has happened.`);

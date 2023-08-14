@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Services
     {
         void CacheJob(JobInfo jobInfo);
         IEnumerable<JobInfo> GetJobInfosByUser(string username);
+        JobInfo GetJobInfoById(string jobId);
         IEnumerable<JobInfo> GetAllJobInfos();
     }
 
@@ -51,6 +52,11 @@ namespace WitsmlExplorer.Api.Services
             return _jobs.Values.Where(job => job.Username == username);
         }
 
+        public JobInfo GetJobInfoById(string jobId)
+        {
+            return _jobs[jobId];
+        }
+
         public IEnumerable<JobInfo> GetAllJobInfos()
         {
             return _jobs.Values;
@@ -79,6 +85,5 @@ namespace WitsmlExplorer.Api.Services
             }
             _logger.LogInformation("JobCache cleanup finished, deleted: {deleted}, failed: {failed}, remaining: {remaining}", deleted, failed, _jobs.Count);
         }
-
     }
 }

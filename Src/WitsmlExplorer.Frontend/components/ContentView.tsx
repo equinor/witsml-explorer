@@ -11,7 +11,7 @@ import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
-import { LogsListView } from "./ContentViews/LogsListView";
+import LogsListView from "./ContentViews/LogsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import MudLogView from "./ContentViews/MudLogView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";

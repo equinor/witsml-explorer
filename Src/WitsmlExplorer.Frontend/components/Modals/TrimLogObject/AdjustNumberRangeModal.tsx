@@ -76,7 +76,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
       <TextField
         fullWidth
         label={"Start index"}
-        value={startValue}
+        value={startValue ?? ""}
         type={"number"}
         error={!startIndexIsValid}
         helperText={startIndexIsValid ? "" : isDescending ? `Must be higher than ${endValue}` : `Must be lower than ${endValue}`}
@@ -86,7 +86,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
       <TextField
         fullWidth
         label={"End index"}
-        value={endValue}
+        value={endValue ?? ""}
         type={"number"}
         error={!endIndexIsValid}
         helperText={endIndexIsValid ? "" : isDescending ? `Must be lower than ${startValue}` : `Must be higher than ${startValue}`}

@@ -1,3 +1,4 @@
+import { Switch, Typography } from "@equinor/eds-core-react";
 import { Button } from "@material-ui/core";
 import orderBy from "lodash/orderBy";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -15,6 +16,7 @@ import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import ProgressSpinner from "../ProgressSpinner";
+import { CurveValuesPlot } from "./CurveValuesPlot";
 import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
@@ -23,21 +25,18 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    dispatchOperation,
+    operationState: { colors }
+  } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, selectedObject, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
+  const [showPlot, setShowPlot] = useState<boolean>(false);
   const selectedLog = selectedObject as LogObject;
-  const { exportData, properties: exportOptions } = useExport({
-    fileExtension: ".csv",
-    newLineCharacter: "\n",
-    outputMimeType: "text/csv",
-    separator: ",",
-    omitSpecialCharactersFromFilename: true,
-    appendDateTime: true
-  });
+  const { exportData, exportOptions } = useExport();
 
   const getDeleteLogCurveValuesJob = (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
     const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
@@ -139,7 +138,6 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [selectedLogCurveInfo, selectedLog]);
 
   const panelElements = [
-    <EditInterval key="editinterval" />,
     <Button key="downloadall" disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
       Download all as .csv
     </Button>,
@@ -153,17 +151,26 @@ export const CurveValuesView = (): React.ReactElement => {
       {isLoading && <ProgressSpinner message="Fetching data" />}
       {!isLoading && !tableData.length && <Message>No data</Message>}
       {Boolean(columns.length) && Boolean(tableData.length) && (
-        <>
-          <ContentTable
-            columns={columns}
-            onRowSelectionChange={(rows) => setSelectedRows(rows as CurveValueRow[])}
-            onContextMenu={onContextMenu}
-            data={tableData}
-            checkableRows={true}
-            panelElements={panelElements}
-            stickyLeftColumns={2}
-          />
-        </>
+        <ContentContainer>
+          <CommonPanelContainer>
+            <EditInterval key="editinterval" />
+            <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
+            <Typography style={{ color: colors.text.staticIconsDefault }}>Show Plot</Typography>
+          </CommonPanelContainer>
+          {showPlot ? (
+            <CurveValuesPlot data={tableData} columns={columns} name={selectedLog?.name} />
+          ) : (
+            <ContentTable
+              columns={columns}
+              onRowSelectionChange={(rows) => setSelectedRows(rows as CurveValueRow[])}
+              onContextMenu={onContextMenu}
+              data={tableData}
+              checkableRows={true}
+              panelElements={panelElements}
+              stickyLeftColumns={2}
+            />
+          )}
+        </ContentContainer>
       )}
     </>
   );
@@ -226,3 +233,19 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
+
+const CommonPanelContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  > p {
+    margin-left: -1rem;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;

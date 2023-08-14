@@ -23,7 +23,7 @@ public interface IQueryLogger
     /// <param name="resultCode">Result code from the witsml server (negative number means error code)</param>
     /// <param name="suppMsgOut">Result message from the witsml server</param>
     /// <typeparam name="T">IWitsmlQueryType</typeparam>
-    void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful, 
+    void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful,
         string xmlReceived, short resultCode, string suppMsgOut) where T : IWitsmlQueryType;
 }
 
@@ -38,7 +38,7 @@ public class DefaultQueryLogger : IQueryLogger
             .CreateLogger();
     }
 
-    public void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful, 
+    public void LogQuery<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn, string querySent, bool isSuccessful,
         string xmlReceived, short resultCode, string suppMsgOut) where T : IWitsmlQueryType
     {
         if (xmlReceived != null)

@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-        
+
         /// <summary>
         /// Create trajectories witsml model. 
         /// </summary>
@@ -117,7 +117,7 @@ namespace WitsmlExplorer.Api.Query
                 }.AsSingletonList()
             };
         }
-        
+
         public static WitsmlTrajectories UpdateTrajectoryStation(TrajectoryStation trajectoryStation, ObjectReference trajectoryReference)
         {
             WitsmlTrajectoryStation ts = new()

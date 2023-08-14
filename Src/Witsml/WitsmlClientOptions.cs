@@ -10,33 +10,33 @@ public class WitsmlClientOptions
     /// <summary>
     /// Hostname of the WITSML server to connect to
     /// </summary>
-    public string Hostname { get; init; }
+    public string Hostname { get; set; }
 
     /// <summary>
     /// Client credentials to be used for basic authentication with the WITSML server
     /// </summary>
-    public WitsmlCredentials Credentials { get; init; }
+    public WitsmlCredentials Credentials { get; set; }
 
     /// <summary>
-    /// Client certificate to present while connecting to the WITSML server. The certificate should contain the private key.
+    /// Optional. Client certificate to present while connecting to the WITSML server. The certificate should contain the private key.
     /// </summary>
-    public X509Certificate2 ClientCertificate { get; init; }
+    public X509Certificate2 ClientCertificate { get; set; }
 
     /// <summary>
     /// The client capabilities to present to the WITSML server
     /// <see cref="WitsmlClientCapabilities" />
     /// </summary>
-    public WitsmlClientCapabilities ClientCapabilities { get; init; } = new();
+    public WitsmlClientCapabilities ClientCapabilities { get; set; } = new();
 
     /// <summary>
     /// The timeout interval to be used when communicating with the WITSML server. Default is 00:01:00 minutes
     /// </summary>
-    public TimeSpan RequestTimeOut { get; init; } = TimeSpan.FromMinutes(1);
+    public TimeSpan RequestTimeOut { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
     /// Enable logging all queries to a file (queries.log) in the current directory
     /// </summary>
-    public bool LogQueries { get; init; }
+    public bool LogQueries { get; set; }
 }
 
 public record WitsmlCredentials(string Username, string Password);

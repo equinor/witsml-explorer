@@ -16,7 +16,6 @@ using WitsmlExplorer.Api.Repositories;
 namespace WitsmlExplorer.Api.Middleware
 {
     // Source: https://code-maze.com/global-error-handling-aspnetcore/
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
@@ -32,6 +31,26 @@ namespace WitsmlExplorer.Api.Middleware
             {
                 await _next(httpContext);
             }
+            catch (TimeoutException ex)
+            {
+                Log.Error($"Connection failed, timeout occured: {ex}");
+                ErrorDetails errorDetails = new()
+                {
+                    StatusCode = (int)HttpStatusCode.GatewayTimeout,
+                    Message = "Connection to server failed, no response in timeout"
+                };
+                await HandleExceptionAsync(httpContext, errorDetails);
+            }
+            catch (ProtocolException ex)
+            {
+                Log.Error($"Invalid response from server: {ex}");
+                ErrorDetails errorDetails = new()
+                {
+                    StatusCode = (int)HttpStatusCode.BadGateway,
+                    Message = "Remote endpoint sent not WITSML server response"
+                };
+                await HandleExceptionAsync(httpContext, errorDetails);
+            }
             catch (MessageSecurityException ex)
             {
                 Log.Debug($"Not valid credentials: {ex}");
@@ -45,7 +64,7 @@ namespace WitsmlExplorer.Api.Middleware
             catch (EndpointNotFoundException ex)
             {
                 Log.Debug($"Not able to connect server endpoint. : {ex}");
-                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlAuthHeader, n => "");
+                ServerCredentials witsmlTarget = httpContext.Request.GetWitsmlServerHttpHeader(EssentialHeaders.WitsmlAuthHeader, _ => string.Empty);
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.NotFound,
@@ -83,7 +102,7 @@ namespace WitsmlExplorer.Api.Middleware
 
         private static Task HandleExceptionAsync(HttpContext context, ErrorDetails errorDetails)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = System.Net.Mime.MediaTypeNames.Application.Json;
             context.Response.StatusCode = errorDetails.StatusCode;
 
             return context.Response.WriteAsync(errorDetails.ToString());
