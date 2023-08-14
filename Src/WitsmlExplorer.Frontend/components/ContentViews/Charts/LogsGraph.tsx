@@ -93,32 +93,18 @@ export const LogsGraph = (): React.ReactElement => {
     return 600;
   };
 
-  const randomColor = (name: string): string => {
-    let result = "";
+  const itemColor = (name: string): string => {
+    let result = '';
     reservedColours.forEach(function (value, key) {
       if (name.toLowerCase().includes(value)) {
         result = key;
       }
     });
     // returns reserved colours
-    if (result !== "") {
+    if (result !== '') {
       return result;
     }
-    return generateColor(name);
-  };
-
-  const generateColor = (name: string): string => {
-    let result = "";
-    for (let i = 0; i < 6; ++i) {
-      const value = Math.floor(16 * Math.random());
-      result += value.toString(16);
-    }
-    result = "#" + result;
-    // recursion to avoid duplicities with reserved colours
-    if (reservedColours.has(name)) {
-      return generateColor(name);
-    }
-    return result;
+    return '#536878';
   };
 
   for (let i = 0; i < sortedLogs.length; i++) {
@@ -133,7 +119,7 @@ export const LogsGraph = (): React.ReactElement => {
       value: [i, start, end],
       itemStyle: {
         normal: {
-          color: randomColor(log.name)
+          color: itemColor(log.name)
         }
       }
     });
