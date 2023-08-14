@@ -78,7 +78,6 @@ export const LogsGraph = (): React.ReactElement => {
   });
 
   // calculates equal vertical distribution
-  // needs to be more tuned
   const barHeight = 30;
   const spacing = 30;
   const verticalAxisZoomMaxValue = () => {
@@ -94,17 +93,17 @@ export const LogsGraph = (): React.ReactElement => {
   };
 
   const itemColor = (name: string): string => {
-    let result = '';
+    let result = "";
     reservedColours.forEach(function (value, key) {
       if (name.toLowerCase().includes(value)) {
         result = key;
       }
     });
     // returns reserved colours
-    if (result !== '') {
+    if (result !== "") {
       return result;
     }
-    return '#536878';
+    return "#536878";
   };
 
   for (let i = 0; i < sortedLogs.length; i++) {
@@ -130,12 +129,10 @@ export const LogsGraph = (): React.ReactElement => {
     const start = api.coord([api.value(dimStart), itemIndex]);
     const end = api.coord([api.value(dimEnd), itemIndex]);
     let barLength = end[0] - start[0];
-    const barHeight = 30;
     let x = start[0];
     const y = end[1];
     //assures minimum bar lenght to be visible in graph
     const originalX = sortedLogs[itemIndex as number].start;
-    console.log(originalX);
     if (barLength < 20) {
       barLength = 20;
       // should not be located outside graph

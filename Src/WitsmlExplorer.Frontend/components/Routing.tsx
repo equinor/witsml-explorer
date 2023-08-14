@@ -18,7 +18,7 @@ import { WITSML_INDEX_TYPE_MD } from "./Constants";
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { updateSelectedFilter } = React.useContext(FilterContext);
-  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup, displayGraph } = navigationState;
+  const { selectedServer, servers, wells, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup } = navigationState;
   const router = useRouter();
   const [isSyncingUrlAndState, setIsSyncingUrlAndState] = useState<boolean>(true);
   const [hasSelectedServer, setHasSelectedServer] = useState<boolean>(false);
@@ -40,7 +40,7 @@ const Routing = (): React.ReactElement => {
     if (finishedSyncingStateAndUrl) {
       setIsSyncingUrlAndState(false);
     }
-  }, [selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup, displayGraph]);
+  }, [selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, selectedLogTypeGroup]);
 
   useEffect(() => {
     //update router on params change

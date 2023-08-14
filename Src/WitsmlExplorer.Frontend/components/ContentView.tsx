@@ -4,7 +4,6 @@ import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "
 import { ObjectType } from "../models/objectType";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
-import LogsGraph from "./ContentViews/Charts/LogsGraph";
 import { CurveValuesView } from "./ContentViews/CurveValuesView";
 import FluidsReportsListView from "./ContentViews/FluidsReportListView";
 import FluidsView from "./ContentViews/FluidsView";
@@ -55,8 +54,7 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected, displayGraph } =
-    navigationState;
+  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected } = navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {
@@ -83,8 +81,6 @@ const ContentView = (): React.ReactElement => {
         setObjectView(true);
       } else if (currentSelected === selectedLogTypeGroup) {
         setView(<LogsListView />);
-      } else if (currentSelected === displayGraph) {
-        setView(<LogsGraph />);
       } else if (currentSelected === selectedObject) {
         setObjectView(false);
       } else if (currentSelected === selectedLogCurveInfo) {
