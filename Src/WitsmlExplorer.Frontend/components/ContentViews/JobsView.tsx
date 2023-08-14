@@ -15,7 +15,6 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
 import { ReportModal } from "../Modals/ReportModal";
-import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const JobsView = (): React.ReactElement => {
@@ -108,10 +107,10 @@ export const JobsView = (): React.ReactElement => {
         .map((jobInfo) => {
           return {
             ...jobInfo,
-            failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
-            wellName: clipLongString(jobInfo.wellName, 20, "-"),
-            wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
-            objectName: clipLongString(jobInfo.objectName, 30, "-"),
+            failedReason: jobInfo.failedReason,
+            wellName: jobInfo.wellName,
+            wellboreName: jobInfo.wellboreName,
+            objectName: jobInfo.objectName,
             startTime: formatDateString(jobInfo.startTime, timeZone),
             endTime: formatDateString(jobInfo.endTime, timeZone),
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
