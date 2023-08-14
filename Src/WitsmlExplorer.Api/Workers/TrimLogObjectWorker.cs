@@ -35,6 +35,16 @@ namespace WitsmlExplorer.Api.Workers
             Index currentEndIndex = Index.End(witsmlLog);
             Index newEndIndex = Index.End(witsmlLog, job.EndIndex);
 
+            if (newStartIndex > newEndIndex)
+            {
+                (newEndIndex, newStartIndex) = (newStartIndex, newEndIndex);
+            }
+
+            if ((currentStartIndex == newStartIndex) && (newEndIndex == currentEndIndex))
+            {
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, "No update needed", string.Empty, witsmlLog.GetDescription()), null);
+            }
+
             bool trimmedStartOfLog = false;
             if (currentStartIndex < newStartIndex && newStartIndex < currentEndIndex)
             {

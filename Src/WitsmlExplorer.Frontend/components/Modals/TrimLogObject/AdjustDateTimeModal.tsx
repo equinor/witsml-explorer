@@ -33,6 +33,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
     { timeInMilliseconds: 604800000, displayText: "week" }
   ];
   const totalTimeSpan = toDate(maxDate).getTime() - toDate(minDate).getTime();
+  const isDescending = minDate > maxDate;
 
   useEffect(() => {
     onStartDateChanged(startIndex + startOffset);
@@ -40,7 +41,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
   }, [startIndex, endIndex]);
 
   useEffect(() => {
-    onValidChange(startIndexIsValid && endIndexIsValid && startIndex < endIndex);
+    onValidChange(startIndexIsValid && endIndexIsValid && (isDescending ? startIndex > endIndex : startIndex < endIndex));
   }, [startIndexIsValid, endIndexIsValid, startIndex, endIndex]);
 
   return (
@@ -81,7 +82,8 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
           setEndIndexIsValid(valid);
         }}
         offset={startOffset}
-        maxValue={endIndex}
+        minValue={isDescending ? endIndex : null}
+        maxValue={isDescending ? null : endIndex}
       />
       <LogHeaderDateTimeField
         value={endIndex}
@@ -91,7 +93,8 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
           setStartIndexIsValid(valid);
         }}
         offset={endOffset}
-        minValue={startIndex}
+        minValue={isDescending ? null : startIndex}
+        maxValue={isDescending ? startIndex : null}
       />
     </>
   );

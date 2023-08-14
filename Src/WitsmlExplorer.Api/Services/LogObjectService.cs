@@ -145,11 +145,6 @@ namespace WitsmlExplorer.Api.Services
             Index startIndex = Index.Start(log, start);
             Index endIndex = Index.End(log, end);
 
-            if (startIndex > endIndex)
-            {
-                return new LogData();
-            }
-
             string indexMnemonic = log.IndexCurve.Value;
             if (!mnemonics.Contains(indexMnemonic))
             {
