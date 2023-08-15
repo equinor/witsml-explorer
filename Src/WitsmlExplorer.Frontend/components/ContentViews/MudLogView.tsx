@@ -9,7 +9,6 @@ import MudLog from "../../models/mudLog";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
-import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface GeologyIntervalRow extends ContentTableRow {
@@ -96,7 +95,7 @@ export const MudLogView = (): React.ReactElement => {
     return {
       id: index,
       typeLithology: geologyInterval.typeLithology,
-      description: clipLongString(geologyInterval.description, 30),
+      description: geologyInterval.description,
       mdTop: measureToString(geologyInterval.mdTop),
       mdBottom: measureToString(geologyInterval.mdBottom),
       tvdTop: measureToString(geologyInterval.tvdTop),
