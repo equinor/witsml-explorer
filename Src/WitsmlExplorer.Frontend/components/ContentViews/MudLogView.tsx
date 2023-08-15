@@ -129,7 +129,15 @@ export const MudLogView = (): React.ReactElement => {
   ];
 
   return selectedMudLog && !isFetchingData ? (
-    <ContentTable viewId="mudLogView" columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows insetColumns={insetColumns} />
+    <ContentTable
+      viewId="mudLogView"
+      columns={columns}
+      data={geologyIntervalRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      insetColumns={insetColumns}
+      downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
+    />
   ) : (
     <></>
   );

@@ -24,6 +24,8 @@ export interface PanelProps {
   downloadToCsvFileName?: string;
 }
 
+const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
+
 const Panel = (props: PanelProps) => {
   const {
     checkableRows,
@@ -61,12 +63,14 @@ const Panel = (props: PanelProps) => {
     const exportColumns = table
       .getVisibleLeafColumns()
       .map((c) => c.id)
+      .filter((c) => !csvIgnoreColumns.includes(c))
       .join(exportOptions.separator);
     const csvString = table
       .getRowModel()
       .rows.map((row) =>
         row
           .getVisibleCells()
+          .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
           .map((cell) => cell.getValue())
           .join(exportOptions.separator)
       )

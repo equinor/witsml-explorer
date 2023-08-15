@@ -154,7 +154,7 @@ export const JobsView = (): React.ReactElement => {
     </Typography>
   ];
 
-  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} />;
+  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} downloadToCsvFileName="Jobs" />;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {
