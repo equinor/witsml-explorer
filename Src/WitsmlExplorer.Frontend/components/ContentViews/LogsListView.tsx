@@ -63,9 +63,10 @@ export const LogsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
+    { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
+    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },

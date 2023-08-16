@@ -31,6 +31,7 @@ interface LogItem {
   startRaw: string;
   endRaw: string;
   runNumber: string;
+  mnemonics: string;
 }
 
 const depthNullValue = -999.25;
@@ -82,7 +83,8 @@ export const LogsGraph = (): React.ReactElement => {
         uid: log.uid,
         startRaw: log.startIndex,
         endRaw: log.endIndex,
-        runNumber: log.runNumber
+        runNumber: log.runNumber != null ? log.runNumber : "",
+        mnemonics: log.mnemonics
       };
     });
   };
@@ -91,6 +93,7 @@ export const LogsGraph = (): React.ReactElement => {
     return a.start - b.start;
   });
 
+  // set the position of empty logs to the start of the first log with data
   const nullValue = isTimeIndexed() ? timeNullValue : depthNullValue;
   let lowestNonNullStart = nullValue;
   for (let i = 0; i < sortedLogs.length; i++) {
@@ -100,12 +103,10 @@ export const LogsGraph = (): React.ReactElement => {
     }
   }
   for (let i = 0; i < sortedLogs.length; i++) {
-    if (sortedLogs[i].start == nullValue) {
+    if (sortedLogs[i].start == nullValue && sortedLogs[i].end == nullValue) {
       sortedLogs[i].start = lowestNonNullStart;
       sortedLogs[i].end = lowestNonNullStart;
       sortedLogs[i].name += " (no data)";
-    } else {
-      break;
     }
   }
 
@@ -154,7 +155,7 @@ export const LogsGraph = (): React.ReactElement => {
         }
       },
       tooltip: {
-        formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}`
+        formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}<br />mnemonics: ${log.mnemonics}`
       }
     });
   }
