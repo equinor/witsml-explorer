@@ -30,24 +30,17 @@ export enum WellboreObjects {
   toolErrorTermSet = "toolErrorTermSet"
 }
 
-export enum DisabledWellObj {
-  Well = "Well",
-  Wellbore = "Wellbore",
-  toolErrorTermSet = "toolErrorTermSet",
-  toolErrorModel = "toolErrorModel",
-  target = "target",
-  surveyProgram = "surveyProgram",
-  sidewallCore = "sidewallCore",
-  stimJob = "stimJob",
-  rig = "rig",
-  pressureTestPlan = "pressureTestPlan",
-  opsReport = "opsReport",
-  objectGroup = "objectGroup",
-  mnemonicSet = "mnemonicSet",
+export enum EnabledWellboreObjects {
+  bhaRun = "bhaRun",
+  changeLog = "changeLog",
+  fluidsReport = "fluidsReport",
   formationMarker = "formationMarker",
-  drillReport = "drillReport",
-  customObjcts = "customObjcts",
-  convCore = "convCore",
-  cementJobs = "cementJobs",
-  attachment = "attachment"
+  log = "log",
+  message = "message",
+  mudLog = "mudLog",
+  rig = "rig",
+  risk = "risk",
+  trajectory = "trajectory",
+  tubular = "tubular",
+  wbGeometry = "wbGeometry"
 }
