@@ -20,6 +20,7 @@ export interface DataItem {
   value: number[];
   uid: string;
   itemStyle: { normal: { color: string } };
+  tooltip: { formatter: string };
 }
 
 interface LogItem {
@@ -27,7 +28,13 @@ interface LogItem {
   start: number;
   end: number;
   uid: string;
+  startRaw: string;
+  endRaw: string;
+  runNumber: string;
 }
+
+const depthNullValue = -999.25;
+const timeNullValue = +new Date("1900-01-01T00:00:00.000Z");
 
 export const LogsGraph = (): React.ReactElement => {
   const dimItemIndex = 0;
@@ -64,21 +71,43 @@ export const LogsGraph = (): React.ReactElement => {
     return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
   };
 
-  const getTableData = (): LogItem[] => {
+  const getGraphData = (): LogItem[] => {
     return logs.map((log) => {
+      const start = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", "");
+      const end = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
       return {
-        name: log.name,
-        start: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", ""),
-        end: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", ""),
+        name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
+        start: start < end ? start : end,
+        end: start < end ? end : start,
         uid: log.uid,
-        category: null
+        startRaw: log.startIndex,
+        endRaw: log.endIndex,
+        runNumber: log.runNumber
       };
     });
   };
 
-  const sortedLogs = getTableData().sort((a, b) => {
+  const sortedLogs = getGraphData().sort((a, b) => {
     return a.start - b.start;
   });
+
+  const nullValue = isTimeIndexed() ? timeNullValue : depthNullValue;
+  let lowestNonNullStart = nullValue;
+  for (let i = 0; i < sortedLogs.length; i++) {
+    if (sortedLogs[i].start != nullValue) {
+      lowestNonNullStart = sortedLogs[i].start;
+      break;
+    }
+  }
+  for (let i = 0; i < sortedLogs.length; i++) {
+    if (sortedLogs[i].start == nullValue) {
+      sortedLogs[i].start = lowestNonNullStart;
+      sortedLogs[i].end = lowestNonNullStart;
+      sortedLogs[i].name += " (no data)";
+    } else {
+      break;
+    }
+  }
 
   // calculates equal vertical distribution
   const barHeight = 30;
@@ -123,6 +152,9 @@ export const LogsGraph = (): React.ReactElement => {
         normal: {
           color: itemColor(log.name)
         }
+      },
+      tooltip: {
+        formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}`
       }
     });
   }
@@ -136,8 +168,8 @@ export const LogsGraph = (): React.ReactElement => {
     const y = end[1];
     //assures minimum bar lenght to be visible in graph
     const originalX = sortedLogs[itemIndex as number].start;
-    if (barLength < 20) {
-      barLength = 20;
+    if (barLength < 1) {
+      barLength = 3;
       // should not be located outside graph
       if (originalX - barLength > 0) {
         x = x - barLength;
@@ -272,8 +304,7 @@ export const LogsGraph = (): React.ReactElement => {
         },
         encode: {
           x: [1, 2],
-          y: 0,
-          tooltip: [dimStart, dimEnd]
+          y: 0
         },
         data: data,
         clip: true
