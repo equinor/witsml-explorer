@@ -22,13 +22,16 @@ interface ExportObject {
   exportData: (fileName: string, header: string, data: string) => void;
   exportOptions: ExportProperties;
 }
+
 function omitSpecialCharacters(text: string): string {
   return text.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 }
+
 function appendDateTime(append: boolean): string {
   const now = new Date();
-  return append ? `-${now.getFullYear()}-${now.getMonth()}-${now.getDay()}T${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}` : "";
+  return append ? `-${now.toISOString()}` : "";
 }
+
 function useExport(props?: Partial<ExportProperties>): ExportObject {
   const exportOptions = useMemo(() => ({ ...defaultExportProperties, ...props }), [defaultExportProperties, props]);
 
