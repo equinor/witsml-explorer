@@ -36,13 +36,16 @@ export const LogsGraph = (): React.ReactElement => {
   const data: DataItem[] = [];
   const categories: number[] = [];
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedLogTypeGroup } = navigationState;
 
   // dedicated colors for items containing specific names
   const reservedColours: Map<string, string> = new Map([
-    ["#0000FF", "surface"],
-    ["#FF0000", "downhole"],
-    ["#FFFF00", "memory"]
+    ["#0088DD", "surface"],
+    ["#DD2222", "downhole"],
+    ["#DDBB00", "memory"]
   ]);
 
   const {
@@ -103,7 +106,7 @@ export const LogsGraph = (): React.ReactElement => {
     if (result !== "") {
       return result;
     }
-    return "#536878";
+    return "#9AA";
   };
 
   for (let i = 0; i < sortedLogs.length; i++) {
@@ -141,14 +144,35 @@ export const LogsGraph = (): React.ReactElement => {
       }
     }
     const itemText = data[itemIndex as number].name;
-    const textWidth = echarts.format.getTextRect(itemText).width;
-    const text = barLength > textWidth + 40 && x + barLength >= 180 ? itemText : "";
-    const rectText = clipRectByRect(params, {
+    let position: "insideLeft" | "left" | "right" = "insideLeft";
+    let itemRect = clipRectByRect(params, {
       x: x,
       y: y,
       width: barLength,
       height: barHeight
     });
+
+    // ensure labels are shown when items are outside the view
+    if (!itemRect) {
+      const coordSys = params.coordSys as any;
+      if (start[0] > coordSys.x + coordSys.width) {
+        itemRect = {
+          x: coordSys.x + coordSys.width - 1,
+          y,
+          width: 0,
+          height: barHeight
+        };
+        position = "left";
+      } else if (end[0] < coordSys.x) {
+        itemRect = {
+          x: coordSys.x,
+          y,
+          width: 0,
+          height: barHeight
+        };
+        position = "right";
+      }
+    }
 
     return {
       type: "group",
@@ -156,20 +180,21 @@ export const LogsGraph = (): React.ReactElement => {
       children: [
         {
           type: "rect",
-          ignore: !rectText,
-          shape: rectText,
+          ignore: !itemRect,
+          shape: itemRect,
           style: {
-            fill: api.visual("color")
+            fill: api.visual("color"),
+            opacity: 0.8
           },
           textConfig: {
-            position: "insideLeft"
+            position
           },
           textContent: {
             type: "text",
             style: {
-              text: text,
-              fontSize: 12,
-              textFill: "#fff"
+              text: itemText,
+              fontSize: 13,
+              textFill: colors.text.staticIconsDefault
             }
           }
         }
@@ -191,7 +216,7 @@ export const LogsGraph = (): React.ReactElement => {
     dataZoom: [
       {
         type: "slider",
-        filterMode: "weakFilter",
+        filterMode: "none",
         showDataShadow: false,
         top: 15,
         labelFormatter: ""
@@ -250,7 +275,8 @@ export const LogsGraph = (): React.ReactElement => {
           y: 0,
           tooltip: [dimStart, dimEnd]
         },
-        data: data
+        data: data,
+        clip: true
       }
     ]
   };
