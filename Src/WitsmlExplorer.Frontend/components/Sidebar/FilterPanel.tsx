@@ -2,11 +2,11 @@
 import { Divider } from "@material-ui/core";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
-import { FilterContext } from "../../contexts/filter";
+import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
-import { EnabledWellboreObjects } from "../../contexts/wellboreObjects";
+import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
 
 const FilterPanel = (): React.ReactElement => {
@@ -16,6 +16,16 @@ const FilterPanel = (): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+
+  const switchObjectVisibility = (objectType: ObjectType) => {
+    const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
+    if (updatedVisibility[objectType] === VisibilityStatus.Visible) {
+      updatedVisibility[objectType] = VisibilityStatus.Hidden;
+    } else {
+      updatedVisibility[objectType] = VisibilityStatus.Visible;
+    }
+    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+  };
 
   return (
     <EdsProvider density="compact">
@@ -102,13 +112,15 @@ const FilterPanel = (): React.ReactElement => {
             Well Objects
           </Typography>
           <ObjectListContainer>
-            {Object.values(EnabledWellboreObjects).map((wellObj: string) => (
+            {Object.values(ObjectType).map((objectType) => (
               <StyledCheckbox
-                label={wellObj}
+                label={objectType}
                 // disabled={true} //disabling everything for now as checking objects does not do anything yet, should use DisabledWellObj when implemented
-                defaultChecked={true}
-                key={wellObj}
+                checked={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible}
+                disabled={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Disabled}
+                key={objectType}
                 colors={colors}
+                onChange={() => switchObjectVisibility(objectType)}
               />
             ))}
           </ObjectListContainer>
