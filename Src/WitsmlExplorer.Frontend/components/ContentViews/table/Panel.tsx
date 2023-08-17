@@ -6,7 +6,7 @@ import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
 import OperationContext from "../../../contexts/operationContext";
-import useExport from "../../../hooks/useExport";
+import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
@@ -64,6 +64,7 @@ const Panel = (props: PanelProps) => {
       .getVisibleLeafColumns()
       .map((c) => c.id)
       .filter((c) => !csvIgnoreColumns.includes(c))
+      .map((c) => encloseCell(c))
       .join(exportOptions.separator);
     const csvString = table
       .getRowModel()
@@ -71,7 +72,8 @@ const Panel = (props: PanelProps) => {
         row
           .getVisibleCells()
           .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
-          .map((cell) => cell.getValue())
+          .map((cell) => cell.getValue()?.toString() || "")
+          .map((value) => encloseCell(value))
           .join(exportOptions.separator)
       )
       .join(exportOptions.newLineCharacter);

@@ -23,6 +23,12 @@ interface ExportObject {
   exportOptions: ExportProperties;
 }
 
+// Encloses a string value for safe usage as a cell in a CSV, handling comma and double-quote characters.
+export function encloseCell(value: string): string {
+  const enclosedValue = value.replace(/"/g, '""');
+  return /[,"]/g.test(enclosedValue) ? `"${enclosedValue}"` : enclosedValue;
+}
+
 function omitSpecialCharacters(text: string): string {
   return text.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 }
