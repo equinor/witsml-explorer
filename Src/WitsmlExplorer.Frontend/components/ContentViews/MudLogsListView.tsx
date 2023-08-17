@@ -82,7 +82,16 @@ export const MudLogsListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.mudLogs, mudLogs) && (
-      <ContentTable viewId="mudLogsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable
+        viewId="mudLogsListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="MudLogs"
+      />
     )
   );
 };

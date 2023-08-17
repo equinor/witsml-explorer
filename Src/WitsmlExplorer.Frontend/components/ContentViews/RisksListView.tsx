@@ -73,7 +73,7 @@ export const RisksListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.risks, risks) && (
-      <ContentTable viewId="risksListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="risksListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="Risks" />
     )
   );
 };

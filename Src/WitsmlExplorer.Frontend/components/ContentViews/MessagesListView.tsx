@@ -68,7 +68,7 @@ export const MessagesListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.messages, messages) && (
-      <ContentTable viewId="messagesListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="messagesListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="Messages" />
     )
   );
 };
