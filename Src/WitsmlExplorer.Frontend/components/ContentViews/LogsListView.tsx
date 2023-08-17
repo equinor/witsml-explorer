@@ -30,6 +30,7 @@ export const LogsListView = (): React.ReactElement => {
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -83,6 +84,7 @@ export const LogsListView = (): React.ReactElement => {
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
+      setSelectedRows([]);
     }
   }, [resetCheckedItems]);
 
@@ -94,10 +96,10 @@ export const LogsListView = (): React.ReactElement => {
     <ContentContainer>
       <CommonPanelContainer>
         <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography style={{ color: colors.text.staticIconsDefault }}>Show Graph</Typography>
+        <Typography style={{ color: colors.text.staticIconsDefault }}>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
       </CommonPanelContainer>
       {showGraph ? (
-        <LogsGraph />
+        <LogsGraph selectedLogs={selectedRows} />
       ) : (
         <ContentTable
           viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
@@ -105,8 +107,10 @@ export const LogsListView = (): React.ReactElement => {
           onSelect={onSelect}
           data={getTableData()}
           onContextMenu={onContextMenu}
+          onRowSelectionChange={(rows) => setSelectedRows(rows as LogObjectRow[])}
           checkableRows
           showRefresh
+          initiallySelectedRows={selectedRows}
         />
       )}
     </ContentContainer>

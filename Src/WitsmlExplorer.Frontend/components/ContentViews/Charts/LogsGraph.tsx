@@ -37,7 +37,11 @@ interface LogItem {
 const depthNullValue = -999.25;
 const timeNullValue = +new Date("1900-01-01T00:00:00.000Z");
 
-export const LogsGraph = (): React.ReactElement => {
+interface LogsGraphProps {
+  selectedLogs: LogObjectRow[];
+}
+
+export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   const dimItemIndex = 0;
   const dimStart = 1;
   const dimEnd = 2;
@@ -64,7 +68,12 @@ export const LogsGraph = (): React.ReactElement => {
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
-      setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
+      const filteredLogs = selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup);
+      if (props.selectedLogs.length > 0) {
+        setLogs(filteredLogs.filter((log) => props.selectedLogs.find((selectedLog) => selectedLog.uid == log.uid)));
+      } else {
+        setLogs(filteredLogs);
+      }
     }
   }, [selectedLogTypeGroup, selectedWellbore]);
 
