@@ -37,6 +37,7 @@ import {
   save,
   search,
   settings,
+  sync,
   upload,
   world
 } from "@equinor/eds-icons";
@@ -78,6 +79,7 @@ const icons = {
   save,
   search,
   settings,
+  sync,
   upload,
   world
 };

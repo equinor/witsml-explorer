@@ -13,9 +13,10 @@ const EditInterval = (): React.ReactElement => {
 
   const [startIndex, setStartIndex] = useState(String(minIndex));
   const [endIndex, setEndIndex] = useState(String(maxIndex));
-  const [isEditInterval, setEditInterval] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
 
   const submitEditInterval = () => {
+    setIsEdited(false);
     const logCurveInfoWithUpdatedIndex = selectedLogCurveInfo.map((logCurveInfo) => {
       return {
         ...logCurveInfo,
@@ -45,7 +46,7 @@ const EditInterval = (): React.ReactElement => {
           defaultValue={startIndex}
           onChange={(e: any) => {
             setStartIndex(e.target.value);
-            setEditInterval(true);
+            setIsEdited(true);
           }}
         />
       </StartEndIndex>
@@ -56,12 +57,12 @@ const EditInterval = (): React.ReactElement => {
           defaultValue={endIndex}
           onChange={(e: any) => {
             setEndIndex(e.target.value);
-            setEditInterval(true);
+            setIsEdited(true);
           }}
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={isEditInterval ?? "primary"} disabled={!isEditInterval} onClick={submitEditInterval}>
-        <Icon size={16} name="arrowForward" />
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval}>
+        <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </EditIntervalLayout>
   );
@@ -87,7 +88,7 @@ const StyledTextField = styled(TextField)`
   div {
     background-color: transparent;
   }
-  min-width: 210px;
+  min-width: 220px;
 `;
 
 const StyledButton = styled(Button)`
