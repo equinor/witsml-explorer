@@ -7,7 +7,6 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
-import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface MessageObjectRow extends ContentTableRow {
@@ -35,7 +34,7 @@ export const MessagesListView = (): React.ReactElement => {
         id: msg.uid,
         index: index + 1,
         dTim: formatDateString(msg.dTim, timeZone),
-        messageText: clipLongString(msg.messageText, 30),
+        messageText: msg.messageText,
         uid: msg.uid,
         name: msg.name,
         typeMessage: msg.typeMessage,
@@ -69,7 +68,7 @@ export const MessagesListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.messages, messages) && (
-      <ContentTable viewId="messagesListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="messagesListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="Messages" />
     )
   );
 };

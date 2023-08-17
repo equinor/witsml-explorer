@@ -78,7 +78,9 @@ export const RigsListView = (): React.ReactElement => {
 
   return (
     selectedWellbore &&
-    Object.is(selectedWellbore.rigs, rigs) && <ContentTable viewId="rigsListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+    Object.is(selectedWellbore.rigs, rigs) && (
+      <ContentTable viewId="rigsListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="Rigs" />
+    )
   );
 };
 

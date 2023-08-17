@@ -111,6 +111,7 @@ export const LogsListView = (): React.ReactElement => {
           checkableRows
           showRefresh
           initiallySelectedRows={selectedRows}
+          downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
         />
       )}
     </ContentContainer>

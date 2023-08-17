@@ -64,7 +64,16 @@ export const TrajectoriesListView = (): React.ReactElement => {
   });
 
   return selectedWellbore && trajectories == selectedWellbore.trajectories ? (
-    <ContentTable viewId="trajectoriesListView" columns={columns} data={trajectoryRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+    <ContentTable
+      viewId="trajectoriesListView"
+      columns={columns}
+      data={trajectoryRows}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      downloadToCsvFileName="Trajectories"
+    />
   ) : (
     <></>
   );
