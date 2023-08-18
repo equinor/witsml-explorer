@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavigationAction } from "../contexts/navigationAction";
 import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
-import NavigationContext, { NavigationState, Selectable, selectedJobsFlag } from "../contexts/navigationContext";
+import NavigationContext, { NavigationState, Selectable, ViewFlags } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
@@ -148,7 +148,7 @@ const getObjectCrumb = (navigationState: NavigationState, dispatch: (action: Nav
 };
 
 const getJobsCrumb = (currentSelected: Selectable) => {
-  return currentSelected == selectedJobsFlag
+  return currentSelected == ViewFlags.Jobs
     ? {
         name: "Jobs"
       }

@@ -1,4 +1,4 @@
-import { Button, NativeSelect } from "@equinor/eds-core-react";
+import { Button } from "@equinor/eds-core-react";
 import { Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import styled from "styled-components";
@@ -7,10 +7,11 @@ import { TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../../msal/MsalAuthProvider";
 import AuthorizationService from "../../services/authorizationService";
-import { Colors, dark, light } from "../../styles/Colors";
+import { dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
 import { getOffsetFromTimeZone } from "../DateFormatter";
+import { StyledNativeSelect } from "../Select";
 import ModalDialog from "./ModalDialog";
 
 const timeZoneLabels: Record<TimeZone, string> = {
@@ -111,20 +112,6 @@ const HorizontalLayout = styled.div`
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-  }
-`;
-
-const StyledNativeSelect = styled(NativeSelect)<{ colors: Colors }>`
-  select {
-    background: ${(props) => props.colors.text.staticTextFeildDefault};
-    color: ${(props) => props.colors.text.staticIconsDefault};
-    option {
-      background: ${(props) => props.colors.ui.backgroundLight};
-      color: ${(props) => props.colors.text.staticIconsDefault};
-    }
-  }
-  label {
-    color: ${(props) => props.colors.text.staticIconsDefault};
   }
 `;
 
