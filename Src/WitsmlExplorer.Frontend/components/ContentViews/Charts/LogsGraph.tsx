@@ -19,7 +19,7 @@ export interface DataItem {
   name: string;
   value: number[];
   uid: string;
-  itemStyle: { normal: { color: string } };
+  itemStyle: { color: string };
   tooltip: { formatter: string };
 }
 
@@ -159,9 +159,7 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
       uid: log.uid,
       value: [i, start, end],
       itemStyle: {
-        normal: {
-          color: itemColor(log.name)
-        }
+        color: itemColor(log.name)
       },
       tooltip: {
         formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}<br />mnemonics: ${log.mnemonics}`
