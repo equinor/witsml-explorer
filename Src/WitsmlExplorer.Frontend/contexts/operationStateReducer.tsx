@@ -91,7 +91,7 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     progressIndicatorValue: 0,
     modals: [],
     theme: UserTheme.Compact,
-    timeZone: TimeZone.Local,
+    timeZone: TimeZone.Raw,
     colors: Light
   };
   return useReducer(reducer, initialState);
