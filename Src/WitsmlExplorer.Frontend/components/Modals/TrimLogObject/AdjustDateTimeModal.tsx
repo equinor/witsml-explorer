@@ -8,6 +8,7 @@ import { LogHeaderDateTimeField } from "../LogHeaderDateTimeField";
 export interface AdjustDateTimeModelProps {
   minDate: string;
   maxDate: string;
+  isDescending?: boolean;
   onStartDateChanged: (value: string) => void;
   onEndDateChanged: (value: string) => void;
   onValidChange: (isValid: boolean) => void;
@@ -19,7 +20,7 @@ interface SetRangeButton {
 }
 
 const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElement => {
-  const { minDate, maxDate, onStartDateChanged, onEndDateChanged, onValidChange } = props;
+  const { minDate, maxDate, isDescending, onStartDateChanged, onEndDateChanged, onValidChange } = props;
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>(true);
   const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>(true);
   const [startOffset] = useState<string>(getOffset(minDate));
@@ -33,7 +34,6 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
     { timeInMilliseconds: 604800000, displayText: "week" }
   ];
   const totalTimeSpan = toDate(maxDate).getTime() - toDate(minDate).getTime();
-  const isDescending = minDate > maxDate;
 
   useEffect(() => {
     onStartDateChanged(startIndex + startOffset);

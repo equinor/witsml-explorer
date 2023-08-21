@@ -51,6 +51,7 @@ namespace WitsmlExplorer.Api.Services
                     StartIndex = log.GetStartIndexAsString(),
                     EndIndex = log.GetEndIndexAsString(),
                     IndexCurve = log.IndexCurve.Value,
+                    Direction = LogObject.ConvertDirection(log),
                     CommonData = new CommonData()
                     {
                         DTimCreation = log.CommonData.DTimCreation,
@@ -87,6 +88,7 @@ namespace WitsmlExplorer.Api.Services
                 ObjectGrowing = StringHelpers.ToBooleanSafe(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber,
+                Direction = LogObject.ConvertDirection(witsmlLog),
                 CommonData = new()
                 {
                     DTimCreation = witsmlLog.CommonData.DTimCreation,
@@ -178,7 +180,8 @@ namespace WitsmlExplorer.Api.Services
                 EndIndex = Index.End(witsmlLog).GetValueAsString(),
                 CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
                     new CurveSpecification { Mnemonic = mnemonic, Unit = unit }),
-                Data = GetDataDictionary(witsmlLog.LogData)
+                Data = GetDataDictionary(witsmlLog.LogData),
+                Direction = LogObject.ConvertDirection(witsmlLog)
             };
         }
 

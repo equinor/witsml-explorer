@@ -4,20 +4,20 @@ import React, { useEffect, useState } from "react";
 export interface AdjustNumberRangeModalProps {
   minValue: number;
   maxValue: number;
+  isDescending?: boolean;
   onStartValueChanged: (value: number) => void;
   onEndValueChanged: (value: number) => void;
   onValidChange: (isValid: boolean) => void;
 }
 
 const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.ReactElement => {
-  const { minValue, maxValue, onStartValueChanged, onEndValueChanged, onValidChange } = props;
+  const { minValue, maxValue, isDescending, onStartValueChanged, onEndValueChanged, onValidChange } = props;
   const [startValue, setStartIndex] = useState<number>(minValue);
   const [endValue, setEndIndex] = useState<number>(maxValue);
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
   const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>();
   const setRangeButtonValues = [20, 50, 200, 1000];
   const totalDepthSpan = maxValue - minValue;
-  const isDescending = totalDepthSpan < 0;
 
   useEffect(() => {
     onStartValueChanged(startValue);
