@@ -106,6 +106,7 @@ export const LogsListView = (): React.ReactElement => {
           onContextMenu={onContextMenu}
           checkableRows
           showRefresh
+          downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
         />
       )}
     </ContentContainer>

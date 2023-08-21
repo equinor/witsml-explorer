@@ -7,7 +7,6 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
 import formatDateString from "../DateFormatter";
-import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
@@ -39,8 +38,8 @@ export const RisksListView = (): React.ReactElement => {
         mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
         dTimStart: formatDateString(risk.dTimStart, timeZone),
         dTimEnd: formatDateString(risk.dTimEnd, timeZone),
-        details: clipLongString(risk.details, 30),
-        summary: clipLongString(risk.summary, 40),
+        details: risk.details,
+        summary: risk.summary,
         dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
         dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
         risk: risk
@@ -74,7 +73,7 @@ export const RisksListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.risks, risks) && (
-      <ContentTable viewId="risksListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="risksListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="Risks" />
     )
   );
 };

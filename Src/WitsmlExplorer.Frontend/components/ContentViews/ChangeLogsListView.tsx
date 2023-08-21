@@ -40,7 +40,11 @@ export const ChangeLogsListView = (): React.ReactElement => {
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
-  return Object.is(selectedWellbore?.changeLogs, changeLogs) && <ContentTable viewId="changeLogsListView" columns={columns} data={getTableData()} showRefresh />;
+  return (
+    Object.is(selectedWellbore?.changeLogs, changeLogs) && (
+      <ContentTable viewId="changeLogsListView" columns={columns} data={getTableData()} showRefresh downloadToCsvFileName="ChangeLogs" />
+    )
+  );
 };
 
 export default ChangeLogsListView;

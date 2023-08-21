@@ -208,7 +208,15 @@ export const FluidsView = (): React.ReactElement => {
   ];
 
   return selectedFluidsReport && !isFetchingData ? (
-    <ContentTable viewId="fluidView" columns={columns} data={fluidRows} onContextMenu={onContextMenu} checkableRows insetColumns={insetColumns} />
+    <ContentTable
+      viewId="fluidView"
+      columns={columns}
+      data={fluidRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      insetColumns={insetColumns}
+      downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
+    />
   ) : (
     <></>
   );

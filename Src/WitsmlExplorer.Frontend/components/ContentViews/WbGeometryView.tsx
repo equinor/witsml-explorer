@@ -99,7 +99,14 @@ export const WbGeometryView = (): React.ReactElement => {
   });
 
   return selectedWbGeometry && !isFetchingData ? (
-    <ContentTable viewId="wbGeometryView" columns={columns} data={wbGeometrySectionRows} onContextMenu={onContextMenu} checkableRows />
+    <ContentTable
+      viewId="wbGeometryView"
+      columns={columns}
+      data={wbGeometrySectionRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      downloadToCsvFileName={`WbGeometry_${selectedWbGeometry.name}`}
+    />
   ) : (
     <></>
   );

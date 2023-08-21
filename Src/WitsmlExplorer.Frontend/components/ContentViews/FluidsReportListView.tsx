@@ -74,7 +74,16 @@ export const FluidsReportsListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.fluidsReports, fluidsReports) && (
-      <ContentTable viewId="fluidsReportsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable
+        viewId="fluidsReportsListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="FluidsReports"
+      />
     )
   );
 };

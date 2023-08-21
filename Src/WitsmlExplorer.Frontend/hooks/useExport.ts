@@ -22,13 +22,22 @@ interface ExportObject {
   exportData: (fileName: string, header: string, data: string) => void;
   exportOptions: ExportProperties;
 }
+
+// Encloses a string value for safe usage as a cell in a CSV, handling comma and double-quote characters.
+export function encloseCell(value: string): string {
+  const enclosedValue = value.replace(/"/g, '""');
+  return /[,"]/g.test(enclosedValue) ? `"${enclosedValue}"` : enclosedValue;
+}
+
 function omitSpecialCharacters(text: string): string {
   return text.replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "_");
 }
+
 function appendDateTime(append: boolean): string {
   const now = new Date();
-  return append ? `-${now.getFullYear()}-${now.getMonth()}-${now.getDay()}T${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}` : "";
+  return append ? `-${now.toISOString()}` : "";
 }
+
 function useExport(props?: Partial<ExportProperties>): ExportObject {
   const exportOptions = useMemo(() => ({ ...defaultExportProperties, ...props }), [defaultExportProperties, props]);
 
