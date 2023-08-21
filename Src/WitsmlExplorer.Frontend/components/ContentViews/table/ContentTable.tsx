@@ -61,13 +61,14 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     stickyLeftColumns = 0,
     viewId,
     downloadToCsvFileName = null,
-    onRowSelectionChange
+    onRowSelectionChange,
+    initiallySelectedRows = []
   } = contentTableProps;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const [previousIndex, setPreviousIndex] = useState<number>(null);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(Object.assign({}, ...initiallySelectedRows.map((row) => ({ [row.id]: true }))));
   const [columnVisibility, setColumnVisibility] = useState(initializeColumnVisibility(viewId));
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";

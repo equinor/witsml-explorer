@@ -4,9 +4,8 @@ import type { CSSProperties } from "react";
 import { useContext, useEffect, useRef } from "react";
 import NavigationContext from "../../../contexts/navigationContext";
 import NavigationType from "../../../contexts/navigationType";
-import LogObject from "../../../models/logObject";
 import { ObjectType } from "../../../models/objectType";
-import { DataItem, LogObjectRow } from "./LogsGraph";
+import { DataItem } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;
@@ -20,6 +19,8 @@ export interface ReactEChartsProps {
 
 export function ReactLogChart({ option, style, settings, loading, theme, width, height }: ReactEChartsProps): JSX.Element {
   const chartRef = useRef<HTMLDivElement>(null);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedWell, selectedWellbore } = navigationState;
 
   useEffect(() => {
     // Initialize chart
@@ -30,20 +31,12 @@ export function ReactLogChart({ option, style, settings, loading, theme, width, 
 
     chart?.on("click", (params) => {
       const uid = (params.data as DataItem).uid;
-      const id = (params.data as DataItem).key;
-      const myLog = selectedWellbore.logs.filter((x) => x.uid === uid)[0];
-      const myLogObject: LogObjectRow = {
-        name: myLog.name,
-        id: id,
-        uid: myLog.uid,
-        wellboreName: selectedWellbore.name,
-        wellboreUid: selectedWellbore.uid,
-        wellName: selectedWell.name,
-        wellUid: selectedWell.uid,
-        logObject: myLog
-      };
+      const log = selectedWellbore.logs.filter((x) => x.uid === uid)[0];
 
-      onSelect(myLogObject);
+      dispatchNavigation({
+        type: NavigationType.SelectObject,
+        payload: { object: log, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
+      });
     });
 
     // Add chart resize listener
@@ -76,17 +69,6 @@ export function ReactLogChart({ option, style, settings, loading, theme, width, 
       loading === true ? chart?.showLoading() : chart?.hideLoading();
     }
   }, [loading, theme]);
-
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-
-  const { selectedWell, selectedWellbore } = navigationState;
-
-  const onSelect = (log: LogObject) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: { object: log, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
-    });
-  };
 
   return <div ref={chartRef} style={{ width: width, height: height, ...style }} />;
 }

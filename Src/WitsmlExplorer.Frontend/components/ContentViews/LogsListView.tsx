@@ -30,6 +30,7 @@ export const LogsListView = (): React.ReactElement => {
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -63,9 +64,10 @@ export const LogsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
+    { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
+    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
@@ -82,6 +84,7 @@ export const LogsListView = (): React.ReactElement => {
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
+      setSelectedRows([]);
     }
   }, [resetCheckedItems]);
 
@@ -93,10 +96,10 @@ export const LogsListView = (): React.ReactElement => {
     <ContentContainer>
       <CommonPanelContainer>
         <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography style={{ color: colors.text.staticIconsDefault }}>Show Graph</Typography>
+        <Typography style={{ color: colors.text.staticIconsDefault }}>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
       </CommonPanelContainer>
       {showGraph ? (
-        <LogsGraph />
+        <LogsGraph selectedLogs={selectedRows} />
       ) : (
         <ContentTable
           viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
@@ -104,8 +107,10 @@ export const LogsListView = (): React.ReactElement => {
           onSelect={onSelect}
           data={getTableData()}
           onContextMenu={onContextMenu}
+          onRowSelectionChange={(rows) => setSelectedRows(rows as LogObjectRow[])}
           checkableRows
           showRefresh
+          initiallySelectedRows={selectedRows}
           downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
         />
       )}
