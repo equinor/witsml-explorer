@@ -98,7 +98,14 @@ export const TrajectoryView = (): React.ReactElement => {
   });
 
   return selectedTrajectory && !isFetchingData ? (
-    <ContentTable viewId="trajectoryView" columns={columns} data={trajectoryStationRows} onContextMenu={onContextMenu} checkableRows />
+    <ContentTable
+      viewId="trajectoryView"
+      columns={columns}
+      data={trajectoryStationRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
+    />
   ) : (
     <></>
   );

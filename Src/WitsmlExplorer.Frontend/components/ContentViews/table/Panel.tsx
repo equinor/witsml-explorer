@@ -6,7 +6,7 @@ import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
 import OperationContext from "../../../contexts/operationContext";
-import useExport from "../../../hooks/useExport";
+import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
@@ -23,6 +23,8 @@ export interface PanelProps {
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
 }
+
+const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
 
 const Panel = (props: PanelProps) => {
   const {
@@ -61,13 +63,17 @@ const Panel = (props: PanelProps) => {
     const exportColumns = table
       .getVisibleLeafColumns()
       .map((c) => c.id)
+      .filter((c) => !csvIgnoreColumns.includes(c))
+      .map((c) => encloseCell(c))
       .join(exportOptions.separator);
     const csvString = table
       .getRowModel()
       .rows.map((row) =>
         row
           .getVisibleCells()
-          .map((cell) => cell.getValue())
+          .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
+          .map((cell) => cell.getValue()?.toString() || "")
+          .map((value) => encloseCell(value))
           .join(exportOptions.separator)
       )
       .join(exportOptions.newLineCharacter);

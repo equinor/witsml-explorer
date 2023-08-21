@@ -63,7 +63,11 @@ export const WellboresListView = (): React.ReactElement => {
     }
   };
 
-  return selectedWell && <ContentTable viewId="wellboresListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} />;
+  return (
+    selectedWell && (
+      <ContentTable viewId="wellboresListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} downloadToCsvFileName="Wellbores" />
+    )
+  );
 };
 
 export default WellboresListView;

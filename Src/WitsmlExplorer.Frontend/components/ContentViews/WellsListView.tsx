@@ -58,7 +58,15 @@ export const WellsListView = (): React.ReactElement => {
       {wells.length > 0 && filteredWells.length == 0 ? (
         <>No wells match the current filter</>
       ) : (
-        <ContentTable viewId="wellsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+        <ContentTable
+          viewId="wellsListView"
+          columns={columns}
+          data={getTableData()}
+          onSelect={onSelect}
+          onContextMenu={onContextMenu}
+          checkableRows
+          downloadToCsvFileName="Wells"
+        />
       )}
     </WellProgress>
   );

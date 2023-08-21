@@ -66,7 +66,7 @@ export const BhaRunsListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.bhaRuns, bhaRuns) && (
-      <ContentTable viewId="bhaRunsListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable viewId="bhaRunsListView" columns={columns} data={getTableData()} onContextMenu={onContextMenu} checkableRows showRefresh downloadToCsvFileName="BhaRuns" />
     )
   );
 };
