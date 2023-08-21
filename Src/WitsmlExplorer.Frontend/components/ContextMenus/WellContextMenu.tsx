@@ -19,6 +19,7 @@ import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -90,6 +91,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
   };
 
+  const onClickDeleteEmptyMnemonics = async () => {
+    const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = { wells: [well], dispatchOperation: dispatchOperation };
+    const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} /> };
+    dispatchOperation(action);
+  };
+
   const onClickProperties = () => {
     const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.Edit, well, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
@@ -121,6 +128,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <MenuItem key={"deleteEmptyMnemonics"} onClick={onClickDeleteEmptyMnemonics}>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (

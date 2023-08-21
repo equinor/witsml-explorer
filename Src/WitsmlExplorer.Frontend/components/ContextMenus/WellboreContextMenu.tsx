@@ -27,6 +27,7 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
+import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
 
 export interface WellboreContextMenuProps {
   wellbore: Wellbore;
@@ -107,6 +108,12 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
   };
 
+  const onClickDeleteEmptyMnemonics = async () => {
+    const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = { wellbores: [wellbore], dispatchOperation: dispatchOperation };
+    const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} /> };
+    dispatchOperation(action);
+  };
+
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     // toggle the wellbore node and navigate to parent wellbore to reset the sidebar and content view
@@ -169,6 +176,10 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
         <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
+        </MenuItem>,
+        <MenuItem key={"deleteEmptyMnemonics"} onClick={onClickDeleteEmptyMnemonics}>
+          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
