@@ -2,6 +2,7 @@ import { useIsAuthenticated } from "@azure/msal-react";
 import { Button, ButtonProps, Table, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction } from "../../contexts/navigationActions";
@@ -9,9 +10,11 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import { Server, emptyServer } from "../../models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/authorizationService";
+import CapService from "../../services/capService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
@@ -29,6 +32,7 @@ const ServerManager = (): React.ReactElement => {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
+  const { selectedFilter, updateSelectedFilter } = React.useContext(FilterContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
@@ -49,7 +53,12 @@ const ServerManager = (): React.ReactElement => {
         return;
       }
       try {
-        const wells = await WellService.getWells();
+        const [wells, supportedObjects] = await Promise.all([WellService.getWells(), CapService.getCapObjects()]);
+        const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
+        Object.values(ObjectType)
+          .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
+          .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));
+        updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
         dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({

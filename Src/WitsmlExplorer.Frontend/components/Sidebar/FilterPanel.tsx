@@ -115,7 +115,6 @@ const FilterPanel = (): React.ReactElement => {
             {Object.values(ObjectType).map((objectType) => (
               <StyledCheckbox
                 label={objectType}
-                // disabled={true} //disabling everything for now as checking objects does not do anything yet, should use DisabledWellObj when implemented
                 checked={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible}
                 disabled={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Disabled}
                 key={objectType}
@@ -136,7 +135,7 @@ const Container = styled.div<{ colors: Colors }>`
   gap: 0.5em;
   padding: 0.5em;
   user-select: none;
-  box-shadow: 1px 4px 5px 0px #8888;
+  box-shadow: 1px 4px 5px 0px rgba(0, 0, 0, 0.3);
   background: ${(props) => props.colors.ui.backgroundLight};
 `;
 
