@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.ServiceModel.Security;
 using System.Threading.Tasks;
@@ -179,9 +180,17 @@ namespace Witsml
 
         public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
         {
-            XmlDocument xmlQuery = new();
-            xmlQuery.LoadXml(query);
-            string type = xmlQuery.FirstChild?.FirstChild?.Name;
+            XmlReaderSettings settings = new()
+            {
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+                IgnoreWhitespace = true
+            };
+            using XmlReader reader = XmlReader.Create(new StringReader(query), settings);
+            // attempt to read the query type from the first nested element, such as <logs><_log_>[...]</log></logs>
+            reader.Read();
+            reader.Read();
+            string type = reader.Name;
             if (string.IsNullOrEmpty(type))
             {
                 throw new Exception("Could not determine WITSML type based on query");
