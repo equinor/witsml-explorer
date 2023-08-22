@@ -96,10 +96,10 @@ const formatXml = (xml: string) => {
 };
 
 const StyledTextField = styled(TextField)<{ colors: Colors }>`
-  ${(props) => `border: 1px solid ${props.colors.interactive.tableBorder};`}
+  border: 1px solid ${(props) => props.colors.interactive.tableBorder};
   height: 100%;
   &&& > div {
-    ${(props) => `background-color: ${props.colors.ui.backgroundLight};`}
+    background-color: ${(props) => props.colors.ui.backgroundLight};
     height: 100% !important;
     border: 0;
     box-shadow: none;
@@ -111,6 +111,7 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
     line-height: 15px;
     font-size: 13px;
     font-family: monospace;
+    cursor: auto;
   }
   div > div {
     display: none; /* disable input adornment */
