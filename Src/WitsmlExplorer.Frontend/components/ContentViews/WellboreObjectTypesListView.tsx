@@ -16,7 +16,7 @@ interface ObjectTypeRow extends ContentTableRow {
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
-  const { selectedFilter } = React.useContext(FilterContext);
+  const { selectedFilter } = useContext(FilterContext);
 
   const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
 

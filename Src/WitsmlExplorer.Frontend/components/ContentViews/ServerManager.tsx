@@ -2,7 +2,7 @@ import { useIsAuthenticated } from "@azure/msal-react";
 import { Button, ButtonProps, Table, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
+import { FilterContext, VisibilityStatus, allVisibleObjects } from "../../contexts/filter";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction } from "../../contexts/navigationActions";
@@ -32,7 +32,7 @@ const ServerManager = (): React.ReactElement => {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedFilter, updateSelectedFilter } = React.useContext(FilterContext);
+  const { updateSelectedFilter } = useContext(FilterContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
@@ -54,7 +54,7 @@ const ServerManager = (): React.ReactElement => {
       }
       try {
         const [wells, supportedObjects] = await Promise.all([WellService.getWells(), CapService.getCapObjects()]);
-        const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
+        const updatedVisibility = { ...allVisibleObjects };
         Object.values(ObjectType)
           .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
           .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));

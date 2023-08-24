@@ -12,7 +12,7 @@ import { Colors } from "../../styles/Colors";
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedCurveThreshold } = navigationState;
-  const { selectedFilter, updateSelectedFilter } = React.useContext(FilterContext);
+  const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);

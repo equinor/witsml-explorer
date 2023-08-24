@@ -110,7 +110,7 @@ export const isObjectPropertyFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(ObjectPropertyFilterType).includes(filterType);
 };
 
-const allVisibleObjects: Record<ObjectType, VisibilityStatus> = {} as Record<ObjectType, VisibilityStatus>;
+export const allVisibleObjects: Record<ObjectType, VisibilityStatus> = {} as Record<ObjectType, VisibilityStatus>;
 Object.values(ObjectType).forEach((object) => (allVisibleObjects[object] = VisibilityStatus.Visible));
 
 export const EMPTY_FILTER: Filter = {
@@ -322,7 +322,16 @@ export const useWellFilter = (wells: Well[], options?: FilterOptions): Well[] =>
     prevFilter.current = selectedFilter;
 
     setFilteredWells(filterWells(wells, selectedFilter, filterOptions));
-  }, [wells, selectedFilter, filterOptions]);
+  }, [
+    wells,
+    filterOptions,
+    selectedFilter.filterType,
+    selectedFilter.isActive,
+    selectedFilter.name,
+    selectedFilter.objectGrowing,
+    selectedFilter.searchResults,
+    selectedFilter.wellLimit
+  ]);
 
   return filteredWells;
 };

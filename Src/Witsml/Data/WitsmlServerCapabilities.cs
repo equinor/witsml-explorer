@@ -60,7 +60,7 @@ namespace Witsml.Data
         [XmlAttribute("maxDataNodes")]
         public int MaxDataNodes { get; init; }
 
-        [XmlElement("maxDataPoints")]
+        [XmlAttribute("maxDataPoints")]
         public int MaxDataPoints { get; init; }
     }
 }
