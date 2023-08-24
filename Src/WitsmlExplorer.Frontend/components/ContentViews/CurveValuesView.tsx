@@ -148,16 +148,17 @@ export const CurveValuesView = (): React.ReactElement => {
 
   return (
     <>
-      {isLoading && <ProgressSpinner message="Fetching data" />}
-      {!isLoading && !tableData.length && <Message>No data</Message>}
-      {Boolean(columns.length) && Boolean(tableData.length) && (
-        <ContentContainer>
-          <CommonPanelContainer>
-            <EditInterval key="editinterval" />
-            <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
-            <Typography style={{ color: colors.text.staticIconsDefault }}>Show Plot</Typography>
-          </CommonPanelContainer>
-          {showPlot ? (
+      <ContentContainer>
+        <CommonPanelContainer>
+          <EditInterval key="editinterval" />
+          <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
+          <Typography style={{ color: colors.text.staticIconsDefault }}>Show Plot</Typography>
+        </CommonPanelContainer>
+        {isLoading && <ProgressSpinner message="Fetching data" />}
+        {!isLoading && !tableData.length && <Message>No data</Message>}
+        {Boolean(columns.length) &&
+          Boolean(tableData.length) &&
+          (showPlot ? (
             <CurveValuesPlot data={tableData} columns={columns} name={selectedLog?.name} />
           ) : (
             <ContentTable
@@ -169,9 +170,8 @@ export const CurveValuesView = (): React.ReactElement => {
               panelElements={panelElements}
               stickyLeftColumns={2}
             />
-          )}
-        </ContentContainer>
-      )}
+          ))}
+      </ContentContainer>
     </>
   );
 };

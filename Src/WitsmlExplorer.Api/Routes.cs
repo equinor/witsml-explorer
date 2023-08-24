@@ -78,6 +78,8 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}", WbGeometryHandler.GetWbGeometry, useOAuth2);
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}/" + ComponentType.WbGeometrySection.ToPluralLowercase(), WbGeometryHandler.GetWbGeometrySections, useOAuth2);
 
+            app.MapPost("/query", WitsmlQueryHandler.PostQuery, useOAuth2);
+
             app.MapPost("/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
             app.MapGet("/jobs/userjobinfos", JobHandler.GetUserJobInfos, useOAuth2);
             app.MapGet("/jobs/userjobinfo/{jobId}", JobHandler.GetUserJobInfo, useOAuth2);
