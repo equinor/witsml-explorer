@@ -1,11 +1,13 @@
-import { Button, TextField } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
+import { Button, Menu, TextField } from "@equinor/eds-core-react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import QueryService from "../../services/queryService";
 import { Colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
+import { templates } from "../../templates/templates";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { StyledNativeSelect } from "../Select";
 
@@ -26,6 +28,35 @@ export enum StoreFunction {
   UpdateInStore = "UpdateInStore"
 }
 
+export enum TemplateObjects {
+  Attachment = "attachment",
+  BhaRun = "bhaRun",
+  CementJob = "cementJob",
+  ChangeLog = "changeLog",
+  ConvCore = "convCore",
+  DrillReport = "drillReport",
+  FluidsReport = "fluidsReport",
+  FormationMarker = "formationMarker",
+  Log = "log",
+  Message = "message",
+  MudLog = "mudLog",
+  ObjectGroup = "objectGroup",
+  OpsReport = "opsReport",
+  Rig = "rig",
+  Risk = "risk",
+  SidewallCore = "sidewallCore",
+  StimJob = "stimJob",
+  SurveyProgram = "surveyProgram",
+  Target = "target",
+  ToolErrorModel = "toolErrorModel",
+  ToolErrorTermSet = "toolErrorTermSet",
+  Trajectory = "trajectory",
+  Tubular = "tubular",
+  WbGeometry = "wbGeometry",
+  Well = "well",
+  Wellbore = "wellbore"
+}
+
 const QueryView = (): React.ReactElement => {
   const {
     operationState: { colors },
@@ -37,6 +68,9 @@ const QueryView = (): React.ReactElement => {
   const [isXmlResponse, setIsXmlResponse] = useState(false);
   const [returnElements, setReturnElements] = useState(ReturnElements.All);
   const [storeFunction, setStoreFunction] = useState(StoreFunction.GetFromStore);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
 
   const sendQuery = () => {
     const getResult = async () => {
@@ -72,7 +106,7 @@ const QueryView = (): React.ReactElement => {
     <>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
         <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
-          <StyledTextField id="input" multiline colors={colors} onChange={(e: any) => setQuery(e.target.value)} defaultValue={query} />
+          <StyledTextField id="input" multiline colors={colors} onChange={(e: any) => setQuery(e.target.value)} defaultValue={query} textareaRef={inputRef} />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
             <StyledNativeSelect
               label="Function"
@@ -104,6 +138,44 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
+            <Button
+              ref={setMenuAnchor}
+              id="anchor-default"
+              aria-haspopup="true"
+              aria-expanded={isTemplateMenuOpen}
+              aria-controls="menu-default"
+              onClick={() => setIsTemplateMenuOpen(!isTemplateMenuOpen)}
+            >
+              Template
+              <Icon name="chevronUp" />
+            </Button>
+            <StyledMenu
+              open={isTemplateMenuOpen}
+              id="menu-default"
+              aria-labelledby="anchor-default"
+              onClose={() => setIsTemplateMenuOpen(false)}
+              anchorEl={menuAnchor}
+              colors={colors}
+            >
+              {Object.values(TemplateObjects).map((value) => {
+                return (
+                  <StyledMenuItem
+                    colors={colors}
+                    key={value}
+                    onClick={() => {
+                      const template = getTemplate(value as TemplateObjects, returnElements);
+                      if (template != undefined) {
+                        inputRef.current.value = template;
+                        setQuery(template);
+                      }
+                      setIsTemplateMenuOpen(false);
+                    }}
+                  >
+                    {value}
+                  </StyledMenuItem>
+                );
+              })}
+            </StyledMenu>
             <Button onClick={sendQuery} disabled={isLoading}>
               Execute
             </Button>
@@ -115,6 +187,30 @@ const QueryView = (): React.ReactElement => {
       </div>
     </>
   );
+};
+
+const getTemplate = (templateObject: TemplateObjects, returnElements: ReturnElements): string | undefined => {
+  if (returnElements == ReturnElements.IdOnly) {
+    if (templateObject == TemplateObjects.Well || templateObject == TemplateObjects.Wellbore || templateObject == TemplateObjects.ChangeLog) {
+      return templates[templateObject + "IdOnly"];
+    } else {
+      return templates.objectIdOnly.replaceAll("object", templateObject);
+    }
+  } else if (
+    returnElements == ReturnElements.DataOnly &&
+    (templateObject == TemplateObjects.Log || templateObject == TemplateObjects.MudLog || templateObject == TemplateObjects.Trajectory)
+  ) {
+    return templates[templateObject + "DataOnly"];
+  } else if (
+    returnElements == ReturnElements.HeaderOnly &&
+    (templateObject == TemplateObjects.Log || templateObject == TemplateObjects.MudLog || templateObject == TemplateObjects.Trajectory)
+  ) {
+    return templates[templateObject + "HeaderOnly"];
+  } else if (returnElements == ReturnElements.StationLocationOnly && templateObject == TemplateObjects.Trajectory) {
+    return templates[templateObject + "StationLocationOnly"];
+  } else {
+    return templates[templateObject];
+  }
 };
 
 const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchOperation) => {
@@ -185,6 +281,21 @@ const StyledTextField = styled(TextField)<{ colors: Colors; textWrap?: boolean }
   div > div {
     display: none; /* disable input adornment */
   }
+`;
+
+const StyledMenu = styled(Menu)<{ colors: Colors }>`
+  background: ${(props) => props.colors.ui.backgroundLight};
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  max-height: 80vh;
+  overflow-y: scroll;
+`;
+
+const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
+  &&:hover {
+    background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
+  }
+  color: ${(props) => props.colors.text.staticIconsDefault};
+  padding: 4px;
 `;
 
 export default QueryView;
