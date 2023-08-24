@@ -1,0 +1,60 @@
+<objectGroups xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <objectGroup uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <groupType />
+    <groupSubtype />
+    <sequence />
+    <description />
+    <param index="" name="" uom="" description="" uid="" />
+    <memberObject uid="">
+      <objectReference object="" uidRef="" />
+      <indexType />
+      <sequence1 description="" />
+      <sequence2 description="" />
+      <sequence3 description="" />
+      <rangeMin uom="" />
+      <rangeMax uom="" />
+      <rangeDateTimeMin />
+      <rangeDateTimeMax />
+      <mnemonicList />
+      <referenceDepth uom="" datum="" />
+      <referenceDateTime />
+      <param index="" name="" uom="" description="" uid="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </memberObject>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </objectGroup>
+</objectGroups>

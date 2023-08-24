@@ -1,0 +1,203 @@
+<mudLogs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <mudLog uidWell="" uidWellbore="" uid="">
+    <parameter uid="">
+      <type />
+      <dTime />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <force uom="" />
+      <concentration uom="" />
+      <equivalentMudWeight uom="" />
+      <pressureGradient uom="" />
+      <text />
+      <commonTime />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </parameter>
+    <geologyInterval uid="">
+      <typeLithology />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <dTim />
+      <tvdTop uom="" datum="" />
+      <tvdBase uom="" datum="" />
+      <ropAv uom="" />
+      <ropMn uom="" />
+      <ropMx uom="" />
+      <wobAv uom="" />
+      <tqAv uom="" />
+      <currentAv uom="" />
+      <rpmAv uom="" />
+      <wtMudAv uom="" />
+      <ecdTdAv uom="" />
+      <dxcAv />
+      <lithology uid="">
+        <type />
+        <codeLith />
+        <lithPc uom="" />
+        <description />
+        <lithClass />
+        <grainType />
+        <dunhamClass />
+        <color />
+        <texture />
+        <hardness />
+        <compaction />
+        <sizeGrain />
+        <roundness />
+        <sphericity />
+        <sorting />
+        <matrixCement />
+        <porosityVisible />
+        <porosityFabric />
+        <permeability />
+        <densShale uom="" />
+        <qualifier uid="">
+          <type />
+          <mdTop uom="" datum="" />
+          <mdBottom uom="" datum="" />
+          <abundance uom="" />
+          <abundanceCode />
+          <description />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </qualifier>
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </lithology>
+      <show>
+        <showRat />
+        <stainColor />
+        <stainDistr />
+        <stainPc uom="" />
+        <natFlorColor />
+        <natFlorPc uom="" />
+        <natFlorLevel />
+        <natFlorDesc />
+        <cutColor />
+        <cutSpeed />
+        <cutStrength />
+        <cutForm />
+        <cutLevel />
+        <cutFlorColor />
+        <cutFlorSpeed />
+        <cutFlorStrength />
+        <cutFlorForm />
+        <cutFlorLevel />
+        <residueColor />
+        <showDesc />
+        <impregnatedLitho />
+        <odor />
+      </show>
+      <chromatograph>
+        <dTim />
+        <mdTop uom="" datum="" />
+        <mdBottom uom="" datum="" />
+        <wtMudIn uom="" />
+        <wtMudOut uom="" />
+        <chromType />
+        <eTimChromCycle uom="" />
+        <chromIntRpt />
+        <methAv uom="" />
+        <methMn uom="" />
+        <methMx uom="" />
+        <ethAv uom="" />
+        <ethMn uom="" />
+        <ethMx uom="" />
+        <propAv uom="" />
+        <propMn uom="" />
+        <propMx uom="" />
+        <ibutAv uom="" />
+        <ibutMn uom="" />
+        <ibutMx uom="" />
+        <nbutAv uom="" />
+        <nbutMn uom="" />
+        <nbutMx uom="" />
+        <ipentAv uom="" />
+        <ipentMn uom="" />
+        <ipentMx uom="" />
+        <npentAv uom="" />
+        <npentMn uom="" />
+        <npentMx uom="" />
+        <epentAv uom="" />
+        <epentMn uom="" />
+        <epentMx uom="" />
+        <ihexAv uom="" />
+        <ihexMn uom="" />
+        <ihexMx uom="" />
+        <nhexAv uom="" />
+        <nhexMn uom="" />
+        <nhexMx uom="" />
+        <co2Av uom="" />
+        <co2Mn uom="" />
+        <co2Mx uom="" />
+        <h2sAv uom="" />
+        <h2sMn uom="" />
+        <h2sMx uom="" />
+        <acetylene uom="" />
+      </chromatograph>
+      <mudGas>
+        <gasAv uom="" />
+        <gasPeak uom="" />
+        <gasPeakType />
+        <gasBackgnd uom="" />
+        <gasConAv uom="" />
+        <gasConMx uom="" />
+        <gasTrip uom="" />
+      </mudGas>
+      <densBulk uom="" />
+      <densShale uom="" />
+      <calcite uom="" />
+      <dolomite uom="" />
+      <cec uom="" />
+      <qft uom="" />
+      <calcStab uom="" />
+      <nameFormation />
+      <lithostratigraphic kind="" />
+      <chronostratigraphic kind="" />
+      <sizeMn uom="" />
+      <sizeMx uom="" />
+      <lenPlug uom="" />
+      <description />
+      <cuttingFluid />
+      <cleaningMethod />
+      <dryingMethod />
+      <comments />
+      <commonTime />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </geologyInterval>
+  </mudLog>
+</mudLogs>
