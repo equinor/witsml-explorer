@@ -20,6 +20,7 @@ import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
+import { STORAGE_FILTER_HIDDENOBJECTS_KEY } from "../Constants";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, { UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
@@ -54,11 +55,7 @@ const ServerManager = (): React.ReactElement => {
       }
       try {
         const [wells, supportedObjects] = await Promise.all([WellService.getWells(), CapService.getCapObjects()]);
-        const updatedVisibility = { ...allVisibleObjects };
-        Object.values(ObjectType)
-          .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
-          .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));
-        updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+        updateVisibleObjects(supportedObjects);
         dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
@@ -92,6 +89,16 @@ const ServerManager = (): React.ReactElement => {
       };
     }
   }, [isAuthenticated, hasFetchedServers]);
+
+  const updateVisibleObjects = (supportedObjects: string[]) => {
+    const updatedVisibility = { ...allVisibleObjects };
+    const hiddenItems = localStorage.getItem(STORAGE_FILTER_HIDDENOBJECTS_KEY)?.split(",") || [];
+    hiddenItems.forEach((objectType) => (updatedVisibility[objectType as ObjectType] = VisibilityStatus.Hidden));
+    Object.values(ObjectType)
+      .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
+      .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));
+    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+  };
 
   const onSelectItem = async (server: Server) => {
     if (server.id === selectedServer?.id) {

@@ -1,5 +1,5 @@
-﻿import { Checkbox, EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
-import { Divider } from "@material-ui/core";
+﻿import { Checkbox, EdsProvider, Icon, TextField, Typography } from "@equinor/eds-core-react";
+import { Divider, Tooltip } from "@material-ui/core";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
@@ -8,6 +8,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
+import { STORAGE_FILTER_HIDDENOBJECTS_KEY } from "../Constants";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -24,6 +25,13 @@ const FilterPanel = (): React.ReactElement => {
     } else {
       updatedVisibility[objectType] = VisibilityStatus.Visible;
     }
+    localStorage.setItem(
+      STORAGE_FILTER_HIDDENOBJECTS_KEY,
+      Object.entries(updatedVisibility)
+        .filter(([, value]) => value == VisibilityStatus.Hidden)
+        .map(([key]) => key)
+        .join(",")
+    );
     updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
   };
 
@@ -108,9 +116,12 @@ const FilterPanel = (): React.ReactElement => {
         <Divider />
 
         <InnerContainer>
-          <Typography style={{ paddingLeft: "0.8rem" }} token={{ fontSize: "1rem", fontFamily: "EquinorMedium", color: colors.interactive.primaryResting }}>
-            Well Objects
-          </Typography>
+          <ObjectTitleContainer>
+            <Typography token={{ fontSize: "1rem", fontFamily: "EquinorMedium", color: colors.interactive.primaryResting }}>Well Objects</Typography>
+            <Tooltip title="Objects not supported by the current server are disabled.">
+              <Icon name="infoCircle" color={colors.interactive.primaryResting} size={18} />
+            </Tooltip>
+          </ObjectTitleContainer>
           <ObjectListContainer>
             {Object.values(ObjectType).map((objectType) => (
               <StyledCheckbox
@@ -158,6 +169,12 @@ const ObjectListContainer = styled.div`
   overflow-y: scroll;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+`;
+
+const ObjectTitleContainer = styled.div`
+  padding-left: 0.8rem;
+  display: flex;
+  gap: 8px;
 `;
 
 const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`

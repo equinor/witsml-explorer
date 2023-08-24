@@ -315,8 +315,8 @@ export const useWellFilter = (wells: Well[], options?: FilterOptions): Well[] =>
   const prevFilter = React.useRef<Filter>(selectedFilter);
 
   React.useEffect(() => {
-    if (prevFilter.current === selectedFilter) {
-      // Treenodes should only toggle expand state if it's the filter that has been changed
+    if (prevFilter.current.filterType === selectedFilter.filterType && prevFilter.current.name == selectedFilter.name) {
+      // Treenodes should only toggle expand state if the filter type or name has changed
       filterOptions = { ...filterOptions, dispatchNavigation: null };
     }
     prevFilter.current = selectedFilter;
