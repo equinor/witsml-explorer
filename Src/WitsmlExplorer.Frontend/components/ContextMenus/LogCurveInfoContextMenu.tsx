@@ -20,6 +20,7 @@ import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnS
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
+import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -51,6 +52,14 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = { logCurveInfo, dispatchOperation, selectedLog };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
+  const onClickAnalyzeGaps = () => {
+    const logObject = selectedLog;
+    const mnemonics = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchNavigation, dispatchOperation, logObject, mnemonics };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -98,6 +107,10 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
             </MenuItem>
           ))}
         </NestedMenuItem>,
+        <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps} /*disabled={checkedLogCurveInfoRows.length !== 1}*/>
+          <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Analyze gaps</Typography>
+        </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedLogCurveInfoRows.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

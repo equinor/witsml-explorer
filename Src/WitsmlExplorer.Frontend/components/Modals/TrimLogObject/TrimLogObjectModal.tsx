@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import ModificationType from "../../../contexts/modificationType";
 import { NavigationAction } from "../../../contexts/navigationAction";
 import { HideModalAction } from "../../../contexts/operationStateReducer";
@@ -10,11 +9,11 @@ import { ObjectType } from "../../../models/objectType";
 import { truncateAbortHandler } from "../../../services/apiClient";
 import JobService, { JobType } from "../../../services/jobService";
 import ObjectService from "../../../services/objectService";
-import { colors } from "../../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../../Constants";
 import ModalDialog from "../ModalDialog";
 import AdjustDateTimeModal from "./AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
+import WarningBar from "../../WarningBar";
 
 export interface TrimLogObjectModalProps {
   dispatchNavigation: (action: NavigationAction) => void;
@@ -84,9 +83,7 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
                   onValidChange={toggleConfirmDisabled}
                 />
               )}
-              <Warning>
-                <strong>Warning:</strong> Adjusting start/end index will permanently remove data values outside selected range
-              </Warning>
+              <WarningBar message="Adjusting start/end index will permanently remove data values outside selected range" />
             </>
           }
           onSubmit={() => onSubmit(log)}
@@ -100,15 +97,5 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
     </>
   );
 };
-
-const Warning = styled.div`
-  border: 1px solid ${colors.interactive.dangerResting};
-  border-radius: 2px;
-  padding: 1em;
-  background-color: ${colors.interactive.dangerHighlight};
-  color: ${colors.interactive.dangerHover};
-  margin-top: 1em;
-  width: 28em;
-`;
 
 export default TrimLogObjectModal;

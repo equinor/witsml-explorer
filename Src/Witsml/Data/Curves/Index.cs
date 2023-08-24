@@ -26,6 +26,16 @@ namespace Witsml.Data.Curves
         {
             return index1.CompareTo(index2) >= 0;
         }
+        
+        public static Index operator -(Index index1, Index index2)
+        {
+            return index1 switch
+            {
+                DepthIndex depthIndex1 when index2 is DepthIndex depthIndex2 => depthIndex1 - depthIndex2,
+                DateTimeIndex dateTimeIndex1 when index2 is DateTimeIndex dateTimeIndex2 => new TimeSpanIndex(dateTimeIndex1 - dateTimeIndex2),
+                _ => throw new ArgumentException("Unsupported index types for subtraction")
+            };
+        }
 
         [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
         public abstract Index AddEpsilon();

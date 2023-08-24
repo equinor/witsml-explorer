@@ -72,5 +72,10 @@ namespace Witsml.Data.Curves
         {
             return GetValueAsString();
         }
+        
+        public static TimeSpan operator -(DateTimeIndex index1, DateTimeIndex index2)
+        {
+            return index1.Value - index2.Value;
+        }
     }
 }

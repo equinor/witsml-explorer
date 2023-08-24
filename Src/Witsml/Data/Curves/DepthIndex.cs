@@ -94,6 +94,16 @@ namespace Witsml.Data.Curves
         }
 
         public override string ToString() => $"{GetValueAsString()} {Uom}";
+        
+        public static DepthIndex operator -(DepthIndex index1, DepthIndex index2)
+        {
+            if (!index1.HasSameUnitAs(index2))
+            {
+                throw new ArgumentException("Cannot subtract depths with different types");
+            }
+
+            return new DepthIndex(index1.Value - index2.Value, index1.Uom);
+        }
     }
 }
 #pragma warning restore CS0253

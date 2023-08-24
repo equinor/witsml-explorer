@@ -29,6 +29,7 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
 
 const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -53,6 +54,12 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   const onClickImport = async () => {
     const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0] };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
+  };
+  const onClickAnalyzeGaps = () => {
+    const logObject = checkedObjects[0];
+    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchNavigation, dispatchOperation, logObject, mnemonics: [] };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
+    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickRefresh = async () => {
@@ -124,6 +131,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Adjust range</Typography>
+        </MenuItem>,
+        <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps} disabled={checkedObjects.length !== 1}>
+          <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Analyze gaps</Typography>
         </MenuItem>,
         <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
           <StyledIcon name="upload" color={colors.interactive.primaryResting} />
