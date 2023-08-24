@@ -54,7 +54,7 @@ namespace Witsml.Tests.Data
                                  "</capClients>";
             var clientCapabilities = new WitsmlClientCapabilities
             {
-                Contact = new ClientContactInformation
+                Contact = new ContactInformation
                 {
                     Name = "Reodor Felgen",
                     Email = "reodor.felgen@flaaklypa.no"
