@@ -27,6 +27,7 @@ namespace Witsml
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
+        Task<WitsmlCapServers> GetCap();
         Uri GetServerHostname();
     }
 
@@ -400,6 +401,17 @@ namespace Witsml
                 throw new Exception("Error while testing connection: Server does not indicate support for WITSML 1.4.1.1");
 
             return new QueryResult(true);
+        }
+
+        public async Task<WitsmlCapServers> GetCap()
+        {
+            WMLS_GetCapResponse response = await _client.WMLS_GetCapAsync(new WMLS_GetCapRequest("dataVersion=1.4.1.1"));
+
+            if (response.IsSuccessful())
+                return XmlHelper.Deserialize(response.CapabilitiesOut, new WitsmlCapServers());
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
         private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn,

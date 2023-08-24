@@ -73,7 +73,8 @@ const QueryView = (): React.ReactElement => {
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
 
   const sendQuery = () => {
-    const getResult = async () => {
+    const getResult = async (dispatchOperation?: DispatchOperation | null) => {
+      dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
       const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
       let response = await QueryService.postQuery(query, storeFunction, requestReturnElements);
@@ -85,7 +86,7 @@ const QueryView = (): React.ReactElement => {
       setIsLoading(false);
     };
     if (storeFunction == StoreFunction.DeleteFromStore) {
-      displayConfirmation(getResult, dispatchOperation);
+      displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
     } else {
       getResult();
     }

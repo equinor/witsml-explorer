@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -15,18 +16,21 @@ interface ObjectTypeRow extends ContentTableRow {
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
+  const { selectedFilter } = useContext(FilterContext);
 
   const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
 
   const getRows = (): ObjectTypeRow[] => {
-    return Object.keys(ObjectType).map((key, index) => {
-      return {
-        id: index,
-        uid: index,
-        name: pluralizeObjectType(key as ObjectType),
-        objectType: key as ObjectType
-      };
-    });
+    return Object.values(ObjectType)
+      .filter((objectType) => selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible)
+      .map((objectType, index) => {
+        return {
+          id: index,
+          uid: index,
+          name: pluralizeObjectType(objectType),
+          objectType: objectType
+        };
+      });
   };
 
   const onSelect = async (row: ObjectTypeRow) => {
