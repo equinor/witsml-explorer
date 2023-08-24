@@ -17,7 +17,7 @@ using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
-namespace WitsmlExplorer.Api.Workers
+namespace WitsmlExplorer.Api.Workers.Delete
 {
     public class DeleteEmptyMnemonicsWorker : BaseWorker<DeleteEmptyMnemonicsJob>, IWorker
     {
