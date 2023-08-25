@@ -49,42 +49,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Returns(Task.Run(() => new List<Wellbore>().AsEnumerable()));
 
             _logObjectService = new();
-            _logObjectService
-                .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123" } }.AsEnumerable()));
-
-            var lcis = new List<LogCurveInfo>();
-
-            var lci = new LogCurveInfo
-            {
-                MinDepthIndex = "0",
-                MaxDepthIndex = "1",
-                MinDateTimeIndex = new DateTime(2023, 1, 20, 12, 0, 0).ToISODateTimeString(),
-                MaxDateTimeIndex = new DateTime(2023, 2, 21, 12, 0, 0).ToISODateTimeString()
-            };
-            lcis.Add(lci);
-
-            lci = new LogCurveInfo
-            {
-                MinDepthIndex = "1",
-                MaxDepthIndex = "3",
-                MinDateTimeIndex = new DateTime(2023, 3, 20, 12, 0, 0).ToISODateTimeString(),
-                MaxDateTimeIndex = new DateTime(2023, 4, 21, 12, 0, 0).ToISODateTimeString()
-            };
-            lcis.Add(lci);
-
-            lci = new LogCurveInfo
-            {
-                MinDepthIndex = "2",
-                MaxDepthIndex = "3",
-                MinDateTimeIndex = new DateTime(2023, 5, 20, 12, 0, 0).ToISODateTimeString(),
-                MaxDateTimeIndex = new DateTime(2023, 6, 21, 12, 0, 0).ToISODateTimeString()
-            };
-            lcis.Add(lci);
-
-            _logObjectService
-                .Setup(los => los.GetLogCurveInfo(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => lcis.AsEnumerable()));
 
             _mnemonicService = new();
             _mnemonicService
@@ -97,6 +61,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task DeleteZeroMnemonics()
         {
+            SetupDateTimeLogObject();
+
             var job = CreateJob(10, new DateTime(2023, 8, 20, 12, 0, 0));
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
@@ -107,14 +73,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 Times.Never);
 
             Assert.True(result.IsSuccess);
+
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Empty(job.JobInfo.Report.ReportItems);
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"2023-08-20T10:00:00.000Z\". No empty mnemonics were found and deleted.",
+                job.JobInfo.Report.Summary);
         }
 
         [Fact]
         public async Task DeleteOneMnemonic()
         {
-            var job = CreateJob(10, new DateTime(2023, 3, 20, 12, 0, 0));
+            SetupDepthLogObject();
+
+            var job = CreateJob(0, new DateTime(2023, 8, 20, 12, 0, 0));
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -124,14 +95,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 Times.Once);
 
             Assert.True(result.IsSuccess);
+
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Single(job.JobInfo.Report.ReportItems);
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"2023-08-20T10:00:00.000Z\". One empty mnemonic was found and deleted.",
+                job.JobInfo.Report.Summary);
         }
 
         [Fact]
         public async Task DeleteTwoMnemonics()
         {
-            var job = CreateJob(1, new DateTime(2023, 8, 20, 12, 0, 0));
+            SetupDateTimeLogObject();
+
+            var job = CreateJob(10, new DateTime(2023, 3, 21, 12, 0, 0));
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -141,8 +117,79 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 Times.Exactly(2));
 
             Assert.True(result.IsSuccess);
+
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Equal(2, job.JobInfo.Report.ReportItems.Count());
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"2023-03-21T11:00:00.000Z\". 2 empty mnemonics were found and deleted.",
+                job.JobInfo.Report.Summary);
+        }
+
+        private void SetupDateTimeLogObject()
+        {
+            _logObjectService
+                .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME } }.AsEnumerable()));
+
+            var lcis = new List<LogCurveInfo>();
+
+            var lci = new LogCurveInfo
+            {
+                MinDateTimeIndex = new DateTime(2023, 1, 20, 12, 0, 0).ToISODateTimeString(),
+                MaxDateTimeIndex = new DateTime(2023, 2, 21, 12, 0, 0).ToISODateTimeString()
+            };
+            lcis.Add(lci);
+
+            lci = new LogCurveInfo
+            {
+                MinDateTimeIndex = new DateTime(2023, 3, 21, 12, 0, 0).ToISODateTimeString(),
+                MaxDateTimeIndex = new DateTime(2023, 3, 21, 12, 0, 0).ToISODateTimeString()
+            };
+            lcis.Add(lci);
+
+            lci = new LogCurveInfo
+            {
+                MinDateTimeIndex = new DateTime(2023, 3, 21, 12, 0, 0).ToISODateTimeString(),
+                MaxDateTimeIndex = new DateTime(2023, 3, 21, 12, 0, 0).ToISODateTimeString()
+            };
+            lcis.Add(lci);
+
+            _logObjectService
+                .Setup(los => los.GetLogCurveInfo(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => lcis.AsEnumerable()));
+        }
+
+        private void SetupDepthLogObject()
+        {
+            _logObjectService
+                .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD } }.AsEnumerable()));
+
+            var lcis = new List<LogCurveInfo>();
+
+            var lci = new LogCurveInfo
+            {
+                MinDepthIndex = "0",
+                MaxDepthIndex = "0"
+            };
+            lcis.Add(lci);
+
+            lci = new LogCurveInfo
+            {
+                MinDepthIndex = "1",
+                MaxDepthIndex = "1"
+            };
+            lcis.Add(lci);
+
+            lci = new LogCurveInfo
+            {
+                MinDepthIndex = "0",
+                MaxDepthIndex = "1"
+            };
+            lcis.Add(lci);
+
+            _logObjectService
+                .Setup(los => los.GetLogCurveInfo(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => lcis.AsEnumerable()));
         }
 
         private DeleteEmptyMnemonicsJob CreateJob(double nullDepthValue, DateTime nullTimeValue)

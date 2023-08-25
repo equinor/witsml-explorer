@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
+using Witsml.Data;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Jobs;
@@ -49,6 +52,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             wellboreRefsToCheck.AddRange(await ExtractWellboreRefs(job.Wells));
 
             var reportItems = new List<DeleteEmptyMnemonicsReportItem>();
+            var logCurvesCheckedCount = 0;
 
             foreach (var wellboreRef in wellboreRefsToCheck)
             {
@@ -60,15 +64,29 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     {
                         var logCurves = await GetLogCurveInfos(logToCheck);
 
-                        var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logCurves);
+                        logCurvesCheckedCount += logCurves.Count();
+
+                        var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logToCheck, logCurves);
 
                         foreach (var mnemonicToDelete in mnemonicsToDelete)
                         {
                             var result = await DeleteMnemonic(wellboreRef.WellUid, wellboreRef.WellboreUid, logToCheck.Uid, mnemonicToDelete);
 
+                            var reportItem = new DeleteEmptyMnemonicsReportItem
+                            {
+                                WellName = wellboreRef.WellName,
+                                WellUid = wellboreRef.WellUid,
+                                WellboreName = wellboreRef.WellboreName,
+                                WellboreUid = wellboreRef.WellboreUid,
+                                LogName = logToCheck.Name,
+                                LogUid = logToCheck.Uid,
+                                LogIndexType = logToCheck.IndexType,
+                                Mnemonic = mnemonicToDelete.Mnemonic
+                            };
+
                             if (result.IsSuccessful)
                             {
-                                reportItems.Add(new DeleteEmptyMnemonicsReportItem { WellboreReference = wellboreRef, LogCurveInfo = mnemonicToDelete });
+                                reportItems.Add(reportItem);
 
                                 Logger.LogInformation("Successfully deleted empty mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}"
                                     , wellboreRef.WellUid, wellboreRef.WellboreUid, logToCheck.Uid, mnemonicToDelete.Mnemonic);
@@ -83,19 +101,65 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 }
             }
 
-            var report = new DeleteEmptyMnemonicsReport() { ReportItems = reportItems };
+            var report = new DeleteEmptyMnemonicsReport()
+            {
+                Title = "Delete Empty Mnemonics Report",
+                Summary = CreateReportSummary(job, logCurvesCheckedCount, reportItems.Count),
+                ReportItems = reportItems
+            };
             job.JobInfo.Report = report;
 
-            Logger.LogInformation("{JobType} - Job successful. Empty mnemonics deleted.", GetType().Name);
-
-            var updatedWells = job.Wells.Select(w => w.WellUid)
-                .Concat(job.Wellbores.Select(w => w.WellUid))
-                .Distinct()
-                .ToArray();
+            Logger.LogInformation("{JobType} - Job successful. {Message}", GetType().Name, reportItems.IsNullOrEmpty() ? "No empty mnemonics deleted" : "Empty mnemonics deleted.");
 
             return (
                 new WorkerResult(client.GetServerHostname(), true, $"Empty mnemonics deleted"),
-                new RefreshWells(client.GetServerHostname(), updatedWells, RefreshType.BatchUpdate));
+                null);
+        }
+
+        private string CreateReportSummary(DeleteEmptyMnemonicsJob job, int mnemonicsCheckedCount, int mnemonicsDeletedCount)
+        {
+            var summary = new StringBuilder();
+
+            if (mnemonicsCheckedCount > 0)
+            {
+                switch (mnemonicsCheckedCount)
+                {
+                    case 0:
+                        summary = summary.AppendFormat("No mnemonics were");
+                        break;
+                    case 1:
+                        summary = summary.AppendFormat("One mnemonic was");
+                        break;
+                    default:
+                        summary = summary.AppendFormat("{0} mnemonics were", mnemonicsCheckedCount.ToString());
+                        break;
+                }
+
+                summary = summary.AppendFormat(" checked for NullDepthValue: \"{0}\" and NullTimeValue: \"{1}\". ",
+                    job.NullDepthValue.ToString(),
+                    job.NullTimeValue.ToISODateTimeString());
+
+                switch (mnemonicsDeletedCount)
+                {
+                    case 0:
+                        summary = summary.AppendFormat("No empty mnemonics were found and deleted.");
+                        break;
+                    case 1:
+                        summary = summary.AppendFormat("One empty mnemonic was found and deleted.");
+                        break;
+                    default:
+                        summary = summary.AppendFormat("{0} empty mnemonics were found and deleted.", mnemonicsDeletedCount.ToString());
+                        break;
+                }
+            }
+            else
+            {
+                summary = summary.AppendFormat("No mnemonics were checked for NullDepthValue: \"{0}\" and NullTimeValue: \"{1}\".",
+                    job.NullDepthValue.ToString(),
+                    job.NullTimeValue.ToISODateTimeString());
+            }
+
+            return summary.ToString();
         }
 
         private async Task<QueryResult> DeleteMnemonic(string wellUid, string wellboreUid, string logToCheckUid, LogCurveInfo mnemonicToDelete)
@@ -103,7 +167,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return await _mnemonicService.DeleteMnemonic(wellUid, wellboreUid, logToCheckUid, mnemonicToDelete);
         }
 
-        private ICollection<LogCurveInfo> FindNullMnemonics(double nullDepthValue, DateTime nullTimeValue, ICollection<LogCurveInfo> logCurves)
+        private ICollection<LogCurveInfo> FindNullMnemonics(double nullDepthValue, DateTime nullTimeValue, LogObject logToCheck, ICollection<LogCurveInfo> logCurves)
         {
             var nullMnemonics = new List<LogCurveInfo>();
 
@@ -112,12 +176,24 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
             if (!logCurves.IsNullOrEmpty())
             {
-                foreach (var logCurve in logCurves)
+                if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
-                    if (logCurve.MinDepthIndex == nullDepthValueString || logCurve.MaxDepthIndex == nullDepthValueString
-                        || logCurve.MinDateTimeIndex == nullTimeValueString || logCurve.MaxDateTimeIndex == nullTimeValueString)
+                    foreach (var logCurve in logCurves)
                     {
-                        nullMnemonics.Add(logCurve);
+                        if (logCurve.MinDepthIndex == nullDepthValueString && logCurve.MaxDepthIndex == nullDepthValueString)
+                        {
+                            nullMnemonics.Add(logCurve);
+                        }
+                    }
+                }
+                else if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
+                {
+                    foreach (var logCurve in logCurves)
+                    {
+                        if (logCurve.MinDateTimeIndex == nullTimeValueString && logCurve.MaxDateTimeIndex == nullTimeValueString)
+                        {
+                            nullMnemonics.Add(logCurve);
+                        }
                     }
                 }
             }

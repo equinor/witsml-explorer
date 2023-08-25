@@ -23,8 +23,8 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
-  const [nullTimeValue, setNullTimeValue] = useState<string>("1900-01-01T00:00:00.000+00:00");
-  const [dTimeKickoffValid, setDTimeKickoffValid] = useState<boolean>(true);
+  const [nullTimeValue, setNullTimeValue] = useState<string>("1900-01-01T00:00:00.000Z");
+  const [nullTimeValueValid, setNullTimeValueValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async (nullDepthValue: number, nullTimeValue: string) => {
@@ -59,15 +59,15 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
               value={nullTimeValue}
               label="Null time value"
               updateObject={(dateTime: string, valid: boolean) => {
-                setNullTimeValue(nullTimeValue);
-                setDTimeKickoffValid(valid);
+                setNullTimeValue(dateTime);
+                setNullTimeValueValid(valid);
               }}
               timeZone={timeZone}
             />
             <TextField label="Null depth value" type="number" fullWidth value={nullDepthValue} onChange={(e: any) => setNullDepthValue(+e.target.value)} />
           </ContentLayout>
         }
-        confirmDisabled={!dTimeKickoffValid}
+        confirmDisabled={!nullTimeValueValid}
         onSubmit={() => onSubmit(nullDepthValue, nullTimeValue)}
         isLoading={isLoading}
       />
