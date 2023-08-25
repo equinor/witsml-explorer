@@ -17,9 +17,9 @@ jobs:
     name: Package and publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@v3
       - name: Setup .NET 7
-        uses: actions/setup-dotnet@a351d9ea84bc76ec7508debf02a39d88f8b6c0c0 # v2.1.1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.x
           source-url: https://nuget.pkg.github.com/equinor/index.json
