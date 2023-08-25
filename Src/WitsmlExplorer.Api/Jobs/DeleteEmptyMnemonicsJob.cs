@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Microsoft.IdentityModel.Tokens;
+
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 
@@ -35,12 +37,12 @@ namespace WitsmlExplorer.Api.Jobs
 
         public override string GetWellboreName()
         {
-            return null;
+            return Wellbores.IsNullOrEmpty() ? null : string.Join(", ", Wellbores.Select(w => w.WellboreUid));
         }
 
         public override string GetWellName()
         {
-            return null;
+            return Wells.IsNullOrEmpty() ? null : string.Join(", ", Wells.Select(w => w.WellUid));
         }
     }
 }
