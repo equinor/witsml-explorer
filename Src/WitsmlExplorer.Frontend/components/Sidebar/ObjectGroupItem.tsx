@@ -1,4 +1,5 @@
 import React, { ReactNode, useCallback, useContext, useState } from "react";
+import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
@@ -35,6 +36,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { wellbore, well } = useContext(WellboreItemContext);
+  const { selectedFilter } = useContext(FilterContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSelectObjectGroup = useCallback(async () => {
@@ -73,7 +75,8 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
     return onGroupContextMenu == null ? onGenericGroupContextMenu(event, objectType, wellbore, dispatchOperation, setIsLoading) : onGroupContextMenu(event, wellbore, setIsLoading);
   };
   const showStub = wellbore.objectCount != null && wellbore.objectCount[objectType] != null && wellbore.objectCount[objectType] != 0;
-  return (
+
+  return selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible ? (
     <TreeItem
       nodeId={calculateObjectGroupId(wellbore, objectType)}
       labelText={pluralize(objectType)}
@@ -98,7 +101,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
           ))) ||
         (showStub && ["", ""])}
     </TreeItem>
-  );
+  ) : null;
 };
 
 const onGenericGroupContextMenu = (

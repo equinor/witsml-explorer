@@ -1,0 +1,37 @@
+<mudLogs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <mudLog uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <objectGrowing />
+    <dTim />
+    <mudLogCompany />
+    <mudLogEngineers />
+    <startMd uom="" datum="" />
+    <endMd uom="" datum="" />
+    <relatedLog uidRef="" />
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </mudLog>
+</mudLogs>

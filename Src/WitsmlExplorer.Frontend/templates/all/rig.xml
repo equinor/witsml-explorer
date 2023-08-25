@@ -1,0 +1,479 @@
+<rigs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <rig uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <owner />
+    <typeRig />
+    <manufacturer />
+    <yearEntService />
+    <classRig />
+    <approvals />
+    <registration />
+    <telNumber />
+    <faxNumber />
+    <emailAddress />
+    <nameContact />
+    <ratingDrillDepth uom="" />
+    <ratingWaterDepth uom="" />
+    <isOffshore />
+    <airGap uom="" />
+    <dTimStartOp />
+    <dTimEndOp />
+    <bop>
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <typeConnectionBop />
+      <sizeConnectionBop uom="" />
+      <presBopRating uom="" />
+      <sizeBopSys uom="" />
+      <rotBop />
+      <idBoosterLine uom="" />
+      <odBoosterLine uom="" />
+      <lenBoosterLine uom="" />
+      <idSurfLine uom="" />
+      <odSurfLine uom="" />
+      <lenSurfLine uom="" />
+      <idChkLine uom="" />
+      <odChkLine uom="" />
+      <lenChkLine uom="" />
+      <idKillLine uom="" />
+      <odKillLine uom="" />
+      <lenKillLine uom="" />
+      <bopComponent uid="">
+        <typeBopComp />
+        <descComp />
+        <idPassThru uom="" />
+        <presWork uom="" />
+        <diaCloseMn uom="" />
+        <diaCloseMx uom="" />
+        <nomenclature />
+        <isVariable />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </bopComponent>
+      <typeDiverter />
+      <diaDiverter uom="" />
+      <presWorkDiverter uom="" />
+      <accumulator />
+      <capAccFluid uom="" />
+      <presAccPreCharge uom="" />
+      <volAccPreCharge uom="" />
+      <presAccOpRating uom="" />
+      <typeControlManifold />
+      <descControlManifold />
+      <typeChokeManifold />
+      <presChokeManifold uom="" />
+    </bop>
+    <pit uid="">
+      <index />
+      <dTimInstall />
+      <dTimRemove />
+      <capMx uom="" />
+      <owner />
+      <typePit />
+      <isActive />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </pit>
+    <pump uid="">
+      <index />
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <owner />
+      <typePump />
+      <numCyl />
+      <odRod uom="" />
+      <idLiner uom="" />
+      <pumpAction />
+      <eff uom="" />
+      <lenStroke uom="" />
+      <presMx uom="" />
+      <powHydMx uom="" />
+      <spmMx uom="" />
+      <displacement uom="" />
+      <presDamp uom="" />
+      <volDamp uom="" />
+      <powMechMx uom="" />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </pump>
+    <shaker uid="">
+      <name />
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <type />
+      <locationShaker />
+      <numDecks />
+      <numCascLevel />
+      <mudCleaner />
+      <capFlow uom="" />
+      <owner />
+      <sizeMeshMn uom="" />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </shaker>
+    <centrifuge uid="">
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <type />
+      <capFlow uom="" />
+      <owner />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </centrifuge>
+    <hydrocyclone uid="">
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <type />
+      <descCone />
+      <owner />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </hydrocyclone>
+    <degasser uid="">
+      <manufacturer />
+      <model />
+      <dTimInstall />
+      <dTimRemove />
+      <type />
+      <owner />
+      <height uom="" />
+      <len uom="" />
+      <id uom="" />
+      <capFlow uom="" />
+      <areaSeparatorFlow uom="" />
+      <htMudSeal uom="" />
+      <idInlet uom="" />
+      <idVentLine uom="" />
+      <lenVentLine uom="" />
+      <capGasSep uom="" />
+      <capBlowdown uom="" />
+      <presRating uom="" />
+      <tempRating uom="" />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </degasser>
+    <surfaceEquipment>
+      <description />
+      <presRating uom="" />
+      <typeSurfEquip />
+      <usePumpDischarge />
+      <useStandpipe />
+      <useHose />
+      <useSwivel />
+      <useKelly />
+      <useTopStack />
+      <useInjStack />
+      <useSurfaceIron />
+      <idStandpipe uom="" />
+      <lenStandpipe uom="" />
+      <idHose uom="" />
+      <lenHose uom="" />
+      <idSwivel uom="" />
+      <lenSwivel uom="" />
+      <idKelly uom="" />
+      <lenKelly uom="" />
+      <idSurfaceIron uom="" />
+      <lenSurfaceIron uom="" />
+      <htSurfaceIron uom="" />
+      <idDischargeLine uom="" />
+      <lenDischargeLine uom="" />
+      <ctWrapType />
+      <odReel uom="" />
+      <odCore uom="" />
+      <widReelWrap uom="" />
+      <lenReel uom="" />
+      <injStkUp />
+      <htInjStk uom="" />
+      <umbInside />
+      <odUmbilical uom="" />
+      <lenUmbilical uom="" />
+      <idTopStk uom="" />
+      <htTopStk uom="" />
+      <htFlange uom="" />
+    </surfaceEquipment>
+    <numDerricks />
+    <typeDerrick />
+    <ratingDerrick uom="" />
+    <htDerrick uom="" />
+    <ratingHkld uom="" />
+    <capWindDerrick uom="" />
+    <wtBlock uom="" />
+    <ratingBlock uom="" />
+    <numBlockLines />
+    <typeHook />
+    <ratingHook uom="" />
+    <sizeDrillLine uom="" />
+    <typeDrawWorks />
+    <powerDrawWorks uom="" />
+    <ratingDrawWorks uom="" />
+    <motorDrawWorks />
+    <descBrake />
+    <typeSwivel />
+    <ratingSwivel uom="" />
+    <rotSystem />
+    <descRotSystem />
+    <ratingTqRotSys uom="" />
+    <rotSizeOpening uom="" />
+    <ratingRotSystem uom="" />
+    <scrSystem />
+    <pipeHandlingSystem />
+    <capBulkMud uom="" />
+    <capLiquidMud uom="" />
+    <capDrillWater uom="" />
+    <capPotableWater uom="" />
+    <capFuel uom="" />
+    <capBulkCement uom="" />
+    <mainEngine />
+    <generator />
+    <cementUnit />
+    <numBunks />
+    <bunksPerRoom />
+    <numCranes />
+    <numAnch />
+    <moorType />
+    <numGuideTens />
+    <numRiserTens />
+    <varDeckLdMx uom="" />
+    <vdlStorm uom="" />
+    <numThrusters />
+    <azimuthing />
+    <motionCompensationMn uom="" />
+    <motionCompensationMx uom="" />
+    <strokeMotionCompensation uom="" />
+    <riserAngleLimit uom="" />
+    <heaveMx uom="" />
+    <gantry />
+    <flares />
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </rig>
+</rigs>
