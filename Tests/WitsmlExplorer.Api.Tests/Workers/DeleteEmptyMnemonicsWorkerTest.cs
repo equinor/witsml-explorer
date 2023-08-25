@@ -63,7 +63,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupDateTimeLogObject();
 
-            var job = CreateJob(10, new DateTime(2023, 8, 20, 12, 0, 0));
+            var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
+
+            var job = CreateJob(10, dateTime);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -76,7 +78,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Empty(job.JobInfo.Report.ReportItems);
-            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"2023-08-20T10:00:00.000Z\". No empty mnemonics were found and deleted.",
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". No empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
         }
 
@@ -85,7 +87,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupDepthLogObject();
 
-            var job = CreateJob(0, new DateTime(2023, 8, 20, 12, 0, 0));
+            var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
+
+            var job = CreateJob(0, dateTime);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -98,7 +102,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Single(job.JobInfo.Report.ReportItems);
-            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"2023-08-20T10:00:00.000Z\". One empty mnemonic was found and deleted.",
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". One empty mnemonic was found and deleted.",
                 job.JobInfo.Report.Summary);
         }
 
@@ -107,7 +111,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             SetupDateTimeLogObject();
 
-            var job = CreateJob(10, new DateTime(2023, 3, 21, 12, 0, 0));
+            var dateTime = new DateTime(2023, 3, 21, 12, 0, 0);
+
+            var job = CreateJob(10, dateTime);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -120,7 +126,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.NotNull(job.JobInfo?.Report);
             Assert.Equal(2, job.JobInfo.Report.ReportItems.Count());
-            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"2023-03-21T11:00:00.000Z\". 2 empty mnemonics were found and deleted.",
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". 2 empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
         }
 
