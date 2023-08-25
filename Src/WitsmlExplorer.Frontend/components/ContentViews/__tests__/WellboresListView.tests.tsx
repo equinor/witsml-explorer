@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { FilterContextProvider } from "../../../contexts/filter";
 import NavigationContext from "../../../contexts/navigationContext";
 import { initNavigationStateReducer } from "../../../contexts/navigationStateReducer";
 import OperationContext from "../../../contexts/operationContext";
@@ -12,7 +13,9 @@ test("Should render when selected well is not set", () => {
     return (
       <OperationContext.Provider value={{ operationState, dispatchOperation }}>
         <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
-          <WellboresListView />
+          <FilterContextProvider>
+            <WellboresListView />
+          </FilterContextProvider>
         </NavigationContext.Provider>
       </OperationContext.Provider>
     );

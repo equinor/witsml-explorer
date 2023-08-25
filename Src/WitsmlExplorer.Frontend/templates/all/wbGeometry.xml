@@ -1,0 +1,58 @@
+<wbGeometrys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <wbGeometry uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <dTimReport />
+    <mdBottom uom="" datum="" />
+    <gapAir uom="" />
+    <depthWaterMean uom="" />
+    <wbGeometrySection uid="">
+      <typeHoleCasing />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <idSection uom="" />
+      <odSection uom="" />
+      <wtPerLen uom="" />
+      <grade />
+      <curveConductor />
+      <diaDrift uom="" />
+      <factFric />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wbGeometrySection>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </wbGeometry>
+</wbGeometrys>

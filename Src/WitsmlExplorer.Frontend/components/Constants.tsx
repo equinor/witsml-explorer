@@ -10,3 +10,4 @@ export const DateFormat = {
 export const STORAGE_THEME_KEY = "selectedTheme";
 export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";
 export const STORAGE_MODE_KEY = "selectedMode";
+export const STORAGE_FILTER_HIDDENOBJECTS_KEY = "hiddenObjects";

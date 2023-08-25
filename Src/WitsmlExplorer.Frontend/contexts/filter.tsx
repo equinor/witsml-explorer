@@ -15,6 +15,13 @@ export interface Filter {
   wellLimit: number;
   filterType: FilterType;
   searchResults?: ObjectSearchResult[];
+  objectVisibilityStatus: Record<ObjectType, VisibilityStatus>;
+}
+
+export enum VisibilityStatus {
+  Visible,
+  Hidden,
+  Disabled
 }
 
 // Filter by wells and/or wellbores
@@ -103,13 +110,17 @@ export const isObjectPropertyFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(ObjectPropertyFilterType).includes(filterType);
 };
 
+export const allVisibleObjects: Record<ObjectType, VisibilityStatus> = {} as Record<ObjectType, VisibilityStatus>;
+Object.values(ObjectType).forEach((object) => (allVisibleObjects[object] = VisibilityStatus.Visible));
+
 export const EMPTY_FILTER: Filter = {
   name: "",
   isActive: false,
   objectGrowing: false,
   wellLimit: 30,
   filterType: WellFilterType.Well,
-  searchResults: []
+  searchResults: [],
+  objectVisibilityStatus: allVisibleObjects
 };
 
 interface FilterContextProps {
@@ -304,14 +315,23 @@ export const useWellFilter = (wells: Well[], options?: FilterOptions): Well[] =>
   const prevFilter = React.useRef<Filter>(selectedFilter);
 
   React.useEffect(() => {
-    if (prevFilter.current === selectedFilter) {
-      // Treenodes should only toggle expand state if it's the filter that has been changed
+    if (prevFilter.current.filterType === selectedFilter.filterType && prevFilter.current.name == selectedFilter.name) {
+      // Treenodes should only toggle expand state if the filter type or name has changed
       filterOptions = { ...filterOptions, dispatchNavigation: null };
     }
     prevFilter.current = selectedFilter;
 
     setFilteredWells(filterWells(wells, selectedFilter, filterOptions));
-  }, [wells, selectedFilter, filterOptions]);
+  }, [
+    wells,
+    filterOptions,
+    selectedFilter.filterType,
+    selectedFilter.isActive,
+    selectedFilter.name,
+    selectedFilter.objectGrowing,
+    selectedFilter.searchResults,
+    selectedFilter.wellLimit
+  ]);
 
   return filteredWells;
 };
