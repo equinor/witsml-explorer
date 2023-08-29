@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Models
         public string DateTimeCreation { get; init; }
         public string DateTimeLastChange { get; init; }
         public string ItemState { get; init; }
-        public IEnumerable<Wellbore> Wellbores { get; set; }
+        public IList<Wellbore> Wellbores { get; set; }
         public string Country { get; init; }
         public string StatusWell { get; init; }
         public string PurposeWell { get; init; }
