@@ -34,7 +34,7 @@ const Sidebar = (): React.ReactElement => {
         <WellProgress>
           {filteredWells &&
             (filteredWells.length === 0 ? (
-              <Typography style={{ color: colors.text.staticIconsDefault }}>No wells match the current filter</Typography>
+              <Typography style={{ paddingTop: "1rem" }}>No wells match the current filter</Typography>
             ) : (
               <TreeView
                 defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}

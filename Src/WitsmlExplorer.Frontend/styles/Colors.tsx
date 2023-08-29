@@ -25,13 +25,12 @@ export const light: Colors = {
   text: {
     staticIconsDefault: tokens.colors.text.static_icons__default.hex,
     staticIconsTertiary: tokens.colors.text.static_icons__tertiary.hex,
-    staticTextFieldDefault: "#DCDCDC",
     staticCheckBoxDefault: tokens.colors.infographic.primary__moss_green_100,
     staticInactiveIndicator: "#DCDCDC",
     staticPropertyBarDefault: "#666666",
     staticPropertyKey: tokens.colors.text.static_icons__tertiary.hex,
     staticPropertyValue: tokens.colors.interactive.primary__resting.hex,
-    staticTextFeildDefault: "#F7F7F7",
+    staticTextFieldDefault: "#F7F7F7",
     staticTextLabel: "#999999"
   },
   ui: {
@@ -65,13 +64,12 @@ export const dark: Colors = {
   text: {
     staticIconsDefault: "#FFFFFF",
     staticIconsTertiary: "#97CACE",
-    staticTextFieldDefault: "#2E3F4D",
     staticCheckBoxDefault: "#AAAAAA",
     staticInactiveIndicator: "#6F6F6F",
     staticPropertyBarDefault: "#FFFFFF",
     staticPropertyKey: "#DEE5E7",
     staticPropertyValue: "#FFFFFF",
-    staticTextFeildDefault: "transparent",
+    staticTextFieldDefault: "transparent",
     staticTextLabel: "#CCCCCC"
   },
   ui: {
@@ -106,13 +104,12 @@ export interface Colors {
   text: {
     staticIconsDefault: string;
     staticIconsTertiary: string;
-    staticTextFieldDefault: string;
     staticCheckBoxDefault: string | { hex: string; hsla: string; rgba: string };
     staticInactiveIndicator: string;
     staticPropertyBarDefault: string;
     staticPropertyKey: string;
     staticPropertyValue: string;
-    staticTextFeildDefault: string;
+    staticTextFieldDefault: string;
     staticTextLabel: string;
   };
   ui: {
