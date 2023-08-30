@@ -80,6 +80,12 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 variant={editableLogObject.name.length === 0 ? "error" : undefined}
                 onChange={(e: any) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
               />
+              <TextField
+                disabled
+                id="objectGrowing"
+                label="object growing"
+                defaultValue={editableLogObject.objectGrowing == null ? "" : editableLogObject.objectGrowing ? "true" : "false"}
+              />
               <TextField disabled id="serviceCompany" label="service company" defaultValue={editableLogObject.serviceCompany} />
               <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
               <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
