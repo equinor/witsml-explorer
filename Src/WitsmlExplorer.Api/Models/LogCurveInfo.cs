@@ -6,16 +6,16 @@ namespace WitsmlExplorer.Api.Models
 {
     public class LogCurveInfo
     {
-        public string Uid { get; internal set; }
-        public string Mnemonic { get; internal set; }
-        public string MinDateTimeIndex { get; internal set; }
-        public string MinDepthIndex { get; internal set; }
-        public string MaxDateTimeIndex { get; internal set; }
-        public string MaxDepthIndex { get; internal set; }
-        public string ClassWitsml { get; internal set; }
-        public string Unit { get; internal set; }
-        public LengthMeasure SensorOffset { get; internal set; }
-        public string MnemAlias { get; internal set; }
-        public List<AxisDefinition> AxisDefinitions { get; internal set; }
+        public string Uid { get; init; }
+        public string Mnemonic { get; init; }
+        public string MinDateTimeIndex { get; init; }
+        public string MinDepthIndex { get; init; }
+        public string MaxDateTimeIndex { get; init; }
+        public string MaxDepthIndex { get; init; }
+        public string ClassWitsml { get; init; }
+        public string Unit { get; init; }
+        public LengthMeasure SensorOffset { get; init; }
+        public string MnemAlias { get; init; }
+        public List<AxisDefinition> AxisDefinitions { get; init; }
     }
 }
