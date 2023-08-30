@@ -80,6 +80,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Empty(job.JobInfo.Report.ReportItems);
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". No empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
+
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("Well111", job.JobInfo.WellName);
+            Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
         }
 
         [Fact]
@@ -104,6 +108,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Single(job.JobInfo.Report.ReportItems);
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". One empty mnemonic was found and deleted.",
                 job.JobInfo.Report.Summary);
+
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("Well111", job.JobInfo.WellName);
+            Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
         }
 
         [Fact]
@@ -128,6 +136,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(2, job.JobInfo.Report.ReportItems.Count());
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". 2 empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
+
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("Well111", job.JobInfo.WellName);
+            Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
         }
 
         private void SetupDateTimeLogObject()
