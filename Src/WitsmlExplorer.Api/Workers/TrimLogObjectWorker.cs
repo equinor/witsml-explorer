@@ -39,6 +39,13 @@ namespace WitsmlExplorer.Api.Workers
             Index newEndIndex = Index.End(witsmlLog, job.EndIndex);
             bool isDescending = string.Equals(witsmlLog.Direction, WitsmlLog.WITSML_DIRECTION_DECREASING, StringComparison.InvariantCultureIgnoreCase);
 
+            // Added because of issue reported by Jan Burak, see #1975, pull request #2003
+            if (isDescending)
+            {
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Trimming of decreasing log temporarily disabled because of potential server issue", string.Empty, witsmlLog.GetDescription()), null);
+            }
+
+
             if ((currentStartIndex == newStartIndex) && (newEndIndex == currentEndIndex))
             {
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, "No update needed", string.Empty, witsmlLog.GetDescription()), null);
