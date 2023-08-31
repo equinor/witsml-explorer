@@ -25,6 +25,7 @@ import {
   SelectLogTypeAction,
   SelectObjectAction,
   SelectObjectGroupAction,
+  SelectQueryViewAction,
   SelectServerAction,
   SelectServerManagerAction,
   SelectWellAction,
@@ -55,6 +56,7 @@ export type NavigationAction =
   | CollapseTreeNodeChildrenAction
   | ExpandTreeNodesAction
   | SelectJobsAction
+  | SelectQueryViewAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
   | SelectWellAction

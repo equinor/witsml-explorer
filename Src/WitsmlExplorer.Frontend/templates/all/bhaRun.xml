@@ -1,0 +1,112 @@
+<bhaRuns xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <bhaRun uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <tubular uidRef="" />
+    <dTimStart />
+    <dTimStop />
+    <dTimStartDrilling />
+    <dTimStopDrilling />
+    <planDogleg uom="" />
+    <actDogleg uom="" />
+    <actDoglegMx uom="" />
+    <statusBha />
+    <numBitRun />
+    <numStringRun />
+    <reasonTrip />
+    <objectiveBha />
+    <drillingParams uid="">
+      <eTimOpBit uom="" />
+      <mdHoleStart uom="" datum="" />
+      <mdHoleStop uom="" datum="" />
+      <tubular uidRef="" />
+      <hkldRot uom="" />
+      <overPull uom="" />
+      <slackOff uom="" />
+      <hkldUp uom="" />
+      <hkldDn uom="" />
+      <tqOnBotAv uom="" />
+      <tqOnBotMx uom="" />
+      <tqOnBotMn uom="" />
+      <tqOffBotAv uom="" />
+      <tqDhAv uom="" />
+      <wtAboveJar uom="" />
+      <wtBelowJar uom="" />
+      <wtMud uom="" />
+      <flowratePump uom="" />
+      <powBit uom="" />
+      <velNozzleAv uom="" />
+      <presDropBit uom="" />
+      <cTimHold uom="" />
+      <cTimSteering uom="" />
+      <cTimDrillRot uom="" />
+      <cTimDrillSlid uom="" />
+      <cTimCirc uom="" />
+      <cTimReam uom="" />
+      <distDrillRot uom="" />
+      <distDrillSlid uom="" />
+      <distReam uom="" />
+      <distHold uom="" />
+      <distSteering uom="" />
+      <rpmAv uom="" />
+      <rpmMx uom="" />
+      <rpmMn uom="" />
+      <rpmAvDh uom="" />
+      <ropAv uom="" />
+      <ropMx uom="" />
+      <ropMn uom="" />
+      <wobAv uom="" />
+      <wobMx uom="" />
+      <wobMn uom="" />
+      <wobAvDh uom="" />
+      <reasonTrip />
+      <objectiveBha />
+      <aziTop uom="" />
+      <aziBottom uom="" />
+      <inclStart uom="" />
+      <inclMx uom="" />
+      <inclMn uom="" />
+      <inclStop uom="" />
+      <tempMudDhMx uom="" />
+      <presPumpAv uom="" />
+      <flowrateBit uom="" />
+      <mudClass />
+      <mudSubClass />
+      <comments />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </drillingParams>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </bhaRun>
+</bhaRuns>

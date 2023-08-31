@@ -18,6 +18,7 @@ import {
   clear,
   cloud_download as cloudDownload,
   cloud_off as cloudOff,
+  code,
   compare,
   copy,
   delete_to_trash as deleteToTrash,
@@ -37,6 +38,7 @@ import {
   save,
   search,
   settings,
+  sync,
   upload,
   world
 } from "@equinor/eds-icons";
@@ -59,6 +61,7 @@ const icons = {
   clear,
   cloudDownload,
   cloudOff,
+  code,
   compare,
   copy,
   deleteToTrash,
@@ -78,6 +81,7 @@ const icons = {
   save,
   search,
   settings,
+  sync,
   upload,
   world
 };

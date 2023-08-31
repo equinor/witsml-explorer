@@ -16,6 +16,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteWell,
         DeleteWellbore,
         RenameMnemonic,
+        DeleteEmptyMnemonics,
         ModifyBhaRun,
         ModifyFormationMarker,
         ModifyGeologyInterval,

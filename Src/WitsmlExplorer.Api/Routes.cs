@@ -23,6 +23,8 @@ namespace WitsmlExplorer.Api
             app.MapPatch("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.UpdateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
             app.MapDelete("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
 
+            app.MapGet("/capabilities", CapHandler.GetCap, useOAuth2);
+
             app.MapGet("/wells", WellHandler.GetAllWells, useOAuth2);
             app.MapGet("/wells/{wellUid}", WellHandler.GetWell, useOAuth2);
 
@@ -77,6 +79,11 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.WbGeometry], WbGeometryHandler.GetWbGeometries, useOAuth2);
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}", WbGeometryHandler.GetWbGeometry, useOAuth2);
             app.MapGet(routes[EntityType.WbGeometry] + "/{wbGeometryUid}/" + ComponentType.WbGeometrySection.ToPluralLowercase(), WbGeometryHandler.GetWbGeometrySections, useOAuth2);
+
+            app.MapPost("/query/addtostore", WitsmlQueryHandler.AddToStore, useOAuth2);
+            app.MapPost("/query/deletefromstore", WitsmlQueryHandler.DeleteFromStore, useOAuth2);
+            app.MapPost("/query/getfromstore", WitsmlQueryHandler.GetFromStore, useOAuth2);
+            app.MapPost("/query/updateinstore", WitsmlQueryHandler.UpdateInStore, useOAuth2);
 
             app.MapPost("/jobs/{jobType}", JobHandler.CreateJob, useOAuth2);
             app.MapGet("/jobs/userjobinfos", JobHandler.GetUserJobInfos, useOAuth2);

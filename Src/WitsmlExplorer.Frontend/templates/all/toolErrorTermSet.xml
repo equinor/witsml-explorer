@@ -1,0 +1,116 @@
+<toolErrorTermSets xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <toolErrorTermSet uid="">
+    <name />
+    <authorization>
+      <author />
+      <source />
+      <authority />
+      <status />
+      <version />
+      <comment />
+    </authorization>
+    <nomenclature>
+      <parameter uid="">
+        <name />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </parameter>
+      <function uid="">
+        <name />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </function>
+      <constant uid="">
+        <name />
+        <value />
+        <unit />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </constant>
+    </nomenclature>
+    <errorTerm uid="">
+      <name />
+      <type />
+      <measureClass />
+      <label />
+      <description />
+      <errorCoefficient uid="">
+        <azi />
+        <inc />
+        <depth />
+        <tvd />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </errorCoefficient>
+      <operatingMode />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </errorTerm>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </toolErrorTermSet>
+</toolErrorTermSets>

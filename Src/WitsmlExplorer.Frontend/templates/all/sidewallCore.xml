@@ -1,0 +1,136 @@
+<sidewallCores xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <sidewallCore uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <dTimToolRun />
+    <dTimToolPull />
+    <mdToolReference uom="" datum="" />
+    <coreReferenceLog />
+    <mdCore uom="" datum="" />
+    <serviceCompany />
+    <analysisContractor />
+    <analysisBy />
+    <sidewallCoringTool />
+    <diaHole uom="" />
+    <diaPlug uom="" />
+    <numPlugsShot />
+    <numRecPlugs />
+    <numMisfiredPlugs />
+    <numEmptyPlugs />
+    <numLostPlugs />
+    <numPaidPlugs />
+    <swcSample uid="">
+      <md uom="" datum="" />
+      <lithology uid="">
+        <type />
+        <codeLith />
+        <lithPc uom="" />
+        <description />
+        <lithClass />
+        <grainType />
+        <dunhamClass />
+        <color />
+        <texture />
+        <hardness />
+        <compaction />
+        <sizeGrain />
+        <roundness />
+        <sphericity />
+        <sorting />
+        <matrixCement />
+        <porosityVisible />
+        <porosityFabric />
+        <permeability />
+        <densShale uom="" />
+        <qualifier uid="">
+          <type />
+          <mdTop uom="" datum="" />
+          <mdBottom uom="" datum="" />
+          <abundance uom="" />
+          <abundanceCode />
+          <description />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </qualifier>
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </lithology>
+      <show>
+        <showRat />
+        <stainColor />
+        <stainDistr />
+        <stainPc uom="" />
+        <natFlorColor />
+        <natFlorPc uom="" />
+        <natFlorLevel />
+        <natFlorDesc />
+        <cutColor />
+        <cutSpeed />
+        <cutStrength />
+        <cutForm />
+        <cutLevel />
+        <cutFlorColor />
+        <cutFlorSpeed />
+        <cutFlorStrength />
+        <cutFlorForm />
+        <cutFlorLevel />
+        <residueColor />
+        <showDesc />
+        <impregnatedLitho />
+        <odor />
+      </show>
+      <nameFormation />
+      <comments />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </swcSample>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </sidewallCore>
+</sidewallCores>

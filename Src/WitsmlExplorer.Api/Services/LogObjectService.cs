@@ -51,6 +51,7 @@ namespace WitsmlExplorer.Api.Services
                     StartIndex = log.GetStartIndexAsString(),
                     EndIndex = log.GetEndIndexAsString(),
                     IndexCurve = log.IndexCurve.Value,
+                    Mnemonics = log.LogCurveInfo.Count,
                     CommonData = new CommonData()
                     {
                         DTimCreation = log.CommonData.DTimCreation,
