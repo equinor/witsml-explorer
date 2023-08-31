@@ -11,6 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string ServiceCompany { get; init; }
         public string RunNumber { get; init; }
         public string IndexCurve { get; init; }
+        public int Mnemonics { get; init; }
         public CommonData CommonData { get; init; }
         public string Direction { get; init; }
 

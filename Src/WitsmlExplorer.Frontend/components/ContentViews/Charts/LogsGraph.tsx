@@ -19,7 +19,8 @@ export interface DataItem {
   name: string;
   value: number[];
   uid: string;
-  itemStyle: { normal: { color: string } };
+  itemStyle: { color: string };
+  tooltip: { formatter: string };
 }
 
 interface LogItem {
@@ -27,22 +28,36 @@ interface LogItem {
   start: number;
   end: number;
   uid: string;
+  startRaw: string;
+  endRaw: string;
+  runNumber: string;
+  mnemonics: string;
 }
 
-export const LogsGraph = (): React.ReactElement => {
+const depthNullValue = -999.25;
+const timeNullValue = +new Date("1900-01-01T00:00:00.000Z");
+
+interface LogsGraphProps {
+  selectedLogs: LogObjectRow[];
+}
+
+export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   const dimItemIndex = 0;
   const dimStart = 1;
   const dimEnd = 2;
   const data: DataItem[] = [];
   const categories: number[] = [];
   const { navigationState } = useContext(NavigationContext);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
   const { selectedWellbore, selectedLogTypeGroup } = navigationState;
 
   // dedicated colors for items containing specific names
   const reservedColours: Map<string, string> = new Map([
-    ["#0000FF", "surface"],
-    ["#FF0000", "downhole"],
-    ["#FFFF00", "memory"]
+    ["#0088DD", "surface"],
+    ["#DD2222", "downhole"],
+    ["#DDBB00", "memory"]
   ]);
 
   const {
@@ -53,7 +68,12 @@ export const LogsGraph = (): React.ReactElement => {
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
-      setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
+      const filteredLogs = selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup);
+      if (props.selectedLogs.length > 0) {
+        setLogs(filteredLogs.filter((log) => props.selectedLogs.find((selectedLog) => selectedLog.uid == log.uid)));
+      } else {
+        setLogs(filteredLogs);
+      }
     }
   }, [selectedLogTypeGroup, selectedWellbore]);
 
@@ -61,21 +81,43 @@ export const LogsGraph = (): React.ReactElement => {
     return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
   };
 
-  const getTableData = (): LogItem[] => {
+  const getGraphData = (): LogItem[] => {
     return logs.map((log) => {
+      const start = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", "");
+      const end = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
       return {
-        name: log.name,
-        start: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", ""),
-        end: selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", ""),
+        name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
+        start: start < end ? start : end,
+        end: start < end ? end : start,
         uid: log.uid,
-        category: null
+        startRaw: log.startIndex,
+        endRaw: log.endIndex,
+        runNumber: log.runNumber != null ? log.runNumber : "",
+        mnemonics: log.mnemonics
       };
     });
   };
 
-  const sortedLogs = getTableData().sort((a, b) => {
+  const sortedLogs = getGraphData().sort((a, b) => {
     return a.start - b.start;
   });
+
+  // set the position of empty logs to the start of the first log with data
+  const nullValue = isTimeIndexed() ? timeNullValue : depthNullValue;
+  let lowestNonNullStart = nullValue;
+  for (let i = 0; i < sortedLogs.length; i++) {
+    if (sortedLogs[i].start != nullValue) {
+      lowestNonNullStart = sortedLogs[i].start;
+      break;
+    }
+  }
+  for (let i = 0; i < sortedLogs.length; i++) {
+    if (sortedLogs[i].start == nullValue && sortedLogs[i].end == nullValue) {
+      sortedLogs[i].start = lowestNonNullStart;
+      sortedLogs[i].end = lowestNonNullStart;
+      sortedLogs[i].name += " (no data)";
+    }
+  }
 
   // calculates equal vertical distribution
   const barHeight = 30;
@@ -103,7 +145,7 @@ export const LogsGraph = (): React.ReactElement => {
     if (result !== "") {
       return result;
     }
-    return "#536878";
+    return "#9AA";
   };
 
   for (let i = 0; i < sortedLogs.length; i++) {
@@ -117,9 +159,10 @@ export const LogsGraph = (): React.ReactElement => {
       uid: log.uid,
       value: [i, start, end],
       itemStyle: {
-        normal: {
-          color: itemColor(log.name)
-        }
+        color: itemColor(log.name)
+      },
+      tooltip: {
+        formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}<br />mnemonics: ${log.mnemonics}`
       }
     });
   }
@@ -133,22 +176,43 @@ export const LogsGraph = (): React.ReactElement => {
     const y = end[1];
     //assures minimum bar lenght to be visible in graph
     const originalX = sortedLogs[itemIndex as number].start;
-    if (barLength < 20) {
-      barLength = 20;
+    if (barLength < 1) {
+      barLength = 3;
       // should not be located outside graph
       if (originalX - barLength > 0) {
         x = x - barLength;
       }
     }
     const itemText = data[itemIndex as number].name;
-    const textWidth = echarts.format.getTextRect(itemText).width;
-    const text = barLength > textWidth + 40 && x + barLength >= 180 ? itemText : "";
-    const rectText = clipRectByRect(params, {
+    let position: "insideLeft" | "left" | "right" = "insideLeft";
+    let itemRect = clipRectByRect(params, {
       x: x,
       y: y,
       width: barLength,
       height: barHeight
     });
+
+    // ensure labels are shown when items are outside the view
+    if (!itemRect) {
+      const coordSys = params.coordSys as any;
+      if (start[0] > coordSys.x + coordSys.width) {
+        itemRect = {
+          x: coordSys.x + coordSys.width - 1,
+          y,
+          width: 0,
+          height: barHeight
+        };
+        position = "left";
+      } else if (end[0] < coordSys.x) {
+        itemRect = {
+          x: coordSys.x,
+          y,
+          width: 0,
+          height: barHeight
+        };
+        position = "right";
+      }
+    }
 
     return {
       type: "group",
@@ -156,20 +220,21 @@ export const LogsGraph = (): React.ReactElement => {
       children: [
         {
           type: "rect",
-          ignore: !rectText,
-          shape: rectText,
+          ignore: !itemRect,
+          shape: itemRect,
           style: {
-            fill: api.visual("color")
+            fill: api.visual("color"),
+            opacity: 0.8
           },
           textConfig: {
-            position: "insideLeft"
+            position
           },
           textContent: {
             type: "text",
             style: {
-              text: text,
-              fontSize: 12,
-              textFill: "#fff"
+              text: itemText,
+              fontSize: 13,
+              textFill: colors.text.staticIconsDefault
             }
           }
         }
@@ -191,7 +256,7 @@ export const LogsGraph = (): React.ReactElement => {
     dataZoom: [
       {
         type: "slider",
-        filterMode: "weakFilter",
+        filterMode: "none",
         showDataShadow: false,
         top: 15,
         labelFormatter: ""
@@ -247,10 +312,10 @@ export const LogsGraph = (): React.ReactElement => {
         },
         encode: {
           x: [1, 2],
-          y: 0,
-          tooltip: [dimStart, dimEnd]
+          y: 0
         },
-        data: data
+        data: data,
+        clip: true
       }
     ]
   };

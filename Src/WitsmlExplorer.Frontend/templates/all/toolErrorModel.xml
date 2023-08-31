@@ -1,0 +1,96 @@
+<toolErrorModels xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <toolErrorModel uid="">
+    <name />
+    <authorization>
+      <author />
+      <source />
+      <authority />
+      <status />
+      <version />
+      <comment />
+    </authorization>
+    <typeSurveyTool />
+    <operatingCondition uid="">
+      <parameter />
+      <min uom="" />
+      <max uom="" />
+      <value />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </operatingCondition>
+    <operatingInterval uid="">
+      <mode />
+      <start uom="" />
+      <end uom="" />
+      <speed uom="" />
+      <sampleRate uom="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </operatingInterval>
+    <modelParameters>
+      <misalignmentMode />
+      <gyroInitialization uom="" />
+      <gyroReinitializationDistance uom="" />
+      <switching />
+      <noiseReductionFactor />
+      <gyroRunningSpeed uom="" />
+    </modelParameters>
+    <useErrorTermSet uidRef="" />
+    <errorTermValue uid="">
+      <term uidRef="" />
+      <prop />
+      <bias />
+      <value uom="" />
+      <comment />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </errorTermValue>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </toolErrorModel>
+</toolErrorModels>

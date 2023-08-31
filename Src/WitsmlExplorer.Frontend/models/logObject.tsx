@@ -10,6 +10,7 @@ export default interface LogObject extends ObjectOnWellbore {
   runNumber?: string;
   indexCurve?: string;
   direction?: string;
+  mnemonics?: string;
   commonData?: CommonData;
 }
 

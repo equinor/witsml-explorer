@@ -1,0 +1,616 @@
+<stimJobs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <stimJob uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <kind />
+    <commodityCode />
+    <serviceCompany />
+    <supervisor />
+    <apiNumber />
+    <customerName />
+    <dTimArrival />
+    <dTimStart />
+    <dTimEnd />
+    <totalPumpTime uom="" />
+    <maxJobPres uom="" />
+    <maxFluidRate uom="" />
+    <avgJobPres uom="" />
+    <totalJobVolume uom="" />
+    <totalProppantWt uom="" />
+    <proppantName />
+    <perfBallCount />
+    <totalN2StdVolume uom="" />
+    <totalCO2Mass uom="" />
+    <hhpOrdered uom="" />
+    <hhpUsed uom="" />
+    <treatmentCount />
+    <fluidEfficiency uom="" />
+    <flowBackPres uom="" />
+    <flowBackRate uom="" />
+    <flowBackVolume uom="" />
+    <treatmentIntervalCount />
+    <bottomholeStaticTemperature uom="" />
+    <treatingBottomholeTemperature uom="" />
+    <jobInterval uid="">
+      <uidTreatmentInterval />
+      <name />
+      <number />
+      <dTimStart />
+      <dTimEnd />
+      <formationName />
+      <mdFormationTop uom="" datum="" />
+      <mdFormationBottom uom="" datum="" />
+      <tvdFormationTop uom="" datum="" />
+      <tvdFormationBottom uom="" datum="" />
+      <openHoleName />
+      <openHoleDiameter uom="" />
+      <mdOpenHoleTop uom="" datum="" />
+      <mdOpenHoleBottom uom="" datum="" />
+      <tvdOpenHoleTop uom="" datum="" />
+      <tvdOpenHoleBottom uom="" datum="" />
+      <totalFrictionPresLoss uom="" />
+      <totalPumpTime uom="" />
+      <maxPresTubing uom="" />
+      <maxPresCasing uom="" />
+      <maxPresAnnulus uom="" />
+      <maxFluidRateTubing uom="" />
+      <maxFluidRateCasing uom="" />
+      <maxFluidRateAnnulus uom="" />
+      <avgPresTubing uom="" />
+      <avgPresCasing uom="" />
+      <avgPresAnnulus uom="" />
+      <breakDownPres uom="" />
+      <averagePres uom="" />
+      <avgBaseFluidReturnRate uom="" />
+      <avgSlurryReturnRate uom="" />
+      <avgBottomholeRate uom="" />
+      <totalVolume uom="" />
+      <maxProppantConcSurface uom="" />
+      <maxProppantConcBottomhole uom="" />
+      <avgProppantConcSurface uom="" />
+      <avgProppantConcBottomhole uom="" />
+      <perfproppantConc uom="" />
+      <totalProppantMass uom="" />
+      <totalProppantUsage uid="">
+        <name />
+        <mass uom="" />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </totalProppantUsage>
+      <percentProppantPumped uom="" />
+      <wellboreProppantMass uom="" />
+      <proppantName />
+      <formationProppantMass uom="" />
+      <perfBallCount />
+      <totalN2StdVolume uom="" />
+      <totalCO2Mass uom="" />
+      <fluidName />
+      <fractureGradient uom="" />
+      <finalFractureGradient uom="" />
+      <initialShutinPres uom="" />
+      <shutinPres uid="">
+        <pres uom="" />
+        <timeAfterShutin uom="" />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </shutinPres>
+      <screenOutPres uom="" />
+      <hhpOrderedCO2 uom="" />
+      <hhpOrderedFluid uom="" />
+      <hhpUsedCO2 uom="" />
+      <hhpUsedFluid uom="" />
+      <perfBallSize uom="" />
+      <screenedOut />
+      <avgFractureWidth uom="" />
+      <avgConductivity uom="" />
+      <netPres uom="" />
+      <closurePres uom="" />
+      <closureDuration uom="" />
+      <flowPath uid="">
+        <kind />
+        <name />
+        <description />
+        <maxTreatmentPres uom="" />
+        <maxSlurryRate uom="" />
+        <maxWellheadRate uom="" />
+        <maxN2StdRate uom="" />
+        <maxCO2LiquidRate uom="" />
+        <maxGelRate uom="" />
+        <maxOilRate uom="" />
+        <maxAcidRate uom="" />
+        <maxPropConc uom="" />
+        <maxSlurryPropConc uom="" />
+        <avgTreatPres uom="" />
+        <avgBaseFluidRate uom="" />
+        <avgSlurryRate uom="" />
+        <avgWellheadRate uom="" />
+        <avgN2StdRate uom="" />
+        <avgCO2LiquidRate uom="" />
+        <avgGelRate uom="" />
+        <avgOilRate uom="" />
+        <avgAcidRate uom="" />
+        <avgPropConc uom="" />
+        <avgSlurryPropConc uom="" />
+        <avgTemperature uom="" />
+        <avgIntervalPhaseFraction />
+        <avgBaseFluidQuality uom="" />
+        <avgN2BaseFluidQuality uom="" />
+        <avgCO2BaseFluidQuality uom="" />
+        <avgHydraulicPower uom="" />
+        <baseFluidVol uom="" />
+        <slurryVol uom="" />
+        <wellheadVol uom="" />
+        <stdVolN2 uom="" />
+        <massCO2 uom="" />
+        <gelVol uom="" />
+        <oilVol uom="" />
+        <acidVol uom="" />
+        <baseFluidBypassVol uom="" />
+        <propMass uom="" />
+        <maxPmaxPacPres uom="" />
+        <maxPmaxWeaklinkPres uom="" />
+        <avgPmaxPacPres uom="" />
+        <avgPmaxWeaklinkPres uom="" />
+        <shutinPres5Min uom="" />
+        <shutinPres10Min uom="" />
+        <shutinPres15Min uom="" />
+        <breakDownPres uom="" />
+        <percentPad uom="" />
+        <fractureGradient uom="" />
+        <pipeFrictionFactor />
+        <stageCount />
+        <tubular uid="">
+          <type />
+          <id uom="" />
+          <od uom="" />
+          <weight uom="" />
+          <mdTop uom="" datum="" />
+          <mdBottom uom="" datum="" />
+          <tvdTop uom="" datum="" />
+          <tvdBottom uom="" datum="" />
+          <volumeFactor uom="" />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </tubular>
+        <jobStage uid="">
+          <kind />
+          <name />
+          <description />
+          <number />
+          <dTimStart />
+          <dTimEnd />
+          <pumpTime uom="" />
+          <startRateSurfaceLiquid uom="" />
+          <endRateSurfaceLiquid uom="" />
+          <avgRateSurfaceLiquid uom="" />
+          <startRateSurfaceCO2 uom="" />
+          <endRateSurfaceCO2 uom="" />
+          <avgRateSurfaceCO2 uom="" />
+          <startStdRateSurfaceN2 uom="" />
+          <endStdRateSurfaceN2 uom="" />
+          <avgStdRateSurfaceN2 uom="" />
+          <startPresSurface uom="" />
+          <endPresSurface uom="" />
+          <averagePresSurface uom="" />
+          <startPumpRateBottomhole uom="" />
+          <endPumpRateBottomhole uom="" />
+          <avgPumpRateBottomhole uom="" />
+          <startPresBottomhole uom="" />
+          <endPresBottomhole uom="" />
+          <averagePresBottomhole uom="" />
+          <startProppantConcSurface uom="" />
+          <endProppantConcSurface uom="" />
+          <avgProppantConcSurface uom="" />
+          <startProppantConcBottomhole uom="" />
+          <endProppantConcBottomhole uom="" />
+          <avgProppantConcBottomhole uom="" />
+          <startFoamRateN2 uom="" />
+          <endFoamRateN2 uom="" />
+          <startFoamRateCO2 uom="" />
+          <endFoamRateCO2 uom="" />
+          <fluidVolBase uom="" />
+          <fluidVolSlurry uom="" />
+          <slurryRateBegin uom="" />
+          <slurryRateEnd uom="" />
+          <proppantMassWellHead uom="" />
+          <proppantMass uom="" />
+          <maxPres uom="" />
+          <maxSlurryRate uom="" />
+          <maxWellheadRate uom="" />
+          <maxN2StdRate uom="" />
+          <maxCO2LiquidRate uom="" />
+          <maxPropConc uom="" />
+          <maxSlurryPropConc uom="" />
+          <avgPropConc uom="" />
+          <avgSlurryPropConc uom="" />
+          <avgTemperature uom="" />
+          <avgInternalPhaseFraction uom="" />
+          <avgBaseFluidQuality uom="" />
+          <avgN2BaseFluidQuality uom="" />
+          <avgCO2BaseFluidQuality uom="" />
+          <avgHydraulicPower uom="" />
+          <avgBaseFluidRate uom="" />
+          <avgSlurryRate uom="" />
+          <avgWellheadRate uom="" />
+          <avgN2StdRate uom="" />
+          <avgCO2Rate uom="" />
+          <baseFluidVol uom="" />
+          <slurryVol uom="" />
+          <wellheadVol uom="" />
+          <maxPmaxPacPres uom="" />
+          <maxPmaxWeaklinkPres uom="" />
+          <maxGelRate uom="" />
+          <maxOilRate uom="" />
+          <maxAcidRate uom="" />
+          <avgGelRate uom="" />
+          <avgOilRate uom="" />
+          <avgAcidRate uom="" />
+          <gelVolume uom="" />
+          <oilVolume uom="" />
+          <acidVolume uom="" />
+          <baseFluidBypassVol uom="" />
+          <frictionFactor />
+          <stageFluid>
+            <name />
+            <fluidVol uom="" />
+            <waterSource />
+            <additive uid="">
+              <name />
+              <kind />
+              <volume uom="" />
+              <mass uom="" />
+              <extensionNameValue uid="">
+                <name />
+                <value uom="" />
+                <dataType />
+                <dTim />
+                <md uom="" datum="" />
+                <index />
+                <measureClass />
+                <description />
+              </extensionNameValue>
+            </additive>
+            <proppant>
+              <name />
+              <kind />
+              <weight uom="" />
+              <sieveSize />
+            </proppant>
+            <density uom="" />
+            <pH />
+            <purpose />
+            <description />
+            <supplier />
+            <fluidType />
+            <fluidSubtype />
+          </stageFluid>
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </jobStage>
+        <jobEvent uid="">
+          <number />
+          <dTim />
+          <comment />
+          <numStage />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </jobEvent>
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </flowPath>
+      <pdatSession uid="">
+        <name />
+        <description />
+        <number />
+        <dTimPumpOn />
+        <dTimPumpOff />
+        <dTimWellShutin />
+        <dTimFractureClose />
+        <pumpDuration uom="" />
+        <avgBottomholeTreatmentPres uom="" />
+        <bottomholeHydrostaticPres uom="" />
+        <bubblePointPres uom="" />
+        <fractureClosePres uom="" />
+        <frictionPres uom="" />
+        <initialShutinPres uom="" />
+        <porePres uom="" />
+        <avgBottomholeTreatmentRate uom="" />
+        <fluidDensity uom="" />
+        <baseFluidVol uom="" />
+        <wellboreVolume uom="" />
+        <mdSurface uom="" datum="" />
+        <mdBottomhole uom="" datum="" />
+        <mdMidPerforation uom="" datum="" />
+        <tvdMidPerforation uom="" datum="" />
+        <surfaceTemperature uom="" />
+        <bottomholeTemperature uom="" />
+        <surfaceFluidTemperature uom="" />
+        <fluidCompressibility uom="" />
+        <reservoirTotalCompressibility uom="" />
+        <fluidNprimeFactor />
+        <fluidKprimeFactor />
+        <fluidSpecificHeat uom="" />
+        <fluidThermalConductivity uom="" />
+        <fluidThermalExpansionCoefficient uom="" />
+        <fluidEfficiency uom="" />
+        <foamQuality uom="" />
+        <percentPad uom="" />
+        <stageNumber />
+        <temperatureCorrectionApplied />
+        <stepRateTest uid="">
+          <presMeasurement uid="">
+            <pres uom="" />
+            <bottomholeRate uom="" />
+            <extensionNameValue uid="">
+              <name />
+              <value uom="" />
+              <dataType />
+              <dTim />
+              <md uom="" datum="" />
+              <index />
+              <measureClass />
+              <description />
+            </extensionNameValue>
+          </presMeasurement>
+          <fractureExtensionPres uom="" />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </stepRateTest>
+        <fluidEfficiencyTest uid="">
+          <analysisMethod />
+          <dTimStart />
+          <dTimEnd />
+          <endPdlDuration uom="" />
+          <fractureCloseDuration uom="" />
+          <fractureClosePres uom="" />
+          <fractureExtensionPres uom="" />
+          <netPres uom="" />
+          <porePres uom="" />
+          <pseudoRadialPres uom="" />
+          <fractureLength uom="" />
+          <fractureWidth uom="" />
+          <fluidEfficiency uom="" />
+          <pdlCoef />
+          <residualPermeability uom="" />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </fluidEfficiencyTest>
+        <pumpFlowBackTest uid="">
+          <fractureCloseDuration uom="" />
+          <fractureClosePres uom="" />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </pumpFlowBackTest>
+        <stepDownTest uid="">
+          <initialShutinPres uom="" />
+          <bottomholeFluidDensity uom="" />
+          <diameterEntryHole uom="" />
+          <perforationCount />
+          <dischargeCoefficient />
+          <effectivePerfs />
+          <step uid="">
+            <number />
+            <bottomholeRate uom="" />
+            <pres uom="" />
+            <pipeFriction uom="" />
+            <entryFriction uom="" />
+            <perfFriction uom="" />
+            <nearWellboreFriction uom="" />
+            <surfaceRate uom="" />
+            <extensionNameValue uid="">
+              <name />
+              <value uom="" />
+              <dataType />
+              <dTim />
+              <md uom="" datum="" />
+              <index />
+              <measureClass />
+              <description />
+            </extensionNameValue>
+          </step>
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </stepDownTest>
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </pdatSession>
+      <reservoirInterval uid="">
+        <mdLithTop uom="" datum="" />
+        <mdLithBottom uom="" datum="" />
+        <lithFormationPermeability uom="" />
+        <lithYoungsModulus uom="" />
+        <lithPorePres uom="" />
+        <lithNetPayThickness uom="" />
+        <lithName />
+        <mdGrossPayTop uom="" datum="" />
+        <mdGrossPayBottom uom="" datum="" />
+        <grossPayThickness uom="" />
+        <netPayThickness uom="" />
+        <netPayPorePres uom="" />
+        <netPayFluidCompressibility uom="" />
+        <netPayFluidViscosity uom="" />
+        <netPayName />
+        <netPayFormationPermeability uom="" />
+        <lithPoissonsRatio uom="" />
+        <netPayFormationPorosity uom="" />
+        <formationPermeability uom="" />
+        <formationPorosity uom="" />
+        <nameFormation />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </reservoirInterval>
+      <perforationInterval uid="">
+        <type />
+        <mdPerforationsTop uom="" datum="" />
+        <mdPerforationsBottom uom="" datum="" />
+        <tvdPerforationsTop uom="" datum="" />
+        <tvdPerforationsBottom uom="" datum="" />
+        <perforationCount />
+        <size uom="" />
+        <densityPerforation uom="" />
+        <phasingPerforation uom="" />
+        <frictionFactor />
+        <frictionPres uom="" />
+        <dischargeCoefficient />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </perforationInterval>
+      <avgBHStaticTemperature uom="" />
+      <avgBHTreatingTemperature uom="" />
+      <additive uid="">
+        <name />
+        <kind />
+        <volume uom="" />
+        <mass uom="" />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </additive>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </jobInterval>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </stimJob>
+</stimJobs>
