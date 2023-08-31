@@ -147,7 +147,7 @@ namespace WitsmlExplorer.Api.Services
             Index startIndex = Index.Start(log, start);
             Index endIndex = Index.End(log, end);
 
-            if (startIndex > endIndex)
+            if ((!log.IsDecreasing() && startIndex > endIndex) || (log.IsDecreasing() && startIndex < endIndex))
             {
                 return new LogData();
             }
