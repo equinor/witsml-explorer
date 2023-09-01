@@ -10,7 +10,9 @@ import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+
+export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -33,8 +35,8 @@ export const WellboresListView = (): React.ReactElement => {
     { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
-    const contextMenuProps: WellboreContextMenuProps = { wellbore, well: selectedWell };
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, checkedWellboreRows: WellboreRow[]) => {
+    const contextMenuProps: WellboreContextMenuProps = { wellbore, well: selectedWell, checkedWellboreRows };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
   };
@@ -65,7 +67,15 @@ export const WellboresListView = (): React.ReactElement => {
 
   return (
     selectedWell && (
-      <ContentTable viewId="wellboresListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} downloadToCsvFileName="Wellbores" />
+      <ContentTable
+        viewId="wellboresListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        downloadToCsvFileName="Wellbores"
+        checkableRows
+      />
     )
   );
 };
