@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
-import OperationContext from "../../../contexts/operationContext";
 import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
@@ -41,9 +40,6 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const {
-    operationState: { colors }
-  } = useContext(OperationContext);
   const { selectedWellbore, selectedObjectGroup } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
@@ -83,22 +79,15 @@ const Panel = (props: PanelProps) => {
   return (
     <Div>
       <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
-      <Typography style={{ color: colors.text.staticIconsDefault }}>{selectedItemsText}</Typography>
+      <Typography>{selectedItemsText}</Typography>
       {showRefresh && (
-        <Button
-          key="refreshObject"
-          variant="outlined"
-          aria-disabled={isRefreshing ? true : false}
-          aria-label={isRefreshing ? "loading data" : null}
-          onClick={onClickRefresh}
-          disabled={isRefreshing}
-        >
+        <Button key="refreshObject" aria-disabled={isRefreshing ? true : false} aria-label={isRefreshing ? "loading data" : null} onClick={onClickRefresh} disabled={isRefreshing}>
           <Icon name="refresh" />
           Refresh
         </Button>
       )}
       {downloadToCsvFileName != null && (
-        <Button key="download" variant="outlined" aria-label="download as csv" onClick={exportAsCsv}>
+        <Button key="download" aria-label="download as csv" onClick={exportAsCsv}>
           Download as .csv
         </Button>
       )}

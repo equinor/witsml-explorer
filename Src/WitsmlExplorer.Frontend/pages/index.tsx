@@ -49,7 +49,7 @@ const Home = (): React.ReactElement => {
       }
     }
     if (process.env.NEXT_PUBLIC_DARK_MODE_DEBUG) {
-      enableDarkModeDebug(dispatchOperation);
+      return enableDarkModeDebug(dispatchOperation);
     }
   }, []);
 

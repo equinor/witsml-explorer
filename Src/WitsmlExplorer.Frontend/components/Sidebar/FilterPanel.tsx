@@ -191,7 +191,7 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
     color: ${(props) => props.colors.text.staticTextLabel};
   }
   div {
-    background: ${(props) => props.colors.text.staticTextFeildDefault};
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
   }
 `;
 

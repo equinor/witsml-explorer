@@ -29,8 +29,7 @@ export interface ReportModal {
  */
 export const ReportModal = (props: ReportModal): React.ReactElement => {
   const { jobId, report: reportProp } = props;
-  const { operationState, dispatchOperation } = React.useContext(OperationContext);
-  const { colors } = operationState;
+  const { dispatchOperation } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
 
@@ -60,16 +59,16 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         <>
           {report ? (
             <ContentLayout>
-              {report.summary && <Typography style={{ color: colors.text.staticIconsDefault }}>{report.summary}</Typography>}
+              {report.summary && <Typography>{report.summary}</Typography>}
               {columns.length > 0 && <ContentTable columns={columns} data={report.reportItems} downloadToCsvFileName={report.title.replace(/\s+/g, "")} />}
             </ContentLayout>
           ) : (
             <ContentLayout>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem", color: colors.text.staticIconsDefault }}>Waiting for the job to finish.</Typography>
+                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}>Waiting for the job to finish.</Typography>
                 <DotProgress />
               </div>
-              <Typography style={{ color: colors.text.staticIconsDefault }}>The report will also be available in the jobs view once the job is finished.</Typography>
+              <Typography>The report will also be available in the jobs view once the job is finished.</Typography>
             </ContentLayout>
           )}
         </>

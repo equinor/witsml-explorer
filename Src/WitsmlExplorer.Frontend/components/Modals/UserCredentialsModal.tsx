@@ -75,7 +75,7 @@ const UserCredentialsModal = (props: UserCredentialsModalProps): React.ReactElem
       heading={`Access server`}
       content={
         <>
-          <Typography style={{ marginBottom: 20, color: colors.text.staticIconsDefault }}>{server.name}</Typography>
+          <Typography style={{ marginBottom: 20 }}>{server.name}</Typography>
           <TextField
             autoFocus={!shouldFocusPasswordInput}
             id={"username" + server.id}
