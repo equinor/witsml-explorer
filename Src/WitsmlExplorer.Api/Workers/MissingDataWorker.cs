@@ -345,7 +345,7 @@ namespace WitsmlExplorer.Api.Workers
             if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
                 return ((IList)property).Count == 0;
             if (propertyType.IsClass)
-                // Recursively check if all properties of a class is empty
+                // Recursively check if all properties of a class are empty
                 return !propertyType.GetProperties().Select(p => p.GetValue(property)).Any(p => !IsPropertyEmpty(p));
             return false;
         }
