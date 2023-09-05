@@ -1,8 +1,9 @@
-import { TextField } from "@equinor/eds-core-react";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { itemStateValues } from "../../models/commonData";
 import MaxLength from "../../models/maxLength";
 import MudLog from "../../models/mudLog";
 import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
@@ -18,7 +19,9 @@ export interface MudLogPropertiesModalProps {
 interface EditableMudLog extends ObjectOnWellbore {
   mudLogCompany?: string;
   mudLogEngineers?: string;
+  itemState?: string;
 }
+
 
 const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactElement => {
   const { mudLog } = props;
@@ -32,7 +35,7 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
   const onSubmit = async (updatedMudLog: EditableMudLog) => {
     setIsLoading(true);
     const modifyMudLogJob = {
-      mudLog: updatedMudLog
+      mudLog: { ...updatedMudLog, commonData: { itemState: updatedMudLog.itemState } }
     };
     await JobService.orderJob(JobType.ModifyMudLog, modifyMudLogJob);
     setIsLoading(false);
@@ -86,6 +89,16 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
               <TextField id="endMd" label="endMd" disabled defaultValue={mudLog?.endMd?.value} unit={mudLog?.endMd?.uom} />
               <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone)} />
               <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone)} />
+              <Autocomplete
+                id="itemState"
+                label="commonData.itemState"
+                options={itemStateValues}
+                initialSelectedOptions={[mudLog?.commonData?.itemState]}
+                hideClearButton
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableMudLog({ ...editableMudLog, itemState: selectedItems[0] });
+                }}
+              />
             </Layout>
           }
           confirmDisabled={invalidName || invalidMudLogCompany || invalidMudLogEngineers}
