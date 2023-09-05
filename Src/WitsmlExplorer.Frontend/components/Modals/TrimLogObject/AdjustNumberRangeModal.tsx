@@ -4,13 +4,14 @@ import React, { useEffect, useState } from "react";
 export interface AdjustNumberRangeModalProps {
   minValue: number;
   maxValue: number;
+  isDescending?: boolean;
   onStartValueChanged: (value: number) => void;
   onEndValueChanged: (value: number) => void;
   onValidChange: (isValid: boolean) => void;
 }
 
 const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.ReactElement => {
-  const { minValue, maxValue, onStartValueChanged, onEndValueChanged, onValidChange } = props;
+  const { minValue, maxValue, isDescending, onStartValueChanged, onEndValueChanged, onValidChange } = props;
   const [startValue, setStartIndex] = useState<number>(minValue);
   const [endValue, setEndIndex] = useState<number>(maxValue);
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
@@ -24,8 +25,8 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   }, [startValue, endValue]);
 
   useEffect(() => {
-    setStartIndexIsValid(startValue < endValue);
-    setEndIndexIsValid(endValue > startValue);
+    setStartIndexIsValid(isDescending ? startValue > endValue : endValue > startValue);
+    setEndIndexIsValid(isDescending ? startValue > endValue : endValue > startValue);
   }, [startValue, endValue]);
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         value={startValue ?? ""}
         type={"number"}
         error={!startIndexIsValid}
-        helperText={startIndexIsValid ? "" : `Must be lower than ${endValue}`}
+        helperText={startIndexIsValid ? "" : isDescending ? `Must be higher than ${endValue}` : `Must be lower than ${endValue}`}
         onChange={handleStartIndexChanged}
         style={{ paddingBottom: startIndexIsValid ? "23px" : 0 }}
       />
@@ -88,7 +89,7 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         value={endValue ?? ""}
         type={"number"}
         error={!endIndexIsValid}
-        helperText={endIndexIsValid ? "" : `Must be higher than ${maxValue}`}
+        helperText={endIndexIsValid ? "" : isDescending ? `Must be lower than ${startValue}` : `Must be higher than ${startValue}`}
         onChange={handleEndIndexChanged}
         style={{ paddingBottom: endIndexIsValid ? "23px" : 0 }}
       />

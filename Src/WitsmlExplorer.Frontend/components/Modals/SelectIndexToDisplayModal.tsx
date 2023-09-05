@@ -4,7 +4,7 @@ import NavigationType from "../../contexts/navigationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
@@ -62,6 +62,7 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
                   <AdjustDateTimeModal
                     minDate={log.startIndex}
                     maxDate={log.endIndex}
+                    isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
                     onStartDateChanged={setStartIndex}
                     onEndDateChanged={setEndIndex}
                     onValidChange={toggleConfirmDisabled}
@@ -71,6 +72,7 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
                 <AdjustNumberRangeModal
                   minValue={indexToNumber(log.startIndex)}
                   maxValue={indexToNumber(log.endIndex)}
+                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
                   onStartValueChanged={setStartIndex}
                   onEndValueChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
