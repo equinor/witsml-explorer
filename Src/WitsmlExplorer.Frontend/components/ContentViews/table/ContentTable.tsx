@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import OperationContext from "../../../contexts/operationContext";
 import { indexToNumber } from "../../../models/logObject";
 import { Colors } from "../../../styles/Colors";
@@ -74,10 +74,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
   const cellHeight = isCompactMode ? 30 : 53;
   const headCellHeight = isCompactMode ? 35 : 55;
+  const noData = useMemo(() => [], []);
 
   const columnDef = useColumnDef(viewId, columns, insetColumns, checkableRows, stickyLeftColumns);
   const table = useReactTable({
-    data: data ?? [],
+    data: data ?? noData,
     columns: columnDef,
     state: {
       rowSelection,
