@@ -22,7 +22,6 @@ interface EditableMudLog extends ObjectOnWellbore {
   itemState?: string;
 }
 
-
 const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactElement => {
   const { mudLog } = props;
   const {
