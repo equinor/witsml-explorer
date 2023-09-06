@@ -18,7 +18,7 @@ export interface FormationMarkerRow extends ContentTableRow {
 export const FormationMarkersListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
@@ -57,8 +57,8 @@ export const FormationMarkersListView = (): React.ReactElement => {
         chronostratigraphic: structToString(formationMarker.chronostratigraphic),
         description: formationMarker.description,
         itemState: formationMarker.commonData.itemState,
-        dTimCreation: formatDateString(formationMarker.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(formationMarker.commonData.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(formationMarker.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(formationMarker.commonData.dTimLastChange, timeZone, dateTimeFormat),
         formationMarker
       };
     });

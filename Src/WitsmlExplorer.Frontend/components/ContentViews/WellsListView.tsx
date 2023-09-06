@@ -18,7 +18,7 @@ export const WellsListView = (): React.ReactElement => {
   const { servers, wells } = navigationState;
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const filteredWells = useWellFilter(wells);
 
@@ -47,8 +47,8 @@ export const WellsListView = (): React.ReactElement => {
       return {
         ...well,
         id: well.uid,
-        dateTimeCreation: formatDateString(well.dateTimeCreation, timeZone),
-        dateTimeLastChange: formatDateString(well.dateTimeLastChange, timeZone)
+        dateTimeCreation: formatDateString(well.dateTimeCreation, timeZone, dateTimeFormat),
+        dateTimeLastChange: formatDateString(well.dateTimeLastChange, timeZone, dateTimeFormat)
       };
     });
   };

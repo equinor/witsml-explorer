@@ -3,13 +3,13 @@ import { Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
-import { TimeZone, UserTheme } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../../msal/MsalAuthProvider";
 import AuthorizationService from "../../services/authorizationService";
 import { dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
 import { getOffsetFromTimeZone } from "../DateFormatter";
 import { StyledNativeSelect } from "../Select";
 import ModalDialog from "./ModalDialog";
@@ -27,7 +27,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const SettingsModal = (): React.ReactElement => {
   const {
-    operationState: { theme, timeZone, colors },
+    operationState: { theme, timeZone, colors, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
 
@@ -45,6 +45,11 @@ const SettingsModal = (): React.ReactElement => {
     }
     localStorage.setItem(STORAGE_MODE_KEY, event.target.value);
     dispatchOperation({ type: OperationType.SetMode, payload: selectedMode });
+  };
+  const onChangeDateTimeFormat = (event: any) => {
+    const selectedDateTimeFormat = event.target.value;
+    localStorage.setItem(STORAGE_DATETIMEFORMAT_KEY, selectedDateTimeFormat);
+    dispatchOperation({ type: OperationType.SetDateTimeFormat, payload: selectedDateTimeFormat });
   };
   const onChangeTimeZone = (event: any) => {
     const selectedTimeZone = event.target.value;
@@ -79,6 +84,13 @@ const SettingsModal = (): React.ReactElement => {
                   {timeZoneLabel}
                 </option>
               ))}
+            </StyledNativeSelect>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <Icon name="calendar" size={32} color={colors.infographic.primaryMossGreen} />
+            <StyledNativeSelect label="Datetime Format" id="native-select-datetimeformat" onChange={onChangeDateTimeFormat} defaultValue={dateTimeFormat} colors={colors}>
+              <option value={DateTimeFormat.Raw}>Raw</option>
+              <option value={DateTimeFormat.Natural}>Natural</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           {msalEnabled && (
@@ -116,3 +128,4 @@ const HorizontalLayout = styled.div`
 `;
 
 export { SettingsModal };
+

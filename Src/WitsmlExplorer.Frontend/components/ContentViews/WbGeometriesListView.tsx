@@ -19,7 +19,7 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
 export const WbGeometriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore, selectedWell } = navigationState;
@@ -37,10 +37,10 @@ export const WbGeometriesListView = (): React.ReactElement => {
         ...wbGeometry,
         mdBottom: measureToString(wbGeometry.mdBottom),
         gapAir: measureToString(wbGeometry.gapAir),
-        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone),
+        dTimReport: formatDateString(wbGeometry.dTimReport, timeZone, dateTimeFormat),
         itemState: wbGeometry.commonData.itemState,
-        dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(wbGeometry.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(wbGeometry.commonData.dTimLastChange, timeZone, dateTimeFormat),
         id: wbGeometry.uid,
         wbGeometry: wbGeometry
       };

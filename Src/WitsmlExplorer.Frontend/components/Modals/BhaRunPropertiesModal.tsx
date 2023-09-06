@@ -23,7 +23,7 @@ export interface BhaRunPropertiesModalProps {
 const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactElement => {
   const { mode, bhaRun, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
   const [dTimStartValid, setDTimStartValid] = useState<boolean>(true);
@@ -36,14 +36,14 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
   useEffect(() => {
     setEditableBhaRun({
       ...bhaRun,
-      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone) : null,
-      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone) : null,
-      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone) : null,
-      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone) : null,
+      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone, dateTimeFormat) : null,
+      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone, dateTimeFormat) : null,
+      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone, dateTimeFormat) : null,
+      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone, dateTimeFormat) : null,
       commonData: {
         ...bhaRun.commonData,
-        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone) : null,
-        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone) : null
+        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone, dateTimeFormat) : null,
+        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone, dateTimeFormat) : null
       }
     });
   }, [bhaRun]);

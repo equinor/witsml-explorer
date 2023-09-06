@@ -8,7 +8,8 @@ enum OperationType {
   ClearClipboard,
   SetTheme,
   SetTimeZone,
-  SetMode
+  SetMode,
+  SetDateTimeFormat
 }
 
 export default OperationType;

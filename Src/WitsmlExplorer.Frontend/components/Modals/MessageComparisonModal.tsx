@@ -27,7 +27,7 @@ export interface MessageComparisonModalProps {
 const MessageComparisonModal = (props: MessageComparisonModalProps): React.ReactElement => {
   const { sourceMessage, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone, colors }
+    operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
   const [targetMessage, setTargetMessage] = useState<MessageObject>(null);
   const [differenceFound, setDifferenceFound] = useState(false);
@@ -52,8 +52,8 @@ const MessageComparisonModal = (props: MessageComparisonModalProps): React.React
       return;
     }
     const rows = [];
-    const sourceDTim = formatDateString(sourceMessage.dTim, timeZone);
-    const targetDTim = formatDateString(targetMessage.dTim, timeZone);
+    const sourceDTim = formatDateString(sourceMessage.dTim, timeZone, dateTimeFormat);
+    const targetDTim = formatDateString(targetMessage.dTim, timeZone, dateTimeFormat);
     let areDifferent = sourceDTim != targetDTim;
     const [sourceDTimDiff, targetDTimDiff] = markDateTimeStringDifferences(sourceDTim, targetDTim);
     rows.push({

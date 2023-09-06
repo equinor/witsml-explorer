@@ -21,6 +21,11 @@ export enum TimeZone {
   Houston = "America/Chicago"
 }
 
+export enum DateTimeFormat {
+  Raw = "raw",
+  Natural = "natural"
+}
+
 interface Action {
   type: OperationType;
 }
@@ -62,6 +67,11 @@ export interface SetModeAction extends PayloadAction {
   payload: Colors;
 }
 
+export interface SetDateTimeFormatAction extends PayloadAction {
+  type: OperationType.SetDateTimeFormat;
+  payload: DateTimeFormat;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -69,6 +79,7 @@ export interface OperationState {
   theme: UserTheme;
   timeZone: TimeZone;
   colors: Colors;
+  dateTimeFormat: DateTimeFormat;
 }
 
 export interface MousePosition {
@@ -92,7 +103,8 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     modals: [],
     theme: UserTheme.Compact,
     timeZone: TimeZone.Raw,
-    colors: Light
+    colors: Light,
+    dateTimeFormat: DateTimeFormat.Raw
   };
   return useReducer(reducer, initialState);
 };
@@ -113,6 +125,8 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return setTimeZone(state, action as SetTimeZoneAction);
     case OperationType.SetMode:
       return setMode(state, action as SetModeAction);
+    case OperationType.SetDateTimeFormat:
+      return setDateTimeFormat(state, action as SetDateTimeFormatAction);
     default:
       throw new Error();
   }
@@ -172,6 +186,13 @@ const setMode = (state: OperationState, { payload }: SetModeAction) => {
   };
 };
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetModeAction;
+const setDateTimeFormat = (state: OperationState, { payload }: SetDateTimeFormatAction) => {
+  return {
+    ...state,
+    dateTimeFormat: payload
+  };
+};
+
+export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetModeAction | SetDateTimeFormatAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

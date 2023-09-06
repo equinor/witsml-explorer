@@ -5,7 +5,7 @@ import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
-import { STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
@@ -19,7 +19,7 @@ import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { SetModeAction, SetThemeAction, SetTimeZoneAction, TimeZone, UserTheme, initOperationStateReducer } from "../contexts/operationStateReducer";
+import { DateTimeFormat, SetDateTimeFormatAction, SetModeAction, SetThemeAction, SetTimeZoneAction, TimeZone, UserTheme, initOperationStateReducer } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
@@ -45,6 +45,11 @@ const Home = (): React.ReactElement => {
       const storedMode = localStorage.getItem(STORAGE_MODE_KEY) as "light" | "dark";
       if (storedMode) {
         const action: SetModeAction = { type: OperationType.SetMode, payload: storedMode == "light" ? light : dark };
+        dispatchOperation(action);
+      }
+      const storedDateTimeFormat = localStorage.getItem(STORAGE_DATETIMEFORMAT_KEY) as DateTimeFormat;
+      if (storedDateTimeFormat) {
+        const action: SetDateTimeFormatAction = { type: OperationType.SetDateTimeFormat, payload: storedDateTimeFormat };
         dispatchOperation(action);
       }
     }

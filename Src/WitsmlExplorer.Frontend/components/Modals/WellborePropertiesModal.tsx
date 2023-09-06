@@ -26,7 +26,7 @@ const purposeValues = ["appraisal", "development", "exploration", "fluid storage
 const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.ReactElement => {
   const { mode, wellbore, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableWellbore, setEditableWellbore] = useState<Wellbore>(null);
   const [pristineWellbore, setPristineWellbore] = useState<Wellbore>(null);
@@ -47,7 +47,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
   useEffect(() => {
     setEditableWellbore({
       ...wellbore,
-      dTimeKickoff: formatDateString(wellbore.dTimeKickoff, timeZone)
+      dTimeKickoff: formatDateString(wellbore.dTimeKickoff, timeZone, dateTimeFormat)
     });
     setPristineWellbore(wellbore);
   }, [wellbore]);
@@ -289,8 +289,8 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       })
                     }
                   />
-                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(wellbore.dateTimeCreation, timeZone)} fullWidth />
-                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(wellbore.dateTimeLastChange, timeZone)} fullWidth />
+                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(wellbore.dateTimeCreation, timeZone, dateTimeFormat)} fullWidth />
+                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(wellbore.dateTimeLastChange, timeZone, dateTimeFormat)} fullWidth />
                   <TextField
                     id="comments"
                     label="comments"

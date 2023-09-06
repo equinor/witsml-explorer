@@ -23,7 +23,7 @@ interface EditableMudLog extends ObjectOnWellbore {
 const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactElement => {
   const { mudLog } = props;
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const [editableMudLog, setEditableMudLog] = useState<EditableMudLog>(null);
@@ -84,8 +84,8 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
               <TextField disabled id="objectGrowing" label="objectGrowing" defaultValue={`${mudLog?.objectGrowing}`} />
               <TextField id="startMd" label="startMd" disabled defaultValue={mudLog?.startMd?.value} unit={mudLog?.startMd?.uom} />
               <TextField id="endMd" label="endMd" disabled defaultValue={mudLog?.endMd?.value} unit={mudLog?.endMd?.uom} />
-              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone)} />
-              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone)} />
+              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone, dateTimeFormat)} />
+              <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone, dateTimeFormat)} />
             </Layout>
           }
           confirmDisabled={invalidName || invalidMudLogCompany || invalidMudLogEngineers}

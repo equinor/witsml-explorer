@@ -16,7 +16,7 @@ export interface RigRow extends ContentTableRow, Rig {
 export const RigsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
@@ -38,10 +38,10 @@ export const RigsListView = (): React.ReactElement => {
         airGap: `${rig.airGap?.value ?? ""} ${rig.airGap?.uom ?? ""}`,
         rig: rig,
         isOffshore: `${rig.isOffshore ?? ""}`,
-        dTimStartOp: formatDateString(rig.dTimStartOp, timeZone),
-        dTimEndOp: formatDateString(rig.dTimEndOp, timeZone),
-        dTimCreation: formatDateString(rig.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(rig.commonData.dTimLastChange, timeZone)
+        dTimStartOp: formatDateString(rig.dTimStartOp, timeZone, dateTimeFormat),
+        dTimEndOp: formatDateString(rig.dTimEndOp, timeZone, dateTimeFormat),
+        dTimCreation: formatDateString(rig.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(rig.commonData.dTimLastChange, timeZone, dateTimeFormat)
       };
     });
   };
