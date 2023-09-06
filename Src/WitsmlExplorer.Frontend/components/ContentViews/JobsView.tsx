@@ -126,9 +126,8 @@ export const JobsView = (): React.ReactElement => {
   );
 
   const panelElements = [
-    <StyledButton
+    <Button
       key="refreshJobs"
-      variant="outlined"
       aria-disabled={shouldRefresh ? true : false}
       aria-label={shouldRefresh ? "loading data" : null}
       onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
@@ -137,7 +136,7 @@ export const JobsView = (): React.ReactElement => {
     >
       <Icon name="refresh" />
       Refresh
-    </StyledButton>,
+    </Button>,
     msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
       <StyledSwitch
         colors={colors}
@@ -148,9 +147,7 @@ export const JobsView = (): React.ReactElement => {
         }}
       />
     ) : null,
-    <Typography style={{ color: colors.text.staticIconsDefault }} key="lastFetched">
-      Last fetched: {lastFetched}
-    </Typography>
+    <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
   ];
 
   return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} downloadToCsvFileName="Jobs" />;
@@ -163,11 +160,6 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   const server = servers.find((server) => server.url.toLowerCase() == url.toLowerCase());
   return server ? server.name : url;
 };
-
-const StyledButton = styled(Button) <{ colors: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const StyledSwitch = styled(Switch) <{ colors: Colors }>`
   span {

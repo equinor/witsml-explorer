@@ -141,18 +141,21 @@ const Routing = (): React.ReactElement => {
     }
   }, [selectedWell]);
 
+  const [isFetchingObjects, setIsFetchingObjects] = useState(false);
   useEffect(() => {
-    if (isSyncingUrlAndState && selectedWellbore) {
+    if (isSyncingUrlAndState && selectedWellbore && !isFetchingObjects) {
       const group = urlParams?.group as ObjectType;
       const objectUid = urlParams?.objectUid;
       if (group != null && getObjectsFromWellbore(selectedWellbore, group) == null) {
         const fetchAndSelectObjectGroup = async () => {
+          setIsFetchingObjects(true);
           const objects = await ObjectService.getObjects(selectedWell.uid, selectedWellbore.uid, group);
           const action: SelectObjectGroupAction = {
             type: NavigationType.SelectObjectGroup,
             payload: { objectType: group, wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objects }
           };
           dispatchNavigation(action);
+          setIsFetchingObjects(false);
         };
         fetchAndSelectObjectGroup();
         if (urlParams.logType == null && objectUid == null) {

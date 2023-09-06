@@ -96,7 +96,7 @@ export const LogsListView = (): React.ReactElement => {
     <ContentContainer>
       <CommonPanelContainer>
         <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography style={{ color: colors.text.staticIconsDefault }}>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
+        <Typography>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
       </CommonPanelContainer>
       {showGraph ? (
         <LogsGraph selectedLogs={selectedRows} />
