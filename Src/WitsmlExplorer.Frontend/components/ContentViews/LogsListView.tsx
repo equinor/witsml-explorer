@@ -25,7 +25,7 @@ export const LogsListView = (): React.ReactElement => {
 
   const {
     dispatchOperation,
-    operationState: { timeZone, colors, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
