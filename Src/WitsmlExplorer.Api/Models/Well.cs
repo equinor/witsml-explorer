@@ -17,8 +17,5 @@ namespace WitsmlExplorer.Api.Models
         public string Country { get; init; }
         public string StatusWell { get; init; }
         public string PurposeWell { get; init; }
-        public WellDatum WellDatum { get; init; }
-        public string WaterDepth { get; init; }
-        public WellLocation WellLocation { get; init; }
     }
 }

@@ -68,9 +68,6 @@ namespace WitsmlExplorer.Api.Services
                     ItemState = well.CommonData.ItemState,
                     StatusWell = well.StatusWell,
                     PurposeWell = well.PurposeWell,
-                    WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum).FirstOrDefault(),
-                    WaterDepth = well.WaterDepth?.Value,
-                    WellLocation = WellLocation.FromWitsmlLocation(well.WellLocation).FirstOrDefault(),
                     Country = well.Country
                 }
                 ).ToList();
