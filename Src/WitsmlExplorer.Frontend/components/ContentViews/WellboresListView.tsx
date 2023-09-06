@@ -1,3 +1,4 @@
+import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useWellFilter } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
@@ -42,15 +43,17 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const getTableData = () => {
-    return selectedWellFiltered?.wellbores?.map((wellbore) => {
-      return {
-        ...wellbore,
-        id: wellbore.uid,
-        dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone),
-        dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone),
-        wellbore: wellbore
-      };
-    });
+    return (
+      selectedWellFiltered?.wellbores?.map((wellbore) => {
+        return {
+          ...wellbore,
+          id: wellbore.uid,
+          dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone),
+          dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone),
+          wellbore: wellbore
+        };
+      }) ?? []
+    );
   };
 
   const onSelect = async (wellboreRow: any) => {
@@ -66,7 +69,10 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   return (
-    selectedWell && (
+    selectedWell &&
+    (selectedWell.wellbores.length > 0 && !selectedWellFiltered?.wellbores ? (
+      <Typography style={{ padding: "1rem" }}>No wellbores match the current filter</Typography>
+    ) : (
       <ContentTable
         viewId="wellboresListView"
         columns={columns}
@@ -76,7 +82,7 @@ export const WellboresListView = (): React.ReactElement => {
         downloadToCsvFileName="Wellbores"
         checkableRows
       />
-    )
+    ))
   );
 };
 

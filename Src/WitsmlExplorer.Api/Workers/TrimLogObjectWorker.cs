@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
+
+using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -34,16 +37,36 @@ namespace WitsmlExplorer.Api.Workers
             Index newStartIndex = Index.Start(witsmlLog, job.StartIndex);
             Index currentEndIndex = Index.End(witsmlLog);
             Index newEndIndex = Index.End(witsmlLog, job.EndIndex);
+            bool isDescending = string.Equals(witsmlLog.Direction, WitsmlLog.WITSML_DIRECTION_DECREASING, StringComparison.InvariantCultureIgnoreCase);
+
+            // Added because of issue reported by Jan Burak, see #1975, pull request #2003
+            if (isDescending)
+            {
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Trimming of decreasing log temporarily disabled because of potential server issue", string.Empty, witsmlLog.GetDescription()), null);
+            }
+
+
+            if ((currentStartIndex == newStartIndex) && (newEndIndex == currentEndIndex))
+            {
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, "No update needed", string.Empty, witsmlLog.GetDescription()), null);
+            }
+
+            bool trimStart = isDescending
+                ? currentStartIndex > newStartIndex && newStartIndex > currentEndIndex
+                : currentStartIndex < newStartIndex && newStartIndex < currentEndIndex;
+            bool trimEnd = isDescending
+                ? currentEndIndex < newEndIndex && newEndIndex < currentStartIndex
+                : currentEndIndex > newEndIndex && newEndIndex > currentStartIndex;
 
             bool trimmedStartOfLog = false;
-            if (currentStartIndex < newStartIndex && newStartIndex < currentEndIndex)
+            if (trimStart)
             {
                 WitsmlLogs trimLogObjectStartQuery = CreateRequest(
                     job.LogObject.WellUid,
                     job.LogObject.WellboreUid,
                     job.LogObject.Uid,
                     witsmlLog.IndexType,
-                    deleteTo: newStartIndex);
+                    deleteTo: isDescending ? newEndIndex : newStartIndex);
 
                 QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(trimLogObjectStartQuery);
                 if (result.IsSuccessful)
@@ -58,14 +81,14 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             bool trimmedEndOfLog = false;
-            if (currentEndIndex > newEndIndex && newEndIndex > currentStartIndex)
+            if (trimEnd)
             {
                 WitsmlLogs trimLogObjectEndQuery = CreateRequest(
                     job.LogObject.WellUid,
                     job.LogObject.WellboreUid,
                     job.LogObject.Uid,
                     witsmlLog.IndexType,
-                    deleteFrom: newEndIndex);
+                    deleteFrom: isDescending ? newStartIndex : newEndIndex);
 
                 QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(trimLogObjectEndQuery);
                 if (result.IsSuccessful)

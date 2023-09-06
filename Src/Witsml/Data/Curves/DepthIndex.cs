@@ -79,14 +79,17 @@ namespace Witsml.Data.Curves
         public override bool Equals(object that)
         {
             if (this == that) return true;
-            if (that == null || GetType() != that.GetType()) return false;
-
-            var depth = (DepthIndex)that;
-
-            if (depth.Value.CompareTo(Value) != 0) return false;
-            return Uom?.Equals(depth.Uom) ?? depth.Uom == null;
+            switch (that)
+            {
+                case null:
+                case DepthIndex depthIndex when depthIndex.Value.CompareTo(Value) != 0:
+                    return false;
+                case DepthIndex depthIndex:
+                    return Uom?.Equals(depthIndex.Uom) ?? depthIndex.Uom == null;
+                default:
+                    return false;
+            }
         }
-
 
         public override int GetHashCode()
         {
