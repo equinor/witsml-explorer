@@ -106,6 +106,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStop}
@@ -115,6 +116,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStartDrilling}
@@ -124,6 +126,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartDrillingValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStopDrilling}
@@ -133,6 +136,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopDrillingValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <TextField
                 id={"planDogleg"}

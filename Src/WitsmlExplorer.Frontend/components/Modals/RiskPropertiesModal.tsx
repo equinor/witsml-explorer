@@ -135,6 +135,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                   setDTimStartValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <DateTimeField
                 value={editableRiskObject.dTimEnd}
@@ -144,6 +145,7 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                   setDTimEndValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <TextField
                 id={"mdBitStart"}

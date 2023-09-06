@@ -21,7 +21,7 @@ export interface RigPropertiesModalProps {
 const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement => {
   const { mode, rig, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableRig, setEditableRig] = useState<Rig>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -98,6 +98,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimStartOpValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <DateTimeField
                 value={editableRig.dTimEndOp}
@@ -107,6 +108,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimEndOpValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <TextField
                 id={"yearEntService"}

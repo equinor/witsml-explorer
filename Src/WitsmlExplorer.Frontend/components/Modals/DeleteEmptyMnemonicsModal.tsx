@@ -1,15 +1,15 @@
-import Wellbore from "../../models/wellbore";
-import Well from "../../models/well";
-import JobService, { JobType } from "../../services/jobService";
 import { TextField } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
 import { useContext, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import { DeleteEmptyMnemonicsJob } from "../../models/jobs/deleteEmptyMnemonicsJob";
-import ModalDialog from "./ModalDialog";
-import OperationContext from "../../contexts/operationContext";
-import { DateTimeField } from "./DateTimeField";
 import styled from "styled-components";
+import OperationContext from "../../contexts/operationContext";
+import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationType from "../../contexts/operationType";
+import { DeleteEmptyMnemonicsJob } from "../../models/jobs/deleteEmptyMnemonicsJob";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
+import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
+import ModalDialog from "./ModalDialog";
 
 export interface DeleteEmptyMnemonicsModalProps {
   wells?: Well[];
@@ -20,7 +20,7 @@ export interface DeleteEmptyMnemonicsModalProps {
 const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React.ReactElement => {
   const { wells, wellbores, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
   const [nullTimeValue, setNullTimeValue] = useState<string>("1900-01-01T00:00:00.000Z");
@@ -63,6 +63,7 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
                 setNullTimeValueValid(valid);
               }}
               timeZone={timeZone}
+              dateTimeFormat={dateTimeFormat}
             />
             <TextField label="Null depth value" type="number" fullWidth value={nullDepthValue} onChange={(e: any) => setNullDepthValue(+e.target.value)} />
           </ContentLayout>

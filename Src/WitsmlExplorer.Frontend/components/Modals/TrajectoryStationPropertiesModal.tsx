@@ -62,6 +62,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
                   setDTimStnValid(valid);
                 }}
                 timeZone={timeZone}
+                dateTimeFormat={dateTimeFormat}
               />
               <TextField
                 id={"md"}

@@ -127,6 +127,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       setDTimeKickoffValid(valid);
                     }}
                     timeZone={timeZone}
+                    dateTimeFormat={dateTimeFormat}
                   />
                   <Container>
                     <TextField

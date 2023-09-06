@@ -10,7 +10,7 @@ interface DateTimeFieldProps {
   label: string;
   updateObject: (dateTime: string, valid: boolean) => void;
   timeZone: TimeZone;
-  dateTimeFormat: DateTimeFormat
+  dateTimeFormat: DateTimeFormat;
 }
 
 /**
