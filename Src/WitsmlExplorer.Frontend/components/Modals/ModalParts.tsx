@@ -3,8 +3,12 @@
   Edit
 }
 
-export const validText = (text: string): boolean => {
-  return text && text.length > 0;
+export const validText = (text: string, minLength: number | undefined = undefined, maxLength: number | undefined = undefined): boolean => {
+  if (minLength === undefined && maxLength === undefined) return text && text.length > 0;
+  if (typeof minLength === "number" && maxLength === undefined) return text && text.length >= minLength;
+  if (minLength === undefined && typeof maxLength === "number") return text && text.length <= maxLength;
+  if (minLength > maxLength) throw new Error("validText(): minLength is larger than maxLength");
+  return text && text.length >= minLength && text.length <= maxLength;
 };
 
 export const validTimeZone = (timeZone: string): boolean => {
