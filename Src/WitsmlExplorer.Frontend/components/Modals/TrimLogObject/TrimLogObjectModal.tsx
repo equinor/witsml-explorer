@@ -9,7 +9,7 @@ import { ObjectType } from "../../../models/objectType";
 import { truncateAbortHandler } from "../../../services/apiClient";
 import JobService, { JobType } from "../../../services/jobService";
 import ObjectService from "../../../services/objectService";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../../Constants";
+import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD, WITSML_LOG_ORDERTYPE_DECREASING } from "../../Constants";
 import ModalDialog from "../ModalDialog";
 import AdjustDateTimeModal from "./AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
@@ -69,6 +69,7 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
                 <AdjustDateTimeModal
                   minDate={log.startIndex}
                   maxDate={log.endIndex}
+                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
                   onStartDateChanged={setStartIndex}
                   onEndDateChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
@@ -78,6 +79,7 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
                 <AdjustNumberRangeModal
                   minValue={indexToNumber(logObject.startIndex)}
                   maxValue={indexToNumber(logObject.endIndex)}
+                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
                   onStartValueChanged={setStartIndex}
                   onEndValueChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}

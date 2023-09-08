@@ -25,10 +25,7 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const {
-    dispatchOperation,
-    operationState: { colors }
-  } = useContext(OperationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, selectedObject, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
@@ -152,10 +149,14 @@ export const CurveValuesView = (): React.ReactElement => {
         <CommonPanelContainer>
           <EditInterval key="editinterval" />
           <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
-          <Typography style={{ color: colors.text.staticIconsDefault }}>Show Plot</Typography>
+          <Typography>Show Plot</Typography>
         </CommonPanelContainer>
         {isLoading && <ProgressSpinner message="Fetching data" />}
-        {!isLoading && !tableData.length && <Message>No data</Message>}
+        {!isLoading && !tableData.length && (
+          <Message>
+            <Typography>No data</Typography>
+          </Message>
+        )}
         {Boolean(columns.length) &&
           Boolean(tableData.length) &&
           (showPlot ? (

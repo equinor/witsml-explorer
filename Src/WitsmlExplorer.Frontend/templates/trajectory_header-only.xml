@@ -1,0 +1,50 @@
+<trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <trajectory uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <objectGrowing />
+    <parentTrajectory>
+      <trajectoryReference uidRef="" />
+      <wellboreParent uidRef="" />
+    </parentTrajectory>
+    <dTimTrajStart />
+    <dTimTrajEnd />
+    <mdMn uom="" datum="" />
+    <mdMx uom="" datum="" />
+    <serviceCompany />
+    <magDeclUsed uom="" />
+    <gridCorUsed uom="" />
+    <gridConUsed uom="" />
+    <aziVertSect uom="" />
+    <dispNsVertSectOrig uom="" />
+    <dispEwVertSectOrig uom="" />
+    <definitive />
+    <memory />
+    <finalTraj />
+    <aziRef />
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </trajectory>
+</trajectorys>

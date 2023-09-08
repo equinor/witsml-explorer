@@ -1,0 +1,116 @@
+<targets xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <target uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <parentTarget uidRef="" />
+    <dispNsCenter uom="" />
+    <dispEwCenter uom="" />
+    <tvd uom="" datum="" />
+    <dispNsOffset uom="" />
+    <dispEwOffset uom="" />
+    <thickAbove uom="" />
+    <thickBelow uom="" />
+    <dip uom="" />
+    <strike uom="" />
+    <rotation uom="" />
+    <lenMajorAxis uom="" />
+    <widMinorAxis uom="" />
+    <typeTargetScope />
+    <dispNsSectOrig uom="" />
+    <dispEwSectOrig uom="" />
+    <aziRef />
+    <catTarg />
+    <location uid="">
+      <wellCRS uidRef="" />
+      <latitude uom="" />
+      <longitude uom="" />
+      <easting uom="" />
+      <northing uom="" />
+      <westing uom="" />
+      <southing uom="" />
+      <projectedX uom="" />
+      <projectedY uom="" />
+      <localX uom="" />
+      <localY uom="" />
+      <original />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </location>
+    <targetSection uid="">
+      <sectNumber />
+      <typeTargetSectionScope />
+      <lenRadius uom="" />
+      <angleArc uom="" />
+      <thickAbove uom="" />
+      <thickBelow uom="" />
+      <location uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </location>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </targetSection>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </target>
+</targets>

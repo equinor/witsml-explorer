@@ -137,13 +137,14 @@ const SearchFilter = (): React.ReactElement => {
       <SearchLayout colors={colors}>
         <SearchBarContainer>
           <EdsProvider density="compact">
-            <TextField
+            <SearchField
               value={nameFilter}
               style={{ width: "100%" }}
               onChange={(event) => setNameFilter(event.target.value ?? "")}
               id="searchField"
               ref={textFieldRef}
               variant="outlined"
+              colors={colors}
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
               onKeyDown={(e) => (e.key == "Enter" ? handleSearch() : null)}
@@ -195,6 +196,12 @@ const SearchFilter = (): React.ReactElement => {
     </>
   );
 };
+
+const SearchField = styled(TextField)<{ colors: Colors }>`
+  &&& > div > fieldset {
+    border-color: ${(props) => props.colors.interactive.primaryResting};
+  }
+`;
 
 const SearchLayout = styled.div<{ colors: Colors }>`
   display: flex;

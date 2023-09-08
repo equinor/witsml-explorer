@@ -50,6 +50,7 @@
     "notistack": "1.0.10",
     "prettier": "^2.7.1",
     "prop-types": "15.8.1",
+    "raw-loader": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-idle-timer": "^5.4.2",

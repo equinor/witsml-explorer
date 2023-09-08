@@ -1,0 +1,37 @@
+<trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <trajectory uidWell="" uidWellbore="" uid="">
+    <trajectoryStation uid="">
+      <dTimStn />
+      <typeTrajStation />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <incl uom="" />
+      <azi uom="" />
+      <location uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </location>
+    </trajectoryStation>
+  </trajectory>
+</trajectorys>

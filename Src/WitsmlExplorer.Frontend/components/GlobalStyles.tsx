@@ -121,7 +121,11 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     .MuiTypography-colorTextSecondary {
       color:${(props) => props.colors.text.staticIconsDefault};
     }
+    .MuiFormHelperText-root {
+      color:${(props) => props.colors.text.staticIconsDefault};
+    }
   }
+
   input[type=text],input[type=password],input[type=number],textarea,textarea.MuiInputBase-input {
     color:${(props) => props.colors.text.staticIconsDefault} ;
   }
@@ -129,6 +133,7 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   input[type=checkbox] + svg {
     fill:${(props) => props.colors.infographic.primaryMossGreen}
   }
+
   ul[class*="List__StyledList"] {
     background: ${(props) => props.colors.ui.backgroundLight};
     li {
@@ -139,6 +144,10 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
      text-decoration: none;
      background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
     }
+  }
+
+  p[class*="Typography__StyledTypography"] {
+    color:${(props) => props.colors.text.staticIconsDefault};
   }
 `;
 

@@ -5,7 +5,7 @@ import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { CopyRangeClipboard, createComponentReferences } from "../../models/jobs/componentReferences";
 import LogObject, { indexToNumber } from "../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
+import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
@@ -45,6 +45,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
             <AdjustDateTimeModal
               minDate={selectedLog.startIndex}
               maxDate={selectedLog.endIndex}
+              isDescending={selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING}
               onStartDateChanged={setStartIndex}
               onEndDateChanged={setEndIndex}
               onValidChange={toggleConfirmDisabled}
@@ -54,6 +55,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
             <AdjustNumberRangeModal
               minValue={indexToNumber(selectedLog.startIndex)}
               maxValue={indexToNumber(selectedLog.endIndex)}
+              isDescending={selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING}
               onStartValueChanged={setStartIndex}
               onEndValueChanged={setEndIndex}
               onValidChange={toggleConfirmDisabled}

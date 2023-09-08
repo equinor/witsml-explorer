@@ -72,6 +72,26 @@ namespace Witsml.Data.Curves
         {
             return GetValueAsString();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is DateTimeIndex dateTimeIndex)
+            {
+                return this.Value == dateTimeIndex.Value;
+            }
+
+            return obj is null ? false : throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Value.GetHashCode();
+        }
         
         public static TimeSpan operator -(DateTimeIndex index1, DateTimeIndex index2)
         {

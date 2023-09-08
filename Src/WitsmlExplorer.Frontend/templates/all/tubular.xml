@@ -1,0 +1,329 @@
+<tubulars xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <tubular uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <typeTubularAssy />
+    <valveFloat />
+    <sourceNuclear />
+    <diaHoleAssy uom="" />
+    <tubularComponent uid="">
+      <typeTubularComp />
+      <sequence />
+      <description />
+      <id uom="" />
+      <od uom="" />
+      <odMx uom="" />
+      <len uom="" />
+      <lenJointAv uom="" />
+      <numJointStand />
+      <wtPerLen uom="" />
+      <grade />
+      <odDrift uom="" />
+      <tensYield uom="" />
+      <tqYield uom="" />
+      <stressFatig uom="" />
+      <lenFishneck uom="" />
+      <idFishneck uom="" />
+      <odFishneck uom="" />
+      <disp uom="" />
+      <presBurst uom="" />
+      <presCollapse uom="" />
+      <classService />
+      <wearWall uom="" />
+      <thickWall uom="" />
+      <configCon />
+      <bendStiffness uom="" />
+      <axialStiffness uom="" />
+      <torsionalStiffness uom="" />
+      <typeMaterial />
+      <doglegMx uom="" />
+      <vendor />
+      <model />
+      <nameTag uid="">
+        <name />
+        <numberingScheme />
+        <technology />
+        <location />
+        <installationDate />
+        <installationCompany />
+        <mountingCode />
+        <comment />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nameTag>
+      <bitRecord uid="">
+        <numBit />
+        <diaBit uom="" />
+        <diaPassThru uom="" />
+        <diaPilot uom="" />
+        <manufacturer />
+        <typeBit />
+        <cost currency="" />
+        <codeMfg />
+        <codeIADC />
+        <condInitInner />
+        <condInitOuter />
+        <condInitDull />
+        <condInitLocation />
+        <condInitBearing />
+        <condInitGauge />
+        <condInitOther />
+        <condInitReason />
+        <condFinalInner />
+        <condFinalOuter />
+        <condFinalDull />
+        <condFinalLocation />
+        <condFinalBearing />
+        <condFinalGauge />
+        <condFinalOther />
+        <condFinalReason />
+        <drive />
+        <bitClass />
+        <customData />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </bitRecord>
+      <areaNozzleFlow uom="" />
+      <nozzle uid="">
+        <index />
+        <diaNozzle uom="" />
+        <typeNozzle />
+        <len uom="" />
+        <orientation />
+        <customData />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </nozzle>
+      <connection uid="">
+        <id uom="" />
+        <od uom="" />
+        <len uom="" />
+        <typeThread />
+        <sizeThread uom="" />
+        <tensYield uom="" />
+        <tqYield uom="" />
+        <position />
+        <criticalCrossSection uom="" />
+        <presLeak uom="" />
+        <tqMakeup uom="" />
+        <customData />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </connection>
+      <jar>
+        <forUpSet uom="" />
+        <forDownSet uom="" />
+        <forUpTrip uom="" />
+        <forDownTrip uom="" />
+        <forPmpOpen uom="" />
+        <forSealFric uom="" />
+        <typeJar />
+        <jarAction />
+        <customData />
+        <extensionAny />
+      </jar>
+      <mwdTool>
+        <flowrateMn uom="" />
+        <flowrateMx uom="" />
+        <tempMx uom="" />
+        <idEquv uom="" />
+        <sensor uid="">
+          <typeMeasurement />
+          <offsetBot uom="" />
+          <comments />
+          <customData />
+          <extensionAny />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </sensor>
+        <customData />
+        <extensionAny />
+      </mwdTool>
+      <motor>
+        <offsetTool uom="" />
+        <presLossFact />
+        <flowrateMn uom="" />
+        <flowrateMx uom="" />
+        <diaRotorNozzle uom="" />
+        <clearanceBearBox uom="" />
+        <lobesRotor />
+        <lobesStator />
+        <typeBearing />
+        <tempOpMx uom="" />
+        <rotorCatcher />
+        <dumpValve />
+        <diaNozzle uom="" />
+        <rotatable />
+        <bendSettingsMn uom="" />
+        <bendSettingsMx uom="" />
+        <customData />
+        <extensionAny />
+      </motor>
+      <stabilizer uid="">
+        <lenBlade uom="" />
+        <lenBladeGauge uom="" />
+        <odBladeMx uom="" />
+        <odBladeMn uom="" />
+        <distBladeBot uom="" />
+        <shapeBlade />
+        <factFric />
+        <typeBlade />
+        <customData />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </stabilizer>
+      <bend uid="">
+        <angle uom="" />
+        <distBendBot uom="" />
+        <customData />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </bend>
+      <holeOpener>
+        <typeHoleOpener />
+        <numCutter />
+        <manufacturer />
+        <diaHoleOpener uom="" />
+        <customData />
+        <extensionAny />
+      </holeOpener>
+      <rotarySteerableTool>
+        <deflectionMethod />
+        <bendAngle uom="" />
+        <bendOffset uom="" />
+        <holeSizeMn uom="" />
+        <holeSizeMx uom="" />
+        <wobMx uom="" />
+        <operatingSpeed uom="" />
+        <speedMx uom="" />
+        <flowRateMn uom="" />
+        <flowRateMx uom="" />
+        <downLinkFlowRateMn uom="" />
+        <downLinkFlowRateMx uom="" />
+        <pressLossFact />
+        <padCount />
+        <padLen uom="" />
+        <padWidth uom="" />
+        <padOffset uom="" />
+        <openPadOd uom="" />
+        <closePadOd uom="" />
+        <sensor uid="">
+          <typeMeasurement />
+          <offsetBot uom="" />
+          <comments />
+          <customData />
+          <extensionAny />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </sensor>
+        <customData />
+        <extensionAny />
+      </rotarySteerableTool>
+      <customData />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </tubularComponent>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </tubular>
+</tubulars>

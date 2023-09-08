@@ -1,0 +1,760 @@
+<drillReports xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <drillReport uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <dTimStart />
+    <dTimEnd />
+    <versionKind />
+    <createDate />
+    <wellAlias uid="">
+      <name />
+      <namingSystem />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellAlias>
+    <wellboreAlias uid="">
+      <name />
+      <namingSystem />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellboreAlias>
+    <wellDatum uid="">
+      <name />
+      <code />
+      <datumName namingSystem="" code="" />
+      <datumCRS uidRef="" />
+      <kind />
+      <wellbore>
+        <wellboreReference uidRef="" />
+        <wellParent uidRef="" />
+      </wellbore>
+      <rig>
+        <rigReference uidRef="" />
+        <wellboreParent uidRef="" />
+        <wellParent uidRef="" />
+      </rig>
+      <elevation uom="" datum="" />
+      <measuredDepth uom="" datum="" />
+      <horizontalLocation uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </horizontalLocation>
+      <comment />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellDatum>
+    <wellCRS uid="">
+      <name />
+      <mapProjection>
+        <nameCRS namingSystem="" code="" />
+        <projectionCode />
+        <projectedFrom uidRef="" />
+        <stdParallel1 uom="" />
+        <stdParallel2 uom="" />
+        <centralMeridian uom="" />
+        <originLatitude uom="" />
+        <originLongitude uom="" />
+        <latitude1 uom="" />
+        <longitude1 uom="" />
+        <latitude2 uom="" />
+        <longitude2 uom="" />
+        <latitudeForScale uom="" />
+        <longitudeForScale uom="" />
+        <trueScaleLatitude uom="" />
+        <spheroidRadius uom="" />
+        <scaleFactor />
+        <methodVariant />
+        <perspectiveHeight uom="" />
+        <zone />
+        <NADType />
+        <falseEasting uom="" />
+        <falseNorthing uom="" />
+        <bearing uom="" />
+        <hemisphere />
+        <description />
+        <parameter index="" name="" uom="" description="" uid="" />
+      </mapProjection>
+      <geographic>
+        <nameCRS namingSystem="" code="" />
+        <geodeticDatumCode />
+        <xTranslation uom="" />
+        <yTranslation uom="" />
+        <zTranslation uom="" />
+        <xRotation uom="" />
+        <yRotation uom="" />
+        <zRotation uom="" />
+        <scaleFactor />
+        <ellipsoidCode />
+        <ellipsoidSemiMajorAxis uom="" />
+        <ellipsoidInverseFlattening />
+      </geographic>
+      <mapProjectionCRS uidRef="" />
+      <geodeticCRS uidRef="" />
+      <localCRS>
+        <usesWellAsOrigin />
+        <origin uidRef="" />
+        <originDescription />
+        <yAxisAzimuth uom="" northDirection="" />
+        <magneticDeclination uom="" />
+        <gridConvergence uom="" />
+        <yAxisDescription />
+        <xRotationCounterClockwise />
+      </localCRS>
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellCRS>
+    <wellboreInfo>
+      <dTimSpud />
+      <dTimPreSpud />
+      <dateDrillComplete />
+      <operator />
+      <drillContractor />
+      <rigAlias uid="">
+        <name />
+        <namingSystem />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </rigAlias>
+    </wellboreInfo>
+    <statusInfo uid="">
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <mdPlugTop uom="" datum="" />
+      <diaHole uom="" />
+      <mdDiaHoleStart uom="" datum="" />
+      <diaPilot uom="" />
+      <mdDiaPilotPlan uom="" datum="" />
+      <tvdDiaPilotPlan uom="" datum="" />
+      <typeWellbore />
+      <mdKickoff uom="" datum="" />
+      <tvdKickoff uom="" datum="" />
+      <parentWellbore uid="">
+        <name />
+        <namingSystem />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </parentWellbore>
+      <strengthForm uom="" />
+      <mdStrengthForm uom="" datum="" />
+      <tvdStrengthForm uom="" datum="" />
+      <diaCsgLast uom="" />
+      <mdCsgLast uom="" datum="" />
+      <tvdCsgLast uom="" datum="" />
+      <presTestType />
+      <mdPlanned uom="" datum="" />
+      <distDrill uom="" />
+      <elevKelly uom="" datum="" />
+      <sum24Hr />
+      <forecast24Hr />
+      <ropCurrent uom="" />
+      <rig uidRef="" />
+      <eTimStart uom="" />
+      <eTimSpud uom="" />
+      <eTimLoc uom="" />
+      <eTimDrill uom="" />
+      <ropAv uom="" />
+      <supervisor />
+      <engineer />
+      <geologist />
+      <eTimDrillRot uom="" />
+      <eTimDrillSlid uom="" />
+      <eTimCirc uom="" />
+      <eTimReam uom="" />
+      <eTimHold uom="" />
+      <eTimSteering uom="" />
+      <distDrillRot uom="" />
+      <distDrillSlid uom="" />
+      <distReam uom="" />
+      <distHold uom="" />
+      <distSteering uom="" />
+      <numPob />
+      <numContract />
+      <numOperator />
+      <numService />
+      <numAFE />
+      <costDay currency="" />
+      <costDayMud currency="" />
+      <conditionHole />
+      <tvdLot uom="" datum="" />
+      <presLotEmw uom="" />
+      <presKickTol uom="" />
+      <volKickTol uom="" />
+      <maasp uom="" />
+      <tubular uidRef="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </statusInfo>
+    <bitRecord uid="">
+      <numBit />
+      <diaBit uom="" />
+      <diaPassThru uom="" />
+      <diaPilot uom="" />
+      <manufacturer />
+      <typeBit />
+      <cost currency="" />
+      <codeMfg />
+      <codeIADC />
+      <condInitInner />
+      <condInitOuter />
+      <condInitDull />
+      <condInitLocation />
+      <condInitBearing />
+      <condInitGauge />
+      <condInitOther />
+      <condInitReason />
+      <condFinalInner />
+      <condFinalOuter />
+      <condFinalDull />
+      <condFinalLocation />
+      <condFinalBearing />
+      <condFinalGauge />
+      <condFinalOther />
+      <condFinalReason />
+      <drive />
+      <bitClass />
+      <customData />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </bitRecord>
+    <fluid uid="">
+      <type />
+      <locationSample />
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <presBopRating uom="" />
+      <mudClass />
+      <density uom="" />
+      <visFunnel uom="" />
+      <tempVis uom="" />
+      <pv uom="" />
+      <yp uom="" />
+      <gel10Sec uom="" />
+      <gel10Min uom="" />
+      <gel30Min uom="" />
+      <filterCakeLtlp uom="" />
+      <filtrateLtlp uom="" />
+      <tempHthp uom="" />
+      <presHthp uom="" />
+      <filtrateHthp uom="" />
+      <filterCakeHthp uom="" />
+      <solidsPc uom="" />
+      <waterPc uom="" />
+      <oilPc uom="" />
+      <sandPc uom="" />
+      <solidsLowGravPc uom="" />
+      <solidsCalcPc uom="" />
+      <baritePc uom="" />
+      <lcm uom="" />
+      <mbt uom="" />
+      <ph />
+      <tempPh uom="" />
+      <pm uom="" />
+      <pmFiltrate uom="" />
+      <mf uom="" />
+      <alkalinityP1 uom="" />
+      <alkalinityP2 uom="" />
+      <chloride uom="" />
+      <calcium uom="" />
+      <magnesium uom="" />
+      <potassium uom="" />
+      <rheometer uid="">
+        <tempRheom uom="" />
+        <presRheom uom="" />
+        <vis3Rpm />
+        <vis6Rpm />
+        <vis100Rpm />
+        <vis200Rpm />
+        <vis300Rpm />
+        <vis600Rpm />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </rheometer>
+      <brinePc uom="" />
+      <lime uom="" />
+      <electStab uom="" />
+      <calciumChloride uom="" />
+      <company />
+      <engineer />
+      <asg />
+      <solidsHiGravPc uom="" />
+      <polymer uom="" />
+      <polyType />
+      <solCorPc uom="" />
+      <oilCtg uom="" />
+      <hardnessCa uom="" />
+      <sulfide uom="" />
+      <comments />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </fluid>
+    <porePressure uid="">
+      <readingKind />
+      <equivalentMudWeight uom="" />
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </porePressure>
+    <extendedReport dTim="" />
+    <surveyStation uid="">
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <incl uom="" />
+      <azi uom="" />
+      <vertSect uom="" />
+      <dls uom="" />
+      <location uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </location>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </surveyStation>
+    <activity uid="">
+      <dTimStart />
+      <dTimEnd />
+      <duration uom="" />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <phase />
+      <activityCode />
+      <proprietaryCode namingSystem="" />
+      <detailActivity />
+      <typeActivityClass />
+      <mdHoleStart uom="" datum="" />
+      <tvdHoleStart uom="" datum="" />
+      <mdHoleEnd uom="" datum="" />
+      <tvdHoleEnd uom="" datum="" />
+      <mdBitStart uom="" datum="" />
+      <mdBitEnd uom="" datum="" />
+      <state />
+      <stateDetailActivity />
+      <operator />
+      <tubular uidRef="" />
+      <optimum />
+      <productive />
+      <itemState />
+      <comments />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </activity>
+    <logInfo uid="">
+      <dTim />
+      <runNumber />
+      <serviceCompany />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <tool />
+      <tempBHCT uom="" />
+      <tempBHST uom="" />
+      <eTimStatic uom="" />
+      <mdTempTool uom="" datum="" />
+      <tvdTempTool uom="" datum="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </logInfo>
+    <coreInfo uid="">
+      <dTim />
+      <coreNumber />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <lenRecovered uom="" />
+      <recoverPc uom="" />
+      <lenBarrel uom="" />
+      <innerBarrelType />
+      <coreDescription />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </coreInfo>
+    <wellTestInfo uid="">
+      <dTim />
+      <testType />
+      <testNumber />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <chokeOrificeSize uom="" />
+      <densityOil uom="" />
+      <densityWater uom="" />
+      <densityGas uom="" />
+      <flowRateOil uom="" />
+      <flowRateWater uom="" />
+      <flowRateGas uom="" />
+      <presShutIn uom="" />
+      <presFlowing uom="" />
+      <presBottom uom="" />
+      <gasOilRatio uom="" />
+      <waterOilRatio uom="" />
+      <chloride uom="" />
+      <carbonDioxide uom="" />
+      <hydrogenSulfide uom="" />
+      <volOilTotal uom="" />
+      <volGasTotal uom="" />
+      <volWaterTotal uom="" />
+      <volOilStored uom="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellTestInfo>
+    <formTestInfo uid="">
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <presPore uom="" />
+      <goodSeal />
+      <mdSample uom="" datum="" />
+      <dominateComponent />
+      <densityHC uom="" />
+      <volumeSample uom="" />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </formTestInfo>
+    <lithShowInfo uid="">
+      <dTim />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <show />
+      <lithology />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </lithShowInfo>
+    <equipFailureInfo uid="">
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <equipClass />
+      <eTimMissProduction uom="" />
+      <dTimRepair />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </equipFailureInfo>
+    <controlIncidentInfo uid="">
+      <dTim />
+      <mdInflow uom="" datum="" />
+      <tvdInflow uom="" datum="" />
+      <phase />
+      <activityCode />
+      <proprietaryCode namingSystem="" />
+      <detailActivity />
+      <eTimLost uom="" />
+      <dTimRegained />
+      <diaBit uom="" />
+      <mdBit uom="" datum="" />
+      <wtMud uom="" />
+      <porePressure uom="" />
+      <diaCsgLast uom="" />
+      <mdCsgLast uom="" datum="" />
+      <volMudGained uom="" />
+      <presShutInCasing uom="" />
+      <presShutInDrill uom="" />
+      <incidentType />
+      <killingType />
+      <formation />
+      <tempBottom uom="" />
+      <presMaxChoke uom="" />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </controlIncidentInfo>
+    <stratInfo uid="">
+      <dTim />
+      <mdTop uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </stratInfo>
+    <perfInfo uid="">
+      <dTimOpen />
+      <dTimClose />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </perfInfo>
+    <gasReadingInfo uid="">
+      <dTim />
+      <readingType />
+      <mdTop uom="" datum="" />
+      <mdBottom uom="" datum="" />
+      <tvdTop uom="" datum="" />
+      <tvdBottom uom="" datum="" />
+      <gasHigh uom="" />
+      <gasLow uom="" />
+      <meth uom="" />
+      <eth uom="" />
+      <prop uom="" />
+      <ibut uom="" />
+      <nbut uom="" />
+      <ipent uom="" />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </gasReadingInfo>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </drillReport>
+</drillReports>

@@ -1,0 +1,51 @@
+<wellbores xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <wellbore uidWell="" uid="">
+    <nameWell />
+    <name />
+    <parentWellbore uidRef="" />
+    <number />
+    <suffixAPI />
+    <numGovt />
+    <statusWellbore />
+    <isActive />
+    <purposeWellbore />
+    <typeWellbore />
+    <shape />
+    <dTimKickoff />
+    <achievedTD />
+    <md uom="" datum="" />
+    <tvd uom="" datum="" />
+    <mdBit uom="" datum="" />
+    <tvdBit uom="" datum="" />
+    <mdKickoff uom="" datum="" />
+    <tvdKickoff uom="" datum="" />
+    <mdPlanned uom="" datum="" />
+    <tvdPlanned uom="" datum="" />
+    <mdSubSeaPlanned uom="" datum="" />
+    <tvdSubSeaPlanned uom="" datum="" />
+    <dayTarget uom="" />
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </wellbore>
+</wellbores>
