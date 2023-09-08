@@ -193,6 +193,14 @@ const setDateTimeFormat = (state: OperationState, { payload }: SetDateTimeFormat
   };
 };
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetModeAction | SetDateTimeFormatAction;
+export type OperationAction =
+  | DisplayModalAction
+  | HideModalAction
+  | DisplayContextMenuAction
+  | HideContextMenuAction
+  | SetThemeAction
+  | SetTimeZoneAction
+  | SetModeAction
+  | SetDateTimeFormatAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

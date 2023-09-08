@@ -83,8 +83,14 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
 
   const getGraphData = (): LogItem[] => {
     return logs.map((log) => {
-      const start = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.startIndex, timeZone, dateTimeFormat)) : log.startIndex === null ? 0 : +log.startIndex?.replace("m", "");
-      const end = selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone, dateTimeFormat)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
+      const start =
+        selectedWellbore && isTimeIndexed()
+          ? +new Date(formatDateString(log.startIndex, timeZone, dateTimeFormat))
+          : log.startIndex === null
+          ? 0
+          : +log.startIndex?.replace("m", "");
+      const end =
+        selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone, dateTimeFormat)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
       return {
         name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
         start: start < end ? start : end,

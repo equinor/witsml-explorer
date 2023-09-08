@@ -103,8 +103,20 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
               <TextField disabled id={"numLicense"} label={"numLicense"} defaultValue={well.numLicense} fullWidth />
               {mode !== PropertiesModalMode.New && (
                 <>
-                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone, dateTimeFormat)} fullWidth />
-                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(well.dateTimeLastChange, timeZone, dateTimeFormat)} fullWidth />
+                  <TextField
+                    disabled
+                    id="dTimCreation"
+                    label="commonData.dTimCreation"
+                    defaultValue={formatDateString(well.dateTimeCreation, timeZone, dateTimeFormat)}
+                    fullWidth
+                  />
+                  <TextField
+                    disabled
+                    id="dTimLastChange"
+                    label="commonData.dTimLastChange"
+                    defaultValue={formatDateString(well.dateTimeLastChange, timeZone, dateTimeFormat)}
+                    fullWidth
+                  />
                 </>
               )}
             </>

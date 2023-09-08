@@ -103,8 +103,18 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
               />
               {mode !== PropertiesModalMode.New && (
                 <>
-                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone, dateTimeFormat)} />
-                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone, dateTimeFormat)} />
+                  <TextField
+                    disabled
+                    id="dTimCreation"
+                    label="commonData.dTimCreation"
+                    defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone, dateTimeFormat)}
+                  />
+                  <TextField
+                    disabled
+                    id="dTimLastChange"
+                    label="commonData.dTimLastChange"
+                    defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone, dateTimeFormat)}
+                  />
                 </>
               )}
             </>

@@ -128,4 +128,3 @@ const HorizontalLayout = styled.div`
 `;
 
 export { SettingsModal };
-

@@ -161,7 +161,7 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   return server ? server.name : url;
 };
 
-const StyledSwitch = styled(Switch) <{ colors: Colors }>`
+const StyledSwitch = styled(Switch)<{ colors: Colors }>`
   span {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
     margin-left: 0;

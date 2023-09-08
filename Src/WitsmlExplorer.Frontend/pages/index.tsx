@@ -19,7 +19,16 @@ import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { DateTimeFormat, SetDateTimeFormatAction, SetModeAction, SetThemeAction, SetTimeZoneAction, TimeZone, UserTheme, initOperationStateReducer } from "../contexts/operationStateReducer";
+import {
+  DateTimeFormat,
+  SetDateTimeFormatAction,
+  SetModeAction,
+  SetThemeAction,
+  SetTimeZoneAction,
+  TimeZone,
+  UserTheme,
+  initOperationStateReducer
+} from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";

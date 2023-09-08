@@ -46,8 +46,8 @@ export const WellboresListView = (): React.ReactElement => {
         return {
           ...wellbore,
           id: wellbore.uid,
-        dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone, dateTimeFormat),
-        dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone, dateTimeFormat),
+          dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone, dateTimeFormat),
+          dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone, dateTimeFormat),
           wellbore: wellbore
         };
       }) ?? []
