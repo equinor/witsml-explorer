@@ -61,7 +61,11 @@ namespace Witsml.Data.Curves
 
         private static DepthIndex GetDepthFromIndex(Index index) => (DepthIndex)index;
 
-        public override string GetValueAsString() => Value.ToString(CultureInfo.InvariantCulture);
+        public override string GetValueAsString()
+        {
+            var roundedValue = Math.Round(Value, CommonConstants.DefaultNumberOfRoundedPlaces);
+            return roundedValue.ToString(CultureInfo.InvariantCulture);
+        }
 
         public override bool IsContinuous(Index that)
         {

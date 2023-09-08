@@ -13,7 +13,6 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 using Index = Witsml.Data.Curves.Index;
 
@@ -29,7 +28,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
     public AnalyzeGapWorker(ILogger<AnalyzeGapJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
     
     /// <summary>
-    /// Find all gaps for selected mnemonics and required size of gap. If isn't select mnemonics, then are used all mnemonics on log for finding gaps. 
+    /// Find all gaps for selected mnemonics and required size of gap. If no mnemonics are selected, all mnemonics on the log will be analyzed.
     /// </summary>
     /// <param name="job">Job model of logObject, array of mnemonics, gapSize...</param>
     /// <returns>Task of workerResult with gap report items.</returns>
@@ -41,25 +40,33 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         string logUid = job.LogReference.Uid;
         bool isDepthLog = job.LogReference.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         List<AnalyzeGapReportItem> gapReportItems = new();
+        List<string> logDataRows = new();
         
-        WitsmlLogs logQuery = LogQueries.GetLogContent(job.LogReference.WellUid, job.LogReference.WellboreUid, logUid, job.LogReference.IndexType, job.Mnemonics, null, null);
-        WitsmlLogs witsmlLogs =  await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(logQuery, new OptionsIn(ReturnElements.All));
-        WitsmlLog witsmlLog = witsmlLogs?.Logs.FirstOrDefault();
-
+        var witsmlLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
         if (witsmlLog == null)
         {
             var message = $"AnalyzeGapJob failed. Can not find witsml log for {job.Description()}";
             Logger.LogError(message);
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message), null);
         }
+
+        var jobMnemonics = job.Mnemonics.Any() ? job.Mnemonics : witsmlLog.LogCurveInfo.Select(x => x.Mnemonic);
+        await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, jobMnemonics.ToList(), Logger);
         
-        if (witsmlLog.LogData == null || !witsmlLog.LogData.Data.Any() || !witsmlLog.LogData.MnemonicList.Any())
+        WitsmlLogData logData = await logDataReader.GetNextBatch();
+        var logMnemonics = logData.MnemonicList.Split(DataSeparator).Select((value, index) => new { index, value }).ToList();
+        while (logData != null)
+        {
+            logDataRows.AddRange(logData.Data?.Select(x => x.Data) ?? Array.Empty<string>());
+            logData = await logDataReader.GetNextBatch();
+        }
+        
+        if (!logDataRows.Any() || !logMnemonics.Any())
         {
             return GetGapReportResult(job, new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
         }
 
         var isLogIncreasing = witsmlLog.IsIncreasing();
-        var logMnemonics = witsmlLog.LogData.MnemonicList.Split(DataSeparator).Select((value, index) => new { index, value }).ToList();
         int mnemonicCurveIndex = logMnemonics.FirstOrDefault(x => string.Equals(x.value, indexCurve))?.index ?? 0;
         var logCurveMinMaxIndexDictionary = witsmlLog.LogCurveInfo
             .Where(x => isDepthLog ? x.MinIndex != null && x.MaxIndex != null : x.MinDateTimeIndex != null && x.MaxDateTimeIndex != null)
@@ -67,14 +74,14 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         foreach (var logMnemonic in logMnemonics.Where(x => x.index != mnemonicCurveIndex))
         {
-            List<Tuple<Index, string>> inputList = new();
+            List<Tuple<Index, string>> inputAnalyzeDataList = new();
             var logCurveMinMaxIndex = logCurveMinMaxIndexDictionary.GetValueOrDefault(logMnemonic.value, null);
             if (logCurveMinMaxIndex == null)
             {
                 continue;
             }
 
-            foreach (var dataRow in witsmlLog.LogData.Data.Select(x => x.Data))
+            foreach (var dataRow in logDataRows)
             {
                 var dataRowIndexValues = dataRow.Split(DataSeparator);
                 var depthOrDateTimeCurveValue = GetDepthOrDateTimeIndex(isDepthLog, dataRowIndexValues[mnemonicCurveIndex], logCurveMinMaxIndex);
@@ -82,7 +89,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                 //only values between min and max index of curve
                 if (ValidateCurveIndex(isLogIncreasing, logCurveMinMaxIndex)(depthOrDateTimeCurveValue))
                 {
-                    inputList.Add(new Tuple<Index, string>(depthOrDateTimeCurveValue, dataRowIndexValues[logMnemonic.index]));
+                    inputAnalyzeDataList.Add(new Tuple<Index, string>(depthOrDateTimeCurveValue, dataRowIndexValues[logMnemonic.index]));
                 }
             }
             
@@ -90,7 +97,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                 ? new DepthIndex(job.GapSize, depthMinIndex.Uom)
                 : new TimeSpanIndex(job.TimeGapSize);
 
-            gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputList, gapSize, isLogIncreasing));
+            gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputAnalyzeDataList, gapSize, isLogIncreasing));
         }
 
         return GetGapReportResult(job, gapReportItems, isDepthLog, logUid);
@@ -135,45 +142,40 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
     /// Get all gaps for input list of mnemonic values larger then requested gap size.
     /// </summary>
     /// <param name="mnemonic">Name of mnemonic.</param>
-    /// <param name="inputList">Input list of tuple mnemonic values.</param>
+    /// <param name="inputDataList">Input list of tuple mnemonic values.</param>
     /// <param name="requestedGapSize">Requested gap size defined by user.</param>
     /// <param name="isLogIncreasing">Is log direction increasing.</param>
     /// <returns>Report items with gap size information.</returns>
-    private IEnumerable<AnalyzeGapReportItem> GetAnalyzeGapReportItem(string mnemonic, IList<Tuple<Index, string>> inputList, Index requestedGapSize, bool isLogIncreasing)
+    private IEnumerable<AnalyzeGapReportItem> GetAnalyzeGapReportItem(string mnemonic, IList<Tuple<Index, string>> inputDataList, Index requestedGapSize, bool isLogIncreasing)
     {
         List<AnalyzeGapReportItem> gapValues = new();
-        Index startGapIndex = null;
-        bool insideGap = false;
-        
-        for (int i = 0; i < inputList.Count; i++)
+        Index lastValueIndex = null;
+        bool gapInside = false;
+    
+        foreach ((Index valueIndex, string value) in inputDataList)
         {
-            var typeItem =  inputList[i].Item1;
-            string value = inputList[i].Item2;
-            if (string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value))
             {
-                if (!insideGap)
+                if (lastValueIndex != null && gapInside)
                 {
-                    startGapIndex = i > 0 ? (inputList[i - 1].Item1) : typeItem;
-                    insideGap = true;
-                }
-            }
-            else
-            {
-                if (insideGap)
-                {
-                    var gapSize = isLogIncreasing ? (typeItem - startGapIndex) : (startGapIndex - typeItem) ;
+                    var gapSize = isLogIncreasing ? (valueIndex - lastValueIndex) : (lastValueIndex - valueIndex) ;
                     if (gapSize >= requestedGapSize)
                     {
                         gapValues.Add(new AnalyzeGapReportItem
                         {
                             Mnemonic = mnemonic,
-                            Start = startGapIndex.ToString(),
-                            End = typeItem.ToString(),
+                            Start = lastValueIndex.ToString(),
+                            End = valueIndex.ToString(),
                             GapSize = gapSize.ToString(),
                         });
                     }
-                    insideGap = false;
+                    gapInside = false;
                 }
+                lastValueIndex = valueIndex;
+            }
+            else
+            {
+                gapInside = true;
             }
         }
         return gapValues;

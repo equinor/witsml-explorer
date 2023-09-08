@@ -5,7 +5,7 @@ import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
 import ModalDialog from "./ModalDialog";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
 import { ReportModal } from "./ReportModal";
 import WarningBar from "../WarningBar";
@@ -25,8 +25,8 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [gapSize, setGapSize] = useState<number>(0);
   const [timeGapSize, setTimeGapSize] = useState(initialTime);
-  const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(true);
-  const [gapSizeShowWarning, setGapSizeShowWarning] = useState<boolean>(true);
+  const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
+  const [gapSizeShowWarning, setGapSizeShowWarning] = useState<boolean>(false);
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -48,7 +48,7 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
     if (event.target.value) {
       const value = Number(event.target.value);
       setGapSize(value);
-      setGapSizeIsValid(value >= 0);
+      setGapSizeIsValid(value > 0);
       setGapSizeShowWarning(value >= 0 && value < 1);
     }
   };
@@ -58,7 +58,8 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
     if (event.target.value) {
       setTimeGapSize(event.target.value);
       const millisecondsTime = convertToMilliseconds(event.target.value);
-      setGapSizeShowWarning(millisecondsTime >= 0 && millisecondsTime < 60000);
+      setGapSizeIsValid(millisecondsTime > 0);
+      setGapSizeShowWarning(millisecondsTime > 0 && millisecondsTime < 60000);
     }
   };
 
@@ -81,10 +82,10 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   value={timeGapSize}
                   onChange={handleTimeGapSizeChanged}
                   placeholder="hh:mm:ss"
-                  fullWidth
-                  inputProps={{ maxLength: 8 }}
-                  error={!gapSizeIsValid}
-                  helperText={"Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59"}
+                  maxLength={8}
+                  helperText={
+                    !gapSizeIsValid ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00" : null
+                  }
                 />
               )}
               {log.indexType === WITSML_INDEX_TYPE_MD && (
@@ -92,11 +93,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   id={"gapSize"}
                   label="gap size"
                   type="number"
-                  fullWidth
                   value={gapSize}
                   onChange={handleGapSizeChanged}
-                  error={!gapSizeIsValid}
-                  helperText={"Gap size number must be greater than or equal to 0"}
+                  helperText={!gapSizeIsValid ? "Gap size number must be greater than 0" : null}
                 />
               )}
               {gapSizeShowWarning && <WarningBar message={"The gap size is too small, gap analysis might take some time."} />}
@@ -104,7 +103,6 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
           }
           onSubmit={() => onSubmit()}
           isLoading={isLoading}
-          confirmColor={"danger"}
           confirmText={"Analyze"}
           confirmDisabled={!gapSizeIsValid}
         />

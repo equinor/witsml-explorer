@@ -6,6 +6,7 @@ using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Workers
@@ -32,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers
             return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
         }
 
-        public static async Task<WitsmlLog> GetLog(IWitsmlClient client, ObjectReference logReference, ReturnElements optionsInReturnElements)
+        public static async Task<WitsmlLog> GetLog(IWitsmlClient client, IWellboreReference logReference, ReturnElements optionsInReturnElements)
         {
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(logReference.WellUid, logReference.WellboreUid, logReference.Uid);
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));

@@ -33,7 +33,7 @@ public class AnalyzeGapWorkerTests
     private const string DepthDataRow3 = "53,88,100";
     
     private const string DepthDataWithGapsRow1 = "51,88,100";
-    private const string DepthDataWithGapsRow2 = "52,,";
+    private const string DepthDataWithGapsRow2 = "52,,110";
     private const string DepthDataWithGapsRow3 = "53,92,";
     private const string DepthDataWithGapsRow4 = "54,94,130";
    
@@ -42,7 +42,7 @@ public class AnalyzeGapWorkerTests
     private const string TimeDataRow3 = "2023-04-19T00:00:02Z,88,100";
     
     private const string TimeDataWithGapsRow1 = "2023-04-19T00:00:00Z,88,100";
-    private const string TimeDataWithGapsRow2 = "2023-04-19T00:00:01Z,,";
+    private const string TimeDataWithGapsRow2 = "2023-04-19T00:00:01Z,,110";
     private const string TimeDataWithGapsRow3 = "2023-04-19T00:00:02Z,92,";
     private const string TimeDataWithGapsRow4 = "2023-04-19T00:00:03Z,94,130";
 
@@ -141,7 +141,7 @@ public class AnalyzeGapWorkerTests
         bool isSuccess = false;
         
         _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
             .Returns((WitsmlLogs logs, OptionsIn options) => Task.FromResult(new WitsmlLogs()));
 
         (WorkerResult Result, RefreshAction) analyzeGapTask = await _worker.Execute(job);
@@ -151,14 +151,29 @@ public class AnalyzeGapWorkerTests
     private static void SetupClient(Mock<IWitsmlClient> witsmlClient, string indexType, bool isLogDataWithGaps)
     {
         bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
-        witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+        var mockSequence = new MockSequence();
+        
+        witsmlClient.InSequence(mockSequence)
+            .Setup(client =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
             .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
-                ? Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithGaps(isDepthLog)))
-                : Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithoutGaps(isDepthLog))));
+                ? Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithGaps(isDepthLog),isDepthLog))
+                : Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithoutGaps(isDepthLog), isDepthLog)));
+        
+        witsmlClient.InSequence(mockSequence)
+            .Setup(client =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+            .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
+                ? Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithGaps(isDepthLog),isDepthLog))
+                : Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithoutGaps(isDepthLog), isDepthLog)));
+
+        witsmlClient.InSequence(mockSequence)
+            .Setup(client =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+            .Returns(Task.FromResult(new WitsmlLogs(){Logs = new List<WitsmlLog>() }));
     }
     
-    private static WitsmlLogs GetTestWitsmlLogs(WitsmlLogData logData)
+    private static WitsmlLogs GetTestWitsmlLogs(WitsmlLogData logData, bool isDepthLog)
     {
         return new WitsmlLogs
         {
@@ -167,11 +182,14 @@ public class AnalyzeGapWorkerTests
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
+                StartIndex = new WitsmlIndex(new DepthIndex(51, "m")),
+                EndIndex = new WitsmlIndex(new DepthIndex(54, "m")),
                 StartDateTimeIndex = "2023-04-19T00:00:00Z",
                 EndDateTimeIndex = "2023-04-19T00:00:02Z",
                 IndexCurve = new WitsmlIndexCurve() { Value = "Depth" },
                 LogData = logData,
                 Direction = WitsmlLog.WITSML_DIRECTION_INCREASING,
+                IndexType = isDepthLog ? WitsmlLog.WITSML_INDEX_TYPE_MD : WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                 LogCurveInfo = new List<WitsmlLogCurveInfo>()
                 {
                     new WitsmlLogCurveInfo()
