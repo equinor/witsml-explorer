@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _wellboreService = new();
             _wellboreService
                 .Setup(ws => ws.GetWellbores(It.IsAny<string>()))
-                .Returns(Task.Run(() => new List<Wellbore>().AsEnumerable()));
+                .Returns(Task.Run(() => new List<Wellbore>() as IList<Wellbore>));
 
             _logObjectService = new();
 

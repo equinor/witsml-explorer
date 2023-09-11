@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IWellboreService
     {
         Task<Wellbore> GetWellbore(string wellUid, string wellboreUid);
-        Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = "");
+        Task<IList<Wellbore>> GetWellbores(string wellUid = "");
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -65,9 +66,10 @@ namespace WitsmlExplorer.Api.Services
                 };
         }
 
-        public async Task<IEnumerable<Wellbore>> GetWellbores(string wellUid = "")
+        public async Task<IList<Wellbore>> GetWellbores(string wellUid = "")
         {
-            DateTime start = DateTime.Now;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByWell(wellUid);
 
             WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
@@ -86,8 +88,8 @@ namespace WitsmlExplorer.Api.Services
                         DateTimeCreation = witsmlWellbore.CommonData.DTimCreation
                     })
                 .OrderBy(wellbore => wellbore.Name).ToList();
-            double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug("Fetched {Count} wellbores in {Elapsed} seconds", wellbores.Count, elapsed);
+            stopwatch.Stop();
+            Log.Debug("Fetched {Count} wellbores in {Elapsed} ms", wellbores.Count, stopwatch.ElapsedMilliseconds);
             return wellbores;
         }
     }
