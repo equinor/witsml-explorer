@@ -1,4 +1,4 @@
-﻿﻿import { TextField } from "@material-ui/core";
+﻿import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
