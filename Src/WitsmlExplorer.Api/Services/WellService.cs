@@ -13,13 +13,11 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 
-using WellDatum = WitsmlExplorer.Api.Models.WellDatum;
-
 namespace WitsmlExplorer.Api.Services
 {
     public interface IWellService
     {
-        Task<IList> GetWells();
+        Task<IList<Well>> GetWells();
         Task<Well> GetWell(string wellUid);
     }
 
@@ -33,7 +31,7 @@ namespace WitsmlExplorer.Api.Services
             _wellboreService = wellboreService;
         }
 
-        public async Task<IList> GetWells()
+        public async Task<IList<Well>> GetWells()
         {
             Task<IList<Wellbore>> getWellbores = _wellboreService.GetWellbores();
             Task<IList<Well>> getWells = GetWellsInformation();
