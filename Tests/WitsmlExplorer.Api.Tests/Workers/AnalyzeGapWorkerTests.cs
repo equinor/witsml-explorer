@@ -264,8 +264,8 @@ public class AnalyzeGapWorkerTests
                 IndexType = indexType
             },
             Mnemonics = new List<string>(),
-            GapSize = 0,
-            TimeGapSize = 60
+            GapSize = 2,
+            TimeGapSize = 2000
         };
     }
 }
