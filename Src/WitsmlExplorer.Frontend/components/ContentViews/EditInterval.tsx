@@ -1,12 +1,19 @@
 import { Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { colors } from "../../styles/Colors";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
 
-const EditInterval = (): React.ReactElement => {
+interface EditIntervalProps {
+  disabled?: boolean;
+  overrideStartIndex?: string;
+  overrideEndIndex?: string;
+}
+
+const EditInterval = (props: EditIntervalProps): React.ReactElement => {
+  const { disabled, overrideStartIndex, overrideEndIndex } = props;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedLogCurveInfo } = navigationState;
   const { minIndex, maxIndex } = selectedLogCurveInfo ? selectedLogCurveInfo[0] : { minIndex: null, maxIndex: null };
@@ -14,6 +21,11 @@ const EditInterval = (): React.ReactElement => {
   const [startIndex, setStartIndex] = useState(String(minIndex));
   const [endIndex, setEndIndex] = useState(String(maxIndex));
   const [isEdited, setIsEdited] = useState(false);
+
+  useEffect(() => {
+    if (overrideStartIndex) setStartIndex(overrideStartIndex);
+    if (overrideEndIndex) setEndIndex(overrideEndIndex);
+  }, [overrideStartIndex, overrideEndIndex]);
 
   const submitEditInterval = () => {
     setIsEdited(false);
@@ -29,6 +41,7 @@ const EditInterval = (): React.ReactElement => {
       payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
     });
   };
+
   return (
     <EditIntervalLayout>
       <Typography
@@ -42,8 +55,9 @@ const EditInterval = (): React.ReactElement => {
       <StartEndIndex>
         <StyledLabel label="Start Index" />
         <StyledTextField
+          disabled={disabled}
           id="startIndex"
-          defaultValue={startIndex}
+          value={startIndex}
           onChange={(e: any) => {
             setStartIndex(e.target.value);
             setIsEdited(true);
@@ -53,15 +67,16 @@ const EditInterval = (): React.ReactElement => {
       <StartEndIndex>
         <StyledLabel label="End Index" />
         <StyledTextField
+          disabled={disabled}
           id="endIndex"
-          defaultValue={endIndex}
+          value={endIndex}
           onChange={(e: any) => {
             setEndIndex(e.target.value);
             setIsEdited(true);
           }}
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval}>
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval} disabled={disabled}>
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </EditIntervalLayout>
@@ -91,7 +106,7 @@ const StyledTextField = styled(TextField)`
   min-width: 220px;
 `;
 
-const StyledButton = styled(Button)`
+export const StyledButton = styled(Button)`
   ${(props) =>
     props.disabled
       ? `

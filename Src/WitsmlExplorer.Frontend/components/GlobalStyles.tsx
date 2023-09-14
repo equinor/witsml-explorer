@@ -149,6 +149,16 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   p[class*="Typography__StyledTypography"] {
     color:${(props) => props.colors.text.staticIconsDefault};
   }
+
+  @keyframes fadeToNormal {
+    from {
+      background-color: ${(props) => props.colors.interactive.successResting};
+    }
+  }
+
+  .fading-row {
+    animation: fadeToNormal 6s;
+  }
 `;
 
 export default GlobalStyles;

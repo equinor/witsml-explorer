@@ -10,19 +10,28 @@ interface CurveValuesPlotProps {
   data: any[];
   columns: ExportableContentTableColumn<CurveSpecification>[];
   name: string;
+  autoRefresh: boolean;
+  isDescending?: boolean;
 }
 
 export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.ReactElement => {
-  const { data, columns, name } = props;
+  const { data, columns, name, autoRefresh, isDescending = false } = props;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const chart = useRef<ECharts>(null);
+  const selectedLabels = useRef<Record<string, boolean>>(null);
+  const scrollIndex = useRef<number>(0);
+  const horizontalZoom = useRef<[number, number]>([0, 100]);
 
-  const chartOption = React.useMemo(() => getChartOption(data, columns, name, colors), [data, columns, name, colors]);
+  const chartOption = React.useMemo(
+    () => getChartOption(data, columns, name, colors, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current),
+    [data, columns, name, colors, autoRefresh]
+  );
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
-    const actionType = Object.values(params.selected).every((s) => s === false) ? "legendSelect" : "legendUnSelect";
+    const shouldShowAll = Object.values(params.selected).every((s) => s === false);
+    const actionType = shouldShowAll ? "legendSelect" : "legendUnSelect";
     chart.current.dispatchAction({ type: "legendSelect", name: params.name });
     for (const legend in params.selected) {
       if (legend !== params.name) {
@@ -32,10 +41,29 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
         });
       }
     }
+    selectedLabels.current = {
+      ...Object.keys(params.selected).reduce((acc, key) => {
+        acc[key] = shouldShowAll;
+        return acc;
+      }, {} as Record<string, boolean>),
+      [params.name]: true
+    };
+  };
+
+  const onLegendScroll = (params: { scrollDataIndex: number }) => {
+    scrollIndex.current = params.scrollDataIndex;
+  };
+
+  const onDataZoom = (params: { dataZoomId: string; start: number; end: number }) => {
+    if (params.dataZoomId == "horizontalZoom") {
+      horizontalZoom.current = [params.start, params.end];
+    }
   };
 
   const handleEvents = {
-    legendselectchanged: onLegendChange
+    legendselectchanged: onLegendChange,
+    legendscroll: onLegendScroll,
+    datazoom: onDataZoom
   };
 
   return (
@@ -53,8 +81,20 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
 });
 CurveValuesPlot.displayName = "CurveValuesPlot";
 
-const getChartOption = (data: any[], columns: ExportableContentTableColumn<CurveSpecification>[], name: string, colors: Colors) => {
+const getChartOption = (
+  data: any[],
+  columns: ExportableContentTableColumn<CurveSpecification>[],
+  name: string,
+  colors: Colors,
+  isDescending: boolean,
+  autoRefresh: boolean,
+  selectedLabels: Record<string, boolean>,
+  scrollIndex: number,
+  horizontalZoom: [number, number]
+) => {
   const valueOffsetFromColumn = 0.01;
+  const autoRefreshSize = 300;
+  if (autoRefresh) data = data.slice(-autoRefreshSize); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const isTimeLog = columns[0].type == ContentType.DateTime;
@@ -73,7 +113,7 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
   return {
     title: {
       left: "center",
-      text: name,
+      text: name + (autoRefresh ? ` (last ${autoRefreshSize} rows)` : ""),
       textStyle: {
         color: colors.text.staticIconsDefault
       }
@@ -87,7 +127,9 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
       selectedMode: "onlyHover",
       textStyle: {
         color: colors.text.staticIconsDefault
-      }
+      },
+      selected: selectedLabels,
+      scrollDataIndex: scrollIndex
     },
     grid: {
       left: "30px",
@@ -120,6 +162,7 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
         color: colors.text.staticIconsDefault,
         hideOverlap: false,
         showMaxLabel: false,
+        showMinLabel: autoRefresh || null,
         formatter: (param: number) => {
           const index = Math.floor(param);
           if (index >= dataColumns.length) return "";
@@ -131,7 +174,7 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
     },
     yAxis: {
       type: isTimeLog ? "time" : "value",
-      inverse: true,
+      inverse: !isDescending,
       min: (value: { min: number }) => value.min - 0.001, // The edge points can disappear, so make sure everything is shown
       max: (value: { max: number }) => value.max + 0.001,
       axisLabel: {
@@ -142,29 +185,35 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
       }
     },
     dataZoom: [
+      autoRefresh
+        ? null
+        : {
+            orient: "vertical",
+            filterMode: "empty",
+            type: "inside"
+          },
+      autoRefresh
+        ? null
+        : {
+            orient: "vertical",
+            filterMode: "empty",
+            type: "slider",
+            labelFormatter: () => ""
+          },
       {
-        orient: "vertical",
-        filterMode: "empty",
-        type: "inside"
-      },
-      {
-        orient: "vertical",
-        filterMode: "empty",
-        type: "slider",
-        labelFormatter: () => ""
-      },
-      {
+        id: "horizontalZoom",
         orient: "horizontal",
         filterMode: "empty",
         type: "slider",
-        startValue: 0,
-        endValue: 8,
+        start: horizontalZoom[0],
+        end: horizontalZoom[1],
         minValueSpan: 1,
         maxValueSpan: 12,
         labelFormatter: () => ""
       }
     ],
     animation: false,
+    backgroundColor: colors.ui.backgroundDefault,
     series: dataColumns.map((col, i) => {
       const minMaxValue = minMaxValues.find((v) => v.curve == col.columnOf.mnemonic);
       return {
