@@ -86,8 +86,10 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
       .filter((check) => check.objectType != null);
     const missingDataJob: MissingDataJob = { wellReferences: wellReferences, wellboreReferences: wellboreReferences, missingDataChecks: filteredChecks };
     const jobId = await JobService.orderJob(JobType.MissingData, missingDataJob);
-    const reportModalProps = { jobId };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    }
   };
 
   const addCheck = () => {
