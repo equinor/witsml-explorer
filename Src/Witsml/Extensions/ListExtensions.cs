@@ -6,7 +6,7 @@ namespace Witsml.Extensions
     {
         public static List<T> AsSingletonList<T>(this T item)
         {
-            return new List<T>(new T[] { item });
+            return new List<T> { item };
         }
     }
 }

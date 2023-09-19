@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Models.Measure;
@@ -26,6 +29,11 @@ namespace WitsmlExplorer.Api.Models
                     LocalX = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalX),
                     LocalY = WellMeasure.FromWitsmlMeasure(witsmlLocation.LocalY)
                 };
+        }
+
+        public static List<WellLocation> FromWitsmlLocation(IEnumerable<WitsmlLocation> witsmlLocations)
+        {
+            return witsmlLocations?.Select(FromWitsmlLocation).ToList() ?? new List<WellLocation>();
         }
     }
 }
