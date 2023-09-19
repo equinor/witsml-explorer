@@ -88,6 +88,7 @@ export const MudLogView = (): React.ReactElement => {
     { property: "wtMudAv", label: "wtMudAv", type: ContentType.Measure },
     { property: "ecdTdAv", label: "ecdTdAv", type: ContentType.Measure },
     { property: "dxcAv", label: "dxcAv", type: ContentType.Number },
+    { property: "commonDataItemState", label: "commonData.itemState", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
@@ -117,6 +118,7 @@ export const MudLogView = (): React.ReactElement => {
           lithPc: lithology.lithPc
         };
       }),
+      commonDataItemState: selectedMudLog?.commonData?.itemState,
       geologyInterval
     };
   });
