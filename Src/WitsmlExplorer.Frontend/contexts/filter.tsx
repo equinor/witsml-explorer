@@ -174,6 +174,7 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
   const isWellFilter = isWellFilterType(filterType);
   const property = isObjectPropertyFilter ? "searchProperty" : filterTypeToProperty[filterType];
   const findEmpty = name === "*IS_EMPTY*" && !isWellFilter && !isObjectPropertyFilter;
+  const isSitecomSyntax = /^sel\(.*\)$/.test(name);
   let searchName = name;
 
   if (!searchName || searchName === "") {
@@ -219,7 +220,7 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
       }
     }
   } else if (isObjectFilter || isObjectPropertyFilter) {
-    const filteredObjects = searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
+    const filteredObjects = isSitecomSyntax ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
     let filteredWellUids = filteredObjects.map((object) => object.wellUid);
     let filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
 
