@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Tests.Query
 {
     public class QueryHelperTests
     {
-        private readonly WitsmlWell _well = new()
+        private readonly TestWell _well = new()
         {
             Uid = "uid",
             Name = "name",
@@ -33,13 +33,13 @@ namespace WitsmlExplorer.Api.Tests.Query
                     Uid = "wellDatumUid",
                     Name = "wellDatumName"
                 }
-            }
+            },
         };
 
         [Fact]
         public void GetPropertyFromObject_NotSupportedProperty_ReturnsNull()
         {
-            object obj = new WitsmlWell { };
+            object obj = new TestWell { };
             object objPropertyValue = QueryHelper.GetPropertyFromObject(obj, "undefinedProperty");
             Assert.Null(objPropertyValue);
         }
@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Tests.Query
         public void AddPropertyToObject_AddsStringProperty()
         {
             Assert.Null(_well.Field);
-            WitsmlWell obj = QueryHelper.AddPropertyToObject(_well, "field");
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "field");
             Assert.Equal("", obj.Field);
         }
 
@@ -112,7 +112,7 @@ namespace WitsmlExplorer.Api.Tests.Query
         public void AddPropertyToObject_AddsObjectProperty()
         {
             Assert.Null(_well.CommonData);
-            WitsmlWell obj = QueryHelper.AddPropertyToObject(_well, "commonData");
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "commonData");
             Assert.NotNull(obj.CommonData);
             Assert.IsType<WitsmlCommonData>(obj.CommonData);
         }
@@ -121,7 +121,7 @@ namespace WitsmlExplorer.Api.Tests.Query
         public void AddPropertyToObject_AddsNestedObject()
         {
             Assert.Null(_well.CommonData);
-            WitsmlWell obj = QueryHelper.AddPropertyToObject(_well, "commonData.sourceName");
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "commonData.sourceName");
             Assert.Equal("", obj.CommonData.SourceName);
         }
 
@@ -132,7 +132,7 @@ namespace WitsmlExplorer.Api.Tests.Query
             Assert.Null(_well.CommonData);
             Assert.Null(_well.WellLocation.Longitude);
             Assert.Null(_well.WellLocation.ProjectedX);
-            WitsmlWell obj = QueryHelper.AddPropertiesToObject(_well, new List<string> { "region", "commonData.sourceName", "wellLocation.longitude.value", "wellLocation.projectedX" });
+            TestWell obj = QueryHelper.AddPropertiesToObject(_well, new List<string> { "region", "commonData.sourceName", "wellLocation.longitude.value", "wellLocation.projectedX" });
             Assert.Equal("", obj.Region);
             Assert.Equal("", obj.CommonData.SourceName);
             Assert.Equal("", obj.WellLocation.Longitude.Value);
@@ -140,4 +140,16 @@ namespace WitsmlExplorer.Api.Tests.Query
             Assert.Null(obj.WellLocation.ProjectedY);
         }
     }
+
+    class TestWell
+    {
+        public string Uid { get; set; }
+        public string Name { get; set; }
+        public string Field { get; set; }
+        public string Region { get; set; }
+        public List<WellDatum> WellDatum { get; set; }
+        public WitsmlLocation WellLocation { get; set; }
+        public WitsmlCommonData CommonData { get; set; }
+    }
+
 }
