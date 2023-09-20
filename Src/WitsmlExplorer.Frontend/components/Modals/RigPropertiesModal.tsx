@@ -2,7 +2,7 @@
 import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import Rig from "../../models/rig";
@@ -21,7 +21,7 @@ export interface RigPropertiesModalProps {
 const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement => {
   const { mode, rig, dispatchOperation } = props;
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone }
   } = useContext(OperationContext);
   const [editableRig, setEditableRig] = useState<Rig>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -98,7 +98,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimStartOpValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableRig.dTimEndOp}
@@ -108,7 +108,7 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimEndOpValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"yearEntService"}

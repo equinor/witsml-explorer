@@ -2,7 +2,7 @@ import { format, formatInTimeZone, toDate } from "date-fns-tz";
 import { DateTimeFormat, TimeZone } from "../contexts/operationStateReducer";
 
 //https://date-fns.org/v2.29.3/docs/format
-const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss";
+const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";
 const rawDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 let dateTimeFormat = rawDateTimeFormat;
 export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";

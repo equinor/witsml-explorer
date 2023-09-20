@@ -1,6 +1,6 @@
 ﻿import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
@@ -17,7 +17,7 @@ export interface TrajectoryPropertiesModalProps {
 const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React.ReactElement => {
   const { mode, trajectory, dispatchOperation } = props;
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone }
   } = useContext(OperationContext);
   const [editableTrajectory, setEditableTrajectory] = useState<Trajectory>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -83,7 +83,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajStartValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableTrajectory.dTimTrajEnd}
@@ -93,7 +93,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajEndValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"serviceCompany"}

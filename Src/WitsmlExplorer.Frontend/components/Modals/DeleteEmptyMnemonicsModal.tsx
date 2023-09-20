@@ -4,7 +4,7 @@ import JobService, { JobType } from "../../services/jobService";
 import { TextField } from "@material-ui/core";
 import OperationType from "../../contexts/operationType";
 import { useContext, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import { DeleteEmptyMnemonicsJob } from "../../models/jobs/deleteEmptyMnemonicsJob";
 import ModalDialog from "./ModalDialog";
 import OperationContext from "../../contexts/operationContext";
@@ -20,7 +20,7 @@ export interface DeleteEmptyMnemonicsModalProps {
 const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React.ReactElement => {
   const { wells, wellbores, dispatchOperation } = props;
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
   const [nullTimeValue, setNullTimeValue] = useState<string>("1900-01-01T00:00:00.000Z");
@@ -63,7 +63,7 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
                 setNullTimeValueValid(valid);
               }}
               timeZone={timeZone}
-              dateTimeFormat={dateTimeFormat}
+              dateTimeFormat={DateTimeFormat.Raw}
             />
             <TextField label="Null depth value" type="number" fullWidth value={nullDepthValue} onChange={(e: any) => setNullDepthValue(+e.target.value)} />
           </ContentLayout>

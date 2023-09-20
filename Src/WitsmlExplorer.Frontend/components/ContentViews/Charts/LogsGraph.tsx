@@ -9,6 +9,7 @@ import { calculateLogTypeId, calculateLogTypeTimeId } from "../../../models/well
 import formatDateString from "../../DateFormatter";
 import { ContentTableRow } from "../table";
 import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
+import { DateTimeFormat } from "../../../contexts/operationStateReducer";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -85,12 +86,12 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     return logs.map((log) => {
       const start =
         selectedWellbore && isTimeIndexed()
-          ? +new Date(formatDateString(log.startIndex, timeZone, dateTimeFormat))
+          ? +new Date(formatDateString(log.startIndex, timeZone, DateTimeFormat.Raw))
           : log.startIndex === null
           ? 0
           : +log.startIndex?.replace("m", "");
       const end =
-        selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone, dateTimeFormat)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
+        selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone, DateTimeFormat.Raw)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
       return {
         name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
         start: start < end ? start : end,
@@ -158,6 +159,8 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
+    const startRaw = formatDateString(log.startRaw, timeZone, dateTimeFormat);
+    const endRaw = formatDateString(log.endRaw, timeZone, dateTimeFormat);
     categories.push(i);
     data.push({
       key: i,
@@ -168,7 +171,7 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
         color: itemColor(log.name)
       },
       tooltip: {
-        formatter: `{b}<br />startIndex: ${log.startRaw}<br />endIndex: ${log.endRaw}<br />runNumber: ${log.runNumber}<br />mnemonics: ${log.mnemonics}`
+        formatter: `{b}<br />startIndex: ${startRaw}<br />endIndex: ${endRaw}<br />runNumber: ${log.runNumber}<br />mnemonics: ${log.mnemonics}`
       }
     });
   }

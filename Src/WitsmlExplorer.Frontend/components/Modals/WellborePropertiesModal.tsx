@@ -4,7 +4,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import MaxLength from "../../models/maxLength";
 import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
@@ -127,7 +127,7 @@ const WellborePropertiesModal = (props: WellborePropertiesModalProps): React.Rea
                       setDTimeKickoffValid(valid);
                     }}
                     timeZone={timeZone}
-                    dateTimeFormat={dateTimeFormat}
+                    dateTimeFormat={DateTimeFormat.Raw}
                   />
                   <Container>
                     <TextField

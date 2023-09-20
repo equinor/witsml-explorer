@@ -2,7 +2,7 @@ import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import { itemStateTypes } from "../../models/itemStateTypes";
@@ -106,7 +106,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStop}
@@ -116,7 +116,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStartDrilling}
@@ -126,7 +126,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartDrillingValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStopDrilling}
@@ -136,7 +136,7 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopDrillingValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={dateTimeFormat}
+                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"planDogleg"}

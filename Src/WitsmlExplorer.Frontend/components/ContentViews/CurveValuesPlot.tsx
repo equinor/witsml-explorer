@@ -5,6 +5,8 @@ import OperationContext from "../../contexts/operationContext";
 import { CurveSpecification } from "../../models/logData";
 import { Colors } from "../../styles/Colors";
 import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
+import formatDateString from "../DateFormatter";
+import { TimeZone, DateTimeFormat } from "../../contexts/operationStateReducer";
 
 interface CurveValuesPlotProps {
   data: any[];
@@ -15,11 +17,11 @@ interface CurveValuesPlotProps {
 export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.ReactElement => {
   const { data, columns, name } = props;
   const {
-    operationState: { colors }
+    operationState: { colors, timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const chart = useRef<ECharts>(null);
 
-  const chartOption = React.useMemo(() => getChartOption(data, columns, name, colors), [data, columns, name, colors]);
+  const chartOption = React.useMemo(() => getChartOption(data, columns, name, colors, timeZone, dateTimeFormat), [data, columns, name, colors, timeZone, dateTimeFormat]);
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const actionType = Object.values(params.selected).every((s) => s === false) ? "legendSelect" : "legendUnSelect";
@@ -53,7 +55,14 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
 });
 CurveValuesPlot.displayName = "CurveValuesPlot";
 
-const getChartOption = (data: any[], columns: ExportableContentTableColumn<CurveSpecification>[], name: string, colors: Colors) => {
+const getChartOption = (
+  data: any[],
+  columns: ExportableContentTableColumn<CurveSpecification>[],
+  name: string,
+  colors: Colors,
+  timeZone: TimeZone,
+  dateTimeFormat: DateTimeFormat
+) => {
   const valueOffsetFromColumn = 0.01;
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
@@ -137,7 +146,7 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
       axisLabel: {
         showMinLabel: true,
         showMaxLabel: true,
-        formatter: isTimeLog ? timeFormatter : (params: number) => depthFormatter(params, indexUnit),
+        formatter: isTimeLog ? (params: number) => timeFormatter(params, timeZone, dateTimeFormat) : (params: number) => depthFormatter(params, indexUnit),
         color: colors.text.staticIconsDefault
       }
     },
@@ -184,9 +193,9 @@ const getChartOption = (data: any[], columns: ExportableContentTableColumn<Curve
   };
 };
 
-const timeFormatter = (params: number) => {
+const timeFormatter = (params: number, timeZone: TimeZone, dateTimeFormat: DateTimeFormat) => {
   const dateTime = new Date(Math.round(params));
-  return dateTime.toISOString().split(".")[0] + "Z";
+  return formatDateString(dateTime.toISOString().split(".")[0] + "Z", timeZone, dateTimeFormat);
 };
 
 const depthFormatter = (params: number, indexUnit: string) => {
