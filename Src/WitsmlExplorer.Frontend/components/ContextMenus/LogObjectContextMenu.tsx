@@ -57,7 +57,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   };
   const onClickAnalyzeGaps = () => {
     const logObject = checkedObjects[0];
-    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchNavigation, dispatchOperation, logObject, mnemonics: [] };
+    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchOperation, logObject, mnemonics: [] };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

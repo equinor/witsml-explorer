@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
@@ -25,7 +26,6 @@ namespace WitsmlExplorer.Api.Workers;
 /// </summary>
 public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 {
-    private const string DataSeparator = ",";
     public JobType JobType => JobType.AnalyzeGaps;
     public AnalyzeGapWorker(ILogger<AnalyzeGapJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
     
@@ -52,20 +52,20 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message), null);
         }
 
-        var jobMnemonics = job.Mnemonics.Any() ? job.Mnemonics : witsmlLog.LogCurveInfo.Select(x => x.Mnemonic);
-        await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, jobMnemonics.ToList(), Logger);
+        var jobMnemonics = job.Mnemonics.Any() ? job.Mnemonics.ToList() : witsmlLog.LogCurveInfo.Select(x => x.Mnemonic).ToList();
+        await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger);
         
         WitsmlLogData logData = await logDataReader.GetNextBatch();
-        var logMnemonics = logData.MnemonicList.Split(DataSeparator).Select((value, index) => new { index, value }).ToList();
+        var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
         while (logData != null)
         {
-            logDataRows.AddRange(logData.Data?.Select(x => x.Data.Split(DataSeparator)) ?? Array.Empty<string[]>());
+            logDataRows.AddRange(logData.Data?.Select(x => x.Data.Split(CommonConstants.DataSeparator)) ?? Array.Empty<string[]>());
             logData = await logDataReader.GetNextBatch();
         }
         
-        if (!logDataRows.Any() || !logMnemonics.Any())
+        if (!logDataRows.Any() || logMnemonics == null || !logMnemonics.Any())
         {
-            return GetGapReportResult(job, new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
+            return GetGapReportResult(job, jobMnemonics,new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
         }
 
         if (logDataRows.Any(x => x.Length < logMnemonics.Count))
@@ -100,7 +100,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputAnalyzeDataList, gapSize, isLogIncreasing));
         }
 
-        return GetGapReportResult(job, gapReportItems, isDepthLog, logUid);
+        return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid);
     }
 
     private static Func<Index, bool> ValidateCurveIndex(bool isLogIncreasing, LogCurveIndex logCurveIndex)
@@ -117,22 +117,23 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             : new DateTimeIndex(DateTime.Parse(value, CultureInfo.InvariantCulture));
     }
 
-    private (WorkerResult, RefreshAction) GetGapReportResult(AnalyzeGapJob job, List<AnalyzeGapReportItem> gapReportItems, bool isDepth, string logUid)
+    private (WorkerResult, RefreshAction) GetGapReportResult(AnalyzeGapJob job, IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> gapReportItems, bool isDepth, string logUid)
     {
         Logger.LogInformation("Analyzing gaps is done. {jobDescription}", job.Description());
-        job.JobInfo.Report = GetGapReport(gapReportItems, job.LogReference, isDepth);
+        job.JobInfo.Report = GetGapReport(selectedMnemonics, gapReportItems, job.LogReference, isDepth);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Analyze gaps for log: {logUid}", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private AnalyzeGapReport GetGapReport(List<AnalyzeGapReportItem> analyzeGapItems, LogObject logReference, bool isDepthLog)
+    private AnalyzeGapReport GetGapReport(IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> analyzeGapItems, LogObject logReference, bool isDepthLog)
     {
+        var mnemonics = CommonConstants.NewLine + string.Join(CommonConstants.NewLine, selectedMnemonics);
         return new AnalyzeGapReport
         {
             Title = $"Analyze gaps report",
             Summary = analyzeGapItems.Count > 0
-                ? $"Found {analyzeGapItems.Count} gaps for {(isDepthLog ? "depth" : "time")} log '{logReference.Name}':"
-                : "No gaps were found for selected items.",
+                ? $"Found {analyzeGapItems.Count} gaps in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}' for mnemonics: {mnemonics}."
+                : $"No gaps were found for mnemonics: {mnemonics}.",
             LogReference = logReference,
             ReportItems = analyzeGapItems
         };
@@ -163,7 +164,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                     Mnemonic = mnemonic,
                     Start = lastValueIndex.ToString(),
                     End = inputIndex.ToString(),
-                    GapSize = gapSize.ToString(),
+                    GapSize = (gapSize is DepthIndex depthIndex) ? depthIndex.ToString(CommonConstants.DefaultNumberOfRoundedPlaces) : gapSize.ToString(),
                 });
             }
             lastValueIndex = inputIndex;

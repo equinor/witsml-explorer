@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { NavigationAction } from "../../contexts/navigationAction";
+import React, { useContext, useState } from "react";
 import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
@@ -9,16 +8,17 @@ import { TextField } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
 import { ReportModal } from "./ReportModal";
 import WarningBar from "../WarningBar";
+import OperationContext from "../../contexts/operationContext";
 
 export interface AnalyzeGapModalProps {
-  dispatchNavigation: (action: NavigationAction) => void;
   dispatchOperation: (action: HideModalAction | DisplayModalAction) => void;
   logObject: LogObject;
   mnemonics: string[];
 }
 
 const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
-  const { dispatchOperation, logObject } = props;
+  const { logObject, mnemonics } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   const initialTime = "00:00:00";
   const [log] = useState<LogObject>(logObject);
@@ -30,10 +30,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
 
   const onSubmit = async () => {
     setIsLoading(true);
-    const logReference: LogObject = props.logObject;
     const analyzeGapsJob = {
-      logReference: logReference,
-      mnemonics: props.mnemonics,
+      logReference: logObject,
+      mnemonics: mnemonics,
       gapSize: gapSize,
       timeGapSize: convertToMilliseconds(timeGapSize)
     };

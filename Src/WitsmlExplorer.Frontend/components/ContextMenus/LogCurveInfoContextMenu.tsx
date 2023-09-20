@@ -58,7 +58,7 @@ const LogCurveInfoContextMenu = (props: LogCurveInfoContextMenuProps): React.Rea
   const onClickAnalyzeGaps = () => {
     const logObject = selectedLog;
     const mnemonics = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
-    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchNavigation, dispatchOperation, logObject, mnemonics };
+    const analyzeGapModalProps: AnalyzeGapModalProps = { dispatchOperation, logObject, mnemonics };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

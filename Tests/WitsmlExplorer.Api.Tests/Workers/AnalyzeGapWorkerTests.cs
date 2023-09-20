@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -60,14 +61,16 @@ public class AnalyzeGapWorkerTests
         _worker = new AnalyzeGapWorker(logger, witsmlClientProvider.Object);
     }
     
-    [Fact]
-    public async Task AnalyzeGap_Depth_CorrectData_WithoutGaps_IsValid()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task AnalyzeGap_Depth_CorrectData_WithoutGaps_IsValid(bool isIncreasing)
     {
         AnalyzeGapJob job = GetAnalyzeGapJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
         JobInfo jobInfo = new();
         job.JobInfo = jobInfo;
 
-        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, isLogDataWithGaps: false);
+        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, isLogDataWithGaps: false, isIncreasing: isIncreasing);
         (_, _) = await _worker.Execute(job);
 
         Assert.IsType<AnalyzeGapReport>(jobInfo.Report);
@@ -78,14 +81,16 @@ public class AnalyzeGapWorkerTests
         Assert.Empty(report.ReportItems);
     }
     
-    [Fact]
-    public async Task AnalyzeGap_Depth_CorrectData_WithGaps_IsValid()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]   
+    public async Task AnalyzeGap_Depth_CorrectData_WithGaps_IsValid(bool isIncreasing)
     {
         AnalyzeGapJob job = GetAnalyzeGapJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
         JobInfo jobInfo = new();
         job.JobInfo = jobInfo;
 
-        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, isLogDataWithGaps: true);
+        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD, isLogDataWithGaps: true, isIncreasing: isIncreasing);
         (_, _) = await _worker.Execute(job);
 
         Assert.IsType<AnalyzeGapReport>(jobInfo.Report);
@@ -96,14 +101,16 @@ public class AnalyzeGapWorkerTests
         Assert.NotEmpty(report.ReportItems);
     }
     
-    [Fact]
-    public async Task AnalyzeGap_Time_CorrectData_WithoutGaps_IsValid()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task AnalyzeGap_Time_CorrectData_WithoutGaps_IsValid(bool isIncreasing)
     {
         AnalyzeGapJob job = GetAnalyzeGapJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
         JobInfo jobInfo = new();
         job.JobInfo = jobInfo;
 
-        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, isLogDataWithGaps: false);
+        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, isLogDataWithGaps: false, isIncreasing: isIncreasing);
         (_, _) = await _worker.Execute(job);
 
         Assert.IsType<AnalyzeGapReport>(jobInfo.Report);
@@ -114,14 +121,16 @@ public class AnalyzeGapWorkerTests
         Assert.Empty(report.ReportItems);
     }
     
-    [Fact]
-    public async Task AnalyzeGap_Time_CorrectData_WithGaps_IsValid()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task AnalyzeGap_Time_CorrectData_WithGaps_IsValid(bool isIncreasing)
     {
         AnalyzeGapJob job = GetAnalyzeGapJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
         JobInfo jobInfo = new();
         job.JobInfo = jobInfo;
 
-        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, isLogDataWithGaps: true);
+        SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME, isLogDataWithGaps: true, isIncreasing: isIncreasing);
         (_, _) = await _worker.Execute(job);
 
         Assert.IsType<AnalyzeGapReport>(jobInfo.Report);
@@ -148,24 +157,26 @@ public class AnalyzeGapWorkerTests
         Assert.Equal(isSuccess, analyzeGapTask.Result.IsSuccess);
     }
     
-    private static void SetupClient(Mock<IWitsmlClient> witsmlClient, string indexType, bool isLogDataWithGaps)
+    private static void SetupClient(Mock<IWitsmlClient> witsmlClient, string indexType, bool isLogDataWithGaps, bool isIncreasing)
     {
         bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         var mockSequence = new MockSequence();
+
+        var logDataWithGaps = GetTestLogDataWithGaps(isDepthLog);
+        var logDataWithoutGaps = GetTestLogDataWithoutGaps(isDepthLog);
+        witsmlClient.InSequence(mockSequence)
+            .Setup(client =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+            .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
+                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps,isDepthLog, isIncreasing))
+                : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
         
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
             .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
-                ? Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithGaps(isDepthLog),isDepthLog))
-                : Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithoutGaps(isDepthLog), isDepthLog)));
-        
-        witsmlClient.InSequence(mockSequence)
-            .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
-                ? Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithGaps(isDepthLog),isDepthLog))
-                : Task.FromResult(GetTestWitsmlLogs(GetTestLogDataWithoutGaps(isDepthLog), isDepthLog)));
+                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps,isDepthLog, isIncreasing))
+                : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
@@ -173,8 +184,15 @@ public class AnalyzeGapWorkerTests
             .Returns(Task.FromResult(new WitsmlLogs(){Logs = new List<WitsmlLog>() }));
     }
     
-    private static WitsmlLogs GetTestWitsmlLogs(WitsmlLogData logData, bool isDepthLog)
+    private static WitsmlLogs GetTestWitsmlLogs(WitsmlLogData logData, bool isDepthLog, bool isIncreasing)
     {
+        logData.Data = isIncreasing
+            ? logData.Data.OrderBy(x => x.Data).ToList()
+            : logData.Data.OrderByDescending(x => x.Data).ToList();
+        
+        (int startIndex, int endIndex) = isIncreasing ? (51, 54) : (54, 51);
+        (string startDateTimeIndex, string endDateTimeIndex) = isIncreasing ? ("2023-04-19T00:00:00Z", "2023-04-19T00:00:02Z") : ("2023-04-19T00:00:02Z", "2023-04-19T00:00:00Z");
+
         return new WitsmlLogs
         {
             Logs = new WitsmlLog
@@ -182,40 +200,40 @@ public class AnalyzeGapWorkerTests
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
-                StartIndex = new WitsmlIndex(new DepthIndex(51, "m")),
-                EndIndex = new WitsmlIndex(new DepthIndex(54, "m")),
-                StartDateTimeIndex = "2023-04-19T00:00:00Z",
-                EndDateTimeIndex = "2023-04-19T00:00:02Z",
+                StartIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
+                EndIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                StartDateTimeIndex = startDateTimeIndex,
+                EndDateTimeIndex = endDateTimeIndex,
                 IndexCurve = new WitsmlIndexCurve() { Value = "Depth" },
                 LogData = logData,
-                Direction = WitsmlLog.WITSML_DIRECTION_INCREASING,
+                Direction = isIncreasing ? WitsmlLog.WITSML_DIRECTION_INCREASING : WitsmlLog.WITSML_DIRECTION_DECREASING,
                 IndexType = isDepthLog ? WitsmlLog.WITSML_INDEX_TYPE_MD : WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                 LogCurveInfo = new List<WitsmlLogCurveInfo>()
                 {
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "Depth",
-                        MinIndex = new WitsmlIndex(new DepthIndex(51, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(54, "m")),
-                        MinDateTimeIndex = "2023-04-19T00:00:00Z",
-                        MaxDateTimeIndex = "2023-04-19T00:00:03Z",
+                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                        MinDateTimeIndex = startDateTimeIndex,
+                        MaxDateTimeIndex = endDateTimeIndex,
                         
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "BPOS",
-                        MinIndex = new WitsmlIndex(new DepthIndex(51, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(54, "m")),
-                        MinDateTimeIndex = "2023-04-19T00:00:00Z",
-                        MaxDateTimeIndex = "2023-04-19T00:00:03Z"
+                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                        MinDateTimeIndex = startDateTimeIndex,
+                        MaxDateTimeIndex = endDateTimeIndex
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "SPM1",
-                        MinIndex = new WitsmlIndex(new DepthIndex(51, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(54, "m")),
-                        MinDateTimeIndex = "2023-04-19T00:00:00Z",
-                        MaxDateTimeIndex = "2023-04-19T00:00:03Z"
+                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                        MinDateTimeIndex = startDateTimeIndex,
+                        MaxDateTimeIndex = endDateTimeIndex
                     },
                 },
             }.AsSingletonList()

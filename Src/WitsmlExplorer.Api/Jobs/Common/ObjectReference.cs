@@ -5,7 +5,7 @@ using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 
 namespace WitsmlExplorer.Api.Jobs.Common
 {
-    public class ObjectReference : IReference, IWellboreReference
+    public class ObjectReference : IReference, IObjectReference
     {
         public string WellUid { get; set; }
         public string WellboreUid { get; set; }
