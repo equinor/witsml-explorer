@@ -34,7 +34,7 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
   const onSubmit = async (updatedMudLog: EditableMudLog) => {
     setIsLoading(true);
     const modifyMudLogJob = {
-      mudLog: { ...updatedMudLog, commonData: { itemState: updatedMudLog.itemState } }
+      mudLog: { ...updatedMudLog, commonData: updatedMudLog.itemState ? { itemState: updatedMudLog.itemState } : null }
     };
     await JobService.orderJob(JobType.ModifyMudLog, modifyMudLogJob);
     setIsLoading(false);
