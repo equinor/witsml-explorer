@@ -45,6 +45,7 @@ namespace WitsmlExplorer.Api.Models
         ReplaceComponents,
         ReplaceObjects,
         CheckLogHeader,
+        MissingData,
         AnalyzeGaps
     }
 }
