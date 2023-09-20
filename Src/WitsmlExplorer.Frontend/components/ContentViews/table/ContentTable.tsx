@@ -105,7 +105,9 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     onColumnVisibilityChange: setColumnVisibility,
     onColumnSizingChange: setColumnSizing,
     onRowSelectionChange: (updaterOrValue) => {
-      const newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(rowSelection) : updaterOrValue;
+      const prevSelection = checkableRows ? rowSelection : {};
+      let newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(prevSelection) : updaterOrValue;
+      if (!checkableRows && Object.keys(newRowSelection).length == 0) newRowSelection = rowSelection;
       setRowSelection(newRowSelection);
       onRowSelectionChange?.(data.filter((_, index) => newRowSelection[index]));
     },

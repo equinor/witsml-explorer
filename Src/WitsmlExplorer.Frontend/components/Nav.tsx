@@ -29,6 +29,7 @@ const Nav = (): React.ReactElement => {
     return [
       getServerCrumb(selectedServer, dispatchNavigation),
       getJobsCrumb(currentSelected),
+      getSearchCrumb(currentSelected),
       getWellCrumb(selectedWell, dispatchNavigation),
       getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
       ...groupCrumbs,
@@ -151,6 +152,14 @@ const getJobsCrumb = (currentSelected: Selectable) => {
   return currentSelected == ViewFlags.Jobs
     ? {
         name: "Jobs"
+      }
+    : {};
+};
+
+const getSearchCrumb = (currentSelected: Selectable) => {
+  return currentSelected == ViewFlags.ObjectSearchView
+    ? {
+        name: "Search"
       }
     : {};
 };

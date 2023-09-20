@@ -1,20 +1,8 @@
-﻿import { getLogObject, getObject, getObjectSearchResult, getWell, getWellbore } from "../../__testUtils__/testUtils";
-import { pluralize } from "../../components/ContextMenus/ContextMenuUtils";
+﻿import { getLogObject, getObjectSearchResult, getWell, getWellbore } from "../../__testUtils__/testUtils";
 import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import {
-  EMPTY_FILTER,
-  Filter,
-  FilterOptions,
-  ObjectFilterType,
-  ObjectPropertyFilterType,
-  WellFilterType,
-  WellPropertyFilterType,
-  filterTypeToProperty,
-  filterWells
-} from "../filter";
+import { EMPTY_FILTER, Filter, FilterOptions, ObjectFilterType, WellFilterType, WellPropertyFilterType, filterTypeToProperty, filterWells } from "../filter";
 
 describe("Filter", () => {
   let filter: Filter;
@@ -203,20 +191,7 @@ describe("Filter", () => {
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
 
-    Object.values(ObjectFilterType).forEach((objectType) => {
-      it(`Should match on name when FilterType is ${objectType}`, () => {
-        filter.name = `test${objectType}`;
-        filter.filterType = objectType;
-        filter.searchResults = [
-          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` })
-        ];
-        const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
-        const expectedWells = [WELL_6];
-        expect(modifiedWells).toStrictEqual(expectedWells);
-      });
-    });
-
-    Object.values(ObjectPropertyFilterType).forEach((filterType) => {
+    Object.values(ObjectFilterType).forEach((filterType) => {
       it(`Should match on ${filterTypeToProperty[filterType]} property when FilterType is ${filterType}`, () => {
         filter.name = `test${filterTypeToProperty[filterType]}`;
         filter.filterType = filterType;
@@ -267,38 +242,6 @@ describe("Filter", () => {
       const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
       const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
       expect(modifiedWells).toStrictEqual(expectedWells);
-    });
-
-    Object.values(ObjectFilterType).forEach((objectType) => {
-      it(`Should only match on empty ${pluralize(objectType)} when filterType is ${objectType} and the special keyword *IS_EMPTY* is used`, () => {
-        filter.name = "*IS_EMPTY*";
-        filter.filterType = objectType;
-        filter.searchResults = [
-          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` }),
-          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well5", wellboreUid: "wellbore5A", name: `test${objectType}` })
-        ];
-        const modifiedWells = filterWells(wells, filter, {
-          ...FILTER_OPTIONS,
-          filterWellbores: false
-        });
-        const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
-        expect(modifiedWells).toStrictEqual(expectedWells);
-      });
-
-      it(`Should only match on empty ${pluralize(objectType)} with filtered wellbores when filterType is ${objectType} and the special keyword *IS_EMPTY* is used `, () => {
-        filter.name = "*IS_EMPTY*";
-        filter.filterType = objectType;
-        filter.searchResults = [
-          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well6", wellboreUid: "wellbore6", name: `test${objectType}` }),
-          getObject(objectType as undefined as ObjectType, { uid: `${objectType}Uid`, wellUid: "well5", wellboreUid: "wellbore5A", name: `test${objectType}` })
-        ];
-        const modifiedWells = filterWells(wells, filter, {
-          ...FILTER_OPTIONS,
-          filterWellbores: true
-        });
-        const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, { ...WELL_5, wellbores: [WELLBORE_5B] }];
-        expect(modifiedWells).toStrictEqual(expectedWells);
-      });
     });
   });
 });

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using Witsml.Data;
 using Witsml.ServiceReference;
@@ -55,6 +56,8 @@ namespace WitsmlExplorer.Api.Services
                     WellboreUid = obj.UidWellbore,
                     WellUid = obj.UidWell,
                     Name = obj.Name,
+                    WellboreName = obj.NameWellbore,
+                    WellName = obj.NameWell
                 }
             );
         }
@@ -65,8 +68,12 @@ namespace WitsmlExplorer.Api.Services
             {
                 throw new ArgumentException($"{nameof(objectType)} must be a valid type of an object on wellbore");
             }
+            else if (objectProperty == null)
+            {
+                throw new ArgumentException("objectProperty cannot be null!");
+            }
 
-            if (objectProperty != null)
+            if (!objectPropertyValue.IsNullOrEmpty())
             {
                 // send a request to see if the server is capable of searching by the property.
                 IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsSingletonWitsmlList();
@@ -95,17 +102,16 @@ namespace WitsmlExplorer.Api.Services
                     Uid = obj.Uid,
                     WellboreUid = obj.UidWellbore,
                     WellUid = obj.UidWell,
-                    Name = obj.Name
+                    Name = obj.Name,
+                    WellboreName = obj.NameWellbore,
+                    WellName = obj.NameWell,
+                    ObjectType = objectType
                 };
 
                 if (objectProperty != null)
                 {
-                    PropertyInfo witsmlProperty = obj.GetType().GetProperty(objectProperty.CapitalizeFirstLetter());
-                    if (witsmlProperty != null)
-                    {
-                        string propertyValue = witsmlProperty.GetValue(obj)?.ToString();
-                        searchResult.SearchProperty = propertyValue;
-                    }
+                    string propertyValue = (string)QueryHelper.GetPropertyFromObject(obj, objectProperty);
+                    searchResult.SearchProperty = propertyValue;
                 }
 
                 return searchResult;
