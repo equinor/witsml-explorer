@@ -12,6 +12,8 @@ import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { WellRow } from "../ContentViews/WellsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
+import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
+import MissingDataAgentModal, { MissingDataAgentModalProps } from "../Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
 import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
@@ -19,7 +21,6 @@ import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
 
 export interface WellContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -97,6 +98,20 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     dispatchOperation(action);
   };
 
+  const onClickMissingDataAgent = () => {
+    const wellReferences = checkedWellRows?.map((row) => ({
+      wellUid: row.uid,
+      wellName: row.name
+    })) || [
+      {
+        wellUid: well.uid,
+        wellName: well.name
+      }
+    ];
+    const missingDataAgentModalProps: MissingDataAgentModalProps = { wellReferences: wellReferences, wellboreReferences: [] };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <MissingDataAgentModal {...missingDataAgentModalProps} /> });
+  };
+
   const onClickProperties = () => {
     const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.Edit, well, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
@@ -140,6 +155,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
             </MenuItem>
           ))}
         </NestedMenuItem>,
+        <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+          <StyledIcon name="search" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Missing Data Agent</Typography>
+        </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
