@@ -5,6 +5,8 @@
 
 export const validText = (text: string, minLength: number | undefined = undefined, maxLength: number | undefined = undefined): boolean => {
   if (minLength === undefined && maxLength === undefined) return Boolean(text) && text.length > 0;
+  if (minLength === 0 && (text === null || text === undefined)) return true;
+  if (minLength > 0 && (text === null || text === undefined)) return false;
   if (typeof minLength === "number" && maxLength === undefined) return text.length >= minLength;
   if (minLength === undefined && typeof maxLength === "number") return text.length <= maxLength;
   if (minLength >= maxLength) throw new Error("The value for minLength should be less than maxLength.");

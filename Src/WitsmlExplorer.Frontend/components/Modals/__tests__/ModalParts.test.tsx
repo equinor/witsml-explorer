@@ -1,6 +1,15 @@
 import { validText } from "../ModalParts";
 
 it("Should detect any misbehavior during text validation using the validText() method.", () => {
+  expect(validText(null)).toBeFalsy();
+  expect(validText(null, 0)).toBeTruthy();
+  expect(validText(undefined, 0)).toBeTruthy();
+  expect(validText(null, 0, 10)).toBeTruthy();
+  expect(validText(undefined, 0, 10)).toBeTruthy();
+  expect(validText(null, 1)).toBeFalsy();
+  expect(validText(undefined, 1)).toBeFalsy();
+  expect(validText(null, 1, 10)).toBeFalsy();
+  expect(validText(undefined, 1, 10)).toBeFalsy();
   expect(validText("")).toBeFalsy();
   expect(validText("", 0, undefined)).toBeTruthy();
   expect(validText("a", 0, undefined)).toBeTruthy();

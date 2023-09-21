@@ -31,6 +31,16 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
   const editMode = mode === PropertiesModalMode.Edit;
   const validIndexCurves = [IndexCurve.Depth, IndexCurve.Time];
 
+  const validEditableServiceCompany = () => {
+    if (logObject.serviceCompany === null && editableLogObject.serviceCompany === null) return true;
+    return validText(editableLogObject.serviceCompany, 1, 64);
+  };
+
+  const validEditableRunNumber = () => {
+    if (logObject.runNumber === null && editableLogObject.runNumber === null) return true;
+    return validText(editableLogObject.runNumber, 1, 16);
+  };
+
   const onSubmit = async (updatedLog: LogObject) => {
     setIsLoading(true);
     const wellboreLogJob = {
@@ -86,42 +96,45 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 label="object growing"
                 defaultValue={editableLogObject.objectGrowing == null ? "" : editableLogObject.objectGrowing ? "true" : "false"}
               />
-              <TextField
-                id="serviceCompany"
-                label="service company"
-                helperText={
-                  logObject.serviceCompany &&
-                  !(logObject.serviceCompany === null && editableLogObject.serviceCompany === null) &&
-                  !validText(editableLogObject.serviceCompany, 1, 64)
-                    ? "A service company must be 1-64 characters"
-                    : ""
-                }
-                variant={
-                  logObject.serviceCompany &&
-                  !(logObject.serviceCompany === null && editableLogObject.serviceCompany === null) &&
-                  !validText(editableLogObject.serviceCompany, 1, 64)
-                    ? "error"
-                    : undefined
-                }
-                defaultValue={editableLogObject.serviceCompany}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, serviceCompany: e.target.value === "" ? null : e.target.value })}
-              />
-              <TextField
-                id="runNumber"
-                label="run number"
-                helperText={
-                  logObject.runNumber && !(logObject.runNumber === null && editableLogObject.runNumber === null) && !validText(editableLogObject.runNumber, 1, 16)
-                    ? "A run number must be 1-16 characters"
-                    : ""
-                }
-                variant={
-                  logObject.runNumber && !(logObject.runNumber === null && editableLogObject.runNumber === null) && !validText(editableLogObject.runNumber, 1, 16)
-                    ? "error"
-                    : undefined
-                }
-                defaultValue={editableLogObject.runNumber}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, runNumber: e.target.value === "" ? null : e.target.value })}
-              />
+              {mode === PropertiesModalMode.New ? (
+                <>
+                  <TextField
+                    id="serviceCompany"
+                    label="service company"
+                    helperText={validText(editableLogObject.serviceCompany, 0, 64) ? "" : "A service company must be 0-64 characters"}
+                    variant={validText(editableLogObject.serviceCompany, 0, 64) ? undefined : "error"}
+                    defaultValue={editableLogObject.serviceCompany}
+                    onChange={(e: any) => setEditableLogObject({ ...editableLogObject, serviceCompany: e.target.value === "" ? null : e.target.value })}
+                  />
+                  <TextField
+                    id="runNumber"
+                    label="run number"
+                    helperText={validText(editableLogObject.runNumber, 0, 16) ? "" : "A run number must be 0-16 characters"}
+                    variant={validText(editableLogObject.runNumber, 0, 16) ? undefined : "error"}
+                    defaultValue={editableLogObject.runNumber}
+                    onChange={(e: any) => setEditableLogObject({ ...editableLogObject, runNumber: e.target.value === "" ? null : e.target.value })}
+                  />
+                </>
+              ) : (
+                <>
+                  <TextField
+                    id="serviceCompany"
+                    label="service company"
+                    helperText={validEditableServiceCompany() ? "" : "A service company must be 1-64 characters"}
+                    variant={validEditableServiceCompany() ? undefined : "error"}
+                    defaultValue={editableLogObject.serviceCompany}
+                    onChange={(e: any) => setEditableLogObject({ ...editableLogObject, serviceCompany: e.target.value === "" ? null : e.target.value })}
+                  />
+                  <TextField
+                    id="runNumber"
+                    label="run number"
+                    helperText={validEditableRunNumber() ? "" : "A run number must be 1-16 characters"}
+                    variant={validEditableRunNumber() ? undefined : "error"}
+                    defaultValue={editableLogObject.runNumber}
+                    onChange={(e: any) => setEditableLogObject({ ...editableLogObject, runNumber: e.target.value === "" ? null : e.target.value })}
+                  />
+                </>
+              )}
               <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
               <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
               <TextField disabled id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} />
@@ -148,10 +161,10 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
             !validText(editableLogObject.uid) ||
             !validText(editableLogObject.name) ||
             !validText(editableLogObject.indexCurve) ||
-            (logObject.serviceCompany &&
-              !(logObject.serviceCompany === null && editableLogObject.serviceCompany === null) &&
-              !validText(editableLogObject.serviceCompany, 1, 64)) ||
-            (logObject.runNumber && !(logObject.runNumber === null && editableLogObject.runNumber === null) && !validText(editableLogObject.runNumber, 1, 16))
+            (mode === PropertiesModalMode.New && !validText(editableLogObject.serviceCompany, 0, 64)) ||
+            (mode === PropertiesModalMode.Edit && !validEditableServiceCompany()) ||
+            (mode === PropertiesModalMode.New && !validText(editableLogObject.runNumber, 0, 16)) ||
+            (mode === PropertiesModalMode.Edit && !validEditableRunNumber())
           }
           onSubmit={() => onSubmit(editableLogObject)}
           isLoading={isLoading}

@@ -56,6 +56,8 @@ namespace WitsmlExplorer.Api.Workers.Create
                     NameWellbore = targetWellbore.Name,
                     Uid = job.LogObject.Uid,
                     Name = job.LogObject.Name,
+                    RunNumber = job.LogObject.RunNumber,
+                    ServiceCompany = job.LogObject.ServiceCompany,
                     IndexType = indexType == IndexType.Depth ? WitsmlLog.WITSML_INDEX_TYPE_MD : WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                     IndexCurve = new WitsmlIndexCurve()
                     {
