@@ -1,4 +1,4 @@
-import { DotProgress, Typography } from "@equinor/eds-core-react";
+import { Accordion, DotProgress, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
@@ -8,6 +8,7 @@ import BaseReport, { createReport } from "../../models/reports/BaseReport";
 import JobService from "../../services/jobService";
 import NotificationService from "../../services/notificationService";
 import { ContentTable, ContentTableColumn, ContentType } from "../ContentViews/table";
+import { StyledAccordionHeader } from "./LogComparisonModal";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 
 export interface ReportModal {
@@ -29,7 +30,10 @@ export interface ReportModal {
  */
 export const ReportModal = (props: ReportModal): React.ReactElement => {
   const { jobId, report: reportProp } = props;
-  const { dispatchOperation } = React.useContext(OperationContext);
+  const {
+    dispatchOperation,
+    operationState: { colors }
+  } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
 
@@ -59,7 +63,18 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         <>
           {report ? (
             <ContentLayout>
-              {report.summary && <Typography>{report.summary}</Typography>}
+              {report.summary && report.summary.includes("\n") ? (
+                <Accordion>
+                  <Accordion.Item>
+                    <StyledAccordionHeader colors={colors}>{report.summary.split("\n")[0]}</StyledAccordionHeader>
+                    <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
+                      <Typography style={{ whiteSpace: "pre-line" }}>{report.summary.split("\n").splice(1).join("\n")}</Typography>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion>
+              ) : (
+                <Typography>{report.summary}</Typography>
+              )}
               {columns.length > 0 && <ContentTable columns={columns} data={report.reportItems} downloadToCsvFileName={report.title.replace(/\s+/g, "")} />}
             </ContentLayout>
           ) : (

@@ -18,8 +18,10 @@ import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
+import { WellboreRow } from "../ContentViews/WellboresListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
+import MissingDataAgentModal, { MissingDataAgentModalProps } from "../Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
 import ContextMenu from "./ContextMenu";
@@ -32,10 +34,11 @@ import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Mo
 export interface WellboreContextMenuProps {
   wellbore: Wellbore;
   well: Well;
+  checkedWellboreRows?: WellboreRow[];
 }
 
 const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElement => {
-  const { wellbore, well } = props;
+  const { wellbore, well, checkedWellboreRows } = props;
   const {
     dispatchNavigation,
     navigationState: { servers, expandedTreeNodes, selectedWell, selectedWellbore }
@@ -140,6 +143,24 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     });
   };
 
+  const onClickMissingDataAgent = () => {
+    const wellboreReferences = checkedWellboreRows?.map((row) => ({
+      wellUid: row.wellUid,
+      wellboreUid: row.uid,
+      wellName: row.wellName,
+      wellboreName: row.name
+    })) || [
+      {
+        wellUid: wellbore.wellUid,
+        wellboreUid: wellbore.uid,
+        wellName: wellbore.wellName,
+        wellboreName: wellbore.name
+      }
+    ];
+    const missingDataAgentModalProps: MissingDataAgentModalProps = { wellReferences: [], wellboreReferences: wellboreReferences };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <MissingDataAgentModal {...missingDataAgentModalProps} /> });
+  };
+
   const onClickProperties = async () => {
     const controller = new AbortController();
     const detailedWellbore = await WellboreService.getWellbore(wellbore.wellUid, wellbore.uid, controller.signal);
@@ -188,6 +209,10 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
             </MenuItem>
           ))}
         </NestedMenuItem>,
+        <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+          <StyledIcon name="search" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Missing Data Agent</Typography>
+        </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

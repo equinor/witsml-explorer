@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 using WitsmlExplorer.Api.Models;
 
@@ -26,7 +27,7 @@ namespace WitsmlExplorer.Api.Tests.Models
 
             List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
 
-            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
 
             Assert.Equal(newWellDatum.Name, sourceWitsmlDatum.Name);
             Assert.Equal(newWellDatum.Code, sourceWitsmlDatum.Code);
@@ -37,7 +38,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void FromWitsmlDatum_ReturnsNullIfListIsEmpty()
         {
             List<WitsmlDatum> sourceWitsmlDatumList = new();
-            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }
 
@@ -45,7 +46,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void FromWitsmlDatum_ReturnsNullIfListIsNull()
         {
             List<WitsmlDatum> sourceWitsmlDatumList = null;
-            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }
 
@@ -54,7 +55,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         {
             WitsmlDatum sourceWitsmlDatum = null;
             List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
-            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList);
+            WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }
     }

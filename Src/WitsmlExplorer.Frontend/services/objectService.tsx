@@ -109,7 +109,7 @@ export default class ObjectService {
   }
 
   public static async getObjectsWithParamByType(type: ObjectType, propertyName: string, propertyValue: string, abortSignal?: AbortSignal): Promise<ObjectSearchResult[]> {
-    const response = await ApiClient.get(`/api/objects/${type}/${propertyName}/${propertyValue}`, abortSignal);
+    const response = await ApiClient.get(`/api/objects/${type}/${propertyName}/${encodeURIComponent(propertyValue)}`, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
