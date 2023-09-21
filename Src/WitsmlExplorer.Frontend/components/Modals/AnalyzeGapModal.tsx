@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { DisplayModalAction, HideModalAction } from "../../contexts/operationStateReducer";
 import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
 import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
@@ -7,11 +6,9 @@ import ModalDialog from "./ModalDialog";
 import { TextField } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
 import { ReportModal } from "./ReportModal";
-import WarningBar from "../WarningBar";
 import OperationContext from "../../contexts/operationContext";
 
 export interface AnalyzeGapModalProps {
-  dispatchOperation: (action: HideModalAction | DisplayModalAction) => void;
   logObject: LogObject;
   mnemonics: string[];
 }
@@ -26,7 +23,6 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const [gapSize, setGapSize] = useState<number>(0);
   const [timeGapSize, setTimeGapSize] = useState(initialTime);
   const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
-  const [gapSizeShowWarning, setGapSizeShowWarning] = useState<boolean>(false);
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -48,7 +44,6 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
       const value = Number(event.target.value);
       setGapSize(value);
       setGapSizeIsValid(value > 0);
-      setGapSizeShowWarning(value >= 0 && value < 1);
     }
   };
 
@@ -58,7 +53,6 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
       setTimeGapSize(event.target.value);
       const millisecondsTime = convertToMilliseconds(event.target.value);
       setGapSizeIsValid(millisecondsTime > 0);
-      setGapSizeShowWarning(millisecondsTime > 0 && millisecondsTime < 60000);
     }
   };
 
@@ -97,7 +91,6 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   helperText={!gapSizeIsValid ? "Gap size number must be greater than 0" : null}
                 />
               )}
-              {gapSizeShowWarning && <WarningBar message={"The gap size is too small, gap analysis might take some time."} />}
             </>
           }
           onSubmit={() => onSubmit()}

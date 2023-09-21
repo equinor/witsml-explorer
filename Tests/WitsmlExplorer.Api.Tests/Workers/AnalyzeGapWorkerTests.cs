@@ -168,20 +168,20 @@ public class AnalyzeGapWorkerTests
             .Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
             .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
-                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps,isDepthLog, isIncreasing))
+                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                 : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
         
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
             .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
-                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps,isDepthLog, isIncreasing))
+                ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                 : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns(Task.FromResult(new WitsmlLogs(){Logs = new List<WitsmlLog>() }));
+            .Returns(Task.FromResult(new WitsmlLogs() { Logs = new List<WitsmlLog>() }));
     }
     
     private static WitsmlLogs GetTestWitsmlLogs(WitsmlLogData logData, bool isDepthLog, bool isIncreasing)
@@ -189,9 +189,12 @@ public class AnalyzeGapWorkerTests
         logData.Data = isIncreasing
             ? logData.Data.OrderBy(x => x.Data).ToList()
             : logData.Data.OrderByDescending(x => x.Data).ToList();
-        
-        (int startIndex, int endIndex) = isIncreasing ? (51, 54) : (54, 51);
-        (string startDateTimeIndex, string endDateTimeIndex) = isIncreasing ? ("2023-04-19T00:00:00Z", "2023-04-19T00:00:02Z") : ("2023-04-19T00:00:02Z", "2023-04-19T00:00:00Z");
+
+        (int minIndex, int maxIndex) = (51, 54);
+        (string minDateTimeIndex, string maxDateTimeIndex) = ("2023-04-19T00:00:00Z", "2023-04-19T00:00:03Z");
+
+        (int startIndex, int endIndex) = isIncreasing ? (minIndex, maxIndex) : (maxIndex, minIndex);
+        (string startDateTimeIndex, string endDateTimeIndex) = isIncreasing ? (minDateTimeIndex, maxDateTimeIndex) : (maxDateTimeIndex, minDateTimeIndex);
 
         return new WitsmlLogs
         {
@@ -213,33 +216,32 @@ public class AnalyzeGapWorkerTests
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "Depth",
-                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
-                        MinDateTimeIndex = startDateTimeIndex,
-                        MaxDateTimeIndex = endDateTimeIndex,
-                        
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinDateTimeIndex = minDateTimeIndex,
+                        MaxDateTimeIndex = maxDateTimeIndex,
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "BPOS",
-                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
-                        MinDateTimeIndex = startDateTimeIndex,
-                        MaxDateTimeIndex = endDateTimeIndex
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinDateTimeIndex = minDateTimeIndex,
+                        MaxDateTimeIndex = maxDateTimeIndex
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "SPM1",
-                        MinIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
-                        MinDateTimeIndex = startDateTimeIndex,
-                        MaxDateTimeIndex = endDateTimeIndex
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinDateTimeIndex = minDateTimeIndex,
+                        MaxDateTimeIndex = maxDateTimeIndex
                     },
                 },
             }.AsSingletonList()
         };
     }
-    
+
     private static WitsmlLogData GetTestLogDataWithoutGaps(bool isDepthLog)
     {
         return new WitsmlLogData()
@@ -247,13 +249,13 @@ public class AnalyzeGapWorkerTests
             MnemonicList = MnemonicList,
             Data = new List<WitsmlData>()
             {
-                new(){Data = isDepthLog ? DepthDataRow1 : TimeDataRow1},
-                new(){Data = isDepthLog ? DepthDataRow2 : TimeDataRow2},
-                new(){Data = isDepthLog ? DepthDataRow3 : TimeDataRow3},
+                new() { Data = isDepthLog ? DepthDataRow1 : TimeDataRow1 },
+                new() { Data = isDepthLog ? DepthDataRow2 : TimeDataRow2 },
+                new() { Data = isDepthLog ? DepthDataRow3 : TimeDataRow3 },
             }
         };
     }
-    
+
     private static WitsmlLogData GetTestLogDataWithGaps(bool isDepthLog)
     {
         return new WitsmlLogData()
@@ -261,10 +263,10 @@ public class AnalyzeGapWorkerTests
             MnemonicList = MnemonicList,
             Data = new List<WitsmlData>()
             {
-                new(){Data = isDepthLog ? DepthDataWithGapsRow1 : TimeDataWithGapsRow1},
-                new(){Data = isDepthLog ? DepthDataWithGapsRow2 : TimeDataWithGapsRow2},
-                new(){Data = isDepthLog ? DepthDataWithGapsRow3 : TimeDataWithGapsRow3},
-                new(){Data = isDepthLog ? DepthDataWithGapsRow4 : TimeDataWithGapsRow4}
+                new() { Data = isDepthLog ? DepthDataWithGapsRow1 : TimeDataWithGapsRow1 },
+                new() { Data = isDepthLog ? DepthDataWithGapsRow2 : TimeDataWithGapsRow2 },
+                new() { Data = isDepthLog ? DepthDataWithGapsRow3 : TimeDataWithGapsRow3 },
+                new() { Data = isDepthLog ? DepthDataWithGapsRow4 : TimeDataWithGapsRow4 }
             }
         };
     }

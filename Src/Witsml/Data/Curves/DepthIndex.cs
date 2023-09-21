@@ -61,12 +61,12 @@ namespace Witsml.Data.Curves
 
         private static DepthIndex GetDepthFromIndex(Index index) => (DepthIndex)index;
         public override string GetValueAsString() => Value.ToString(CultureInfo.InvariantCulture);
-        
+
         /// <summary>
-        /// Rounded the value according to the required number of decimal places.
+        /// Rounds the value according to the provided number of decimal places.
         /// </summary>
-        /// <param name="numberOfDecimalPlaces">Number of decimals.</param>
-        /// <returns>Rounded string.</returns>
+        /// <param name="numberOfDecimalPlaces">The number of decimal places.</param>
+        /// <returns>A string with the rounded value.</returns>
         public string GetValueAsRoundedString(int numberOfDecimalPlaces)
         {
             var roundedValue = Math.Round(Value, numberOfDecimalPlaces);
@@ -107,14 +107,14 @@ namespace Witsml.Data.Curves
         }
 
         public override string ToString() => $"{GetValueAsString()} {Uom}";
-        
+
         /// <summary>
-        /// Rounded the value according to the required number of decimal places and add unit.
+        /// Formats the string as a value rounded according to the provided number of decimal places and the unit of depth.
         /// </summary>
-        /// <param name="numberOfDecimalPlaces">Number of decimals.</param>
-        /// <returns>Rounded string with unit.</returns>
+        /// <param name="numberOfDecimalPlaces">The number of decimal places.</param>
+        /// <returns>A string with the rounded value and the unit of depth.</returns>
         public string ToString(int numberOfDecimalPlaces) => $"{GetValueAsRoundedString(numberOfDecimalPlaces)} {Uom}";
-        
+
         public static DepthIndex operator -(DepthIndex index1, DepthIndex index2)
         {
             if (!index1.HasSameUnitAs(index2))

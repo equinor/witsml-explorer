@@ -6,6 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
@@ -62,10 +64,10 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             logDataRows.AddRange(logData.Data?.Select(x => x.Data.Split(CommonConstants.DataSeparator)) ?? Array.Empty<string[]>());
             logData = await logDataReader.GetNextBatch();
         }
-        
-        if (!logDataRows.Any() || logMnemonics == null || !logMnemonics.Any())
+
+        if (!logDataRows.Any() || logMnemonics.IsNullOrEmpty())
         {
-            return GetGapReportResult(job, jobMnemonics,new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
+            return GetGapReportResult(job, jobMnemonics, new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
         }
 
         if (logDataRows.Any(x => x.Length < logMnemonics.Count))
@@ -90,9 +92,9 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             var inputAnalyzeDataList = logDataRows
                 .Where(dataRow => !string.IsNullOrEmpty(dataRow[logMnemonic.index]))
                 .Select(dataRow => GetDepthOrDateTimeIndex(isDepthLog, dataRow[mnemonicCurveIndex], logCurveMinMaxIndex))
-                .Where(dataRowCurveIndex => ValidateCurveIndex(isLogIncreasing, logCurveMinMaxIndex)(dataRowCurveIndex))
+                .Where(dataRowCurveIndex => dataRowCurveIndex >= logCurveMinMaxIndex.MinIndex && dataRowCurveIndex <= logCurveMinMaxIndex.MaxIndex)
                 .ToList();
-            
+
             Index gapSize = isDepthLog && logCurveMinMaxIndex.MinIndex is DepthIndex depthMinIndex
                 ? new DepthIndex(job.GapSize, depthMinIndex.Uom)
                 : new TimeSpanIndex(job.TimeGapSize);
@@ -101,13 +103,6 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         }
 
         return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid);
-    }
-
-    private static Func<Index, bool> ValidateCurveIndex(bool isLogIncreasing, LogCurveIndex logCurveIndex)
-    {
-        return isLogIncreasing
-            ? value => value >= logCurveIndex.MinIndex && value <= logCurveIndex.MaxIndex
-            : value => value <= logCurveIndex.MinIndex && value >= logCurveIndex.MaxIndex;
     }
 
     private static Index GetDepthOrDateTimeIndex(bool isDepthLog, string value, LogCurveIndex logCurveIndex)
