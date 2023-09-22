@@ -21,9 +21,8 @@ it("Should detect any misbehavior during text validation using the validText() m
   expect(validText("abc", 1, 3)).toBeTruthy();
   expect(validText("", 1, 3)).toBeFalsy();
   expect(validText("abcd", 1, 3)).toBeFalsy();
-  expect(() => {
-    validText("abc", 1, 1);
-  }).toThrow("The value for minLength should be less than maxLength.");
+  expect(validText("a", 1, 1)).toBeTruthy();
+  expect(validText("aa", 1, 1)).toBeFalsy();
   expect(() => {
     validText("abc", 3, 1);
   }).toThrow("The value for minLength should be less than maxLength.");
