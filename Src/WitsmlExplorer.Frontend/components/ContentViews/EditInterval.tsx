@@ -1,19 +1,24 @@
 import { Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
-import { useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { colors } from "../../styles/Colors";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
+import { format } from "date-fns-tz";
+import { isValid, parse } from "date-fns";
 
 const EditInterval = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedLogCurveInfo } = navigationState;
   const { minIndex, maxIndex } = selectedLogCurveInfo ? selectedLogCurveInfo[0] : { minIndex: null, maxIndex: null };
+  const curveType = selectedLogCurveInfo ? selectedLogCurveInfo[0].mnemonic : "";
 
   const [startIndex, setStartIndex] = useState(String(minIndex));
   const [endIndex, setEndIndex] = useState(String(maxIndex));
   const [isEdited, setIsEdited] = useState(false);
+  const [isValidStart, setIsValidStart] = useState<boolean>(true);
+  const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
 
   const submitEditInterval = () => {
     setIsEdited(false);
@@ -29,6 +34,35 @@ const EditInterval = (): React.ReactElement => {
       payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
     });
   };
+
+  const validate = (current: string) => {
+    return parse(current, dateTimeFormat, new Date());
+  };
+  const isTimeCurve = () => {
+    return curveType === "Time";
+  };
+
+  const setDefaultValue = (input: string) => {
+    return isTimeCurve() ? (validate(input) ? format(new Date(input), dateTimeFormat) : "") : input;
+  };
+
+  const onTextFieldChange = (e: any, setIndex: Dispatch<SetStateAction<string>>, setIsValid: Dispatch<SetStateAction<boolean>>) => {
+    if (isTimeCurve()) {
+      if (isValid(validate(e.target.value))) {
+        setIndex(e.target.value);
+        setIsEdited(true);
+        setIsValid(true);
+      } else {
+        setIsValid(false);
+      }
+    } else {
+      setIndex(e.target.value);
+      setIsEdited(true);
+    }
+  };
+
+  const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
+
   return (
     <EditIntervalLayout>
       <Typography
@@ -43,10 +77,11 @@ const EditInterval = (): React.ReactElement => {
         <StyledLabel label="Start Index" />
         <StyledTextField
           id="startIndex"
-          defaultValue={startIndex}
+          defaultValue={setDefaultValue(startIndex)}
+          variant={isValidStart ? undefined : "error"}
+          type={isTimeCurve() ? "datetime-local" : ""}
           onChange={(e: any) => {
-            setStartIndex(e.target.value);
-            setIsEdited(true);
+            onTextFieldChange(e, setStartIndex, setIsValidStart);
           }}
         />
       </StartEndIndex>
@@ -54,14 +89,15 @@ const EditInterval = (): React.ReactElement => {
         <StyledLabel label="End Index" />
         <StyledTextField
           id="endIndex"
-          defaultValue={endIndex}
+          defaultValue={setDefaultValue(endIndex)}
+          type={isTimeCurve() ? "datetime-local" : ""}
+          variant={isValidEnd ? undefined : "error"}
           onChange={(e: any) => {
-            setEndIndex(e.target.value);
-            setIsEdited(true);
+            onTextFieldChange(e, setEndIndex, setIsValidEnd);
           }}
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval}>
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval} disabled={!isValidStart || !isValidEnd}>
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </EditIntervalLayout>
