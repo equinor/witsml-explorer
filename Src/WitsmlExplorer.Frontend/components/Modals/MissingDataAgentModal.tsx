@@ -47,8 +47,13 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
   }, [missingDataChecks]);
 
   const stringToChecks = (checkString: string): MissingDataCheck[] => {
-    const checksObj = JSON.parse(checkString);
-    return verifyObjectIsChecks(checksObj) ? checksObj : [];
+    try {
+      const checksObj = JSON.parse(checkString);
+      const checks: MissingDataCheck[] = verifyObjectIsChecks(checksObj) ? checksObj : [];
+      return checks.map((check) => ({ ...check, id: uuid() }));
+    } catch (error) {
+      return [];
+    }
   };
 
   const verifyObjectIsChecks = (obj: any): boolean => {
@@ -56,7 +61,6 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
     return obj.every(
       (check) =>
         typeof check === "object" &&
-        "id" in check &&
         (!("objectType" in check) || missingDataObjectOptions.includes(check.objectType)) &&
         (!("properties" in check) ||
           ("objectType" in check &&
@@ -150,7 +154,7 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
   };
 
   const onExport = () => {
-    const json = JSON.stringify(missingDataChecks);
+    const json = JSON.stringify(missingDataChecks, (k, v) => (k == "id" ? undefined : v));
     exportOptions.fileExtension = ".json";
     exportOptions.appendDateTime = false;
     exportData("missingDataAgentChecks", "", json);
