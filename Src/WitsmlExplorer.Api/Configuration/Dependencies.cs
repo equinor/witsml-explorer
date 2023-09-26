@@ -31,6 +31,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IWitsmlClientProvider>()
                 .IgnoreThisInterface<ICredentialsCache>()
                 .IgnoreThisInterface<IAsyncDisposable>()
+                .IgnoreThisInterface<IJobProgressService>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
@@ -39,6 +40,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
+            services.AddTransient<IJobProgressService, JobProgressService>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyObjectsJob>> logger = new();
-            _copyLogWorker = new CopyLogWorker(logger.Object, witsmlClientProvider.Object, _copyLogDataWorker.Object);
+            _copyLogWorker = new CopyLogWorker(logger.Object, witsmlClientProvider.Object, new JobProgressService(), _copyLogDataWorker.Object);
         }
 
         [Fact]

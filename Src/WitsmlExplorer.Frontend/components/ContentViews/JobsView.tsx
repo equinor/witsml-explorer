@@ -4,7 +4,7 @@ import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import JobInfo from "../../models/jobs/jobInfo";
+import JobInfo, { JobStatus } from "../../models/jobs/jobInfo";
 import BaseReport from "../../models/reports/BaseReport";
 import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
@@ -107,6 +107,7 @@ export const JobsView = (): React.ReactElement => {
         .map((jobInfo) => {
           return {
             ...jobInfo,
+            status: jobInfo.status == JobStatus.Started.toString() && jobInfo.progress > 0 ? "Running (" + jobInfo.progress + "%)" : jobInfo.status,
             failedReason: jobInfo.failedReason,
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,

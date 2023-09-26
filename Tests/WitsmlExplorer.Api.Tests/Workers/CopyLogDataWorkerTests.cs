@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyLogDataJob>> logger = new();
             Mock<IDocumentRepository<Server, Guid>> documentRepository = new();
-            _worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object, documentRepository.Object);
+            _worker = new CopyLogDataWorker(witsmlClientProvider.Object, new JobProgressService(), logger.Object, documentRepository.Object);
         }
 
         [Fact]

@@ -16,6 +16,13 @@ export default interface JobInfo {
   endTime: string;
   killTime: string;
   status: string;
+  progress: number;
   failedReason: string;
   report: BaseReport;
+}
+
+export enum JobStatus {
+  Started = "Started",
+  Finished = "Finished",
+  Failed = "Failed"
 }

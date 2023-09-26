@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             }
             });
             Mock<ILogger<CopyLogDataJob>> logger = new();
-            _worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object, _documentRepository.Object);
+            _worker = new CopyLogDataWorker(witsmlClientProvider.Object, new JobProgressService(), logger.Object, _documentRepository.Object);
         }
 
         [Fact]

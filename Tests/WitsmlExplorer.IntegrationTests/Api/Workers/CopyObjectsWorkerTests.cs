@@ -28,8 +28,8 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILogger<CopyObjectsJob> logger = loggerFactory.CreateLogger<CopyObjectsJob>();
             ICopyUtils copyUtils = new CopyUtils(loggerFactory.CreateLogger<CopyUtils>());
 
-            CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, loggerFactory.CreateLogger<CopyLogDataJob>());
-            CopyLogWorker copyLogWorker = new(loggerFactory.CreateLogger<CopyObjectsJob>(), witsmlClientProvider, copyLogDataWorker);
+            CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, new JobProgressService(), loggerFactory.CreateLogger<CopyLogDataJob>());
+            CopyLogWorker copyLogWorker = new(loggerFactory.CreateLogger<CopyObjectsJob>(), witsmlClientProvider, new JobProgressService(), copyLogDataWorker);
 
             _worker = new CopyObjectsWorker(logger, witsmlClientProvider, copyUtils, copyLogWorker);
         }

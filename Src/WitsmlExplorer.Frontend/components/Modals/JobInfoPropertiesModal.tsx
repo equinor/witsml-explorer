@@ -1,6 +1,6 @@
 import { TextField } from "@material-ui/core";
 import React from "react";
-import JobInfo from "../../models/jobs/jobInfo";
+import JobInfo, { JobStatus } from "../../models/jobs/jobInfo";
 import ModalDialog from "./ModalDialog";
 
 export interface JobInfoPropertiesModalInterface {
@@ -19,7 +19,7 @@ const JobInfoPropertiesModal = (props: JobInfoPropertiesModalInterface): React.R
             <TextField InputProps={{ readOnly: true }} id="id" label="Job ID" defaultValue={jobInfo.id} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="jobType" label="Job Type" defaultValue={jobInfo.jobType} fullWidth />
             <TextField InputProps={{ readOnly: true }} id="status" label="Status" defaultValue={jobInfo.status} fullWidth />
-            {jobInfo.status == "Failed" && (
+            {jobInfo.status == JobStatus.Failed.toString() && (
               <TextField InputProps={{ readOnly: true }} multiline id="failedReason" label="Failure Reason" defaultValue={jobInfo.failedReason} fullWidth />
             )}
             <TextField InputProps={{ readOnly: true }} id="objectName" label="Object Name(s)" defaultValue={jobInfo.objectName} fullWidth />

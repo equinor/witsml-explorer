@@ -46,6 +46,8 @@ namespace WitsmlExplorer.Api.Jobs
 
         public BaseReport Report { get; set; }
 
+        public int Progress { get; set; }
+
         private JobStatus _status;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]

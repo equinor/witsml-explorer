@@ -29,11 +29,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
     public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
     {
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
+        private readonly IJobProgressService _jobProgressService;
+
         public JobType JobType => JobType.CopyLogData;
 
-        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<CopyLogDataJob> logger = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        public CopyLogDataWorker(IWitsmlClientProvider witsmlClientProvider, IJobProgressService jobProgressService, ILogger<CopyLogDataJob> logger = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null)
+            : base(witsmlClientProvider, logger)
         {
             _witsmlServerRepository = witsmlServerRepository;
+            _jobProgressService = jobProgressService;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
@@ -68,6 +72,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
             }
+
+            SetupJobProgress(job, sourceLog);
 
             int totalRowsCopied = 0;
             int originalRows = 0;
@@ -108,6 +114,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
+        }
+
+        private void SetupJobProgress(CopyLogDataJob job, WitsmlLog sourceLog)
+        {
+            if (job.JobInfo != null && sourceLog.StartIndex != null && sourceLog.EndIndex != null)
+            {
+                double startIndex = StringHelpers.ToDouble(sourceLog.StartIndex.Value);
+                double endIndex = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
+
+                _jobProgressService.Setup(job.JobInfo, startIndex, endIndex);
+            }
         }
 
         private static void SetIndexesOnSourceLogs(WitsmlLog sourceLog, CopyLogDataJob job)
@@ -163,27 +180,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 return await CopyLogDataWithoutDuplicates(sourceLog, targetLog, job, mnemonics, targetDepthLogDecimals);
             }
-
-            int numberOfDataRowsCopied = 0;
-            await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
-            WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
-            while (sourceLogData != null)
+            else
             {
-                WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
-                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
-                if (result.IsSuccessful)
-                {
-                    numberOfDataRowsCopied += sourceLogData.Data.Count;
-                }
-                else
-                {
-                    Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
-                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
-                }
-                sourceLogData = await logDataReader.GetNextBatch();
+                return await CopyLogData(sourceLog, targetLog, job, mnemonics);
             }
-
-            return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied };
         }
 
         private async Task<CopyResult> CopyLogDataWithoutDuplicates(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics, int targetDepthLogDecimals)
@@ -192,6 +192,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             double endIndex = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
             int numberOfDataRowsCopied = 0;
             int originalNumberOfRows = 0;
+
             do
             {
                 WitsmlLogs query = LogQueries.GetLogContent(
@@ -201,7 +202,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     sourceLog.IndexType, mnemonics,
                     Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
                     Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
+
                 WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
+
                 if (!sourceData.Logs.Any())
                 {
                     break;
@@ -216,6 +219,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 double firstSourceRowIndex = double.MinValue;
                 double lastSourceRowIndex = double.MinValue;
                 double targetIndex = double.MinValue;
+
                 foreach (WitsmlData row in data)
                 {
                     string[] split = row.Data.Split(",");
@@ -233,6 +237,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     }
                     rowsToCollate.Add(split[1..]);
                 }
+
                 newData.Add(CollateData(rowsToCollate, targetIndex));
                 startIndex = lastSourceRowIndex >= endIndex ? endIndex : firstSourceRowIndex;
 
@@ -240,10 +245,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogWithData.LogData);
                 QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
+
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += newData.Count;
                     originalNumberOfRows += data.Count;
+
+                    _jobProgressService.SetCurrent(startIndex);
                 }
                 else
                 {
@@ -253,6 +261,33 @@ namespace WitsmlExplorer.Api.Workers.Copy
             } while (startIndex < endIndex);
 
             return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied, OriginalNumberOfRows = originalNumberOfRows };
+        }
+
+        private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics)
+        {
+            int numberOfDataRowsCopied = 0;
+            await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics.ToList(), Logger);
+            WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
+
+            while (sourceLogData != null)
+            {
+                WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
+                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
+
+                if (result.IsSuccessful)
+                {
+                    numberOfDataRowsCopied += sourceLogData.Data.Count;
+                }
+                else
+                {
+                    Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
+                }
+
+                sourceLogData = await logDataReader.GetNextBatch();
+            }
+
+            return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied };
         }
 
         private static WitsmlData CollateData(List<string[]> oldRows, double index)

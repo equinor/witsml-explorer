@@ -29,9 +29,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private readonly ICopyLogDataWorker _copyLogDataWorker;
         public JobType JobType => JobType.CopyLog;
 
-        public CopyLogWorker(ILogger<CopyObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        public CopyLogWorker(ILogger<CopyObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, IJobProgressService jobProgressService, ICopyLogDataWorker copyLogDataWorker = null, IDocumentRepository<Server, Guid> witsmlServerRepository = null)
+            : base(witsmlClientProvider, logger)
         {
-            _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider, null, witsmlServerRepository);
+            _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider, jobProgressService, null, witsmlServerRepository);
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)

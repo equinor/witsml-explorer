@@ -129,6 +129,7 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     startTime: "",
     endTime: "",
     killTime: "",
+    progress: 0,
     status: "",
     failedReason: "",
     report: null,

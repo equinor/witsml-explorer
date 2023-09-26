@@ -38,9 +38,9 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<CopyLogDataJob> logger = loggerFactory.CreateLogger<CopyLogDataJob>();
-            CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, logger);
+            CopyLogDataWorker copyLogDataWorker = new(witsmlClientProvider, new JobProgressService(), logger);
             ILogger<CopyObjectsJob> logger2 = loggerFactory.CreateLogger<CopyObjectsJob>();
-            _worker = new CopyLogWorker(logger2, witsmlClientProvider, copyLogDataWorker);
+            _worker = new CopyLogWorker(logger2, witsmlClientProvider, new JobProgressService(), copyLogDataWorker);
             _logObjectService = new LogObjectService(witsmlClientProvider);
 
             ILogger<DeleteObjectsJob> logger3 = loggerFactory.CreateLogger<DeleteObjectsJob>();

@@ -19,7 +19,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         {
             IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
-            _worker = new CopyLogDataWorker(witsmlClientProvider);
+            _worker = new CopyLogDataWorker(witsmlClientProvider, new JobProgressService());
         }
 
         [Fact(Skip = "Should only be run manually")]
