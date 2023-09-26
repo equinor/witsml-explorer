@@ -104,5 +104,6 @@ export enum JobType {
   BatchModifyWell = "BatchModifyWell",
   ImportLogData = "ImportLogData",
   ReplaceComponents = "ReplaceComponents",
-  ReplaceObjects = "ReplaceObjects"
+  ReplaceObjects = "ReplaceObjects",
+  AnalyzeGaps = "AnalyzeGaps"
 }
