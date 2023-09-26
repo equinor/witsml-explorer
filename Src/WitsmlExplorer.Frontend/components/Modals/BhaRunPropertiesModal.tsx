@@ -23,7 +23,7 @@ export interface BhaRunPropertiesModalProps {
 const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactElement => {
   const { mode, bhaRun, dispatchOperation } = props;
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone }
   } = useContext(OperationContext);
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
   const [dTimStartValid, setDTimStartValid] = useState<boolean>(true);
@@ -36,14 +36,14 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
   useEffect(() => {
     setEditableBhaRun({
       ...bhaRun,
-      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone, dateTimeFormat) : null,
-      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone, dateTimeFormat) : null,
-      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone, dateTimeFormat) : null,
-      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone, dateTimeFormat) : null,
+      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone, DateTimeFormat.Raw) : null,
+      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone, DateTimeFormat.Raw) : null,
+      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone, DateTimeFormat.Raw) : null,
+      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone, DateTimeFormat.Raw) : null,
       commonData: {
         ...bhaRun.commonData,
-        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone, dateTimeFormat) : null,
-        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone, dateTimeFormat) : null
+        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone, DateTimeFormat.Raw) : null,
+        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone, DateTimeFormat.Raw) : null
       }
     });
   }, [bhaRun]);
@@ -106,7 +106,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStop}
@@ -116,7 +115,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStartDrilling}
@@ -126,7 +124,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStartDrillingValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStopDrilling}
@@ -136,7 +133,6 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                   setDTimStopDrillingValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"planDogleg"}

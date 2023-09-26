@@ -1,6 +1,6 @@
 ﻿import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
-import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
+import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
@@ -83,7 +83,6 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajStartValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableTrajectory.dTimTrajEnd}
@@ -93,7 +92,6 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajEndValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"serviceCompany"}

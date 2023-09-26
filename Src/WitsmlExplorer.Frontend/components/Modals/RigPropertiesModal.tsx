@@ -2,7 +2,7 @@
 import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
+import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import Rig from "../../models/rig";
@@ -98,7 +98,6 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimStartOpValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableRig.dTimEndOp}
@@ -108,7 +107,6 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                   setDTimEndOpValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"yearEntService"}

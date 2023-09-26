@@ -159,8 +159,8 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
-    const startRaw = formatDateString(log.startRaw, timeZone, dateTimeFormat);
-    const endRaw = formatDateString(log.endRaw, timeZone, dateTimeFormat);
+    const startRaw = isTimeIndexed() ? formatDateString(log.startRaw, timeZone, dateTimeFormat) : log.startRaw;
+    const endRaw = isTimeIndexed() ? formatDateString(log.endRaw, timeZone, dateTimeFormat) : log.endRaw;
     categories.push(i);
     data.push({
       key: i,

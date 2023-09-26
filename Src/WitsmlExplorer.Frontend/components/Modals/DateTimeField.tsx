@@ -10,7 +10,6 @@ interface DateTimeFieldProps {
   label: string;
   updateObject: (dateTime: string, valid: boolean) => void;
   timeZone: TimeZone;
-  dateTimeFormat: DateTimeFormat;
 }
 
 /**
@@ -24,7 +23,7 @@ interface DateTimeFieldProps {
  * @returns
  */
 export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => {
-  const { value, label, updateObject, timeZone, dateTimeFormat } = props;
+  const { value, label, updateObject, timeZone } = props;
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
   const isFirefox = navigator.userAgent.includes("Firefox");
 
@@ -72,7 +71,7 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
             const slice = isFirefox ? value.slice(10) : value.slice(16);
             toFormat += slice;
           }
-          const formatted = formatDateString(toFormat, timeZone, dateTimeFormat);
+          const formatted = formatDateString(toFormat, timeZone, DateTimeFormat.Raw);
           updateObject(formatted, validate(formatted));
         }}
       />

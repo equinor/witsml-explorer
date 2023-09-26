@@ -46,11 +46,13 @@ const SettingsModal = (): React.ReactElement => {
     localStorage.setItem(STORAGE_MODE_KEY, event.target.value);
     dispatchOperation({ type: OperationType.SetMode, payload: selectedMode });
   };
+
   const onChangeDateTimeFormat = (event: any) => {
     const selectedDateTimeFormat = event.target.value;
     localStorage.setItem(STORAGE_DATETIMEFORMAT_KEY, selectedDateTimeFormat);
     dispatchOperation({ type: OperationType.SetDateTimeFormat, payload: selectedDateTimeFormat });
   };
+
   const onChangeTimeZone = (event: any) => {
     const selectedTimeZone = event.target.value;
     localStorage.setItem(STORAGE_TIMEZONE_KEY, selectedTimeZone);

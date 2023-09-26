@@ -2,7 +2,7 @@ import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
+import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
 import { riskAffectedPersonnel } from "../../models/riskAffectedPersonnel";
@@ -135,7 +135,6 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                   setDTimStartValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <DateTimeField
                 value={editableRiskObject.dTimEnd}
@@ -145,7 +144,6 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
                   setDTimEndValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"mdBitStart"}

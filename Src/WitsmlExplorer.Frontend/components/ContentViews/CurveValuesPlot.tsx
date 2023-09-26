@@ -17,11 +17,11 @@ interface CurveValuesPlotProps {
 export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.ReactElement => {
   const { data, columns, name } = props;
   const {
-    operationState: { colors, timeZone, dateTimeFormat }
+    operationState: { colors, dateTimeFormat }
   } = useContext(OperationContext);
   const chart = useRef<ECharts>(null);
 
-  const chartOption = React.useMemo(() => getChartOption(data, columns, name, colors, timeZone, dateTimeFormat), [data, columns, name, colors, timeZone, dateTimeFormat]);
+  const chartOption = React.useMemo(() => getChartOption(data, columns, name, colors, dateTimeFormat), [data, columns, name, colors, dateTimeFormat]);
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const actionType = Object.values(params.selected).every((s) => s === false) ? "legendSelect" : "legendUnSelect";
@@ -55,14 +55,7 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
 });
 CurveValuesPlot.displayName = "CurveValuesPlot";
 
-const getChartOption = (
-  data: any[],
-  columns: ExportableContentTableColumn<CurveSpecification>[],
-  name: string,
-  colors: Colors,
-  timeZone: TimeZone,
-  dateTimeFormat: DateTimeFormat
-) => {
+const getChartOption = (data: any[], columns: ExportableContentTableColumn<CurveSpecification>[], name: string, colors: Colors, dateTimeFormat: DateTimeFormat) => {
   const valueOffsetFromColumn = 0.01;
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
@@ -146,7 +139,7 @@ const getChartOption = (
       axisLabel: {
         showMinLabel: true,
         showMaxLabel: true,
-        formatter: isTimeLog ? (params: number) => timeFormatter(params, timeZone, dateTimeFormat) : (params: number) => depthFormatter(params, indexUnit),
+        formatter: (params: number) => (isTimeLog ? timeFormatter(params, dateTimeFormat) : depthFormatter(params, indexUnit)),
         color: colors.text.staticIconsDefault
       }
     },
@@ -193,9 +186,9 @@ const getChartOption = (
   };
 };
 
-const timeFormatter = (params: number, timeZone: TimeZone, dateTimeFormat: DateTimeFormat) => {
+const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
   const dateTime = new Date(Math.round(params));
-  return formatDateString(dateTime.toISOString().split(".")[0] + "Z", timeZone, dateTimeFormat);
+  return formatDateString(dateTime.toISOString().split(".")[0] + "Z", TimeZone.Utc, dateTimeFormat);
 };
 
 const depthFormatter = (params: number, indexUnit: string) => {

@@ -78,7 +78,7 @@ export function validateIsoDateString(dateString: string): boolean {
       return false;
     }
     const parsed = toDate(replaced);
-    const formatted = formatInTimeZone(parsed, offset, dateTimeFormat);
+    const formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
     return replaced == formatted;
   } catch {
     return false;

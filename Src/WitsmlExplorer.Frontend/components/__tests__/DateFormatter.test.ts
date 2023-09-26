@@ -28,6 +28,16 @@ it("Should convert the time when a specific TimeZone is picked", () => {
   expect(actual).toEqual(expected);
 });
 
+it("DateTime Format missing milliseconds)", () => {
+  const actual = formatDateString("2023-08-08T12:20:53", TimeZone.Raw, DateTimeFormat.Natural);
+  expect(actual).toEqual("08.08.2023 12:20:53.418");
+});
+
+it("DateTime Format missing offset(Z))", () => {
+  const actual = formatDateString("2023-08-08T12:20:53.418", TimeZone.Raw, DateTimeFormat.Natural);
+  expect(actual).toEqual("08.08.2023 12:20:53.418");
+});
+
 it("Should validate offset with minus", () => {
   const actual = validateIsoDateString("2022-11-17T13:54:17.000\u{2212}02:00");
   expect(actual).toEqual(true);

@@ -1,7 +1,7 @@
 import { InputAdornment, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
+import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import ObjectReference from "../../models/jobs/objectReference";
 import { toObjectReference } from "../../models/objectOnWellbore";
@@ -62,7 +62,6 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
                   setDTimStnValid(valid);
                 }}
                 timeZone={timeZone}
-                dateTimeFormat={DateTimeFormat.Raw}
               />
               <TextField
                 id={"md"}

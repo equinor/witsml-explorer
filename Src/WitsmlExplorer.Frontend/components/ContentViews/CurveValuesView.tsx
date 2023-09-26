@@ -15,11 +15,11 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import formatDateString from "../DateFormatter";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
 import EditInterval from "./EditInterval";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
@@ -33,7 +33,6 @@ export const CurveValuesView = (): React.ReactElement => {
   const { selectedWell, selectedWellbore, selectedObject, selectedLogCurveInfo } = navigationState;
   const [columns, setColumns] = useState<ExportableContentTableColumn<CurveSpecification>[]>([]);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
-  const [tableFormatedData, settableFormatedData] = useState<CurveValueRow[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
   const [showPlot, setShowPlot] = useState<boolean>(false);
@@ -92,24 +91,15 @@ export const CurveValuesView = (): React.ReactElement => {
     setColumns([...columns, ...newColumns]);
   };
 
-  const formateDateTimetableData = (Data: CurveValueRow[]) => {
-    const formatedDateTime = [];
-    for (const curve of JSON.parse(JSON.stringify(Data))) {
-      formatedDateTime.push(curve);
-      let dateTimeKey = "";
-      if (curve.time) {
-        dateTimeKey = "time";
-      } else if (curve.Time) {
-        dateTimeKey = "Time";
-      } else if (curve.DateTime) {
-        dateTimeKey = "DateTime";
-      } else if (curve.datetime) {
-        dateTimeKey = "datetime";
-      }
-      formatedDateTime[formatedDateTime.length - 1][dateTimeKey] = formatDateString(curve[dateTimeKey] as string, timeZone, dateTimeFormat);
-    }
-    return formatedDateTime;
-  };
+  const getTableData = React.useCallback(() => {
+    const mnemonicToType = Object.fromEntries(columns.map((c) => [c.property, c.type]));
+    return tableData.map((data) => {
+      return Object.entries(data).reduce((newData, [key, value]) => {
+        newData[key] = mnemonicToType[key] === ContentType.DateTime ? formatDateString(value as string, timeZone, dateTimeFormat) : value;
+        return newData;
+      }, {} as CurveValueRow);
+    });
+  }, [tableData, columns, timeZone, dateTimeFormat]);
 
   useEffect(() => {
     setTableData([]);
@@ -144,7 +134,6 @@ export const CurveValuesView = (): React.ReactElement => {
         });
         completeData = [...completeData, ...logDataRows];
         setTableData(completeData);
-        settableFormatedData(formateDateTimetableData(completeData));
       }
     }
 
@@ -158,12 +147,6 @@ export const CurveValuesView = (): React.ReactElement => {
       controller.abort();
     };
   }, [selectedLogCurveInfo, selectedLog]);
-
-  useEffect(() => {
-    if (tableData && tableData.length) {
-      settableFormatedData(formateDateTimetableData(tableData));
-    }
-  }, [dateTimeFormat]);
 
   const panelElements = [
     <Button key="downloadall" disabled={isLoading} onClick={() => exportSelectedIndexRange()}>
@@ -197,7 +180,7 @@ export const CurveValuesView = (): React.ReactElement => {
               columns={columns}
               onRowSelectionChange={(rows) => setSelectedRows(rows as CurveValueRow[])}
               onContextMenu={onContextMenu}
-              data={tableFormatedData}
+              data={getTableData()}
               checkableRows={true}
               panelElements={panelElements}
               stickyLeftColumns={2}
