@@ -3,22 +3,28 @@ import { Dispatch, SetStateAction, useContext, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { colors } from "../../styles/Colors";
+import { Colors, colors, dark } from "../../styles/Colors";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
 import { format } from "date-fns-tz";
 import { isValid, parse } from "date-fns";
+import LogObject from "../../models/logObject";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import OperationContext from "../../contexts/operationContext";
 
 const EditInterval = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const { selectedLogCurveInfo } = navigationState;
+  const { selectedObject, selectedLogCurveInfo } = navigationState;
+  const selectedLog = selectedObject as LogObject;
   const { minIndex, maxIndex } = selectedLogCurveInfo ? selectedLogCurveInfo[0] : { minIndex: null, maxIndex: null };
-  const curveType = selectedLogCurveInfo ? selectedLogCurveInfo[0].mnemonic : "";
 
   const [startIndex, setStartIndex] = useState(String(minIndex));
   const [endIndex, setEndIndex] = useState(String(maxIndex));
   const [isEdited, setIsEdited] = useState(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
 
   const submitEditInterval = () => {
     setIsEdited(false);
@@ -35,20 +41,21 @@ const EditInterval = (): React.ReactElement => {
     });
   };
 
-  const validate = (current: string) => {
+  const parseDate = (current: string) => {
     return parse(current, dateTimeFormat, new Date());
   };
+
   const isTimeCurve = () => {
-    return curveType === "Time";
+    return selectedLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   };
 
-  const setDefaultValue = (input: string) => {
-    return isTimeCurve() ? (validate(input) ? format(new Date(input), dateTimeFormat) : "") : input;
+  const getDefaultValue = (input: string) => {
+    return isTimeCurve() ? (parseDate(input) ? format(new Date(input), dateTimeFormat) : "") : input;
   };
 
   const onTextFieldChange = (e: any, setIndex: Dispatch<SetStateAction<string>>, setIsValid: Dispatch<SetStateAction<boolean>>) => {
     if (isTimeCurve()) {
-      if (isValid(validate(e.target.value))) {
+      if (isValid(parseDate(e.target.value))) {
         setIndex(e.target.value);
         setIsEdited(true);
         setIsValid(true);
@@ -64,7 +71,7 @@ const EditInterval = (): React.ReactElement => {
   const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
   return (
-    <EditIntervalLayout>
+    <EditIntervalLayout colors={colors}>
       <Typography
         style={{
           color: `${colors.interactive.primaryResting}`
@@ -77,9 +84,10 @@ const EditInterval = (): React.ReactElement => {
         <StyledLabel label="Start Index" />
         <StyledTextField
           id="startIndex"
-          defaultValue={setDefaultValue(startIndex)}
+          defaultValue={getDefaultValue(startIndex)}
           variant={isValidStart ? undefined : "error"}
           type={isTimeCurve() ? "datetime-local" : ""}
+          step="1"
           onChange={(e: any) => {
             onTextFieldChange(e, setStartIndex, setIsValidStart);
           }}
@@ -89,9 +97,10 @@ const EditInterval = (): React.ReactElement => {
         <StyledLabel label="End Index" />
         <StyledTextField
           id="endIndex"
-          defaultValue={setDefaultValue(endIndex)}
+          defaultValue={getDefaultValue(endIndex)}
           type={isTimeCurve() ? "datetime-local" : ""}
           variant={isValidEnd ? undefined : "error"}
+          step="1"
           onChange={(e: any) => {
             onTextFieldChange(e, setEndIndex, setIsValidEnd);
           }}
@@ -104,10 +113,13 @@ const EditInterval = (): React.ReactElement => {
   );
 };
 
-const EditIntervalLayout = styled.div`
+const EditIntervalLayout = styled.div<{ colors: Colors }>`
   display: flex;
   gap: 0.25rem;
   align-items: center;
+  input {
+    color-scheme: ${({ colors }) => (colors === dark ? "dark" : "")};
+  }
 `;
 
 const StartEndIndex = styled.div`
