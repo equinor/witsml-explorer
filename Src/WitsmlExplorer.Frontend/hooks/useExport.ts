@@ -45,7 +45,7 @@ function useExport(props?: Partial<ExportProperties>): ExportObject {
     (fileName: string, header: string, data: string) => {
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(
-        new Blob([header, exportOptions.newLineCharacter, data], {
+        new Blob([header, header ? exportOptions.newLineCharacter : "", data], {
           type: exportOptions.outputMimeType
         })
       );

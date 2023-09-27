@@ -67,6 +67,7 @@ export const LogsListView = (): React.ReactElement => {
     { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
+    { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
     { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },

@@ -3,8 +3,11 @@
   Edit
 }
 
-export const validText = (text: string): boolean => {
-  return text && text.length > 0;
+export const validText = (text: string, minLength = 1, maxLength: number = null): boolean => {
+  if (maxLength !== null && minLength > maxLength) throw new Error("The value for minLength should be less than maxLength.");
+  if (minLength !== null && (text?.length ?? 0) < minLength) return false;
+  if (maxLength !== null && (text?.length ?? 0) > maxLength) return false;
+  return true;
 };
 
 export const validTimeZone = (timeZone: string): boolean => {

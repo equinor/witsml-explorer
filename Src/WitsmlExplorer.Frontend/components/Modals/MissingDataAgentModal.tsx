@@ -1,15 +1,18 @@
 import { Accordion, Autocomplete, Button, Icon, Typography } from "@equinor/eds-core-react";
-import { useContext, useEffect, useState } from "react";
+import { CloudUpload } from "@material-ui/icons";
+import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import useExport from "../../hooks/useExport";
 import MissingDataJob, { MissingDataCheck } from "../../models/jobs/missingDataJob";
 import WellReference from "../../models/jobs/wellReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import { Colors } from "../../styles/Colors";
+import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "../Constants";
 import { StyledAccordionHeader } from "./LogComparisonModal";
 import { objectToProperties, selectAllProperties } from "./MissingDataAgentProperties";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
@@ -30,13 +33,44 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
   } = useContext(OperationContext);
   const [missingDataChecks, setMissingDataChecks] = useState<MissingDataCheck[]>([{ id: uuid() } as MissingDataCheck]);
   const [errors, setErrors] = useState<string[]>([]);
+  const { exportData, exportOptions } = useExport();
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setErrors([]);
+    const checkString = localStorage.getItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY);
+    const checks = stringToChecks(checkString);
+    if (checks.length > 0) setMissingDataChecks(checks);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, JSON.stringify(missingDataChecks));
   }, [missingDataChecks]);
 
+  const stringToChecks = (checkString: string): MissingDataCheck[] => {
+    try {
+      const checksObj = JSON.parse(checkString);
+      const checks: MissingDataCheck[] = verifyObjectIsChecks(checksObj) ? checksObj : [];
+      return checks.map((check) => ({ ...check, id: uuid() }));
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const verifyObjectIsChecks = (obj: any): boolean => {
+    if (!Array.isArray(obj)) return false;
+    return obj.every(
+      (check) =>
+        typeof check === "object" &&
+        (!("objectType" in check) || missingDataObjectOptions.includes(check.objectType)) &&
+        (!("properties" in check) ||
+          ("objectType" in check &&
+            Array.isArray(check.properties) &&
+            check.properties.every((property: any) => typeof property === "string" && objectToProperties[check.objectType].includes(property))))
+    );
+  };
+
   const validateChecks = (): boolean => {
-    const updatedErrors = [...errors];
+    const updatedErrors = [];
 
     if (!missingDataChecks.some((check) => Boolean(check.objectType))) updatedErrors.push("No objects are selected!");
     if (missingDataChecks.some((check) => check.objectType == "Well" && check.properties.length == 0)) updatedErrors.push("Selecting properties is required for Wells.");
@@ -56,8 +90,10 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
       .filter((check) => check.objectType != null);
     const missingDataJob: MissingDataJob = { wellReferences: wellReferences, wellboreReferences: wellboreReferences, missingDataChecks: filteredChecks };
     const jobId = await JobService.orderJob(JobType.MissingData, missingDataJob);
-    const reportModalProps = { jobId };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    }
   };
 
   const addCheck = () => {
@@ -93,6 +129,35 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
         : "";
 
     return `Select properties${requiredString}`;
+  };
+
+  const onClear = () => {
+    setMissingDataChecks([{ id: uuid() } as MissingDataCheck]);
+  };
+
+  const onImport = () => {
+    // Open file picker
+    inputFileRef.current.click();
+  };
+
+  const onImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files.item(0);
+    if (!file) return;
+    const checkString = await file.text();
+    const checks = stringToChecks(checkString);
+    if (checks.length > 0) {
+      setErrors([]);
+      setMissingDataChecks(checks);
+    } else {
+      setErrors([...errors, `Could not recognise the format of the imported data from ${file.name}.`]);
+    }
+  };
+
+  const onExport = () => {
+    const json = JSON.stringify(missingDataChecks, (k, v) => (k == "id" ? undefined : v));
+    exportOptions.fileExtension = ".json";
+    exportOptions.appendDateTime = false;
+    exportData("missingDataAgentChecks", "", json);
   };
 
   return (
@@ -149,6 +214,19 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
           <StyledButton variant="contained_icon" onClick={addCheck}>
             <Icon name="add" />
           </StyledButton>
+          <div style={{ display: "flex", flexDirection: "row", gap: "1rem", paddingTop: "1rem", paddingLeft: "0.5rem" }}>
+            <Button onClick={onClear}>
+              <Typography>Clear</Typography>
+            </Button>
+            <Button onClick={onImport}>
+              <CloudUpload />
+              <Typography noWrap>Import</Typography>
+              <input ref={inputFileRef} type="file" accept=".json,text/json" onChange={onImportFile} hidden />
+            </Button>
+            <Button onClick={onExport}>
+              <Typography>Export</Typography>
+            </Button>
+          </div>
         </ModalContentLayout>
       }
     />

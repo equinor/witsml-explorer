@@ -36,7 +36,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     Uid = logUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
-                    Name = job.LogObject.Name
+                    Name = job.LogObject.Name,
+                    RunNumber = job.LogObject.RunNumber,
+                    ServiceCompany = job.LogObject.ServiceCompany
                 });
             QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
             if (result.IsSuccessful)
@@ -74,7 +76,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Uid = logUid,
-                    Name = logObject.Name
+                    Name = logObject.Name,
+                    RunNumber = logObject.RunNumber,
+                    ServiceCompany = logObject.ServiceCompany
                 }.AsSingletonList()
             };
         }
