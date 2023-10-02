@@ -13,7 +13,7 @@ import LogObject, { indexToNumber } from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
+import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE, WITSML_INDEX_TYPE_DATE_TIME, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import ProgressSpinner from "../ProgressSpinner";
@@ -23,7 +23,7 @@ import EditNumber from "./EditNumber";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
-const TIME_INDEX_START_OFFSET = 60 * 20; // offset before log end index that defines the start index for streaming (in seconds).
+const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
 const TIME_INDEX_OFFSET = 30536000; // offset from current end index that should ensure that any new data is captured (in seconds).
 const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should ensure that any new data is captured.
@@ -59,7 +59,7 @@ export const CurveValuesView = (): React.ReactElement => {
       const startIndex = getCurrentMaxIndex();
       const endIndex = getOffsetIndex(startIndex, TIME_INDEX_OFFSET, DEPTH_INDEX_OFFSET);
       getLogData(startIndex, endIndex).then(() => {
-        timer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * 1000);
+        timer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * MILLIS_IN_SECOND);
       });
     }
   }, [refreshFlag]);

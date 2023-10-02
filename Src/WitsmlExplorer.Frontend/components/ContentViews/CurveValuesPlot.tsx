@@ -24,10 +24,7 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
   const scrollIndex = useRef<number>(0);
   const horizontalZoom = useRef<[number, number]>([0, 100]);
 
-  const chartOption = React.useMemo(
-    () => getChartOption(data, columns, name, colors, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current),
-    [data, columns, name, colors, autoRefresh]
-  );
+  const chartOption = getChartOption(data, columns, name, colors, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current);
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const shouldShowAll = Object.values(params.selected).every((s) => s === false);
@@ -92,9 +89,9 @@ const getChartOption = (
   scrollIndex: number,
   horizontalZoom: [number, number]
 ) => {
-  const valueOffsetFromColumn = 0.01;
-  const autoRefreshSize = 300;
-  if (autoRefresh) data = data.slice(-autoRefreshSize); // Slice to avoid lag while streaming
+  const VALUE_OFFSET_FROM_COLUMN = 0.01;
+  const AUTO_REFRESH_SIZE = 300;
+  if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const isTimeLog = columns[0].type == ContentType.DateTime;
@@ -113,7 +110,7 @@ const getChartOption = (
   return {
     title: {
       left: "center",
-      text: name + (autoRefresh ? ` (last ${autoRefreshSize} rows)` : ""),
+      text: name + (autoRefresh ? ` (last ${AUTO_REFRESH_SIZE} rows)` : ""),
       textStyle: {
         color: colors.text.staticIconsDefault
       }
@@ -146,8 +143,8 @@ const getChartOption = (
     },
     xAxis: {
       type: "value",
-      min: (value: { min: number; max: number }) => value.min - valueOffsetFromColumn,
-      max: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min + 1 - valueOffsetFromColumn : dataColumns.length),
+      min: (value: { min: number; max: number }) => value.min - VALUE_OFFSET_FROM_COLUMN,
+      max: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min + 1 - VALUE_OFFSET_FROM_COLUMN : dataColumns.length),
       minInterval: 1,
       maxInterval: 1,
       splitLine: {
@@ -225,7 +222,7 @@ const getChartOption = (
           const index = row[indexCurve];
           const value = row[col.columnOf.mnemonic];
           const normalizedValue = (value - minMaxValue.minValue) / (minMaxValue.maxValue - minMaxValue.minValue || 1);
-          const offsetNormalizedValue = normalizedValue * (1 - 2 * valueOffsetFromColumn) + valueOffsetFromColumn + i;
+          const offsetNormalizedValue = normalizedValue * (1 - 2 * VALUE_OFFSET_FROM_COLUMN) + VALUE_OFFSET_FROM_COLUMN + i;
           return [offsetNormalizedValue, index];
         })
       };

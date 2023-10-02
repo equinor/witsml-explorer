@@ -157,7 +157,7 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   }
 
   .fading-row {
-    animation: fadeToNormal 6s;
+    animation: fadeToNormal 3s;
   }
 `;
 

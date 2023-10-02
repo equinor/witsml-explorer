@@ -1,6 +1,6 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@material-ui/core";
-import { useContext, useState } from "react";
+import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { TooltipLayout } from "../ContextMenus/OptionsContextMenu";
@@ -14,7 +14,7 @@ interface EditNumberProps {
   onSubmit: (value: number) => void;
 }
 
-const EditNumber = (props: EditNumberProps): React.ReactElement => {
+const EditNumber = (props: EditNumberProps): ReactElement => {
   const { label, infoTooltip, infoIconColor, defaultValue = 0, onSubmit } = props;
   const {
     operationState: { colors }
@@ -27,7 +27,7 @@ const EditNumber = (props: EditNumberProps): React.ReactElement => {
     onSubmit(parseFloat(value) || null);
   };
 
-  const onInputChange = (e: any) => {
+  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (/^\d*\.?\d*$/.test(newValue)) {
       setIsEdited(true);
