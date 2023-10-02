@@ -1,30 +1,48 @@
 import { Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import { isValid, parse } from "date-fns";
+import { format } from "date-fns-tz";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { Colors, colors, dark } from "../../styles/Colors";
-import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
-import { format } from "date-fns-tz";
-import { isValid, parse } from "date-fns";
-import LogObject from "../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import OperationContext from "../../contexts/operationContext";
+import LogObject from "../../models/logObject";
+import { Colors, colors, dark } from "../../styles/Colors";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
 
-const EditInterval = (): React.ReactElement => {
+interface EditIntervalProps {
+  disabled?: boolean;
+  overrideStartIndex?: string;
+  overrideEndIndex?: string;
+}
+
+const EditInterval = (props: EditIntervalProps): React.ReactElement => {
+  const { disabled, overrideStartIndex, overrideEndIndex } = props;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
   const selectedLog = selectedObject as LogObject;
-  const { minIndex, maxIndex } = selectedLogCurveInfo ? selectedLogCurveInfo[0] : { minIndex: null, maxIndex: null };
 
-  const [startIndex, setStartIndex] = useState(String(minIndex));
-  const [endIndex, setEndIndex] = useState(String(maxIndex));
-  const [isEdited, setIsEdited] = useState(false);
+  const [startIndex, setStartIndex] = useState<string>(null);
+  const [endIndex, setEndIndex] = useState<string>(null);
+  const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+
+  useEffect(() => {
+    const minIndex = selectedLogCurveInfo?.[0]?.minIndex;
+    const maxIndex = selectedLogCurveInfo?.[0]?.maxIndex;
+    setStartIndex(getParsedValue(String(minIndex)));
+    setEndIndex(getParsedValue(String(maxIndex)));
+  }, []);
+
+  useEffect(() => {
+    if (overrideStartIndex) setStartIndex(getParsedValue(overrideStartIndex));
+    if (overrideEndIndex) setEndIndex(getParsedValue(overrideEndIndex));
+  }, [overrideStartIndex, overrideEndIndex]);
 
   const submitEditInterval = () => {
     setIsEdited(false);
@@ -49,7 +67,7 @@ const EditInterval = (): React.ReactElement => {
     return selectedLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   };
 
-  const getDefaultValue = (input: string) => {
+  const getParsedValue = (input: string) => {
     return isTimeCurve() ? (parseDate(input) ? format(new Date(input), dateTimeFormat) : "") : input;
   };
 
@@ -83,8 +101,10 @@ const EditInterval = (): React.ReactElement => {
       <StartEndIndex>
         <StyledLabel label="Start Index" />
         <StyledTextField
+          disabled={disabled}
           id="startIndex"
-          defaultValue={getDefaultValue(startIndex)}
+          value={startIndex}
+          // defaultValue={getDefaultValue(startIndex)}
           variant={isValidStart ? undefined : "error"}
           type={isTimeCurve() ? "datetime-local" : ""}
           step="1"
@@ -96,8 +116,10 @@ const EditInterval = (): React.ReactElement => {
       <StartEndIndex>
         <StyledLabel label="End Index" />
         <StyledTextField
+          disabled={disabled}
           id="endIndex"
-          defaultValue={getDefaultValue(endIndex)}
+          value={endIndex}
+          // defaultValue={getDefaultValue(endIndex)}
           type={isTimeCurve() ? "datetime-local" : ""}
           variant={isValidEnd ? undefined : "error"}
           step="1"
@@ -139,7 +161,7 @@ const StyledTextField = styled(TextField)`
   min-width: 220px;
 `;
 
-const StyledButton = styled(Button)`
+export const StyledButton = styled(Button)`
   ${(props) =>
     props.disabled
       ? `
