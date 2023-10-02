@@ -81,6 +81,7 @@ export enum JobType {
   DeleteObjects = "DeleteObjects",
   DeleteWell = "DeleteWell",
   DeleteWellbore = "DeleteWellbore",
+  MissingData = "MissingData",
   ModifyBhaRun = "ModifyBhaRun",
   ModifyFormationMarker = "ModifyFormationMarker",
   ModifyGeologyInterval = "ModifyGeologyInterval",
@@ -103,5 +104,6 @@ export enum JobType {
   BatchModifyWell = "BatchModifyWell",
   ImportLogData = "ImportLogData",
   ReplaceComponents = "ReplaceComponents",
-  ReplaceObjects = "ReplaceObjects"
+  ReplaceObjects = "ReplaceObjects",
+  AnalyzeGaps = "AnalyzeGaps"
 }

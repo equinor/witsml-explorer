@@ -92,5 +92,10 @@ namespace Witsml.Data.Curves
         {
             return this.Value.GetHashCode();
         }
+
+        public static TimeSpan operator -(DateTimeIndex index1, DateTimeIndex index2)
+        {
+            return index1.Value - index2.Value;
+        }
     }
 }
