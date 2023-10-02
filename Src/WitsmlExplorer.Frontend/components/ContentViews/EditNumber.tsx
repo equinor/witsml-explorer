@@ -28,8 +28,11 @@ const EditNumber = (props: EditNumberProps): React.ReactElement => {
   };
 
   const onInputChange = (e: any) => {
-    setIsEdited(true);
-    setValue(e.target.value);
+    const newValue = e.target.value;
+    if (/^\d*\.?\d*$/.test(newValue)) {
+      setIsEdited(true);
+      setValue(newValue);
+    }
   };
 
   return (
