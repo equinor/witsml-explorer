@@ -47,7 +47,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export const ContentTable = (contentTableProps: ContentTableProps): React.ReactElement => {
+export const ContentTable = React.memo((contentTableProps: ContentTableProps): React.ReactElement => {
   const {
     columns,
     data,
@@ -62,7 +62,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     viewId,
     downloadToCsvFileName = null,
     onRowSelectionChange,
-    initiallySelectedRows = []
+    initiallySelectedRows = [],
+    autoRefresh = false
   } = contentTableProps;
   const {
     operationState: { colors }
@@ -105,7 +106,9 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     onColumnVisibilityChange: setColumnVisibility,
     onColumnSizingChange: setColumnSizing,
     onRowSelectionChange: (updaterOrValue) => {
-      const newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(rowSelection) : updaterOrValue;
+      const prevSelection = checkableRows ? rowSelection : {};
+      let newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(prevSelection) : updaterOrValue;
+      if (!checkableRows && Object.keys(newRowSelection).length == 0) newRowSelection = rowSelection;
       setRowSelection(newRowSelection);
       onRowSelectionChange?.(data.filter((_, index) => newRowSelection[index]));
     },
@@ -146,6 +149,18 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
   useEffect(() => {
     columnVirtualizer.measure();
   }, [columnSizing]);
+
+  useEffect(() => {
+    if (autoRefresh) {
+      tableContainerRef.current.scrollTop = tableContainerRef.current.scrollHeight;
+    }
+  });
+
+  const oldDataCountRef = React.useRef<number>(null);
+
+  useEffect(() => {
+    oldDataCountRef.current = autoRefresh ? data.length : null;
+  }, [autoRefresh]);
 
   const columnItems = columnVirtualizer.getVirtualItems();
   const [spaceLeft, spaceRight] = calculateHorizontalSpace(columnItems, columnVirtualizer.getTotalSize(), stickyLeftColumns);
@@ -194,7 +209,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
           stickyLeftColumns={stickyLeftColumns}
         />
       ) : null}
-      <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>
+      <div ref={tableContainerRef} style={{ overflowY: autoRefresh ? "hidden" : "auto", height: "100%" }}>
         <StyledTable>
           <TableHead
             style={{
@@ -244,6 +259,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     data-index={virtualRow.index}
                     ref={rowVirtualizer.measureElement}
                     colors={colors}
+                    className={autoRefresh && oldDataCountRef.current && virtualRow.index + 1 > oldDataCountRef.current ? "fading-row" : ""}
                   >
                     <td style={{ width: `${spaceLeft}px` }} />
                     {columnItems.map((column) => {
@@ -282,7 +298,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
       </div>
     </TableContainer>
   );
-};
+});
+ContentTable.displayName = "ContentTable";
 
 const sortingIcons = {
   asc: <Icon size={16} name="arrowUp" style={{ position: "relative", top: 3 }} />,

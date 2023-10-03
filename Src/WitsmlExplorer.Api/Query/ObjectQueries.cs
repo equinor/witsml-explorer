@@ -47,12 +47,7 @@ namespace WitsmlExplorer.Api.Query
 
         public static IWitsmlObjectList GetWitsmlObjectsByType(EntityType type)
         {
-            WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
-            o.UidWell = "";
-            o.UidWellbore = "";
-            o.Uid = "";
-            o.Name = "";
-            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            return GetWitsmlObjectsWithParamByType(type, null, null);
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsWithParamByType(EntityType type, string objectProperty, string objectPropertyValue)
@@ -61,16 +56,13 @@ namespace WitsmlExplorer.Api.Query
             o.UidWell = "";
             o.UidWellbore = "";
             o.Uid = "";
+            o.NameWell = "";
+            o.NameWellbore = "";
             o.Name = "";
             if (objectProperty != null)
             {
-                PropertyInfo property = o.GetType().GetProperty(objectProperty.CapitalizeFirstLetter());
-                if (property == null || !property.CanWrite)
-                {
-                    throw new ArgumentException($"{objectProperty} must be a supported property of a {type}.");
-                }
-                property.SetValue(o, objectPropertyValue);
-            }
+                o = QueryHelper.AddPropertyToObject(o, objectProperty, objectPropertyValue);
+            };
             return (IWitsmlObjectList)o.AsSingletonWitsmlList();
         }
 

@@ -9,25 +9,25 @@ namespace Witsml.Data.Curves;
 public class TimeSpanIndex : Index
 {
     private const string TimeSpanPattern = @"hh\:mm\:ss";
-    
+
     public TimeSpan Value { get; }
 
     public TimeSpanIndex(TimeSpan value)
     {
         Value = value;
     }
-    
+
     public TimeSpanIndex(long milliseconds)
     {
         Value = TimeSpan.FromMilliseconds(milliseconds);
     }
-    
+
     [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
     public override Index AddEpsilon()
     {
         throw new System.NotImplementedException();
     }
-   
+
     public override int CompareTo(Index that)
     {
         TimeSpanIndex thatWitsmlTimeSpan = (TimeSpanIndex)that;
@@ -55,7 +55,7 @@ public class TimeSpanIndex : Index
     {
         return Value == TimeSpan.Zero;
     }
-    
+
     public override string ToString()
     {
         return GetValueAsString();

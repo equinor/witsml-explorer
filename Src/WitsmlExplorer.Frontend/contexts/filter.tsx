@@ -36,36 +36,34 @@ export enum WellPropertyFilterType {
   License = "License"
 }
 
-// Filter by an object type. The objects will be fetched for all wells and wellbores when selected as an option.
-// Searching this way will support wildcards.
-// This means that fetching will be slow if there are many instances of that object. Consider using ObjectPropertyFilterType which will fetch on demand.
-export enum ObjectFilterType {
-  Rig = "Rig"
-  // Add any other objects from ObjectType you want to search for by name here.
-}
-
 // Filter by an object's property. Objects set in this filter type will be fetched on demand.
-// Searching this way will not support wildcards, and needs an exact match.
-export enum ObjectPropertyFilterType {
+// When searching without wildcards, it will try to find exact matches (quick).
+// When searching with wildcards (or an empty string), it will fetch all the objects, and then filter them in the frontend (slow).
+// It will only fetch all objects once. Afterwards, all searches will be filtered in the fetched objects in the frontend, until a different object is chosen to search by.
+export enum ObjectFilterType {
+  Log = "Log",
+  Rig = "Rig",
   ServiceCompany = "Service Company" // A property for both logs and trajectories.
 }
 
-// Mapping from ObjectPropertyFilterType to the objects the property belongs to.
-export const objectPropertyFilterTypeToObjects = {
-  [ObjectPropertyFilterType.ServiceCompany]: [ObjectType.Log, ObjectType.Trajectory]
+// Mapping from ObjectFilterType to the objects the property belongs to.
+export const objectFilterTypeToObjects = {
+  [ObjectFilterType.Log]: [ObjectType.Log],
+  [ObjectFilterType.Rig]: [ObjectType.Rig],
+  [ObjectFilterType.ServiceCompany]: [ObjectType.Log, ObjectType.Trajectory]
 };
 
 // Mapping from every filter type to the property to filter by.
 // For WellFilterType, the property must be a property of a Well and Wellbore.
-// For ObjectFilterType, the property must be a property of an ObjectOnWellbore.
-// For ObjectPropertyFilterType, the property can be any string property under an object.
+// For ObjectFilterType, the property can be any string property under an object.
 export const filterTypeToProperty = {
   [WellFilterType.Well]: "name",
   [WellFilterType.WellOrWellbore]: "name",
   [WellPropertyFilterType.Field]: "field",
   [WellPropertyFilterType.License]: "numLicense",
+  [ObjectFilterType.Log]: "name",
   [ObjectFilterType.Rig]: "name",
-  [ObjectPropertyFilterType.ServiceCompany]: "serviceCompany"
+  [ObjectFilterType.ServiceCompany]: "serviceCompany"
 };
 
 // A function to get a description for a filter type.
@@ -73,26 +71,17 @@ export const filterTypeToProperty = {
 // Return null for types that should not have any description.
 export const getFilterTypeInformation = (filterType: FilterType): string => {
   const wildCardString = "Use wildcard ? for one unknown character.\nUse wildcard * for x unknown characters.";
-  const emptySearchStringWellbores = `Use keyword *IS_EMPTY* to search for wellbores without ${pluralize(filterType)}.`;
-  const emptySearchStringWells = `Use keyword *IS_EMPTY* to search for wells without a ${filterType}.`;
-  const exactSearchString = `Searching by ${filterType} only returns exact matches.`;
-  if (isWellFilterType(filterType)) {
+  const onDemandString = `${pluralize(filterType)} will be fetched on demand by typing 'Enter' or clicking the search icon.`;
+  if (isWellFilterType(filterType) || isWellPropertyFilterType(filterType)) {
     return wildCardString;
-  } else if (isWellPropertyFilterType(filterType)) {
-    return `${wildCardString}\n${emptySearchStringWells}`;
   } else if (isObjectFilterType(filterType)) {
-    return `${wildCardString}\n${emptySearchStringWellbores}`;
-  } else if (isObjectPropertyFilterType(filterType)) {
-    const lf = new Intl.ListFormat("en-US");
-    return `${filterType} is a parameter under ${lf.format(
-      objectPropertyFilterTypeToObjects[filterType as ObjectPropertyFilterType]
-    )}, and will be fetched on demand by typing 'Enter' or clicking the search icon.\n${exactSearchString}`;
+    return `${onDemandString}\n${wildCardString}`;
   }
   return null;
 };
 
-export type FilterType = WellFilterType | WellPropertyFilterType | ObjectFilterType | ObjectPropertyFilterType;
-export const FilterType = { ...WellFilterType, ...WellPropertyFilterType, ...ObjectFilterType, ...ObjectPropertyFilterType };
+export type FilterType = WellFilterType | WellPropertyFilterType | ObjectFilterType;
+export const FilterType = { ...WellFilterType, ...WellPropertyFilterType, ...ObjectFilterType };
 
 export const isWellFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(WellFilterType).includes(filterType);
@@ -104,10 +93,6 @@ export const isWellPropertyFilterType = (filterType: FilterType): boolean => {
 
 export const isObjectFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(ObjectFilterType).includes(filterType);
-};
-
-export const isObjectPropertyFilterType = (filterType: FilterType): boolean => {
-  return Object.values<string>(ObjectPropertyFilterType).includes(filterType);
 };
 
 export const allVisibleObjects: Record<ObjectType, VisibilityStatus> = {} as Record<ObjectType, VisibilityStatus>;
@@ -168,16 +153,12 @@ export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
 const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOptions) => {
   const { name, filterType, searchResults } = filter;
   const { filterWellbores, dispatchNavigation } = filterOptions;
-  const isObjectPropertyFilter = isObjectPropertyFilterType(filterType);
   const isObjectFilter = isObjectFilterType(filterType);
   const isWellPropertyFilter = isWellPropertyFilterType(filterType);
   const isWellFilter = isWellFilterType(filterType);
-  const property = isObjectPropertyFilter ? "searchProperty" : filterTypeToProperty[filterType];
-  const findEmpty = name === "*IS_EMPTY*" && !isWellFilter && !isObjectPropertyFilter;
-  const isSitecomSyntax = /^sel\(.*\)$/.test(name);
-  let searchName = name;
+  const property = isObjectFilter ? "searchProperty" : filterTypeToProperty[filterType];
 
-  if (!searchName || searchName === "") {
+  if (!name) {
     if (filterOptions.dispatchNavigation) {
       const expandTreeNodes: ExpandTreeNodesAction = { type: NavigationType.ExpandTreeNodes, payload: { nodeIds: [] } };
       dispatchNavigation(expandTreeNodes);
@@ -187,18 +168,7 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
     }
   }
 
-  if (findEmpty) {
-    searchName = "^$"; // Empty string
-  } else if (searchName == "") {
-    searchName = ".+"; // Any string that is not empty
-  } else {
-    searchName = searchName
-      .replace(/[.+^${}()|[\]\\]/g, "\\$&") // Escape unsupported regex-symbols (except for * and ?)
-      .replace(/\*/g, ".*") // Replace * with .* to match any characters
-      .replace(/\?/g, "."); // Replace ? with . to match any single character
-  }
-
-  const regex = new RegExp(searchName, "i");
+  const regex = getSearchRegex(name);
 
   const filteredWells: Well[] = [];
   const treeNodesToExpand: string[] = [];
@@ -219,18 +189,10 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
         }
       }
     }
-  } else if (isObjectFilter || isObjectPropertyFilter) {
-    const filteredObjects = isSitecomSyntax ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
-    let filteredWellUids = filteredObjects.map((object) => object.wellUid);
-    let filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
-
-    if (findEmpty) {
-      const notEmptyRegex = new RegExp(".+", "i");
-      const notEmptyWellboreUids = searchResults.filter((o) => notEmptyRegex.test(o[property as keyof ObjectSearchResult] || "")).map((object) => object.wellboreUid);
-      const emptyFilteredWellAndWellboreUids = wells.flatMap((w) => w.wellbores?.map((wb) => [w.uid, wb.uid])).filter(([, wbUid]) => !notEmptyWellboreUids.includes(wbUid));
-      filteredWellUids = emptyFilteredWellAndWellboreUids.map(([wellUid]) => wellUid);
-      filteredWellAndWellboreUids = emptyFilteredWellAndWellboreUids.map((o) => o.join(","));
-    }
+  } else if (isObjectFilter) {
+    const filteredObjects = isSitecomSyntax(name) ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
+    const filteredWellUids = filteredObjects.map((object) => object.wellUid);
+    const filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
 
     for (const well of wells) {
       if (filteredWellUids.includes(well.uid)) {
@@ -253,6 +215,23 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
   }
 
   return filteredWells;
+};
+
+export const isSitecomSyntax = (str: string) => {
+  return /^sel\(.*\)$/.test(str);
+};
+
+export const getSearchRegex = (str: string): RegExp => {
+  let newStr = str;
+  if (str == "") {
+    newStr = ".+"; // Any string that is not empty
+  } else {
+    newStr = str
+      .replace(/[.+^${}()|[\]\\]/g, "\\$&") // Escape unsupported regex-symbols (except for * and ?)
+      .replace(/\*/g, ".*") // Replace * with .* to match any characters
+      .replace(/\?/g, "."); // Replace ? with . to match any single character
+  }
+  return new RegExp(newStr, "i");
 };
 
 function filterOnIsActive(wells: Well[], filterOnIsActive: boolean) {

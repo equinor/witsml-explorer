@@ -27,7 +27,8 @@ export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject 
 export enum ViewFlags {
   Jobs = "jobs",
   Query = "query",
-  ServerManager = "serverManager"
+  ServerManager = "serverManager",
+  ObjectSearchView = "objectSearchView"
 }
 
 export interface NavigationState {

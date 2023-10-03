@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs;
@@ -12,7 +13,7 @@ public record AnalyzeGapJob : Job
     /// Log reference object
     /// </summary>
     public LogObject LogReference { get; init; }
-    
+
     /// <summary>
     /// Array of mnemonics names
     /// </summary>
@@ -22,7 +23,7 @@ public record AnalyzeGapJob : Job
     /// Size of the GAP for depth
     /// </summary>
     public double GapSize { get; set; }
-    
+
     /// <summary>
     /// Size of the GAP for dateTime
     /// </summary>
