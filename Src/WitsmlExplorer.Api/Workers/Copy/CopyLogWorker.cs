@@ -88,7 +88,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             string[] logUids = job.Source.ObjectUids;
             Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(logUids.Select(
-                logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)));
+                logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)).ToList());
             Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target, retry: true);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);
