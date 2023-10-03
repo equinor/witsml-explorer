@@ -226,24 +226,6 @@ describe("Filter", () => {
       expect(modifiedWells).toStrictEqual(expectedWells);
     });
   });
-
-  describe("Filter special keywords", () => {
-    it("Should only match on empty fields when filterType is Field and the special keyword *IS_EMPTY* is used", () => {
-      filter.name = "*IS_EMPTY*";
-      filter.filterType = WellPropertyFilterType.Field;
-      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
-      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_6];
-      expect(modifiedWells).toStrictEqual(expectedWells);
-    });
-
-    it("Should only match on empty licenses when filterType is License and the special keyword *IS_EMPTY* is used", () => {
-      filter.name = "*IS_EMPTY*";
-      filter.filterType = WellPropertyFilterType.License;
-      const modifiedWells = filterWells(wells, filter, FILTER_OPTIONS);
-      const expectedWells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5];
-      expect(modifiedWells).toStrictEqual(expectedWells);
-    });
-  });
 });
 
 const LOG_1A1: LogObject = getLogObject({ uid: "log1A1", wellUid: "well1", wellboreUid: "wellbore1A", name: "Log 1A1", objectGrowing: true });

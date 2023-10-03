@@ -71,12 +71,9 @@ export const filterTypeToProperty = {
 // Return null for types that should not have any description.
 export const getFilterTypeInformation = (filterType: FilterType): string => {
   const wildCardString = "Use wildcard ? for one unknown character.\nUse wildcard * for x unknown characters.";
-  const emptySearchStringWells = `Use keyword *IS_EMPTY* to search for wells without a ${filterType}.`;
   const onDemandString = `${pluralize(filterType)} will be fetched on demand by typing 'Enter' or clicking the search icon.`;
-  if (isWellFilterType(filterType)) {
+  if (isWellFilterType(filterType) || isWellPropertyFilterType(filterType)) {
     return wildCardString;
-  } else if (isWellPropertyFilterType(filterType)) {
-    return `${wildCardString}\n${emptySearchStringWells}`;
   } else if (isObjectFilterType(filterType)) {
     return `${onDemandString}\n${wildCardString}`;
   }
@@ -160,10 +157,8 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
   const isWellPropertyFilter = isWellPropertyFilterType(filterType);
   const isWellFilter = isWellFilterType(filterType);
   const property = isObjectFilter ? "searchProperty" : filterTypeToProperty[filterType];
-  const findEmpty = name === "*IS_EMPTY*" && isWellPropertyFilter;
-  const isSitecomSyntax = /^sel\(.*\)$/.test(name);
 
-  if (!name || name === "") {
+  if (!name) {
     if (filterOptions.dispatchNavigation) {
       const expandTreeNodes: ExpandTreeNodesAction = { type: NavigationType.ExpandTreeNodes, payload: { nodeIds: [] } };
       dispatchNavigation(expandTreeNodes);
@@ -173,7 +168,7 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
     }
   }
 
-  const regex = getSearchRegex(name, findEmpty);
+  const regex = getSearchRegex(name);
 
   const filteredWells: Well[] = [];
   const treeNodesToExpand: string[] = [];
@@ -195,17 +190,9 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
       }
     }
   } else if (isObjectFilter) {
-    const filteredObjects = isSitecomSyntax ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
-    let filteredWellUids = filteredObjects.map((object) => object.wellUid);
-    let filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
-
-    if (findEmpty) {
-      const notEmptyRegex = new RegExp(".+", "i");
-      const notEmptyWellboreUids = searchResults.filter((o) => notEmptyRegex.test(o[property as keyof ObjectSearchResult] || "")).map((object) => object.wellboreUid);
-      const emptyFilteredWellAndWellboreUids = wells.flatMap((w) => w.wellbores?.map((wb) => [w.uid, wb.uid])).filter(([, wbUid]) => !notEmptyWellboreUids.includes(wbUid));
-      filteredWellUids = emptyFilteredWellAndWellboreUids.map(([wellUid]) => wellUid);
-      filteredWellAndWellboreUids = emptyFilteredWellAndWellboreUids.map((o) => o.join(","));
-    }
+    const filteredObjects = isSitecomSyntax(name) ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
+    const filteredWellUids = filteredObjects.map((object) => object.wellUid);
+    const filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
 
     for (const well of wells) {
       if (filteredWellUids.includes(well.uid)) {
@@ -230,11 +217,13 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
   return filteredWells;
 };
 
-export const getSearchRegex = (str: string, findEmpty: boolean): RegExp => {
+export const isSitecomSyntax = (str: string) => {
+  return /^sel\(.*\)$/.test(str);
+};
+
+export const getSearchRegex = (str: string): RegExp => {
   let newStr = str;
-  if (findEmpty) {
-    newStr = "^$"; // Empty string
-  } else if (str == "") {
+  if (str == "") {
     newStr = ".+"; // Any string that is not empty
   } else {
     newStr = str

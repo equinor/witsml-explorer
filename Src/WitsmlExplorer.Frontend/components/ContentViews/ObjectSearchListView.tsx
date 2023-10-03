@@ -1,6 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
-import { FilterContext, filterTypeToProperty, getFilterTypeInformation, getSearchRegex, isObjectFilterType } from "../../contexts/filter";
+import { FilterContext, filterTypeToProperty, getFilterTypeInformation, getSearchRegex, isObjectFilterType, isSitecomSyntax } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -35,11 +35,10 @@ export const ObjectSearchListView = (): React.ReactElement => {
 
   useEffect(() => {
     if (isObjectFilterType(selectedFilter.filterType)) {
-      const regex = getSearchRegex(selectedFilter.name, selectedFilter.name === "*IS_EMPTY*");
-      const isSitecomSyntax = /^sel\(.*\)$/.test(selectedFilter.name);
+      const regex = getSearchRegex(selectedFilter.name);
       setRows(
         selectedFilter.searchResults
-          .filter((searchResult) => isSitecomSyntax || regex.test(searchResult.searchProperty))
+          .filter((searchResult) => isSitecomSyntax(selectedFilter.name) || regex.test(searchResult.searchProperty)) // If we later want to filter away empty results, use regex.test(searchResult.searchProperty ?? ""))
           .map((searchResult, index) => {
             const well = wells?.find((w) => w.uid == searchResult.wellUid);
             const wellbore = well?.wellbores?.find((wb) => wb.uid == searchResult.wellboreUid);
