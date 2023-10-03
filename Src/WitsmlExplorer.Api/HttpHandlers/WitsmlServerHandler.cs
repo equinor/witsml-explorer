@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 new Connection(server)
                 {
                     Usernames = await credentialsService.GetLoggedInUsernames(httpHeaders, server.Url)
-                }));
+                }).ToList());
             return TypedResults.Ok(credentials);
         }
 

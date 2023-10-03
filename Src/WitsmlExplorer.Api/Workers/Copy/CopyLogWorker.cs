@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
-            IEnumerable<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList()));
+            List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList())).ToList();
 
             Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
             IEnumerable<QueryResult> results = await copyLogTasksResult;
@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
-            IEnumerable<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(_copyLogDataWorker.Execute);
+            List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(_copyLogDataWorker.Execute).ToList();
 
             Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
             await copyLogDataResultTask;
@@ -88,7 +88,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             string[] logUids = job.Source.ObjectUids;
             Task<WitsmlLog[]> getLogFromSourceQueries = Task.WhenAll(logUids.Select(
-                logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)));
+                logUid => GetLogHeaderOnly(GetSourceWitsmlClientOrThrow(), logUid, job.Source.WellboreUid, job.Source.WellUid)).ToList());
             Task<WitsmlWellbore> getTargetWellboreQuery = WorkerTools.GetWellbore(GetTargetWitsmlClientOrThrow(), job.Target, retry: true);
 
             await Task.WhenAll(getLogFromSourceQueries, getTargetWellboreQuery);

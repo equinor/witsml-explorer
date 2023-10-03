@@ -145,7 +145,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)
         {
-            IEnumerable<Task<(EntityType objectType, int count)>> countTasks = _expandableObjects.Select(
+            List<Task<(EntityType objectType, int count)>> countTasks = _expandableObjects.Select(
                 async (objectType) =>
                 {
                     IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, "", objectType);
@@ -161,7 +161,7 @@ namespace WitsmlExplorer.Api.Services
                         return (objectType, 0);
                     }
                 }
-            );
+            ).ToList();
             await Task.WhenAll(countTasks);
             return countTasks.ToDictionary((task) => task.Result.objectType, (task) => task.Result.count);
         }
