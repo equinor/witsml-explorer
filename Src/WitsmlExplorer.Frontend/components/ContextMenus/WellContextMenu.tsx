@@ -1,7 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import ModificationType from "../../contexts/modificationType";
+import NavigationContext from "../../contexts/navigationContext";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteWellJob } from "../../models/jobs/deleteJobs";
@@ -9,6 +11,7 @@ import { Server } from "../../models/server";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
+import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import { WellRow } from "../ContentViews/WellsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
@@ -31,6 +34,7 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
+  const { dispatchNavigation } = useContext(NavigationContext);
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -43,6 +47,17 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     };
     const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.New, well: newWell, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
+  };
+
+  const onClickRefresh = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    WellService.getWell(well.uid).then((response) => dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: response } }));
+  };
+
+  const onClickRefreshAll = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const abortController = new AbortController();
+    WellService.getWells(abortController.signal).then((response) => dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: response } }));
   };
 
   const onClickNewWellbore = () => {
@@ -132,6 +147,14 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"refreshwell"} onClick={onClickRefresh}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh well</Typography>
+        </MenuItem>,
+        <MenuItem key={"refreshallwells"} onClick={onClickRefreshAll}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh all wells</Typography>
+        </MenuItem>,
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Well</Typography>

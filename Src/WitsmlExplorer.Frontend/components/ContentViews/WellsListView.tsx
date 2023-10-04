@@ -1,11 +1,13 @@
-import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
+import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import React, { useContext, useEffect, useState } from "react";
 import { useWellFilter } from "../../contexts/filter";
+import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
+import WellService from "../../services/wellService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
 import formatDateString from "../DateFormatter";
@@ -19,9 +21,11 @@ export const WellsListView = (): React.ReactElement => {
   const { servers, wells } = navigationState;
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const filteredWells = useWellFilter(wells);
+  const [lastFetched, setLastFetched] = useState<string>(new Date().toLocaleTimeString());
+  const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
@@ -54,6 +58,33 @@ export const WellsListView = (): React.ReactElement => {
     });
   };
 
+  useEffect(() => {
+    if (shouldRefresh) {
+      setShouldRefresh(false);
+      const abortController = new AbortController();
+      const refreshWells = async () => {
+        WellService.getWells(abortController.signal).then((response) => dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: response } }));
+        setLastFetched(new Date().toLocaleTimeString());
+      };
+      refreshWells();
+    }
+  }, [shouldRefresh]);
+
+  const panelElements = [
+    <Button
+      key="refreshJobs"
+      aria-disabled={shouldRefresh ? true : false}
+      aria-label={shouldRefresh ? "loading data" : null}
+      onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
+      disabled={shouldRefresh}
+      colors={colors}
+    >
+      <Icon name="refresh" />
+      Refresh
+    </Button>,
+    <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
+  ];
+
   return (
     <WellProgress>
       {wells.length > 0 && filteredWells.length == 0 ? (
@@ -67,6 +98,7 @@ export const WellsListView = (): React.ReactElement => {
           onContextMenu={onContextMenu}
           checkableRows
           downloadToCsvFileName="Wells"
+          panelElements={panelElements}
         />
       )}
     </WellProgress>

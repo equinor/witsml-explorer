@@ -126,9 +126,8 @@ const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
   const { well } = payload;
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, well.uid);
-  const { wellbores } = wells[wellIndex];
+  wells[wellIndex] = { ...well };
 
-  wells[wellIndex] = { ...well, wellbores };
   const refreshedWellIsSelected = state.selectedWell?.uid === well.uid;
 
   return {
