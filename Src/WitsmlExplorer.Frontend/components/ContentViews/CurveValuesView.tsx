@@ -68,8 +68,7 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [columns, selectedRows]);
 
   const onContextMenu = (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
-    const originalTableData = tableData.filter((data) => checkedContentItems.map((c) => c.id).includes(data.id));
-    const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, originalTableData, selectedLog);
+    const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
     const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
