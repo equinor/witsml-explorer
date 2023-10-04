@@ -1,5 +1,5 @@
 import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
-import { useContext, useEffect, useState } from "react";
+import { DragEvent, ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import OperationContext from "../../contexts/operationContext";
@@ -19,7 +19,7 @@ export interface SpliceLogsProps {
   checkedLogs: ObjectOnWellbore[];
 }
 
-const SpliceLogsModal = (props: SpliceLogsProps): React.ReactElement => {
+const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
   const { checkedLogs } = props;
   const {
     operationState: { colors },
@@ -44,7 +44,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): React.ReactElement => {
     await JobService.orderJob(JobType.SpliceLogs, spliceLogsJob);
   };
 
-  const drop = (e: React.DragEvent<HTMLDivElement>) => {
+  const drop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (draggedId != null && draggedOverId != null && draggedId != draggedOverId) {
       const dragItemIndex = orderedLogs.findIndex((log) => log.uid == draggedId);
@@ -73,33 +73,12 @@ const SpliceLogsModal = (props: SpliceLogsProps): React.ReactElement => {
       showCancelButton={true}
       width={ModalWidth.MEDIUM}
       content={
-        <div>
+        <>
           <Accordion>
             <Accordion.Item>
               <StyledAccordionHeader colors={colors}>How are the logs spliced?</StyledAccordionHeader>
               <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
-                <Typography style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}>
-                  The logs are spliced by only adding the data for subsequent logs that are not within the min and max indexes of the previous log.
-                  <br />
-                  This process is repeated for each curve using the min/max index of the curve, not the start/end index of the log.
-                  <br />
-                  <br />
-                  Log 1: <br />
-                  Depth | Curve1 | Curve2 <br />
-                  1 | 1 | 1 <br />
-                  2 | 1 | - <br />
-                  <br />
-                  Log 2: <br />
-                  Depth | Curve1 | Curve2 <br />
-                  2 | 2 | 2 <br />
-                  3 | 2 | 2 <br />
-                  <br />
-                  Spliced Log: <br />
-                  Depth | Curve1 | Curve2 <br />
-                  1 | 1 | 1 <br />
-                  2 | 1 | 2 <br />
-                  3 | 2 | 2 <br />
-                </Typography>
+                <ExampleSplice />
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
@@ -134,9 +113,36 @@ const SpliceLogsModal = (props: SpliceLogsProps): React.ReactElement => {
             helperText={!validText(newLogName, 1, 64) ? "The name must be 1-64 characters" : ""}
             onChange={(e: any) => setNewLogName(e.target.value)}
           />
-        </div>
+        </>
       }
     />
+  );
+};
+
+const ExampleSplice = (): ReactElement => {
+  return (
+    <Typography style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}>
+      The logs are spliced by only adding the data for subsequent logs that are not within the min and max indexes of the previous log.
+      <br />
+      This process is repeated for each curve using the min/max index of the curve, not the start/end index of the log.
+      <br />
+      <br />
+      Log 1: <br />
+      Depth | Curve1 | Curve2 <br />
+      1 | 1 | 1 <br />
+      2 | 1 | - <br />
+      <br />
+      Log 2: <br />
+      Depth | Curve1 | Curve2 <br />
+      2 | 2 | 2 <br />
+      3 | 2 | 2 <br />
+      <br />
+      Spliced Log: <br />
+      Depth | Curve1 | Curve2 <br />
+      1 | 1 | 1 <br />
+      2 | 1 | 2 <br />
+      3 | 2 | 2 <br />
+    </Typography>
   );
 };
 

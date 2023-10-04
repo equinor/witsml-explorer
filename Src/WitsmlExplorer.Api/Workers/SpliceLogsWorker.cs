@@ -172,6 +172,8 @@ namespace WitsmlExplorer.Api.Workers
             return new()
             {
                 Name = newLogName,
+                NameWell = baseLog.NameWell,
+                NameWellbore = baseLog.NameWellbore,
                 Uid = newLogUid,
                 UidWell = baseLog.UidWell,
                 UidWellbore = baseLog.UidWellbore,

@@ -46,49 +46,74 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Theory]
         [InlineData(WitsmlLog.WITSML_INDEX_TYPE_MD)]
         [InlineData(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)]
-        public async Task Execute_OnlyOverlap_KeepsFirst(string indexType)
+        public async Task Execute_SplicedLog_HasCorrectHeader(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 0 }; // start indexes for each log
+            int[] endIndexNum = { 10, 10 }; // end indexes for each log
             WitsmlLogs capturedLogHeader = null;
             WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 0 }, new int[] { 10, 10 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 0 }, new int[] { 10, 10 });
-
-            var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
-            var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
-
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var (workerResult, refreshAction) = await _worker.Execute(job);
+
+            WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
+            WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
 
             Assert.True(workerResult.IsSuccess);
             Assert.NotNull(refreshAction);
 
-            // Verify that the new log has the correct header
+            // Verify that the captured new log has the correct header
             Assert.NotNull(capturedLogHeader);
             Assert.Single(capturedLogHeader.Logs);
-            WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
             Assert.Equal(_newLogUid, newLogHeader.Uid);
             Assert.Equal(_newLogName, newLogHeader.Name);
             Assert.Equal(_wellUid, newLogHeader.UidWell);
             Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
+            Assert.Equal(indexType, newLogHeader.IndexType);
 
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
+            // Verify that the captured log data has the correct header
             Assert.NotNull(capturedLogData);
             Assert.Single(capturedLogData.Logs);
-            WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
             Assert.Equal(_newLogUid, newLogDataHeader.Uid);
             Assert.Equal(_wellUid, newLogDataHeader.UidWell);
             Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
+        }
+
+        [Theory]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_MD)]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)]
+        public async Task Execute_OnlyOverlap_KeepsFirst(string indexType)
+        {
+            string[] logUids = { "log1Uid", "log2Uid" };
+            int[] startIndexNum = { 0, 0 }; // start indexes for each log
+            int[] endIndexNum = { 10, 10 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
+
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
+
+            var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
+            var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
+
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+
+            WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
+            WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            Assert.Equal(logData.Logs.First().LogData.Data.Select(d => d.Data), newLogData.Data.Select(d => d.Data));
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> expectedData = logData.Logs.First().LogData.Data.Select(d => d.Data);
+            IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(expectedData, newLogDataData);
         }
 
         [Theory]
@@ -97,47 +122,35 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_NoOverlap_KeepsBoth(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 5 }; // start indexes for each log
+            int[] endIndexNum = { 4, 9 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 5 }, new int[] { 4, 9 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 5 }, new int[] { 4, 9 });
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
 
-            WitsmlLogs capturedLogHeader = null;
-            WitsmlLogs capturedLogData = null;
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
-
             var (workerResult, refreshAction) = await _worker.Execute(job);
 
-            Assert.True(workerResult.IsSuccess);
-            Assert.NotNull(refreshAction);
-
-            // Verify that the new log has the correct header
-            Assert.NotNull(capturedLogHeader);
-            Assert.Single(capturedLogHeader.Logs);
             WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
-            Assert.Equal(_newLogUid, newLogHeader.Uid);
-            Assert.Equal(_newLogName, newLogHeader.Name);
-            Assert.Equal(_wellUid, newLogHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
-
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
-            Assert.NotNull(capturedLogData);
-            Assert.Single(capturedLogData.Logs);
             WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
-            Assert.Equal(_newLogUid, newLogDataHeader.Uid);
-            Assert.Equal(_wellUid, newLogDataHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            Assert.Equal(logData.Logs.First().LogData.Data.Select(d => d.Data), newLogData.Data.Select(d => d.Data).Take(5));
-            Assert.Equal(logData.Logs.Last().LogData.Data.Select(d => d.Data), newLogData.Data.Select(d => d.Data).TakeLast(5));
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> expectedDataFirst5Rows = logData.Logs.First().LogData.Data.Select(d => d.Data);
+            IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data);
+            IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(expectedDataFirst5Rows, newLogDataData.Take(5));
+            Assert.Equal(expectedDataLast5Rows, newLogDataData.TakeLast(5));
         }
 
         [Theory]
@@ -146,47 +159,35 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_SomeOverlap_KeepsFirstOnOverlap(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 5 }; // start indexes for each log
+            int[] endIndexNum = { 9, 14 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 5 }, new int[] { 9, 14 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 5 }, new int[] { 9, 14 });
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
 
-            WitsmlLogs capturedLogHeader = null;
-            WitsmlLogs capturedLogData = null;
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
-
             var (workerResult, refreshAction) = await _worker.Execute(job);
 
-            Assert.True(workerResult.IsSuccess);
-            Assert.NotNull(refreshAction);
-
-            // Verify that the new log has the correct header
-            Assert.NotNull(capturedLogHeader);
-            Assert.Single(capturedLogHeader.Logs);
             WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
-            Assert.Equal(_newLogUid, newLogHeader.Uid);
-            Assert.Equal(_newLogName, newLogHeader.Name);
-            Assert.Equal(_wellUid, newLogHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
-
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
-            Assert.NotNull(capturedLogData);
-            Assert.Single(capturedLogData.Logs);
             WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
-            Assert.Equal(_newLogUid, newLogDataHeader.Uid);
-            Assert.Equal(_wellUid, newLogDataHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            Assert.Equal(logData.Logs.First().LogData.Data.Select(d => d.Data), newLogData.Data.Select(d => d.Data).Take(10));
-            Assert.Equal(logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5), newLogData.Data.Select(d => d.Data).TakeLast(5));
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> expectedDataFirst10Rows = logData.Logs.First().LogData.Data.Select(d => d.Data);
+            IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5);
+            IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(expectedDataFirst10Rows, newLogDataData.Take(10));
+            Assert.Equal(expectedDataLast5Rows, newLogDataData.TakeLast(5));
         }
 
         [Theory]
@@ -195,49 +196,36 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_ManyLogs_NoOverlap_KeepsFirstAll(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid", "log3Uid", "log4Uid", "log5Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 5, 10, 15, 20 }; // start indexes for each log
+            int[] endIndexNum = { 4, 9, 14, 19, 24 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 5, 10, 15, 20 }, new int[] { 4, 9, 14, 19, 24 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 5, 10, 15, 20 }, new int[] { 4, 9, 14, 19, 24 });
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
 
-            WitsmlLogs capturedLogHeader = null;
-            WitsmlLogs capturedLogData = null;
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
-
             var (workerResult, refreshAction) = await _worker.Execute(job);
 
-            Assert.True(workerResult.IsSuccess);
-            Assert.NotNull(refreshAction);
-
-            // Verify that the new log has the correct header
-            Assert.NotNull(capturedLogHeader);
-            Assert.Single(capturedLogHeader.Logs);
             WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
-            Assert.Equal(_newLogUid, newLogHeader.Uid);
-            Assert.Equal(_newLogName, newLogHeader.Name);
-            Assert.Equal(_wellUid, newLogHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
-
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
-            Assert.NotNull(capturedLogData);
-            Assert.Single(capturedLogData.Logs);
             WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
-            Assert.Equal(_newLogUid, newLogDataHeader.Uid);
-            Assert.Equal(_wellUid, newLogDataHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            for (int i = 0; i < logUids.Length; i++)
-            {
-                Assert.Equal(logData.Logs[i].LogData.Data.Select(d => d.Data).TakeLast(5), newLogData.Data.Select(d => d.Data).Skip(5 * i).Take(5));
-            }
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(logData.Logs[0].LogData.Data.Select(d => d.Data).TakeLast(5), newLogDataData.Take(5));
+            Assert.Equal(logData.Logs[1].LogData.Data.Select(d => d.Data).TakeLast(5), newLogDataData.Skip(5).Take(5));
+            Assert.Equal(logData.Logs[2].LogData.Data.Select(d => d.Data).TakeLast(5), newLogDataData.Skip(10).Take(5));
+            Assert.Equal(logData.Logs[3].LogData.Data.Select(d => d.Data).TakeLast(5), newLogDataData.Skip(15).Take(5));
+            Assert.Equal(logData.Logs[4].LogData.Data.Select(d => d.Data).TakeLast(5), newLogDataData.Skip(20).Take(5));
         }
 
         [Theory]
@@ -246,10 +234,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_SomeCurvesOverlap_KeepsFirstCurveOnOverlap(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 5 }; // start indexes for each log
+            int[] endIndexNum = { 9, 14 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 5 }, new int[] { 9, 14 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 5 }, new int[] { 9, 14 });
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var data = logData.Logs.First().LogData.Data.Last().Data.Split(',');
             data[1] = "";
@@ -258,44 +248,30 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
 
-            WitsmlLogs capturedLogHeader = null;
-            WitsmlLogs capturedLogData = null;
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
-
             var (workerResult, refreshAction) = await _worker.Execute(job);
 
-            Assert.True(workerResult.IsSuccess);
-            Assert.NotNull(refreshAction);
-
-            // Verify that the new log has the correct header
-            Assert.NotNull(capturedLogHeader);
-            Assert.Single(capturedLogHeader.Logs);
             WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
-            Assert.Equal(_newLogUid, newLogHeader.Uid);
-            Assert.Equal(_newLogName, newLogHeader.Name);
-            Assert.Equal(_wellUid, newLogHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
-
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
-            Assert.NotNull(capturedLogData);
-            Assert.Single(capturedLogData.Logs);
             WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
-            Assert.Equal(_newLogUid, newLogDataHeader.Uid);
-            Assert.Equal(_wellUid, newLogDataHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            Assert.Equal(logData.Logs.First().LogData.Data.Select(d => d.Data).Take(8), newLogData.Data.Select(d => d.Data).Take(8));
-            Assert.Equal(logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5), newLogData.Data.Select(d => d.Data).TakeLast(5));
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> expectedDataFirst8Rows = logData.Logs.First().LogData.Data.Select(d => d.Data).Take(8);
+            IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5);
+            IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
             var log1Value = logData.Logs.First().LogData.Data.Select(d => d.Data).ToArray().Last().Split(',');
             var log2Value = logData.Logs.Last().LogData.Data.Select(d => d.Data).ToArray().First().Split(',');
             log1Value[1] = log2Value[1];
-            var expectedValue = string.Join(',', log1Value);
-            Assert.Equal(expectedValue, newLogData.Data.Select(d => d.Data).ToArray()[9]);
+            string expectedDataRow10 = string.Join(',', log1Value);
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(expectedDataFirst8Rows, newLogDataData.Take(8));
+            Assert.Equal(expectedDataRow10, newLogDataData.ToArray()[9]);
+            Assert.Equal(expectedDataLast5Rows, newLogDataData.TakeLast(5));
         }
 
         [Theory]
@@ -304,10 +280,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_NewCurve_AddsNewCurve(string indexType)
         {
             string[] logUids = { "log1Uid", "log2Uid" };
-            var job = CreateSpliceLogsJob(logUids);
+            int[] startIndexNum = { 0, 0 }; // start indexes for each log
+            int[] endIndexNum = { 10, 10 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
 
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, new int[] { 0, 0 }, new int[] { 10, 10 });
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, new int[] { 0, 0 }, new int[] { 10, 10 });
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
             var isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
             logHeaders.Logs.Last().LogCurveInfo.Add(new WitsmlLogCurveInfo()
@@ -330,38 +308,35 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var expectedMnemonics = logHeaders.Logs.Last().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.Last().LogCurveInfo.Select(lci => lci.Unit);
 
-            WitsmlLogs capturedLogHeader = null;
-            WitsmlLogs capturedLogData = null;
-            SetupClient(_witsmlClient, logHeaders, logData, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
-
             var (workerResult, refreshAction) = await _worker.Execute(job);
 
-            Assert.True(workerResult.IsSuccess);
-            Assert.NotNull(refreshAction);
-
-            // Verify that the new log has the correct header
-            Assert.NotNull(capturedLogHeader);
-            Assert.Single(capturedLogHeader.Logs);
             WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
-            Assert.Equal(_newLogUid, newLogHeader.Uid);
-            Assert.Equal(_newLogName, newLogHeader.Name);
-            Assert.Equal(_wellUid, newLogHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogHeader.UidWellbore);
-            Assert.Equal(expectedMnemonics, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic));
-            Assert.Equal(expectedUnits, newLogHeader.LogCurveInfo.Select(lci => lci.Unit));
-
-            // Verify that the new log has the correct data
-            Assert.NotNull(capturedLogData);
-            Assert.Single(capturedLogData.Logs);
             WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
-            Assert.Equal(_newLogUid, newLogDataHeader.Uid);
-            Assert.Equal(_wellUid, newLogDataHeader.UidWell);
-            Assert.Equal(_wellboreUid, newLogDataHeader.UidWellbore);
             WitsmlLogData newLogData = newLogDataHeader.LogData;
-            Assert.Equal(expectedMnemonics, newLogData.MnemonicList.Split(','));
-            Assert.Equal(expectedUnits, newLogData.UnitList.Split(','));
-            Assert.Equal(logData.Logs.First().LogData.Data.Select(d => d.Data), newLogData.Data.Select(d => string.Join(',', d.Data.Split(',').SkipLast(1))));
-            Assert.Equal(logData.Logs.Last().LogData.Data.Select(d => d.Data.Split(',').Last()), newLogData.Data.Select(d => d.Data.Split(',').Last()));
+            IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
+            IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> expectedDataExceptLastMnemonic = logData.Logs.First().LogData.Data.Select(d => d.Data);
+            IEnumerable<string> expectedDataLastMnemonic = logData.Logs.Last().LogData.Data.Select(d => d.Data.Split(',').Last());
+            IEnumerable<string> newLogDataWithoutLastMnemonic = newLogData.Data.Select(d => string.Join(',', d.Data.Split(',').SkipLast(1)));
+            IEnumerable<string> newLogDataLastMnemonic = newLogData.Data.Select(d => d.Data.Split(',').Last());
+
+            Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
+            Assert.Equal(expectedUnits, newLogHeaderUnits);
+            Assert.Equal(expectedMnemonics, newLogDataMnemonics);
+            Assert.Equal(expectedUnits, newLogDataUnits);
+            Assert.Equal(expectedDataExceptLastMnemonic, newLogDataWithoutLastMnemonic);
+            Assert.Equal(expectedDataLastMnemonic, newLogDataLastMnemonic);
+        }
+
+        private (SpliceLogsJob, WitsmlLogs, WitsmlLogs) SetupTest(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, Action<WitsmlLogs> logHeaderCallback, Action<WitsmlLogs> logDataCallback)
+        {
+            SpliceLogsJob job = CreateSpliceLogsJob(logUids);
+            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, startIndexNum, endIndexNum);
+            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, startIndexNum, endIndexNum);
+            SetupClient(_witsmlClient, logHeaders, logData, logHeaderCallback, logDataCallback);
+            return (job, logHeaders, logData);
         }
 
         private SpliceLogsJob CreateSpliceLogsJob(string[] logUids)
