@@ -28,13 +28,13 @@ it("Should convert the time when a specific TimeZone is picked", () => {
   expect(actual).toEqual(expected);
 });
 
-it("DateTime Format missing milliseconds)", () => {
-  const actual = formatDateString("2023-08-08T12:20:53", TimeZone.Raw, DateTimeFormat.Natural);
-  expect(actual).toEqual("08.08.2023 12:20:53.418");
+it("Should replace +02:00 with Z when TimeZone is Raw", () => {
+  const actual = formatDateString("2022-11-17T13:54:17.000+02:00", TimeZone.Raw, DateTimeFormat.Natural);
+  expect(actual).toEqual("17.11.2022 11:54:17.000");
 });
 
-it("DateTime Format missing offset(Z))", () => {
-  const actual = formatDateString("2023-08-08T12:20:53.418", TimeZone.Raw, DateTimeFormat.Natural);
+it("Should convert the time when a specific DateTime Format Picked", () => {
+  const actual = formatDateString("2023-08-08T12:20:53.418Z", TimeZone.Raw, DateTimeFormat.Natural);
   expect(actual).toEqual("08.08.2023 12:20:53.418");
 });
 
