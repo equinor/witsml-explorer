@@ -1,5 +1,5 @@
 import { Button, Menu, TextField } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
@@ -67,6 +67,7 @@ const QueryView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(false);
   const [isXmlResponse, setIsXmlResponse] = useState(false);
   const [returnElements, setReturnElements] = useState(ReturnElements.All);
+  const [optionsIn, setOptionsIn] = useState<string>("");
   const [storeFunction, setStoreFunction] = useState(StoreFunction.GetFromStore);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
@@ -77,7 +78,7 @@ const QueryView = (): React.ReactElement => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
       const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
-      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements);
+      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn.trim());
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
@@ -107,7 +108,7 @@ const QueryView = (): React.ReactElement => {
     <>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
         <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
-          <StyledTextField id="input" multiline colors={colors} onChange={(e: any) => setQuery(e.target.value)} defaultValue={query} textareaRef={inputRef} />
+          <StyledLargeTextField id="input" multiline colors={colors} onChange={(e: any) => setQuery(e.target.value)} defaultValue={query} textareaRef={inputRef} />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
             <StyledNativeSelect
               label="Function"
@@ -139,6 +140,15 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
+            <StyledTextField
+              id="optionsIn"
+              label="Options In"
+              value={optionsIn}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setOptionsIn(e.target.value);
+              }}
+              colors={colors}
+            />
             <Button
               ref={setMenuAnchor}
               id="anchor-default"
@@ -183,7 +193,7 @@ const QueryView = (): React.ReactElement => {
           </div>
         </div>
         <div>
-          <StyledTextField id="output" multiline colors={colors} readOnly value={result} textWrap={!isXmlResponse} />
+          <StyledLargeTextField id="output" multiline colors={colors} readOnly value={result} textWrap={!isXmlResponse} />
         </div>
       </div>
     </>
@@ -261,7 +271,7 @@ const formatXml = (xml: string) => {
   return new XMLSerializer().serializeToString(resultDoc);
 };
 
-const StyledTextField = styled(TextField)<{ colors: Colors; textWrap?: boolean }>`
+const StyledLargeTextField = styled(TextField)<{ colors: Colors; textWrap?: boolean }>`
   border: 1px solid ${(props) => props.colors.interactive.tableBorder};
   height: 100%;
   &&& > div {
@@ -297,6 +307,15 @@ const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
   }
   color: ${(props) => props.colors.text.staticIconsDefault};
   padding: 4px;
+`;
+
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: ${(props) => props.colors.text.staticIconsDefault};
+  }
+  div {
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
+  }
 `;
 
 export default QueryView;
