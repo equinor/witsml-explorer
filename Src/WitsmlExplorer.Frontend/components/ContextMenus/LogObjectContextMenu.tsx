@@ -17,19 +17,20 @@ import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
+import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
 import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
 import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
 import { ReportModal } from "../Modals/ReportModal";
+import SpliceLogsModal from "../Modals/SpliceLogsModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
-import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
 
 const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -110,6 +111,14 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     }
   };
 
+  const onClickSplice = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <SpliceLogsModal checkedLogs={checkedObjects} />
+    });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -145,6 +154,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="compare" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
+        </MenuItem>,
+        <MenuItem key={"splice"} onClick={onClickSplice} disabled={checkedObjects.length < 2}>
+          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Splice logs</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>

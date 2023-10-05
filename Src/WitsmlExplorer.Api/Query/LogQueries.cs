@@ -50,6 +50,21 @@ namespace WitsmlExplorer.Api.Query
             };
         }
 
+        public static WitsmlLogs GetWitsmlLogsByIds(string wellUid, string wellboreUid, string[] logUids)
+        {
+            return new WitsmlLogs
+            {
+                Logs = logUids.Select(logUid =>
+                    new WitsmlLog
+                    {
+                        Uid = logUid,
+                        UidWell = wellUid,
+                        UidWellbore = wellboreUid
+                    }
+                ).ToList()
+            };
+        }
+
         public static WitsmlLogs GetLogContent(
             string wellUid,
             string wellboreUid,
