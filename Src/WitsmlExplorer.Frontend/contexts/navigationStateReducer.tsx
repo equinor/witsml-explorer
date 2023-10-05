@@ -52,6 +52,8 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
       return expandTreeNodes(state, action);
     case NavigationType.ToggleTreeNode:
       return selectToggleTreeNode(state, action);
+    case NavigationType.CollapseAllTreeNodes:
+      return collapseAllTreeNodes(state);
     case NavigationType.CollapseTreeNodeChildren:
       return collapseTreeNodeChildren(state, action);
     case NavigationType.SelectServer:
@@ -88,6 +90,10 @@ const selectToggleTreeNode = (state: NavigationState, { payload }: ToggleTreeNod
     ...state,
     expandedTreeNodes: toggleTreeNode(state.expandedTreeNodes, payload.nodeId)
   };
+};
+
+const collapseAllTreeNodes = (state: NavigationState): NavigationState => {
+  return { ...state, ...allDeselected, expandedTreeNodes: [], selectedServer: state.selectedServer, currentSelected: state.selectedServer };
 };
 
 const collapseTreeNodeChildren = (state: NavigationState, { payload }: CollapseTreeNodeChildrenAction): NavigationState => {
