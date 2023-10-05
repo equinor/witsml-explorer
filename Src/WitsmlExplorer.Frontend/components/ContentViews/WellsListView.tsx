@@ -67,6 +67,7 @@ export const WellsListView = (): React.ReactElement => {
         setLastFetched(new Date().toLocaleTimeString());
       };
       refreshWells();
+      dispatchNavigation({ type: NavigationType.CollapseAllTreeNodes, payload: {} });
     }
   }, [shouldRefresh]);
 
