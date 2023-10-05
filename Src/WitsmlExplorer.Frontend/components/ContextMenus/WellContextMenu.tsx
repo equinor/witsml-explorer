@@ -51,7 +51,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    WellService.getWell(well.uid).then((response) => dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: response } }));
+    WellService.getWell(well.uid).then((response) => dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: response, overrideWellbores: true } }));
   };
 
   const onClickRefreshAll = async () => {
