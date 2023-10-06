@@ -75,7 +75,7 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [autoRefresh]);
 
   const getDeleteLogCurveValuesJob = useCallback(
-    (currentSelected: LogCurveInfoRow[], checkedContentItems: CurveValueRow[], selectedLog: LogObject) => {
+    (currentSelected: LogCurveInfoRow[], checkedContentItems: CurveValueRow[], selectedLog: LogObject, tableData: CurveValueRow[]) => {
       const indexRanges = getIndexRanges(checkedContentItems, tableData, selectedLog);
       const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
 
@@ -107,12 +107,12 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const onContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
+      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog, tableData);
       const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
       const position = getContextMenuPosition(event);
       dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
     },
-    [selectedLogCurveInfo, selectedLog, getDeleteLogCurveValuesJob, dispatchOperation, getContextMenuPosition]
+    [selectedLogCurveInfo, selectedLog, getDeleteLogCurveValuesJob, dispatchOperation, getContextMenuPosition, tableData]
   );
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
