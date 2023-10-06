@@ -53,7 +53,7 @@ namespace Witsml.Tests.ServiceReference
         }
 
         [Fact]
-        public void GetKeywords_OptionsInString_ManyKeywords_ReturnsCorrectValue()
+        public void GetKeywords_OptionsInString_MultipleKeywords_ReturnsCorrectValue()
         {
             OptionsIn optionsIn = new(OptionsInString: "foo=bar;baz=qux;quux=corge;grault=garply");
             Assert.Equal("foo=bar;baz=qux;quux=corge;grault=garply", optionsIn.GetKeywords());
@@ -73,7 +73,6 @@ namespace Witsml.Tests.ServiceReference
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "invalid="));
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "invalid=true;"));
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: ";invalid=true"));
-            Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "invalid=true;"));
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "invalid-key=true"));
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "=true"));
             Assert.Throws<ArgumentException>(() => new OptionsIn(OptionsInString: "foo=bar,baz=qux"));

@@ -108,12 +108,19 @@ const QueryView = (): React.ReactElement => {
     <>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
         <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
-          <StyledLargeTextField id="input" multiline colors={colors} onChange={(e: any) => setQuery(e.target.value)} defaultValue={query} textareaRef={inputRef} />
+          <StyledLargeTextField
+            id="input"
+            multiline
+            colors={colors}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+            defaultValue={query}
+            textareaRef={inputRef}
+          />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
             <StyledNativeSelect
               label="Function"
               id="function"
-              onChange={(event: any) => setStoreFunction(event.target.value)}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) => setStoreFunction(event.target.value as StoreFunction)}
               defaultValue={StoreFunction.GetFromStore}
               colors={colors}
             >
@@ -128,7 +135,7 @@ const QueryView = (): React.ReactElement => {
             <StyledNativeSelect
               label="Return elements"
               id="return-elements"
-              onChange={(event: any) => setReturnElements(event.target.value)}
+              onChange={(event: ChangeEvent<HTMLSelectElement>) => setReturnElements(event.target.value as ReturnElements)}
               defaultValue={ReturnElements.All}
               colors={colors}
             >
