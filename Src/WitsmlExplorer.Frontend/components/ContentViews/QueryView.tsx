@@ -9,6 +9,7 @@ import QueryService from "../../services/queryService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
+import { QueryEditor } from "../QueryEditor";
 import { StyledNativeSelect } from "../Select";
 import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getQueryTemplate } from "./QueryViewUtils";
 
@@ -23,9 +24,15 @@ const QueryView = (): React.ReactElement => {
   } = useContext(QueryContext);
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isXmlResponse, setIsXmlResponse] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+
+  const formatQuery = () => {
+    const formattedQuery = formatXml(query);
+    if (formattedQuery != query) {
+      onQueryChange(formattedQuery);
+    }
+  };
 
   const sendQuery = () => {
     const getResult = async (dispatchOperation?: DispatchOperation | null) => {
@@ -36,10 +43,10 @@ const QueryView = (): React.ReactElement => {
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
-      setIsXmlResponse(response.startsWith("<"));
       setResult(response);
       setIsLoading(false);
     };
+    formatQuery();
     if (storeFunction == StoreFunction.DeleteFromStore) {
       displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
     } else {
@@ -47,8 +54,8 @@ const QueryView = (): React.ReactElement => {
     }
   };
 
-  const onQueryChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatchQuery({ type: QueryActionType.SetQuery, query: event.target.value });
+  const onQueryChange = (newValue: string) => {
+    dispatchQuery({ type: QueryActionType.SetQuery, query: newValue });
   };
 
   const onFunctionChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -75,7 +82,7 @@ const QueryView = (): React.ReactElement => {
     <Fragment>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
         <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
-          <StyledLargeTextField id="input" multiline colors={colors} onChange={onQueryChange} value={query} />
+          <QueryEditor value={query} onChange={onQueryChange} />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
             <StyledNativeSelect label="Function" id="function" onChange={onFunctionChange} value={storeFunction} colors={colors}>
               {Object.values(StoreFunction).map((value) => {
@@ -129,7 +136,7 @@ const QueryView = (): React.ReactElement => {
           </div>
         </div>
         <div>
-          <StyledLargeTextField id="output" multiline colors={colors} readOnly value={result} textWrap={!isXmlResponse} />
+          <QueryEditor value={result} readonly />
         </div>
       </div>
     </Fragment>
@@ -149,29 +156,6 @@ const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchO
   );
   dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
 };
-
-const StyledLargeTextField = styled(TextField)<{ colors: Colors; textWrap?: boolean }>`
-  border: 1px solid ${(props) => props.colors.interactive.tableBorder};
-  height: 100%;
-  &&& > div {
-    background-color: ${(props) => props.colors.ui.backgroundLight};
-    height: 100% !important;
-    border: 0;
-    box-shadow: none;
-  }
-  div > textarea {
-    height: 100%;
-    overflow: scroll;
-    text-wrap: ${(props) => (props.textWrap ? "wrap" : "nowrap")};
-    line-height: 15px;
-    font-size: 13px;
-    font-family: monospace;
-    cursor: auto;
-  }
-  div > div {
-    display: none; /* disable input adornment */
-  }
-`;
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`
   background: ${(props) => props.colors.ui.backgroundLight};
