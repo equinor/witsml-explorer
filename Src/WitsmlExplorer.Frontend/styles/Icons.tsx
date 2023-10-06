@@ -39,6 +39,7 @@ import {
   search,
   settings,
   sync,
+  text_field as textField,
   upload,
   world
 } from "@equinor/eds-icons";
@@ -82,6 +83,7 @@ const icons = {
   search,
   settings,
   sync,
+  textField,
   upload,
   world
 };

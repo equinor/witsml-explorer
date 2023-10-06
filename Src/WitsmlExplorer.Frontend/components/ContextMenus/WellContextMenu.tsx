@@ -4,12 +4,14 @@ import React from "react";
 import { v4 as uuid } from "uuid";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { DeleteWellJob } from "../../models/jobs/deleteJobs";
 import { Server } from "../../models/server";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
+import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import { WellRow } from "../ContentViews/WellsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
 import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
@@ -31,6 +33,7 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
+  const openInQueryView = useOpenInQueryView();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -140,7 +143,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"deletelogobject"} onClick={onClickDelete}>
+        <MenuItem key={"deleteWell"} onClick={onClickDelete}>
           <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
@@ -154,6 +157,25 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
+        </NestedMenuItem>,
+        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+          {[
+            <MenuItem key={"openQuery"} onClick={() => openInQueryView({ templateObject: TemplateObjects.Well, storeFunction: StoreFunction.GetFromStore, wellUid: well.uid })}>
+              <StyledIcon name="textField" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>Open in query view</Typography>
+            </MenuItem>,
+            <MenuItem key={"newWell"} onClick={() => openInQueryView({ templateObject: TemplateObjects.Well, storeFunction: StoreFunction.AddToStore, wellUid: uuid() })}>
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Well</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"newWellbore"}
+              onClick={() => openInQueryView({ templateObject: TemplateObjects.Wellbore, storeFunction: StoreFunction.AddToStore, wellUid: well.uid, wellboreUid: uuid() })}
+            >
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Wellbore</Typography>
+            </MenuItem>
+          ]}
         </NestedMenuItem>,
         <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
           <StyledIcon name="search" color={colors.interactive.primaryResting} />
