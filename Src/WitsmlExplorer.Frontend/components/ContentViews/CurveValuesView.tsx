@@ -75,8 +75,8 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [autoRefresh]);
 
   const getDeleteLogCurveValuesJob = useCallback(
-    (currentSelected: LogCurveInfoRow[], checkedContentItems: ContentTableRow[], selectedLog: LogObject) => {
-      const indexRanges = getIndexRanges(checkedContentItems, selectedLog);
+    (currentSelected: LogCurveInfoRow[], checkedContentItems: CurveValueRow[], selectedLog: LogObject, tableData: CurveValueRow[]) => {
+      const indexRanges = getIndexRanges(checkedContentItems, tableData, selectedLog);
       const mnemonics = currentSelected.map((logCurveInfoRow) => logCurveInfoRow.mnemonic);
 
       const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
@@ -107,12 +107,12 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const onContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog);
+      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog, tableData);
       const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
       const position = getContextMenuPosition(event);
       dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
     },
-    [selectedLogCurveInfo, selectedLog, getDeleteLogCurveValuesJob, dispatchOperation, getContextMenuPosition]
+    [selectedLogCurveInfo, selectedLog, getDeleteLogCurveValuesJob, dispatchOperation, getContextMenuPosition, tableData]
   );
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
@@ -203,9 +203,9 @@ export const CurveValuesView = (): React.ReactElement => {
     if (logData && logData.data) {
       updateColumns(logData.curveSpecifications);
 
-      const logDataRows = logData.data.map((data, index) => {
+      const logDataRows = logData.data.map((data) => {
         const row: CurveValueRow = {
-          id: index,
+          id: String(data[selectedLog.indexCurve]),
           ...data
         };
         return row;
@@ -296,18 +296,23 @@ const Message = styled.div`
   padding: 10px;
 `;
 
-const getIndexRanges = (checkedContentItems: ContentTableRow[], selectedLog: LogObject): IndexRange[] => {
-  const sortedItems = checkedContentItems.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+const getIndexRanges = (checkedContentItems: CurveValueRow[], tableData: CurveValueRow[], selectedLog: LogObject): IndexRange[] => {
+  const sortedItems = checkedContentItems.sort((a, b) => {
+    const idA = selectedLog.indexType === "datetime" ? new Date(a.id) : Number(a.id);
+    const idB = selectedLog.indexType === "datetime" ? new Date(b.id) : Number(b.id);
+    return idA < idB ? -1 : idA > idB ? 1 : 0;
+  });
   const indexCurve = selectedLog.indexCurve;
+  const idList = tableData.map((row) => String(row[indexCurve]));
 
-  return sortedItems.reduce((accumulator: IndexRange[], currentElement: any, currentIndex) => {
-    const currentId = currentElement["id"];
+  return sortedItems.reduce((accumulator: IndexRange[], currentElement: CurveValueRow, currentIndex) => {
     const indexValue = String(currentElement[indexCurve]);
 
     if (accumulator.length === 0) {
       accumulator.push({ startIndex: indexValue, endIndex: indexValue });
     } else {
-      const inSameRange = currentId - sortedItems[currentIndex - 1].id === 1;
+      const prevElement = sortedItems[currentIndex - 1];
+      const inSameRange = idList.indexOf(prevElement.id) === idList.indexOf(currentElement.id) - 1;
       if (inSameRange) {
         accumulator[accumulator.length - 1].endIndex = indexValue;
       } else {

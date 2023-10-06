@@ -137,7 +137,7 @@ const displayDeleteModal = (
             <strong>
               {toDeleteNames.map((name, index) => {
                 return (
-                  <Fragment key={index}>
+                  <Fragment key={`${name}-${index}`}>
                     <br />
                     {name}
                   </Fragment>

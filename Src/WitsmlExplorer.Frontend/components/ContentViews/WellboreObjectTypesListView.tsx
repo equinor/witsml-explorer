@@ -8,7 +8,7 @@ import ObjectService from "../../services/objectService";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 interface ObjectTypeRow extends ContentTableRow {
-  uid: number;
+  uid: string;
   name: string;
   objectType: ObjectType;
 }
@@ -23,10 +23,10 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   const getRows = (): ObjectTypeRow[] => {
     return Object.values(ObjectType)
       .filter((objectType) => selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible)
-      .map((objectType, index) => {
+      .map((objectType) => {
         return {
-          id: index,
-          uid: index,
+          id: objectType,
+          uid: objectType,
           name: pluralizeObjectType(objectType),
           objectType: objectType
         };
