@@ -38,9 +38,9 @@ export const FormationMarkersListView = (): React.ReactElement => {
   };
 
   const getTableData = (): FormationMarkerRow[] => {
-    return formationMarkers.map((formationMarker, index) => {
+    return formationMarkers.map((formationMarker) => {
       return {
-        id: index,
+        id: formationMarker.uid,
         name: formationMarker.name,
         mdPrognosed: measureToString(formationMarker.mdPrognosed),
         tvdPrognosed: measureToString(formationMarker.tvdPrognosed),

@@ -42,13 +42,13 @@ const Sidebar = (): React.ReactElement => {
                 defaultEndIcon={<div style={{ width: 24 }} />}
                 expanded={expandedTreeNodes}
               >
-                {filteredWells.map((well: Well, index) => (
+                {filteredWells.map((well: Well) => (
                   <React.Fragment key={well.uid}>
                     <div style={WellListing}>
                       <WellItem well={well} />
                       <WellIndicator compactMode={isCompactMode} active={well.wellbores.some((wellbore: Wellbore) => wellbore.isActive)} colors={colors} />
                     </div>
-                    <Divider style={{ margin: "0px", backgroundColor: colors.interactive.disabledBorder }} key={index} />
+                    <Divider style={{ margin: "0px", backgroundColor: colors.interactive.disabledBorder }} />
                   </React.Fragment>
                 ))}
               </TreeView>

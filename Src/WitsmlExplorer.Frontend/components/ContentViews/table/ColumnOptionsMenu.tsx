@@ -176,7 +176,7 @@ const OrderingLabel = styled(Typography)`
   font-size: 0.875rem;
 `;
 
-const DummyDrop = styled.div<{ isDraggedOver?: number; colors: Colors }>`
+export const DummyDrop = styled.div<{ isDraggedOver?: number; colors: Colors }>`
   border-top: 2px solid ${(props) => props.colors.ui.backgroundLight};
   ${(props) =>
     props.isDraggedOver
@@ -186,7 +186,7 @@ const DummyDrop = styled.div<{ isDraggedOver?: number; colors: Colors }>`
       : ""}
 `;
 
-const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number; colors: Colors }>`
+export const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number; colors: Colors }>`
   cursor: grab;
   user-select: none;
   height: 100%;

@@ -162,6 +162,7 @@ export function getObjectSearchResult(overrides?: Partial<ObjectSearchResult>): 
   return {
     ...getObjectOnWellbore(),
     searchProperty: "searchProperty",
+    objectType: ObjectType.Log,
     ...overrides
   };
 }

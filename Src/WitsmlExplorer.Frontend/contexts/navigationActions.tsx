@@ -80,3 +80,7 @@ export interface SetCurveThresholdAction extends Action {
 export interface SelectServerManagerAction extends Action {
   type: NavigationType.SelectServerManager;
 }
+
+export interface SelectObjectOnWellboreViewAction extends Action {
+  type: NavigationType.SelectObjectOnWellboreView;
+}

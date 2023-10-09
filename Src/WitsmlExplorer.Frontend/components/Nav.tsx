@@ -1,6 +1,7 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { v4 as uuid } from "uuid";
 import { NavigationAction } from "../contexts/navigationAction";
 import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState, Selectable, ViewFlags } from "../contexts/navigationContext";
@@ -29,6 +30,7 @@ const Nav = (): React.ReactElement => {
     return [
       getServerCrumb(selectedServer, dispatchNavigation),
       getJobsCrumb(currentSelected),
+      getSearchCrumb(currentSelected),
       getWellCrumb(selectedWell, dispatchNavigation),
       getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
       ...groupCrumbs,
@@ -50,7 +52,7 @@ const Nav = (): React.ReactElement => {
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
-                key={index}
+                key={uuid()}
                 href="#"
                 onClick={breadCrumb.onClick}
                 style={{
@@ -151,6 +153,14 @@ const getJobsCrumb = (currentSelected: Selectable) => {
   return currentSelected == ViewFlags.Jobs
     ? {
         name: "Jobs"
+      }
+    : {};
+};
+
+const getSearchCrumb = (currentSelected: Selectable) => {
+  return currentSelected == ViewFlags.ObjectSearchView
+    ? {
+        name: "Search"
       }
     : {};
 };

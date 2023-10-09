@@ -48,7 +48,7 @@ const OptionLayout = styled.div`
   gap: 8px;
 `;
 
-const TooltipLayout = styled.div`
+export const TooltipLayout = styled.div`
   white-space: pre-line;
 `;
 

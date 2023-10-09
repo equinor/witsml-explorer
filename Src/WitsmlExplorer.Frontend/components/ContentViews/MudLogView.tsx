@@ -91,9 +91,9 @@ export const MudLogView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals.map((geologyInterval, index) => {
+  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals.map((geologyInterval) => {
     return {
-      id: index,
+      id: geologyInterval.uid,
       typeLithology: geologyInterval.typeLithology,
       description: geologyInterval.description,
       mdTop: measureToString(geologyInterval.mdTop),
@@ -109,9 +109,9 @@ export const MudLogView = (): React.ReactElement => {
       ecdTdAv: measureToString(geologyInterval.ecdTdAv),
       dxcAv: geologyInterval.dxcAv,
       uid: geologyInterval.uid,
-      inset: geologyInterval.lithologies.map((lithology, index) => {
+      inset: geologyInterval.lithologies.map((lithology) => {
         return {
-          id: index,
+          id: lithology.uid,
           type: lithology.type,
           codeLith: lithology.codeLith,
           lithPc: lithology.lithPc

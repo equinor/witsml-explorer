@@ -11,7 +11,7 @@ export interface ContentTableColumn {
 }
 
 export interface ContentTableRow {
-  id: number;
+  id: string;
 }
 
 export interface ContentTableProps {
@@ -29,6 +29,7 @@ export interface ContentTableProps {
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;
   initiallySelectedRows?: ContentTableRow[];
+  autoRefresh?: boolean;
 }
 
 export enum Order {

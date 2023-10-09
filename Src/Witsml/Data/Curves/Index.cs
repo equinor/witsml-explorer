@@ -26,7 +26,7 @@ namespace Witsml.Data.Curves
         {
             return index1.CompareTo(index2) >= 0;
         }
-        
+
         public static Index operator -(Index index1, Index index2)
         {
             return index1 switch
