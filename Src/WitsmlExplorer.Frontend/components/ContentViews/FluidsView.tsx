@@ -120,9 +120,9 @@ export const FluidsView = (): React.ReactElement => {
     { property: "comments", label: "comments", type: ContentType.String }
   ];
 
-  const fluidRows: FluidsRow[] = fluids.map((fluid, index) => {
+  const fluidRows: FluidsRow[] = fluids.map((fluid) => {
     return {
-      id: index,
+      id: fluid.uid,
       uid: fluid.uid,
       type: fluid.type,
       locationSample: fluid.locationSample,

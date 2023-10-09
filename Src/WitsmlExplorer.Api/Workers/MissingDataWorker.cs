@@ -106,7 +106,7 @@ namespace WitsmlExplorer.Api.Workers
                         Uid = wellReference.WellUid,
                         Name = "",
                     };
-                    QueryHelper.AddPropertiesToObject(well, check.Properties);
+                    QueryHelper.AddPropertiesToObject(well, check.Properties.ToList());
                     return well;
                 }).ToList()
             };
@@ -129,7 +129,7 @@ namespace WitsmlExplorer.Api.Workers
                             Name = "",
                             NameWell = "",
                         };
-                        QueryHelper.AddPropertiesToObject(wellbore, check.Properties);
+                        QueryHelper.AddPropertiesToObject(wellbore, check.Properties.ToList());
                         return wellbore;
                     }).ToList()
                 : wellReferences.Select(wellReference =>
@@ -141,7 +141,7 @@ namespace WitsmlExplorer.Api.Workers
                             Name = "",
                             NameWell = "",
                         };
-                        QueryHelper.AddPropertiesToObject(wellbore, check.Properties);
+                        QueryHelper.AddPropertiesToObject(wellbore, check.Properties.ToList());
                         return wellbore;
                     }).ToList()
             };
@@ -166,7 +166,7 @@ namespace WitsmlExplorer.Api.Workers
                         o.NameWellbore = "";
                         o.UidWell = wellboreReference.WellUid;
                         o.NameWell = "";
-                        QueryHelper.AddPropertiesToObject(o, check.Properties);
+                        QueryHelper.AddPropertiesToObject(o, check.Properties.ToList());
                         return o;
                     }).ToList()
                 : wellReferences.Select(wellReference =>
@@ -178,7 +178,7 @@ namespace WitsmlExplorer.Api.Workers
                         o.NameWellbore = "";
                         o.UidWell = wellReference.WellUid;
                         o.NameWell = "";
-                        QueryHelper.AddPropertiesToObject(o, check.Properties);
+                        QueryHelper.AddPropertiesToObject(o, check.Properties.ToList());
                         return o;
                     }).ToList();
 

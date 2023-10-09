@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     Logger.LogError("An unexpected exception has occured: {ex}", ex);
                     throw;
                 }
-            }));
+            }).ToList());
 
             string successString = successUids.Count > 0 ? $"Deleted {queries.First()?.GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error

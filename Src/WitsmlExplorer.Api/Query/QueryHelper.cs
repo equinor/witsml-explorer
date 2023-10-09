@@ -14,13 +14,14 @@ namespace WitsmlExplorer.Api.Query
         /// </summary>
         /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="obj">The object to which properties will be added.</param>
-        /// <param name="properties">A collection of property names to add, optionally supporting nested properties (e.g., "commonData.sourceName").</param>
+        /// <param name="properties">A list of property names to add, optionally supporting nested properties (e.g., "commonData.sourceName").</param>
+        /// <param name="propertyValues">A list of property values to add, corresponding to the element in properties.</param>
         /// <returns>The modified object with added properties.</returns>
-        public static T AddPropertiesToObject<T>(T obj, IEnumerable<string> properties)
+        public static T AddPropertiesToObject<T>(T obj, IList<string> properties, IList<object> propertyValues = null)
         {
-            foreach (string property in properties)
+            for (var i = 0; i < properties.Count; i++)
             {
-                obj = AddPropertyToObject(obj, property);
+                obj = AddPropertyToObject(obj, properties[i], propertyValues?[i]);
             }
             return obj;
         }
@@ -31,8 +32,9 @@ namespace WitsmlExplorer.Api.Query
         /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="obj">The object to which the property will be added.</param>
         /// <param name="property">The name of the property to add, optionally supporting nested properties (e.g., "commonData.sourceName").</param>
+        /// /// <param name="propertyValue">The value property should be set to.</param>
         /// <returns>The modified object with the added property.</returns>
-        public static T AddPropertyToObject<T>(T obj, string property)
+        public static T AddPropertyToObject<T>(T obj, string property, object propertyValue = null)
         {
             string childProperty = null;
             if (property.Contains('.'))
@@ -41,6 +43,7 @@ namespace WitsmlExplorer.Api.Query
                 property = propertyParts[0];
                 childProperty = propertyParts[1];
             }
+            var isNested = !string.IsNullOrEmpty(childProperty);
 
             PropertyInfo propertyInfo = obj.GetType().GetProperty(property.CapitalizeFirstLetter());
 
@@ -49,11 +52,11 @@ namespace WitsmlExplorer.Api.Query
                 throw new ArgumentException($"{property} must be a supported property of a {obj.GetType()}.");
             }
 
-            object instance = GetOrCreateInstanceOfProperty(obj, propertyInfo);
+            object instance = (!isNested && propertyValue != null) ? propertyValue : GetOrCreateInstanceOfProperty(obj, propertyInfo);
 
-            if (!string.IsNullOrEmpty(childProperty))
+            if (isNested)
             {
-                instance = AddPropertyToObject(instance, childProperty);
+                instance = AddPropertyToObject(instance, childProperty, propertyValue);
             }
 
             propertyInfo.SetValue(obj, instance);
