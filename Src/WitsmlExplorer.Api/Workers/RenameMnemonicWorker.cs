@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 throw new InvalidOperationException("Empty name given when trying to rename a mnemonic. Make sure valid names are given");
             }
-            else if (job.Mnemonic.Equals(job.NewMnemonic, StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(job.Mnemonic, job.NewMnemonic, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Cannot rename a mnemonic to the same name it already has. Make sure new mnemonic is a unique name");
             }

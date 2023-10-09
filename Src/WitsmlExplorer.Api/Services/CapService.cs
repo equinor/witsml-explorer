@@ -17,7 +17,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<WitsmlServerCapabilities> GetCap()
         {
-            return (await _witsmlClient.GetCap()).ServerCapabilities.FirstOrDefault();
+            return (await _witsmlClient.GetCap()).ServerCapabilities?.FirstOrDefault();
         }
     }
 }

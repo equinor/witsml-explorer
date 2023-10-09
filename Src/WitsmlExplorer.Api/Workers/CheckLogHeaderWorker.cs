@@ -97,8 +97,8 @@ namespace WitsmlExplorer.Api.Workers
             {
                 return null;
             }
-            IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data.Select(data => data.Data.Split(","));
-            string[] startResultLogData = dataStartResultLog.LogData.Data.First().Data.Split(",");
+            IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(","));
+            string[] startResultLogData = dataStartResultLog.LogData.Data?.First().Data.Split(",");
             IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
             IEnumerable<string> dataEndIndexes = ExtractColumnIndexes(endResultLogData);
             string[] startMnemonics = dataStartResultLog.LogData.MnemonicList.Split(",");
@@ -123,7 +123,7 @@ namespace WitsmlExplorer.Api.Workers
                 List<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1))).ToList();
                 await Task.WhenAll(missingDataResults);
                 IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
-                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
+                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData?.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
                 // Insert the indexes from the missing mnemonics to the original dict.
                 missingDataIndexes
                     .Select((value, index) => new { mnemonic = missingMnemonics[index], value })

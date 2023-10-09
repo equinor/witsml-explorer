@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                         wellUid,
                         wellboreUid,
                         logUid,
-                        query.Logs.First().LogCurveInfo.First().Mnemonic);
+                        query.Logs.First()?.LogCurveInfo?.First()?.Mnemonic);
                 }
                 else
                 {

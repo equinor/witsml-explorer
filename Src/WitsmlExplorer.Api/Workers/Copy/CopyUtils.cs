@@ -75,10 +75,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }));
 
-            string successString = successUids.Count > 0 ? $"Copied {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
+            string successString = successUids.Count > 0 ? $"Copied {queries.First()?.GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {queries.First().GetType().Name}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {queries.First()?.GetType().Name}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }
