@@ -29,6 +29,7 @@ import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogOb
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
@@ -84,7 +85,24 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const onClickCompare = () => {
+  const onClickCompareHeader = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
+      const props: LogComparisonModalProps = { sourceLog: checkedObjects[0], sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <LogComparisonModal {...props} />
+      });
+    };
+    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <ObjectPickerModal {...props} />
+    });
+  };
+
+  const onClickCompareHeavy = () => {
+    console.log("Hei");
     dispatchOperation({ type: OperationType.HideContextMenu });
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: LogComparisonModalProps = { sourceLog: checkedObjects[0], sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
@@ -135,10 +153,18 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
-        <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`${menuItemText("compare", "log", [])}`}</Typography>
-        </MenuItem>,
+        <NestedMenuItem key={"comparelognestedmenu"} label={`${menuItemText("compare", "log", [])}`} disabled={checkedObjects.length !== 1}>
+          <MenuItem key={"comparelog"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} header`}</Typography>
+          </MenuItem>
+          ,
+          <MenuItem key={"comparelogheavy"} onClick={onClickCompareHeavy} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} heavy`}</Typography>
+          </MenuItem>
+          ,
+        </NestedMenuItem>,
         <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Adjust range</Typography>
