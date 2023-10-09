@@ -21,10 +21,6 @@ export interface ToggleTreeNodeAction extends Action {
   payload: { nodeId: string };
 }
 
-export interface CollapseAllTreeNodesAction extends Action {
-  type: NavigationType.CollapseAllTreeNodes;
-}
-
 export interface CollapseTreeNodeChildrenAction extends Action {
   type: NavigationType.CollapseTreeNodeChildren;
   payload: { nodeId: string };

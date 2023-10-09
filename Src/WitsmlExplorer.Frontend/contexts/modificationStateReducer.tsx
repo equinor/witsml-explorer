@@ -123,8 +123,7 @@ const addWell = (state: NavigationState, { payload }: AddWellAction) => {
 };
 
 const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
-  const well = payload.well;
-  const overrideWellbores = payload.overrideWellbores;
+  const { well, overrideWellbores } = payload;
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, well.uid);
   const { wellbores: oldWellbores } = wells[wellIndex];

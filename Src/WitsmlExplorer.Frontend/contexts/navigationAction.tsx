@@ -18,7 +18,6 @@ import {
   UpdateWellsAction
 } from "./modificationActions";
 import {
-  CollapseAllTreeNodesAction,
   CollapseTreeNodeChildrenAction,
   ExpandTreeNodesAction,
   SelectJobsAction,
@@ -55,7 +54,6 @@ export type NavigationAction =
   | UpdateWellboreWbGeometryAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
-  | CollapseAllTreeNodesAction
   | CollapseTreeNodeChildrenAction
   | ExpandTreeNodesAction
   | SelectJobsAction

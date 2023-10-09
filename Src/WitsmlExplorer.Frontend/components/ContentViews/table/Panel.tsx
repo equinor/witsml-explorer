@@ -5,8 +5,10 @@ import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
+import NavigationType from "../../../contexts/navigationType";
 import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
+import WellService from "../../../services/wellService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
 export interface PanelProps {
@@ -40,18 +42,33 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedObjectGroup } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedObjectGroup, currentSelected } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
+  const abortController = new AbortController();
 
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
-  const onClickRefresh = async () => {
-    setIsRefreshing(true);
+  const refreshObjects = async () => {
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
     const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, selectedObjectGroup);
     dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
+  };
+
+  const refreshWells = async () => {
+    const wells = await WellService.getWells(abortController.signal);
+    dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells } });
+    dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
+  };
+
+  const onClickRefresh = () => {
+    setIsRefreshing(true);
+    if (currentSelected === selectedServer || currentSelected === selectedWell) {
+      refreshWells();
+    } else {
+      refreshObjects();
+    }
     setIsRefreshing(false);
   };
 

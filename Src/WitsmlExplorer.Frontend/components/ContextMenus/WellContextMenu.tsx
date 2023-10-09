@@ -38,7 +38,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
   const {
     dispatchNavigation,
-    navigationState: { expandedTreeNodes }
+    navigationState: { expandedTreeNodes, selectedServer, selectedWell }
   } = useContext(NavigationContext);
 
   const onClickNewWell = () => {
@@ -56,23 +56,21 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    // toggle the well node and navigate to parent well to reset the sidebar and content view
-    // because we do not load in objects that have been loaded in before the refresh
     const nodeId = well.uid;
     if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
       dispatchNavigation({ type: NavigationType.CollapseTreeNodeChildren, payload: { nodeId } });
     }
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    if (selectedWell?.uid == well.uid) {
+      dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    }
 
     WellService.getWell(well.uid).then((response) => dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: response, overrideWellbores: true } }));
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    dispatchNavigation({ type: NavigationType.CollapseAllTreeNodes, payload: {} });
-
-    const abortController = new AbortController();
-    WellService.getWells(abortController.signal).then((response) => dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: response } }));
+    WellService.getWells().then((response) => dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: response } }));
+    dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
   };
 
   const onClickNewWellbore = () => {
