@@ -64,12 +64,14 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
     }
 
-    WellService.getWell(well.uid).then((response) => dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: response, overrideWellbores: true } }));
+    const updatedWell = await WellService.getWell(well.uid);
+    dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: updatedWell, overrideWellbores: true } });
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    WellService.getWells().then((response) => dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: response } }));
+    const updatedWells = await WellService.getWells();
+    dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: updatedWells } });
     dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
   };
 

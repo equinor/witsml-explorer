@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { ContentTableColumn } from ".";
 import ModificationType from "../../../contexts/modificationType";
 import NavigationContext from "../../../contexts/navigationContext";
+import { treeNodeIsExpanded } from "../../../contexts/navigationStateReducer";
 import NavigationType from "../../../contexts/navigationType";
 import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
@@ -42,10 +43,9 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedObjectGroup, currentSelected } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedObjectGroup, currentSelected, expandedTreeNodes } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
-  const abortController = new AbortController();
 
   const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
 
@@ -57,17 +57,30 @@ const Panel = (props: PanelProps) => {
   };
 
   const refreshWells = async () => {
-    const wells = await WellService.getWells(abortController.signal);
+    const wells = await WellService.getWells();
     dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells } });
     dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
   };
 
-  const onClickRefresh = () => {
+  const refreshWell = async () => {
+    const nodeId = selectedWell.uid;
+    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
+      dispatchNavigation({ type: NavigationType.CollapseTreeNodeChildren, payload: { nodeId } });
+    }
+
+    const well = await WellService.getWell(nodeId);
+    dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well, overrideWellbores: true } });
+    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+  };
+
+  const onClickRefresh = async () => {
     setIsRefreshing(true);
-    if (currentSelected === selectedServer || currentSelected === selectedWell) {
-      refreshWells();
+    if (currentSelected === selectedServer) {
+      await refreshWells();
+    } else if (currentSelected === selectedWell) {
+      await refreshWell();
     } else {
-      refreshObjects();
+      await refreshObjects();
     }
     setIsRefreshing(false);
   };
