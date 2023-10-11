@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
 
@@ -45,44 +44,42 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message), null);
         }
 
-        var jobMnemonics = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic).ToList();
+        var logMnemonics = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic).ToList();
 
-        var countLogDataReportItemTasks = jobMnemonics.Select(async mnemonic =>
+        var countLogDataReportItemTasks = logMnemonics.Select(async mnemonic =>
         {
-            int mnemonicsCount = 0;
+            int mnemonicLogDataRowsCount = 0;
             await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>() { mnemonic }, Logger);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             while (logData != null)
             {
-                mnemonicsCount += logData.Data?.Count ?? 0;
+                mnemonicLogDataRowsCount += logData.Data?.Count ?? 0;
                 logData = await logDataReader.GetNextBatch();
             }
 
-            return new CountLogDataReportItem() { Mnemonic = mnemonic, LogDataCount = mnemonicsCount };
-        });
+            return new CountLogDataReportItem() { Mnemonic = mnemonic, LogDataCount = mnemonicLogDataRowsCount };
+        }).ToList();
         countLogDataReportItems.AddRange(await Task.WhenAll(countLogDataReportItemTasks));
 
-        return GetCountLogDataReportResult(job, jobMnemonics, countLogDataReportItems, isDepthLog, logUid);
+        return GetCountLogDataReportResult(job, countLogDataReportItems, isDepthLog, logUid);
     }
 
-    private (WorkerResult, RefreshAction) GetCountLogDataReportResult(CountLogDataRowJob job, IList<string> selectedMnemonics, IList<CountLogDataReportItem> reportItems,
-        bool isDepth, string logUid)
+    private (WorkerResult, RefreshAction) GetCountLogDataReportResult(CountLogDataRowJob job, IList<CountLogDataReportItem> reportItems, bool isDepth, string logUid)
     {
         Logger.LogInformation("Counting log data rows is done. {jobDescription}", job.Description());
-        job.JobInfo.Report = GetCountLogDataReport(selectedMnemonics, reportItems, job.LogReference, isDepth);
+        job.JobInfo.Report = GetCountLogDataReport(reportItems, job.LogReference, isDepth);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Count data rows for the log: {logUid}", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private CountLogDataReport GetCountLogDataReport(IList<string> selectedMnemonics, IList<CountLogDataReportItem> reportItems, LogObject logReference, bool isDepthLog)
+    private CountLogDataReport GetCountLogDataReport(IList<CountLogDataReportItem> reportItems, LogObject logReference, bool isDepthLog)
     {
         var totalCount = reportItems.Sum(x => x.LogDataCount);
-        var mnemonics = CommonConstants.NewLine + string.Join(CommonConstants.NewLine, selectedMnemonics);
         return new CountLogDataReport
         {
             Title = $"Count log data values report - {logReference.Name}",
             Summary = reportItems.Count > 0
-                ? $"The total of {totalCount} values in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}' for the mnemonics: {mnemonics}."
+                ? $"Found a total of {totalCount} values in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}':"
                 : "No curve values found.",
             LogReference = logReference,
             ReportItems = reportItems

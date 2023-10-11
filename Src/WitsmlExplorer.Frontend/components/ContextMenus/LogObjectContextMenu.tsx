@@ -124,8 +124,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     const logReference: LogObject = checkedObjects[0];
     const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
     const jobId = await JobService.orderJob(JobType.CountLogDataRows, checkLogHeaderJob);
-    const reportModalProps = { jobId };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    }
   };
 
   return (
