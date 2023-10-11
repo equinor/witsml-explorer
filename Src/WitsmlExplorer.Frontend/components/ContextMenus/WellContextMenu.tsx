@@ -1,7 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import ModificationType from "../../contexts/modificationType";
+import NavigationContext from "../../contexts/navigationContext";
+import { treeNodeIsExpanded } from "../../contexts/navigationStateReducer";
+import NavigationType from "../../contexts/navigationType";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
@@ -10,6 +14,7 @@ import { Server } from "../../models/server";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
+import WellService from "../../services/wellService";
 import { colors } from "../../styles/Colors";
 import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import { WellRow } from "../ContentViews/WellsListView";
@@ -33,6 +38,10 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
+  const {
+    dispatchNavigation,
+    navigationState: { expandedTreeNodes, selectedServer, selectedWell }
+  } = useContext(NavigationContext);
   const openInQueryView = useOpenInQueryView();
 
   const onClickNewWell = () => {
@@ -46,6 +55,27 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     };
     const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.New, well: newWell, dispatchOperation };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
+  };
+
+  const onClickRefresh = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const nodeId = well.uid;
+    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
+      dispatchNavigation({ type: NavigationType.CollapseTreeNodeChildren, payload: { nodeId } });
+    }
+    if (selectedWell?.uid == well.uid) {
+      dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    }
+
+    const updatedWell = await WellService.getWell(well.uid);
+    dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: updatedWell, overrideWellbores: true } });
+  };
+
+  const onClickRefreshAll = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const updatedWells = await WellService.getWells();
+    dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: updatedWells } });
+    dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
   };
 
   const onClickNewWellbore = () => {
@@ -135,6 +165,14 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"refreshwell"} onClick={onClickRefresh}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh well</Typography>
+        </MenuItem>,
+        <MenuItem key={"refreshallwells"} onClick={onClickRefreshAll}>
+          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Refresh all wells</Typography>
+        </MenuItem>,
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Well</Typography>
