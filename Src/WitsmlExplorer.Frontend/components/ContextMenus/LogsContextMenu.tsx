@@ -5,16 +5,19 @@ import { v4 as uuid } from "uuid";
 import NavigationContext from "../../contexts/navigationContext";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
+import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface LogsContextMenuProps {
@@ -29,6 +32,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const { dispatchOperation, wellbore, servers, indexCurve, setIsLoading } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -61,7 +65,26 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
         <MenuItem key={"pasteLog"} onClick={() => pasteObjectOnWellbore(servers, logReferences, dispatchOperation, wellbore)} disabled={logReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "log", logReferences?.objectUids)}</Typography>
-        </MenuItem>
+        </MenuItem>,
+        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+          {[
+            <MenuItem
+              key={"newObject"}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Log,
+                  storeFunction: StoreFunction.AddToStore,
+                  wellUid: wellbore.wellUid,
+                  wellboreUid: wellbore.uid,
+                  objectUid: uuid()
+                })
+              }
+            >
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Log</Typography>
+            </MenuItem>
+          ]}
+        </NestedMenuItem>
       ]}
     />
   );
