@@ -54,9 +54,16 @@ namespace Witsml.Data.Curves
         {
             return log.IndexType switch
             {
-                WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.StartIndex.Value, CultureInfo.InvariantCulture),
-                    log.StartIndex?.Uom ?? "m"),
-                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.StartDateTimeIndex, CultureInfo.InvariantCulture)),
+                WitsmlLog.WITSML_INDEX_TYPE_MD => (log.StartIndex == null && !customIndexValue.IsNumeric())
+                    ? null
+                    : new DepthIndex(
+                        double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.StartIndex?.Value ?? DepthIndex.NullValue.ToString(CultureInfo.InvariantCulture),
+                            CultureInfo.InvariantCulture),
+                        log.StartIndex?.Uom ?? "m"),
+                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => log.StartDateTimeIndex == null && string.IsNullOrEmpty(customIndexValue)
+                    ? null
+                    : new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.StartDateTimeIndex ?? DateTimeIndex.NullValue,
+                        CultureInfo.InvariantCulture)),
                 _ => throw new Exception($"Invalid index type: '{log.IndexType}'")
             };
         }
@@ -65,9 +72,16 @@ namespace Witsml.Data.Curves
         {
             return log.IndexType switch
             {
-                WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.EndIndex.Value, CultureInfo.InvariantCulture),
-                    log.EndIndex?.Uom ?? "m"),
-                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.EndDateTimeIndex, CultureInfo.InvariantCulture)),
+                WitsmlLog.WITSML_INDEX_TYPE_MD => (log.EndIndex == null && !customIndexValue.IsNumeric())
+                    ? null
+                    : new DepthIndex(
+                        double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.EndIndex?.Value ?? DepthIndex.NullValue.ToString(CultureInfo.InvariantCulture),
+                            CultureInfo.InvariantCulture),
+                        log.EndIndex?.Uom ?? "m"),
+                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => log.EndDateTimeIndex == null && string.IsNullOrEmpty(customIndexValue)
+                    ? null
+                    : new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.EndDateTimeIndex ?? DateTimeIndex.NullValue,
+                        CultureInfo.InvariantCulture)),
                 _ => throw new Exception($"Invalid index type: '{log.IndexType}'")
             };
         }
