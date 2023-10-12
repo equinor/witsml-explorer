@@ -122,15 +122,17 @@ const ServerManager = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled={editDisabled} server={server} /> });
   };
 
-  const CellHeaderStyle = {
+  const CellStyle = {
     color: colors.interactive.primaryResting,
     padding: "0.3rem",
-    background: colors.ui.backgroundLight,
     borderBottom: `2px solid ${colors.interactive.disabledBorder}`
+  };
+  const CellHeaderStyle = {
+    ...CellStyle,
+    background: colors.ui.backgroundLight
   };
   const CloudIconStyle = {
     textlign: "center",
-    background: colors.ui.backgroundLight,
     borderBottom: `2px solid ${colors.interactive.disabledBorder}`
   };
 
@@ -166,27 +168,27 @@ const ServerManager = (): React.ReactElement => {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
               <Table.Row id={server.id} key={server.id}>
-                <Table.Cell style={CellHeaderStyle}>
+                <Table.Cell style={CellStyle}>
                   {isConnected(server) ? (
                     <StyledLink onClick={() => dispatchNavigation({ type: NavigationType.SelectServer, payload: { server } })}>{server.name}</StyledLink>
                   ) : (
                     server.name
                   )}
                 </Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>{server.url}</Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>{server.currentUsername == null ? "" : server.currentUsername}</Table.Cell>
+                <Table.Cell style={CellStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={CellStyle}>{server.currentUsername == null ? "" : server.currentUsername}</Table.Cell>
                 <Table.Cell style={CloudIconStyle}>
                   <Icon color={isConnected(server) ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
                 </Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>
+                <Table.Cell style={CellStyle}>
                   <ConnectButton colors={colors} isConnected={isConnected(server)} onClick={() => onSelectItem(server)} />
                 </Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>
+                <Table.Cell style={CellStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
                     <Icon name="edit" size={24} />
                   </Button>
                 </Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>
+                <Table.Cell style={CellStyle}>
                   <Button disabled={editDisabled} variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
                     <Icon name="deleteToTrash" size={24} />
                   </Button>
@@ -249,11 +251,11 @@ const StyledConnectButton = styled(Button)<{ isConnected: boolean; colors: Color
 
 const StyledTableBody = styled(Table.Body)<{ colors: Colors }>`
   tr:nth-child(even) {
-    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) => props.colors.ui.backgroundLight};
   }
 
   tr:nth-child(odd) {
-    background-color: white;
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
   }
 `;
 
