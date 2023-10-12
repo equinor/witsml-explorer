@@ -219,12 +219,12 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   }
 
   div[class*="Input__Container"][disabled] {
-    background: ${(props) => props.colors.text.staticTextFeildDefault};
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
     border-bottom: 1px solid #9ca6ac;
   }
 
   div[class*="Input__Container"] {
-    background-color: ${(props) => props.colors.text.staticTextFeildDefault};
+    background-color: ${(props) => props.colors.text.staticTextFieldDefault};
   }
 
   div[class*="DateTimeField__Layout"] {
@@ -256,11 +256,16 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   ${({ colors }) =>
     colors === dark
       ? `
-        button[disabled] {
+      button[disabled]:disabled {
         background: #565656;
         border:1px solid #565656;
         color:#9CA6AC;
-      }`
+      }
+      button[class*="Autocomplete__StyledButton"]:disabled {
+        background: none;
+        border: none;
+      }
+      `
       : ""};
 `;
 

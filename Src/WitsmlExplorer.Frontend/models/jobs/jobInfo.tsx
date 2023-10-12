@@ -1,3 +1,5 @@
+import BaseReport from "../reports/BaseReport";
+
 export default interface JobInfo {
   jobType: string;
   description: string;
@@ -15,4 +17,5 @@ export default interface JobInfo {
   killTime: string;
   status: string;
   failedReason: string;
+  report: BaseReport;
 }

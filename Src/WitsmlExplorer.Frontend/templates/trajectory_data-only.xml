@@ -1,0 +1,150 @@
+<trajectorys xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <trajectory uidWell="" uidWellbore="" uid="">
+    <trajectoryStation uid="">
+      <target uidRef="" />
+      <dTimStn />
+      <typeTrajStation />
+      <typeSurveyTool />
+      <calcAlgorithm />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <incl uom="" />
+      <azi uom="" />
+      <mtf uom="" />
+      <gtf uom="" />
+      <dispNs uom="" />
+      <dispEw uom="" />
+      <vertSect uom="" />
+      <dls uom="" />
+      <rateTurn uom="" />
+      <rateBuild uom="" />
+      <mdDelta uom="" />
+      <tvdDelta uom="" />
+      <modelToolError />
+      <iscwsaToolErrorModel uidRef="" />
+      <gravTotalUncert uom="" />
+      <dipAngleUncert uom="" />
+      <magTotalUncert uom="" />
+      <gravAccelCorUsed />
+      <magXAxialCorUsed />
+      <sagCorUsed />
+      <magDrlstrCorUsed />
+      <infieldRefCorUsed />
+      <interpolatedInfieldRefCorUsed />
+      <inHoleRefCorUsed />
+      <axialMagInterferenceCorUsed />
+      <cosagCorUsed />
+      <MSACorUsed />
+      <gravTotalFieldReference uom="" />
+      <magTotalFieldReference uom="" />
+      <magDipAngleReference uom="" />
+      <magModelUsed />
+      <magModelValid />
+      <geoModelUsed />
+      <statusTrajStation />
+      <rawData>
+        <gravAxialRaw uom="" />
+        <gravTran1Raw uom="" />
+        <gravTran2Raw uom="" />
+        <magAxialRaw uom="" />
+        <magTran1Raw uom="" />
+        <magTran2Raw uom="" />
+      </rawData>
+      <corUsed>
+        <gravAxialAccelCor uom="" />
+        <gravTran1AccelCor uom="" />
+        <gravTran2AccelCor uom="" />
+        <magAxialDrlstrCor uom="" />
+        <magTran1DrlstrCor uom="" />
+        <magTran2DrlstrCor uom="" />
+        <magTran1MSACor uom="" />
+        <magTran2MSACor uom="" />
+        <magAxialMSACor uom="" />
+        <sagIncCor uom="" />
+        <sagAziCor uom="" />
+        <stnMagDeclUsed uom="" />
+        <stnGridCorUsed uom="" />
+        <stnGridConUsed uom="" />
+        <dirSensorOffset uom="" />
+      </corUsed>
+      <valid>
+        <magTotalFieldCalc uom="" />
+        <magDipAngleCalc uom="" />
+        <gravTotalFieldCalc uom="" />
+      </valid>
+      <matrixCov>
+        <varianceNN uom="" />
+        <varianceNE uom="" />
+        <varianceNVert uom="" />
+        <varianceEE uom="" />
+        <varianceEVert uom="" />
+        <varianceVertVert uom="" />
+        <biasN uom="" />
+        <biasE uom="" />
+        <biasVert uom="" />
+      </matrixCov>
+      <location uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </location>
+      <sourceStation>
+        <stationReference />
+        <trajectoryParent uidRef="" />
+        <wellboreParent uidRef="" />
+      </sourceStation>
+      <commonData>
+        <sourceName />
+        <dTimCreation />
+        <dTimLastChange />
+        <itemState />
+        <serviceCategory />
+        <comments />
+        <acquisitionTimeZone dTim="" />
+        <defaultDatum uidRef="" />
+        <privateGroupOnly />
+        <extensionAny />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </commonData>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </trajectoryStation>
+  </trajectory>
+</trajectorys>

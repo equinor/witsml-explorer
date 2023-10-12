@@ -27,6 +27,16 @@ namespace Witsml.Data.Curves
             return index1.CompareTo(index2) >= 0;
         }
 
+        public static Index operator -(Index index1, Index index2)
+        {
+            return index1 switch
+            {
+                DepthIndex depthIndex1 when index2 is DepthIndex depthIndex2 => depthIndex1 - depthIndex2,
+                DateTimeIndex dateTimeIndex1 when index2 is DateTimeIndex dateTimeIndex2 => new TimeSpanIndex(dateTimeIndex1 - dateTimeIndex2),
+                _ => throw new ArgumentException("Unsupported index types for subtraction")
+            };
+        }
+
         [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
         public abstract Index AddEpsilon();
 
@@ -45,7 +55,7 @@ namespace Witsml.Data.Curves
             return log.IndexType switch
             {
                 WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.StartIndex.Value, CultureInfo.InvariantCulture),
-                    log.StartIndex.Uom),
+                    log.StartIndex?.Uom ?? "m"),
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.StartDateTimeIndex, CultureInfo.InvariantCulture)),
                 _ => throw new Exception($"Invalid index type: '{log.IndexType}'")
             };
@@ -56,7 +66,7 @@ namespace Witsml.Data.Curves
             return log.IndexType switch
             {
                 WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.EndIndex.Value, CultureInfo.InvariantCulture),
-                    log.EndIndex.Uom),
+                    log.EndIndex?.Uom ?? "m"),
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.EndDateTimeIndex, CultureInfo.InvariantCulture)),
                 _ => throw new Exception($"Invalid index type: '{log.IndexType}'")
             };

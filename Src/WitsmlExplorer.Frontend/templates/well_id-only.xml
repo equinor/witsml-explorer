@@ -1,0 +1,5 @@
+<wells xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <well uid="">
+    <name />
+  </well>
+</wells>

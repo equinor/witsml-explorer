@@ -29,10 +29,10 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
         public LogObjectTests()
         {
             var config = ConfigurationReader.GetWitsmlConfiguration();
-            _client = new WitsmlClient(new WitsmlClientOptions
+            _client = new WitsmlClient(options =>
             {
-                Hostname = config.Hostname,
-                Credentials = new WitsmlCredentials(config.Username, config.Password)
+                options.Hostname = config.Hostname;
+                options.Credentials = new WitsmlCredentials(config.Username, config.Password);
             });
         }
 
@@ -101,7 +101,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
             };
 
             var result = await _client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            var witsmlLog = result.Logs.FirstOrDefault();
+            var witsmlLog = result.Logs.First();
             var data = witsmlLog.LogData.Data;
             data.First().GetRow(); // Test fails if parsing error on GetRow() due to incompatible culture setting.
         }

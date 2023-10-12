@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.ServiceModel.Security;
 using System.Threading.Tasks;
@@ -20,9 +21,13 @@ namespace Witsml
         Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlGrowingDataQueryType, new();
         Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn);
         Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<string> AddToStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<string> UpdateInStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
+        Task<WitsmlCapServers> GetCap();
         Uri GetServerHostname();
     }
 
@@ -36,28 +41,31 @@ namespace Witsml
         [Obsolete("Use the WitsmlClientOptions based constructor instead")]
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null,
             bool logQueries = false)
-            : this(new WitsmlClientOptions
+            : this(options =>
             {
-                Hostname = hostname,
-                Credentials = new WitsmlCredentials(username, password),
-                ClientCapabilities = clientCapabilities,
-                RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1),
-                LogQueries = logQueries
+                options.Hostname = hostname;
+                options.Credentials = new WitsmlCredentials(username, password);
+                options.ClientCapabilities = clientCapabilities;
+                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1);
+                options.LogQueries = logQueries;
             })
         { }
 
-        public WitsmlClient(WitsmlClientOptions options)
+        public WitsmlClient(Action<WitsmlClientOptions> options)
         {
-            ArgumentNullException.ThrowIfNull(options.Hostname);
-            ArgumentNullException.ThrowIfNull(options.Credentials.Username);
-            ArgumentNullException.ThrowIfNull(options.Credentials.Password);
+            var witsmlClientOptions = new WitsmlClientOptions();
+            options(witsmlClientOptions);
 
-            _clientCapabilities = options.ClientCapabilities.ToXml();
-            _serverUrl = new Uri(options.Hostname);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Hostname);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Credentials.Username);
+            ArgumentNullException.ThrowIfNull(witsmlClientOptions.Credentials.Password);
 
-            _client = CreateSoapClient(options);
+            _clientCapabilities = witsmlClientOptions.ClientCapabilities.ToXml();
+            _serverUrl = new Uri(witsmlClientOptions.Hostname);
 
-            SetupQueryLogging(options.LogQueries);
+            _client = CreateSoapClient(witsmlClientOptions);
+
+            SetupQueryLogging(witsmlClientOptions.LogQueries);
         }
 
         private void SetupQueryLogging(bool logQueries)
@@ -125,7 +133,9 @@ namespace Witsml
             };
 
             WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-            LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
+
+            LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn,
+                response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
             if (response.IsSuccessful())
                 return XmlHelper.Deserialize(response.XMLout, query);
@@ -155,7 +165,9 @@ namespace Witsml
                 };
 
                 WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
-                LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful(), response.XMLout);
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn,
+                    request.QueryIn, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return (XmlHelper.Deserialize(response.XMLout, query), response.Result);
@@ -170,16 +182,29 @@ namespace Witsml
             }
         }
 
-        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
+        private string GetQueryType(string query)
         {
-            XmlDocument xmlQuery = new();
-            xmlQuery.LoadXml(query);
-            string type = xmlQuery.FirstChild?.FirstChild?.Name;
-            if (string.IsNullOrEmpty(type))
+            XmlReaderSettings settings = new()
+            {
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+                IgnoreWhitespace = true,
+                XmlResolver = null
+            };
+            using XmlReader reader = XmlReader.Create(new StringReader(query), settings);
+            // attempt to read the query type from the first nested element, such as <logs><_log_>[...]</log></logs>
+            reader.Read();
+            reader.Read();
+            if (string.IsNullOrEmpty(reader.Name))
             {
                 throw new Exception("Could not determine WITSML type based on query");
             }
+            return reader.Name;
+        }
 
+        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
+        {
+            string type = GetQueryType(query);
             WMLS_GetFromStoreRequest request = new()
             {
                 WMLtypeIn = type,
@@ -189,6 +214,8 @@ namespace Witsml
             };
 
             WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
+            LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_GetFromStoreAsync), _serverUrl, null, optionsIn,
+                    query, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
             if (response.IsSuccessful())
                 return response.XMLout;
@@ -211,7 +238,9 @@ namespace Witsml
                 };
 
                 WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
-                LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_AddToStoreAsync), this._serverUrl, query, optionsIn,
+                    request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -228,6 +257,28 @@ namespace Witsml
             }
         }
 
+        public async Task<string> AddToStoreAsync(string query, OptionsIn optionsIn = null)
+        {
+            string type = GetQueryType(query);
+            WMLS_AddToStoreRequest request = new()
+            {
+                WMLtypeIn = type,
+                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                XMLin = query,
+                CapabilitiesIn = _clientCapabilities
+            };
+
+            WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
+            LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_AddToStoreAsync), _serverUrl, null, optionsIn,
+                    query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
+
+            if (response.IsSuccessful())
+                return "Function completed successfully";
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+        }
+
         public async Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType
         {
             try
@@ -241,7 +292,9 @@ namespace Witsml
                 };
 
                 WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
-                LogQueriesSentAndReceived(request.XMLin, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_UpdateInStoreAsync), this._serverUrl, query, null,
+                    request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -258,6 +311,28 @@ namespace Witsml
             }
         }
 
+        public async Task<string> UpdateInStoreAsync(string query, OptionsIn optionsIn = null)
+        {
+            string type = GetQueryType(query);
+            WMLS_UpdateInStoreRequest request = new()
+            {
+                WMLtypeIn = type,
+                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                XMLin = query,
+                CapabilitiesIn = _clientCapabilities
+            };
+
+            WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
+            LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_UpdateInStoreAsync), _serverUrl, null, optionsIn,
+                    query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
+
+            if (response.IsSuccessful())
+                return "Function completed successfully";
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+        }
+
         public async Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
         {
             try
@@ -271,7 +346,9 @@ namespace Witsml
                 };
 
                 WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
-                LogQueriesSentAndReceived(request.QueryIn, response.IsSuccessful());
+
+                LogQueriesSentAndReceived(nameof(_client.WMLS_DeleteFromStoreAsync), this._serverUrl, query, null,
+                    request.QueryIn, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
                 if (response.IsSuccessful())
                     return new QueryResult(true);
@@ -286,6 +363,28 @@ namespace Witsml
                 Log.Error(e, message);
                 return new QueryResult(false, message);
             }
+        }
+
+        public async Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null)
+        {
+            string type = GetQueryType(query);
+            WMLS_DeleteFromStoreRequest request = new()
+            {
+                WMLtypeIn = type,
+                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                QueryIn = query,
+                CapabilitiesIn = _clientCapabilities
+            };
+
+            WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
+            LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_DeleteFromStoreAsync), _serverUrl, null, optionsIn,
+                    query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
+
+            if (response.IsSuccessful())
+                return "Function completed successfully";
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
         public async Task<QueryResult> TestConnectionAsync()
@@ -304,9 +403,21 @@ namespace Witsml
             return new QueryResult(true);
         }
 
-        private void LogQueriesSentAndReceived(string querySent, bool isSuccessful, string xmlReceived = null)
+        public async Task<WitsmlCapServers> GetCap()
         {
-            _queryLogger?.LogQuery(querySent, isSuccessful, xmlReceived);
+            WMLS_GetCapResponse response = await _client.WMLS_GetCapAsync(new WMLS_GetCapRequest("dataVersion=1.4.1.1"));
+
+            if (response.IsSuccessful())
+                return XmlHelper.Deserialize(response.CapabilitiesOut, new WitsmlCapServers());
+
+            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
+            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+        }
+
+        private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn,
+            string querySent, bool isSuccessful, string xmlReceived, short resultCode, string suppMsgOut = null) where T : IWitsmlQueryType
+        {
+            _queryLogger?.LogQuery(function, serverUrl, query, optionsIn, querySent, isSuccessful, xmlReceived, resultCode, suppMsgOut);
         }
 
         public Uri GetServerHostname() => _serverUrl;

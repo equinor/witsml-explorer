@@ -6,12 +6,14 @@ enum NavigationType {
   SelectWell = "SelectWell",
   SelectWellbore = "SelectWellbore",
   SelectJobs = "SelectJobs",
+  SelectQueryView = "SelectQueryView",
   SelectLogType = "SelectLogType",
   SelectObject = "SelectObject",
   SelectObjectGroup = "SelectObjectGroup",
   SetCurveThreshold = "SetCurveThreshold",
   ShowCurveValues = "ShowCurveValues",
-  SelectServerManager = "SelectServerManager"
+  SelectServerManager = "SelectServerManager",
+  SelectObjectOnWellboreView = "SelectObjectOnWellboreView"
 }
 
 export default NavigationType;

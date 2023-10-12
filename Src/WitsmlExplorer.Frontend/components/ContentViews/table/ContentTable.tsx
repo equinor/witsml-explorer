@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import OperationContext from "../../../contexts/operationContext";
 import { indexToNumber } from "../../../models/logObject";
 import { Colors } from "../../../styles/Colors";
@@ -27,6 +27,7 @@ import { StyledResizer, StyledTable, StyledTd, StyledTh, StyledTr, TableContaine
 import {
   calculateHorizontalSpace,
   calculateRowHeight,
+  componentSortingFn,
   constantTableOptions,
   expanderId,
   isClickable,
@@ -46,7 +47,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export const ContentTable = (contentTableProps: ContentTableProps): React.ReactElement => {
+export const ContentTable = React.memo((contentTableProps: ContentTableProps): React.ReactElement => {
   const {
     columns,
     data,
@@ -59,22 +60,26 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     showRefresh = false,
     stickyLeftColumns = 0,
     viewId,
-    onRowSelectionChange
+    downloadToCsvFileName = null,
+    onRowSelectionChange,
+    initiallySelectedRows = [],
+    autoRefresh = false
   } = contentTableProps;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const [previousIndex, setPreviousIndex] = useState<number>(null);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>(Object.assign({}, ...initiallySelectedRows.map((row) => ({ [row.id]: true }))));
   const [columnVisibility, setColumnVisibility] = useState(initializeColumnVisibility(viewId));
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
   const cellHeight = isCompactMode ? 30 : 53;
   const headCellHeight = isCompactMode ? 35 : 55;
+  const noData = useMemo(() => [], []);
 
   const columnDef = useColumnDef(viewId, columns, insetColumns, checkableRows, stickyLeftColumns);
   const table = useReactTable({
-    data: data ?? [],
+    data: data ?? noData,
     columns: columnDef,
     state: {
       rowSelection,
@@ -86,6 +91,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
         const a = indexToNumber(rowA.getValue(columnId));
         const b = indexToNumber(rowB.getValue(columnId));
         return a > b ? -1 : a < b ? 1 : 0;
+      },
+      [componentSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+        const a = rowA.getValue(columnId) == null;
+        const b = rowB.getValue(columnId) == null;
+        return a === b ? 0 : a ? -1 : 1;
       }
     },
     columnResizeMode: "onChange",
@@ -96,7 +106,9 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
     onColumnVisibilityChange: setColumnVisibility,
     onColumnSizingChange: setColumnSizing,
     onRowSelectionChange: (updaterOrValue) => {
-      const newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(rowSelection) : updaterOrValue;
+      const prevSelection = checkableRows ? rowSelection : {};
+      let newRowSelection = updaterOrValue instanceof Function ? updaterOrValue(prevSelection) : updaterOrValue;
+      if (!checkableRows && Object.keys(newRowSelection).length == 0) newRowSelection = rowSelection;
       setRowSelection(newRowSelection);
       onRowSelectionChange?.(data.filter((_, index) => newRowSelection[index]));
     },
@@ -137,6 +149,18 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
   useEffect(() => {
     columnVirtualizer.measure();
   }, [columnSizing]);
+
+  useEffect(() => {
+    if (autoRefresh) {
+      tableContainerRef.current.scrollTop = tableContainerRef.current.scrollHeight;
+    }
+  });
+
+  const oldDataCountRef = React.useRef<number>(null);
+
+  useEffect(() => {
+    oldDataCountRef.current = autoRefresh ? data.length : null;
+  }, [autoRefresh]);
 
   const columnItems = columnVirtualizer.getVirtualItems();
   const [spaceLeft, spaceRight] = calculateHorizontalSpace(columnItems, columnVirtualizer.getTotalSize(), stickyLeftColumns);
@@ -181,10 +205,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
           columns={columns}
           expandableRows={insetColumns != null}
           showRefresh={showRefresh}
+          downloadToCsvFileName={downloadToCsvFileName}
           stickyLeftColumns={stickyLeftColumns}
         />
       ) : null}
-      <div ref={tableContainerRef} style={{ overflowY: "auto", height: "100%" }}>
+      <div ref={tableContainerRef} style={{ overflowY: autoRefresh ? "hidden" : "auto", height: "100%" }}>
         <StyledTable>
           <TableHead
             style={{
@@ -222,7 +247,11 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                 <Fragment key={row.id}>
                   <StyledTr
                     selected={row.getIsSelected()}
-                    onContextMenu={(e) => onRowContextMenu(e, row)}
+                    onContextMenu={async (e) => {
+                      // await selection to ensure that the context menu detects that a row has been selected
+                      await row.toggleSelected(true);
+                      onRowContextMenu(e, row);
+                    }}
                     style={{
                       height: `${calculateRowHeight(row, headCellHeight, cellHeight)}px`,
                       transform: `translateY(${virtualRow.start}px)`
@@ -230,6 +259,7 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
                     data-index={virtualRow.index}
                     ref={rowVirtualizer.measureElement}
                     colors={colors}
+                    className={autoRefresh && oldDataCountRef.current && virtualRow.index + 1 > oldDataCountRef.current ? "fading-row" : ""}
                   >
                     <td style={{ width: `${spaceLeft}px` }} />
                     {columnItems.map((column) => {
@@ -268,7 +298,8 @@ export const ContentTable = (contentTableProps: ContentTableProps): React.ReactE
       </div>
     </TableContainer>
   );
-};
+});
+ContentTable.displayName = "ContentTable";
 
 const sortingIcons = {
   asc: <Icon size={16} name="arrowUp" style={{ position: "relative", top: 3 }} />,

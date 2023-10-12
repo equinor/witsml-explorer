@@ -1,20 +1,20 @@
-import { Button, DotProgress, EdsProvider, Icon } from "@equinor/eds-core-react";
+import { Button, DotProgress, EdsProvider, Icon, Typography } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled, { CSSProp } from "styled-components";
 import {
   FilterContext,
   FilterType,
-  ObjectPropertyFilterType,
+  ObjectFilterType,
   filterTypeToProperty,
   getFilterTypeInformation,
   isObjectFilterType,
-  isObjectPropertyFilterType,
   isWellFilterType,
   isWellPropertyFilterType,
-  objectPropertyFilterTypeToObjects
+  objectFilterTypeToObjects
 } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
+import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ObjectSearchResult from "../../models/objectSearchResult";
@@ -25,12 +25,14 @@ import { Colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, { OptionsContextMenuProps } from "../ContextMenus/OptionsContextMenu";
+import ConfirmModal from "../Modals/ConfirmModal";
 import FilterPanel from "./FilterPanel";
 
 const searchOptions = Object.values(FilterType);
 
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
@@ -41,13 +43,14 @@ const SearchFilter = (): React.ReactElement => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [genericSearchResults, setGenericSearchResults] = useState<boolean>(false);
   const textFieldRef = useRef<HTMLInputElement>(null);
 
   const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6.3rem", minWidth: "174px", paddingRight: "0.1em" };
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
-      if (nameFilter !== selectedFilter.name && !isObjectPropertyFilterType(selectedOption)) {
+      if (nameFilter !== selectedFilter.name && !isObjectFilterType(selectedOption)) {
         updateSelectedFilter({ name: nameFilter });
       }
     }, 400);
@@ -60,14 +63,17 @@ const SearchFilter = (): React.ReactElement => {
     }
   }, [selectedFilter.name]);
 
-  const fetchObjectProperties = async () => {
+  const fetchObjects = async (fetchAllObjects: boolean) => {
     setIsLoading(true);
+
     const searchResults: ObjectSearchResult[] = [];
     const errors: Error[] = [];
-    const objectTypes = objectPropertyFilterTypeToObjects[selectedOption as ObjectPropertyFilterType];
+    const objectTypes = objectFilterTypeToObjects[selectedOption as ObjectFilterType];
     const objectPromises = objectTypes.map(async (objectType) => {
       try {
-        const objects = await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], nameFilter);
+        const objects = fetchAllObjects
+          ? await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], "")
+          : await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], nameFilter);
         searchResults.push(...objects);
       } catch (error) {
         errors.push(error);
@@ -75,46 +81,83 @@ const SearchFilter = (): React.ReactElement => {
     });
     await Promise.all(objectPromises);
     if (errors.length > 0) {
-      NotificationService.Instance.alertDispatcher.dispatch({
-        serverUrl: new URL(selectedServer.url),
-        message: errors.map((error) => error.message).join("\n"),
-        isSuccess: false,
-        severity: errors.length === objectTypes.length ? "error" : "info"
-      });
+      if (errors.every((e) => e.message.includes("The server does not support to select"))) {
+        showWarning(
+          `${errors.join(
+            "\n"
+          )}\n\nThe search can still be performed by fetching all ${getListedObjects()} before filtering. This might take some time.\n\nDo you still want to proceed?`
+        );
+      } else {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(selectedServer.url),
+          message: errors.map((error) => error.message).join("\n"),
+          isSuccess: false,
+          severity: errors.length === objectTypes.length ? "error" : "info"
+        });
+      }
     }
     if (errors.length !== objectTypes.length) {
       updateSelectedFilter({ name: nameFilter, filterType: selectedOption, searchResults });
+      setGenericSearchResults(fetchAllObjects);
     }
     setIsLoading(false);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     // This is triggered when the 'Enter' key is pressed or the search icon is clicked
-    if (!isLoading && nameFilter.length > 0) {
-      if (isObjectPropertyFilterType(selectedOption)) {
-        fetchObjectProperties();
+    if (!isLoading) {
+      updateSelectedFilter({ name: nameFilter });
+      if (isObjectFilterType(selectedOption)) {
+        if (!genericSearchResults) {
+          const fetchAllObjects = /^$|[*?]/.test(nameFilter);
+          if (fetchAllObjects) {
+            showWarning(`The given search will fetch all ${getListedObjects()}. This might take some time.\n\nDo you still want to proceed?`);
+            return;
+          }
+          await fetchObjects(false);
+        }
       }
+      openSearchView(selectedOption);
+    }
+  };
+
+  const getListedObjects = (): string => {
+    const lf = new Intl.ListFormat("en-US");
+    const pluralizedObjectTypes = objectFilterTypeToObjects[selectedOption as ObjectFilterType].map((o) => pluralize(o));
+    return lf.format(pluralizedObjectTypes);
+  };
+
+  const showWarning = (warning: string) => {
+    // Some searches might be slow, so warn the user first
+    const confirmation = (
+      <ConfirmModal
+        heading={"Warning: Seach might be slow!"}
+        content={<Typography style={{ whiteSpace: "pre-line" }}>{warning}</Typography>}
+        onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
+          fetchObjects(true).then(() => openSearchView(selectedOption));
+        }}
+        confirmColor={"danger"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  };
+
+  const openSearchView = (option: FilterType) => {
+    if (isWellFilterType(option) || isWellPropertyFilterType(option)) {
+      dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
+    }
+    if (isObjectFilterType(option)) {
+      dispatchNavigation({ type: NavigationType.SelectObjectOnWellboreView, payload: {} });
     }
   };
 
   const handleOptionChange = async (newValue: FilterType) => {
     setSelectedOption(newValue);
-    if (isWellFilterType(newValue) || isWellPropertyFilterType(newValue)) {
-      updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults: [] });
-    } else if (isObjectFilterType(newValue)) {
-      setIsLoading(true);
-      try {
-        const searchResults = await ObjectService.getObjectsByType(newValue as unknown as ObjectType);
-        updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults });
-      } catch (error) {
-        NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(selectedServer.url),
-          message: error.message,
-          isSuccess: false
-        });
-      }
-      setIsLoading(false);
-    }
+    updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults: [] });
+    setGenericSearchResults(false);
+    openSearchView(newValue);
   };
 
   const openOptions = () => {
@@ -137,13 +180,14 @@ const SearchFilter = (): React.ReactElement => {
       <SearchLayout colors={colors}>
         <SearchBarContainer>
           <EdsProvider density="compact">
-            <TextField
+            <SearchField
               value={nameFilter}
               style={{ width: "100%" }}
               onChange={(event) => setNameFilter(event.target.value ?? "")}
               id="searchField"
               ref={textFieldRef}
               variant="outlined"
+              colors={colors}
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
               onKeyDown={(e) => (e.key == "Enter" ? handleSearch() : null)}
@@ -195,6 +239,12 @@ const SearchFilter = (): React.ReactElement => {
     </>
   );
 };
+
+const SearchField = styled(TextField)<{ colors: Colors }>`
+  &&& > div > fieldset {
+    border-color: ${(props) => props.colors.interactive.primaryResting};
+  }
+`;
 
 const SearchLayout = styled.div<{ colors: Colors }>`
   display: flex;

@@ -7,12 +7,14 @@ import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../c
 import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import { EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
+import { QueryContextProvider, QueryContextState } from "../contexts/queryContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
 import CommonData from "../models/commonData";
 import FluidsReport from "../models/fluidsReport";
 import FormationMarker from "../models/formationMarker";
+import JobInfo from "../models/jobs/jobInfo";
 import LogCurveInfo from "../models/logCurveInfo";
 import LogObject from "../models/logObject";
 import Measure from "../models/measure";
@@ -31,6 +33,7 @@ import Tubular from "../models/tubular";
 import WbGeometryObject from "../models/wbGeometry";
 import Well, { emptyWell } from "../models/well";
 import Wellbore, { emptyWellbore } from "../models/wellbore";
+import { Notification } from "../services/notificationService";
 import { light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
 
@@ -38,9 +41,13 @@ interface RenderWithContextsOptions {
   initialNavigationState?: Partial<NavigationState>;
   initialOperationState?: Partial<OperationState>;
   initialFilter?: Partial<Filter>;
+  initialQueryState?: Partial<QueryContextState>;
 }
 
-export function renderWithContexts(ui: React.ReactElement, { initialNavigationState, initialOperationState, initialFilter, ...options }: RenderWithContextsOptions = {}) {
+export function renderWithContexts(
+  ui: React.ReactElement,
+  { initialNavigationState, initialOperationState, initialFilter, initialQueryState, ...options }: RenderWithContextsOptions = {}
+) {
   const Wrapper = ({ children }: { children: React.ReactElement }) => {
     const [operationState, dispatchOperation] = React.useReducer(operationReducer, {
       contextMenu: EMPTY_CONTEXT_MENU,
@@ -58,7 +65,9 @@ export function renderWithContexts(ui: React.ReactElement, { initialNavigationSt
         <ThemeProvider theme={getTheme(operationState.theme)}>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
             <FilterContextProvider initialFilter={initialFilter}>
-              <SnackbarProvider>{children}</SnackbarProvider>
+              <QueryContextProvider initialQueryState={initialQueryState}>
+                <SnackbarProvider>{children}</SnackbarProvider>
+              </QueryContextProvider>
             </FilterContextProvider>
           </NavigationContext.Provider>
         </ThemeProvider>
@@ -111,6 +120,38 @@ export function getWellbore(overrides?: Partial<Wellbore>): Wellbore {
   };
 }
 
+export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
+  return {
+    jobType: "",
+    description: "",
+    id: "",
+    username: "",
+    witsmlTargetUsername: "",
+    witsmlSourceUsername: "",
+    sourceServer: "",
+    targetServer: "",
+    wellName: "",
+    wellboreName: "",
+    objectName: "",
+    startTime: "",
+    endTime: "",
+    killTime: "",
+    status: "",
+    failedReason: "",
+    report: null,
+    ...overrides
+  };
+}
+
+export function getNotification(overrides?: Partial<Notification>): Notification {
+  return {
+    serverUrl: new URL("http://example.com"),
+    isSuccess: true,
+    message: "",
+    ...overrides
+  };
+}
+
 export function getObjectOnWellbore(overrides?: Partial<ObjectOnWellbore>): ObjectOnWellbore {
   return {
     uid: "uid",
@@ -127,6 +168,7 @@ export function getObjectSearchResult(overrides?: Partial<ObjectSearchResult>): 
   return {
     ...getObjectOnWellbore(),
     searchProperty: "searchProperty",
+    objectType: ObjectType.Log,
     ...overrides
   };
 }

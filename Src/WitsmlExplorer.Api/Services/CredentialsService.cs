@@ -70,11 +70,11 @@ namespace WitsmlExplorer.Api.Services
                 cacheId = httpContext.CreateWitsmlExplorerCookie();
             }
 
-            var witsmlClient = new WitsmlClient(new WitsmlClientOptions
+            var witsmlClient = new WitsmlClient(options =>
             {
-                Hostname = creds.Host.ToString(),
-                Credentials = new WitsmlCredentials(creds.UserId, creds.Password),
-                ClientCapabilities = _clientCapabilities
+                options.Hostname = creds.Host.ToString();
+                options.Credentials = new WitsmlCredentials(creds.UserId, creds.Password);
+                options.ClientCapabilities = _clientCapabilities;
             });
             await witsmlClient.TestConnectionAsync();
 

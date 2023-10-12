@@ -29,7 +29,7 @@ import {
   SetCurveThresholdAction,
   ToggleTreeNodeAction
 } from "./navigationActions";
-import { EMPTY_NAVIGATION_STATE, NavigationState, allDeselected, selectedJobsFlag, selectedServerManagerFlag } from "./navigationContext";
+import { EMPTY_NAVIGATION_STATE, NavigationState, ViewFlags, allDeselected } from "./navigationContext";
 import NavigationType from "./navigationType";
 
 export const initNavigationStateReducer = (): [NavigationState, Dispatch<Action>] => {
@@ -61,7 +61,9 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
     case NavigationType.SelectWellbore:
       return selectWellbore(state, action);
     case NavigationType.SelectJobs:
-      return selectJobs(state);
+      return selectView(state, ViewFlags.Jobs);
+    case NavigationType.SelectQueryView:
+      return selectView(state, ViewFlags.Query);
     case NavigationType.SelectLogType:
       return selectLogType(state, action);
     case NavigationType.SelectObject:
@@ -73,7 +75,9 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
     case NavigationType.ShowCurveValues:
       return selectLogCurveInfo(state, action);
     case NavigationType.SelectServerManager:
-      return selectServerManager(state);
+      return selectView(state, ViewFlags.ServerManager);
+    case NavigationType.SelectObjectOnWellboreView:
+      return selectView(state, ViewFlags.ObjectSearchView);
     default:
       throw new Error();
   }
@@ -129,7 +133,7 @@ const selectServer = (state: NavigationState, { payload }: SelectServerAction): 
   return {
     ...state,
     ...allDeselected,
-    currentSelected: server ?? selectedServerManagerFlag,
+    currentSelected: server ?? ViewFlags.ServerManager,
     selectedServer: server,
     wells: alreadySelected ? state.wells : [],
     expandedTreeNodes
@@ -166,21 +170,12 @@ const selectWellbore = (state: NavigationState, { payload }: SelectWellboreActio
   };
 };
 
-const selectJobs = (state: NavigationState): NavigationState => {
+const selectView = (state: NavigationState, flag: ViewFlags): NavigationState => {
   return {
     ...state,
     ...allDeselected,
     selectedServer: state.selectedServer,
-    currentSelected: selectedJobsFlag
-  };
-};
-
-const selectServerManager = (state: NavigationState): NavigationState => {
-  return {
-    ...state,
-    ...allDeselected,
-    selectedServer: state.selectedServer,
-    currentSelected: selectedServerManagerFlag
+    currentSelected: flag
   };
 };
 

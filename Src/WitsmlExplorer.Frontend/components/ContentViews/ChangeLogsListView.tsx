@@ -20,9 +20,9 @@ export const ChangeLogsListView = (): React.ReactElement => {
   }, [selectedWellbore]);
 
   const getTableData = () => {
-    return changeLogs.map((changeLog, index) => {
+    return changeLogs.map((changeLog) => {
       return {
-        id: index,
+        id: changeLog.uid,
         uidObject: changeLog.uidObject,
         nameObject: changeLog.nameObject,
         lastChangeType: changeLog.lastChangeType,
@@ -40,7 +40,11 @@ export const ChangeLogsListView = (): React.ReactElement => {
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];
 
-  return Object.is(selectedWellbore?.changeLogs, changeLogs) && <ContentTable viewId="changeLogsListView" columns={columns} data={getTableData()} showRefresh />;
+  return (
+    Object.is(selectedWellbore?.changeLogs, changeLogs) && (
+      <ContentTable viewId="changeLogsListView" columns={columns} data={getTableData()} showRefresh downloadToCsvFileName="ChangeLogs" />
+    )
+  );
 };
 
 export default ChangeLogsListView;

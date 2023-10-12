@@ -51,6 +51,8 @@ namespace WitsmlExplorer.Api.Services
                     StartIndex = log.GetStartIndexAsString(),
                     EndIndex = log.GetEndIndexAsString(),
                     IndexCurve = log.IndexCurve.Value,
+                    Direction = LogObject.ConvertDirection(log),
+                    Mnemonics = log.LogCurveInfo.Count,
                     CommonData = new CommonData()
                     {
                         DTimCreation = log.CommonData.DTimCreation,
@@ -145,7 +147,7 @@ namespace WitsmlExplorer.Api.Services
             Index startIndex = Index.Start(log, start);
             Index endIndex = Index.End(log, end);
 
-            if (startIndex > endIndex)
+            if ((!log.IsDecreasing() && startIndex > endIndex) || (log.IsDecreasing() && startIndex < endIndex))
             {
                 return new LogData();
             }

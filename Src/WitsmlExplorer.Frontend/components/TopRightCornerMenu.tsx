@@ -2,6 +2,7 @@ import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
+import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
@@ -40,6 +41,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
   };
 
+  const openQueryView = () => {
+    dispatchNavigation({ type: NavigationType.SelectQueryView, payload: {} });
+  };
+
   return (
     <Layout>
       {selectedServer?.currentUsername && (
@@ -50,6 +55,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
       )}
       <ServerManagerButton showLabels={showLabels} />
       <JobsButton showLabels={showLabels} />
+      <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openQueryView} disabled={!selectedServer}>
+        <Icon name="code" />
+        {showLabels && "Query"}
+      </StyledButton>
       <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openSettingsMenu}>
         <Icon name="settings" />
         {showLabels && "Settings"}

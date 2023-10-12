@@ -211,7 +211,7 @@ const columns: Column[] = [
   { name: "Source/target end", accessor: "endIndexes" }
 ];
 
-const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
+export const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};
   &:hover {
     background-color: ${(props) => props.colors.ui.backgroundLight};

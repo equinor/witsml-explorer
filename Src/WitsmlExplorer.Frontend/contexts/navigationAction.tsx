@@ -25,6 +25,8 @@ import {
   SelectLogTypeAction,
   SelectObjectAction,
   SelectObjectGroupAction,
+  SelectObjectOnWellboreViewAction,
+  SelectQueryViewAction,
   SelectServerAction,
   SelectServerManagerAction,
   SelectWellAction,
@@ -55,6 +57,7 @@ export type NavigationAction =
   | CollapseTreeNodeChildrenAction
   | ExpandTreeNodesAction
   | SelectJobsAction
+  | SelectQueryViewAction
   | SelectLogTypeAction
   | SelectLogCurveInfoAction
   | SelectWellAction
@@ -63,6 +66,7 @@ export type NavigationAction =
   | SelectObjectGroupAction
   | SelectServerAction
   | SetCurveThresholdAction
-  | SelectServerManagerAction;
+  | SelectServerManagerAction
+  | SelectObjectOnWellboreViewAction;
 
 export type DispatchNavigation = (action: NavigationAction) => void;

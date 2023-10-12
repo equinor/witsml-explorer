@@ -8,6 +8,7 @@ import { LogHeaderDateTimeField } from "../LogHeaderDateTimeField";
 export interface AdjustDateTimeModelProps {
   minDate: string;
   maxDate: string;
+  isDescending?: boolean;
   onStartDateChanged: (value: string) => void;
   onEndDateChanged: (value: string) => void;
   onValidChange: (isValid: boolean) => void;
@@ -19,7 +20,7 @@ interface SetRangeButton {
 }
 
 const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElement => {
-  const { minDate, maxDate, onStartDateChanged, onEndDateChanged, onValidChange } = props;
+  const { minDate, maxDate, isDescending, onStartDateChanged, onEndDateChanged, onValidChange } = props;
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>(true);
   const [endIndexIsValid, setEndIndexIsValid] = useState<boolean>(true);
   const [startOffset] = useState<string>(getOffset(minDate));
@@ -40,7 +41,7 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
   }, [startIndex, endIndex]);
 
   useEffect(() => {
-    onValidChange(startIndexIsValid && endIndexIsValid && startIndex < endIndex);
+    onValidChange(startIndexIsValid && endIndexIsValid && (isDescending ? startIndex > endIndex : startIndex < endIndex));
   }, [startIndexIsValid, endIndexIsValid, startIndex, endIndex]);
 
   return (
@@ -74,24 +75,26 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
       </ButtonGroup>
 
       <LogHeaderDateTimeField
-        value={startIndex}
+        value={startIndex ?? ""}
         label="Start index"
         updateObject={(dateTime: string, valid: boolean) => {
           setStartIndex(dateTime);
           setEndIndexIsValid(valid);
         }}
         offset={startOffset}
-        maxValue={endIndex}
+        minValue={isDescending ? endIndex : null}
+        maxValue={isDescending ? null : endIndex}
       />
       <LogHeaderDateTimeField
-        value={endIndex}
+        value={endIndex ?? ""}
         label="End index"
         updateObject={(dateTime: string, valid: boolean) => {
           setEndIndex(dateTime);
           setStartIndexIsValid(valid);
         }}
         offset={endOffset}
-        minValue={startIndex}
+        minValue={isDescending ? null : startIndex}
+        maxValue={isDescending ? startIndex : null}
       />
     </>
   );

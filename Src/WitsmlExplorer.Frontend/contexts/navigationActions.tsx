@@ -48,6 +48,10 @@ export interface SelectJobsAction extends Action {
   type: NavigationType.SelectJobs;
 }
 
+export interface SelectQueryViewAction extends Action {
+  type: NavigationType.SelectQueryView;
+}
+
 export interface SelectObjectGroupAction extends Action {
   type: NavigationType.SelectObjectGroup;
   payload: { wellUid: string; wellboreUid: string; objectType: ObjectType; objects: ObjectOnWellbore[] | null };
@@ -75,4 +79,8 @@ export interface SetCurveThresholdAction extends Action {
 
 export interface SelectServerManagerAction extends Action {
   type: NavigationType.SelectServerManager;
+}
+
+export interface SelectObjectOnWellboreViewAction extends Action {
+  type: NavigationType.SelectObjectOnWellboreView;
 }

@@ -16,6 +16,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteWell,
         DeleteWellbore,
         RenameMnemonic,
+        DeleteEmptyMnemonics,
         ModifyBhaRun,
         ModifyFormationMarker,
         ModifyGeologyInterval,
@@ -37,10 +38,15 @@ namespace WitsmlExplorer.Api.Models
         CreateRisk,
         CreateMudLog,
         CreateRig,
+        CreateTrajectory,
         CreateWbGeometry,
         BatchModifyWell,
         ImportLogData,
         ReplaceComponents,
-        ReplaceObjects
+        ReplaceObjects,
+        CheckLogHeader,
+        MissingData,
+        AnalyzeGaps,
+        SpliceLogs
     }
 }

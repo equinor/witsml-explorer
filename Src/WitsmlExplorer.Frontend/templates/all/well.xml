@@ -1,0 +1,255 @@
+<wells xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <well uid="">
+    <name />
+    <nameLegal />
+    <numLicense />
+    <numGovt />
+    <dTimLicense />
+    <field />
+    <country />
+    <state />
+    <county />
+    <region />
+    <district />
+    <block />
+    <timeZone />
+    <operator />
+    <operatorDiv />
+    <pcInterest uom="" />
+    <numAPI />
+    <statusWell />
+    <purposeWell />
+    <fluidWell />
+    <directionWell />
+    <dTimSpud />
+    <dTimPa />
+    <wellheadElevation uom="" datum="" />
+    <wellDatum uid="">
+      <name />
+      <code />
+      <datumName namingSystem="" code="" />
+      <datumCRS uidRef="" />
+      <kind />
+      <wellbore>
+        <wellboreReference uidRef="" />
+        <wellParent uidRef="" />
+      </wellbore>
+      <rig>
+        <rigReference uidRef="" />
+        <wellboreParent uidRef="" />
+        <wellParent uidRef="" />
+      </rig>
+      <elevation uom="" datum="" />
+      <measuredDepth uom="" datum="" />
+      <horizontalLocation uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </horizontalLocation>
+      <comment />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellDatum>
+    <groundElevation uom="" datum="" />
+    <waterDepth uom="" />
+    <wellLocation uid="">
+      <wellCRS uidRef="" />
+      <latitude uom="" />
+      <longitude uom="" />
+      <easting uom="" />
+      <northing uom="" />
+      <westing uom="" />
+      <southing uom="" />
+      <projectedX uom="" />
+      <projectedY uom="" />
+      <localX uom="" />
+      <localY uom="" />
+      <original />
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellLocation>
+    <wellPublicLandSurveySystemLocation>
+      <principalMeridian />
+      <range />
+      <rangeDir />
+      <township />
+      <townshipDir />
+      <section />
+      <quarterSection />
+      <quarterTownship />
+      <footageNS uom="" ref="" />
+      <footageEW uom="" ref="" />
+    </wellPublicLandSurveySystemLocation>
+    <referencePoint uid="">
+      <name />
+      <type />
+      <elevation uom="" datum="" />
+      <measuredDepth uom="" datum="" />
+      <location uid="">
+        <wellCRS uidRef="" />
+        <latitude uom="" />
+        <longitude uom="" />
+        <easting uom="" />
+        <northing uom="" />
+        <westing uom="" />
+        <southing uom="" />
+        <projectedX uom="" />
+        <projectedY uom="" />
+        <localX uom="" />
+        <localY uom="" />
+        <original />
+        <description />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </location>
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </referencePoint>
+    <wellCRS uid="">
+      <name />
+      <mapProjection>
+        <nameCRS namingSystem="" code="" />
+        <projectionCode />
+        <projectedFrom uidRef="" />
+        <stdParallel1 uom="" />
+        <stdParallel2 uom="" />
+        <centralMeridian uom="" />
+        <originLatitude uom="" />
+        <originLongitude uom="" />
+        <latitude1 uom="" />
+        <longitude1 uom="" />
+        <latitude2 uom="" />
+        <longitude2 uom="" />
+        <latitudeForScale uom="" />
+        <longitudeForScale uom="" />
+        <trueScaleLatitude uom="" />
+        <spheroidRadius uom="" />
+        <scaleFactor />
+        <methodVariant />
+        <perspectiveHeight uom="" />
+        <zone />
+        <NADType />
+        <falseEasting uom="" />
+        <falseNorthing uom="" />
+        <bearing uom="" />
+        <hemisphere />
+        <description />
+        <parameter index="" name="" uom="" description="" uid="" />
+      </mapProjection>
+      <geographic>
+        <nameCRS namingSystem="" code="" />
+        <geodeticDatumCode />
+        <xTranslation uom="" />
+        <yTranslation uom="" />
+        <zTranslation uom="" />
+        <xRotation uom="" />
+        <yRotation uom="" />
+        <zRotation uom="" />
+        <scaleFactor />
+        <ellipsoidCode />
+        <ellipsoidSemiMajorAxis uom="" />
+        <ellipsoidInverseFlattening />
+      </geographic>
+      <mapProjectionCRS uidRef="" />
+      <geodeticCRS uidRef="" />
+      <localCRS>
+        <usesWellAsOrigin />
+        <origin uidRef="" />
+        <originDescription />
+        <yAxisAzimuth uom="" northDirection="" />
+        <magneticDeclination uom="" />
+        <gridConvergence uom="" />
+        <yAxisDescription />
+        <xRotationCounterClockwise />
+      </localCRS>
+      <description />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </wellCRS>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </well>
+</wells>

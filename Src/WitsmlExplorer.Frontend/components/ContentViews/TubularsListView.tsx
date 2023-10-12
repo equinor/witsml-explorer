@@ -57,7 +57,16 @@ export const TubularsListView = (): React.ReactElement => {
   });
 
   return selectedWellbore && tubulars == selectedWellbore.tubulars ? (
-    <ContentTable viewId="tubularsListView" columns={columns} data={tubularRows} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+    <ContentTable
+      viewId="tubularsListView"
+      columns={columns}
+      data={tubularRows}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      downloadToCsvFileName="Tubulars"
+    />
   ) : (
     <></>
   );

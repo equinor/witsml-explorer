@@ -1,3 +1,4 @@
+import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
@@ -56,9 +57,18 @@ export const WellsListView = (): React.ReactElement => {
   return (
     <WellProgress>
       {wells.length > 0 && filteredWells.length == 0 ? (
-        <>No wells match the current filter</>
+        <Typography style={{ padding: "1rem" }}>No wells match the current filter</Typography>
       ) : (
-        <ContentTable viewId="wellsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows />
+        <ContentTable
+          viewId="wellsListView"
+          columns={columns}
+          data={getTableData()}
+          onSelect={onSelect}
+          onContextMenu={onContextMenu}
+          checkableRows
+          downloadToCsvFileName="Wells"
+          showRefresh
+        />
       )}
     </WellProgress>
   );

@@ -1,0 +1,122 @@
+<fluidsReports xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <fluidsReport uidWell="" uidWellbore="" uid="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <dTim />
+    <md uom="" datum="" />
+    <tvd uom="" datum="" />
+    <numReport />
+    <fluid uid="">
+      <type />
+      <locationSample />
+      <dTim />
+      <md uom="" datum="" />
+      <tvd uom="" datum="" />
+      <presBopRating uom="" />
+      <mudClass />
+      <density uom="" />
+      <visFunnel uom="" />
+      <tempVis uom="" />
+      <pv uom="" />
+      <yp uom="" />
+      <gel10Sec uom="" />
+      <gel10Min uom="" />
+      <gel30Min uom="" />
+      <filterCakeLtlp uom="" />
+      <filtrateLtlp uom="" />
+      <tempHthp uom="" />
+      <presHthp uom="" />
+      <filtrateHthp uom="" />
+      <filterCakeHthp uom="" />
+      <solidsPc uom="" />
+      <waterPc uom="" />
+      <oilPc uom="" />
+      <sandPc uom="" />
+      <solidsLowGravPc uom="" />
+      <solidsCalcPc uom="" />
+      <baritePc uom="" />
+      <lcm uom="" />
+      <mbt uom="" />
+      <ph />
+      <tempPh uom="" />
+      <pm uom="" />
+      <pmFiltrate uom="" />
+      <mf uom="" />
+      <alkalinityP1 uom="" />
+      <alkalinityP2 uom="" />
+      <chloride uom="" />
+      <calcium uom="" />
+      <magnesium uom="" />
+      <potassium uom="" />
+      <rheometer uid="">
+        <tempRheom uom="" />
+        <presRheom uom="" />
+        <vis3Rpm />
+        <vis6Rpm />
+        <vis100Rpm />
+        <vis200Rpm />
+        <vis300Rpm />
+        <vis600Rpm />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </rheometer>
+      <brinePc uom="" />
+      <lime uom="" />
+      <electStab uom="" />
+      <calciumChloride uom="" />
+      <company />
+      <engineer />
+      <asg />
+      <solidsHiGravPc uom="" />
+      <polymer uom="" />
+      <polyType />
+      <solCorPc uom="" />
+      <oilCtg uom="" />
+      <hardnessCa uom="" />
+      <sulfide uom="" />
+      <comments />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </fluid>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </fluidsReport>
+</fluidsReports>

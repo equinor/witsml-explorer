@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -8,14 +9,8 @@ namespace WitsmlExplorer.Api.Models
         public string Code { get; private init; }
         public string Elevation { get; private init; }
 
-        public static WellDatum FromWitsmlWellDatum(List<Witsml.Data.WellDatum> witsmlWellDatumList)
+        public static WellDatum FromWitsmlWellDatum(Witsml.Data.WellDatum witsmlWellDatum)
         {
-            if (witsmlWellDatumList == null || witsmlWellDatumList.Count == 0)
-            {
-                return null;
-            }
-
-            Witsml.Data.WellDatum witsmlWellDatum = witsmlWellDatumList[0];
             return witsmlWellDatum == null
                 ? null
                 : new WellDatum
@@ -24,6 +19,11 @@ namespace WitsmlExplorer.Api.Models
                     Code = witsmlWellDatum.Code,
                     Elevation = witsmlWellDatum.Elevation?.Value,
                 };
+        }
+
+        public static List<WellDatum> FromWitsmlWellDatum(IEnumerable<Witsml.Data.WellDatum> witsmlWellDatums)
+        {
+            return witsmlWellDatums?.Select(FromWitsmlWellDatum).ToList() ?? new List<WellDatum>();
         }
     }
 }

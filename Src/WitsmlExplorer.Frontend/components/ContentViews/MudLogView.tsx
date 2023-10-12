@@ -9,7 +9,6 @@ import MudLog from "../../models/mudLog";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
-import { clipLongString } from "./ViewUtils";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface GeologyIntervalRow extends ContentTableRow {
@@ -92,11 +91,11 @@ export const MudLogView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals.map((geologyInterval, index) => {
+  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals.map((geologyInterval) => {
     return {
-      id: index,
+      id: geologyInterval.uid,
       typeLithology: geologyInterval.typeLithology,
-      description: clipLongString(geologyInterval.description, 30),
+      description: geologyInterval.description,
       mdTop: measureToString(geologyInterval.mdTop),
       mdBottom: measureToString(geologyInterval.mdBottom),
       tvdTop: measureToString(geologyInterval.tvdTop),
@@ -110,9 +109,9 @@ export const MudLogView = (): React.ReactElement => {
       ecdTdAv: measureToString(geologyInterval.ecdTdAv),
       dxcAv: geologyInterval.dxcAv,
       uid: geologyInterval.uid,
-      inset: geologyInterval.lithologies.map((lithology, index) => {
+      inset: geologyInterval.lithologies.map((lithology) => {
         return {
-          id: index,
+          id: lithology.uid,
           type: lithology.type,
           codeLith: lithology.codeLith,
           lithPc: lithology.lithPc
@@ -129,7 +128,15 @@ export const MudLogView = (): React.ReactElement => {
   ];
 
   return selectedMudLog && !isFetchingData ? (
-    <ContentTable viewId="mudLogView" columns={columns} data={geologyIntervalRows} onContextMenu={onContextMenu} checkableRows insetColumns={insetColumns} />
+    <ContentTable
+      viewId="mudLogView"
+      columns={columns}
+      data={geologyIntervalRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      insetColumns={insetColumns}
+      downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
+    />
   ) : (
     <></>
   );

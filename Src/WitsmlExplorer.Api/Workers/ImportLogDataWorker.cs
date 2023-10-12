@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Extensions;
@@ -24,6 +26,7 @@ namespace WitsmlExplorer.Api.Workers
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job)
         {
             int chunkSize = 1000;
+            int maxUpdateAttempts = 2;
             string wellUid = job.TargetLog.WellUid;
             string wellboreUid = job.TargetLog.WellboreUid;
             string logUid = job.TargetLog.Uid;
@@ -35,7 +38,20 @@ namespace WitsmlExplorer.Api.Workers
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason), null);
             }
 
-            List<WitsmlLogCurveInfo> logCurveInfos = witsmlLog.LogCurveInfo.Where(logCurveInfo => job.Mnemonics.Contains(logCurveInfo.Mnemonic)).ToList();
+            WitsmlLogs addMnemonicsQuery = CreateAddMnemonicsQuery(job, witsmlLog);
+            if (addMnemonicsQuery.Logs.FirstOrDefault().LogCurveInfo.Count > 0)
+            {
+                QueryResult addMnemonicsResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(addMnemonicsQuery);
+                if (addMnemonicsResult.IsSuccessful)
+                {
+                    Logger.LogInformation("{JobType} - Successfully added missing mnemonics", GetType().Name);
+                }
+                else
+                {
+                    Logger.LogError("Job failed: {jobDescription}. Failed to add missing mnemonics", job.Description());
+                    return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), addMnemonicsResult.IsSuccessful, $"Failed to add missing mnemonics", addMnemonicsResult.Reason, witsmlLog.GetDescription()), null);
+                }
+            }
 
             //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
             WitsmlLogs[] queries = CreateImportQueries(job, chunkSize).ToArray();
@@ -43,28 +59,33 @@ namespace WitsmlExplorer.Api.Workers
             //Todo: update import progress for the user using websockets
             for (int i = 0; i < queries.Length; i++)
             {
-                QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(queries[i]);
-                if (result.IsSuccessful)
+                for (int attempt = 0; attempt < maxUpdateAttempts; attempt++)
                 {
-                    Logger.LogInformation("{JobType} - Query {QueryCount}/{CurrentQuery} successful", GetType().Name, queries.Length, i + 1);
-                }
-                else
-                {
-                    Logger.LogError("Job failed: {jobDescription}. Failed import at query:{QueryNumber} with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
-                        job.Description(),
-                        i,
-                        chunkSize,
-                        queries.Length);
+                    QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(queries[i]);
+                    if (result.IsSuccessful)
+                    {
+                        Logger.LogInformation("{JobType} - Query {CurrentQuery}/{QueryCount} successful", GetType().Name, i + 1, queries.Length);
+                        break;
+                    }
+                    else if (attempt == maxUpdateAttempts - 1)
+                    {
+                        Logger.LogError("Job failed: {jobDescription}. Failed import at query:{QueryNumber} after {Attempts} attempts with the chunkSize of {ChunkSize} and total number of queries:{QueriesLength}",
+                            job.Description(),
+                            i,
+                            maxUpdateAttempts,
+                            chunkSize,
+                            queries.Length);
 
-                    return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
+                        return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
+                    }
                 }
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Log, logUid);
-            string mnemonicsOnLog = string.Join(", ", logCurveInfos.Select(logCurveInfo => logCurveInfo.Mnemonic));
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsOnLog}, for log: {logUid}");
+            string mnemonicsString = string.Join(", ", job.Mnemonics);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Imported curve info values for mnemonics: {mnemonicsString}, for log: {logUid}");
             return (workerResult, refreshAction);
         }
 
@@ -99,6 +120,28 @@ namespace WitsmlExplorer.Api.Workers
                         }
                     },
                 });
+        }
+
+        private static WitsmlLogs CreateAddMnemonicsQuery(ImportLogDataJob job, WitsmlLog witsmlLog)
+        {
+            return new WitsmlLogs
+            {
+                Logs = new WitsmlLog
+                {
+                    Uid = job.TargetLog.Uid,
+                    UidWellbore = job.TargetLog.WellboreUid,
+                    UidWell = job.TargetLog.WellUid,
+                    LogCurveInfo = Enumerable.Range(0, job.Mnemonics.Count())
+                                .Where(i => !witsmlLog.LogCurveInfo.Select(l => l.Mnemonic).Contains(job.Mnemonics.ElementAt(i)))
+                                .Select(i => new WitsmlLogCurveInfo
+                                {
+                                    Mnemonic = job.Mnemonics.ElementAt(i),
+                                    Unit = string.IsNullOrEmpty(job.Units.ElementAt(i)) ? "unitless" : job.Units.ElementAt(i), // Can't updateInStore with an empty unit
+                                    Uid = job.Mnemonics.ElementAt(i),
+                                    TypeLogData = WitsmlLogCurveInfo.LogDataTypeDouble
+                                }).ToList(),
+                }.AsSingletonList()
+            };
         }
     }
 }

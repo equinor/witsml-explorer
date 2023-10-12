@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext, { selectedJobsFlag, selectedServerManagerFlag } from "../contexts/navigationContext";
+import NavigationContext, { ViewFlags } from "../contexts/navigationContext";
 import { ObjectType } from "../models/objectType";
 import { BhaRunsListView } from "./ContentViews/BhaRunsListView";
 import ChangeLogsListView from "./ContentViews/ChangeLogsListView";
@@ -11,10 +11,12 @@ import FormationMarkersListView from "./ContentViews/FormationMarkersListView";
 import JobsView from "./ContentViews/JobsView";
 import LogCurveInfoListView from "./ContentViews/LogCurveInfoListView";
 import { LogTypeListView } from "./ContentViews/LogTypeListView";
-import { LogsListView } from "./ContentViews/LogsListView";
+import LogsListView from "./ContentViews/LogsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import MudLogView from "./ContentViews/MudLogView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";
+import ObjectSearchListView from "./ContentViews/ObjectSearchListView";
+import QueryView from "./ContentViews/QueryView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
 import ServerManager from "./ContentViews/ServerManager";
@@ -85,10 +87,14 @@ const ContentView = (): React.ReactElement => {
         setObjectView(false);
       } else if (currentSelected === selectedLogCurveInfo) {
         setView(<CurveValuesView />);
-      } else if (currentSelected === selectedJobsFlag) {
+      } else if (currentSelected === ViewFlags.Jobs) {
         setView(<JobsView />);
-      } else if (currentSelected === selectedServerManagerFlag) {
+      } else if (currentSelected === ViewFlags.Query) {
+        setView(<QueryView />);
+      } else if (currentSelected === ViewFlags.ServerManager) {
         setView(<ServerManager />);
+      } else if (currentSelected === ViewFlags.ObjectSearchView) {
+        setView(<ObjectSearchListView />);
       } else {
         throw new Error(`No view is implemented for item: ${JSON.stringify(currentSelected)}`);
       }

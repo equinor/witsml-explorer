@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -56,7 +57,7 @@ namespace Witsml.Data
         public WitsmlLengthMeasure WaterDepth { get; set; }
 
         [XmlElement("wellLocation")]
-        public WitsmlLocation WellLocation { get; set; }
+        public List<WitsmlLocation> WellLocation { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }

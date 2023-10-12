@@ -47,9 +47,9 @@ export const MudLogsListView = (): React.ReactElement => {
   };
 
   const getTableData = (): MudLogRow[] => {
-    return mudLogs.map((mudLog, index) => {
+    return mudLogs.map((mudLog) => {
       return {
-        id: index,
+        id: mudLog.uid,
         name: mudLog.name,
         mudLogCompany: mudLog.mudLogCompany,
         mudLogEngineers: mudLog.mudLogEngineers,
@@ -57,6 +57,7 @@ export const MudLogsListView = (): React.ReactElement => {
         endMd: measureToString(mudLog.endMd),
         dTimCreation: formatDateString(mudLog.commonData?.dTimCreation, timeZone),
         dTimLastChange: formatDateString(mudLog.commonData?.dTimLastChange, timeZone),
+        itemState: mudLog.commonData?.itemState,
         uid: mudLog.uid,
         mudLog
       };
@@ -71,6 +72,7 @@ export const MudLogsListView = (): React.ReactElement => {
     { property: "endMd", label: "endMd", type: ContentType.Measure },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
     { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime },
+    { property: "itemState", label: "commonData.itemState", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
@@ -82,7 +84,16 @@ export const MudLogsListView = (): React.ReactElement => {
 
   return (
     Object.is(selectedWellbore?.mudLogs, mudLogs) && (
-      <ContentTable viewId="mudLogsListView" columns={columns} data={getTableData()} onSelect={onSelect} onContextMenu={onContextMenu} checkableRows showRefresh />
+      <ContentTable
+        viewId="mudLogsListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="MudLogs"
+      />
     )
   );
 };

@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Query
                     PurposeWell = "",
                     WellDatum = new List<WellDatum>(),
                     WaterDepth = Measure.ToFetch<WitsmlLengthMeasure>(),
-                    WellLocation = new WitsmlLocation(),
+                    WellLocation = new List<WitsmlLocation>(),
                     CommonData = new WitsmlCommonData
                     {
                         DTimCreation = "",

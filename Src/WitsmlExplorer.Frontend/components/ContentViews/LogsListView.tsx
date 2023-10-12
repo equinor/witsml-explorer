@@ -1,4 +1,6 @@
+import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -10,6 +12,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
+import LogsGraph from "./Charts/LogsGraph";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
@@ -26,6 +29,8 @@ export const LogsListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
+  const [showGraph, setShowGraph] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -44,10 +49,10 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log, index) => {
+    return logs.map((log) => {
       return {
         ...log,
-        id: index,
+        id: log.uid,
         startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone) : log.startIndex,
         endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone) : log.endIndex,
         dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone),
@@ -59,9 +64,11 @@ export const LogsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
     { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
+    { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
+    { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
+    { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
@@ -78,6 +85,7 @@ export const LogsListView = (): React.ReactElement => {
   useEffect(() => {
     if (resetCheckedItems) {
       setResetCheckedItems(false);
+      setSelectedRows([]);
     }
   }, [resetCheckedItems]);
 
@@ -86,18 +94,47 @@ export const LogsListView = (): React.ReactElement => {
   }, [selectedWellbore, selectedLogTypeGroup]);
 
   return selectedWellbore && !resetCheckedItems ? (
-    <ContentTable
-      viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
-      columns={columns}
-      onSelect={onSelect}
-      data={getTableData()}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-    />
+    <ContentContainer>
+      <CommonPanelContainer>
+        <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
+        <Typography>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
+      </CommonPanelContainer>
+      {showGraph ? (
+        <LogsGraph selectedLogs={selectedRows} />
+      ) : (
+        <ContentTable
+          viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
+          columns={columns}
+          onSelect={onSelect}
+          data={getTableData()}
+          onContextMenu={onContextMenu}
+          onRowSelectionChange={(rows) => setSelectedRows(rows as LogObjectRow[])}
+          checkableRows
+          showRefresh
+          initiallySelectedRows={selectedRows}
+          downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
+        />
+      )}
+    </ContentContainer>
   ) : (
     <></>
   );
 };
+
+const CommonPanelContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  > p {
+    margin-left: -1rem;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
 
 export default LogsListView;

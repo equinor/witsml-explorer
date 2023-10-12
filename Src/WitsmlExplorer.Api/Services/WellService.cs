@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,13 +13,11 @@ using Witsml.ServiceReference;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 
-using WellDatum = WitsmlExplorer.Api.Models.WellDatum;
-
 namespace WitsmlExplorer.Api.Services
 {
     public interface IWellService
     {
-        Task<IEnumerable<Well>> GetWells();
+        Task<IList<Well>> GetWells();
         Task<Well> GetWell(string wellUid);
     }
 
@@ -31,24 +31,25 @@ namespace WitsmlExplorer.Api.Services
             _wellboreService = wellboreService;
         }
 
-        public async Task<IEnumerable<Well>> GetWells()
+        public async Task<IList<Well>> GetWells()
         {
-            Task<IEnumerable<Wellbore>> getWellbores = _wellboreService.GetWellbores();
-            Task<IEnumerable<Well>> getWells = GetWellsInformation();
+            Task<IList<Wellbore>> getWellbores = _wellboreService.GetWellbores();
+            Task<IList<Well>> getWells = GetWellsInformation();
             await Task.WhenAll(getWellbores, getWells);
 
-            List<Well> wells = getWells.Result.ToList();
+            List<Well> wells = getWells.Result.OrderBy(well => well.Name).ToList();
             foreach (Well well in wells)
             {
-                well.Wellbores = getWellbores.Result.Where(wb => wb.WellUid == well.Uid);
+                well.Wellbores = getWellbores.Result.Where(wb => wb.WellUid == well.Uid).ToList();
             }
 
-            return wells.OrderBy(well => well.Name);
+            return wells;
         }
 
-        private async Task<IEnumerable<Well>> GetWellsInformation(string wellUid = null)
+        private async Task<IList<Well>> GetWellsInformation(string wellUid = null)
         {
-            DateTime start = DateTime.Now;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
             WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
             List<Well> wells = result.Wells
@@ -65,21 +66,18 @@ namespace WitsmlExplorer.Api.Services
                     ItemState = well.CommonData.ItemState,
                     StatusWell = well.StatusWell,
                     PurposeWell = well.PurposeWell,
-                    WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
-                    WaterDepth = well.WaterDepth?.Value,
-                    WellLocation = WellLocation.FromWitsmlLocation(well.WellLocation),
                     Country = well.Country
                 }
                 ).ToList();
-            double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug("Fetched {Count} wells in {Elapsed} seconds", wells.Count, elapsed);
+            stopwatch.Stop();
+            Log.Debug("Fetched {Count} wells in {Elapsed} ms", wells.Count, stopwatch.ElapsedMilliseconds);
             return wells;
         }
 
         public async Task<Well> GetWell(string wellUid)
         {
-            Task<IEnumerable<Wellbore>> getWellbores = _wellboreService.GetWellbores(wellUid);
-            Task<IEnumerable<Well>> getWell = GetWellsInformation(wellUid);
+            Task<IList<Wellbore>> getWellbores = _wellboreService.GetWellbores(wellUid);
+            Task<IList<Well>> getWell = GetWellsInformation(wellUid);
             await Task.WhenAll(getWellbores, getWell);
 
             if (!getWell.Result.Any())

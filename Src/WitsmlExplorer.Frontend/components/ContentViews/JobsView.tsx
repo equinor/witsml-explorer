@@ -5,6 +5,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import JobInfo from "../../models/jobs/jobInfo";
+import BaseReport from "../../models/reports/BaseReport";
 import { Server } from "../../models/server";
 import { adminRole, developerRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
 import JobService from "../../services/jobService";
@@ -13,7 +14,7 @@ import { Colors } from "../../styles/Colors";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import JobInfoContextMenu, { JobInfoContextMenuProps } from "../ContextMenus/JobInfoContextMenu";
 import formatDateString from "../DateFormatter";
-import { clipLongString } from "./ViewUtils";
+import { ReportModal } from "../Modals/ReportModal";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const JobsView = (): React.ReactElement => {
@@ -80,6 +81,11 @@ export const JobsView = (): React.ReactElement => {
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <JobInfoContextMenu {...contextMenuProps} />, position } });
   };
 
+  const onClickReport = (report: BaseReport) => {
+    const reportModalProps = { report };
+    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "startTime", label: "Start time", type: ContentType.DateTime },
     { property: "jobType", label: "Job Type", type: ContentType.String },
@@ -87,6 +93,7 @@ export const JobsView = (): React.ReactElement => {
     { property: "wellboreName", label: "Wellbore Name", type: ContentType.String },
     { property: "objectName", label: "Object Name(s)", type: ContentType.String },
     { property: "status", label: "Status", type: ContentType.String },
+    { property: "report", label: "Report", type: ContentType.Component },
     { property: "failedReason", label: "Failure Reason", type: ContentType.String },
     { property: "targetServer", label: "Target Server", type: ContentType.String },
     { property: "sourceServer", label: "Source Server", type: ContentType.String },
@@ -100,14 +107,15 @@ export const JobsView = (): React.ReactElement => {
         .map((jobInfo) => {
           return {
             ...jobInfo,
-            failedReason: clipLongString(jobInfo.failedReason, 20, "-"),
-            wellName: clipLongString(jobInfo.wellName, 20, "-"),
-            wellboreName: clipLongString(jobInfo.wellboreName, 20, "-"),
-            objectName: clipLongString(jobInfo.objectName, 30, "-"),
+            failedReason: jobInfo.failedReason,
+            wellName: jobInfo.wellName,
+            wellboreName: jobInfo.wellboreName,
+            objectName: jobInfo.objectName,
             startTime: formatDateString(jobInfo.startTime, timeZone),
             endTime: formatDateString(jobInfo.endTime, timeZone),
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
+            report: jobInfo.report ? <ReportButton onClick={() => onClickReport(jobInfo.report)}>Report</ReportButton> : null,
             jobInfo: jobInfo
           };
         })
@@ -118,9 +126,8 @@ export const JobsView = (): React.ReactElement => {
   );
 
   const panelElements = [
-    <StyledButton
+    <Button
       key="refreshJobs"
-      variant="outlined"
       aria-disabled={shouldRefresh ? true : false}
       aria-label={shouldRefresh ? "loading data" : null}
       onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
@@ -129,7 +136,7 @@ export const JobsView = (): React.ReactElement => {
     >
       <Icon name="refresh" />
       Refresh
-    </StyledButton>,
+    </Button>,
     msalEnabled && (getUserAppRoles().includes(adminRole) || getUserAppRoles().includes(developerRole)) ? (
       <StyledSwitch
         colors={colors}
@@ -140,12 +147,10 @@ export const JobsView = (): React.ReactElement => {
         }}
       />
     ) : null,
-    <Typography style={{ color: colors.text.staticIconsDefault }} key="lastFetched">
-      Last fetched: {lastFetched}
-    </Typography>
+    <Typography key="lastFetched">Last fetched: {lastFetched}</Typography>
   ];
 
-  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} />;
+  return <ContentTable viewId="jobsView" columns={columns} data={jobInfoRows} onContextMenu={onContextMenu} panelElements={panelElements} downloadToCsvFileName="Jobs" />;
 };
 
 const serverUrlToName = (servers: Server[], url: string): string => {
@@ -156,16 +161,15 @@ const serverUrlToName = (servers: Server[], url: string): string => {
   return server ? server.name : url;
 };
 
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
-
 const StyledSwitch = styled(Switch)<{ colors: Colors }>`
   span {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
     margin-left: 0;
   }
+`;
+const ReportButton = styled.div`
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 export default JobsView;

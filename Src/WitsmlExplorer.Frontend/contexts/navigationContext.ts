@@ -24,8 +24,12 @@ const NavigationContext = createContext<NavigationContextProps>({} as Navigation
 
 export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
 
-export const selectedJobsFlag = "jobs";
-export const selectedServerManagerFlag = "serverManager";
+export enum ViewFlags {
+  Jobs = "jobs",
+  Query = "query",
+  ServerManager = "serverManager",
+  ObjectSearchView = "objectSearchView"
+}
 
 export interface NavigationState {
   selectedServer: Server;
