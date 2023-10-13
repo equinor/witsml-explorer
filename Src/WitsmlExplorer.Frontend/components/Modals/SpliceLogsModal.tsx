@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import SpliceLogsJob from "../../models/jobs/spliceLogsJob";
+import LogObject from "../../models/logObject";
 import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
@@ -27,7 +28,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
   } = useContext(OperationContext);
   const [draggedId, setDraggedId] = useState(null);
   const [draggedOverId, setDraggedOverId] = useState(null);
-  const [orderedLogs, setOrderedLogs] = useState<ObjectOnWellbore[]>([]);
+  const [orderedLogs, setOrderedLogs] = useState<LogObject[]>([]);
   const [newLogName, setNewLogName] = useState<string>("Spliced Log");
 
   useEffect(() => {
@@ -71,7 +72,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
       confirmText={`Splice`}
       isLoading={false}
       showCancelButton={true}
-      width={ModalWidth.MEDIUM}
+      width={ModalWidth.LARGE}
       content={
         <>
           <Accordion>
@@ -82,7 +83,13 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
-          <Typography style={{ marginTop: "16px" }}>Priority:</Typography>
+          <Typography style={{ marginTop: "16px", marginBottom: "16px" }}>Priority:</Typography>
+          <DragLayout>
+            <OrderingLabel>{`\tname`}</OrderingLabel>
+            <OrderingLabel>startIndex</OrderingLabel>
+            <OrderingLabel>endIndex</OrderingLabel>
+            <OrderingLabel>uid</OrderingLabel>
+          </DragLayout>
           <DraggableArea>
             {orderedLogs.map((log, index) => (
               <div key={log.uid}>
@@ -96,7 +103,12 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
                   draggingStarted={draggedId != null ? 1 : 0}
                   colors={colors}
                 >
-                  <OrderingLabel>{`${index + 1}.\t ${log.name}`}</OrderingLabel>
+                  <DraggableItem>
+                    <OrderingLabel>{`${index + 1}.\t ${log.name}${log.runNumber ? ` (${log.runNumber})` : ""}`}</OrderingLabel>
+                    <OrderingLabel>{log.startIndex}</OrderingLabel>
+                    <OrderingLabel>{log.endIndex}</OrderingLabel>
+                    <OrderingLabel>{log.uid}</OrderingLabel>
+                  </DraggableItem>
                 </Draggable>
               </div>
             ))}
@@ -146,13 +158,24 @@ const ExampleSplice = (): ReactElement => {
   );
 };
 
-const OrderingLabel = styled(Typography)`
+const DragLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 0.8fr 1.5fr;
+  column-gap: 12px;
+  width: 100%;
+`;
+
+const DraggableItem = styled(DragLayout)`
   margin-top: auto;
   margin-bottom: auto;
   cursor: grab;
+`;
+
+const OrderingLabel = styled(Typography)`
   font-family: EquinorMedium;
   font-size: 1rem;
   white-space: pre;
+  overflow: hidden;
 `;
 
 const DraggableArea = styled.div`

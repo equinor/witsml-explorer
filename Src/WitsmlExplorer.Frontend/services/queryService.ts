@@ -1,4 +1,4 @@
-import { ReturnElements, StoreFunction } from "../components/ContentViews/QueryView";
+import { ReturnElements, StoreFunction } from "../components/ContentViews/QueryViewUtils";
 import { ApiClient } from "./apiClient";
 
 export default class QueryService {
