@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using Witsml.Data;
 using Witsml.ServiceReference;
@@ -74,7 +75,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
             WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
-            if (headerResult == null)
+            if (headerResult == null || headerResult.Objects.IsNullOrEmpty())
             {
                 return null;
             }
@@ -91,6 +92,10 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
             WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1));
             WitsmlLogs dataEndResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, RequestLatestValues: 1));
+            if (dataStartResult.Objects.IsNullOrEmpty() || dataEndResult.Objects.IsNullOrEmpty())
+            {
+                return null;
+            }
             WitsmlLog dataStartResultLog = (WitsmlLog)dataStartResult.Objects.First();
             WitsmlLog dataEndResultLog = (WitsmlLog)dataEndResult.Objects.First();
             if (dataStartResultLog.LogData == null || dataEndResultLog.LogData == null)
@@ -98,11 +103,19 @@ namespace WitsmlExplorer.Api.Workers
                 return null;
             }
             IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(","));
-            string[] startResultLogData = dataStartResultLog.LogData.Data?.First().Data.Split(",");
+            string[] startResultLogData = dataStartResultLog.LogData.Data?.FirstOrDefault()?.Data.Split(",");
+            if (startResultLogData.IsNullOrEmpty()  || endResultLogData.IsNullOrEmpty())
+            {
+                return null;
+            }
             IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
             IEnumerable<string> dataEndIndexes = ExtractColumnIndexes(endResultLogData);
-            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList.Split(",");
-            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList.Split(",");
+            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList?.Split(",");
+            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList?.Split(",");
+            if (startMnemonics == null || endMnemonics == null)
+            {
+                return null;
+            }
             Dictionary<string, string> dataStartValues = dataStartIndexes.Select((value, index) => new { mnemonic = startMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
             Dictionary<string, string> dataEndValues = dataEndIndexes.Where(value => !string.IsNullOrEmpty(value)).Select((value, index) => new { mnemonic = endMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
 

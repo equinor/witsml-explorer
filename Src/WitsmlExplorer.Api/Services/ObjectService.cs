@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Services
                 IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsSingletonWitsmlList();
                 IWitsmlObjectList capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
 
-                WitsmlObjectOnWellbore capabilities = capabilityResult?.Objects?.First();
+                WitsmlObjectOnWellbore capabilities = capabilityResult?.Objects?.FirstOrDefault();
                 bool isCapable = capabilities?.GetType().GetProperty(objectProperty.CapitalizeFirstLetter())?.GetValue(capabilities, null) != null;
                 if (!isCapable)
                 {

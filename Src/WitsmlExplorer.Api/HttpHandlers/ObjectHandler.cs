@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType, IObjectService objectService)
         {
             IEnumerable<ObjectOnWellbore> result = await objectService.GetObjectIdOnly(wellUid, wellboreUid, objectUid, objectType);
-            return TypedResults.Ok(result?.First());
+            return TypedResults.Ok(result?.FirstOrDefault());
         }
 
         [Produces(typeof(Dictionary<EntityType, int>))]

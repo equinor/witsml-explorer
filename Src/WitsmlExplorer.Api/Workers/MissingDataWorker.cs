@@ -92,8 +92,8 @@ namespace WitsmlExplorer.Api.Workers
                 // Checking well properties when wellbores are selected, so we actually just want to check the parent well
                 wellReferences = new WellReference
                 {
-                    WellName = wellboreReferences.First()?.WellName,
-                    WellUid = wellboreReferences.First()?.WellUid
+                    WellName = wellboreReferences.First().WellName,
+                    WellUid = wellboreReferences.First().WellUid
                 }.AsSingletonList();
             }
 
@@ -353,7 +353,7 @@ namespace WitsmlExplorer.Api.Workers
         private static MissingDataReport GetReport(List<MissingDataReportItem> missingDataItems, IEnumerable<MissingDataCheck> checks, IEnumerable<WellReference> wellReferences, IEnumerable<WellboreReference> wellboreReferences)
         {
             string checkObjectsSummary = wellboreReferences.Any()
-                ? $"Checked wellbores for well {wellboreReferences?.First()?.WellName}: {string.Join(", ", wellboreReferences.Select(r => r.WellboreName))}"
+                ? $"Checked wellbores for well {wellboreReferences.First().WellName}: {string.Join(", ", wellboreReferences.Select(r => r.WellboreName))}"
                 : $"Checked wells: {string.Join(", ", wellReferences.Select(r => r.WellName))}";
             string checkSummary = string.Join("\n\n", checks.Select(check => check.Properties.Any() ? $"Checked properties for {check.ObjectType}: {string.Join(", ", check.Properties)}" : $"Checked presence of {check.ObjectType}"));
             return new MissingDataReport

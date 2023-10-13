@@ -91,8 +91,8 @@ namespace WitsmlExplorer.Console.ListCommands
                 {
                     UidWell = groupedResult.UidWell,
                     Uid = groupedResult.UidWellbore,
-                    NameWell = groupedResult.Logs.First()?.NameWell,
-                    Name = groupedResult.Logs.First()?.NameWellbore
+                    NameWell = groupedResult.Logs.FirstOrDefault()?.NameWell,
+                    Name = groupedResult.Logs.FirstOrDefault()?.NameWellbore
                 };
             }
         }
