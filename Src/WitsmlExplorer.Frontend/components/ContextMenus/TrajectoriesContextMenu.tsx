@@ -2,20 +2,23 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import NavigationContext from "../../contexts/navigationContext";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickRefresh, StyledIcon } from "./ContextMenuUtils";
-import TrajectoryPropertiesModal, { TrajectoryPropertiesModalProps } from "../Modals/TrajectoryPropertiesModal";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ObjectType } from "../../models/objectType";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
-import NavigationContext from "../../contexts/navigationContext";
 import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
+import Wellbore from "../../models/wellbore";
+import { colors } from "../../styles/Colors";
+import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
+import { PropertiesModalMode } from "../Modals/ModalParts";
+import TrajectoryPropertiesModal, { TrajectoryPropertiesModalProps } from "../Modals/TrajectoryPropertiesModal";
+import ContextMenu from "./ContextMenu";
+import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
+import { pasteObjectOnWellbore } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
+import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TrajectoriesContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -28,6 +31,7 @@ const TrajectoriesContextMenu = (props: TrajectoriesContextMenuProps): React.Rea
   const { dispatchOperation, wellbore, servers, setIsLoading } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
   const trajectoryReferences = useClipboardReferencesOfType(ObjectType.Trajectory);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickNewTrajectory = () => {
     const newTrajectory: Trajectory = {
@@ -70,7 +74,26 @@ const TrajectoriesContextMenu = (props: TrajectoriesContextMenuProps): React.Rea
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "trajectory", trajectoryReferences?.objectUids)}</Typography>
-        </MenuItem>
+        </MenuItem>,
+        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+          {[
+            <MenuItem
+              key={"newObject"}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Trajectory,
+                  storeFunction: StoreFunction.AddToStore,
+                  wellUid: wellbore.wellUid,
+                  wellboreUid: wellbore.uid,
+                  objectUid: uuid()
+                })
+              }
+            >
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Trajectory</Typography>
+            </MenuItem>
+          ]}
+        </NestedMenuItem>
       ]}
     />
   );
