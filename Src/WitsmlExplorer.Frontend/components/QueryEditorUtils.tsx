@@ -2,6 +2,20 @@ import { Ace } from "ace-builds";
 import { templates } from "../templates/templates";
 import { TemplateObjects } from "./ContentViews/QueryViewUtils";
 
+/**
+ * Custom commands for QueryEditor.
+ */
+export const customCommands = [
+  {
+    name: "newLineBelow",
+    bindKey: { win: "Shift-Enter", mac: "Shift-Enter" },
+    exec: (editor: any) => {
+      editor.navigateLineEnd();
+      editor.insert("\n");
+    }
+  }
+];
+
 interface Completion {
   caption: string;
   snippet: string;

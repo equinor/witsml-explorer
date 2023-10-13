@@ -8,7 +8,7 @@ import AceEditor from "react-ace";
 import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { Colors, dark } from "../styles/Colors";
-import { customCompleter } from "./QueryEditorUtils";
+import { customCommands, customCompleter } from "./QueryEditorUtils";
 
 export interface QueryEditorProps {
   value: string;
@@ -53,6 +53,7 @@ export const QueryEditor = (props: QueryEditorProps) => {
         tabSize: 2,
         useWorker: false
       }}
+      commands={customCommands}
     />
   );
 };
