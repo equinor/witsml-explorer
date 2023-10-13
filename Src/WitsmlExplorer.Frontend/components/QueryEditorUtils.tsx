@@ -10,9 +10,10 @@ export const customCommands = [
     name: "newLineBelow",
     bindKey: { win: "Shift-Enter", mac: "Shift-Enter" },
     exec: (editor: any) => {
-      editor.navigateLineEnd();
+      editor.selection.moveCursorLineEnd();
       editor.insert("\n");
-    }
+    },
+    multiSelectAction: "forEach"
   }
 ];
 
@@ -112,13 +113,9 @@ const customInsertMatch = (editor: any, data: Completion) => {
     }
   }
 
-  const lead = editor.selection.lead;
-  const currentRow = lead.row;
-  const currentColumn = lead.column;
-  const isMultiLine = editor.selection.getAllRanges().length > 1;
-
   // Insert snippet
-  const prefix = editor.session.getLine(currentRow).substring(0, currentColumn);
+  const lead = editor.selection.lead;
+  const prefix = editor.session.getLine(lead.row).substring(0, lead.column);
   let snippet = data.snippet;
   if (prefix.trim().startsWith("<")) {
     snippet = snippet.substring(1);
@@ -126,20 +123,26 @@ const customInsertMatch = (editor: any, data: Completion) => {
   editor.insertSnippet(snippet);
 
   // Move cursor to the correct position
-  if (!isMultiLine) {
-    if (snippet.includes("><")) {
-      const snippetColumn = snippet.indexOf("><");
-      editor.gotoLine(currentRow + 1, currentColumn + snippetColumn + 1, true);
-    } else if (/\n\t*\n/.test(snippet)) {
-      const snippetRows = snippet.split("\n");
-      for (let index = 0; index < snippetRows.length; index++) {
-        if (snippetRows[index].trim() == "") {
-          const snippetColumn = (snippetRows[index].match(/\t/g) || []).length * 2;
-          editor.gotoLine(currentRow + index + 1, currentColumn + snippetColumn, true);
-          break;
-        }
-      }
-    }
+  if (snippet.includes("><")) {
+    const charactersFromEnd = snippet.length - snippet.indexOf("><") - 1;
+    editor.execCommand({
+      exec: () => {
+        editor.selection.moveCursorBy(0, -charactersFromEnd);
+      },
+      multiSelectAction: "forEach"
+    });
+  } else if (/\n\t*\n/.test(snippet)) {
+    const rowsFromEnd = snippet
+      .split("\n")
+      .reverse()
+      .findIndex((row) => row.trim() === "");
+    editor.execCommand({
+      exec: () => {
+        editor.selection.moveCursorBy(-rowsFromEnd, 0);
+        editor.selection.moveCursorLineEnd();
+      },
+      multiSelectAction: "forEach"
+    });
   }
 };
 
