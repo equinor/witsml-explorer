@@ -1,7 +1,7 @@
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-xml";
-import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-merbivore";
 import "ace-builds/src-noconflict/theme-xcode";
 import { useContext } from "react";
 import AceEditor from "react-ace";
@@ -37,21 +37,20 @@ export const QueryEditor = (props: QueryEditorProps) => {
       value={value}
       colors={colors}
       mode="xml"
-      theme={colors == dark ? "monokai" : "xcode"}
+      theme={colors == dark ? "merbivore" : "xcode"}
       onChange={onChange}
       onLoad={onLoad}
       readOnly={readonly}
-      fontSize={14}
+      fontSize={13}
       showPrintMargin={false}
-      showGutter={false}
       highlightActiveLine={false}
       setOptions={{
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: true,
-        showLineNumbers: false,
         tabSize: 2,
-        useWorker: false
+        useWorker: false,
+        highlightGutterLine: false
       }}
       commands={customCommands}
     />
@@ -62,4 +61,8 @@ const StyledAceEditor = styled(AceEditor)<{ colors: Colors }>`
   min-width: 100%;
   min-height: 100%;
   background-color: ${(props) => props.colors.ui.backgroundLight};
+
+  .ace_gutter {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
 `;

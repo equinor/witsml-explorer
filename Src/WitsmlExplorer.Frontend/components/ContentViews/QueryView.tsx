@@ -11,7 +11,7 @@ import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { QueryEditor } from "../QueryEditor";
 import { StyledNativeSelect } from "../Select";
-import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getQueryTemplate } from "./QueryViewUtils";
+import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getParserError, getQueryTemplate } from "./QueryViewUtils";
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -27,11 +27,15 @@ const QueryView = (): React.ReactElement => {
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
 
-  const formatQuery = () => {
+  const validateAndFormatQuery = (): boolean => {
     const formattedQuery = formatXml(query);
-    if (formattedQuery != query) {
+    const parserError = getParserError(formattedQuery);
+    if (parserError) {
+      setResult(parserError);
+    } else if (formattedQuery !== query) {
       onQueryChange(formattedQuery);
     }
+    return !parserError;
   };
 
   const sendQuery = () => {
@@ -39,14 +43,15 @@ const QueryView = (): React.ReactElement => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
       const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
-      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn.trim());
+      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn?.trim());
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
       setResult(response);
       setIsLoading(false);
     };
-    formatQuery();
+    const isValid = validateAndFormatQuery();
+    if (!isValid) return;
     if (storeFunction == StoreFunction.DeleteFromStore) {
       displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
     } else {
