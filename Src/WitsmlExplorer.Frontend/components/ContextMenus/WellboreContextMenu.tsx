@@ -9,8 +9,10 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Well from "../../models/well";
 import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
@@ -18,8 +20,10 @@ import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
+import { ObjectTypeToTemplateObject, StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import { WellboreRow } from "../ContentViews/WellboresListView";
 import ConfirmModal from "../Modals/ConfirmModal";
+import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
 import LogPropertiesModal, { IndexCurve, LogPropertiesModalInterface } from "../Modals/LogPropertiesModal";
 import MissingDataAgentModal, { MissingDataAgentModalProps } from "../Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
@@ -29,7 +33,6 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
-import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
 
 export interface WellboreContextMenuProps {
   wellbore: Wellbore;
@@ -44,6 +47,7 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
     navigationState: { servers, expandedTreeNodes, selectedWell, selectedWellbore }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
 
   const onClickNewWellbore = () => {
@@ -208,6 +212,43 @@ const WellboreContextMenu = (props: WellboreContextMenuProps): React.ReactElemen
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
+        </NestedMenuItem>,
+        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+          {[
+            <MenuItem
+              key={"openQuery"}
+              onClick={() => openInQueryView({ templateObject: TemplateObjects.Wellbore, storeFunction: StoreFunction.GetFromStore, wellUid: well.uid, wellboreUid: wellbore.uid })}
+            >
+              <StyledIcon name="textField" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>Open in query view</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"newWellbore"}
+              onClick={() => openInQueryView({ templateObject: TemplateObjects.Wellbore, storeFunction: StoreFunction.AddToStore, wellUid: well.uid, wellboreUid: uuid() })}
+            >
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Wellbore</Typography>
+            </MenuItem>,
+            <NestedMenuItem key={"newObjects"} label={"New object"} icon={"add"}>
+              {Object.values(ObjectType).map((objectType) => (
+                <MenuItem
+                  key={objectType}
+                  onClick={() =>
+                    openInQueryView({
+                      templateObject: ObjectTypeToTemplateObject[objectType],
+                      storeFunction: StoreFunction.AddToStore,
+                      wellUid: well.uid,
+                      wellboreUid: wellbore.uid,
+                      objectUid: uuid()
+                    })
+                  }
+                >
+                  <StyledIcon name="add" color={colors.interactive.primaryResting} />
+                  <Typography color={"primary"}>{`New ${objectType}`}</Typography>
+                </MenuItem>
+              ))}
+            </NestedMenuItem>
+          ]}
         </NestedMenuItem>,
         <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
           <StyledIcon name="search" color={colors.interactive.primaryResting} />

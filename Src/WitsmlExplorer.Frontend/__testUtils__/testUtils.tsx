@@ -7,6 +7,7 @@ import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../c
 import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import { DateTimeFormat, EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
+import { QueryContextProvider, QueryContextState } from "../contexts/queryContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
@@ -40,9 +41,13 @@ interface RenderWithContextsOptions {
   initialNavigationState?: Partial<NavigationState>;
   initialOperationState?: Partial<OperationState>;
   initialFilter?: Partial<Filter>;
+  initialQueryState?: Partial<QueryContextState>;
 }
 
-export function renderWithContexts(ui: React.ReactElement, { initialNavigationState, initialOperationState, initialFilter, ...options }: RenderWithContextsOptions = {}) {
+export function renderWithContexts(
+  ui: React.ReactElement,
+  { initialNavigationState, initialOperationState, initialFilter, initialQueryState, ...options }: RenderWithContextsOptions = {}
+) {
   const Wrapper = ({ children }: { children: React.ReactElement }) => {
     const [operationState, dispatchOperation] = React.useReducer(operationReducer, {
       contextMenu: EMPTY_CONTEXT_MENU,
@@ -61,7 +66,9 @@ export function renderWithContexts(ui: React.ReactElement, { initialNavigationSt
         <ThemeProvider theme={getTheme(operationState.theme)}>
           <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
             <FilterContextProvider initialFilter={initialFilter}>
-              <SnackbarProvider>{children}</SnackbarProvider>
+              <QueryContextProvider initialQueryState={initialQueryState}>
+                <SnackbarProvider>{children}</SnackbarProvider>
+              </QueryContextProvider>
             </FilterContextProvider>
           </NavigationContext.Provider>
         </ThemeProvider>
