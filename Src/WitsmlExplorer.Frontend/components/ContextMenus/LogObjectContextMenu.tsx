@@ -119,6 +119,17 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     });
   };
 
+  const onClickCountLogData = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logReference: LogObject = checkedObjects[0];
+    const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
+    const jobId = await JobService.orderJob(JobType.CountLogDataRows, checkLogHeaderJob);
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    }
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -158,6 +169,10 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <MenuItem key={"splice"} onClick={onClickSplice} disabled={checkedObjects.length < 2}>
           <StyledIcon name="compare" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Splice logs</Typography>
+        </MenuItem>,
+        <MenuItem key={"countLogData"} onClick={onClickCountLogData} disabled={checkedObjects.length !== 1}>
+          <StyledIcon name="assignment" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`${menuItemText("count", "log data", [])}`}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
