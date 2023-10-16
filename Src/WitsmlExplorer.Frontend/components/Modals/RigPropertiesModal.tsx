@@ -198,9 +198,10 @@ const RigPropertiesModal = (props: RigPropertiesModalProps): React.ReactElement 
                 type="number"
                 fullWidth
                 value={editableRig.airGap ? editableRig.airGap.value : ""}
-                disabled={!editableRig.airGap}
-                onChange={(e) =>
-                  setEditableRig({ ...editableRig, airGap: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: editableRig.airGap.uom } })
+                onChange={(e) => {
+                  const uom = editableRig.airGap !== null ? editableRig.airGap.uom : 'm'
+                  setEditableRig({ ...editableRig, airGap: { value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value), uom: uom} })
+                }
                 }
               />
               <Autocomplete
