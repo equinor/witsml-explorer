@@ -76,6 +76,8 @@ const performNavigationAction = (state: NavigationState, action: Action): Naviga
       return selectLogCurveInfo(state, action);
     case NavigationType.SelectServerManager:
       return selectView(state, ViewFlags.ServerManager);
+    case NavigationType.SelectObjectOnWellboreView:
+      return selectView(state, ViewFlags.ObjectSearchView);
     default:
       throw new Error();
   }

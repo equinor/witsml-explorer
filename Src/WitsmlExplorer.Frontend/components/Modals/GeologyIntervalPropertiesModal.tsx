@@ -193,9 +193,9 @@ const GeologyIntervalPropertiesModal = (props: GeologyIntervalPropertiesModalInt
                 variant={invalid.dxcAv ? "error" : undefined}
                 onChange={(e: any) => setEditable({ ...editable, dxcAv: parseFloat(e.target.value) })}
               />
-              {geologyInterval?.lithologies?.map((lithology, index) => {
+              {geologyInterval?.lithologies?.map((lithology) => {
                 return (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={lithology.uid}>
                     <Typography style={{ paddingTop: "0.5rem" }}>Lithology {lithology.uid}</Typography>
                     <Autocomplete
                       id="type"

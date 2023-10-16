@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             try
             {
                 WitsmlQuery query = await httpRequest.Body.Deserialize<WitsmlQuery>();
-                string result = await witsmlClient.AddToStoreAsync(query.Body);
+                string result = await witsmlClient.AddToStoreAsync(query.Body, new OptionsIn(OptionsInString: query.OptionsInString));
                 return TypedResults.Ok(result);
             }
             catch (Exception e)
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             try
             {
                 WitsmlQuery query = await httpRequest.Body.Deserialize<WitsmlQuery>();
-                string result = await witsmlClient.DeleteFromStoreAsync(query.Body);
+                string result = await witsmlClient.DeleteFromStoreAsync(query.Body, new OptionsIn(OptionsInString: query.OptionsInString));
                 return TypedResults.Ok(result);
             }
             catch (Exception e)
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             try
             {
                 WitsmlQuery query = await httpRequest.Body.Deserialize<WitsmlQuery>();
-                string result = await witsmlClient.GetFromStoreAsync(query.Body, new OptionsIn(query.ReturnElements));
+                string result = await witsmlClient.GetFromStoreAsync(query.Body, new OptionsIn(query.ReturnElements, OptionsInString: query.OptionsInString));
                 return TypedResults.Ok(result);
             }
             catch (Exception e)
@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             try
             {
                 WitsmlQuery query = await httpRequest.Body.Deserialize<WitsmlQuery>();
-                string result = await witsmlClient.UpdateInStoreAsync(query.Body);
+                string result = await witsmlClient.UpdateInStoreAsync(query.Body, new OptionsIn(OptionsInString: query.OptionsInString));
                 return TypedResults.Ok(result);
             }
             catch (Exception e)

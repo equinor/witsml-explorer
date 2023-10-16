@@ -2,7 +2,7 @@ using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class ObjectOnWellbore : IObjectReference 
+    public class ObjectOnWellbore : IObjectReference
     {
         public string Uid { get; init; }
         public string WellUid { get; init; }

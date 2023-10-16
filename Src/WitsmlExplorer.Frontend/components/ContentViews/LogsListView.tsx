@@ -49,10 +49,10 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log, index) => {
+    return logs.map((log) => {
       return {
         ...log,
-        id: index,
+        id: log.uid,
         startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone, dateTimeFormat) : log.startIndex,
         endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone, dateTimeFormat) : log.endIndex,
         dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone, dateTimeFormat),

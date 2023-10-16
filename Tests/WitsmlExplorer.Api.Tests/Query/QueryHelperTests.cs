@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Witsml.Data;
 using Witsml.Data.Measures;
@@ -138,6 +136,83 @@ namespace WitsmlExplorer.Api.Tests.Query
             Assert.Equal("", obj.WellLocation.Longitude.Value);
             Assert.NotNull(obj.WellLocation.ProjectedX);
             Assert.Null(obj.WellLocation.ProjectedY);
+        }
+
+        [Fact]
+        public void AddPropertyToObject_AddWithStringValue_AddsValue()
+        {
+            var value = "fieldValue";
+            Assert.Null(_well.Field);
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "field", value);
+            Assert.Equal(value, obj.Field);
+        }
+
+        [Fact]
+        public void AddPropertyToObject_AddWithObjectValue_AddsValue()
+        {
+            var value = new WitsmlCommonData
+            {
+                SourceName = "sourceName"
+            };
+            Assert.Null(_well.Field);
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "commonData", value);
+            Assert.Equal(value, obj.CommonData);
+        }
+
+        [Fact]
+        public void AddPropertyToObject_AddWithWrongValueType_Throws()
+        {
+            var value = new WitsmlCommonData { };
+            Assert.Throws<ArgumentException>(() => QueryHelper.AddPropertyToObject(_well, "field", value));
+        }
+
+        [Fact]
+        public void AddPropertyToObject_AddNestedObject_AddsValue()
+        {
+            var value = "sourceName";
+            Assert.Null(_well.CommonData);
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "commonData.sourceName", value);
+            Assert.Equal(value, obj.CommonData.SourceName);
+        }
+
+        [Fact]
+        public void AddPropertiesToObject_AddsMultiplePropertiesWithValues()
+        {
+
+            List<WellDatum> datumValue = _well.WellDatum;
+            _well.WellDatum = null;
+            var regionValue = "regionValue";
+            var sourceNameValue = "sourceNameValue";
+            var longitudeValue = "10";
+            Assert.Null(_well.Region);
+            Assert.Null(_well.CommonData);
+            Assert.Null(_well.WellLocation.Longitude);
+            Assert.Null(_well.WellDatum);
+            TestWell obj = QueryHelper.AddPropertiesToObject(
+                _well,
+                new List<string> { "region", "commonData.sourceName", "wellLocation.longitude.value", "wellDatum" },
+                new List<object> { regionValue, sourceNameValue, longitudeValue, datumValue }
+            );
+            Assert.Equal(regionValue, obj.Region);
+            Assert.Equal(sourceNameValue, obj.CommonData.SourceName);
+            Assert.Equal(longitudeValue, obj.WellLocation.Longitude.Value);
+            Assert.Equal(datumValue, obj.WellDatum);
+        }
+
+        [Fact]
+        public void AddPropertyToObject_OverrideObject_OverridesValue()
+        {
+            var value = new WitsmlLocation
+            {
+                Uid = "newLocationUid",
+                Latitude = new Measure
+                {
+                    Value = "63.4279798"
+                }
+            };
+            Assert.NotNull(_well.WellLocation);
+            TestWell obj = QueryHelper.AddPropertyToObject(_well, "wellLocation", value);
+            Assert.Equal(value, obj.WellLocation);
         }
     }
 

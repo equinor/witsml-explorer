@@ -56,9 +56,9 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, mnemonic: e.target.value })}
               />
-              {logCurveInfo?.axisDefinitions?.map((axisDefinition, index) => {
+              {logCurveInfo?.axisDefinitions?.map((axisDefinition) => {
                 return (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={axisDefinition.uid}>
                     <Typography style={{ paddingTop: "0.5rem" }}>AxisDefinition {axisDefinition.uid}</Typography>
                     <TextField disabled fullWidth id="order" label="order" defaultValue={axisDefinition.order ?? ""} />
                     <TextField disabled fullWidth id="count" label="count" defaultValue={axisDefinition.count ?? ""} />

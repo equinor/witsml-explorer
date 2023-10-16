@@ -8,6 +8,9 @@ export const DateFormat = {
   DATETIME_MS: "DD.MM.YYYY HH:mm:ss.SSS"
 };
 
+export const MILLIS_IN_SECOND = 1000;
+export const SECONDS_IN_MINUTE = 60;
+
 export const STORAGE_THEME_KEY = "selectedTheme";
 export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";
 export const STORAGE_MODE_KEY = "selectedMode";

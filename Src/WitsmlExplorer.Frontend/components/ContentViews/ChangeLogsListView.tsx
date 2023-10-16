@@ -20,9 +20,9 @@ export const ChangeLogsListView = (): React.ReactElement => {
   }, [selectedWellbore]);
 
   const getTableData = () => {
-    return changeLogs.map((changeLog, index) => {
+    return changeLogs.map((changeLog) => {
       return {
-        id: index,
+        id: changeLog.uid,
         uidObject: changeLog.uidObject,
         nameObject: changeLog.nameObject,
         lastChangeType: changeLog.lastChangeType,

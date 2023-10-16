@@ -15,6 +15,7 @@ import LogsListView from "./ContentViews/LogsListView";
 import { MessagesListView } from "./ContentViews/MessagesListView";
 import MudLogView from "./ContentViews/MudLogView";
 import { MudLogsListView } from "./ContentViews/MudLogsListView";
+import ObjectSearchListView from "./ContentViews/ObjectSearchListView";
 import QueryView from "./ContentViews/QueryView";
 import { RigsListView } from "./ContentViews/RigsListView";
 import { RisksListView } from "./ContentViews/RisksListView";
@@ -92,6 +93,8 @@ const ContentView = (): React.ReactElement => {
         setView(<QueryView />);
       } else if (currentSelected === ViewFlags.ServerManager) {
         setView(<ServerManager />);
+      } else if (currentSelected === ViewFlags.ObjectSearchView) {
+        setView(<ObjectSearchListView />);
       } else {
         throw new Error(`No view is implemented for item: ${JSON.stringify(currentSelected)}`);
       }

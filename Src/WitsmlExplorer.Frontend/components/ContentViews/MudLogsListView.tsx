@@ -47,9 +47,9 @@ export const MudLogsListView = (): React.ReactElement => {
   };
 
   const getTableData = (): MudLogRow[] => {
-    return mudLogs.map((mudLog, index) => {
+    return mudLogs.map((mudLog) => {
       return {
-        id: index,
+        id: mudLog.uid,
         name: mudLog.name,
         mudLogCompany: mudLog.mudLogCompany,
         mudLogEngineers: mudLog.mudLogEngineers,

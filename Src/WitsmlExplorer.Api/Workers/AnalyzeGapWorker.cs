@@ -19,6 +19,7 @@ using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Services;
+
 using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers;
@@ -30,7 +31,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 {
     public JobType JobType => JobType.AnalyzeGaps;
     public AnalyzeGapWorker(ILogger<AnalyzeGapJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
-    
+
     /// <summary>
     /// Find all gaps for selected mnemonics and required size of gap. If no mnemonics are selected, all mnemonics on the log will be analyzed.
     /// </summary>
@@ -45,7 +46,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         bool isDepthLog = job.LogReference.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         List<AnalyzeGapReportItem> gapReportItems = new();
         List<string[]> logDataRows = new();
-        
+
         var witsmlLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
         if (witsmlLog == null)
         {
@@ -56,7 +57,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         var jobMnemonics = job.Mnemonics.Any() ? job.Mnemonics.ToList() : witsmlLog.LogCurveInfo.Select(x => x.Mnemonic).ToList();
         await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger);
-        
+
         WitsmlLogData logData = await logDataReader.GetNextBatch();
         var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
         while (logData != null)
@@ -148,7 +149,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         Index lastValueIndex = inputIndexList.FirstOrDefault();
 
         if (lastValueIndex == null) return gapValues;
-   
+
         foreach (var inputIndex in inputIndexList.Skip(1))
         {
             var gapSize = isLogIncreasing ? (inputIndex - lastValueIndex) : (lastValueIndex - inputIndex);

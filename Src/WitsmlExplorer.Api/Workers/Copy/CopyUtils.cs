@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     _logger.LogError("An unexpected exception has occured: {ex}", ex);
                     throw;
                 }
-            }));
+            }).ToList());
 
             string successString = successUids.Count > 0 ? $"Copied {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error

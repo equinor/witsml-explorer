@@ -15,8 +15,7 @@ const commonDataProperties = [
   "commonData.comments",
   "commonData.acquisitionTimeZone",
   "commonData.defaultDatum",
-  "commonData.privateGroupOnly",
-  "commonData.extensionAny"
+  "commonData.privateGroupOnly"
 ];
 
 export const objectToProperties: Record<string, string[]> = {

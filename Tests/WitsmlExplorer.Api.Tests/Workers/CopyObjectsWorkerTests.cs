@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlSourceClient.Setup(client =>
                     client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(
                         witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid),
-                        new OptionsIn(ReturnElements.All, null, null, null)))
+                        It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.All)))
                 .ReturnsAsync(GetEmptySourceObjects());
             SetupGetWellbore();
 
@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             CopyObjectsJob copyObjectJob = CreateJobTemplate();
             _witsmlSourceClient.Setup(client =>
-                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), new OptionsIn(ReturnElements.All, null, null, null)))
+                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.All)))
                 .ReturnsAsync(GetSourceObjects());
             SetupGetWellbore();
             CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlTargetClient);
@@ -80,7 +80,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             _witsmlTargetClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), new OptionsIn(ReturnElements.Requested, null, null, null)))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested)))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>
