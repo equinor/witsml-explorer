@@ -146,7 +146,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
     private IEnumerable<AnalyzeGapReportItem> GetAnalyzeGapReportItem(string mnemonic, IList<Index> inputIndexList, Index requestedGapSize, bool isLogIncreasing)
     {
         List<AnalyzeGapReportItem> gapValues = new();
-        Index lastValueIndex = inputIndexList.FirstOrDefault();
+        Index lastValueIndex = inputIndexList?.FirstOrDefault();
 
         if (lastValueIndex == null) return gapValues;
 

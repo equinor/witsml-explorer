@@ -207,7 +207,7 @@ namespace WitsmlExplorer.Api.Services
             if (creds == null && _useOAuth2)
             {
                 creds = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
-                if (creds.IsCredsNullOrEmpty() || !creds.UserId.Equals(username, StringComparison.Ordinal))
+                if (creds.IsCredsNullOrEmpty() || !string.Equals(creds.UserId, username, StringComparison.Ordinal))
                 {
                     return null;
                 }

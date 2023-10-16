@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             WitsmlLogs addMnemonicsQuery = CreateAddMnemonicsQuery(job, witsmlLog);
-            if (addMnemonicsQuery.Logs.FirstOrDefault().LogCurveInfo.Count > 0)
+            if (addMnemonicsQuery.Logs.FirstOrDefault().LogCurveInfo?.Count > 0)
             {
                 QueryResult addMnemonicsResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(addMnemonicsQuery);
                 if (addMnemonicsResult.IsSuccessful)
