@@ -106,8 +106,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     console.log("onClickCompareData()");
     dispatchOperation({ type: OperationType.HideContextMenu });
     const onPicked = async (targetObject: ObjectOnWellbore, targetServer: Server) => {
-      const logReference: LogObject = checkedObjects[0];
-      const compareLogDataJob: CompareLogDataJob = { logReference, selectedLog: checkedObjects[0], targetLog: targetObject };
+      const compareLogDataJob: CompareLogDataJob = { selectedLog: checkedObjects[0], targetLog: targetObject };
       console.log("compareLogDataJob", compareLogDataJob);
       const jobId = await JobService.orderJobAtServer(JobType.CompareLogData, compareLogDataJob, targetServer, selectedServer);
       if (jobId) {

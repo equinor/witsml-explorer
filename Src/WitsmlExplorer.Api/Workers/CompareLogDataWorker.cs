@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
 using Witsml.Data;
+using Witsml.Data.Curves;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Query;
@@ -19,204 +23,195 @@ namespace WitsmlExplorer.Api.Workers
     public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker
     {
         public JobType JobType => JobType.CompareLogData;
+        private List<CompareLogDataItem> _compareLogDataReportItems;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
         public override async Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job)
         {
-            Console.WriteLine(job);
-            Console.WriteLine("SelectedLog");
-            Console.WriteLine(job.SelectedLog);
-            Console.WriteLine("TargetLog");
-            Console.WriteLine(job.TargetLog);
-            string wellUid = job.LogReference.WellUid;
-            string wellboreUid = job.LogReference.WellboreUid;
-            string logUid = job.LogReference.Uid;
-            string indexType = job.LogReference.IndexType;
             string jobId = job.JobInfo.Id;
-            bool isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
-            string indexCurve;
-            // Dictionaries that maps from a mnemonic to the mnemonics start or end index
-            Dictionary<string, string> headerStartValues;
-            Dictionary<string, string> headerEndValues;
-            Dictionary<string, string> dataStartValues;
-            Dictionary<string, string> dataEndValues;
-            // These indexes are used to check the global start and end indexes for a log (not the ones found in logCurveInfo)
-            string headerStartIndex;
-            string headerEndIndex;
-            string dataStartIndex;
-            string dataEndIndex;
+            // // Set up log report list
+            _compareLogDataReportItems = new();
 
-            // Get the header indexes
-            (Dictionary<string, string>, Dictionary<string, string>, string, string, string)? headerResult = await GetHeaderValues(wellUid, wellboreUid, logUid, isDepthLog);
-            if (headerResult == null)
+            // Get log queries
+            WitsmlLogs sourceLogQuery = LogQueries.GetWitsmlLogById(job.SelectedLog.WellUid, job.SelectedLog.WellboreUid, job.SelectedLog.Uid);
+            WitsmlLogs targetLogQuery = LogQueries.GetWitsmlLogById(job.TargetLog.WellUid, job.TargetLog.WellboreUid, job.TargetLog.Uid);
+
+            // Get log header responses
+            WitsmlLogs selectedLogHeaderResponse = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(sourceLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs targetLogHeaderResponse = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(targetLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
+
+            // Get log headers
+            WitsmlLog selectedLogHeader = selectedLogHeaderResponse.Logs.FirstOrDefault();
+            WitsmlLog targetLogHeader = targetLogHeaderResponse.Logs.FirstOrDefault();
+
+            bool isTimeLog = selectedLogHeader.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
+
+            // Get log mnemonics
+            List<string> selectedLogMnemonics = selectedLogHeader.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
+            List<string> targetLogMnemonics = targetLogHeader.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
+
+            // Get all mnemonics in selected and target log
+            List<string> allMnemonics = selectedLogMnemonics.Union(targetLogMnemonics).ToList();
+
+            // Get shared mnemonics in selected and target log
+            List<string> sharedMnemonics = selectedLogMnemonics.Intersect(targetLogMnemonics).ToList();
+
+            foreach (string mnemonic in allMnemonics)
             {
-                string reason = $"Did not find witsml log for wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid}";
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Unable to find log", reason, jobId: jobId), null);
+                if (sharedMnemonics.Contains(mnemonic))
+                {
+                    Console.WriteLine($"mnemonic is intersecting: {mnemonic}");
+                    await AddSharedMnemonicData(selectedLogHeader, targetLogHeader, mnemonic, isTimeLog);
+                }
+                else if (selectedLogMnemonics.Contains(mnemonic))
+                {
+                    Console.WriteLine($"mnemonic={mnemonic} is in selected log.");
+                    await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), selectedLogHeader, mnemonic);
+
+                }
+                else if (targetLogMnemonics.Contains(mnemonic))
+                {
+                    Console.WriteLine($"mnemonic={mnemonic} is in target log.");
+                    await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLogHeader, mnemonic);
+
+                }
             }
-            (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex, indexCurve) = headerResult.Value;
 
-            // Get the data indexes
-            (Dictionary<string, string>, Dictionary<string, string>, string, string)? dataResult = await GetDataValues(wellUid, wellboreUid, logUid, indexType, indexCurve);
-            if (dataResult == null)
-            {
-                string reason = $"The log with wellUid: {wellUid}, wellboreUid: {wellboreUid}, logUid: {logUid} does not contain any data";
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "No log data", reason, jobId: jobId), null);
-            }
-            (dataStartValues, dataEndValues, dataStartIndex, dataEndIndex) = dataResult.Value;
-
-            List<CheckLogHeaderReportItem> mismatchingIndexes = GetMismatchingIndexes(headerStartValues, headerEndValues, dataStartValues, dataEndValues, headerStartIndex, headerEndIndex, dataStartIndex, dataEndIndex, isDepthLog);
-
-            CheckLogHeaderReport report = GetReport(mismatchingIndexes, job.LogReference, isDepthLog);
+            BaseReport report = GenerateReport(selectedLogHeader, targetLogHeader, isTimeLog);
             job.JobInfo.Report = report;
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Checked header consistency for log: {logUid}", jobId: jobId);
+            WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: {selectedLogHeader.Name} and {targetLogHeader.Name}", jobId: jobId);
             return (workerResult, null);
         }
 
-        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string, string)?> GetHeaderValues(string wellUid, string wellboreUid, string logUid, bool isDepthLog)
+        private BaseReport GenerateReport(WitsmlLog selectedLogHeader, WitsmlLog targetLogHeader, bool isTimeLog)
         {
-            WitsmlLogs headerQuery = LogQueries.GetLogHeaderIndexes(wellUid, wellboreUid, logUid);
-            WitsmlLogs headerResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(headerQuery, new OptionsIn(ReturnElements.Requested));
-            if (headerResult == null)
+            return new BaseReport
             {
-                return null;
-            }
-            WitsmlLog headerResultLog = (WitsmlLog)headerResult.Objects.First();
-            string headerEndIndex = isDepthLog ? headerResultLog.EndIndex.Value : headerResultLog.EndDateTimeIndex;
-            string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
-            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
-            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
-            return (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex, headerResultLog.IndexCurve.Value);
-        }
-
-        public async Task<(Dictionary<string, string>, Dictionary<string, string>, string, string)?> GetDataValues(string wellUid, string wellboreUid, string logUid, string indexType, string indexCurve)
-        {
-            WitsmlLogs dataQuery = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, indexType, Enumerable.Empty<string>(), null, null);
-            WitsmlLogs dataStartResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1));
-            WitsmlLogs dataEndResult = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(dataQuery, new OptionsIn(ReturnElements.DataOnly, RequestLatestValues: 1));
-            WitsmlLog dataStartResultLog = (WitsmlLog)dataStartResult.Objects.First();
-            WitsmlLog dataEndResultLog = (WitsmlLog)dataEndResult.Objects.First();
-            if (dataStartResultLog.LogData == null || dataEndResultLog.LogData == null)
-            {
-                return null;
-            }
-            IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data.Select(data => data.Data.Split(","));
-            string[] startResultLogData = dataStartResultLog.LogData.Data.First().Data.Split(",");
-            IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
-            IEnumerable<string> dataEndIndexes = ExtractColumnIndexes(endResultLogData);
-            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList.Split(",");
-            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList.Split(",");
-            Dictionary<string, string> dataStartValues = dataStartIndexes.Select((value, index) => new { mnemonic = startMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
-            Dictionary<string, string> dataEndValues = dataEndIndexes.Where(value => !string.IsNullOrEmpty(value)).Select((value, index) => new { mnemonic = endMnemonics[index], value }).ToDictionary(d => d.mnemonic, d => d.value);
-
-            // Only the first data row is fetched for the start indexes. The mnemonics that don't have a value at the start index need to fetch their start index individually.
-            dataStartValues = await AddStartIndexForMissingMnemonics(wellUid, wellboreUid, logUid, dataStartValues, startMnemonics, endMnemonics, indexCurve);
-
-            return (dataStartValues, dataEndValues, dataStartIndexes.First(), dataEndIndexes.First());
-        }
-
-        private async Task<Dictionary<string, string>> AddStartIndexForMissingMnemonics(string wellUid, string wellboreUid, string logUid, Dictionary<string, string> dataStartValues, string[] startMnemonics, string[] endMnemonics, string indexCurve)
-        {
-            string[] missingMnemonics = endMnemonics.Where(mnemonic => !startMnemonics.Contains(mnemonic))
-                .Concat(dataStartValues.Where((entry) => entry.Value == "").Select((entry) => entry.Key)).Distinct().ToArray();
-            if (missingMnemonics.Any())
-            {
-                IEnumerable<WitsmlLogs> missingIndexQueries = missingMnemonics.Select(mnemonic => LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, new List<string>() { indexCurve, mnemonic }, null, null));
-                // Request a data row for each mnemonic to get the start indexes of that mnemonic
-                List<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1))).ToList();
-                await Task.WhenAll(missingDataResults);
-                IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
-                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
-                // Insert the indexes from the missing mnemonics to the original dict.
-                missingDataIndexes
-                    .Select((value, index) => new { mnemonic = missingMnemonics[index], value })
-                    .ToList()
-                    .ForEach(item => dataStartValues[item.mnemonic] = item.value);
-            }
-            return dataStartValues;
-        }
-
-        public static List<CheckLogHeaderReportItem> GetMismatchingIndexes(Dictionary<string, string> headerStartValues, Dictionary<string, string> headerEndValues, Dictionary<string, string> dataStartValues, Dictionary<string, string> dataEndValues, string headerStartIndex, string headerEndIndex, string dataStartIndex, string dataEndIndex, bool isDepthLog)
-        {
-            List<CheckLogHeaderReportItem> mismatchingIndexes = new();
-            // Check the header indexes
-            if (HasMismatch(isDepthLog, headerStartIndex, dataStartIndex, headerEndIndex, dataEndIndex))
-            {
-                mismatchingIndexes.Add(new CheckLogHeaderReportItem()
-                {
-                    Mnemonic = "Log Header",
-                    HeaderStartIndex = headerStartIndex,
-                    HeaderEndIndex = headerEndIndex,
-                    DataStartIndex = dataStartIndex,
-                    DataEndIndex = dataEndIndex,
-                });
-            }
-
-            // Check the header logCurveInfo indexes
-            foreach (string mnemonic in dataStartValues.Keys)
-            {
-                if (HasMismatch(isDepthLog, headerStartValues[mnemonic], dataStartValues[mnemonic], headerEndValues[mnemonic], dataEndValues[mnemonic]))
-                {
-                    mismatchingIndexes.Add(new CheckLogHeaderReportItem()
-                    {
-                        Mnemonic = mnemonic,
-                        HeaderStartIndex = headerStartValues[mnemonic],
-                        HeaderEndIndex = headerEndValues[mnemonic],
-                        DataStartIndex = dataStartValues[mnemonic],
-                        DataEndIndex = dataEndValues[mnemonic],
-                    });
-                }
-            }
-
-            return mismatchingIndexes;
-        }
-
-        private static bool HasMismatch(bool isDepthLog, string startIndex1, string startIndex2, string endIndex1, string endIndex2)
-        {
-            if (isDepthLog || string.IsNullOrEmpty(startIndex1) || string.IsNullOrEmpty(endIndex1) || string.IsNullOrEmpty(startIndex2) || string.IsNullOrEmpty(endIndex2))
-            {
-                return startIndex1 != startIndex2 || endIndex1 != endIndex2;
-            }
-            else
-            {
-                return DateTime.Parse(startIndex1) != DateTime.Parse(startIndex2) || DateTime.Parse(endIndex1) != DateTime.Parse(endIndex2);
-            }
-        }
-
-        private static CheckLogHeaderReport GetReport(List<CheckLogHeaderReportItem> mismatchingIndexes, LogObject logReference, bool isDepthLog)
-        {
-            return new CheckLogHeaderReport
-            {
-                Title = $"Check Log Header Index Report - {logReference.Name}",
-                Summary = mismatchingIndexes.Count > 0
-                    ? $"Found {mismatchingIndexes.Count} header index mismatches for {(isDepthLog ? "depth" : "time")} log '{logReference.Name}':"
-                    : "No mismatches were found in the header indexes.",
-                LogReference = logReference,
-                ReportItems = mismatchingIndexes
+                Title = $"Compare Log Data",
+                Summary = _compareLogDataReportItems.Count > 0
+                    ? $"There are {_compareLogDataReportItems.Count} mismatches in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{selectedLogHeader.Name}' and '{targetLogHeader.Name}':"
+                    : $"No mismatches were found in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{selectedLogHeader.Name}' and '{targetLogHeader.Name}'.",
+                ReportItems = _compareLogDataReportItems
             };
         }
 
-        private static IEnumerable<string> ExtractColumnIndexes(IEnumerable<IEnumerable<string>> data, int indexColumn = 0)
+        private async Task<WitsmlLogData> ReadMnemonicData(IWitsmlClient witsmlClient, WitsmlLog logHeader, string mnemonic)
         {
-            List<string> result = Enumerable.Repeat(string.Empty, data.First().Count()).ToList();
-            List<IEnumerable<string>> list = data.ToList();
+            await using LogDataReader logDataReader = new(witsmlClient, logHeader, mnemonic.AsSingletonList(), Logger);
+            WitsmlLogData mnemonicData = await logDataReader.GetNextBatch();
+            var mnemonicList = mnemonicData?.MnemonicList;
+            var unitList = mnemonicData?.UnitList;
 
-            int rows = list.Count;
-
-            for (int row = 0; row < rows; row++)
+            List<WitsmlData> data = new();
+            while (mnemonicData != null)
             {
-                List<string> rowList = list[row].ToList();
-                for (int col = 0; col < rowList.Count; col++)
+                data.AddRange(mnemonicData.Data);
+                mnemonicData = await logDataReader.GetNextBatch();
+            }
+
+            return new WitsmlLogData
+            {
+                MnemonicList = mnemonicList,
+                UnitList = unitList,
+                Data = data
+            };
+
+        }
+
+        private void AddReportItem(string mnemonic, string index, string sourceValue, string targetValue)
+        {
+            _compareLogDataReportItems.Add(new CompareLogDataItem
+            {
+                Mnemonic = mnemonic,
+                Index = index,
+                SourceValue = sourceValue,
+                TargetValue = targetValue,
+            });
+        }
+
+        private async Task AddSharedMnemonicData(WitsmlLog sourceLogHeader, WitsmlLog targetLogHeader, string mnemonic, bool isTimeLog)
+        {
+            WitsmlLogData sourceLogData = await ReadMnemonicData(GetSourceWitsmlClientOrThrow(), sourceLogHeader, mnemonic);
+            WitsmlLogData targetLogData = await ReadMnemonicData(GetTargetWitsmlClientOrThrow(), targetLogHeader, mnemonic);
+            Dictionary<string, string> sourceData = sourceLogData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
+            Dictionary<string, string> targetData = targetLogData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
+            List<string> sourceIndexes = new List<string>(sourceData.Keys);
+            List<string> targetIndexes = new List<string>(targetData.Keys);
+            List<string> indexes = sourceIndexes.Union(targetIndexes).ToList();
+
+
+
+            if (isTimeLog)
+            {
+                // indexes = indexes.OrderBy(DateTime.Parse)
+                //                         .Select(x => x)
+                //                         .ToList();
+                Console.WriteLine("Is time log");
+            }
+            else
+            {
+                indexes = indexes.OrderBy(double.Parse)
+                                        .Select(x => x)
+                                        .ToList();
+            }
+            Console.WriteLine(string.Join(",", sourceIndexes));
+            Console.WriteLine(string.Join(",", targetIndexes));
+            Console.WriteLine(string.Join(",", indexes));
+
+            foreach (string index in indexes)
+            {
+                if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
                 {
-                    if (!string.IsNullOrEmpty(rowList[col]))
+                    Console.WriteLine($"both logs contains index={index}");
+                    string sourceValue = sourceData[index];
+                    string targetValue = targetData[index];
+                    if (sourceValue != targetValue)
                     {
-                        result[col] = rowList[indexColumn];
+                        AddReportItem(mnemonic, index, sourceValue, targetValue);
                     }
                 }
+                else if (sourceData.ContainsKey(index))
+                {
+                    Console.WriteLine($"source log contains index={index}");
+                    string sourceValue = sourceData[index];
+                    AddReportItem(mnemonic, index, sourceValue, "");
+                }
+                else if (targetData.ContainsKey(index))
+                {
+                    Console.WriteLine($"target log contains index={index}");
+                    string targetValue = targetData[index];
+                    AddReportItem(mnemonic, index, "", targetValue);
+                }
             }
-            return result;
         }
+
+        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog logHeader, string mnemonic)
+        {
+            // TODO: check server type from witsmlClient instead of explicitly setting it with serverType
+            WitsmlLogData mnemonicData = await ReadMnemonicData(witsmlClient, logHeader, mnemonic);
+
+            foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
+            {
+                var data = dataRow.Split(',');
+                var index = data.First();
+                var value = data.Last();
+                if (serverType == ServerType.Source)
+                {
+                    AddReportItem(mnemonic, index, value, "");
+                }
+                else if (serverType == ServerType.Target)
+                {
+                    AddReportItem(mnemonic, index, "", value);
+                }
+                else
+                {
+                    throw new ArgumentException($"serverType={serverType} not supported.");
+                }
+            }
+        }
+
     }
 }

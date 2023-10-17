@@ -5,25 +5,24 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record CompareLogDataJob : Job
     {
-        public LogObject LogReference { get; init; }
         public LogObject SelectedLog { get; init; }
         public LogObject TargetLog { get; init; }
 
         public override string Description()
         {
-            return $"Compare Log Data - Log: {LogReference.Name}";
+            return $"Compare Log Data - Log1: {SelectedLog.Name} and Log2: {TargetLog.Name}";
         }
         public override string GetWellName()
         {
-            return LogReference.WellName;
+            return SelectedLog.WellName;
         }
         public override string GetWellboreName()
         {
-            return LogReference.WellboreName;
+            return SelectedLog.WellboreName;
         }
         public override string GetObjectName()
         {
-            return LogReference.Name;
+            return SelectedLog.Name;
         }
     }
 }
