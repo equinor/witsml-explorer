@@ -30,7 +30,7 @@ it("Should convert the time when a specific TimeZone is picked", () => {
 
 it("Should replace +02:00 with Z when TimeZone is Raw", () => {
   const actual = formatDateString("2022-11-17T13:54:17.000+02:00", TimeZone.Raw, DateTimeFormat.Natural);
-  expect(actual).toEqual("17.11.2022 11:54:17.000");
+  expect(actual).toEqual("17.11.2022 13:54:17.000");
 });
 
 it("Should convert the time when a specific DateTime Format Picked", () => {
