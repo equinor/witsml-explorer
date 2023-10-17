@@ -71,6 +71,10 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
                     }
+                    else
+                    {
+                        throw new ArgumentException($"mnemonic={mnemonic} does not exist in source log or target log.");
+                    }
                 }
 
                 BaseReport report = GenerateReport(sourceLog, targetLog);
@@ -110,15 +114,15 @@ namespace WitsmlExplorer.Api.Workers
                 }
                 else if (sourceData.ContainsKey(index))
                 {
-                    AddReportItem(mnemonic, index, sourceData[index], "");
+                    AddReportItem(mnemonic, index, sourceData[index], null);
                 }
                 else if (targetData.ContainsKey(index))
                 {
-                    AddReportItem(mnemonic, index, "", targetData[index]);
+                    AddReportItem(mnemonic, index, null, targetData[index]);
                 }
                 else
                 {
-                    throw new Exception($"index={index} does not exist in source log or target log.");
+                    throw new ArgumentException($"index={index} does not exist in source log or target log.");
                 }
             }
         }
@@ -134,11 +138,11 @@ namespace WitsmlExplorer.Api.Workers
                 var value = data.Last();
                 if (serverType == ServerType.Source)
                 {
-                    AddReportItem(mnemonic, index, value, "");
+                    AddReportItem(mnemonic, index, value, null);
                 }
                 else if (serverType == ServerType.Target)
                 {
-                    AddReportItem(mnemonic, index, "", value);
+                    AddReportItem(mnemonic, index, null, value);
                 }
                 else
                 {

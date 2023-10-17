@@ -103,11 +103,9 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   };
 
   const onClickCompareData = async () => {
-    console.log("onClickCompareData()");
     dispatchOperation({ type: OperationType.HideContextMenu });
     const onPicked = async (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const compareLogDataJob: CompareLogDataJob = { sourceLog: checkedObjects[0], targetLog: targetObject };
-      console.log("compareLogDataJob", compareLogDataJob);
       const jobId = await JobService.orderJobAtServer(JobType.CompareLogData, compareLogDataJob, targetServer, selectedServer);
       if (jobId) {
         const reportModalProps = { jobId };
@@ -158,7 +156,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         </MenuItem>,
         <NestedMenuItem key={"comparelognestedmenu"} label={`${menuItemText("compare", "log", [])}`} disabled={checkedObjects.length !== 1}>
           {[
-            <MenuItem key={"comparelog"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
+            <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
               <StyledIcon name="compare" color={colors.interactive.primaryResting} />
               <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} header`}</Typography>
             </MenuItem>,
