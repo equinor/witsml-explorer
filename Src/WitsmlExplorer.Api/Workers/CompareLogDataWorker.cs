@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers
     {
         public JobType JobType => JobType.CompareLogData;
         private List<CompareLogDataItem> _compareLogDataReportItems;
-        private bool _isDescending;
+        private bool _isDecreasing;
         private bool _isDepthLog;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Workers
                 VerifyLogs(sourceLog, targetLog);
 
                 // Check log type
-                _isDescending = sourceLog.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
+                _isDecreasing = sourceLog.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
                 _isDepthLog = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
                 List<string> sourceLogMnemonics = GetLogMnemonics(sourceLog);
@@ -205,7 +205,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private List<string> SortIndexes(List<string> indexes)
         {
-            if (_isDescending)
+            if (_isDecreasing)
             {
                 return _isDepthLog ? indexes.OrderByDescending(double.Parse).ToList() : indexes.OrderByDescending(DateTime.Parse).ToList();
             }
