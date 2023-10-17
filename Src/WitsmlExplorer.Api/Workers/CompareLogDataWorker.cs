@@ -33,74 +33,74 @@ namespace WitsmlExplorer.Api.Workers
             _compareLogDataReportItems = new();
 
             // Get log queries
-            WitsmlLogs sourceLogQuery = LogQueries.GetWitsmlLogById(job.SelectedLog.WellUid, job.SelectedLog.WellboreUid, job.SelectedLog.Uid);
+            WitsmlLogs sourceLogQuery = LogQueries.GetWitsmlLogById(job.SourceLog.WellUid, job.SourceLog.WellboreUid, job.SourceLog.Uid);
             WitsmlLogs targetLogQuery = LogQueries.GetWitsmlLogById(job.TargetLog.WellUid, job.TargetLog.WellboreUid, job.TargetLog.Uid);
 
             // Get log header responses
-            WitsmlLogs selectedLogHeaderResponse = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(sourceLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
-            WitsmlLogs targetLogHeaderResponse = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(targetLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs sourceLogResponse = await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(sourceLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs targetLogResponse = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(targetLogQuery, new OptionsIn(ReturnElements.HeaderOnly));
 
             // Get log headers
-            WitsmlLog selectedLogHeader = selectedLogHeaderResponse.Logs.FirstOrDefault();
-            WitsmlLog targetLogHeader = targetLogHeaderResponse.Logs.FirstOrDefault();
+            WitsmlLog sourceLog = sourceLogResponse.Logs.FirstOrDefault();
+            WitsmlLog targetLog = targetLogResponse.Logs.FirstOrDefault();
 
-            bool isTimeLog = selectedLogHeader.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
+            bool isTimeLog = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
 
             // Get log mnemonics
-            List<string> selectedLogMnemonics = selectedLogHeader.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
-            List<string> targetLogMnemonics = targetLogHeader.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
+            List<string> sourceLogMnemonics = sourceLog.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
+            List<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
 
             // Get all mnemonics in selected and target log
-            List<string> allMnemonics = selectedLogMnemonics.Union(targetLogMnemonics).ToList();
+            List<string> allMnemonics = sourceLogMnemonics.Union(targetLogMnemonics).ToList();
 
             // Get shared mnemonics in selected and target log
-            List<string> sharedMnemonics = selectedLogMnemonics.Intersect(targetLogMnemonics).ToList();
+            List<string> sharedMnemonics = sourceLogMnemonics.Intersect(targetLogMnemonics).ToList();
 
             foreach (string mnemonic in allMnemonics)
             {
                 if (sharedMnemonics.Contains(mnemonic))
                 {
                     Console.WriteLine($"mnemonic is intersecting: {mnemonic}");
-                    await AddSharedMnemonicData(selectedLogHeader, targetLogHeader, mnemonic, isTimeLog);
+                    await AddSharedMnemonicData(sourceLog, targetLog, mnemonic, isTimeLog);
                 }
-                else if (selectedLogMnemonics.Contains(mnemonic))
+                else if (sourceLogMnemonics.Contains(mnemonic))
                 {
-                    Console.WriteLine($"mnemonic={mnemonic} is in selected log.");
-                    await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), selectedLogHeader, mnemonic);
+                    Console.WriteLine($"mnemonic={mnemonic} is in source log.");
+                    await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
 
                 }
                 else if (targetLogMnemonics.Contains(mnemonic))
                 {
                     Console.WriteLine($"mnemonic={mnemonic} is in target log.");
-                    await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLogHeader, mnemonic);
+                    await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
 
                 }
             }
 
-            BaseReport report = GenerateReport(selectedLogHeader, targetLogHeader, isTimeLog);
+            BaseReport report = GenerateReport(sourceLog, targetLog, isTimeLog);
             job.JobInfo.Report = report;
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
-            WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: {selectedLogHeader.Name} and {targetLogHeader.Name}", jobId: jobId);
+            WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: {sourceLog.Name} and {targetLog.Name}", jobId: jobId);
             return (workerResult, null);
         }
 
-        private BaseReport GenerateReport(WitsmlLog selectedLogHeader, WitsmlLog targetLogHeader, bool isTimeLog)
+        private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog, bool isTimeLog)
         {
             return new BaseReport
             {
                 Title = $"Compare Log Data",
                 Summary = _compareLogDataReportItems.Count > 0
-                    ? $"There are {_compareLogDataReportItems.Count} mismatches in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{selectedLogHeader.Name}' and '{targetLogHeader.Name}':"
-                    : $"No mismatches were found in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{selectedLogHeader.Name}' and '{targetLogHeader.Name}'.",
+                    ? $"There are {_compareLogDataReportItems.Count} mismatches in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{sourceLog.Name}' and '{targetLog.Name}':"
+                    : $"No mismatches were found in the data indexes of the {(isTimeLog ? "time" : "depth")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
                 ReportItems = _compareLogDataReportItems
             };
         }
 
-        private async Task<WitsmlLogData> ReadMnemonicData(IWitsmlClient witsmlClient, WitsmlLog logHeader, string mnemonic)
+        private async Task<WitsmlLogData> ReadMnemonicData(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
         {
-            await using LogDataReader logDataReader = new(witsmlClient, logHeader, mnemonic.AsSingletonList(), Logger);
+            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsSingletonList(), Logger);
             WitsmlLogData mnemonicData = await logDataReader.GetNextBatch();
             var mnemonicList = mnemonicData?.MnemonicList;
             var unitList = mnemonicData?.UnitList;
@@ -132,10 +132,10 @@ namespace WitsmlExplorer.Api.Workers
             });
         }
 
-        private async Task AddSharedMnemonicData(WitsmlLog sourceLogHeader, WitsmlLog targetLogHeader, string mnemonic, bool isTimeLog)
+        private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic, bool isTimeLog)
         {
-            WitsmlLogData sourceLogData = await ReadMnemonicData(GetSourceWitsmlClientOrThrow(), sourceLogHeader, mnemonic);
-            WitsmlLogData targetLogData = await ReadMnemonicData(GetTargetWitsmlClientOrThrow(), targetLogHeader, mnemonic);
+            WitsmlLogData sourceLogData = await ReadMnemonicData(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
+            WitsmlLogData targetLogData = await ReadMnemonicData(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
             Dictionary<string, string> sourceData = sourceLogData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
             Dictionary<string, string> targetData = targetLogData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
             List<string> sourceIndexes = new List<string>(sourceData.Keys);
@@ -188,10 +188,10 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog logHeader, string mnemonic)
+        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
         {
             // TODO: check server type from witsmlClient instead of explicitly setting it with serverType
-            WitsmlLogData mnemonicData = await ReadMnemonicData(witsmlClient, logHeader, mnemonic);
+            WitsmlLogData mnemonicData = await ReadMnemonicData(witsmlClient, log, mnemonic);
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
