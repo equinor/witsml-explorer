@@ -1,13 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
-
 using Witsml.Data;
+using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -48,30 +44,30 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<IList<Well>> GetWellsInformation(string wellUid = null)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
-            WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
-            List<Well> wells = result.Wells
-                .Select(well => new Well
-                {
-                    Uid = well.Uid,
-                    Name = well.Name,
-                    Field = well.Field,
-                    Operator = well.Operator,
-                    NumLicense = well.NumLicense,
-                    TimeZone = well.TimeZone,
-                    DateTimeCreation = well.CommonData.DTimCreation,
-                    DateTimeLastChange = well.CommonData.DTimLastChange,
-                    ItemState = well.CommonData.ItemState,
-                    StatusWell = well.StatusWell,
-                    PurposeWell = well.PurposeWell,
-                    Country = well.Country
-                }
-                ).ToList();
-            stopwatch.Stop();
-            Log.Debug("Fetched {Count} wells in {Elapsed} ms", wells.Count, stopwatch.ElapsedMilliseconds);
-            return wells;
+            return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
+            {
+                WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
+                WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
+                List<Well> wells = result.Wells
+                    .Select(well => new Well
+                        {
+                            Uid = well.Uid,
+                            Name = well.Name,
+                            Field = well.Field,
+                            Operator = well.Operator,
+                            NumLicense = well.NumLicense,
+                            TimeZone = well.TimeZone,
+                            DateTimeCreation = well.CommonData.DTimCreation,
+                            DateTimeLastChange = well.CommonData.DTimLastChange,
+                            ItemState = well.CommonData.ItemState,
+                            StatusWell = well.StatusWell,
+                            PurposeWell = well.PurposeWell,
+                            Country = well.Country
+                        }
+                    ).ToList();
+                timeMeasurer.LogMessage = executionTime => $"Fetched {wells.Count} wells in {executionTime} ms.";
+                return wells;
+            });
         }
 
         public async Task<Well> GetWell(string wellUid)
