@@ -1,6 +1,6 @@
-import LogObject from "../logObject";
+import ObjectReference from "./objectReference";
 
 export default interface CompareLogDataJob {
-  sourceLog: LogObject;
-  targetLog: LogObject;
+  sourceLog: ObjectReference;
+  targetLog: ObjectReference;
 }

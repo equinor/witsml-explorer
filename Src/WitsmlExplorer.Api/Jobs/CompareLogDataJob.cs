@@ -5,8 +5,8 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record CompareLogDataJob : Job
     {
-        public LogObject SourceLog { get; init; }
-        public LogObject TargetLog { get; init; }
+        public ObjectReference SourceLog { get; init; }
+        public ObjectReference TargetLog { get; init; }
 
         public override string Description()
         {
