@@ -48,6 +48,7 @@ namespace WitsmlExplorer.Api.Models
         MissingData,
         AnalyzeGaps,
         SpliceLogs,
-        CompareLogData
+        CompareLogData,
+        CountLogDataRows
     }
 }

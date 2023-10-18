@@ -67,6 +67,7 @@ export const WellsListView = (): React.ReactElement => {
           onContextMenu={onContextMenu}
           checkableRows
           downloadToCsvFileName="Wells"
+          showRefresh
         />
       )}
     </WellProgress>

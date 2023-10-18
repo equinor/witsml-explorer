@@ -107,5 +107,6 @@ export enum JobType {
   ReplaceObjects = "ReplaceObjects",
   AnalyzeGaps = "AnalyzeGaps",
   SpliceLogs = "SpliceLogs",
-  CompareLogData = "CompareLogData"
+  CompareLogData = "CompareLogData",
+  CountLogDataRows = "CountLogDataRows"
 }

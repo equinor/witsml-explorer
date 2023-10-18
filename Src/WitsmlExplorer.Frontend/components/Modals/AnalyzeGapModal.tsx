@@ -33,10 +33,12 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
       timeGapSize: convertToMilliseconds(timeGapSize)
     };
     const jobId = await JobService.orderJob(JobType.AnalyzeGaps, analyzeGapsJob);
-    const reportModalProps = { jobId };
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+    }
   };
 
   const handleGapSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {

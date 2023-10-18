@@ -38,8 +38,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
         private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction)
         {
             IWitsmlClient witsmlClient = GetTargetWitsmlClientOrThrow();
-            string uidWell = queries.First().UidWell;
-            string uidWellbore = queries.First().UidWellbore;
+            string uidWell = queries.FirstOrDefault()?.UidWell;
+            string uidWellbore = queries.FirstOrDefault()?.UidWellbore;
 
             bool error = false;
             List<string> successUids = new();
@@ -79,10 +79,10 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 }
             }).ToList());
 
-            string successString = successUids.Count > 0 ? $"Deleted {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
+            string successString = successUids.Count > 0 ? $"Deleted {queries.FirstOrDefault()?.GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.First().GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {queries.FirstOrDefault()?.GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }

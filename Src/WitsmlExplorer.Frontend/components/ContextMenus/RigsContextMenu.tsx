@@ -2,20 +2,23 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import NavigationContext from "../../contexts/navigationContext";
 import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
+import { ObjectType } from "../../models/objectType";
+import Rig from "../../models/rig";
+import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
+import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import ContextMenu from "./ContextMenu";
-import { menuItemText, onClickRefresh, StyledIcon } from "./ContextMenuUtils";
-import Rig from "../../models/rig";
 import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
-import { ObjectType } from "../../models/objectType";
+import ContextMenu from "./ContextMenu";
+import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
+import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
-import NavigationContext from "../../contexts/navigationContext";
-import { Server } from "../../models/server";
 
 export interface RigsContextMenuProps {
   dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
@@ -28,6 +31,7 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
   const { dispatchOperation, wellbore, servers, setIsLoading } = props;
   const { dispatchNavigation } = useContext(NavigationContext);
   const rigReferences = useClipboardReferencesOfType(ObjectType.Rig);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickNewRig = () => {
     const newRig: Rig = {
@@ -76,7 +80,26 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
         <MenuItem key={"pasteRig"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore)} disabled={rigReferences === null}>
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
-        </MenuItem>
+        </MenuItem>,
+        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+          {[
+            <MenuItem
+              key={"newObject"}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Rig,
+                  storeFunction: StoreFunction.AddToStore,
+                  wellUid: wellbore.wellUid,
+                  wellboreUid: wellbore.uid,
+                  objectUid: uuid()
+                })
+              }
+            >
+              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <Typography color={"primary"}>New Rig</Typography>
+            </MenuItem>
+          ]}
+        </NestedMenuItem>
       ]}
     />
   );

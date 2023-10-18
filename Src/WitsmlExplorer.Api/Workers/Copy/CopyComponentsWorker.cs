@@ -62,15 +62,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             string[] toCopyUids = job.Source.ComponentUids;
             IWitsmlObjectList sourceQuery = ObjectQueries.GetWitsmlObjectByReference(job.Source.Parent, _componentType.ToParentType());
-            ObjectQueries.SetComponents(sourceQuery.Objects.First(), _componentType, toCopyUids);
+            ObjectQueries.SetComponents(sourceQuery.Objects?.FirstOrDefault(), _componentType, toCopyUids);
             IWitsmlObjectList source = await GetSourceWitsmlClientOrThrow().GetFromStoreNullableAsync(sourceQuery, new OptionsIn(ReturnElements.All));
             if (source == null)
             {
-                string reason = $"Unable to fetch {_componentType.ToParentType()} with uid {sourceQuery.Objects.First().Uid}.";
+                string reason = $"Unable to fetch {_componentType.ToParentType()} with uid {sourceQuery.Objects?.FirstOrDefault()?.Uid}.";
                 return LogErrorAndReturnResult(reason);
             }
 
-            IEnumerable<string> sourceComponentUids = ObjectQueries.GetComponentUids(source.Objects.First(), _componentType);
+            IEnumerable<string> sourceComponentUids = ObjectQueries.GetComponentUids(source.Objects?.FirstOrDefault(), _componentType);
             IEnumerable<string> missingUids = toCopyUids.Except(sourceComponentUids);
             if (missingUids.Any())
             {
@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return LogErrorAndReturnResult(reason);
             }
 
-            WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects.First(), _componentType, job.Target, toCopyUids);
+            WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects?.FirstOrDefault(), _componentType, job.Target, toCopyUids);
             QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsSingletonWitsmlList());
             if (!copyResult.IsSuccessful)
             {
@@ -95,17 +95,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private async Task<string> VerifyTarget()
         {
             IWitsmlObjectList targetQuery = ObjectQueries.GetWitsmlObjectByReference(_job.Target, _componentType.ToParentType());
-            ObjectQueries.SetComponents(targetQuery.Objects.First(), _componentType, _job.Source.ComponentUids);
+            ObjectQueries.SetComponents(targetQuery?.Objects?.FirstOrDefault(), _componentType, _job.Source.ComponentUids);
             IWitsmlObjectList target = await GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(targetQuery, new OptionsIn(ReturnElements.Requested));
             if (target == null)
             {
-                return $"Target {_componentType.ToParentType()} with uid {targetQuery.Objects.First().Uid} could not be fetched.";
+                return $"Target {_componentType.ToParentType()} with uid {targetQuery?.Objects?.FirstOrDefault()?.Uid} could not be fetched.";
             }
             if (!target.Objects.Any()) //if no uids to copy are present in the target then no object is returned
             {
                 return null;
             }
-            IEnumerable<string> targetComponentUids = ObjectQueries.GetComponentUids(target.Objects.First(), _componentType);
+            IEnumerable<string> targetComponentUids = ObjectQueries.GetComponentUids(target.Objects.FirstOrDefault(), _componentType);
             IEnumerable<string> conflictingUids = targetComponentUids.Intersect(_job.Source.ComponentUids);
             if (conflictingUids.Any())
             {

@@ -27,7 +27,7 @@ export interface AddWellAction extends Action {
 
 export interface UpdateWellAction extends Action {
   type: ModificationType.UpdateWell;
-  payload: { well: Well };
+  payload: { well: Well; overrideWellbores?: boolean };
 }
 
 export interface UpdateWellsAction extends Action {
