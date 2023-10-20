@@ -24,6 +24,8 @@ namespace WitsmlExplorer.Api.Workers
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CompareLogData;
         private List<CompareLogDataItem> _compareLogDataReportItems;
+        private Dictionary<string, int> _mnemonicsMismatchCount;
+        private const int MaxMismatchesLimit = 10000;
         private bool _isDecreasing;
         private bool _isDepthLog;
 
@@ -50,6 +52,9 @@ namespace WitsmlExplorer.Api.Workers
             // Set up log report list
             _compareLogDataReportItems = new();
 
+            // Set up mnemonics mismatch count dictionary
+            _mnemonicsMismatchCount = new Dictionary<string, int>();
+
             // Get logs
             WitsmlLog sourceLog = await WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
             WitsmlLog targetLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
@@ -73,6 +78,9 @@ namespace WitsmlExplorer.Api.Workers
 
                 foreach (string mnemonic in allMnemonics)
                 {
+
+                    _mnemonicsMismatchCount[mnemonic] = 0;
+                    if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
                     if (sharedMnemonics.Contains(mnemonic))
                     {
                         await AddSharedMnemonicData(sourceLog, targetLog, mnemonic);
@@ -118,6 +126,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string index in indexes)
             {
+                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
                 if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
                 {
                     string sourceValue = sourceData[index];
@@ -148,9 +157,12 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
+                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+
                 var data = dataRow.Split(',');
                 var index = data.First();
                 var value = data.Last();
+
                 if (serverType == ServerType.Source)
                 {
                     AddReportItem(mnemonic, index, value, null);
@@ -190,12 +202,31 @@ namespace WitsmlExplorer.Api.Workers
 
         private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog)
         {
+            var sortedMnemonicsMismatchCount = _mnemonicsMismatchCount.OrderByDescending(x => x.Value);
+            string mnemonicsMismatchCountResult = "\nNumber of mismatches for each mnemonic:";
+            foreach (KeyValuePair<string, int> keyValues in sortedMnemonicsMismatchCount)
+            {
+                mnemonicsMismatchCountResult += $"\n{keyValues.Key}: {keyValues.Value:n0}";
+            }
+
+            string summary = "";
+            if (_compareLogDataReportItems.Count >= MaxMismatchesLimit)
+            {
+                summary = $"Stopped searching for more mismatches, after finding {_compareLogDataReportItems.Count:n0} mismatches in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult;
+            }
+            else if (_compareLogDataReportItems.Count > 0)
+            {
+                summary = $"There are {_compareLogDataReportItems.Count:n0} mismatches in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult;
+            }
+            else
+            {
+                summary = $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.";
+            }
+
             return new BaseReport
             {
                 Title = $"Compare Log Data",
-                Summary = _compareLogDataReportItems.Count > 0
-                    ? $"There are {_compareLogDataReportItems.Count} mismatches in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':"
-                    : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
+                Summary = summary,
                 ReportItems = _compareLogDataReportItems
             };
         }
@@ -207,6 +238,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private void AddReportItem(string mnemonic, string index, string sourceValue, string targetValue)
         {
+            _mnemonicsMismatchCount[mnemonic]++;
             _compareLogDataReportItems.Add(new CompareLogDataItem
             {
                 Mnemonic = mnemonic,
@@ -220,11 +252,11 @@ namespace WitsmlExplorer.Api.Workers
         {
             if (_isDecreasing)
             {
-                return _isDepthLog ? indexes.OrderByDescending(double.Parse).ToList() : indexes.OrderByDescending(DateTime.Parse).ToList();
+                return _isDepthLog ? indexes.OrderByDescending(StringHelpers.ToDouble).ToList() : indexes.OrderByDescending(DateTime.Parse).ToList();
             }
             else
             {
-                return _isDepthLog ? indexes.OrderBy(double.Parse).ToList() : indexes.OrderBy(DateTime.Parse).ToList();
+                return _isDepthLog ? indexes.OrderBy(StringHelpers.ToDouble).ToList() : indexes.OrderBy(DateTime.Parse).ToList();
             }
         }
 
