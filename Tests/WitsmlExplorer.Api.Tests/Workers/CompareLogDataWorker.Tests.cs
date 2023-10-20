@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 using Moq;
@@ -16,7 +15,6 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
-using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
@@ -179,7 +177,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CompareLogDataItem expectedMismatchItem3 = CreateCompareLogDataItem("3", "Curve1", null, "0");
             CompareLogDataItem expectedMismatchItem4 = CreateCompareLogDataItem("4", "Curve1", null, "0");
 
-
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
             Assert.Equal(expectedMismatchItem1.Index, resultReportItems[0].Index);
@@ -324,7 +321,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             });
         }
 
-
         private WitsmlLogs CreateSampleLogData(string wellUid, string wellboreUid, string logUid, string indexType, int startIndexNum, int endIndexNum, List<(string, string)> logMnemonics, List<string> logData)
         {
             string mnemonicsList = "IndexCurve";
@@ -359,7 +355,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             // TODO: change data values
             return indexes.Select((curveIndex, index) => new WitsmlData() { Data = $"{curveIndex},{logData[index]}" }).ToList();
         }
-
 
         private WitsmlLogs CreateSampleLogHeaders(string wellUid, string wellboreUid, string logUid, string indexType, int startIndexNum, int endIndexNum, List<(string, string)> logCurveInfo)
         {
@@ -424,7 +419,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-
         private CompareLogDataJob CreateCompareLogDataJob()
         {
             return new CompareLogDataJob
@@ -450,6 +444,5 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 JobInfo = new()
             };
         }
-
     }
 }

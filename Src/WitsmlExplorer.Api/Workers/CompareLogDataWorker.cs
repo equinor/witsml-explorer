@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
@@ -15,22 +14,40 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
-using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
     public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker
     {
+        private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CompareLogData;
         private List<CompareLogDataItem> _compareLogDataReportItems;
         private bool _isDecreasing;
         private bool _isDepthLog;
 
-        public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
+        public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        {
+            _witsmlServerRepository = witsmlServerRepository;
+        }
         public override async Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job)
         {
-            // // Set up log report list
+            Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
+            Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
+            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
+            int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
+
+            // Check if the number of decimals for both servers is equal. Throw an error if not.
+            if (sourceDepthLogDecimals != targetDepthLogDecimals)
+            {
+                string message = $"CompareLogDataJob failed. Cases where servers have different numbers of decimals are not currently supported.";
+                Logger.LogError(message);
+                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
+            }
+
+            // Set up log report list
             _compareLogDataReportItems = new();
 
             // Get logs
@@ -39,7 +56,6 @@ namespace WitsmlExplorer.Api.Workers
 
             try
             {
-
                 VerifyLogs(sourceLog, targetLog);
 
                 // Check log type
@@ -54,7 +70,6 @@ namespace WitsmlExplorer.Api.Workers
 
                 // Get shared mnemonics in source and target log
                 List<string> sharedMnemonics = sourceLogMnemonics.Intersect(targetLogMnemonics).ToList();
-
 
                 foreach (string mnemonic in allMnemonics)
                 {
@@ -88,10 +103,10 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
-
             WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'", jobId: job.JobInfo.Id);
             return (workerResult, null);
         }
+
         private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)
         {
             WitsmlLogData sourceLogData = await ReadMnemonicData(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
@@ -185,7 +200,6 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-
         private List<string> GetLogMnemonics(WitsmlLog log)
         {
             return log.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
@@ -201,7 +215,6 @@ namespace WitsmlExplorer.Api.Workers
                 TargetValue = targetValue,
             });
         }
-
 
         private List<string> SortIndexes(List<string> indexes)
         {
