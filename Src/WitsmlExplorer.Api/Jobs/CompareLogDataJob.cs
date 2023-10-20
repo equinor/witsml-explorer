@@ -14,15 +14,15 @@ namespace WitsmlExplorer.Api.Jobs
         }
         public override string GetWellName()
         {
-            return $"SourceLog.WellName={SourceLog.WellName} TargetLog.WellName={TargetLog.WellName}";
+            return $"Source={SourceLog.WellName} Target={TargetLog.WellName}";
         }
         public override string GetWellboreName()
         {
-            return $"SourceLog.WellboreName={SourceLog.WellboreName} TargetLog.WellboreName={TargetLog.WellboreName}";
+            return $"Source={SourceLog.WellboreName} Target={TargetLog.WellboreName}";
         }
         public override string GetObjectName()
         {
-            return $"SourceLog.Name={SourceLog.Name} TargetLog.Name={TargetLog.Name}";
+            return $"Source={SourceLog.Name} Target={TargetLog.Name}";
         }
     }
 }
