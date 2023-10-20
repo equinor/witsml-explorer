@@ -20,7 +20,7 @@ export interface WbGeometryPropertiesModalProps {
 const WbGeometryPropertiesModal = (props: WbGeometryPropertiesModalProps): React.ReactElement => {
   const { mode, wbGeometryObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableWbGeometryObject, setEditableWbGeometryObject] = useState<WbGeometryObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -29,11 +29,11 @@ const WbGeometryPropertiesModal = (props: WbGeometryPropertiesModalProps): React
   useEffect(() => {
     setEditableWbGeometryObject({
       ...wbGeometryObject,
-      dTimReport: formatDateString(wbGeometryObject.dTimReport, timeZone),
+      dTimReport: formatDateString(wbGeometryObject.dTimReport, timeZone, dateTimeFormat),
       commonData: {
         ...wbGeometryObject.commonData,
-        dTimCreation: formatDateString(wbGeometryObject.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(wbGeometryObject.commonData.dTimLastChange, timeZone)
+        dTimCreation: formatDateString(wbGeometryObject.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(wbGeometryObject.commonData.dTimLastChange, timeZone, dateTimeFormat)
       }
     });
   }, [wbGeometryObject]);

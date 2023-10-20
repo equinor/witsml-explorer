@@ -28,7 +28,7 @@ export const MudLogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
@@ -55,8 +55,8 @@ export const MudLogsListView = (): React.ReactElement => {
         mudLogEngineers: mudLog.mudLogEngineers,
         startMd: measureToString(mudLog.startMd),
         endMd: measureToString(mudLog.endMd),
-        dTimCreation: formatDateString(mudLog.commonData?.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(mudLog.commonData?.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(mudLog.commonData?.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(mudLog.commonData?.dTimLastChange, timeZone, dateTimeFormat),
         itemState: mudLog.commonData?.itemState,
         uid: mudLog.uid,
         mudLog

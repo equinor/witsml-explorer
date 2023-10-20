@@ -14,7 +14,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 export const TrajectoriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
@@ -55,10 +55,10 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const trajectoryRows = trajectories.map((trajectory) => {
     return {
       ...trajectory,
-      dTimTrajStart: formatDateString(trajectory.dTimTrajStart, timeZone),
-      dTimTrajEnd: formatDateString(trajectory.dTimTrajEnd, timeZone),
-      dateTimeCreation: formatDateString(trajectory.dateTimeCreation, timeZone),
-      dateTimeLastChange: formatDateString(trajectory.dateTimeLastChange, timeZone),
+      dTimTrajStart: formatDateString(trajectory.dTimTrajStart, timeZone, dateTimeFormat),
+      dTimTrajEnd: formatDateString(trajectory.dTimTrajEnd, timeZone, dateTimeFormat),
+      dateTimeCreation: formatDateString(trajectory.dateTimeCreation, timeZone, dateTimeFormat),
+      dateTimeLastChange: formatDateString(trajectory.dateTimeLastChange, timeZone, dateTimeFormat),
       id: trajectory.uid
     };
   });

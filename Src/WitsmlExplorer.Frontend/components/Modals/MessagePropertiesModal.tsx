@@ -18,7 +18,7 @@ export interface MessagePropertiesModalProps {
 const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.ReactElement => {
   const { mode, messageObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableMessageObject, setEditableMessageObject] = useState<MessageObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -29,8 +29,8 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
       ...messageObject,
       commonData: {
         ...messageObject.commonData,
-        dTimCreation: formatDateString(messageObject.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(messageObject.commonData.dTimLastChange, timeZone)
+        dTimCreation: formatDateString(messageObject.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(messageObject.commonData.dTimLastChange, timeZone, dateTimeFormat)
       }
     });
   }, [messageObject]);

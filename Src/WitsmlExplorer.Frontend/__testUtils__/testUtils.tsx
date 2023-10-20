@@ -6,7 +6,7 @@ import { Filter, FilterContextProvider } from "../contexts/filter";
 import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../contexts/navigationContext";
 import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
+import { DateTimeFormat, EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
 import { QueryContextProvider, QueryContextState } from "../contexts/queryContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
@@ -55,6 +55,7 @@ export function renderWithContexts(
       modals: [],
       theme: UserTheme.Compact,
       timeZone: TimeZone.Local,
+      dateTimeFormat: DateTimeFormat.Raw,
       colors: light,
       ...initialOperationState
     });

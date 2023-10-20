@@ -5,6 +5,8 @@ import OperationContext from "../../contexts/operationContext";
 import { CurveSpecification } from "../../models/logData";
 import { Colors } from "../../styles/Colors";
 import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
+import formatDateString from "../DateFormatter";
+import { TimeZone, DateTimeFormat } from "../../contexts/operationStateReducer";
 
 interface CurveValuesPlotProps {
   data: any[];
@@ -17,14 +19,14 @@ interface CurveValuesPlotProps {
 export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.ReactElement => {
   const { data, columns, name, autoRefresh, isDescending = false } = props;
   const {
-    operationState: { colors }
+    operationState: { colors, dateTimeFormat }
   } = useContext(OperationContext);
   const chart = useRef<ECharts>(null);
   const selectedLabels = useRef<Record<string, boolean>>(null);
   const scrollIndex = useRef<number>(0);
   const horizontalZoom = useRef<[number, number]>([0, 100]);
 
-  const chartOption = getChartOption(data, columns, name, colors, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current);
+  const chartOption = getChartOption(data, columns, name, colors, dateTimeFormat, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current);
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const shouldShowAll = Object.values(params.selected).every((s) => s === false);
@@ -83,6 +85,7 @@ const getChartOption = (
   columns: ExportableContentTableColumn<CurveSpecification>[],
   name: string,
   colors: Colors,
+  dateTimeFormat: DateTimeFormat,
   isDescending: boolean,
   autoRefresh: boolean,
   selectedLabels: Record<string, boolean>,
@@ -177,7 +180,7 @@ const getChartOption = (
       axisLabel: {
         showMinLabel: true,
         showMaxLabel: true,
-        formatter: isTimeLog ? timeFormatter : (params: number) => depthFormatter(params, indexUnit),
+        formatter: (params: number) => (isTimeLog ? timeFormatter(params, dateTimeFormat) : depthFormatter(params, indexUnit)),
         color: colors.text.staticIconsDefault
       }
     },
@@ -230,9 +233,9 @@ const getChartOption = (
   };
 };
 
-const timeFormatter = (params: number) => {
+const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
   const dateTime = new Date(Math.round(params));
-  return dateTime.toISOString().split(".")[0] + "Z";
+  return formatDateString(dateTime.toISOString().split(".")[0] + "Z", TimeZone.Utc, dateTimeFormat);
 };
 
 const depthFormatter = (params: number, indexUnit: string) => {

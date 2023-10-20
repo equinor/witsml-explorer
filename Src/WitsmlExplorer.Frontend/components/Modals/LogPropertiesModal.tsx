@@ -24,7 +24,7 @@ export interface LogPropertiesModalInterface {
 const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElement => {
   const { mode, logObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableLogObject, setEditableLogObject] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -84,8 +84,8 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     const isTimeIndexed = logObject.indexType === WITSML_INDEX_TYPE_DATE_TIME;
     setEditableLogObject({
       ...logObject,
-      startIndex: isTimeIndexed ? formatDateString(logObject.startIndex, timeZone) : logObject.startIndex,
-      endIndex: isTimeIndexed ? formatDateString(logObject.endIndex, timeZone) : logObject.endIndex
+      startIndex: isTimeIndexed ? formatDateString(logObject.startIndex, timeZone, dateTimeFormat) : logObject.startIndex,
+      endIndex: isTimeIndexed ? formatDateString(logObject.endIndex, timeZone, dateTimeFormat) : logObject.endIndex
     });
   }, [logObject]);
 
@@ -152,8 +152,18 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
               />
               {mode !== PropertiesModalMode.New && (
                 <>
-                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone)} />
-                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone)} />
+                  <TextField
+                    disabled
+                    id="dTimCreation"
+                    label="commonData.dTimCreation"
+                    defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone, dateTimeFormat)}
+                  />
+                  <TextField
+                    disabled
+                    id="dTimLastChange"
+                    label="commonData.dTimLastChange"
+                    defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone, dateTimeFormat)}
+                  />
                 </>
               )}
             </>

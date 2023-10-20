@@ -25,7 +25,7 @@ export interface RiskPropertiesModalProps {
 const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElement => {
   const { mode, riskObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableRiskObject, setEditableRiskObject] = useState<RiskObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,12 +36,12 @@ const RiskPropertiesModal = (props: RiskPropertiesModalProps): React.ReactElemen
   useEffect(() => {
     setEditableRiskObject({
       ...riskObject,
-      dTimStart: formatDateString(riskObject.dTimStart, timeZone),
-      dTimEnd: formatDateString(riskObject.dTimEnd, timeZone),
+      dTimStart: formatDateString(riskObject.dTimStart, timeZone, dateTimeFormat),
+      dTimEnd: formatDateString(riskObject.dTimEnd, timeZone, dateTimeFormat),
       commonData: {
         ...riskObject.commonData,
-        dTimCreation: formatDateString(riskObject.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(riskObject.commonData.dTimLastChange, timeZone)
+        dTimCreation: formatDateString(riskObject.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(riskObject.commonData.dTimLastChange, timeZone, dateTimeFormat)
       }
     });
   }, [riskObject]);

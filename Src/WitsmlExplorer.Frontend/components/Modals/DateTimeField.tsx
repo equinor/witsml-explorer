@@ -1,7 +1,7 @@
 import { TextField } from "@equinor/eds-core-react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { TimeZone } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
 import Icon from "../../styles/Icons";
 import formatDateString, { validateIsoDateString } from "../DateFormatter";
 
@@ -71,7 +71,7 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
             const slice = isFirefox ? value.slice(10) : value.slice(16);
             toFormat += slice;
           }
-          const formatted = formatDateString(toFormat, timeZone);
+          const formatted = formatDateString(toFormat, timeZone, DateTimeFormat.Raw);
           updateObject(formatted, validate(formatted));
         }}
       />

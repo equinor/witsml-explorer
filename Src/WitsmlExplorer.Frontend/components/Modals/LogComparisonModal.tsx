@@ -31,7 +31,7 @@ export interface LogComparisonModalProps {
 const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
   const { sourceLog, sourceServer, targetServer, targetObject, dispatchOperation } = props;
   const {
-    operationState: { timeZone, colors }
+    operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
   const [sourceLogCurveInfo, setSourceLogCurveInfo] = useState<LogCurveInfo[]>(null);
   const [targetLogCurveInfo, setTargetLogCurveInfo] = useState<LogCurveInfo[]>(null);
@@ -80,8 +80,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     if (indexTypesMatch) {
       if (sourceType == "time") {
         for (const curve of sourceLogCurveInfo.concat(targetLogCurveInfo)) {
-          curve.minDateTimeIndex = formatDateString(curve.minDateTimeIndex, timeZone);
-          curve.maxDateTimeIndex = formatDateString(curve.maxDateTimeIndex, timeZone);
+          curve.minDateTimeIndex = formatDateString(curve.minDateTimeIndex, timeZone, dateTimeFormat);
+          curve.maxDateTimeIndex = formatDateString(curve.maxDateTimeIndex, timeZone, dateTimeFormat);
         }
       }
       setIndexesToShow(calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo));

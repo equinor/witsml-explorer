@@ -2,7 +2,7 @@ import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import { itemStateTypes } from "../../models/itemStateTypes";
@@ -36,14 +36,14 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
   useEffect(() => {
     setEditableBhaRun({
       ...bhaRun,
-      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone) : null,
-      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone) : null,
-      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone) : null,
-      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone) : null,
+      dTimStart: bhaRun.dTimStart ? formatDateString(bhaRun.dTimStart, timeZone, DateTimeFormat.Raw) : null,
+      dTimStop: bhaRun.dTimStop ? formatDateString(bhaRun.dTimStop, timeZone, DateTimeFormat.Raw) : null,
+      dTimStartDrilling: bhaRun.dTimStartDrilling ? formatDateString(bhaRun.dTimStartDrilling, timeZone, DateTimeFormat.Raw) : null,
+      dTimStopDrilling: bhaRun.dTimStopDrilling ? formatDateString(bhaRun.dTimStopDrilling, timeZone, DateTimeFormat.Raw) : null,
       commonData: {
         ...bhaRun.commonData,
-        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone) : null,
-        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone) : null
+        dTimCreation: bhaRun.commonData.dTimCreation ? formatDateString(bhaRun.commonData.dTimCreation, timeZone, DateTimeFormat.Raw) : null,
+        dTimLastChange: bhaRun.commonData.dTimLastChange ? formatDateString(bhaRun.commonData.dTimLastChange, timeZone, DateTimeFormat.Raw) : null
       }
     });
   }, [bhaRun]);

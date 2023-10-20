@@ -16,7 +16,7 @@ export interface MessageObjectRow extends ContentTableRow {
 export const MessagesListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
@@ -33,14 +33,14 @@ export const MessagesListView = (): React.ReactElement => {
       return {
         id: msg.uid,
         index: index + 1,
-        dTim: formatDateString(msg.dTim, timeZone),
+        dTim: formatDateString(msg.dTim, timeZone, dateTimeFormat),
         messageText: msg.messageText,
         uid: msg.uid,
         name: msg.name,
         typeMessage: msg.typeMessage,
         sourceName: msg.commonData.sourceName,
-        dTimCreation: formatDateString(msg.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(msg.commonData.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(msg.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(msg.commonData.dTimLastChange, timeZone, dateTimeFormat),
         comments: msg.commonData.comments,
         message: msg
       };

@@ -19,7 +19,7 @@ export interface FluidsReportRow extends ContentTableRow, FluidsReport {
 export const FluidsReportsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
@@ -40,8 +40,8 @@ export const FluidsReportsListView = (): React.ReactElement => {
         fluidsReport: fluidsReport,
         md: measureToString(fluidsReport.md),
         tvd: measureToString(fluidsReport.tvd),
-        dTimCreation: formatDateString(fluidsReport.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(fluidsReport.commonData.dTimLastChange, timeZone)
+        dTimCreation: formatDateString(fluidsReport.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(fluidsReport.commonData.dTimLastChange, timeZone, dateTimeFormat)
       };
     });
   };

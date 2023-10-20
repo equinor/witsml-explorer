@@ -16,6 +16,7 @@ import LogObjectService from "../../services/logObjectService";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE, WITSML_INDEX_TYPE_DATE_TIME, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
+import formatDateString from "../DateFormatter";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
 import EditInterval from "./EditInterval";
@@ -32,6 +33,9 @@ const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
+  const {
+    operationState: { timeZone, dateTimeFormat }
+  } = useContext(OperationContext);
   const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { colors },
@@ -107,7 +111,8 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const onContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, _: CurveValueRow, checkedContentItems: CurveValueRow[]) => {
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, checkedContentItems, selectedLog, tableData);
+      const originalTableData = tableData.filter((data) => checkedContentItems.map((c) => c.id).includes(data.id));
+      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(selectedLogCurveInfo, originalTableData, selectedLog, tableData);
       const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
       const position = getContextMenuPosition(event);
       dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <MnemonicsContextMenu {...contextMenuProps} />, position } });
@@ -131,6 +136,16 @@ export const CurveValuesView = (): React.ReactElement => {
       });
     setColumns([...columns, ...newColumns]);
   };
+
+  const getTableData = React.useCallback(() => {
+    const mnemonicToType = Object.fromEntries(columns.map((c) => [c.property, c.type]));
+    return tableData.map((data) => {
+      return Object.entries(data).reduce((newData, [key, value]) => {
+        newData[key] = mnemonicToType[key] === ContentType.DateTime ? formatDateString(value as string, timeZone, dateTimeFormat) : value;
+        return newData;
+      }, {} as CurveValueRow);
+    });
+  }, [tableData, columns, timeZone, dateTimeFormat]);
 
   useEffect(() => {
     setTableData([]);
@@ -280,7 +295,7 @@ export const CurveValuesView = (): React.ReactElement => {
               columns={columns}
               onRowSelectionChange={onRowSelectionChange}
               onContextMenu={onContextMenu}
-              data={tableData}
+              data={getTableData()}
               checkableRows={true}
               panelElements={panelElements}
               stickyLeftColumns={2}
