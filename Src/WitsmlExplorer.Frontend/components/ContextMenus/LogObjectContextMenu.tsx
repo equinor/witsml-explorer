@@ -165,7 +165,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
         </MenuItem>,
-        <NestedMenuItem key={"comparelognestedmenu"} label={`${menuItemText("compare", "log", [])}`} disabled={checkedObjects.length !== 1}>
+        <NestedMenuItem key={"comparelognestedmenu"} label={`${menuItemText("compare", "log", [])}`} disabled={checkedObjects.length !== 1} icon="compare">
           {[
             <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
               <StyledIcon name="compare" color={colors.interactive.primaryResting} />
