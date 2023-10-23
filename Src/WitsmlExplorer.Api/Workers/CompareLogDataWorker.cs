@@ -117,8 +117,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)
         {
-            WitsmlLogData sourceLogData = await ReadMnemonicData(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
-            WitsmlLogData targetLogData = await ReadMnemonicData(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
+            WitsmlLogData sourceLogData = await WorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
+            WitsmlLogData targetLogData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
             Dictionary<string, string> sourceData = WitsmlLogDataToDictionary(sourceLogData);
             Dictionary<string, string> targetData = WitsmlLogDataToDictionary(targetLogData);
             List<string> indexes = sourceData.Keys.Union(targetData.Keys).ToList();
@@ -153,7 +153,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
         {
-            WitsmlLogData mnemonicData = await ReadMnemonicData(witsmlClient, log, mnemonic);
+            WitsmlLogData mnemonicData = await WorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
@@ -176,28 +176,6 @@ namespace WitsmlExplorer.Api.Workers
                     throw new ArgumentException($"serverType={serverType} not supported.");
                 }
             }
-        }
-
-        private async Task<WitsmlLogData> ReadMnemonicData(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
-        {
-            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsSingletonList(), Logger);
-            WitsmlLogData mnemonicData = await logDataReader.GetNextBatch();
-            var mnemonicList = mnemonicData?.MnemonicList;
-            var unitList = mnemonicData?.UnitList;
-
-            List<WitsmlData> data = new();
-            while (mnemonicData != null)
-            {
-                data.AddRange(mnemonicData.Data);
-                mnemonicData = await logDataReader.GetNextBatch();
-            }
-
-            return new WitsmlLogData
-            {
-                MnemonicList = mnemonicList,
-                UnitList = unitList,
-                Data = data
-            };
         }
 
         private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog)
