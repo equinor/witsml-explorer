@@ -189,7 +189,7 @@ namespace WitsmlExplorer.Api.Workers
 
             return new BaseReport
             {
-                Title = $"Compare Log Data",
+                Title = $"Log data comparison",
                 Summary = _compareLogDataReportItems.Count > 0
                 ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
