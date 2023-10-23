@@ -49,10 +49,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _worker = new CompareLogDataWorker(_logger.Object, _witsmlClientProvider.Object);
         }
 
-        [Fact]
-        public async Task CompareLogData_Equal_Logs()
+        [Theory]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_MD)]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)]
+        public async Task CompareLogData_Equal_Logs(string indexType)
         {
-            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
             int[] startIndexNum = { 0, 0 }; // start indexes for each log
             int[] endIndexNum = { 1, 1 }; // end indexes for each log
             List<(string, string)> sourceLogCurveInfo = new() { ("Curve1", "Unit1"), ("Curve2", "Unit2") };
