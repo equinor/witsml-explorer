@@ -132,7 +132,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 var rowIndex = dataRow.Split(',').First();
                 if ((startIndex == null && endIndex == null)
-                    || isDepthLog && (double.Parse(rowIndex) < double.Parse(startIndex) || double.Parse(rowIndex) > double.Parse(endIndex))
+                    || isDepthLog && (StringHelpers.ToDouble(rowIndex) < StringHelpers.ToDouble(startIndex) || StringHelpers.ToDouble(rowIndex) > StringHelpers.ToDouble(endIndex))
                     || !isDepthLog && (DateTime.Parse(rowIndex) < DateTime.Parse(startIndex) || DateTime.Parse(rowIndex) > DateTime.Parse(endIndex)))
                 {
                     var newCellValue = dataRow.Split(',').Last();
@@ -143,7 +143,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            var sorted = isDepthLog ? primaryDict.OrderBy(x => double.Parse(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
+            var sorted = isDepthLog ? primaryDict.OrderBy(x => StringHelpers.ToDouble(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
             List<WitsmlData> splicedData = sorted.Select(x => new WitsmlData { Data = x.Value }).ToList();
 
             WitsmlLogData newData = new()
