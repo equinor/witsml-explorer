@@ -43,6 +43,7 @@ import {
   sync,
   text_field as textField,
   upload,
+  warning_outlined,
   world
 } from "@equinor/eds-icons";
 const icons = {
@@ -89,6 +90,7 @@ const icons = {
   sync,
   textField,
   upload,
+  warning_outlined,
   world
 };
 

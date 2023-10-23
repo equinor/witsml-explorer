@@ -187,25 +187,14 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonicsMismatchCountResult += $"\n{keyValues.Key}: {keyValues.Value:n0}";
             }
 
-            string summary = "";
-            if (_compareLogDataReportItems.Count >= MaxMismatchesLimit)
-            {
-                summary = $"Stopped searching for more mismatches, after finding {_compareLogDataReportItems.Count:n0} mismatches in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult;
-            }
-            else if (_compareLogDataReportItems.Count > 0)
-            {
-                summary = $"There are {_compareLogDataReportItems.Count:n0} mismatches in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult;
-            }
-            else
-            {
-                summary = $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.";
-            }
-
             return new BaseReport
             {
                 Title = $"Compare Log Data",
-                Summary = summary,
-                ReportItems = _compareLogDataReportItems
+                Summary = _compareLogDataReportItems.Count > 0
+                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult
+                : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
+                ReportItems = _compareLogDataReportItems,
+                WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"After finding {MaxMismatchesLimit:n0} mismatches in the data indexes, we stopped comparing logs since this is the maximum limit for mismatches during the search. Something is likely wrong with the compare log setup. However, the report for the comparison so far can be found below." : null,
             };
         }
 
