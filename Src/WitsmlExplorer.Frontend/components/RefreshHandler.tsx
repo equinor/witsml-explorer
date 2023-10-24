@@ -3,6 +3,7 @@ import { RemoveWellboreAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import NavigationContext from "../contexts/navigationContext";
 import EntityType from "../models/entityType";
+import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import { getObjectsFromWellbore, objectTypeToWellboreObjects } from "../models/wellbore";
 import NotificationService, { RefreshAction } from "../services/notificationService";
@@ -37,7 +38,6 @@ const RefreshHandler = (): React.ReactElement => {
       try {
         // @ts-ignore
         const modificationType: ModificationType = ModificationType[`${refreshAction.refreshType}${refreshAction.entityType}`];
-        // the following switch-case can be simplified once we have a generic refresh of a single object
         switch (refreshAction.entityType) {
           case EntityType.Well:
             await refreshWell(refreshAction, modificationType);
@@ -45,53 +45,14 @@ const RefreshHandler = (): React.ReactElement => {
           case EntityType.Wellbore:
             await refreshWellbore(refreshAction, modificationType);
             break;
-          case EntityType.BhaRun:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.FluidsReport:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.FormationMarker:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.Log:
-            if (refreshAction.objectUid == null) {
-              await refreshWellboreObjects(refreshAction);
-            } else {
-              await refreshLogObject(refreshAction);
+          default:
+            if (!Object.values(ObjectType).includes(refreshAction.entityType as ObjectType)) {
+              throw new Error("Unexpected EntityType when attempting to refresh WITSML objects");
             }
-            break;
-          case EntityType.Message:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.MudLog:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.Trajectory:
             if (refreshAction.objectUid == null) {
               await refreshWellboreObjects(refreshAction);
             } else {
-              await refreshTrajectory(refreshAction);
-            }
-            break;
-          case EntityType.Tubular:
-            if (refreshAction.objectUid == null) {
-              await refreshWellboreObjects(refreshAction);
-            } else {
-              await refreshTubular(refreshAction);
-            }
-            break;
-          case EntityType.Risk:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.Rig:
-            await refreshWellboreObjects(refreshAction);
-            break;
-          case EntityType.WbGeometry:
-            if (refreshAction.objectUid == null) {
-              await refreshWellboreObjects(refreshAction);
-            } else {
-              await refreshWbGeometry(refreshAction);
+              await refreshWellboreObject(refreshAction);
             }
         }
       } catch (error) {
@@ -149,36 +110,22 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshLogObject(refreshAction: RefreshAction) {
-    const log = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Log);
-    if (log) {
-      dispatchNavigation({ type: ModificationType.UpdateLogObject, payload: { log } });
-    }
-  }
-
-  async function refreshTubular(refreshAction: RefreshAction) {
-    const tubular = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Tubular);
-    if (tubular) {
-      dispatchNavigation({ type: ModificationType.UpdateTubularOnWellbore, payload: { tubular, exists: true } });
-    }
-  }
-
-  async function refreshTrajectory(refreshAction: RefreshAction) {
-    const trajectory = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.Trajectory);
-    const wellUid = refreshAction.wellUid;
-    const wellboreUid = refreshAction.wellboreUid;
-    if (trajectory) {
-      dispatchNavigation({ type: ModificationType.UpdateTrajectoryOnWellbore, payload: { trajectory, wellUid, wellboreUid } });
-    }
-  }
-
-  async function refreshWbGeometry(refreshAction: RefreshAction) {
-    const wbGeometry = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, ObjectType.WbGeometry);
-    const wellUid = refreshAction.wellUid;
-    const wellboreUid = refreshAction.wellboreUid;
-    if (wbGeometry) {
-      dispatchNavigation({ type: ModificationType.UpdateWbGeometryOnWellbore, payload: { wbGeometry, wellUid, wellboreUid } });
-    }
+  async function refreshWellboreObject(refreshAction: RefreshAction) {
+    const objectToUpdate = await ObjectService.getObject(refreshAction.wellUid, refreshAction.wellboreUid, refreshAction.objectUid, refreshAction.entityType as ObjectType);
+    dispatchNavigation({
+      type: ModificationType.UpdateWellboreObject,
+      payload: objectToUpdate
+        ? {
+            objectToUpdate,
+            objectType: refreshAction.entityType as ObjectType,
+            isDeleted: false
+          }
+        : {
+            objectToUpdate: { uid: refreshAction.objectUid, wellboreUid: refreshAction.wellboreUid, wellUid: refreshAction.wellUid } as ObjectOnWellbore,
+            objectType: refreshAction.entityType as ObjectType,
+            isDeleted: true
+          }
+    });
   }
 
   async function refreshWellboreObjects(refreshAction: RefreshAction) {

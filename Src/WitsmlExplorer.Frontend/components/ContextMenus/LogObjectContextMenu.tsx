@@ -1,7 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -15,7 +14,6 @@ import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbo
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
 import { colors } from "../../styles/Colors";
 import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
 import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
@@ -27,7 +25,7 @@ import { ReportModal } from "../Modals/ReportModal";
 import SpliceLogsModal from "../Modals/SpliceLogsModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickRefreshObject } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
@@ -60,15 +58,6 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     const logObject = checkedObjects[0];
     const analyzeGapModalProps: AnalyzeGapModalProps = { logObject, mnemonics: [] };
     dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
-    dispatchOperation({ type: OperationType.HideContextMenu });
-  };
-
-  const onClickRefresh = async () => {
-    const log = await ObjectService.getObject(checkedObjects[0].wellUid, checkedObjects[0].wellboreUid, checkedObjects[0].uid, ObjectType.Log);
-    dispatchNavigation({
-      type: ModificationType.UpdateLogObject,
-      payload: { log: log }
-    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -133,7 +122,11 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshlog"} onClick={onClickRefresh} disabled={checkedObjects.length !== 1}>
+        <MenuItem
+          key={"refreshlog"}
+          onClick={() => onClickRefreshObject(checkedObjects[0] as LogObject, ObjectType.Log, dispatchOperation, dispatchNavigation)}
+          disabled={checkedObjects.length !== 1}
+        >
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh log</Typography>
         </MenuItem>,
