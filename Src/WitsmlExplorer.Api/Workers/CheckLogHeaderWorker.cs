@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Workers
             }
             IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(","));
             string[] startResultLogData = dataStartResultLog.LogData.Data?.FirstOrDefault()?.Data.Split(",");
-            if (startResultLogData.IsNullOrEmpty()  || endResultLogData.IsNullOrEmpty())
+            if (startResultLogData.IsNullOrEmpty() || endResultLogData.IsNullOrEmpty())
             {
                 return null;
             }
