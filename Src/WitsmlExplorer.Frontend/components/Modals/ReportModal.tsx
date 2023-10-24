@@ -67,7 +67,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
               {report.warningMessage && (
                 <StyledBanner colors={colors}>
                   <Banner.Icon variant="warning">
-                    <Icon name="warningOutlined" />
+                    <Icon name="infoCircle" />
                   </Banner.Icon>
                   <Banner.Message>{report.warningMessage}</Banner.Message>
                 </StyledBanner>
@@ -147,6 +147,7 @@ const ContentLayout = styled.div`
 const StyledBanner = styled(Banner)<{ colors: Colors }>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};
   span {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
     color: ${(props) => props.colors.infographic.primaryMossGreen};
   }
   div {
