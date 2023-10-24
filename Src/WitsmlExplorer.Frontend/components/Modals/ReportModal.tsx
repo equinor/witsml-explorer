@@ -67,7 +67,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
               {report.warningMessage && (
                 <StyledBanner colors={colors}>
                   <Banner.Icon variant="warning">
-                    <Icon name="warning_outlined" />
+                    <Icon name="warningOutlined" />
                   </Banner.Icon>
                   <Banner.Message>{report.warningMessage}</Banner.Message>
                 </StyledBanner>
