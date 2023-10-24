@@ -38,7 +38,7 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
 
   const validate = (current: string) => {
     return (
-      (validateIsoDateStringNoOffset(current, offset) && (!minValue || value >= minValue) && (!maxValue || value <= maxValue)) ||
+      (validateIsoDateStringNoOffset(current, offset) && (!minValue || current >= minValue) && (!maxValue || current <= maxValue)) ||
       (initiallyEmpty && (current == null || current === ""))
     );
   };
