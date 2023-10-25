@@ -51,7 +51,7 @@
     "echarts-for-react": "^3.0.2",
     "lodash.orderby": "^4.6.0",
     "memoize-one": "^6.0.0",
-    "next": "^13.0.0",
+    "next": "^13.5.0",
     "notistack": "1.0.10",
     "prettier": "^2.7.1",
     "prop-types": "15.8.1",
