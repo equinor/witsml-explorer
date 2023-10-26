@@ -39,7 +39,6 @@ namespace WitsmlExplorer.Api.Workers
             {
                 VerifyLogHeaders(logHeaders);
 
-                bool isDescending = logHeaders.Logs.FirstOrDefault().Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
                 bool isDepthLog = logHeaders.Logs.FirstOrDefault().IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
                 WitsmlLogData newLogData = new()
@@ -54,8 +53,8 @@ namespace WitsmlExplorer.Api.Workers
                     WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                     foreach (var mnemonic in logHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1))
                     {
-                        WitsmlLogData logData = await GetLogDataForCurve(logHeader, mnemonic);
-                        newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDescending, isDepthLog);
+                        WitsmlLogData logData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
+                        newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDepthLog);
                     }
                 }
 
@@ -93,28 +92,7 @@ namespace WitsmlExplorer.Api.Workers
             if (logHeaders.Logs.Any(log => log.IndexType != indexType)) throw new ArgumentException("Index type must match for all logs");
         }
 
-        private async Task<WitsmlLogData> GetLogDataForCurve(WitsmlLog log, string mnemonic)
-        {
-            await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), log, mnemonic.AsSingletonList(), Logger);
-            List<WitsmlData> data = new();
-            WitsmlLogData logData = await logDataReader.GetNextBatch();
-            var mnemonicList = logData?.MnemonicList;
-            var unitList = logData?.UnitList;
-            while (logData != null)
-            {
-                data.AddRange(logData.Data);
-                logData = await logDataReader.GetNextBatch();
-            }
-
-            return new WitsmlLogData
-            {
-                MnemonicList = mnemonicList,
-                UnitList = unitList,
-                Data = data
-            };
-        }
-
-        private static WitsmlLogData SpliceLogDataForCurve(WitsmlLogData primaryData, WitsmlLogData secondaryData, string mnemonic, bool isDescending, bool isDepthLog)
+        private static WitsmlLogData SpliceLogDataForCurve(WitsmlLogData primaryData, WitsmlLogData secondaryData, string mnemonic, bool isDepthLog)
         {
             int mnemonicIndex = primaryData.MnemonicList.Split(',').ToList().FindIndex(m => m == mnemonic);
             Dictionary<string, string> primaryDict = primaryData.Data?.ToDictionary(row => row.Data.Split(',')[0], row => row.Data) ?? new();
@@ -132,7 +110,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 var rowIndex = dataRow.Split(',').First();
                 if ((startIndex == null && endIndex == null)
-                    || isDepthLog && (double.Parse(rowIndex) < double.Parse(startIndex) || double.Parse(rowIndex) > double.Parse(endIndex))
+                    || isDepthLog && (StringHelpers.ToDouble(rowIndex) < StringHelpers.ToDouble(startIndex) || StringHelpers.ToDouble(rowIndex) > StringHelpers.ToDouble(endIndex))
                     || !isDepthLog && (DateTime.Parse(rowIndex) < DateTime.Parse(startIndex) || DateTime.Parse(rowIndex) > DateTime.Parse(endIndex)))
                 {
                     var newCellValue = dataRow.Split(',').Last();
@@ -143,7 +121,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            var sorted = isDepthLog ? primaryDict.OrderBy(x => double.Parse(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
+            var sorted = isDepthLog ? primaryDict.OrderBy(x => StringHelpers.ToDouble(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
             List<WitsmlData> splicedData = sorted.Select(x => new WitsmlData { Data = x.Value }).ToList();
 
             WitsmlLogData newData = new()

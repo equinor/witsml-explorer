@@ -129,7 +129,7 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
   return (
     <ModalDialog
-      heading={`Log comparison`}
+      heading={`Log header comparison`}
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
       confirmColor={"primary"}
       confirmText={`OK`}
