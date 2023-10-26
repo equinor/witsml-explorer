@@ -1,12 +1,15 @@
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
+import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
 import { CurveSpecification } from "../../models/logData";
 import { Colors } from "../../styles/Colors";
-import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
 import formatDateString from "../DateFormatter";
-import { TimeZone, DateTimeFormat } from "../../contexts/operationStateReducer";
+import { ContentViewDimensionsContext } from "../PageLayout";
+import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
+
+const COLUMN_WIDTH = 125;
 
 interface CurveValuesPlotProps {
   data: any[];
@@ -25,8 +28,31 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
   const selectedLabels = useRef<Record<string, boolean>>(null);
   const scrollIndex = useRef<number>(0);
   const horizontalZoom = useRef<[number, number]>([0, 100]);
+  const [maxColumns, setMaxColumns] = useState<number>(15);
+  const { width: contentViewWidth } = useContext(ContentViewDimensionsContext);
 
-  const chartOption = getChartOption(data, columns, name, colors, dateTimeFormat, isDescending, autoRefresh, selectedLabels.current, scrollIndex.current, horizontalZoom.current);
+  useEffect(() => {
+    if (contentViewWidth) {
+      const newMaxColumns = Math.floor((contentViewWidth - 100) / COLUMN_WIDTH);
+      if (newMaxColumns !== maxColumns) {
+        setMaxColumns(newMaxColumns);
+      }
+    }
+  }, [contentViewWidth]);
+
+  const chartOption = getChartOption(
+    data,
+    columns,
+    name,
+    colors,
+    dateTimeFormat,
+    isDescending,
+    autoRefresh,
+    maxColumns,
+    selectedLabels.current,
+    scrollIndex.current,
+    horizontalZoom.current
+  );
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const shouldShowAll = Object.values(params.selected).every((s) => s === false);
@@ -88,6 +114,7 @@ const getChartOption = (
   dateTimeFormat: DateTimeFormat,
   isDescending: boolean,
   autoRefresh: boolean,
+  maxColumns: number,
   selectedLabels: Record<string, boolean>,
   scrollIndex: number,
   horizontalZoom: [number, number]
@@ -200,17 +227,19 @@ const getChartOption = (
             type: "slider",
             labelFormatter: () => ""
           },
-      {
-        id: "horizontalZoom",
-        orient: "horizontal",
-        filterMode: "empty",
-        type: "slider",
-        start: horizontalZoom[0],
-        end: horizontalZoom[1],
-        minValueSpan: 1,
-        maxValueSpan: 12,
-        labelFormatter: () => ""
-      }
+      maxColumns >= dataColumns.length
+        ? null
+        : {
+            id: "horizontalZoom",
+            orient: "horizontal",
+            filterMode: "empty",
+            type: "slider",
+            start: horizontalZoom[0],
+            end: horizontalZoom[1],
+            minValueSpan: Math.min(dataColumns.length, maxColumns),
+            maxValueSpan: Math.min(dataColumns.length, maxColumns),
+            labelFormatter: () => ""
+          }
     ],
     animation: false,
     backgroundColor: colors.ui.backgroundDefault,

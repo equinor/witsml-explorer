@@ -1,6 +1,6 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { ReactElement, createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Alerts from "../components/Alerts";
 import ContentView from "../components/ContentView";
@@ -20,7 +20,7 @@ const PageLayout = (): ReactElement => {
   const [isVisible, setIsVisibile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(316);
-  const { width: documentWidth } = useDocumentDimensions();
+  const { width: documentWidth, height: documentHeight } = useDocumentDimensions();
   const { navigationState } = useContext(NavigationContext);
   const { currentProperties } = navigationState;
   const version = process.env.NEXT_PUBLIC_WEX_VERSION;
@@ -74,7 +74,9 @@ const PageLayout = (): ReactElement => {
       <Divider onMouseDown={startResizing} colors={colors} style={{ ...(!isSidebarExpanded && { display: "none" }) }} />
       <ContentViewLayout style={isSidebarExpanded ? { width: contentWidth } : { width: "100%", gridColumn: "1 / -1" }}>
         <Alerts />
-        <ContentView />
+        <ContentViewDimensionsContext.Provider value={{ width: contentWidth, height: documentHeight }}>
+          <ContentView />
+        </ContentViewDimensionsContext.Provider>
       </ContentViewLayout>
       <PropertyBar colors={colors}>
         <Button colors={colors} variant={"ghost_icon"} style={{ marginRight: "0.5rem" }} onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}>
@@ -90,6 +92,13 @@ const PageLayout = (): ReactElement => {
     <></>
   );
 };
+
+interface ContentViewDimensions {
+  width: number;
+  height: number;
+}
+
+export const ContentViewDimensionsContext = createContext<ContentViewDimensions>({} as ContentViewDimensions);
 
 const Layout = styled.div`
   display: grid;
