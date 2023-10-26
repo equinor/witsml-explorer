@@ -1,8 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreTrajectoryAction } from "../../contexts/modificationActions";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { DispatchNavigation } from "../../contexts/navigationAction";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -22,8 +22,8 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
-  dispatchNavigation: (action: UpdateWellboreTrajectoryAction) => void;
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
+  dispatchNavigation: DispatchNavigation;
+  dispatchOperation: DispatchOperation;
   trajectory: Trajectory;
   selectedServer: Server;
   servers: Server[];

@@ -11,10 +11,9 @@ import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickRefreshAll } from "./TubularContextMenuUtils";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularsContextMenuProps {
@@ -22,17 +21,18 @@ export interface TubularsContextMenuProps {
   dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
   wellbore: Wellbore;
   servers?: Server[];
+  setIsLoading?: (arg: boolean) => void;
 }
 
 const TubularsContextMenu = (props: TubularsContextMenuProps): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, wellbore, servers } = props;
+  const { dispatchNavigation, dispatchOperation, wellbore, servers, setIsLoading } = props;
   const tubularReferences = useClipboardReferencesOfType(ObjectType.Tubular);
   const openInQueryView = useOpenInQueryView();
 
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefreshAll(wellbore.wellUid, wellbore.uid, dispatchOperation, dispatchNavigation)}>
+        <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, ObjectType.Tubular, setIsLoading)}>
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh tubulars</Typography>
         </MenuItem>,
