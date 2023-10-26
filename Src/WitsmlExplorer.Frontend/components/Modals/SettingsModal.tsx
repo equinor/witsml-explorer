@@ -92,7 +92,7 @@ const SettingsModal = (): React.ReactElement => {
             <Icon name="calendar" size={32} color={colors.infographic.primaryMossGreen} />
             <StyledNativeSelect label="Datetime Format" id="native-select-datetimeformat" onChange={onChangeDateTimeFormat} defaultValue={dateTimeFormat} colors={colors}>
               <option value={DateTimeFormat.Raw}>Raw</option>
-              <option value={DateTimeFormat.Natural}>Natural</option>
+              <option value={DateTimeFormat.Natural}>dd.MM.yyyy HH:mm:ss.SSS</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           {msalEnabled && (
@@ -130,3 +130,4 @@ const HorizontalLayout = styled.div`
 `;
 
 export { SettingsModal };
+
