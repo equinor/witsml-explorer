@@ -135,3 +135,14 @@ export const formatXml = (xml: string) => {
   const resultDoc = xsltProcessor.transformToDocument(xmlDoc);
   return new XMLSerializer().serializeToString(resultDoc);
 };
+
+export const getParserError = (formattedQuery: string) => {
+  const parserErrorMatch = formattedQuery.match(/<parsererror.*?>[\s\S]*?<\/parsererror>/i);
+  if (parserErrorMatch) {
+    const errorMatch = parserErrorMatch[0]?.match(/<div.*?>([\s\S]*?)<\/div>/i);
+    if (errorMatch) {
+      return errorMatch[1];
+    }
+  }
+  return null;
+};

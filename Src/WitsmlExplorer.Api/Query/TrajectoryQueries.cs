@@ -127,17 +127,17 @@ namespace WitsmlExplorer.Api.Query
                 TypeTrajStation = trajectoryStation.TypeTrajStation
             };
 
-            if (!trajectoryStation.Tvd.Equals(null))
+            if (trajectoryStation.Tvd != null)
             {
                 ts.Tvd = new WitsmlWellVerticalDepthCoord { Uom = trajectoryStation.Tvd.Uom, Value = trajectoryStation.Tvd.Value.ToString(CultureInfo.InvariantCulture) };
             }
 
-            if (!trajectoryStation.Incl.Equals(null))
+            if (trajectoryStation.Incl != null)
             {
                 ts.Incl = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Incl.Uom, Value = trajectoryStation.Incl.Value.ToString(CultureInfo.InvariantCulture) };
             }
 
-            if (!trajectoryStation.Azi.Equals(null))
+            if (trajectoryStation.Azi != null)
             {
                 ts.Azi = new WitsmlPlaneAngleMeasure { Uom = trajectoryStation.Azi.Uom, Value = trajectoryStation.Azi.Value.ToString(CultureInfo.InvariantCulture) };
             }
