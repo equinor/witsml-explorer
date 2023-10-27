@@ -23,7 +23,7 @@ interface ObjectGroupItemProps {
   objectsOnWellbore?: ObjectOnWellbore[] | undefined; //a tree item for each object will be generated if this array is provided
   objectType: ObjectType;
   ObjectContextMenu?: React.ComponentType<ObjectContextMenuProps>; //required only if objectsOnWellbore array is provided
-  onGroupContextMenu?: (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => void;
+  onGroupContextMenu?: (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading: (arg: boolean) => void) => void;
   children?: ReactNode;
   isActive?: boolean;
 }

@@ -9,12 +9,9 @@ import {
   UpdateServerListAction,
   UpdateWellAction,
   UpdateWellboreAction,
-  UpdateWellboreLogAction,
+  UpdateWellboreObjectAction,
   UpdateWellboreObjectsAction,
   UpdateWellborePartialAction,
-  UpdateWellboreTrajectoryAction,
-  UpdateWellboreTubularAction,
-  UpdateWellboreWbGeometryAction,
   UpdateWellsAction
 } from "./modificationActions";
 import {
@@ -48,10 +45,7 @@ export type NavigationAction =
   | UpdateWellsAction
   | UpdateWellboreAction
   | UpdateWellborePartialAction
-  | UpdateWellboreLogAction
-  | UpdateWellboreTrajectoryAction
-  | UpdateWellboreTubularAction
-  | UpdateWellboreWbGeometryAction
+  | UpdateWellboreObjectAction
   | UpdateWellboreObjectsAction
   | ToggleTreeNodeAction
   | CollapseTreeNodeChildrenAction

@@ -6,15 +6,12 @@ enum ModificationType {
   RemoveWell = "RemoveWell",
   RemoveWellbore = "RemoveWellbore",
   RemoveServer = "RemoveServer",
-  UpdateLogObject = "UpdateLogObject",
   UpdateServer = "UpdateServer",
   UpdateServerList = "UpdateServerList",
-  UpdateTrajectoryOnWellbore = "UpdateTrajectoryOnWellbore",
-  UpdateTubularOnWellbore = "UpdateTubularOnWellbore",
-  UpdateWbGeometryOnWellbore = "UpdateWbGeometryOnWellbore",
-  UpdateWellboreObjects = "UpdateWellboreObjects",
   UpdateWell = "UpdateWell",
   UpdateWellbore = "UpdateWellbore",
+  UpdateWellboreObject = "UpdateWellboreObject",
+  UpdateWellboreObjects = "UpdateWellboreObjects",
   UpdateWellborePartial = "UpdateWellborePartial",
   UpdateWells = "UpdateWells"
 }
