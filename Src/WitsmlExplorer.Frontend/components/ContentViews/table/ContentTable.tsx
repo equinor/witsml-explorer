@@ -64,7 +64,7 @@ export const ContentTable = React.memo((contentTableProps: ContentTableProps): R
     onRowSelectionChange,
     initiallySelectedRows = [],
     autoRefresh = false,
-    showObjectRefresh = false,
+    showObjectRefresh = false
   } = contentTableProps;
   const {
     operationState: { colors }
