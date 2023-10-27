@@ -145,6 +145,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       data={getTableData()}
       onContextMenu={onContextMenu}
       checkableRows
+      showObjectRefresh
       downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
     />
   ) : (

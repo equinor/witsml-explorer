@@ -104,6 +104,7 @@ export const TrajectoryView = (): React.ReactElement => {
       data={trajectoryStationRows}
       onContextMenu={onContextMenu}
       checkableRows
+      showObjectRefresh
       downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
     />
   ) : (

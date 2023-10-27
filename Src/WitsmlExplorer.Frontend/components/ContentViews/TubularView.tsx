@@ -103,6 +103,7 @@ export const TubularView = (): React.ReactElement => {
       data={tubularComponentRows}
       onContextMenu={onContextMenu}
       checkableRows
+      showObjectRefresh
       downloadToCsvFileName={`Tubular_${selectedTubular.name}`}
     />
   ) : (
