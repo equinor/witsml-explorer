@@ -51,10 +51,17 @@ namespace WitsmlExplorer.Api.Services
                 Uid = tStation.Uid,
                 DTimStn = tStation.DTimStn,
                 TypeTrajStation = tStation.TypeTrajStation,
-                Md = (tStation.Md == null) ? null : new LengthMeasure { Uom = tStation.Md.Uom, Value = StringHelpers.ToDecimal(tStation.Md.Value) },
-                Tvd = (tStation.Tvd == null) ? null : new LengthMeasure { Uom = tStation.Tvd.Uom, Value = StringHelpers.ToDecimal(tStation.Tvd?.Value) },
-                Incl = (tStation.Incl == null) ? null : new LengthMeasure { Uom = tStation.Incl.Uom, Value = StringHelpers.ToDecimal(tStation.Incl?.Value) },
-                Azi = (tStation.Azi == null) ? null : new LengthMeasure { Uom = tStation.Azi.Uom, Value = StringHelpers.ToDecimal(tStation.Azi?.Value) }
+                Md = LengthMeasure.FromWitsml(tStation.Md),
+                Tvd = LengthMeasure.FromWitsml(tStation.Tvd),
+                Incl = LengthMeasure.FromWitsml(tStation.Incl),
+                Azi = LengthMeasure.FromWitsml(tStation.Azi),
+                Dls =  LengthMeasure.FromWitsml(tStation.Dls),
+                Mtf =  LengthMeasure.FromWitsml(tStation.Mtf),
+                Gtf =  LengthMeasure.FromWitsml(tStation.Gtf),
+                DispNs =  LengthMeasure.FromWitsml(tStation.DispNs),
+                DispEw =  LengthMeasure.FromWitsml(tStation.DispEw),
+                VertSect = LengthMeasure.FromWitsml(tStation.VertSect)
+
             })
                 .OrderBy(tStation => tStation.Md.Value)
                 .ToList();
@@ -76,7 +83,8 @@ namespace WitsmlExplorer.Api.Services
                 DTimTrajEnd = trajectory.DTimTrajEnd,
                 ServiceCompany = trajectory.ServiceCompany,
                 DateTimeCreation = trajectory.CommonData?.DTimCreation,
-                DateTimeLastChange = trajectory.CommonData?.DTimLastChange
+                DateTimeLastChange = trajectory.CommonData?.DTimLastChange,
+                SourceName = trajectory.CommonData?.SourceName,
             };
         }
     }

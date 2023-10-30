@@ -41,6 +41,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
     { property: "dTimTrajEnd", label: "dTimTrajEnd", type: ContentType.DateTime },
     { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
+    { property: "sourceName", label: "commonData.sourceName", type: ContentType.String },
     { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
     { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
   ];

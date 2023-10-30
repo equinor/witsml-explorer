@@ -10,5 +10,6 @@ export default interface Trajectory extends ObjectOnWellbore {
   serviceCompany?: string;
   dateTimeCreation?: string;
   dateTimeLastChange?: string;
+  sourceName?: string;
   trajectoryStations: TrajectoryStation[];
 }

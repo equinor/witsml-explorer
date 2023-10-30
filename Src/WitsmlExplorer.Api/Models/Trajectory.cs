@@ -15,5 +15,6 @@ namespace WitsmlExplorer.Api.Models
         public string ServiceCompany { get; init; }
         public string DateTimeCreation { get; init; }
         public string DateTimeLastChange { get; init; }
+        public string SourceName { get; init; }
     }
 }

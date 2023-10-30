@@ -10,6 +10,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import { measureToString } from "../../models/measure";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;
@@ -80,7 +81,13 @@ export const TrajectoryView = (): React.ReactElement => {
     { property: "md", label: "md", type: ContentType.Number },
     { property: "incl", label: "incl", type: ContentType.Number },
     { property: "azi", label: "azi", type: ContentType.Number },
-    { property: "tvd", label: "tvd", type: ContentType.Number }
+    { property: "tvd", label: "tvd", type: ContentType.Number },
+    { property: "dls", label: "dls", type: ContentType.Number },
+    { property: "mtf", label: "mtf", type: ContentType.Number },
+    { property: "gtf", label: "gtf", type: ContentType.Number },
+    { property: "dispNs", label: "dispNs", type: ContentType.Number },
+    { property: "dispEw", label: "dispEw", type: ContentType.Number },
+    { property: "vertSect", label: "vertSect", type: ContentType.Number }
   ];
 
   const trajectoryStationRows = trajectoryStations.map((trajectoryStation) => {
@@ -89,10 +96,16 @@ export const TrajectoryView = (): React.ReactElement => {
       uid: trajectoryStation.uid,
       dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone, dateTimeFormat),
       typeTrajStation: trajectoryStation.typeTrajStation,
-      md: `${trajectoryStation.md.value?.toFixed(4)} ${trajectoryStation.md?.uom}`,
-      incl: `${trajectoryStation.incl?.value?.toFixed(4)} ${trajectoryStation.incl?.uom}`,
-      azi: `${trajectoryStation.azi?.value?.toFixed(4)} ${trajectoryStation.azi?.uom}`,
-      tvd: `${trajectoryStation.tvd?.value?.toFixed(4)} ${trajectoryStation.tvd?.uom}`,
+      md: measureToString(trajectoryStation.md),
+      incl: measureToString(trajectoryStation.incl),
+      azi: measureToString(trajectoryStation.azi),
+      tvd: measureToString(trajectoryStation.tvd),
+      dls: measureToString(trajectoryStation.dls),
+      mtf: measureToString(trajectoryStation.mtf),
+      gtf: measureToString(trajectoryStation.gtf),
+      dispNs: measureToString(trajectoryStation.dispNs),
+      dispEw: measureToString(trajectoryStation.dispEw),
+      vertSect: measureToString(trajectoryStation.vertSect),
       trajectoryStation: trajectoryStation
     };
   });

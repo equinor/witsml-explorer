@@ -12,5 +12,11 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure Tvd { get; init; }
         public LengthMeasure Incl { get; init; }
         public LengthMeasure Azi { get; init; }
+        public LengthMeasure Dls { get; init; }
+        public LengthMeasure Mtf { get; init; }
+        public LengthMeasure Gtf { get; init; }
+        public LengthMeasure DispNs { get; init; }
+        public LengthMeasure DispEw { get; init; }
+        public LengthMeasure VertSect { get; init; }
     }
 }

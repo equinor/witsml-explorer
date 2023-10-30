@@ -83,6 +83,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajStartValid(valid);
                 }}
                 timeZone={timeZone}
+                disabled={editMode}
               />
               <DateTimeField
                 value={editableTrajectory.dTimTrajEnd}
@@ -92,6 +93,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajEndValid(valid);
                 }}
                 timeZone={timeZone}
+                disabled={editMode}
               />
               <TextField
                 id={"serviceCompany"}
@@ -107,9 +109,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 id={"mdMin"}
                 label={"mdMin"}
                 type="number"
+                disabled
                 fullWidth
                 value={editableTrajectory.mdMin}
-                disabled={!editableTrajectory.mdMin}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
@@ -121,9 +123,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 id={"mdMax"}
                 label={"mdMax"}
                 type="number"
+                disabled
                 fullWidth
                 value={editableTrajectory.mdMax}
-                disabled={!editableTrajectory.mdMax}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
@@ -140,6 +142,14 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 helperText={editMode && editableTrajectory.aziRef?.length === 0 ? "The aziRef must have value." : ""}
                 fullWidth
                 onChange={(e) => setEditableTrajectory({ ...editableTrajectory, aziRef: e.target.value })}
+              />
+              <TextField
+                id="sourceName"
+                label="sourceName"
+                value={editableTrajectory.sourceName ? editableTrajectory.sourceName : ""}
+                fullWidth
+                disabled={!editMode}
+                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, sourceName: e.target.value })}
               />
             </>
           }
