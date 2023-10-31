@@ -56,7 +56,7 @@ export const customCompleter = {
  * @param str - The input XML string.
  * @returns The tag found in the input string.
  */
-const getTag = (str: string): string => {
+export const getTag = (str: string): string => {
   return str.match(/<\/*(\w+)[^>]*>/)?.[1];
 };
 
@@ -68,7 +68,7 @@ const getTag = (str: string): string => {
  */
 const getTemplateObject = (rows: string[]): TemplateObjects | null => {
   for (const row of rows) {
-    const tag = getTag(row).slice(0, -1);
+    const tag = getTag(row)?.slice(0, -1);
     if (tag && Object.values(TemplateObjects).includes(tag as TemplateObjects)) {
       return tag as TemplateObjects;
     }
