@@ -52,19 +52,19 @@ const updateWidgets = (editor: any, renderer: any) => {
   const config = textLayer.config;
   const session = textLayer.session;
 
-  const first = config.firstRow;
-  const last = config.lastRow;
+  const firstRow = config.firstRow;
+  const lastRow = config.lastRow;
 
   const lineElements = textLayer.element.childNodes;
   let lineElementsIdx = 0;
 
-  let row = first;
+  let row = firstRow;
   let foldLine = session.getNextFoldLine(row);
   let foldStart = foldLine ? foldLine.start.row : Infinity;
 
   const useGroups = textLayer.$useLineGroups();
 
-  while (row <= last) {
+  while (row <= lastRow) {
     if (row > foldStart) {
       row = foldLine.end.row + 1;
       foldLine = textLayer.session.getNextFoldLine(row, foldLine);
