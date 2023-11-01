@@ -15,7 +15,7 @@ import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
 const RiskObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
 
   const onClickModify = async () => {
@@ -28,7 +28,7 @@ const RiskObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Risk, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Risk, navigationState, wellbore),
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

@@ -24,7 +24,6 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
-  showObjectRefresh?: boolean;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -41,8 +40,7 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns,
-    showObjectRefresh
+    stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, currentSelected, expandedTreeNodes } = navigationState;
@@ -71,8 +69,6 @@ const Panel = (props: PanelProps) => {
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
     const uid = selectedObject.uid;
-    const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, selectedObjectGroup, abortRefreshControllerRef.current.signal);
-    dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
     let freshObject = await ObjectService.getObject(wellUid, wellboreUid, uid, selectedObjectGroup);
     const isDeleted = !freshObject;
     if (isDeleted) {
@@ -109,15 +105,11 @@ const Panel = (props: PanelProps) => {
       await refreshWells();
     } else if (currentSelected === selectedWell) {
       await refreshWell();
+    } else if (currentSelected === selectedObject) {
+      await refreshObject();
     } else {
       await refreshObjects();
     }
-    setIsRefreshing(false);
-  };
-
-  const onClickObjectRefresh = async () => {
-    setIsRefreshing(true);
-    await refreshObject();
     setIsRefreshing(false);
   };
 
@@ -148,18 +140,6 @@ const Panel = (props: PanelProps) => {
       <Typography>{selectedItemsText}</Typography>
       {showRefresh && (
         <Button key="refreshObjects" aria-disabled={isRefreshing ? true : false} aria-label={isRefreshing ? "loading data" : null} onClick={onClickRefresh} disabled={isRefreshing}>
-          <Icon name="refresh" />
-          Refresh
-        </Button>
-      )}
-      {showObjectRefresh && (
-        <Button
-          key="refreshObject"
-          aria-disabled={isRefreshing ? true : false}
-          aria-label={isRefreshing ? "loading data" : null}
-          onClick={onClickObjectRefresh}
-          disabled={isRefreshing}
-        >
           <Icon name="refresh" />
           Refresh
         </Button>

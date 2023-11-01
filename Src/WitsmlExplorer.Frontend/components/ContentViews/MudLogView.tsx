@@ -135,7 +135,7 @@ export const MudLogView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       insetColumns={insetColumns}
-      showObjectRefresh
+      showRefresh
       downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
     />
   ) : (

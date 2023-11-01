@@ -17,7 +17,7 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { servers } = navigationState;
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
   const { dispatchOperation } = useContext(OperationContext);
@@ -31,7 +31,7 @@ const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0])}

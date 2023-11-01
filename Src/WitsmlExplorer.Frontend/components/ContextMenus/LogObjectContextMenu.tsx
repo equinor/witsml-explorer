@@ -141,7 +141,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, wellbore),
         <MenuItem
           key={"pastelogcurves"}
           onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}

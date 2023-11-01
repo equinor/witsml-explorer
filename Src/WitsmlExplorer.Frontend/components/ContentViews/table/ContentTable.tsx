@@ -63,8 +63,7 @@ export const ContentTable = React.memo((contentTableProps: ContentTableProps): R
     downloadToCsvFileName = null,
     onRowSelectionChange,
     initiallySelectedRows = [],
-    autoRefresh = false,
-    showObjectRefresh = false
+    autoRefresh = false
   } = contentTableProps;
   const {
     operationState: { colors }
@@ -206,7 +205,6 @@ export const ContentTable = React.memo((contentTableProps: ContentTableProps): R
           columns={columns}
           expandableRows={insetColumns != null}
           showRefresh={showRefresh}
-          showObjectRefresh={showObjectRefresh}
           downloadToCsvFileName={downloadToCsvFileName}
           stickyLeftColumns={stickyLeftColumns}
         />

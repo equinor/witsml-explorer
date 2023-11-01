@@ -1,9 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { NavigationState } from "../../contexts/navigationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
+import NavigationContext, { NavigationState } from "../../contexts/navigationContext";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
@@ -17,24 +16,19 @@ import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
-import { DispatchNavigation } from "../../contexts/navigationAction";
+import OperationContext from "../../contexts/operationContext";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
   wellbore: Wellbore;
 }
 
-export const ObjectMenuItems = (
-  checkedObjects: ObjectOnWellbore[],
-  objectType: ObjectType,
-  navigationState: NavigationState,
-  dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation,
-  wellbore: Wellbore
-): React.ReactElement[] => {
+export const ObjectMenuItems = (checkedObjects: ObjectOnWellbore[], objectType: ObjectType, navigationState: NavigationState, wellbore: Wellbore): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
   const { selectedServer, servers } = navigationState;
+  const { dispatchNavigation } = useContext(NavigationContext);
+  const { dispatchOperation } = useContext(OperationContext);
 
   return [
     <MenuItem key={"refresh"} onClick={() => onClickRefreshObject(checkedObjects[0], objectType, dispatchOperation, dispatchNavigation)} disabled={checkedObjects.length !== 1}>
