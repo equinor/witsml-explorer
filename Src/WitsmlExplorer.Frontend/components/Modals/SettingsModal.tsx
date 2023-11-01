@@ -1,15 +1,15 @@
-import { Button } from "@equinor/eds-core-react";
+import { Button, Radio, TextField } from "@equinor/eds-core-react";
 import { Typography } from "@material-ui/core";
-import React, { useContext } from "react";
+import React, { CSSProperties, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, TimeZone, UserTheme } from "../../contexts/operationStateReducer";
+import { DateTimeFormat, DecimalPreference, TimeZone, UserTheme } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "../../msal/MsalAuthProvider";
 import AuthorizationService from "../../services/authorizationService";
 import { dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
 import { getOffsetFromTimeZone } from "../DateFormatter";
 import { StyledNativeSelect } from "../Select";
 import ModalDialog from "./ModalDialog";
@@ -27,9 +27,16 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const SettingsModal = (): React.ReactElement => {
   const {
-    operationState: { theme, timeZone, colors, dateTimeFormat },
+    operationState: { theme, timeZone, colors, dateTimeFormat, decimals },
     dispatchOperation
   } = useContext(OperationContext);
+
+  const [checked, updateChecked] = useState<string>(() => {
+    const storedDecimalPreference = localStorage.getItem(STORAGE_DECIMAL_KEY);
+    return storedDecimalPreference === DecimalPreference.Raw ? DecimalPreference.Raw : DecimalPreference.Decimal;
+  });
+
+  const [decimalError, setDecimalError] = useState<boolean>(false);
 
   const onChangeTheme = (event: any) => {
     const selectedTheme = event.target.value;
@@ -57,6 +64,27 @@ const SettingsModal = (): React.ReactElement => {
     const selectedTimeZone = event.target.value;
     localStorage.setItem(STORAGE_TIMEZONE_KEY, selectedTimeZone);
     dispatchOperation({ type: OperationType.SetTimeZone, payload: selectedTimeZone });
+  };
+
+  const onChangeDecimals = (event: any) => {
+    const inputDecimals: any = parseInt(event.target.value, 10);
+    if (!isNaN(inputDecimals) && inputDecimals >= 0 && inputDecimals <= 10) {
+      setDecimalError(false);
+      localStorage.setItem(STORAGE_DECIMAL_KEY, inputDecimals);
+      dispatchOperation({ type: OperationType.SetDecimal, payload: inputDecimals });
+    } else {
+      setDecimalError(true);
+    }
+  };
+
+  const onChangecheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedValue = event.target.value;
+    if (selectedValue === DecimalPreference.Raw) {
+      const selectedDecimals = DecimalPreference.Raw;
+      localStorage.setItem(STORAGE_DECIMAL_KEY, selectedDecimals);
+      dispatchOperation({ type: OperationType.SetDecimal, payload: selectedDecimals as DecimalPreference });
+    }
+    updateChecked(selectedValue);
   };
 
   return (
@@ -95,6 +123,32 @@ const SettingsModal = (): React.ReactElement => {
               <option value={DateTimeFormat.Natural}>Natural</option>
             </StyledNativeSelect>
           </HorizontalLayout>
+          <HorizontalLayout>
+            <div style={alignLayout}>
+              <Icon name="edit" size={32} color={colors.infographic.primaryMossGreen} />
+              <div style={alignLayout}>
+                <label style={alignLayout}>
+                  <Radio name="group" value={DecimalPreference.Raw} checked={checked === DecimalPreference.Raw} onChange={onChangecheck} />
+                  Raw
+                </label>
+                <label style={alignLayout}>
+                  <Radio name="group" value={DecimalPreference.Decimal} checked={checked === DecimalPreference.Decimal} onChange={onChangecheck} />
+                  Decimals
+                </label>
+                {checked === "decimal" && (
+                  <TextField
+                    variant={decimalError ? "error" : null}
+                    helperText={decimalError ? "Must be a positive integer between 0 and 10" : ""}
+                    id="decimal"
+                    onChange={onChangeDecimals}
+                    type="number"
+                    defaultValue={decimals}
+                    style={{ paddingLeft: "1rem" }}
+                  />
+                )}
+              </div>
+            </div>
+          </HorizontalLayout>
           {msalEnabled && (
             <HorizontalLayout>
               <Typography style={{ margin: "auto 1rem auto 0" }}>Logged in to Azure AD as {getAccountInfo()?.name}</Typography>
@@ -128,5 +182,10 @@ const HorizontalLayout = styled.div`
     align-items: flex-end;
   }
 `;
+
+const alignLayout: CSSProperties = {
+  display: "flex",
+  alignItems: "center"
+};
 
 export { SettingsModal };

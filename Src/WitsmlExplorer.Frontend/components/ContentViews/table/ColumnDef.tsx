@@ -1,10 +1,12 @@
 import { Checkbox, IconButton, useTheme } from "@material-ui/core";
 import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useContext } from "react";
 import Icon from "../../../styles/Icons";
 import { getFromStorage, orderingStorageKey, widthsStorageKey } from "./contentTableStorage";
 import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
+import OperationContext from "../../../contexts/operationContext";
+import { DecimalPreference } from "../../../contexts/operationStateReducer";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,6 +19,12 @@ declare module "@tanstack/react-table" {
 export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean, stickyLeftColumns: number) => {
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
+  const {
+    operationState: { decimals },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    dispatchOperation
+  } = useContext(OperationContext);
+
   return useMemo(() => {
     const savedWidths = getFromStorage(viewId, widthsStorageKey);
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
@@ -28,7 +36,8 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
         ...addComponentCell(column.type),
-        ...addActiveCurveFiltering(column.label)
+        ...addActiveCurveFiltering(column.label),
+        ...addDecimalPreference(column.type, decimals)
       };
     });
 
@@ -70,6 +79,28 @@ const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>>
         sortingFn: componentSortingFn
       }
     : {};
+};
+
+const addDecimalPreference = (columnType: ContentType, decimals: DecimalPreference): Partial<ColumnDef<any, any>> => {
+  return columnType === ContentType.Number || columnType === ContentType.Measure
+    ? {
+        cell: (props) => {
+          const value = props.getValue();
+          if (typeof value !== "string") return value;
+          const match = value ? value.match(/([\d.]+)\s*([^\d.]*)/) : null;
+          if (!match) return value;
+          const numericValue = parseFloat(match[1]);
+          const units = match[2];
+          const decimalVal = decimals === "raw" ? findDefaultDecimal(value) : parseInt(decimals);
+          return isNaN(numericValue) ? value : `${numericValue.toFixed(decimalVal as number)} ${units}`;
+        }
+      }
+    : {};
+};
+
+const findDefaultDecimal = (value: any) => {
+  const decimalMatch = String(value).match(/\.(\d+)/);
+  return decimalMatch ? decimalMatch[1].length : 0;
 };
 
 const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {

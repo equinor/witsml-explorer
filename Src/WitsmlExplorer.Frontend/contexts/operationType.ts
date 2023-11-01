@@ -9,7 +9,8 @@ enum OperationType {
   SetTheme,
   SetTimeZone,
   SetMode,
-  SetDateTimeFormat
+  SetDateTimeFormat,
+  SetDecimal
 }
 
 export default OperationType;

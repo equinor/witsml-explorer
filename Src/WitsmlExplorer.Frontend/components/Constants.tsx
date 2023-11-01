@@ -18,3 +18,4 @@ export const STORAGE_FILTER_HIDDENOBJECTS_KEY = "hiddenObjects";
 export const STORAGE_MISSING_DATA_AGENT_CHECKS_KEY = "missingDataAgentChecks";
 export const STORAGE_DATETIMEFORMAT_KEY = "selectedDateTimeFormat";
 export const STORAGE_QUERYVIEW_DATA = "queryViewData";
+export const STORAGE_DECIMAL_KEY = "decimalPrefernce";
