@@ -4,7 +4,7 @@ import React from "react";
 import { v4 as uuid } from "uuid";
 import { NavigationState } from "../../contexts/navigationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
+import { OpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -28,10 +28,10 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   navigationState: NavigationState,
   dispatchOperation: DispatchOperation,
+  openInQueryView: OpenInQueryView,
   wellbore: Wellbore
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
-  const openInQueryView = useOpenInQueryView();
   const { selectedServer, servers } = navigationState;
 
   return [

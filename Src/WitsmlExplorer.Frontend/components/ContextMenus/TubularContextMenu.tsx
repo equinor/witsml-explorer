@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
@@ -22,6 +23,7 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(ComponentType.TubularComponent);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular: checkedObjects[0] as Tubular, dispatchOperation };
@@ -40,7 +42,7 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh tubular</Typography>
         </MenuItem>,
-        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}

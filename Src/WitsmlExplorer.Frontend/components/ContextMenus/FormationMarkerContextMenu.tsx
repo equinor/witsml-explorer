@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import FormationMarker from "../../models/formationMarker";
 import { ObjectType } from "../../models/objectType";
 import { colors } from "../../styles/Colors";
@@ -16,6 +17,7 @@ const FormationMarkerContextMenu = (props: ObjectContextMenuProps): React.ReactE
   const { checkedObjects, wellbore } = props;
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = { formationMarker: checkedObjects[0] as FormationMarker };
@@ -26,7 +28,7 @@ const FormationMarkerContextMenu = (props: ObjectContextMenuProps): React.ReactE
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, openInQueryView, wellbore),
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

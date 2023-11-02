@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import BhaRun from "../../models/bhaRun";
 import { ObjectType } from "../../models/objectType";
 import { colors } from "../../styles/Colors";
@@ -17,6 +18,7 @@ const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   const { checkedObjects, wellbore } = props;
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -28,7 +30,7 @@ const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, openInQueryView, wellbore),
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />

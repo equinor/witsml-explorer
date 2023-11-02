@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import MessageObject from "../../models/messageObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -22,6 +23,7 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -49,7 +51,7 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="compare" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
