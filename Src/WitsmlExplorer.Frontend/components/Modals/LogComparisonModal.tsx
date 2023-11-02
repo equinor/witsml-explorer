@@ -1,5 +1,5 @@
-import { Accordion, List, TextField, Typography } from "@equinor/eds-core-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { Accordion, List, TextField } from "@equinor/eds-core-react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
@@ -12,12 +12,12 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import { Colors } from "../../styles/Colors";
-import SortableEdsTable, { Column } from "../ContentViews/table/SortableEdsTable";
+import { ContentTable, ContentTableColumn, ContentType } from "../ContentViews/table";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
-import { ComparisonCell, LabelsLayout, StyledTypography, TableLayout } from "./ComparisonModalStyles";
-import { Indexes, calculateMismatchedIndexes, markDateTimeStringDifferences, markNumberDifferences } from "./LogComparisonUtils";
+import { LabelsLayout, StyledTypography } from "./ComparisonModalStyles";
+import { Indexes, calculateMismatchedIndexes } from "./LogComparisonUtils";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface LogComparisonModalProps {
@@ -94,38 +94,15 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     setIndexTypesMatch(indexTypesMatch);
   }, [sourceLogCurveInfo, targetLogCurveInfo]);
 
-  const data = useMemo(
-    () =>
-      indexesToShow?.map((indexes) => {
-        const [markedSourceStart, markedTargetStart] =
-          sourceType == "depth"
-            ? markNumberDifferences(indexes.sourceStart, indexes.targetStart)
-            : markDateTimeStringDifferences(indexes.sourceStart as string, indexes.targetStart as string);
-        const [markedSourceEnd, markedTargetEnd] =
-          sourceType == "depth"
-            ? markNumberDifferences(indexes.sourceEnd, indexes.targetEnd)
-            : markDateTimeStringDifferences(indexes.sourceEnd as string, indexes.targetEnd as string);
-        return {
-          mnemonic: indexes.mnemonic,
-          startIndexes: indexes.sourceStart,
-          endIndexes: indexes.sourceEnd,
-          mnemonicValue: <Typography>{indexes.mnemonic}</Typography>,
-          startIndexesValue: (
-            <ComparisonCell type={sourceType}>
-              <Typography>{markedSourceStart}</Typography>
-              <Typography>{markedTargetStart}</Typography>
-            </ComparisonCell>
-          ),
-          endIndexesValue: (
-            <ComparisonCell type={sourceType}>
-              <Typography>{markedSourceEnd}</Typography>
-              <Typography>{markedTargetEnd}</Typography>
-            </ComparisonCell>
-          )
-        };
-      }),
-    [indexesToShow]
-  );
+  const data = indexesToShow?.map((mismatches) => {
+    return {
+      mnemonic: mismatches.mnemonic,
+      sourceStart: mismatches.sourceStart,
+      targetStart: mismatches.targetStart,
+      sourceEnd: mismatches.sourceEnd,
+      targetEnd: mismatches.targetEnd
+    };
+  });
 
   return (
     <ModalDialog
@@ -180,17 +157,12 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                 </span>
               )}
               {indexesToShow.length != 0 && data && (
-                <TableLayout>
-                  <SortableEdsTable
-                    columns={columns}
-                    data={data}
-                    caption={
-                      <StyledTypography colors={colors} variant="h5">
-                        Listing of Log Curves where indexes do not match
-                      </StyledTypography>
-                    }
-                  />
-                </TableLayout>
+                <>
+                  <StyledTypography colors={colors} variant="h5">
+                    Listing of Log Curves where indexes do not match
+                  </StyledTypography>
+                  <ContentTable columns={columns} data={data} downloadToCsvFileName={"LogHeaderComparison"} />
+                </>
               )}
               {indexesToShow.length == 0 && indexTypesMatch && (
                 <span>
@@ -205,10 +177,32 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   );
 };
 
-const columns: Column[] = [
-  { name: "Curve mnemonic", accessor: "mnemonic", sortDirection: "ascending" },
-  { name: "Source/target start", accessor: "startIndexes" },
-  { name: "Source/target end", accessor: "endIndexes" }
+const columns: ContentTableColumn[] = [
+  {
+    property: "mnemonic",
+    label: "mnemonic",
+    type: ContentType.String
+  },
+  {
+    property: "sourceStart",
+    label: "sourceStart",
+    type: ContentType.String
+  },
+  {
+    property: "targetStart",
+    label: "targetStart",
+    type: ContentType.String
+  },
+  {
+    property: "sourceEnd",
+    label: "sourceEnd",
+    type: ContentType.String
+  },
+  {
+    property: "targetEnd",
+    label: "targetEnd",
+    type: ContentType.String
+  }
 ];
 
 export const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
