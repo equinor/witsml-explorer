@@ -37,11 +37,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
-            IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
+            ICollection<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
             List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList())).ToList();
 
             Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
-            IEnumerable<QueryResult> results = await copyLogTasksResult;
+            ICollection<QueryResult> results = await copyLogTasksResult;
 
             string errorMessage = "Failed to copy log.";
             if (copyLogTasksResult.Status == TaskStatus.Faulted)

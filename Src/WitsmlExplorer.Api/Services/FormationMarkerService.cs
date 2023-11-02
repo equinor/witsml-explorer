@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IFormationMarkerService
     {
         Task<FormationMarker> GetFormationMarker(string wellUid, string wellboreUid, string formationMarkerUid);
-        Task<IEnumerable<FormationMarker>> GetFormationMarkers(string wellUid, string wellboreUid);
+        Task<ICollection<FormationMarker>> GetFormationMarkers(string wellUid, string wellboreUid);
     }
 
     public class FormationMarkerService : WitsmlService, IFormationMarkerService
@@ -27,11 +27,11 @@ namespace WitsmlExplorer.Api.Services
             WitsmlFormationMarkers result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             return result.FormationMarkers.Any() ? WitsmlToFormationMarker(result.FormationMarkers.First()) : null;
         }
-        public async Task<IEnumerable<FormationMarker>> GetFormationMarkers(string wellUid, string wellboreUid)
+        public async Task<ICollection<FormationMarker>> GetFormationMarkers(string wellUid, string wellboreUid)
         {
             WitsmlFormationMarkers query = (WitsmlFormationMarkers)ObjectQueries.GetWitsmlObjectById(wellUid, wellboreUid, "", EntityType.FormationMarker);
             WitsmlFormationMarkers result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            return result.FormationMarkers.Select(WitsmlToFormationMarker);
+            return result.FormationMarkers.Select(WitsmlToFormationMarker).ToList();
         }
 
         private static FormationMarker WitsmlToFormationMarker(WitsmlFormationMarker formationMarker)

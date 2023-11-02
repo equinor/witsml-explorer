@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IMessageObjectService
     {
         Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid);
-        Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
+        Task<ICollection<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
     }
 
     public class MessageObjectService : WitsmlService, IMessageObjectService
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Services
             return messageObject == null ? null : FromWitsml(messageObject);
         }
 
-        public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
+        public async Task<ICollection<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
         {
             return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
             {

@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private readonly ICredentialsCache _credentialsCache;
-        private readonly Task<IEnumerable<Server>> _allServers;
+        private readonly Task<ICollection<Server>> _allServers;
         private static readonly string SUBJECT = "sub";
         private readonly bool _useOAuth2;
 
@@ -86,11 +86,10 @@ namespace WitsmlExplorer.Api.Services
         private async Task<bool> UserHasRoleForHost(string[] roles, Uri host)
         {
             bool result = true;
-            IEnumerable<Server> allServers = await _allServers;
+            ICollection<Server> allServers = await _allServers;
 
             bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.EqualsIgnoreCase(host));
-            IEnumerable<Server> hostServer = allServers.Where(n => n.Url.EqualsIgnoreCase(host));
-            bool validRole = hostServer.Any(n =>
+            bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(host)).Any(n =>
              n.Roles != null && n.Roles.Intersect(roles).Any()
              );
             result &= systemCredsExists & validRole;

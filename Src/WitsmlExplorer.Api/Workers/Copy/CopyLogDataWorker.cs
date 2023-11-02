@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
-            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            ICollection<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
             int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
             int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
 
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 ? job.Source.ComponentUids.Distinct().ToList()
                 : sourceLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
 
-            IEnumerable<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
+            ICollection<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
             List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
             List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 

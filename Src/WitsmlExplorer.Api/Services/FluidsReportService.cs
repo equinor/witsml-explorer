@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IFluidsReportService
     {
-        Task<IEnumerable<FluidsReport>> GetFluidsReports(string wellUid, string wellboreUid);
+        Task<ICollection<FluidsReport>> GetFluidsReports(string wellUid, string wellboreUid);
         Task<FluidsReport> GetFluidsReport(string wellUid, string wellboreUid, string fluidsReportUid);
     }
 
@@ -21,11 +21,11 @@ namespace WitsmlExplorer.Api.Services
     {
         public FluidsReportService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<IEnumerable<FluidsReport>> GetFluidsReports(string wellUid, string wellboreUid)
+        public async Task<ICollection<FluidsReport>> GetFluidsReports(string wellUid, string wellboreUid)
         {
             WitsmlFluidsReports query = FluidsReportQueries.QueryByWellbore(wellUid, wellboreUid);
             WitsmlFluidsReports result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            return result.FluidsReports.Select(WitsmlToFluidsReport);
+            return result.FluidsReports.Select(WitsmlToFluidsReport).ToList();
         }
 
         public async Task<FluidsReport> GetFluidsReport(string wellUid, string wellboreUid, string fluidsReportUid)

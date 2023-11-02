@@ -73,13 +73,12 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return result.Logs.FirstOrDefault();
         }
 
-        private static IEnumerable<WitsmlLogs> CreateDeleteQueries(DeleteCurveValuesJob job, WitsmlLog witsmlLog, List<WitsmlLogCurveInfo> logCurveInfos)
+        private static ICollection<WitsmlLogs> CreateDeleteQueries(DeleteCurveValuesJob job, WitsmlLog witsmlLog, List<WitsmlLogCurveInfo> logCurveInfos)
         {
-            IEnumerable<(Index, Index)> indexRanges = job.IndexRanges.ToList().Select(range => (Index.Start(witsmlLog, range.StartIndex), Index.End(witsmlLog, range.EndIndex)));
-            return indexRanges
+            return job.IndexRanges.ToList().Select(range => (Index.Start(witsmlLog, range.StartIndex), Index.End(witsmlLog, range.EndIndex)))
                 .Where(range => range.Item1 >= Index.Start(witsmlLog) && range.Item2 <= Index.End(witsmlLog))
                 .Select(range => LogQueries.DeleteLogCurveContent(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, witsmlLog.IndexType,
-                    logCurveInfos, range.Item1, range.Item2));
+                    logCurveInfos, range.Item1, range.Item2)).ToList();
         }
     }
 }

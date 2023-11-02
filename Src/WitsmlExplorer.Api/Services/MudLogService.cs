@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IMudLogService
     {
-        Task<IEnumerable<MudLog>> GetMudLogs(string wellUid, string wellboreUid);
+        Task<ICollection<MudLog>> GetMudLogs(string wellUid, string wellboreUid);
         Task<MudLog> GetMudLog(string wellUid, string wellboreUid, string mudlogUid);
     }
     // ReSharper disable once UnusedMember.Global
@@ -21,12 +21,12 @@ namespace WitsmlExplorer.Api.Services
     {
         public MudLogService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<IEnumerable<MudLog>> GetMudLogs(string wellUid, string wellboreUid)
+        public async Task<ICollection<MudLog>> GetMudLogs(string wellUid, string wellboreUid)
         {
             WitsmlMudLogs query = MudLogQueries.QueryByWellbore(wellUid, wellboreUid);
             WitsmlMudLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
 
-            return result.MudLogs.Select(FromWitsml).OrderBy(mudLog => mudLog.Name);
+            return result.MudLogs.Select(FromWitsml).OrderBy(mudLog => mudLog.Name).ToList();
         }
 
         public async Task<MudLog> GetMudLog(string wellUid, string wellboreUid, string mudlogUid)

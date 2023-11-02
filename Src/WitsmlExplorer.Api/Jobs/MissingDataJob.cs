@@ -10,9 +10,9 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record MissingDataJob : Job
     {
-        public IEnumerable<WellReference> WellReferences { get; init; }
-        public IEnumerable<WellboreReference> WellboreReferences { get; init; }
-        public IEnumerable<MissingDataCheck> MissingDataChecks { get; init; }
+        public ICollection<WellReference> WellReferences { get; init; }
+        public ICollection<WellboreReference> WellboreReferences { get; init; }
+        public ICollection<MissingDataCheck> MissingDataChecks { get; init; }
 
         public override string Description()
         {

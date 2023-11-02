@@ -10,8 +10,8 @@ namespace WitsmlExplorer.Api.Models
         public string StartIndex { get; init; }
         public string EndIndex { get; init; }
         public string Direction { get; set; }
-        public IEnumerable<CurveSpecification> CurveSpecifications { get; init; }
-        public IEnumerable<Dictionary<string, LogDataValue>> Data { get; init; }
+        public ICollection<CurveSpecification> CurveSpecifications { get; init; }
+        public ICollection<Dictionary<string, LogDataValue>> Data { get; init; }
     }
 
     public class CurveSpecification

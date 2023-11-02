@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Repositories
             return await container.ReadItemAsync<TDocument>(id.ToString(), new PartitionKey(id.ToString()));
         }
 
-        public async Task<IEnumerable<TDocument>> GetDocumentsAsync()
+        public async Task<ICollection<TDocument>> GetDocumentsAsync()
         {
             var container = _cosmosClient.GetContainer(_dbName, _containerId);
             var queryDefinition = new QueryDefinition("select * from T");
