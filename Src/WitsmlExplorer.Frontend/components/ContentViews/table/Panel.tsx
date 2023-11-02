@@ -43,7 +43,7 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedObjectGroup, currentSelected, expandedTreeNodes } = navigationState;
+  const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, currentSelected, expandedTreeNodes } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -62,6 +62,22 @@ const Panel = (props: PanelProps) => {
     const wellboreUid = selectedWellbore.uid;
     const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, selectedObjectGroup, abortRefreshControllerRef.current.signal);
     dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
+  };
+
+  const refreshObject = async () => {
+    abortRefreshControllerRef.current = new AbortController();
+    const wellUid = selectedWellbore.wellUid;
+    const wellboreUid = selectedWellbore.uid;
+    const uid = selectedObject.uid;
+    let freshObject = await ObjectService.getObject(wellUid, wellboreUid, uid, selectedObjectGroup);
+    const isDeleted = !freshObject;
+    if (isDeleted) {
+      freshObject = selectedObject;
+    }
+    dispatchNavigation({
+      type: ModificationType.UpdateWellboreObject,
+      payload: { objectToUpdate: freshObject, objectType: selectedObjectGroup, isDeleted }
+    });
   };
 
   const refreshWells = async () => {
@@ -89,6 +105,8 @@ const Panel = (props: PanelProps) => {
       await refreshWells();
     } else if (currentSelected === selectedWell) {
       await refreshWell();
+    } else if (currentSelected === selectedObject) {
+      await refreshObject();
     } else {
       await refreshObjects();
     }
@@ -121,7 +139,7 @@ const Panel = (props: PanelProps) => {
       <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
       <Typography>{selectedItemsText}</Typography>
       {showRefresh && (
-        <Button key="refreshObject" aria-disabled={isRefreshing ? true : false} aria-label={isRefreshing ? "loading data" : null} onClick={onClickRefresh} disabled={isRefreshing}>
+        <Button key="refreshObjects" aria-disabled={isRefreshing ? true : false} aria-label={isRefreshing ? "loading data" : null} onClick={onClickRefresh} disabled={isRefreshing}>
           <Icon name="refresh" />
           Refresh
         </Button>
