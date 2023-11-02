@@ -18,7 +18,7 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(ComponentType.TubularComponent);
@@ -32,7 +32,7 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}
