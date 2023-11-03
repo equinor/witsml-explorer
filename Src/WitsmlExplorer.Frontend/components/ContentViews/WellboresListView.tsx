@@ -24,7 +24,7 @@ export const WellboresListView = (): React.ReactElement => {
   );
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
 
   const columns: ContentTableColumn[] = [
@@ -48,8 +48,8 @@ export const WellboresListView = (): React.ReactElement => {
         return {
           ...wellbore,
           id: wellbore.uid,
-          dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone),
-          dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone),
+          dateTimeCreation: formatDateString(wellbore.dateTimeCreation, timeZone, dateTimeFormat),
+          dateTimeLastChange: formatDateString(wellbore.dateTimeLastChange, timeZone, dateTimeFormat),
           wellbore: wellbore
         };
       }) ?? []
@@ -81,6 +81,7 @@ export const WellboresListView = (): React.ReactElement => {
         onContextMenu={onContextMenu}
         downloadToCsvFileName="Wellbores"
         checkableRows
+        showRefresh
       />
     ))
   );

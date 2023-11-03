@@ -14,7 +14,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, wells } = navigationState;
@@ -50,8 +50,8 @@ export const TubularsListView = (): React.ReactElement => {
   const tubularRows = tubulars.map((tubular) => {
     return {
       ...tubular,
-      dTimCreation: formatDateString(tubular.commonData.dTimCreation, timeZone),
-      dTimLastChange: formatDateString(tubular.commonData.dTimLastChange, timeZone),
+      dTimCreation: formatDateString(tubular.commonData.dTimCreation, timeZone, dateTimeFormat),
+      dTimLastChange: formatDateString(tubular.commonData.dTimLastChange, timeZone, dateTimeFormat),
       id: tubular.uid
     };
   });

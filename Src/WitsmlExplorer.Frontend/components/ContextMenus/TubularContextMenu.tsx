@@ -14,7 +14,6 @@ import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
-import { onClickRefresh } from "./TubularContextMenuUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
@@ -33,11 +32,7 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefresh(checkedObjects[0] as Tubular, dispatchOperation, dispatchNavigation)} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Refresh tubular</Typography>
-        </MenuItem>,
-        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}

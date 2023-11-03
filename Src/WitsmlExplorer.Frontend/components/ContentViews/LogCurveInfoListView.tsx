@@ -34,7 +34,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
 export const LogCurveInfoListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedCurveThreshold, servers } = navigationState;
   const selectedLog = selectedObject as LogObject;
@@ -93,8 +93,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
           uid: logCurveInfo.uid,
           mnemonic: logCurveInfo.mnemonic,
-          minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone),
-          maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone),
+          minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone, dateTimeFormat),
+          maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone, dateTimeFormat),
           classWitsml: logCurveInfo.classWitsml,
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),
@@ -145,6 +145,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       data={getTableData()}
       onContextMenu={onContextMenu}
       checkableRows
+      showRefresh
       downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
     />
   ) : (

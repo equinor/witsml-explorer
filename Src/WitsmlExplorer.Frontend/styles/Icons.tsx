@@ -19,11 +19,13 @@ import {
   cloud_download as cloudDownload,
   cloud_off as cloudOff,
   code,
+  collapse,
   compare,
   copy,
   delete_to_trash as deleteToTrash,
   done,
   edit,
+  expand,
   filter_alt as filter,
   folder_open as folderOpen,
   format_line_spacing as formatLine,
@@ -39,6 +41,7 @@ import {
   search,
   settings,
   sync,
+  text_field as textField,
   upload,
   world
 } from "@equinor/eds-icons";
@@ -62,11 +65,13 @@ const icons = {
   cloudDownload,
   cloudOff,
   code,
+  collapse,
   compare,
   copy,
   deleteToTrash,
   done,
   edit,
+  expand,
   filter,
   folderOpen,
   formatLine,
@@ -82,6 +87,7 @@ const icons = {
   search,
   settings,
   sync,
+  textField,
   upload,
   world
 };

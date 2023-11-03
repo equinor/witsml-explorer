@@ -1,19 +1,23 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
+import { v4 as uuid } from "uuid";
 import { NavigationState } from "../../contexts/navigationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
-import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer } from "./ContextMenuUtils";
+import { ObjectTypeToTemplateObject, StoreFunction } from "../ContentViews/QueryViewUtils";
+import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, onClickRefreshObject } from "./ContextMenuUtils";
 import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+import { DispatchNavigation } from "../../contexts/navigationAction";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -25,11 +29,18 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   navigationState: NavigationState,
   dispatchOperation: DispatchOperation,
+  dispatchNavigation: DispatchNavigation,
   wellbore: Wellbore
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+  const openInQueryView = useOpenInQueryView();
   const { selectedServer, servers } = navigationState;
+
   return [
+    <MenuItem key={"refresh"} onClick={() => onClickRefreshObject(checkedObjects[0], objectType, dispatchOperation, dispatchNavigation)} disabled={checkedObjects.length !== 1}>
+      <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>{menuItemText("Refresh", objectType, null)}</Typography>
+    </MenuItem>,
     <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, checkedObjects, dispatchOperation, objectType)} disabled={checkedObjects.length === 0}>
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("copy", objectType, checkedObjects)}</Typography>
@@ -62,6 +73,42 @@ export const ObjectMenuItems = (
           <Typography color={"primary"}>{server.name}</Typography>
         </MenuItem>
       ))}
+    </NestedMenuItem>,
+    <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+      {[
+        <MenuItem
+          key={"openInQueryView"}
+          disabled={checkedObjects.length != 1}
+          onClick={() =>
+            openInQueryView({
+              templateObject: ObjectTypeToTemplateObject[objectType],
+              storeFunction: StoreFunction.GetFromStore,
+              wellUid: wellbore.wellUid,
+              wellboreUid: wellbore.uid,
+              objectUid: checkedObjects[0].uid
+            })
+          }
+        >
+          <StyledIcon name="textField" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Open in query view</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"newObject"}
+          disabled={checkedObjects.length != 1}
+          onClick={() =>
+            openInQueryView({
+              templateObject: ObjectTypeToTemplateObject[objectType],
+              storeFunction: StoreFunction.AddToStore,
+              wellUid: wellbore.wellUid,
+              wellboreUid: wellbore.uid,
+              objectUid: uuid()
+            })
+          }
+        >
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>{`New ${objectType}`}</Typography>
+        </MenuItem>
+      ]}
     </NestedMenuItem>
   ];
 };

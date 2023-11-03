@@ -1,8 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
-import { UpdateWellboreTubularAction } from "../../contexts/modificationActions";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import { DispatchNavigation } from "../../contexts/navigationAction";
+import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -14,17 +14,16 @@ import { colors } from "../../styles/Colors";
 import { TubularComponentRow } from "../ContentViews/TubularView";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteComponents, onClickRefreshObject, onClickShowObjectOnServer } from "./ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import { onClickRefresh } from "./TubularContextMenuUtils";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
-  dispatchNavigation: (action: UpdateWellboreTubularAction) => void;
-  dispatchOperation: (action: DisplayModalAction | HideContextMenuAction | HideModalAction) => void;
+  dispatchNavigation: DispatchNavigation;
+  dispatchOperation: DispatchOperation;
   tubular: Tubular;
   selectedServer: Server;
   servers: Server[];
@@ -48,7 +47,7 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefresh(tubular, dispatchOperation, dispatchNavigation)}>
+        <MenuItem key={"refresh"} onClick={() => onClickRefreshObject(tubular, ObjectType.Tubular, dispatchOperation, dispatchNavigation)}>
           <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Refresh all tubular components</Typography>
         </MenuItem>,

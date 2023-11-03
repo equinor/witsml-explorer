@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Witsml.ServiceReference
 {
@@ -7,8 +9,12 @@ namespace Witsml.ServiceReference
         ReturnElements? ReturnElements = null,
         int? MaxReturnNodes = null,
         int? RequestLatestValues = null,
-        bool? RequestObjectSelectionCapability = null)
+        bool? RequestObjectSelectionCapability = null,
+        string OptionsInString = null)
     {
+        public string OptionsInString { get; init; } = ValidateOptionsInString(OptionsInString);
+        private static readonly string OptionsInRegexPattern = @"^([A-Za-z]+=[^=;]+)(;[A-Za-z]+=[^=;]+)*$";
+
         public string GetKeywords()
         {
             List<string> keywords = new();
@@ -28,8 +34,21 @@ namespace Witsml.ServiceReference
             {
                 keywords.Add($"requestObjectSelectionCapability=true");
             }
+            if (!string.IsNullOrEmpty(OptionsInString))
+            {
+                keywords.Add(OptionsInString);
+            }
 
             return string.Join(";", keywords);
+        }
+
+        private static string ValidateOptionsInString(string optionsInString)
+        {
+            if (!string.IsNullOrEmpty(optionsInString) && !Regex.IsMatch(optionsInString, OptionsInRegexPattern))
+            {
+                throw new ArgumentException("OptionsInString does not match the required pattern.");
+            }
+            return optionsInString;
         }
     }
 

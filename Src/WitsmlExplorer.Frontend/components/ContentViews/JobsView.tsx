@@ -21,7 +21,7 @@ export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
-    operationState: { timeZone, colors }
+    operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
   const { servers, selectedServer } = navigationState;
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
@@ -111,8 +111,8 @@ export const JobsView = (): React.ReactElement => {
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
-            startTime: formatDateString(jobInfo.startTime, timeZone),
-            endTime: formatDateString(jobInfo.endTime, timeZone),
+            startTime: formatDateString(jobInfo.startTime, timeZone, dateTimeFormat),
+            endTime: formatDateString(jobInfo.endTime, timeZone, dateTimeFormat),
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
             report: jobInfo.report ? <ReportButton onClick={() => onClickReport(jobInfo.report)}>Report</ReportButton> : null,

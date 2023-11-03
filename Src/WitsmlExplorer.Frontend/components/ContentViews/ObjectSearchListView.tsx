@@ -39,11 +39,11 @@ export const ObjectSearchListView = (): React.ReactElement => {
       setRows(
         selectedFilter.searchResults
           .filter((searchResult) => isSitecomSyntax(selectedFilter.name) || regex.test(searchResult.searchProperty)) // If we later want to filter away empty results, use regex.test(searchResult.searchProperty ?? ""))
-          .map((searchResult, index) => {
+          .map((searchResult) => {
             const well = wells?.find((w) => w.uid == searchResult.wellUid);
             const wellbore = well?.wellbores?.find((wb) => wb.uid == searchResult.wellboreUid);
             return {
-              id: index,
+              id: searchResult.uid,
               ...searchResult,
               [filterTypeToProperty[selectedFilter.filterType]]: searchResult.searchProperty,
               object: searchResult,

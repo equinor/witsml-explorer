@@ -21,7 +21,7 @@ export interface TrajectoryStationPropertiesModalInterface {
 const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModalInterface): React.ReactElement => {
   const { trajectoryStation, trajectory, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableTrajectoryStation, setEditableTrajectoryStation] = useState<TrajectoryStation>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,7 +42,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
   useEffect(() => {
     setEditableTrajectoryStation({
       ...trajectoryStation,
-      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone)
+      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone, dateTimeFormat)
     });
   }, [trajectoryStation]);
   return (

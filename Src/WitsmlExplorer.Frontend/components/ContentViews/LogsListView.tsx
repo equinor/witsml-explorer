@@ -25,7 +25,7 @@ export const LogsListView = (): React.ReactElement => {
 
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [logs, setLogs] = useState<LogObject[]>([]);
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
@@ -49,14 +49,14 @@ export const LogsListView = (): React.ReactElement => {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log, index) => {
+    return logs.map((log) => {
       return {
         ...log,
-        id: index,
-        startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone) : log.startIndex,
-        endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone) : log.endIndex,
-        dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(log.commonData.dTimLastChange, timeZone),
+        id: log.uid,
+        startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone, dateTimeFormat) : log.startIndex,
+        endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone, dateTimeFormat) : log.endIndex,
+        dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(log.commonData.dTimLastChange, timeZone, dateTimeFormat),
         logObject: log
       };
     });

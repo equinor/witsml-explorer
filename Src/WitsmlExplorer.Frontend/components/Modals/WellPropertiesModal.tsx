@@ -18,7 +18,7 @@ export interface WellPropertiesModalProps {
 const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElement => {
   const { mode, well, dispatchOperation } = props;
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const [editableWell, setEditableWell] = useState<Well>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -103,8 +103,20 @@ const WellPropertiesModal = (props: WellPropertiesModalProps): React.ReactElemen
               <TextField disabled id={"numLicense"} label={"numLicense"} defaultValue={well.numLicense} fullWidth />
               {mode !== PropertiesModalMode.New && (
                 <>
-                  <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(well.dateTimeCreation, timeZone)} fullWidth />
-                  <TextField disabled id="dTimLastChange" label="commonData.dTimLastChange" defaultValue={formatDateString(well.dateTimeLastChange, timeZone)} fullWidth />
+                  <TextField
+                    disabled
+                    id="dTimCreation"
+                    label="commonData.dTimCreation"
+                    defaultValue={formatDateString(well.dateTimeCreation, timeZone, dateTimeFormat)}
+                    fullWidth
+                  />
+                  <TextField
+                    disabled
+                    id="dTimLastChange"
+                    label="commonData.dTimLastChange"
+                    defaultValue={formatDateString(well.dateTimeLastChange, timeZone, dateTimeFormat)}
+                    fullWidth
+                  />
                 </>
               )}
             </>

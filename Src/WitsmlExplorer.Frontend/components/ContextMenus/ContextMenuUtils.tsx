@@ -115,6 +115,24 @@ export const onClickRefresh = async (
   if (setIsLoading) setIsLoading(false);
 };
 
+export const onClickRefreshObject = async (
+  objectOnWellbore: ObjectOnWellbore,
+  objectType: ObjectType,
+  dispatchOperation: DispatchOperation,
+  dispatchNavigation: DispatchNavigation
+) => {
+  let freshObject = await ObjectService.getObject(objectOnWellbore.wellUid, objectOnWellbore.wellboreUid, objectOnWellbore.uid, objectType);
+  const isDeleted = !freshObject;
+  if (isDeleted) {
+    freshObject = objectOnWellbore;
+  }
+  dispatchNavigation({
+    type: ModificationType.UpdateWellboreObject,
+    payload: { objectToUpdate: freshObject, objectType, isDeleted }
+  });
+  dispatchOperation({ type: OperationType.HideContextMenu });
+};
+
 const displayDeleteModal = (
   toDeleteTypeName: string,
   toDeleteNames: string[],
@@ -137,7 +155,7 @@ const displayDeleteModal = (
             <strong>
               {toDeleteNames.map((name, index) => {
                 return (
-                  <Fragment key={index}>
+                  <Fragment key={`${name}-${index}`}>
                     <br />
                     {name}
                   </Fragment>

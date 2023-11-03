@@ -3,7 +3,7 @@ import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction } from "../modificationActions";
+import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction, UpdateWellboreObjectAction } from "../modificationActions";
 import ModificationType from "../modificationType";
 import { NavigationAction } from "../navigationAction";
 import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
@@ -233,9 +233,9 @@ it("Should update refreshed log object", () => {
     wells
   };
   const refreshedLog = { ...LOG_1, name: "renamed log" };
-  const refreshLogAction = {
-    type: ModificationType.UpdateLogObject,
-    payload: { log: refreshedLog }
+  const refreshLogAction: UpdateWellboreObjectAction = {
+    type: ModificationType.UpdateWellboreObject,
+    payload: { objectToUpdate: refreshedLog, objectType: ObjectType.Log, isDeleted: false }
   };
   const afterRefreshLog = reducer(initialState, refreshLogAction);
   const expectedListOfWells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [refreshedLog] }] }, WELL_2, WELL_3];

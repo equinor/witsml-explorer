@@ -1,11 +1,12 @@
-import { ReturnElements, StoreFunction } from "../components/ContentViews/QueryView";
+import { ReturnElements, StoreFunction } from "../components/ContentViews/QueryViewUtils";
 import { ApiClient } from "./apiClient";
 
 export default class QueryService {
-  public static async postQuery(query: string, storeFunction: StoreFunction, returnElements?: ReturnElements, abortSignal?: AbortSignal): Promise<string> {
+  public static async postQuery(query: string, storeFunction: StoreFunction, returnElements?: ReturnElements, optionsIn?: string, abortSignal?: AbortSignal): Promise<string> {
     const payload = {
       body: query,
-      ...(returnElements ? { returnElements } : {})
+      ...(returnElements ? { returnElements } : {}),
+      ...(optionsIn ? { optionsInString: optionsIn } : {})
     };
     const response = await ApiClient.post(`/api/query/${storeFunction.toLowerCase()}`, JSON.stringify(payload), abortSignal);
     if (response.ok) {

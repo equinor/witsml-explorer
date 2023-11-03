@@ -19,7 +19,7 @@ import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
 const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
 
@@ -49,7 +49,7 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="compare" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>

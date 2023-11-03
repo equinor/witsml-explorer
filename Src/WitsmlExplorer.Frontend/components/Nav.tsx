@@ -1,6 +1,7 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { v4 as uuid } from "uuid";
 import { NavigationAction } from "../contexts/navigationAction";
 import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
 import NavigationContext, { NavigationState, Selectable, ViewFlags } from "../contexts/navigationContext";
@@ -51,7 +52,7 @@ const Nav = (): React.ReactElement => {
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
-                key={index}
+                key={uuid()}
                 href="#"
                 onClick={breadCrumb.onClick}
                 style={{

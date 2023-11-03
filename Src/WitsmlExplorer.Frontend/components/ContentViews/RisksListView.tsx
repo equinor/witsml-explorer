@@ -16,7 +16,7 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
 export const RisksListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
@@ -36,12 +36,12 @@ export const RisksListView = (): React.ReactElement => {
         id: risk.uid,
         mdBitStart: `${risk.mdBitStart?.value?.toFixed(4) ?? ""} ${risk.mdBitStart?.uom ?? ""}`,
         mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${risk.mdBitEnd?.uom ?? ""}`,
-        dTimStart: formatDateString(risk.dTimStart, timeZone),
-        dTimEnd: formatDateString(risk.dTimEnd, timeZone),
+        dTimStart: formatDateString(risk.dTimStart, timeZone, dateTimeFormat),
+        dTimEnd: formatDateString(risk.dTimEnd, timeZone, dateTimeFormat),
         details: risk.details,
         summary: risk.summary,
-        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone),
+        dTimCreation: formatDateString(risk.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(risk.commonData.dTimLastChange, timeZone, dateTimeFormat),
         risk: risk
       };
     });

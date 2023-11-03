@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
-
 using Witsml.Data;
+using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -35,14 +33,16 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
         {
-            DateTime start = DateTime.Now;
-            WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
-            WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
-            List<MessageObject> messageObjects = result.Messages
-                .Select(FromWitsml).OrderBy((m) => m.DTim).ToList();
-            double elapsed = DateTime.Now.Subtract(start).Milliseconds / 1000.0;
-            Log.Debug("Fetched {Count} messageobjects from {WellboreName} in {Elapsed} seconds", messageObjects.Count, messageObjects.FirstOrDefault()?.WellboreName, elapsed);
-            return messageObjects;
+            return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
+            {
+                WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
+                WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
+                List<MessageObject> messageObjects = result.Messages
+                    .Select(FromWitsml).OrderBy((m) => m.DTim).ToList();
+                timeMeasurer.LogMessage = executionTime =>
+                    $"Fetched {messageObjects.Count} messageObjects from {messageObjects.FirstOrDefault()?.WellboreName} in {executionTime}ms.";
+                return messageObjects;
+            });
         }
 
         private static MessageObject FromWitsml(WitsmlMessage message)

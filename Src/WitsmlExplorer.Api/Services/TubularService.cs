@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlTubular witsmlTubular = result.Tubulars.FirstOrDefault();
             return witsmlTubular == null
                 ? null
-                : (IEnumerable<TubularComponent>)witsmlTubular.TubularComponents.Select(tComponent => new TubularComponent
+                : (IEnumerable<TubularComponent>)witsmlTubular.TubularComponents?.Select(tComponent => new TubularComponent
                 {
                     Uid = tComponent.Uid,
                     Sequence = tComponent.Sequence,

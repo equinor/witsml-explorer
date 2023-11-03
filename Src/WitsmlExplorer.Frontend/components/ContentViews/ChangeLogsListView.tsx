@@ -8,7 +8,7 @@ import { ContentTable, ContentTableColumn, ContentType } from "./table";
 export const ChangeLogsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
   const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
@@ -20,14 +20,14 @@ export const ChangeLogsListView = (): React.ReactElement => {
   }, [selectedWellbore]);
 
   const getTableData = () => {
-    return changeLogs.map((changeLog, index) => {
+    return changeLogs.map((changeLog) => {
       return {
-        id: index,
+        id: changeLog.uid,
         uidObject: changeLog.uidObject,
         nameObject: changeLog.nameObject,
         lastChangeType: changeLog.lastChangeType,
-        dTimCreation: formatDateString(changeLog.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(changeLog.commonData.dTimLastChange, timeZone)
+        dTimCreation: formatDateString(changeLog.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(changeLog.commonData.dTimLastChange, timeZone, dateTimeFormat)
       };
     });
   };

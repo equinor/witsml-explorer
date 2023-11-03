@@ -32,8 +32,5 @@ namespace Witsml.Data
         [XmlElement("privateGroupOnly")]
         public string PrivateGroupOnly { get; set; }
 
-        [XmlElement("extensionAny")]
-        public string ExtensionAny { get; set; }
-
     }
 }

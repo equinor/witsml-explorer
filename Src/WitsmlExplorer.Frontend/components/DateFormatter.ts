@@ -1,20 +1,26 @@
 import { format, formatInTimeZone, toDate } from "date-fns-tz";
-import { TimeZone } from "../contexts/operationStateReducer";
+import { DateTimeFormat, TimeZone } from "../contexts/operationStateReducer";
 
 //https://date-fns.org/v2.29.3/docs/format
-const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";
+const rawDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+let dateTimeFormat = rawDateTimeFormat;
 export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
 // Minus character U+2212 is preferred by ISO 8601 over hyphen minus '-' so we check both
 // date-fns-tz behaves weirdly with minus so we replace it
 const unicodeMinus = "\u2212";
 
-function formatDateString(dateString: string, timeZone: TimeZone) {
+function formatDateString(dateString: string, timeZone: TimeZone, dateTimeFormatString: DateTimeFormat) {
   try {
     if (dateString == null) {
       return null;
     }
-
+    if (dateTimeFormatString == DateTimeFormat.Natural) {
+      dateTimeFormat = naturalDateTimeFormat;
+    } else if (dateTimeFormatString == DateTimeFormat.Raw) {
+      dateTimeFormat = rawDateTimeFormat;
+    }
     const replaced = dateString.replace(unicodeMinus, "-");
     const parsed = toDate(replaced);
     if (timeZone == TimeZone.Raw) {
@@ -72,7 +78,7 @@ export function validateIsoDateString(dateString: string): boolean {
       return false;
     }
     const parsed = toDate(replaced);
-    const formatted = formatInTimeZone(parsed, offset, dateTimeFormat);
+    const formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
     return replaced == formatted;
   } catch {
     return false;

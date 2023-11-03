@@ -16,7 +16,7 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
 export const BhaRunsListView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
@@ -35,12 +35,12 @@ export const BhaRunsListView = (): React.ReactElement => {
         ...bhaRun.commonData,
         id: bhaRun.uid,
         bhaRun: bhaRun,
-        dTimStart: formatDateString(bhaRun.dTimStart, timeZone),
-        dTimStop: formatDateString(bhaRun.dTimStop, timeZone),
-        dTimStartDrilling: formatDateString(bhaRun.dTimStartDrilling, timeZone),
-        dTimStopDrilling: formatDateString(bhaRun.dTimStopDrilling, timeZone),
-        dTimCreation: formatDateString(bhaRun.commonData.dTimCreation, timeZone),
-        dTimLastChange: formatDateString(bhaRun.commonData.dTimLastChange, timeZone)
+        dTimStart: formatDateString(bhaRun.dTimStart, timeZone, dateTimeFormat),
+        dTimStop: formatDateString(bhaRun.dTimStop, timeZone, dateTimeFormat),
+        dTimStartDrilling: formatDateString(bhaRun.dTimStartDrilling, timeZone, dateTimeFormat),
+        dTimStopDrilling: formatDateString(bhaRun.dTimStopDrilling, timeZone, dateTimeFormat),
+        dTimCreation: formatDateString(bhaRun.commonData.dTimCreation, timeZone, dateTimeFormat),
+        dTimLastChange: formatDateString(bhaRun.commonData.dTimLastChange, timeZone, dateTimeFormat)
       };
     });
   };

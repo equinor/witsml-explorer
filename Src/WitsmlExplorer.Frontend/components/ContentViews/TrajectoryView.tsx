@@ -25,7 +25,7 @@ export interface TrajectoryStationRow extends ContentTableRow {
 export const TrajectoryView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone }
+    operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
   const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
@@ -87,7 +87,7 @@ export const TrajectoryView = (): React.ReactElement => {
     return {
       id: trajectoryStation.uid,
       uid: trajectoryStation.uid,
-      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone),
+      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone, dateTimeFormat),
       typeTrajStation: trajectoryStation.typeTrajStation,
       md: `${trajectoryStation.md.value?.toFixed(4)} ${trajectoryStation.md?.uom}`,
       incl: `${trajectoryStation.incl?.value?.toFixed(4)} ${trajectoryStation.incl?.uom}`,
@@ -104,6 +104,7 @@ export const TrajectoryView = (): React.ReactElement => {
       data={trajectoryStationRows}
       onContextMenu={onContextMenu}
       checkableRows
+      showRefresh
       downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
     />
   ) : (
