@@ -31,11 +31,9 @@ const SettingsModal = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
 
-  const [checked, updateChecked] = useState<string>(() => {
-    const storedDecimalPreference = localStorage.getItem(STORAGE_DECIMAL_KEY);
-    return storedDecimalPreference === DecimalPreference.Raw ? DecimalPreference.Raw : DecimalPreference.Decimal;
+  const [checkedDecimalPreference, setCheckedDecimalPreference] = useState<string>(() => {
+    return decimals === DecimalPreference.Raw ? DecimalPreference.Raw : DecimalPreference.Decimal;
   });
-
   const [decimalError, setDecimalError] = useState<boolean>(false);
 
   const onChangeTheme = (event: any) => {
@@ -77,14 +75,13 @@ const SettingsModal = (): React.ReactElement => {
     }
   };
 
-  const onChangecheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeDecimalPreference = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
-    if (selectedValue === DecimalPreference.Raw) {
-      const selectedDecimals = DecimalPreference.Raw;
-      localStorage.setItem(STORAGE_DECIMAL_KEY, selectedDecimals);
-      dispatchOperation({ type: OperationType.SetDecimal, payload: selectedDecimals as DecimalPreference });
+    if (event.target.value === DecimalPreference.Raw) {
+      localStorage.setItem(STORAGE_DECIMAL_KEY, DecimalPreference.Raw);
+      dispatchOperation({ type: OperationType.SetDecimal, payload: DecimalPreference.Raw as DecimalPreference });
     }
-    updateChecked(selectedValue);
+    setCheckedDecimalPreference(selectedValue);
   };
 
   return (
@@ -128,14 +125,14 @@ const SettingsModal = (): React.ReactElement => {
               <Icon name="edit" size={32} color={colors.infographic.primaryMossGreen} />
               <div style={alignLayout}>
                 <label style={alignLayout}>
-                  <Radio name="group" value={DecimalPreference.Raw} checked={checked === DecimalPreference.Raw} onChange={onChangecheck} />
+                  <Radio name="group" value={DecimalPreference.Raw} checked={checkedDecimalPreference === DecimalPreference.Raw} onChange={onChangeDecimalPreference} />
                   Raw
                 </label>
                 <label style={alignLayout}>
-                  <Radio name="group" value={DecimalPreference.Decimal} checked={checked === DecimalPreference.Decimal} onChange={onChangecheck} />
+                  <Radio name="group" value={DecimalPreference.Decimal} checked={checkedDecimalPreference === DecimalPreference.Decimal} onChange={onChangeDecimalPreference} />
                   Decimals
                 </label>
-                {checked === "decimal" && (
+                {checkedDecimalPreference === DecimalPreference.Decimal && (
                   <TextField
                     variant={decimalError ? "error" : null}
                     helperText={decimalError ? "Must be a positive integer between 0 and 10" : ""}

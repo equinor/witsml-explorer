@@ -86,21 +86,14 @@ const addDecimalPreference = (columnType: ContentType, decimals: DecimalPreferen
     ? {
         cell: (props) => {
           const value = props.getValue();
-          if (typeof value !== "string") return value;
-          const match = value ? value.match(/([\d.]+)\s*([^\d.]*)/) : null;
+          const match = value ? value.toString().match(/([\d.]+)\s*([^\d.]*)/) : null;
           if (!match) return value;
           const numericValue = parseFloat(match[1]);
           const units = match[2];
-          const decimalVal = decimals === "raw" ? findDefaultDecimal(value) : parseInt(decimals);
-          return isNaN(numericValue) ? value : `${numericValue.toFixed(decimalVal as number)} ${units}`;
+          return decimals !== DecimalPreference.Raw ? (isNaN(numericValue) ? value : `${numericValue.toFixed(parseInt(decimals))} ${units}`) : value;
         }
       }
     : {};
-};
-
-const findDefaultDecimal = (value: any) => {
-  const decimalMatch = String(value).match(/\.(\d+)/);
-  return decimalMatch ? decimalMatch[1].length : 0;
 };
 
 const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
