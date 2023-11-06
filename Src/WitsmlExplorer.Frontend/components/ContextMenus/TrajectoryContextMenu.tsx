@@ -15,7 +15,7 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(ComponentType.TrajectoryStation);
@@ -24,7 +24,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}

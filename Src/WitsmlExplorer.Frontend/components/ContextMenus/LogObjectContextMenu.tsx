@@ -27,7 +27,7 @@ import { ReportModal } from "../Modals/ReportModal";
 import SpliceLogsModal from "../Modals/SpliceLogsModal";
 import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefreshObject } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
@@ -143,15 +143,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem
-          key={"refreshlog"}
-          onClick={() => onClickRefreshObject(checkedObjects[0] as LogObject, ObjectType.Log, dispatchOperation, dispatchNavigation)}
-          disabled={checkedObjects.length !== 1}
-        >
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Refresh log</Typography>
-        </MenuItem>,
-        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"pastelogcurves"}
           onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}

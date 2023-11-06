@@ -19,7 +19,7 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(ComponentType.WbGeometrySection);
@@ -35,7 +35,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0])}

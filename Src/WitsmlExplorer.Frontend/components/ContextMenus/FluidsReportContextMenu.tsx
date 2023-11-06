@@ -15,7 +15,7 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
@@ -24,7 +24,7 @@ const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElem
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"pasteComponent"}
           onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}

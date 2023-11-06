@@ -15,7 +15,7 @@ import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
 const FormationMarkerContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
 
@@ -28,7 +28,7 @@ const FormationMarkerContextMenu = (props: ObjectContextMenuProps): React.ReactE
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
