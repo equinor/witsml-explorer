@@ -9,6 +9,7 @@ import styled from "styled-components";
 import OperationContext from "../contexts/operationContext";
 import { Colors, dark } from "../styles/Colors";
 import { customCommands, customCompleter } from "./QueryEditorUtils";
+import { updateLinesWithWidgets } from "./QueryEditorWidgetUtils";
 
 export interface QueryEditorProps {
   value: string;
@@ -29,6 +30,7 @@ export const QueryEditor = (props: QueryEditorProps) => {
       editor.renderer.$cursorLayer.element.style.display = "none";
     } else {
       editor.completers = [customCompleter];
+      editor.renderer.on("afterRender", (_: any, renderer: any) => updateLinesWithWidgets(editor, renderer));
     }
   };
 

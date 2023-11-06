@@ -105,6 +105,7 @@ export const WbGeometryView = (): React.ReactElement => {
       data={wbGeometrySectionRows}
       onContextMenu={onContextMenu}
       checkableRows
+      showRefresh
       downloadToCsvFileName={`WbGeometry_${selectedWbGeometry.name}`}
     />
   ) : (
