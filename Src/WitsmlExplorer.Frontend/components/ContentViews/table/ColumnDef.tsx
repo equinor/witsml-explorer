@@ -20,9 +20,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const {
-    operationState: { decimals },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    dispatchOperation
+    operationState: { decimals }
   } = useContext(OperationContext);
 
   return useMemo(() => {
@@ -82,7 +80,7 @@ const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>>
 };
 
 const addDecimalPreference = (columnType: ContentType, decimals: DecimalPreference): Partial<ColumnDef<any, any>> => {
-  return columnType === ContentType.Number || columnType === ContentType.Measure
+  return (columnType === ContentType.Number || columnType === ContentType.Measure) && decimals !== DecimalPreference.Raw
     ? {
         cell: (props) => {
           const value = props.getValue();
@@ -90,7 +88,7 @@ const addDecimalPreference = (columnType: ContentType, decimals: DecimalPreferen
           if (!match) return value;
           const numericValue = parseFloat(match[1]);
           const units = match[2];
-          return decimals !== DecimalPreference.Raw ? (isNaN(numericValue) ? value : `${numericValue.toFixed(parseInt(decimals))} ${units}`) : value;
+          return isNaN(numericValue) ? value : `${numericValue.toFixed(parseInt(decimals))} ${units}`;
         }
       }
     : {};
