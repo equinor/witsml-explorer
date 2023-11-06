@@ -317,8 +317,7 @@ export function getTrajectory(overrides?: Partial<Trajectory>): Trajectory {
     dTimTrajStart: "",
     dTimTrajEnd: "",
     serviceCompany: "",
-    dateTimeCreation: "",
-    dateTimeLastChange: "",
+    commonData: getCommonData(),
     trajectoryStations: [],
     ...overrides
   };
