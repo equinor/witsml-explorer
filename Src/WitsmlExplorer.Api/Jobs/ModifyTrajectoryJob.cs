@@ -3,7 +3,7 @@ using WitsmlExplorer.Api.Models;
 namespace WitsmlExplorer.Api.Jobs
 {
     /// <summary>
-    /// Job for modifying trajectory with jobInfo.
+    /// Job for modifying trajectory.
     /// </summary>
     public record ModifyTrajectoryJob : Job
     {

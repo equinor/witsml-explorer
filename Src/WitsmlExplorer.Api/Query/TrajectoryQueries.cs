@@ -33,11 +33,7 @@ namespace WitsmlExplorer.Api.Query
                     ServiceCompany = "",
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
-                    CommonData = new WitsmlCommonData()
-                    {
-                        DTimCreation = "",
-                        DTimLastChange = ""
-                    }
+                    CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "" }
                 }.AsSingletonList()
             };
         }
@@ -113,7 +109,7 @@ namespace WitsmlExplorer.Api.Query
                     ServiceCompany = trajectory.ServiceCompany.NullIfEmpty(),
                     DTimTrajStart = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajStart),
                     DTimTrajEnd = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajEnd),
-                    CommonData = string.IsNullOrEmpty(trajectory.SourceName) ? null : new WitsmlCommonData() { SourceName = trajectory.SourceName }
+                    CommonData = string.IsNullOrEmpty(trajectory.CommonData?.SourceName) ? null : new WitsmlCommonData() { SourceName = trajectory.CommonData.SourceName }
                 }.AsSingletonList()
             };
         }

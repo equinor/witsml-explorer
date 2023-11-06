@@ -56,10 +56,11 @@ export const TrajectoriesListView = (): React.ReactElement => {
   const trajectoryRows = trajectories.map((trajectory) => {
     return {
       ...trajectory,
+      ...trajectory.commonData,
       dTimTrajStart: formatDateString(trajectory.dTimTrajStart, timeZone, dateTimeFormat),
       dTimTrajEnd: formatDateString(trajectory.dTimTrajEnd, timeZone, dateTimeFormat),
-      dateTimeCreation: formatDateString(trajectory.dateTimeCreation, timeZone, dateTimeFormat),
-      dateTimeLastChange: formatDateString(trajectory.dateTimeLastChange, timeZone, dateTimeFormat),
+      dateTimeCreation: formatDateString(trajectory.commonData.dTimCreation, timeZone, dateTimeFormat),
+      dateTimeLastChange: formatDateString(trajectory.commonData.dTimLastChange, timeZone, dateTimeFormat),
       id: trajectory.uid
     };
   });

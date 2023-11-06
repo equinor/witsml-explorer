@@ -27,7 +27,10 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
 
   useEffect(() => {
     setEditableTrajectory({
-      ...trajectory
+      ...trajectory,
+      commonData: {
+        ...trajectory.commonData
+      }
     });
   }, [trajectory]);
 
@@ -146,10 +149,13 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
               <TextField
                 id="sourceName"
                 label="sourceName"
-                value={editableTrajectory.sourceName ? editableTrajectory.sourceName : ""}
+                value={editableTrajectory.commonData.sourceName ?? ""}
                 fullWidth
                 disabled={!editMode}
-                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, sourceName: e.target.value })}
+                onChange={(e) => {
+                  const commonData = { ...editableTrajectory.commonData, sourceName: e.target.value };
+                  setEditableTrajectory({ ...editableTrajectory, commonData });
+                }}
               />
             </>
           }

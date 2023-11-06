@@ -13,8 +13,6 @@ namespace WitsmlExplorer.Api.Models
         public string DTimTrajEnd { get; init; }
         public List<TrajectoryStation> TrajectoryStations { get; init; }
         public string ServiceCompany { get; init; }
-        public string DateTimeCreation { get; init; }
-        public string DateTimeLastChange { get; init; }
-        public string SourceName { get; init; }
+        public CommonData CommonData { get; init; }
     }
 }

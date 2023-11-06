@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedNewName, updatedTrajectories.First().Trajectories.First().Name);
             Assert.Equal(job.Trajectory.ServiceCompany, updatedTrajectories.First().Trajectories.First().ServiceCompany);
             Assert.Equal(job.Trajectory.AziRef, updatedTrajectories.First().Trajectories.First().AziRef);
-            Assert.Equal(job.Trajectory.SourceName, updatedTrajectories.First().Trajectories.First().CommonData?.SourceName);
+            Assert.Equal(job.Trajectory.CommonData.SourceName, updatedTrajectories.First().Trajectories.First().CommonData?.SourceName);
         }
 
         [Fact]
@@ -79,8 +79,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Uid = uid,
                     Name = name,
                     ServiceCompany = "NewServiceCompany",
-                    SourceName = "NewSourceName",
-                    AziRef = "GridNorth"
+                    AziRef = "GridNorth",
+                    CommonData = new CommonData() { SourceName = "NewSourceName" }
                 }
             };
         }

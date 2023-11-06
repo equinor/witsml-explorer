@@ -47,7 +47,8 @@ const TrajectoriesContextMenu = (props: TrajectoriesContextMenuProps): React.Rea
       dTimTrajStart: "",
       mdMax: null,
       mdMin: null,
-      trajectoryStations: []
+      trajectoryStations: [],
+      commonData: null
     };
     const trajectoryPropertiesModalProps: TrajectoryPropertiesModalProps = { mode: PropertiesModalMode.New, trajectory: newTrajectory, dispatchOperation };
     const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <TrajectoryPropertiesModal {...trajectoryPropertiesModalProps} /> };
