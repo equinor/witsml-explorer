@@ -215,6 +215,7 @@ export const FluidsView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       insetColumns={insetColumns}
+      showRefresh
       downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
     />
   ) : (
