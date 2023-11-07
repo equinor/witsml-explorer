@@ -12,11 +12,12 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import { ObjectTypeToTemplateObject, StoreFunction } from "../ContentViews/QueryViewUtils";
-import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, onClickRefreshObject } from "./ContextMenuUtils";
 import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+import { DispatchNavigation } from "../../contexts/navigationAction";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -28,6 +29,7 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   navigationState: NavigationState,
   dispatchOperation: DispatchOperation,
+  dispatchNavigation: DispatchNavigation,
   wellbore: Wellbore
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
@@ -35,6 +37,10 @@ export const ObjectMenuItems = (
   const { selectedServer, servers } = navigationState;
 
   return [
+    <MenuItem key={"refresh"} onClick={() => onClickRefreshObject(checkedObjects[0], objectType, dispatchOperation, dispatchNavigation)} disabled={checkedObjects.length !== 1}>
+      <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>{menuItemText("Refresh", objectType, null)}</Typography>
+    </MenuItem>,
     <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, checkedObjects, dispatchOperation, objectType)} disabled={checkedObjects.length === 0}>
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("copy", objectType, checkedObjects)}</Typography>
