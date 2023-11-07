@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers
             IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
             _sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
             _targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
-            _smallestDepthLogDecimals = _sourceDepthLogDecimals <= _targetDepthLogDecimals ? _sourceDepthLogDecimals : _targetDepthLogDecimals;
+            _smallestDepthLogDecimals = Math.Min(_sourceDepthLogDecimals, _targetDepthLogDecimals);
             _isEqualNumOfDecimals = _sourceDepthLogDecimals == _targetDepthLogDecimals;
 
             // Set up log report list
@@ -187,7 +187,7 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     string sourceValue = sourceData[index];
                     string targetValue = targetData[index];
-                    if (!IsMnemonicDataEquals(sourceValue, targetValue))
+                    if (!IsMnemonicDataEqual(sourceValue, targetValue))
                     {
                         AddReportItem(mnemonic, index, sourceValue, targetValue);
                     }
@@ -233,7 +233,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue, true);
                     }
-                    else if (!IsMnemonicDataEquals(lessDecimalsValue, moreDecimalsValue))
+                    else if (!IsMnemonicDataEqual(lessDecimalsValue, moreDecimalsValue))
                     {
                         AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue);
                     }
@@ -251,7 +251,7 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        private bool IsMnemonicDataEquals(string sourceValue, string targetValue)
+        private bool IsMnemonicDataEqual(string sourceValue, string targetValue)
         {
             return String.Equals(sourceValue, targetValue);
         }
