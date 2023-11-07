@@ -2,11 +2,6 @@ using System.Collections.Generic;
 
 namespace WitsmlExplorer.Api.Models.Reports
 {
-    public class BaseReport<T> : BaseReport
-    {
-        public ICollection<T> ReportItems { get; init; }
-    }
-
     public class BaseReport
     {
         public string Title { get; set; }
