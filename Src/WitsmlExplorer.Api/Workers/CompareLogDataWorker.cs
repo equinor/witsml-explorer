@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,9 +24,13 @@ namespace WitsmlExplorer.Api.Workers
     {
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CompareLogData;
-        private List<CompareLogDataItem> _compareLogDataReportItems;
+        private List<ICompareLogDataItem> _compareLogDataReportItems;
         private Dictionary<string, int> _mnemonicsMismatchCount;
         private const int MaxMismatchesLimit = 10000;
+        private int _sourceDepthLogDecimals;
+        private int _targetDepthLogDecimals;
+        private int _smallestDepthLogDecimals;
+        private bool _isEqualNumOfDecimals;
         private bool _isDecreasing;
         private bool _isDepthLog;
 
@@ -38,16 +43,10 @@ namespace WitsmlExplorer.Api.Workers
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
-            int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
-            int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
-
-            // Check if the number of decimals for both servers is equal. Throw an error if not.
-            if (sourceDepthLogDecimals != targetDepthLogDecimals)
-            {
-                string message = $"CompareLogDataJob failed. Cases where servers have different numbers of decimals are not currently supported.";
-                Logger.LogError(message);
-                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
-            }
+            _sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
+            _targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
+            _smallestDepthLogDecimals = Math.Min(_sourceDepthLogDecimals, _targetDepthLogDecimals);
+            _isEqualNumOfDecimals = _sourceDepthLogDecimals == _targetDepthLogDecimals;
 
             // Set up log report list
             _compareLogDataReportItems = new();
@@ -121,17 +120,74 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogData targetLogData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
             Dictionary<string, string> sourceData = WitsmlLogDataToDictionary(sourceLogData);
             Dictionary<string, string> targetData = WitsmlLogDataToDictionary(targetLogData);
+
+            if (!_isEqualNumOfDecimals)
+            {
+                CompareLogDataWithUnequalNumOfDecimals(sourceData, targetData, mnemonic);
+            }
+            else
+            {
+                CompareLogData(sourceData, targetData, mnemonic);
+            }
+        }
+
+        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
+        {
+            WitsmlLogData mnemonicData = await WorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
+
+            foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
+            {
+                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+
+                var data = dataRow.Split(',');
+                var index = data.First();
+                var value = data.Last();
+
+                if (_isEqualNumOfDecimals && serverType == ServerType.Source)
+                {
+                    AddReportItem(mnemonic, index, value, null);
+                }
+                else if (_isEqualNumOfDecimals && serverType == ServerType.Target)
+                {
+                    AddReportItem(mnemonic, index, null, value);
+                }
+                else if (!_isEqualNumOfDecimals && serverType == ServerType.Source && (_sourceDepthLogDecimals < _targetDepthLogDecimals))
+                {
+                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, value, null);
+                }
+                else if (!_isEqualNumOfDecimals && serverType == ServerType.Source && (_sourceDepthLogDecimals > _targetDepthLogDecimals))
+                {
+                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, value);
+                }
+                else if (!_isEqualNumOfDecimals && serverType == ServerType.Target && (_targetDepthLogDecimals < _sourceDepthLogDecimals))
+                {
+                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, value, null);
+                }
+                else if (!_isEqualNumOfDecimals && serverType == ServerType.Target && (_targetDepthLogDecimals > _sourceDepthLogDecimals))
+                {
+                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, value);
+                }
+                else
+                {
+                    throw new ArgumentException($"serverType={serverType} not supported.");
+                }
+            }
+        }
+
+        private void CompareLogData(Dictionary<string, string> sourceData, Dictionary<string, string> targetData, string mnemonic)
+        {
             List<string> indexes = sourceData.Keys.Union(targetData.Keys).ToList();
             indexes = SortIndexes(indexes);
 
             foreach (string index in indexes)
             {
                 if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+
                 if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
                 {
                     string sourceValue = sourceData[index];
                     string targetValue = targetData[index];
-                    if (!String.Equals(sourceValue, targetValue))
+                    if (!IsMnemonicDataEqual(sourceValue, targetValue))
                     {
                         AddReportItem(mnemonic, index, sourceValue, targetValue);
                     }
@@ -151,31 +207,53 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
+        private void CompareLogDataWithUnequalNumOfDecimals(Dictionary<string, string> sourceData, Dictionary<string, string> targetData, string mnemonic)
         {
-            WitsmlLogData mnemonicData = await WorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
+            (Dictionary<string, string> LessDecimals, Dictionary<string, string> MoreDecimals) Logs = _sourceDepthLogDecimals < _targetDepthLogDecimals ? (sourceData, targetData) : (targetData, sourceData);
+            List<string> lessDecimalsIndexes = Logs.LessDecimals.Keys.ToList();
+            List<string> moreDecimalsIndexes = Logs.MoreDecimals.Keys.ToList();
 
-            foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
+            List<string> allIndexes = lessDecimalsIndexes.Union(moreDecimalsIndexes).ToList();
+            allIndexes = SortIndexes(allIndexes);
+
+            List<string> moreDecimalsRoundedIndexes = moreDecimalsIndexes.Select(x => RoundStringDouble(x, _smallestDepthLogDecimals)).ToList();
+            List<string> moreDecimalsRoundedIndexesDuplicates = GetIndexDuplicates(moreDecimalsRoundedIndexes);
+
+            foreach (string index in allIndexes)
             {
                 if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
 
-                var data = dataRow.Split(',');
-                var index = data.First();
-                var value = data.Last();
+                string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
 
-                if (serverType == ServerType.Source)
+                if (lessDecimalsIndexes.Contains(roundedIndex) && moreDecimalsIndexes.Contains(index))
                 {
-                    AddReportItem(mnemonic, index, value, null);
+                    string lessDecimalsValue = Logs.LessDecimals[roundedIndex];
+                    string moreDecimalsValue = Logs.MoreDecimals[index];
+                    if (moreDecimalsRoundedIndexesDuplicates.Contains(roundedIndex))
+                    {
+                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue, true);
+                    }
+                    else if (!IsMnemonicDataEqual(lessDecimalsValue, moreDecimalsValue))
+                    {
+                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue);
+                    }
                 }
-                else if (serverType == ServerType.Target)
+                else if (lessDecimalsIndexes.Contains(index) && !moreDecimalsRoundedIndexes.Contains(index))
                 {
-                    AddReportItem(mnemonic, index, null, value);
+                    string lessDecimalsValue = Logs.LessDecimals[index];
+                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, lessDecimalsValue, null);
                 }
-                else
+                else if (moreDecimalsIndexes.Contains(index) && !lessDecimalsIndexes.Contains(index))
                 {
-                    throw new ArgumentException($"serverType={serverType} not supported.");
+                    string moreDecimalsValue = Logs.MoreDecimals[index];
+                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, moreDecimalsValue);
                 }
             }
+        }
+
+        private bool IsMnemonicDataEqual(string sourceValue, string targetValue)
+        {
+            return String.Equals(sourceValue, targetValue);
         }
 
         private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog)
@@ -215,6 +293,20 @@ namespace WitsmlExplorer.Api.Workers
             });
         }
 
+        private void AddUnequalServerDecimalsReportItem(string mnemonic, string lessDecimalsIndex, string moreDecimalsIndex, string lessDecimalsValue, string moreDecimalsValue, bool isDuplicate = false)
+        {
+            _mnemonicsMismatchCount[mnemonic]++;
+            _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsItem
+            {
+                Mnemonic = mnemonic,
+                SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                IndexDuplicate = isDuplicate ? "X" : null
+            });
+        }
+
         private List<string> SortIndexes(List<string> indexes)
         {
             if (_isDecreasing)
@@ -238,6 +330,19 @@ namespace WitsmlExplorer.Api.Workers
             if (targetLog == null) throw new ArgumentException("Target log could not be fetched.");
             if (sourceLog.IndexType != targetLog.IndexType) throw new ArgumentException($"SourceLog.IndexType={sourceLog.IndexType} should match TargetLog.IndexType={targetLog.IndexType}");
             if (sourceLog.Direction != targetLog.Direction) throw new ArgumentException($"SourceLog.Direction={sourceLog.Direction} should match TargetLog.Direction={targetLog.Direction}");
+        }
+
+        private string RoundStringDouble(string value, int digits)
+        {
+            return Math.Round(StringHelpers.ToDouble(value), digits).ToString(CultureInfo.InvariantCulture);
+        }
+
+        private List<string> GetIndexDuplicates(List<string> indexes)
+        {
+            return indexes.GroupBy(x => x)
+                    .Where(g => g.Count() > 1)
+                    .Select(y => y.Key)
+                    .ToList();
         }
     }
 }
