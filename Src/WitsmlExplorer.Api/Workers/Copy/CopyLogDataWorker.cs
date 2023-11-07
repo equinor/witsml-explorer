@@ -202,12 +202,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
                     Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
                 WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
-                if (!sourceData.Logs.Any())
+                WitsmlLog sourceLogWithData = sourceData?.Logs?.FirstOrDefault();
+
+                if (sourceLogWithData == null)
                 {
                     break;
                 }
-
-                WitsmlLog sourceLogWithData = sourceData.Logs.First();
 
                 List<WitsmlData> data = sourceLogWithData.LogData.Data;
                 List<WitsmlData> newData = new();
@@ -226,10 +226,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         if (rowsToCollate.Any())
                         {
                             newData.Add(CollateData(rowsToCollate, targetIndex));
+                            rowsToCollate.Clear();
                         }
                         firstSourceRowIndex = lastSourceRowIndex;
                         targetIndex = nextTargetIndex;
-                        rowsToCollate = new();
                     }
                     rowsToCollate.Add(split[1..]);
                 }
@@ -377,7 +377,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 ? throw new Exception($"Could not find source log object: {job.Source.Parent.Description()}")
                 : targetLog.Result == null
                 ? throw new Exception($"Could not find target log object: UidWell: {job.Target.Description()}")
-                : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
+                : (sourceLog.Result, targetLog.Result);
         }
 
         private class CopyResult

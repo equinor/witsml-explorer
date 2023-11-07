@@ -34,7 +34,6 @@ namespace WitsmlExplorer.Api.Services
         private readonly IWitsmlSystemCredentials _witsmlServerCredentials;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private readonly ICredentialsCache _credentialsCache;
-        private readonly Task<ICollection<Server>> _allServers;
         private static readonly string SUBJECT = "sub";
         private readonly bool _useOAuth2;
 
@@ -49,11 +48,10 @@ namespace WitsmlExplorer.Api.Services
         {
             _dataProtector = dataProtectionProvider.CreateProtector("WitsmlServerPassword").ToTimeLimitedDataProtector();
             _logger = logger ?? throw new ArgumentException("Missing ILogger");
-            _clientCapabilities = clientCapabilities.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
+            _clientCapabilities = clientCapabilities?.Value ?? throw new ArgumentException("Missing WitsmlClientCapabilities");
             _witsmlServerCredentials = witsmlServerCredentials ?? throw new ArgumentException("Missing WitsmlServerCredentials");
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
             _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
-            _allServers = _witsmlServerRepository.GetDocumentsAsync();
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
@@ -85,15 +83,10 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<bool> UserHasRoleForHost(string[] roles, Uri host)
         {
-            bool result = true;
-            ICollection<Server> allServers = await _allServers;
-
+            ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
             bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.EqualsIgnoreCase(host));
-            bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(host)).Any(n =>
-             n.Roles != null && n.Roles.Intersect(roles).Any()
-             );
-            result &= systemCredsExists & validRole;
-            return result;
+            bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(host)).Any(n => n.Roles != null && n.Roles.Intersect(roles).Any());
+            return systemCredsExists & validRole;
         }
 
         private string Encrypt(string inputString)

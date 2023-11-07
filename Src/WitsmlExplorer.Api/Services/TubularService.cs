@@ -54,8 +54,7 @@ namespace WitsmlExplorer.Api.Services
                 Od = tComponent.Od == null ? null : new LengthMeasure { Uom = tComponent.Od.Uom, Value = decimal.Parse(tComponent.Od.Value, CultureInfo.InvariantCulture) },
                 Len = tComponent.Len == null ? null : new LengthMeasure { Uom = tComponent.Len.Uom, Value = decimal.Parse(tComponent.Len.Value, CultureInfo.InvariantCulture) },
                 TypeTubularComponent = tComponent.TypeTubularComp,
-            })
-                .OrderBy(tComponent => tComponent.Sequence).ToList();
+            }).OrderBy(tComponent => tComponent.Sequence).ToList();
         }
 
         private static Tubular WitsmlToTubular(WitsmlTubular tubular)
@@ -76,6 +75,5 @@ namespace WitsmlExplorer.Api.Services
                 }
             };
         }
-
     }
 }

@@ -33,7 +33,6 @@ namespace WitsmlExplorer.Api.Services
             WitsmlRigs query = RigQueries.GetWitsmlRig(wellUid, wellboreUid, rigUid);
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             WitsmlRig witsmlRig = result.Rigs.FirstOrDefault();
-
             return WitsmlRigToRig(witsmlRig);
         }
 

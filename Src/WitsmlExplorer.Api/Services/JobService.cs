@@ -20,9 +20,9 @@ namespace WitsmlExplorer.Api.Services
     {
         private readonly IJobCache _jobCache;
         private readonly IJobQueue _jobQueue;
-        private readonly ICollection<IWorker> _workers;
+        private readonly IEnumerable<IWorker> _workers;
 
-        public JobService(IJobQueue jobQueue, ICollection<IWorker> workers, IJobCache jobCache)
+        public JobService(IJobQueue jobQueue, IEnumerable<IWorker> workers, IJobCache jobCache)
         {
             _jobQueue = jobQueue;
             _workers = workers;

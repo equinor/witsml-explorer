@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
-            return !result.Logs.Any() ? null : result.Logs.First();
+            return result.Logs?.FirstOrDefault();
         }
 
         private static CopyLogDataJob CreateCopyLogDataJob(CopyObjectsJob job, WitsmlLog targetLog)

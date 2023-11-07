@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static MudLog FromWitsml(WitsmlMudLog witsmlMudLog)
         {
-            return new()
+            return witsmlMudLog == null ? null : new()
             {
                 Uid = witsmlMudLog.Uid,
                 Name = witsmlMudLog.Name,
