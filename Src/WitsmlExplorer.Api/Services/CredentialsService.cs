@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext)
         {
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.WitsmlAuth, Decrypt);
-            if (creds.IsCredsNullOrEmpty())
+            if (creds.IsNullOrEmpty())
             {
                 return false;
             }
@@ -140,7 +140,7 @@ namespace WitsmlExplorer.Api.Services
             if (await UserHasRoleForHost(userRoles, server))
             {
                 result = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host.EqualsIgnoreCase(server));
-                if (!result.IsCredsNullOrEmpty())
+                if (!result.IsNullOrEmpty())
                 {
                     CacheCredentials(GetClaimFromToken(token, SUBJECT), result, 1.0);
                 }
@@ -160,7 +160,7 @@ namespace WitsmlExplorer.Api.Services
             string server = serverType == ServerType.Target ? eh.TargetServer : eh.SourceServer;
             string username = serverType == ServerType.Target ? eh.TargetUsername : eh.SourceUsername;
             ServerCredentials creds = GetCredentials(eh, server, username);
-            if (creds == null || creds.IsCredsNullOrEmpty())
+            if (creds == null || creds.IsNullOrEmpty())
             {
                 string serverTypeName = serverType == ServerType.Target ? "target" : "source";
                 throw new WitsmlClientProviderException($"Missing {serverTypeName} server credentials", (int)HttpStatusCode.Unauthorized, serverType);
@@ -174,7 +174,7 @@ namespace WitsmlExplorer.Api.Services
             if (_useOAuth2)
             {
                 ServerCredentials systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), serverUrl);
-                if (!systemCredentials.IsCredsNullOrEmpty() && !usernames.Contains(systemCredentials.UserId))
+                if (!systemCredentials.IsNullOrEmpty() && !usernames.Contains(systemCredentials.UserId))
                 {
                     usernames.Add(systemCredentials.UserId);
                 }
@@ -206,7 +206,7 @@ namespace WitsmlExplorer.Api.Services
             if (creds == null && _useOAuth2)
             {
                 creds = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
-                if (creds.IsCredsNullOrEmpty() || !string.Equals(creds.UserId, username, StringComparison.Ordinal))
+                if (creds.IsNullOrEmpty() || !string.Equals(creds.UserId, username, StringComparison.Ordinal))
                 {
                     return null;
                 }

@@ -145,6 +145,7 @@ namespace WitsmlExplorer.Api.Query
         /// <param name="componentType">The type of components copy.</param>
         /// <param name="reference">Reference of the target object that will be used to initialize the query.</param>
         /// <param name="uidsToCopy">A list of uids that will be used to filter the <paramref name="source"/> components.</param>
+        /// </summary>
         public static WitsmlObjectOnWellbore CopyComponents(WitsmlObjectOnWellbore source, ComponentType componentType, ObjectReference reference, string[] uidsToCopy)
         {
             WitsmlObjectOnWellbore target = EntityTypeHelper.FromObjectReference(componentType.ToParentType(), reference);

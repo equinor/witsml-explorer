@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
-            IEnumerable<string> userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value);
+            IEnumerable<string> userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToList();
             return userRoles.Contains(AuthorizationPolicyRoles.ADMIN) || userRoles.Contains(AuthorizationPolicyRoles.DEVELOPER);
         }
 
