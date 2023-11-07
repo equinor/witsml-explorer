@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import { STORAGE_QUERYVIEW_DATA } from "../components/Constants";
 import { QueryTemplatePreset, ReturnElements, StoreFunction, getQueryTemplateWithPreset } from "../components/ContentViews/QueryViewUtils";
 
-export interface QueryContextElement {
+export interface QueryElement {
   query: string;
   result: string;
   storeFunction: StoreFunction;
@@ -11,21 +11,21 @@ export interface QueryContextElement {
   optionsIn: string;
   tabId: string;
 }
-export interface QueryContextState {
-  queries: QueryContextElement[];
+export interface QueryState {
+  queries: QueryElement[];
   tabIndex: number;
 }
 
 export type DispatchQuery = Dispatch<QueryAction>;
 
 interface QueryContext {
-  queryState: QueryContextState;
+  queryState: QueryState;
   dispatchQuery: DispatchQuery;
 }
 
 export const QueryContext = React.createContext<QueryContext>({} as QueryContext);
 
-const getDefaultQueryContextElement = (): QueryContextElement => ({
+const getDefaultQueryElement = (): QueryElement => ({
   query: "",
   result: "",
   storeFunction: StoreFunction.GetFromStore,
@@ -34,8 +34,8 @@ const getDefaultQueryContextElement = (): QueryContextElement => ({
   tabId: uuid()
 });
 
-const getDefaultQueryContextState = (): QueryContextState => ({
-  queries: [getDefaultQueryContextElement()],
+const getDefaultQueryState = (): QueryState => ({
+  queries: [getDefaultQueryElement()],
   tabIndex: 0
 });
 
@@ -63,7 +63,7 @@ export interface QueryAction {
   templatePreset?: QueryTemplatePreset;
 }
 
-export const queryContextReducer = (state: QueryContextState, action: QueryAction): QueryContextState => {
+export const queryReducer = (state: QueryState, action: QueryAction): QueryState => {
   const queries = state.queries.map((query) => ({ ...query }));
   const tabIndex = action.tabIndex ?? state.tabIndex;
 
@@ -88,7 +88,7 @@ export const queryContextReducer = (state: QueryContextState, action: QueryActio
     case QueryActionType.SetFromTemplatePreset:
       return setFromTemplatePreset(state, action);
     case QueryActionType.AddTab:
-      return { queries: [...queries, getDefaultQueryContextElement()], tabIndex: queries.length };
+      return { queries: [...queries, getDefaultQueryElement()], tabIndex: queries.length };
     case QueryActionType.RemoveTab:
       return removeTab(state, action);
     default:
@@ -96,11 +96,11 @@ export const queryContextReducer = (state: QueryContextState, action: QueryActio
   }
 };
 
-const setFromTemplatePreset = (state: QueryContextState, action: QueryAction): QueryContextState => {
+const setFromTemplatePreset = (state: QueryState, action: QueryAction): QueryState => {
   const template = getQueryTemplateWithPreset(action.templatePreset);
   if (!template) return state;
-  const defaultValues = getDefaultQueryContextElement();
-  const newQuery: QueryContextElement = {
+  const defaultValues = getDefaultQueryElement();
+  const newQuery: QueryElement = {
     query: template,
     result: "",
     storeFunction: action.templatePreset.storeFunction ?? defaultValues.storeFunction,
@@ -108,46 +108,44 @@ const setFromTemplatePreset = (state: QueryContextState, action: QueryAction): Q
     optionsIn: action.templatePreset.optionsIn ?? defaultValues.optionsIn,
     tabId: uuid()
   };
-  if (state.queries.length == 0 || (state.queries.length == 1 && state.queries[0].query == "")) {
+  if (state.queries.length === 0 || (state.queries.length === 1 && state.queries[0].query === "")) {
     return { queries: [newQuery], tabIndex: 0 };
   }
   const queries = [...state.queries, newQuery];
   return { queries, tabIndex: queries.length - 1 };
 };
 
-const removeTab = (state: QueryContextState, action: QueryAction): QueryContextState => {
+const removeTab = (state: QueryState, action: QueryAction): QueryState => {
   const queries = [...state.queries];
   const tabIndexToRemove = queries.findIndex((q) => q.tabId === action.tabId);
   const isCurrentTab = tabIndexToRemove === state.tabIndex;
   const isLastTab = tabIndexToRemove === queries.length - 1;
   let newTabIndex = state.tabIndex;
-  if (isCurrentTab && isLastTab && newTabIndex > 0) {
-    newTabIndex--;
-  } else if (tabIndexToRemove < state.tabIndex && state.tabIndex > 0) {
+  if ((isCurrentTab && isLastTab && newTabIndex > 0) || (tabIndexToRemove < state.tabIndex && state.tabIndex > 0)) {
     newTabIndex--;
   }
   queries.splice(tabIndexToRemove, 1);
-  if (queries.length === 0) queries.push(getDefaultQueryContextElement());
+  if (queries.length === 0) queries.push(getDefaultQueryElement());
   return { queries, tabIndex: newTabIndex };
 };
 
-export interface QueryContextProviderProps {
-  initialQueryState?: Partial<QueryContextState>;
-  children?: React.ReactNode;
-}
-
-const getInitialQueryState = (initialQueryState: Partial<QueryContextState>): QueryContextState => {
-  if (initialQueryState) return { ...getDefaultQueryContextState(), ...initialQueryState };
+const getInitialQueryState = (initialQueryState: Partial<QueryState>): QueryState => {
+  if (initialQueryState) return { ...getDefaultQueryState(), ...initialQueryState };
   return retrieveStoredQuery();
 };
 
+export interface QueryContextProviderProps {
+  initialQueryState?: Partial<QueryState>;
+  children?: React.ReactNode;
+}
+
 export function QueryContextProvider({ initialQueryState, children }: QueryContextProviderProps) {
-  const [queryState, dispatchQuery] = React.useReducer(queryContextReducer, initialQueryState, getInitialQueryState);
+  const [queryState, dispatchQuery] = React.useReducer(queryReducer, initialQueryState, getInitialQueryState);
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
       setStoredQuery(queryState);
-    }, 1000);
+    }, 500);
     return () => clearTimeout(dispatch);
   }, [queryState]);
 
@@ -161,11 +159,11 @@ const retrieveStoredQuery = () => {
     validateQueryState(queryState);
     return queryState;
   } catch {
-    return getDefaultQueryContextState();
+    return getDefaultQueryState();
   }
 };
 
-const setStoredQuery = (queryState: QueryContextState) => {
+const setStoredQuery = (queryState: QueryState) => {
   try {
     // As results can be large, we don't store them in local storage
     const queryStateWithoutResults = {
@@ -178,7 +176,7 @@ const setStoredQuery = (queryState: QueryContextState) => {
   }
 };
 
-const validateQueryState = (queryState: QueryContextState) => {
+const validateQueryState = (queryState: QueryState) => {
   if (!queryState) throw new Error("No query state");
   if (!("queries" in queryState) || !Array.isArray(queryState.queries)) throw new Error("Invalid queries in query state");
   if (!("tabIndex" in queryState) || typeof queryState.tabIndex !== "number") throw new Error("Invalid tabIndex in query state");

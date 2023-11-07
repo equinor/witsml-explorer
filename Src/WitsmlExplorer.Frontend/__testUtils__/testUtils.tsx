@@ -7,7 +7,7 @@ import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../c
 import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import { DateTimeFormat, EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
-import { QueryContextProvider, QueryContextState } from "../contexts/queryContext";
+import { QueryContextProvider, QueryState } from "../contexts/queryContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
@@ -41,7 +41,7 @@ interface RenderWithContextsOptions {
   initialNavigationState?: Partial<NavigationState>;
   initialOperationState?: Partial<OperationState>;
   initialFilter?: Partial<Filter>;
-  initialQueryState?: Partial<QueryContextState>;
+  initialQueryState?: Partial<QueryState>;
 }
 
 export function renderWithContexts(

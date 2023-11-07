@@ -1,5 +1,4 @@
 import { Button, Menu, Tabs, TextField } from "@equinor/eds-core-react";
-import { capitalize } from "lodash";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
@@ -44,7 +43,7 @@ const QueryView = (): React.ReactElement => {
     const getResult = async (dispatchOperation?: DispatchOperation | null) => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
-      const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
+      const requestReturnElements = storeFunction === StoreFunction.GetFromStore ? returnElements : undefined;
       let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn?.trim());
       if (response.startsWith("<")) {
         response = formatXml(response);
@@ -54,7 +53,7 @@ const QueryView = (): React.ReactElement => {
     };
     const isValid = validateAndFormatQuery();
     if (!isValid) return;
-    if (storeFunction == StoreFunction.DeleteFromStore) {
+    if (storeFunction === StoreFunction.DeleteFromStore) {
       displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
     } else {
       getResult();
@@ -98,13 +97,17 @@ const QueryView = (): React.ReactElement => {
     dispatchQuery({ type: QueryActionType.RemoveTab, tabId });
   };
 
+  const getTabName = (query: string) => {
+    return getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty");
+  };
+
   return (
     <Layout>
       <Tabs activeTab={tabIndex} onChange={onTabChange} scrollable style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         <Tabs.List>
           {queries.map((query) => (
             <StyledTab key={query.tabId} colors={colors}>
-              {capitalize(getTag(query.query.split("\n")?.[0]) ?? (query.query.split("\n")?.[0] || "empty"))}
+              {getTabName(query.query)}
               <StyledClearIcon name="clear" size={16} onClick={(event) => onCloseTab(event, query.tabId)} />
             </StyledTab>
           ))}
