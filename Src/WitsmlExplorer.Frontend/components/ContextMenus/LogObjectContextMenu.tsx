@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "../../models/jobs/compareLogData";
@@ -37,6 +38,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers, selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
 
   const onClickProperties = () => {
@@ -141,7 +143,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"pastelogcurves"}
           onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}

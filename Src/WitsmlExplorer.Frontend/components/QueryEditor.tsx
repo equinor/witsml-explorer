@@ -39,7 +39,7 @@ export const QueryEditor = (props: QueryEditorProps) => {
       value={value}
       colors={colors}
       mode="xml"
-      theme={colors == dark ? "merbivore" : "xcode"}
+      theme={colors === dark ? "merbivore" : "xcode"}
       onChange={onChange}
       onLoad={onLoad}
       readOnly={readonly}

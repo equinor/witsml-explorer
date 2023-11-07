@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
@@ -22,6 +23,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(ComponentType.WbGeometrySection);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -33,7 +35,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0])}
