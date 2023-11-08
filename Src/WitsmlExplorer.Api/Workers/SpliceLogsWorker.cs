@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Workers
                     WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                     foreach (var mnemonic in logHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1))
                     {
-                        WitsmlLogData logData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
+                        WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
                         newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDepthLog);
                     }
                 }

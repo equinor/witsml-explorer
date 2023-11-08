@@ -55,8 +55,8 @@ namespace WitsmlExplorer.Api.Workers
             _mnemonicsMismatchCount = new Dictionary<string, int>();
 
             // Get logs
-            WitsmlLog sourceLog = await WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
-            WitsmlLog targetLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
+            WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
+            WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
 
             try
             {
@@ -116,8 +116,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)
         {
-            WitsmlLogData sourceLogData = await WorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
-            WitsmlLogData targetLogData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
+            WitsmlLogData sourceLogData = await LogWorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
+            WitsmlLogData targetLogData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
             Dictionary<string, string> sourceData = WitsmlLogDataToDictionary(sourceLogData);
             Dictionary<string, string> targetData = WitsmlLogDataToDictionary(targetLogData);
 
@@ -133,7 +133,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
         {
-            WitsmlLogData mnemonicData = await WorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
+            WitsmlLogData mnemonicData = await LogWorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
