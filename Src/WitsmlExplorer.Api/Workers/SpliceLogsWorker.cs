@@ -77,8 +77,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLogs> GetLogHeaders(string wellUid, string wellboreUid, string[] logUids)
         {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogsByIds(wellUid, wellboreUid, logUids);
-            return await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            return await LogWorkerTools.GetLogsByIds(GetTargetWitsmlClientOrThrow(), wellUid, wellboreUid, logUids, ReturnElements.HeaderOnly);
         }
 
         private static void VerifyLogHeaders(WitsmlLogs logHeaders)
