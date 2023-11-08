@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Workers
         private bool _isEqualNumOfDecimals;
         private bool _isDecreasing;
         private bool _isDepthLog;
+        private bool _includeIndexDuplicates;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
@@ -57,6 +58,7 @@ namespace WitsmlExplorer.Api.Workers
             // Get logs
             WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
             WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
+            _includeIndexDuplicates = job.IncludeIndexDuplicates;
 
             try
             {
@@ -213,6 +215,11 @@ namespace WitsmlExplorer.Api.Workers
             List<string> lessDecimalsIndexes = Logs.LessDecimals.Keys.ToList();
             List<string> moreDecimalsIndexes = Logs.MoreDecimals.Keys.ToList();
 
+            if (!_includeIndexDuplicates)
+            {
+                moreDecimalsIndexes = RemoveRoundedIndexDuplicates(moreDecimalsIndexes);
+            }
+
             List<string> allIndexes = lessDecimalsIndexes.Union(moreDecimalsIndexes).ToList();
             allIndexes = SortIndexes(allIndexes);
 
@@ -296,15 +303,29 @@ namespace WitsmlExplorer.Api.Workers
         private void AddUnequalServerDecimalsReportItem(string mnemonic, string lessDecimalsIndex, string moreDecimalsIndex, string lessDecimalsValue, string moreDecimalsValue, bool isDuplicate = false)
         {
             _mnemonicsMismatchCount[mnemonic]++;
-            _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsItem
+            if (_includeIndexDuplicates)
             {
-                Mnemonic = mnemonic,
-                SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                IndexDuplicate = isDuplicate ? "X" : null
-            });
+                _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsIndexDuplicateItem
+                {
+                    Mnemonic = mnemonic,
+                    SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    IndexDuplicate = isDuplicate ? "X" : null
+                });
+            }
+            else
+            {
+                _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsItem
+                {
+                    Mnemonic = mnemonic,
+                    SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                });
+            }
         }
 
         private List<string> SortIndexes(List<string> indexes)
@@ -343,6 +364,22 @@ namespace WitsmlExplorer.Api.Workers
                     .Where(g => g.Count() > 1)
                     .Select(y => y.Key)
                     .ToList();
+        }
+
+        private List<string> RemoveRoundedIndexDuplicates(List<string> indexes)
+        {
+            List<string> newIndexes = new List<string>();
+            List<string> roundedIndexes = new List<string>();
+            foreach (string index in indexes)
+            {
+                string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
+                if (!roundedIndexes.Contains(roundedIndex))
+                {
+                    newIndexes.Add(index);
+                    roundedIndexes.Add(roundedIndex);
+                }
+            }
+            return newIndexes;
         }
     }
 }

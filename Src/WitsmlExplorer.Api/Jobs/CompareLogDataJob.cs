@@ -6,6 +6,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public ObjectReference SourceLog { get; init; }
         public ObjectReference TargetLog { get; init; }
+        public bool IncludeIndexDuplicates { get; init; }
 
         public override string Description()
         {

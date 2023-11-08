@@ -486,7 +486,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<CompareLogDataUnequalServerDecimalsItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataUnequalServerDecimalsItem)x).ToList();
 
             int expectedNumberOfMismatches = 1;
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.02", "0.016", "22", "99", false);
+            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.02", "0.016", "22", "99");
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -495,7 +495,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.TargetIndex, resultReportItems[0].TargetIndex);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
-            Assert.Equal(expectedMismatchItem1.IndexDuplicate, resultReportItems[0].IndexDuplicate);
         }
 
         [Fact]
@@ -528,7 +527,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             int expectedNumberOfMismatches = 1;
             List<WitsmlData> someData = GetLogData(targetLog.Data);
 
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.016", "0.02", "99", "22", false);
+            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.016", "0.02", "99", "22");
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -537,11 +536,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.TargetIndex, resultReportItems[0].TargetIndex);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
-            Assert.Equal(expectedMismatchItem1.IndexDuplicate, resultReportItems[0].IndexDuplicate);
         }
 
         [Fact]
-        public async Task CompareLogData_UnequalServerDecimalsIndexDuplicatesDepthLogs_ReturnsMismatchedReportItems()
+        public async Task CompareLogData_UnequalServerDecimalsExcludeIndexDuplicatesDepthLogs_ReturnsZeroMismatchedReportItems()
         {
             SetupWorker(2, 3);
             string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
@@ -567,10 +565,42 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var (workerResult, refreshAction) = await _worker.Execute(job);
             List<CompareLogDataUnequalServerDecimalsItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataUnequalServerDecimalsItem)x).ToList();
 
+            int expectedNumberOfMismatches = 0;
+
+            Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
+        }
+
+        [Fact]
+        public async Task CompareLogData_UnequalServerDecimalsIndexIncludeDuplicatesDepthLogs_ReturnsMismatchedReportItems()
+        {
+            SetupWorker(2, 3);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "0.01",
+                EndIndex = "0.01",
+                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                Data = new() { "0.01,11" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "0.011",
+                EndIndex = "0.0013",
+                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                Data = new() { "0.011,11", "0.012,99", "0.013,11" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog, includeIndexDuplicates: true);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataUnequalServerDecimalsIndexDuplicateItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataUnequalServerDecimalsIndexDuplicateItem)x).ToList();
+
             int expectedNumberOfMismatches = 3;
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.01", "0.011", "11", "11", true);
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem2 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.01", "0.012", "11", "99", true);
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem3 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.01", "0.013", "11", "11", true);
+            CompareLogDataUnequalServerDecimalsIndexDuplicateItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsIndexDuplicateItem("Curve1", "0.01", "0.011", "11", "11", true);
+            CompareLogDataUnequalServerDecimalsIndexDuplicateItem expectedMismatchItem2 = CreateCompareLogDataUnequalServerDecimalsIndexDuplicateItem("Curve1", "0.01", "0.012", "11", "99", true);
+            CompareLogDataUnequalServerDecimalsIndexDuplicateItem expectedMismatchItem3 = CreateCompareLogDataUnequalServerDecimalsIndexDuplicateItem("Curve1", "0.01", "0.013", "11", "11", true);
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -624,8 +654,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             List<CompareLogDataUnequalServerDecimalsItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataUnequalServerDecimalsItem)x).ToList();
 
             int expectedNumberOfMismatches = 2;
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.00", null, "00", null, false);
-            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem2 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", null, "0.030", null, "33", false);
+            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem1 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", "0.00", null, "00", null);
+            CompareLogDataUnequalServerDecimalsItem expectedMismatchItem2 = CreateCompareLogDataUnequalServerDecimalsItem("Curve1", null, "0.030", null, "33");
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -634,19 +664,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.TargetIndex, resultReportItems[0].TargetIndex);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
-            Assert.Equal(expectedMismatchItem1.IndexDuplicate, resultReportItems[0].IndexDuplicate);
 
             Assert.Equal(expectedMismatchItem2.Mnemonic, resultReportItems[1].Mnemonic);
             Assert.Equal(expectedMismatchItem2.SourceIndex, resultReportItems[1].SourceIndex);
             Assert.Equal(expectedMismatchItem2.TargetIndex, resultReportItems[1].TargetIndex);
             Assert.Equal(expectedMismatchItem2.SourceValue, resultReportItems[1].SourceValue);
             Assert.Equal(expectedMismatchItem2.TargetValue, resultReportItems[1].TargetValue);
-            Assert.Equal(expectedMismatchItem2.IndexDuplicate, resultReportItems[1].IndexDuplicate);
         }
 
-        private CompareLogDataJob SetupTest(TestLog sourceLog, TestLog targetLog)
+        private CompareLogDataJob SetupTest(TestLog sourceLog, TestLog targetLog, bool includeIndexDuplicates = false)
         {
-            CompareLogDataJob job = CreateCompareLogDataJob();
+            CompareLogDataJob job = CreateCompareLogDataJob(includeIndexDuplicates);
             WitsmlLogs sourceLogHeader = CreateSampleLogHeaders(_sourceWellUid, _sourceWellboreUid, _sourceLogUid, sourceLog);
             WitsmlLogs targetLogHeader = CreateSampleLogHeaders(_targetWellUid, _targetWellboreUid, _targetLogUid, targetLog);
             WitsmlLogs sourceLogData = CreateSampleLogData(_sourceWellUid, _sourceWellboreUid, _sourceLogUid, sourceLog);
@@ -817,9 +845,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private CompareLogDataUnequalServerDecimalsItem CreateCompareLogDataUnequalServerDecimalsItem(string mnemonic, string sourceIndex, string targetIndex, string sourceValue, string targetValue, bool isDuplicate)
+        private CompareLogDataUnequalServerDecimalsItem CreateCompareLogDataUnequalServerDecimalsItem(string mnemonic, string sourceIndex, string targetIndex, string sourceValue, string targetValue)
         {
             return new CompareLogDataUnequalServerDecimalsItem
+            {
+                Mnemonic = mnemonic,
+                SourceIndex = sourceIndex,
+                TargetIndex = targetIndex,
+                SourceValue = sourceValue,
+                TargetValue = targetValue,
+            };
+        }
+
+        private CompareLogDataUnequalServerDecimalsIndexDuplicateItem CreateCompareLogDataUnequalServerDecimalsIndexDuplicateItem(string mnemonic, string sourceIndex, string targetIndex, string sourceValue, string targetValue, bool isDuplicate)
+        {
+            return new CompareLogDataUnequalServerDecimalsIndexDuplicateItem
             {
                 Mnemonic = mnemonic,
                 SourceIndex = sourceIndex,
@@ -830,7 +870,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private CompareLogDataJob CreateCompareLogDataJob()
+        private CompareLogDataJob CreateCompareLogDataJob(bool includeIndexDuplicates = false)
         {
             return new CompareLogDataJob
             {
@@ -852,6 +892,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Uid = _targetLogUid,
                     Name = _targetLogUid
                 },
+                IncludeIndexDuplicates = includeIndexDuplicates,
                 JobInfo = new()
             };
         }
