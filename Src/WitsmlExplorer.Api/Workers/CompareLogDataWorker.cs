@@ -355,7 +355,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private string RoundStringDouble(string value, int digits)
         {
-            return Math.Round(StringHelpers.ToDouble(value), digits).ToString(CultureInfo.InvariantCulture);
+            return Math.Round(StringHelpers.ToDouble(value), digits, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
         }
 
         private List<string> GetIndexDuplicates(List<string> indexes)
