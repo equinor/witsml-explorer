@@ -11,6 +11,7 @@ import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
+import { measureToString } from "../../models/measure";
 
 export interface TrajectoryStationPropertiesModalInterface {
   trajectoryStation: TrajectoryStation;
@@ -131,6 +132,52 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
                   })
                 }
               />
+              <TextField disabled id="mtf" label="mtf" defaultValue={measureToString(editableTrajectoryStation.mtf)} fullWidth />
+              <TextField disabled id="gtf" label="gtf" defaultValue={measureToString(editableTrajectoryStation.gtf)} fullWidth />
+              <TextField disabled id="dispNs" label="dispNs" defaultValue={measureToString(editableTrajectoryStation.dispNs)} fullWidth />
+              <TextField disabled id="dispEw" label="dispEw" defaultValue={measureToString(editableTrajectoryStation.dispEw)} fullWidth />
+              <TextField disabled id="vertSect" label="vertSect" defaultValue={measureToString(editableTrajectoryStation.vertSect)} fullWidth />
+              <TextField disabled id="dls" label="dls" defaultValue={measureToString(editableTrajectoryStation.dls)} fullWidth />
+              <TextField disabled id="rateTurn" label="rateTurn" defaultValue={measureToString(editableTrajectoryStation.rateTurn)} fullWidth />
+              <TextField disabled id="rateBuild" label="rateBuild" defaultValue={measureToString(editableTrajectoryStation.rateBuild)} fullWidth />
+              <TextField disabled id="gravTotalUncert" label="gravTotalUncert" defaultValue={measureToString(editableTrajectoryStation.gravTotalUncert)} fullWidth />
+              <TextField disabled id="dipAngleUncert" label="dipAngleUncert" defaultValue={measureToString(editableTrajectoryStation.dipAngleUncert)} fullWidth />
+              <TextField disabled id="magTotalUncert" label="magTotalUncert" defaultValue={measureToString(editableTrajectoryStation.magTotalUncert)} fullWidth />
+              <TextField
+                disabled
+                id="gravTotalFieldReference"
+                label="gravTotalFieldReference"
+                defaultValue={measureToString(editableTrajectoryStation.gravTotalFieldReference)}
+                fullWidth
+              />
+              <TextField
+                disabled
+                id="magTotalFieldReference"
+                label="magTotalFieldReference"
+                defaultValue={measureToString(editableTrajectoryStation.magTotalFieldReference)}
+                fullWidth
+              />
+              <TextField disabled id="magDipAngleReference" label="magDipAngleReference" defaultValue={measureToString(editableTrajectoryStation.magDipAngleReference)} fullWidth />
+              <TextField disabled id="statusTrajStation" label="statusTrajStation" defaultValue={measureToString(editableTrajectoryStation.statusTrajStation)} fullWidth />
+              <TextField disabled id="gravAxialRaw" label="gravAxialRaw" defaultValue={measureToString(editableTrajectoryStation.gravAxialRaw)} fullWidth />
+              <TextField disabled id="gravTran1Raw" label="gravTran1Raw" defaultValue={measureToString(editableTrajectoryStation.gravTran1Raw)} fullWidth />
+              <TextField disabled id="gravTran2Raw" label="gravTran2Raw" defaultValue={measureToString(editableTrajectoryStation.gravTran2Raw)} fullWidth />
+              <TextField disabled id="magAxialRaw" label="magAxialRaw" defaultValue={measureToString(editableTrajectoryStation.magAxialRaw)} fullWidth />
+              <TextField disabled id="magTran1Raw" label="magTran1Raw" defaultValue={measureToString(editableTrajectoryStation.rawData.magTran1Raw)} fullWidth />
+              <TextField disabled id="magTran2Raw" label="magTran2Raw" defaultValue={measureToString(editableTrajectoryStation.rawData.magTran2Raw)} fullWidth />
+              <TextField disabled id="gravAxialAccelCor" label="gravAxialAccelCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.gravAxialAccelCor)} fullWidth />
+              <TextField disabled id="gravTran1AccelCor" label="gravTran1AccelCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.gravTran1AccelCor)} fullWidth />
+              <TextField disabled id="gravTran2AccelCor" label="gravTran2AccelCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.gravTran2AccelCor)} fullWidth />
+              <TextField disabled id="magAxialDrlstrCor" label="magAxialDrlstrCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.magAxialDrlstrCor)} fullWidth />
+              <TextField disabled id="magTran1DrlstrCor" label="magTran1DrlstrCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.magTran1DrlstrCor)} fullWidth />
+              <TextField disabled id="magTran2DrlstrCor" label="magTran2DrlstrCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.magTran2DrlstrCor)} fullWidth />
+              <TextField disabled id="sagIncCor" label="sagIncCor" defaultValue={measureToString(editableTrajectoryStation.corUsed.sagIncCor)} fullWidth />
+              <TextField disabled id="stnMagDeclUsed" label="stnMagDeclUsed" defaultValue={measureToString(editableTrajectoryStation.corUsed.stnMagDeclUsed)} fullWidth />
+              <TextField disabled id="stnGridCorUsed" label="stnGridCorUsed" defaultValue={measureToString(editableTrajectoryStation.corUsed.stnGridCorUsed)} fullWidth />
+              <TextField disabled id="dirSensorOffset" label="dirSensorOffset" defaultValue={measureToString(editableTrajectoryStation.corUsed.dirSensorOffset)} fullWidth />
+              <TextField disabled id="magTotalFieldCalc" label="magTotalFieldCalc" defaultValue={measureToString(editableTrajectoryStation.valid.magTotalFieldCalc)} fullWidth />
+              <TextField disabled id="magDipAngleCalc" label="magDipAngleCalc" defaultValue={measureToString(editableTrajectoryStation.valid.magDipAngleCalc)} fullWidth />
+              <TextField disabled id="gravTotalFieldCalc" label="gravTotalFieldCalc" defaultValue={measureToString(editableTrajectoryStation.valid.gravTotalFieldCalc)} fullWidth />
             </>
           }
           confirmDisabled={!dTimStnValid}

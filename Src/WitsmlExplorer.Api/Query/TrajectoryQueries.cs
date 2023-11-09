@@ -8,6 +8,7 @@ using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
@@ -26,17 +27,13 @@ namespace WitsmlExplorer.Api.Query
                     Name = "",
                     NameWellbore = "",
                     NameWell = "",
-                    MdMin = new WitsmlMeasuredDepthCoord(),
-                    MdMax = new WitsmlMeasuredDepthCoord(),
+                    MdMin = MeasureWithDatum.ToEmptyWitsml<WitsmlMeasuredDepthCoord>(),
+                    MdMax = MeasureWithDatum.ToEmptyWitsml<WitsmlMeasuredDepthCoord>(),
                     AziRef = "",
                     ServiceCompany = "",
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
-                    CommonData = new WitsmlCommonData()
-                    {
-                        DTimCreation = "",
-                        DTimLastChange = ""
-                    }
+                    CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "" }
                 }.AsSingletonList()
             };
         }
@@ -108,12 +105,11 @@ namespace WitsmlExplorer.Api.Query
                     Uid = trajectory.Uid,
                     Name = trajectory.Name,
                     UidWellbore = trajectory.WellboreUid,
-                    MdMin = trajectory.MdMin != null ? new WitsmlMeasuredDepthCoord() { Value = trajectory.MdMin.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    MdMax = trajectory.MdMax != null ? new WitsmlMeasuredDepthCoord() { Value = trajectory.MdMax.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     AziRef = trajectory.AziRef.NullIfEmpty(),
                     ServiceCompany = trajectory.ServiceCompany.NullIfEmpty(),
                     DTimTrajStart = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajStart),
                     DTimTrajEnd = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajEnd),
+                    CommonData = string.IsNullOrEmpty(trajectory.CommonData?.SourceName) ? null : new WitsmlCommonData() { SourceName = trajectory.CommonData.SourceName }
                 }.AsSingletonList()
             };
         }
