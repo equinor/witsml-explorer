@@ -95,15 +95,15 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
 
   const onClickCompareData = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const onPicked = async (targetObject: ObjectOnWellbore, targetServer: Server) => {
-      const compareLogDataJob: CompareLogDataJob = { sourceLog: checkedObjects[0], targetLog: targetObject };
+    const onPicked = async (targetObject: ObjectOnWellbore, targetServer: Server, includeIndexDuplicates: boolean) => {
+      const compareLogDataJob: CompareLogDataJob = { sourceLog: checkedObjects[0], targetLog: targetObject, includeIndexDuplicates };
       const jobId = await JobService.orderJobAtServer(JobType.CompareLogData, compareLogDataJob, targetServer, selectedServer);
       if (jobId) {
         const reportModalProps = { jobId };
         dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
       }
     };
-    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked };
+    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked, includeIndexDuplicatesOption: true };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <ObjectPickerModal {...props} />
