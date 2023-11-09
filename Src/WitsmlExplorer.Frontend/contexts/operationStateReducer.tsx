@@ -26,6 +26,11 @@ export enum DateTimeFormat {
   Natural = "natural"
 }
 
+export enum DecimalPreference {
+  Decimal = "decimal",
+  Raw = "raw"
+}
+
 interface Action {
   type: OperationType;
 }
@@ -72,6 +77,11 @@ export interface SetDateTimeFormatAction extends PayloadAction {
   payload: DateTimeFormat;
 }
 
+export interface SetDecimalAction extends PayloadAction {
+  type: OperationType.SetDecimal;
+  payload: DecimalPreference;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -80,6 +90,7 @@ export interface OperationState {
   timeZone: TimeZone;
   colors: Colors;
   dateTimeFormat: DateTimeFormat;
+  decimals: DecimalPreference;
 }
 
 export interface MousePosition {
@@ -104,7 +115,8 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
     theme: UserTheme.Compact,
     timeZone: TimeZone.Raw,
     colors: Light,
-    dateTimeFormat: DateTimeFormat.Raw
+    dateTimeFormat: DateTimeFormat.Raw,
+    decimals: DecimalPreference.Raw
   };
   return useReducer(reducer, initialState);
 };
@@ -127,6 +139,8 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return setMode(state, action as SetModeAction);
     case OperationType.SetDateTimeFormat:
       return setDateTimeFormat(state, action as SetDateTimeFormatAction);
+    case OperationType.SetDecimal:
+      return setDecimal(state, action as SetDecimalAction);
     default:
       throw new Error();
   }
@@ -193,6 +207,13 @@ const setDateTimeFormat = (state: OperationState, { payload }: SetDateTimeFormat
   };
 };
 
+const setDecimal = (state: OperationState, { payload }: SetDecimalAction) => {
+  return {
+    ...state,
+    decimals: payload
+  };
+};
+
 export type OperationAction =
   | DisplayModalAction
   | HideModalAction
@@ -201,6 +222,7 @@ export type OperationAction =
   | SetThemeAction
   | SetTimeZoneAction
   | SetModeAction
-  | SetDateTimeFormatAction;
+  | SetDateTimeFormatAction
+  | SetDecimalAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

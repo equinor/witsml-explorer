@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers
             Verify(job);
             IWitsmlClient client = GetTargetWitsmlClientOrThrow();
 
-            WitsmlLog logHeader = await WorkerTools.GetLog(client, job.LogReference, ReturnElements.HeaderOnly);
+            WitsmlLog logHeader = await LogWorkerTools.GetLog(client, job.LogReference, ReturnElements.HeaderOnly);
 
             List<string> mnemonics = GetMnemonics(logHeader, job.Mnemonic);
             WitsmlLog updatedLog = new()

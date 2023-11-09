@@ -3,6 +3,7 @@ import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import { colors } from "../../styles/Colors";
@@ -17,12 +18,13 @@ const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElem
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
   const fluidReferences = useClipboardComponentReferencesOfType(ComponentType.Fluid);
 
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"pasteComponent"}
           onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}

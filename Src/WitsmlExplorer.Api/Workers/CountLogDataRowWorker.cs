@@ -36,7 +36,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
         bool isDepthLog = job.LogReference.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         List<CountLogDataReportItem> countLogDataReportItems = new();
 
-        var witsmlLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
+        var witsmlLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
         if (witsmlLog == null)
         {
             var message = $"CountLogDataRowWorkerJob failed. Cannot find the witsml log for {job.Description()}";

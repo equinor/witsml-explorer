@@ -5,7 +5,7 @@ import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
-import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
@@ -27,7 +27,9 @@ import {
   SetTimeZoneAction,
   TimeZone,
   UserTheme,
-  initOperationStateReducer
+  initOperationStateReducer,
+  SetDecimalAction,
+  DecimalPreference
 } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { QueryContextProvider } from "../contexts/queryContext";
@@ -60,6 +62,11 @@ const Home = (): React.ReactElement => {
       const storedDateTimeFormat = localStorage.getItem(STORAGE_DATETIMEFORMAT_KEY) as DateTimeFormat;
       if (storedDateTimeFormat) {
         const action: SetDateTimeFormatAction = { type: OperationType.SetDateTimeFormat, payload: storedDateTimeFormat };
+        dispatchOperation(action);
+      }
+      const storedDecimals = localStorage.getItem(STORAGE_DECIMAL_KEY) as DecimalPreference;
+      if (storedDecimals) {
+        const action: SetDecimalAction = { type: OperationType.SetDecimal, payload: storedDecimals };
         dispatchOperation(action);
       }
     }

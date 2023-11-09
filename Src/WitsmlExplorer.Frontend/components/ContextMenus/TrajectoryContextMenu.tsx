@@ -3,6 +3,7 @@ import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import { colors } from "../../styles/Colors";
@@ -22,6 +23,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(ComponentType.TrajectoryStation);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -33,7 +35,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}

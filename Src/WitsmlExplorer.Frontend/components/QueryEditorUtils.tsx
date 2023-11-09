@@ -150,7 +150,7 @@ const customInsertMatch = (editor: any, data: Completion) => {
  * Completion for the root objects.
  */
 const objectsCompletions: Completion[] = Object.values(TemplateObjects).map((templateObject) => {
-  const uidString = templateObject == TemplateObjects.Well ? 'uid=""' : templateObject == TemplateObjects.Wellbore ? 'uidWell="" uid=""' : 'uidWell="" uidWellbore="" uid=""';
+  const uidString = templateObject === TemplateObjects.Well ? 'uid=""' : templateObject === TemplateObjects.Wellbore ? 'uidWell="" uid=""' : 'uidWell="" uidWellbore="" uid=""';
   return {
     caption: `${templateObject}s`,
     snippet:
@@ -177,7 +177,7 @@ const getCompletionsForObject = (templateObject: TemplateObjects, parentObject: 
   const rows = template.split("\n");
   const completions = [];
   for (let index = 0; index < rows.length; index++) {
-    if (getParentTag(rows, index) == parentObject) {
+    if (getParentTag(rows, index) === parentObject) {
       const tag = getTag(rows[index]);
       const isClosingTag = /^\s*<\//.test(rows[index]);
       if (!tag || isClosingTag) continue;
