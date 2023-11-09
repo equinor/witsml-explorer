@@ -1,4 +1,5 @@
 using WitsmlExplorer.Api.Models.Measure;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace WitsmlExplorer.Api.Models
@@ -33,7 +34,7 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure GravTran1Raw { get; init; }
         public LengthMeasure GravTran2Raw { get; init; }
         public LengthMeasure MagAxialRaw { get; init; }
-        public RawData RawData { get; init; }
+        public TrajRawData RawData { get; init; }
         public StnTrajCorUsed CorUsed { get; init; }
         public StnTrajValid Valid { get; set; }
     }

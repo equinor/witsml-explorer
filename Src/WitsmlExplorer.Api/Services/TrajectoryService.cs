@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Services
                     GravTran2Raw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
                     MagAxialRaw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
                     RawData =
-                        new RawData()
+                        new TrajRawData()
                         {
                             MagTran1Raw = LengthMeasure.FromWitsml(tStation.RawData?.MagTran1Raw), MagTran2Raw = LengthMeasure.FromWitsml(tStation.RawData?.MagTran2Raw)
                         },

@@ -1,5 +1,5 @@
 import Measure from "./measure";
-import RawData from "./rawData";
+import TrajRawData from "./trajRawData";
 import StnTrajCorUsed from "./stnTrajCorUsed";
 import StnTrajValid from "./stnTrajValid";
 
@@ -32,7 +32,7 @@ export default interface TrajectoryStation {
   gravTran1Raw?: Measure;
   gravTran2Raw?: Measure;
   magAxialRaw?: Measure;
-  rawData: RawData;
+  rawData: TrajRawData;
   corUsed: StnTrajCorUsed;
   valid: StnTrajValid;
 }
