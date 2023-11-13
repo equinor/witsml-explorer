@@ -91,7 +91,7 @@ export enum JobType {
   ModifyRig = "ModifyRig",
   ModifyTrajectory = "ModifyTrajectory",
   ModifyRisk = "ModifyRisk",
-  RenameMnemonic = "RenameMnemonic",
+  ModifyLogCurveInfo = "ModifyLogCurveInfo",
   DeleteEmptyMnemonics = "DeleteEmptyMnemonics",
   ModifyTrajectoryStation = "ModifyTrajectoryStation",
   ModifyTubular = "ModifyTubular",

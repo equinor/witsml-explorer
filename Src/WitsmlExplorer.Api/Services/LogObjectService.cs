@@ -130,6 +130,8 @@ namespace WitsmlExplorer.Api.Services
                     MnemAlias = logCurveInfo.MnemAlias,
                     SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
                     Unit = logCurveInfo.Unit,
+                    CurveDescription = logCurveInfo.CurveDescription,
+                    TypeLogData = logCurveInfo.TypeLogData,
                     AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
                     {
                         Uid = a.Uid,
