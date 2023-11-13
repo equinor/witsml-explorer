@@ -29,6 +29,7 @@ const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines
 const TIME_INDEX_OFFSET = 30536000; // offset from current end index that should ensure that any new data is captured (in seconds).
 const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should ensure that any new data is captured.
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
+const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -51,7 +52,8 @@ export const CurveValuesView = (): React.ReactElement => {
   const [refreshDelay, setRefreshDelay] = useState<number>(DEFAULT_REFRESH_DELAY);
   const [refreshFlag, setRefreshFlag] = useState<boolean>(null);
   const controller = useRef(new AbortController());
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
+  const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
   const selectedLog = selectedObject as LogObject;
   const { exportData, exportOptions } = useExport();
 
@@ -63,7 +65,7 @@ export const CurveValuesView = (): React.ReactElement => {
       const startIndex = getCurrentMaxIndex();
       const endIndex = getOffsetIndex(startIndex, TIME_INDEX_OFFSET, DEPTH_INDEX_OFFSET);
       getLogData(startIndex, endIndex).then(() => {
-        timer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * MILLIS_IN_SECOND);
+        refreshDelayTimer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * MILLIS_IN_SECOND);
       });
     }
   }, [refreshFlag]);
@@ -71,10 +73,12 @@ export const CurveValuesView = (): React.ReactElement => {
   useEffect(() => {
     if (autoRefresh) {
       setRefreshFlag((flag) => !flag);
+      stopAutoRefreshTimer.current = setTimeout(() => setAutoRefresh(false), AUTO_REFRESH_TIMEOUT * MILLIS_IN_SECOND * SECONDS_IN_MINUTE); // Stop auto refresh after 5 minutes to reduce load on the server
     }
 
     return () => {
-      if (timer.current) clearTimeout(timer.current);
+      if (refreshDelayTimer.current) clearTimeout(refreshDelayTimer.current);
+      if (stopAutoRefreshTimer.current) clearTimeout(stopAutoRefreshTimer.current);
     };
   }, [autoRefresh]);
 
