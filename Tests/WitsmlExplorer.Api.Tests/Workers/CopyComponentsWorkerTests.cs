@@ -165,7 +165,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             source.UidWellbore = WellboreUid;
             source.Uid = uid;
             ObjectQueries.SetComponents(source, componentType, componentUids);
-            return (IWitsmlObjectList)source.AsSingletonWitsmlList();
+            return (IWitsmlObjectList)source.AsItemInWitsmlList();
         }
     }
 }

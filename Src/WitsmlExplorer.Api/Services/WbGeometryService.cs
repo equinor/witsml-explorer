@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Services
                 OdSection = LengthMeasure.FromWitsml(section.OdSection),
                 WtPerLen = LengthMeasure.FromWitsml(section.WtPerLen),
                 Grade = section.Grade,
-                CurveConductor = StringHelpers.ToNullableBoolean(section.CurveConductor),
+                CurveConductor = StringHelpers.ToBoolean(section.CurveConductor),
                 DiaDrift = LengthMeasure.FromWitsml(section.DiaDrift),
                 FactFric = string.IsNullOrEmpty(section.FactFric) ? null : StringHelpers.ToDouble(section.FactFric)
             }).ToList();

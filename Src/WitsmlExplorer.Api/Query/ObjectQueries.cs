@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Query
             {
                 o = QueryHelper.AddPropertyToObject(o, objectProperty, objectPropertyValue);
             };
-            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            return (IWitsmlObjectList)o.AsItemInWitsmlList();
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)

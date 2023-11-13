@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWell existing = CreateWell(wellUid);
 
-            WitsmlWells existingWells = new() { Wells = existing.AsSingletonList() };
+            WitsmlWells existingWells = new() { Wells = existing.AsItemInList() };
 
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
             string queryText = XmlHelper.Serialize(WellQueries.GetWitsmlWellByUid(wellUid));
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWell well = CreateWell(wellUid);
 
-            WitsmlWells sourceWells = new() { Wells = well.AsSingletonList() };
+            WitsmlWells sourceWells = new() { Wells = well.AsItemInList() };
 
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
 
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWell well = CreateWell(wellUid);
 
-            WitsmlWells sourceWells = new() { Wells = well.AsSingletonList() };
+            WitsmlWells sourceWells = new() { Wells = well.AsItemInList() };
 
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
 

@@ -8,11 +8,11 @@ namespace Witsml.Data
 {
     public class WitsmlFluidsReport : WitsmlObjectOnWellbore
     {
-        public override WitsmlFluidsReports AsSingletonWitsmlList()
+        public override WitsmlFluidsReports AsItemInWitsmlList()
         {
             return new WitsmlFluidsReports()
             {
-                FluidsReports = this.AsSingletonList()
+                FluidsReports = this.AsItemInList()
             };
         }
 

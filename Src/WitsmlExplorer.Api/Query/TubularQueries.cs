@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -69,7 +69,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Uid = uid
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -104,8 +104,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = tubularReference.WellUid,
                     UidWellbore = tubularReference.WellboreUid,
                     Uid = tubularReference.Uid,
-                    TubularComponents = tc.AsSingletonList()
-                }.AsSingletonList()
+                    TubularComponents = tc.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

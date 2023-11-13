@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = trajectoryUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -87,7 +87,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Uid = uid
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -114,7 +114,7 @@ namespace WitsmlExplorer.Api.Query
                     ServiceCompany = trajectory.ServiceCompany.NullIfEmpty(),
                     DTimTrajStart = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajStart),
                     DTimTrajEnd = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajEnd),
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -154,8 +154,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = trajectoryReference.WellUid,
                     UidWellbore = trajectoryReference.WellboreUid,
                     Uid = trajectoryReference.Uid,
-                    TrajectoryStations = ts.AsSingletonList()
-                }.AsSingletonList()
+                    TrajectoryStations = ts.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

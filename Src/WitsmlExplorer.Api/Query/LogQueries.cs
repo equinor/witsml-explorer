@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = logUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -160,7 +160,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Mnemonic = mnemonic
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -185,8 +185,8 @@ namespace WitsmlExplorer.Api.Query
                         MaxIndex = new WitsmlIndex(),
                         MinDateTimeIndex = "",
                         MaxDateTimeIndex = ""
-                    }.AsSingletonList(),
-                }.AsSingletonList()
+                    }.AsItemInList(),
+                }.AsItemInList()
             };
         }
     }

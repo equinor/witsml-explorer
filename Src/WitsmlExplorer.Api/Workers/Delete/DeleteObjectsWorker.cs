@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             {
                 try
                 {
-                    QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsSingletonWitsmlList());
+                    QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsItemInWitsmlList());
                     if (result.IsSuccessful)
                     {
                         Logger.LogInformation("Deleted {ObjectType} successfully, UidWell: {WellUid}, UidWellbore: {WellboreUid}, ObjectUid: {Uid}.",

@@ -93,7 +93,7 @@ namespace WitsmlExplorer.Console.ListCommands
                     {
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));

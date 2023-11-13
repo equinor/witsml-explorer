@@ -89,8 +89,8 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
                         MaxIndex = null,
                         MinDateTimeIndex = null,
                         MaxDateTimeIndex = null
-                    }.AsSingletonList()
-                }.AsSingletonList()
+                    }.AsItemInList()
+                }.AsItemInList()
             };
         }
 

@@ -9,11 +9,11 @@ namespace Witsml.Data.Tubular
 {
     public class WitsmlTubular : WitsmlObjectOnWellbore
     {
-        public override WitsmlTubulars AsSingletonWitsmlList()
+        public override WitsmlTubulars AsItemInWitsmlList()
         {
             return new WitsmlTubulars()
             {
-                Tubulars = this.AsSingletonList()
+                Tubulars = this.AsItemInList()
             };
         }
 

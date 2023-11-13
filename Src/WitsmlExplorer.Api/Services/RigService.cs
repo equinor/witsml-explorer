@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                 DTimEndOp = witsmlRig.DTimEndOp,
                 EmailAddress = witsmlRig.EmailAddress,
                 FaxNumber = witsmlRig.FaxNumber,
-                IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBooleanSafe(witsmlRig.IsOffshore),
+                IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBoolean(witsmlRig.IsOffshore),
                 Owner = witsmlRig.Owner,
                 Manufacturer = witsmlRig.Manufacturer,
                 Name = witsmlRig.Name,

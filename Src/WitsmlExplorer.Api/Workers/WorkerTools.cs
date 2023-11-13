@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger)
         {
-            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsSingletonList(), logger);
+            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsItemInList(), logger);
             List<WitsmlData> data = new();
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             var mnemonicList = logData?.MnemonicList;

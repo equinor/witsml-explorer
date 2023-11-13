@@ -93,7 +93,7 @@ namespace WitsmlExplorer.Console.ListCommands
                         SourceName = source,
                         DTimLastChange = lastChanged
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             try

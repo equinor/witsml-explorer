@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         DTimCreation = "",
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = riskUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -83,7 +83,7 @@ namespace WitsmlExplorer.Api.Query
                     Name = name,
                     MdBitStart = mdBitStart != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitStart.Uom, Value = mdBitStart.Value.ToString(CultureInfo.InvariantCulture) } : null,
                     MdBitEnd = mdBitEnd != null ? new WitsmlMeasuredDepthCoord { Uom = mdBitEnd.Uom, Value = mdBitEnd.Value.ToString(CultureInfo.InvariantCulture) } : null
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         SourceName = source,
                     },
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -144,7 +144,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = null,
                         DTimLastChange = null
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

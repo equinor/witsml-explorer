@@ -76,7 +76,7 @@ namespace WitsmlExplorer.Api.Services
             if (!objectPropertyValue.IsNullOrEmpty())
             {
                 // send a request to see if the server is capable of searching by the property.
-                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsSingletonWitsmlList();
+                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsItemInWitsmlList();
                 IWitsmlObjectList capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
 
                 WitsmlObjectOnWellbore capabilities = capabilityResult?.Objects?.FirstOrDefault();
