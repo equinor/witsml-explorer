@@ -47,7 +47,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         List<AnalyzeGapReportItem> gapReportItems = new();
         List<string[]> logDataRows = new();
 
-        var witsmlLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
+        var witsmlLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
         if (witsmlLog == null)
         {
             var message = $"AnalyzeGapJob failed. Can not find witsml log for {job.Description()}";

@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
@@ -21,6 +22,7 @@ const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   const { servers } = navigationState;
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(ComponentType.GeologyInterval);
   const { dispatchOperation } = useContext(OperationContext);
+  const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const modifyMudLogProps: MudLogPropertiesModalProps = { mudLog: checkedObjects[0] as MudLog };
@@ -31,7 +33,7 @@ const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0])}

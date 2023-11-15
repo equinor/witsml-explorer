@@ -88,23 +88,23 @@ export const getQueryTemplateWithPreset = (templatePreset: QueryTemplatePreset):
 };
 
 export const getQueryTemplate = (templateObject: TemplateObjects, returnElements: ReturnElements): string | undefined => {
-  if (returnElements == ReturnElements.IdOnly) {
-    if (templateObject == TemplateObjects.Well || templateObject == TemplateObjects.Wellbore || templateObject == TemplateObjects.ChangeLog) {
+  if (returnElements === ReturnElements.IdOnly) {
+    if (templateObject === TemplateObjects.Well || templateObject === TemplateObjects.Wellbore || templateObject === TemplateObjects.ChangeLog) {
       return templates[templateObject + "IdOnly"];
     } else {
       return templates.objectIdOnly.replaceAll("object", templateObject);
     }
   } else if (
-    returnElements == ReturnElements.DataOnly &&
-    (templateObject == TemplateObjects.Log || templateObject == TemplateObjects.MudLog || templateObject == TemplateObjects.Trajectory)
+    returnElements === ReturnElements.DataOnly &&
+    (templateObject === TemplateObjects.Log || templateObject === TemplateObjects.MudLog || templateObject === TemplateObjects.Trajectory)
   ) {
     return templates[templateObject + "DataOnly"];
   } else if (
-    returnElements == ReturnElements.HeaderOnly &&
-    (templateObject == TemplateObjects.Log || templateObject == TemplateObjects.MudLog || templateObject == TemplateObjects.Trajectory)
+    returnElements === ReturnElements.HeaderOnly &&
+    (templateObject === TemplateObjects.Log || templateObject === TemplateObjects.MudLog || templateObject === TemplateObjects.Trajectory)
   ) {
     return templates[templateObject + "HeaderOnly"];
-  } else if (returnElements == ReturnElements.StationLocationOnly && templateObject == TemplateObjects.Trajectory) {
+  } else if (returnElements === ReturnElements.StationLocationOnly && templateObject === TemplateObjects.Trajectory) {
     return templates[templateObject + "StationLocationOnly"];
   } else {
     return templates[templateObject];

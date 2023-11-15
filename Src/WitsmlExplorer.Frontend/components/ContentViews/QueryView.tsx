@@ -1,5 +1,5 @@
-import { Button, Menu, TextField } from "@equinor/eds-core-react";
-import React, { ChangeEvent, Fragment, useContext, useState } from "react";
+import { Button, Menu, Tabs, TextField } from "@equinor/eds-core-react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
@@ -10,6 +10,7 @@ import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { QueryEditor } from "../QueryEditor";
+import { getTag } from "../QueryEditorUtils";
 import { StyledNativeSelect } from "../Select";
 import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getParserError, getQueryTemplate } from "./QueryViewUtils";
 
@@ -19,19 +20,19 @@ const QueryView = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
   const {
-    queryState: { query, storeFunction, returnElements, optionsIn },
+    queryState: { queries, tabIndex },
     dispatchQuery
   } = useContext(QueryContext);
-  const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+  const { query, result, storeFunction, returnElements, optionsIn } = queries[tabIndex];
 
   const validateAndFormatQuery = (): boolean => {
     const formattedQuery = formatXml(query);
     const parserError = getParserError(formattedQuery);
     if (parserError) {
-      setResult(parserError);
+      dispatchQuery({ type: QueryActionType.SetResult, result: parserError });
     } else if (formattedQuery !== query) {
       onQueryChange(formattedQuery);
     }
@@ -42,17 +43,17 @@ const QueryView = (): React.ReactElement => {
     const getResult = async (dispatchOperation?: DispatchOperation | null) => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
-      const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
+      const requestReturnElements = storeFunction === StoreFunction.GetFromStore ? returnElements : undefined;
       let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn?.trim());
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
-      setResult(response);
+      dispatchQuery({ type: QueryActionType.SetResult, result: response });
       setIsLoading(false);
     };
     const isValid = validateAndFormatQuery();
     if (!isValid) return;
-    if (storeFunction == StoreFunction.DeleteFromStore) {
+    if (storeFunction === StoreFunction.DeleteFromStore) {
       displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
     } else {
       getResult();
@@ -83,8 +84,38 @@ const QueryView = (): React.ReactElement => {
     setIsTemplateMenuOpen(false);
   };
 
+  const onTabChange = (index: number) => {
+    if (index >= queries.length) {
+      dispatchQuery({ type: QueryActionType.AddTab });
+    } else {
+      dispatchQuery({ type: QueryActionType.SetTabIndex, tabIndex: index });
+    }
+  };
+
+  const onCloseTab = (event: React.MouseEvent, tabId: string) => {
+    event.stopPropagation();
+    dispatchQuery({ type: QueryActionType.RemoveTab, tabId });
+  };
+
+  const getTabName = (query: string) => {
+    return getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty");
+  };
+
   return (
-    <Fragment>
+    <Layout>
+      <Tabs activeTab={tabIndex} onChange={onTabChange} scrollable style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+        <Tabs.List>
+          {queries.map((query) => (
+            <StyledTab key={query.tabId} colors={colors}>
+              {getTabName(query.query)}
+              <StyledClearIcon name="clear" size={16} onClick={(event) => onCloseTab(event, query.tabId)} />
+            </StyledTab>
+          ))}
+          <StyledTab colors={colors}>
+            <Icon name="add" />
+          </StyledTab>
+        </Tabs.List>
+      </Tabs>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
         <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
           <QueryEditor value={query} onChange={onQueryChange} />
@@ -144,7 +175,7 @@ const QueryView = (): React.ReactElement => {
           <QueryEditor value={result} readonly />
         </div>
       </div>
-    </Fragment>
+    </Layout>
   );
 };
 
@@ -184,6 +215,24 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
   div {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
   }
+`;
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+`;
+
+const StyledClearIcon = styled(Icon)`
+  margin-left: 8px;
+  border-radius: 50%;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const StyledTab = styled(Tabs.Tab)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default QueryView;

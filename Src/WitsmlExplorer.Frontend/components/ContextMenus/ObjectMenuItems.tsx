@@ -2,9 +2,10 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
+import { DispatchNavigation } from "../../contexts/navigationAction";
 import { NavigationState } from "../../contexts/navigationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
+import { OpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -12,12 +13,11 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import { ObjectTypeToTemplateObject, StoreFunction } from "../ContentViews/QueryViewUtils";
-import { StyledIcon, menuItemText, onClickDeleteObjects, onClickShowGroupOnServer, onClickRefreshObject } from "./ContextMenuUtils";
+import { StyledIcon, menuItemText, onClickDeleteObjects, onClickRefreshObject, onClickShowGroupOnServer } from "./ContextMenuUtils";
 import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
-import { DispatchNavigation } from "../../contexts/navigationAction";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -30,10 +30,10 @@ export const ObjectMenuItems = (
   navigationState: NavigationState,
   dispatchOperation: DispatchOperation,
   dispatchNavigation: DispatchNavigation,
+  openInQueryView: OpenInQueryView,
   wellbore: Wellbore
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
-  const openInQueryView = useOpenInQueryView();
   const { selectedServer, servers } = navigationState;
 
   return [

@@ -330,6 +330,35 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedDataLastMnemonic, newLogDataLastMnemonic);
         }
 
+        [Theory]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_MD)]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)]
+        public async Task Execute_IndexCurveNotFirstInLCI_HasCorrectHeader(string indexType)
+        {
+            string[] logUids = { "log1Uid", "log2Uid" };
+            int[] startIndexNum = { 0, 0 }; // start indexes for each log
+            int[] endIndexNum = { 10, 10 }; // end indexes for each log
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
+
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
+
+            // Move index curve to last position in LogCurveInfo for all the logHeaders.
+            foreach (var logHeader in logHeaders.Logs)
+            {
+                var indexCurveLCI = logHeader.LogCurveInfo.FirstOrDefault();
+                logHeader.LogCurveInfo.Remove(indexCurveLCI);
+                logHeader.LogCurveInfo.Add(indexCurveLCI);
+            }
+
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+
+            WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
+            WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
+
+            Assert.Equal("IndexCurve", newLogHeader.LogCurveInfo.First().Mnemonic);
+        }
+
         private (SpliceLogsJob, WitsmlLogs, WitsmlLogs) SetupTest(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, Action<WitsmlLogs> logHeaderCallback, Action<WitsmlLogs> logDataCallback)
         {
             SpliceLogsJob job = CreateSpliceLogsJob(logUids);

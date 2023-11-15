@@ -1,5 +1,6 @@
-import { Autocomplete, Button, TextField } from "@equinor/eds-core-react";
-import { useContext, useState } from "react";
+import { Autocomplete, Banner, Button, Checkbox, TextField } from "@equinor/eds-core-react";
+import { ChangeEvent, useContext, useState } from "react";
+import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -8,21 +9,26 @@ import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
+import { Colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
 import { useClipboardReferencesOfType } from "../ContextMenus/UseClipboardReferences";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 
 export interface ObjectPickerProps {
   sourceObject: ObjectOnWellbore;
   objectType: ObjectType;
-  onPicked: (targetObject: ObjectOnWellbore, targetServer: Server) => void;
+  onPicked: (targetObject: ObjectOnWellbore, targetServer: Server, includeIndexDuplicates?: boolean) => void;
+  includeIndexDuplicatesOption?: boolean;
 }
 
-const ObjectPickerModal = (props: ObjectPickerProps): React.ReactElement => {
-  const { sourceObject, objectType, onPicked } = props;
+const ObjectPickerModal = ({ sourceObject, objectType, onPicked, includeIndexDuplicatesOption }: ObjectPickerProps): React.ReactElement => {
   const {
     navigationState: { servers }
   } = useContext(NavigationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  const {
+    operationState: { colors },
+    dispatchOperation
+  } = useContext(OperationContext);
   const [targetServer, setTargetServer] = useState<Server>();
   const [wellUid, setWellUid] = useState<string>(sourceObject.wellUid);
   const [wellboreUid, setWellboreUid] = useState<string>(sourceObject.wellboreUid);
@@ -30,6 +36,7 @@ const ObjectPickerModal = (props: ObjectPickerProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const objectReference = useClipboardReferencesOfType(objectType, 100);
+  const [checkedIncludeIndexDuplicates, setCheckedIncludeIndexDuplicates] = useState(false);
 
   const onClear = () => {
     setWellUid("");
@@ -60,7 +67,7 @@ const ObjectPickerModal = (props: ObjectPickerProps): React.ReactElement => {
       const targetObject = await ObjectService.getObjectIdOnly(wellUid, wellboreUid, objectType, objectUid, null, targetServer);
       if (targetObject?.uid === objectUid) {
         dispatchOperation({ type: OperationType.HideModal });
-        onPicked(targetObject, targetServer);
+        checkedIncludeIndexDuplicates ? onPicked(targetObject, targetServer, checkedIncludeIndexDuplicates) : onPicked(targetObject, targetServer);
       } else {
         setFetchError(`The target ${objectType} was not found`);
       }
@@ -129,18 +136,75 @@ const ObjectPickerModal = (props: ObjectPickerProps): React.ReactElement => {
               paddingBottom: invalidUid(objectUid) ? 0 : "24px"
             }}
           />
-          <div style={{ display: "flex", flexDirection: "row", gap: "1rem", paddingLeft: "0.5rem", paddingBottom: "1rem" }}>
+          <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>
             <Button onClick={onReset}>Reset</Button>
             <Button onClick={onPaste} disabled={objectReference == null || objectReference.objectUids.length != 1}>
               Paste
             </Button>
-          </div>
+            {includeIndexDuplicatesOption && (
+              <StyledCheckbox
+                colors={colors}
+                label="Include index duplicates"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setCheckedIncludeIndexDuplicates(e.target.checked);
+                }}
+                checked={checkedIncludeIndexDuplicates}
+              />
+            )}
+          </ButtonsContainer>
+          {checkedIncludeIndexDuplicates && (
+            <StyledBanner colors={colors}>
+              <Banner.Icon variant="warning">
+                <Icon name="infoCircle" />
+              </Banner.Icon>
+              <Banner.Message>
+                Include index duplicates: This option only takes effect when servers have different numbers of decimals. It is not recommended to search for index duplicates by
+                default, as it may result in unnecessary mismatches. This feature should only be used in special cases that require investigation of anomalies in the index
+                duplicates.
+              </Banner.Message>
+            </StyledBanner>
+          )}
         </ModalContentLayout>
       }
     />
   );
 };
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
+`;
+
+const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
+  span {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  span:hover {
+    background: ${(props) => props.colors.interactive.checkBoxHover};
+  }
+`;
+
+const StyledBanner = styled(Banner)<{ colors: Colors }>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  span {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  div {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+  p {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  hr {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+`;
 
 const invalidUid = (uid: string) => {
   return uid == null || uid.length == 0 || uid.length > MaxLength.Uid;

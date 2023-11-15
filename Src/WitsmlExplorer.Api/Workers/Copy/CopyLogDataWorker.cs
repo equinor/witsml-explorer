@@ -369,8 +369,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
-            Task<WitsmlLog> targetLog = WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> targetLog = LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
             return sourceLog.Result == null
