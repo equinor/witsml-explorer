@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly string _uidWellbore;
         private readonly string _uidLog;
         private readonly string _indexType;
-        private readonly IEnumerable<string> _mnemonics;
+        private readonly ICollection<string> _mnemonics;
         private readonly ILogger _logger;
         private Index _startIndex;
         private readonly Index _endIndex;

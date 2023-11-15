@@ -76,12 +76,13 @@ namespace WitsmlExplorer.Api.Services
             Task<IList<Well>> getWell = GetWellsInformation(wellUid);
             await Task.WhenAll(getWellbores, getWell);
 
-            if (!getWell.Result.Any())
+            Well well = getWell.Result.FirstOrDefault();
+
+            if (well == null)
             {
                 return null;
             }
 
-            Well well = getWell.Result.First();
             well.Wellbores = getWellbores.Result;
             return well;
         }

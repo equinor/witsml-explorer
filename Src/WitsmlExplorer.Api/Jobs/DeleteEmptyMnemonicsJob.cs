@@ -14,8 +14,8 @@ namespace WitsmlExplorer.Api.Jobs
     public record DeleteEmptyMnemonicsJob : Job
     {
 
-        public IEnumerable<WellReference> Wells { get; init; }
-        public IEnumerable<WellboreReference> Wellbores { get; init; }
+        public ICollection<WellReference> Wells { get; init; }
+        public ICollection<WellboreReference> Wellbores { get; init; }
         public double NullDepthValue { get; init; }
         public DateTime NullTimeValue { get; init; }
 

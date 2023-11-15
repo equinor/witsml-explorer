@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 return null;
             }
-            IEnumerable<IEnumerable<string>> endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(","));
+            var endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(",")).ToList();
             string[] startResultLogData = dataStartResultLog.LogData.Data?.FirstOrDefault()?.Data.Split(",");
             if (startResultLogData.IsNullOrEmpty() || endResultLogData.IsNullOrEmpty())
             {
@@ -206,7 +206,23 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        private static IEnumerable<string> ExtractColumnIndexes(IEnumerable<IEnumerable<string>> data, int indexColumn = 0)
+        private static List<string> ExtractColumnIndexes(List<string[]> data, int indexColumn = 0)
+        {
+            List<string> result = Enumerable.Repeat(string.Empty, data.First().Length).ToList();
+            foreach (var row in data)
+            {
+                for (int col = 0; col < row.Length; col++)
+                {
+                    if (!string.IsNullOrEmpty(row[col]))
+                    {
+                        result[col] = row[indexColumn];
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static IEnumerable<string> ExtractColumnIndexes2(IEnumerable<IEnumerable<string>> data, int indexColumn = 0)
         {
             List<string> result = Enumerable.Repeat(string.Empty, data.First().Count()).ToList();
             List<IEnumerable<string>> list = data.ToList();

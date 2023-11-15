@@ -4,15 +4,13 @@ using Witsml.Extensions;
 
 namespace WitsmlExplorer.Api.Configuration
 {
-    public class ServerCredentials : ICredentials, IEquatable<ServerCredentials>
+    public class ServerCredentials : BasicCredentials, ICredentials, IEquatable<ServerCredentials>
     {
         public ServerCredentials() { }
 
-        public ServerCredentials(string host, string userid, string password)
+        public ServerCredentials(string host, string userid, string password) : base(userid, password)
         {
             Host = new Uri(host);
-            UserId = userid;
-            Password = password;
         }
         public ServerCredentials(string host, ICredentials creds)
         {
@@ -21,12 +19,7 @@ namespace WitsmlExplorer.Api.Configuration
             Password = creds.Password;
         }
         public Uri Host { get; init; }
-        public string UserId { get; init; }
-        public string Password { get; init; }
-        public bool IsCredsNullOrEmpty()
-        {
-            return string.IsNullOrEmpty(UserId) || string.IsNullOrEmpty(Password);
-        }
+
         public bool Equals(ServerCredentials other)
         {
             return (Host.EqualsIgnoreCase(other.Host)) &&

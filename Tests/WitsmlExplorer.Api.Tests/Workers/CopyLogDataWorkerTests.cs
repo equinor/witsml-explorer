@@ -10,6 +10,7 @@ using Moq;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -35,6 +36,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         };
         private const double DepthStart = 1;
         private const double DepthEnd = 5;
+        private readonly Uri _targetUri = new("https://target");
+        private readonly Uri _sourceUri = new("https://source");
 
         public CopyLogDataWorkerTests()
         {
@@ -44,6 +47,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyLogDataJob>> logger = new();
             Mock<IDocumentRepository<Server, Guid>> documentRepository = new();
+            documentRepository.Setup(client => client.GetDocumentsAsync())
+                .ReturnsAsync(new List<Server>(){
+                    new(){
+                        Url = _targetUri,
+                        DepthLogDecimals = 1
+                    },
+                    new(){
+                        Url = _sourceUri,
+                        DepthLogDecimals = 2
+                    }
+                }.AsCollection());
             _worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object, documentRepository.Object);
         }
 
