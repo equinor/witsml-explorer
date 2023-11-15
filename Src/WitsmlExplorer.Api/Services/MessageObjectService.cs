@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IMessageObjectService
     {
         Task<MessageObject> GetMessageObject(string wellUid, string wellboreUid, string msgUid);
-        Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
+        Task<ICollection<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid);
     }
 
     public class MessageObjectService : WitsmlService, IMessageObjectService
@@ -28,10 +28,10 @@ namespace WitsmlExplorer.Api.Services
             WitsmlMessages witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
             WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
             WitsmlMessage messageObject = result.Messages.FirstOrDefault();
-            return messageObject == null ? null : FromWitsml(messageObject);
+            return FromWitsml(messageObject);
         }
 
-        public async Task<IEnumerable<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
+        public async Task<ICollection<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
         {
             return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
             {
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static MessageObject FromWitsml(WitsmlMessage message)
         {
-            return new MessageObject
+            return message == null ? null : new MessageObject
             {
                 WellboreUid = message.UidWellbore,
                 WellboreName = message.NameWellbore,

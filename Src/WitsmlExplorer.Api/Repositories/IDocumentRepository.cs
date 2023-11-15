@@ -7,7 +7,7 @@ namespace WitsmlExplorer.Api.Repositories
     public interface IDocumentRepository<TDocument, in TDocumentId>
     {
         Task<TDocument> GetDocumentAsync(TDocumentId id);
-        Task<IEnumerable<TDocument>> GetDocumentsAsync();
+        Task<ICollection<TDocument>> GetDocumentsAsync();
         Task<TDocument> CreateDocumentAsync(TDocument document);
         Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document);
         Task DeleteDocumentAsync(TDocumentId id);
