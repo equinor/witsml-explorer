@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Repositories
             return documents.First();
         }
 
-        public async Task<IEnumerable<TDocument>> GetDocumentsAsync()
+        public async Task<ICollection<TDocument>> GetDocumentsAsync()
         {
             var documents = await _collection.FindAsync(new BsonDocument());
             return documents.ToList<TDocument>();

@@ -9,6 +9,7 @@ using Moq;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -49,7 +50,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                                 Url = _sourceUri,
                                 DepthLogDecimals = 2
                             }
-            });
+            }.AsCollection());
             Mock<ILogger<CopyLogDataJob>> logger = new();
             _worker = new CopyLogDataWorker(witsmlClientProvider.Object, logger.Object, _documentRepository.Object);
         }

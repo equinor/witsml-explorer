@@ -4,6 +4,6 @@ namespace WitsmlExplorer.Api.Configuration
     {
         internal string UserId { get; }
         internal string Password { get; }
-
+        public bool IsNullOrEmpty();
     }
 }

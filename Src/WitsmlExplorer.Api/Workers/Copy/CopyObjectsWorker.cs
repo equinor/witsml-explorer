@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(targetClient.GetServerHostname(), false, "Could not find any objects to copy"), null);
             }
 
-            IEnumerable<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
+            ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
             RefreshObjects refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType);
             return await _copyUtils.CopyObjectsOnWellbore(targetClient, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }

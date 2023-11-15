@@ -71,14 +71,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static BatchModifyWellJob CreateJobTemplate(IEnumerable<string> wellUids)
         {
-            IEnumerable<Well> wells = CreateWells(wellUids);
+            var wells = CreateWells(wellUids);
             return new BatchModifyWellJob
             {
                 Wells = wells
             };
         }
 
-        private static IEnumerable<Well> CreateWells(IEnumerable<string> wellUids)
+        private static ICollection<Well> CreateWells(IEnumerable<string> wellUids)
         {
             return wellUids.Select(wellId => new Well { Uid = wellId, Name = wellId + "Name" }).ToArray();
         }

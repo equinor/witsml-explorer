@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Workers.Create
         {
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(logObject.WellUid, logObject.WellboreUid);
             WitsmlWellbores wellbores = await client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            return !wellbores.Wellbores.Any() ? null : wellbores.Wellbores.First();
+            return wellbores.Wellbores.FirstOrDefault();
         }
     }
 }
