@@ -25,11 +25,11 @@ jobs:
           git checkout main
 
           if git diff --quiet main..upstream/main; then
-            echo "::set-output name=merge_occurred::false"
+            echo "merge_occurred=false" >> $GITHUB_OUTPUT
           else
             git merge --no-edit upstream/main
             git push origin main
-            echo "::set-output name=merge_occurred::true"
+            echo "merge_occurred=true" >> $GITHUB_OUTPUT
           fi
   notify:
     if: github.repository_owner == 'akerbp-dataops' && needs.merge.outputs.merge_occurred == 'true'
