@@ -10,6 +10,7 @@ import { ContentViewDimensionsContext } from "../PageLayout";
 import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
 
 const COLUMN_WIDTH = 125;
+const EXTRA_WIDTH = 200;
 
 interface CurveValuesPlotProps {
   data: any[];
@@ -33,7 +34,7 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
 
   useEffect(() => {
     if (contentViewWidth) {
-      const newMaxColumns = Math.floor((contentViewWidth - 100) / COLUMN_WIDTH);
+      const newMaxColumns = Math.floor((contentViewWidth - EXTRA_WIDTH) / COLUMN_WIDTH);
       if (newMaxColumns !== maxColumns) {
         setMaxColumns(newMaxColumns);
       }
@@ -53,6 +54,40 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
     scrollIndex.current,
     horizontalZoom.current
   );
+
+  const onMouseMove = () => {
+    const TOOLTIP_LEFT_POSITION = 60;
+    const axisTooltipDOM = document.createElement("div");
+    const axisTooltipContent = document.createElement("div");
+    axisTooltipDOM.appendChild(axisTooltipContent);
+    axisTooltipDOM.style.cssText =
+      "position: absolute; visibility: hidden; max-width: 50%; background-color: #fff; color: #333; padding: 5px 15px; border-radius: 2px; box-shadow: 0 0 2px #aaa; transition: transform ease .3s, visibility ease .3s; transform: scale(0); transform-origin: bottom;";
+    const axisTooltipStyle = axisTooltipDOM.style;
+    chart.current.getDom().appendChild(axisTooltipDOM);
+    chart.current
+      .on("mouseover", (e) => {
+        if (e.targetType !== "axisLabel") {
+          return;
+        }
+        if (e.componentType !== "xAxis") {
+          return;
+        }
+        const indexCurve = columns[0].columnOf.mnemonic;
+        const dataColumns = columns.filter((col) => col.property != indexCurve);
+        const currLabel = e.event.target as any;
+        const fullText = dataColumns[Math.floor(e.value as number)];
+        const displayText = fullText.label;
+        (axisTooltipContent as any).innerText = displayText;
+        axisTooltipStyle.left = TOOLTIP_LEFT_POSITION + currLabel.transform[4] + "px";
+        axisTooltipStyle.top = currLabel.transform[5] + "px";
+        axisTooltipStyle.transform = "";
+        axisTooltipStyle.visibility = "visible";
+      })
+      .on("mouseout", () => {
+        axisTooltipStyle.visibility = "hidden";
+        axisTooltipStyle.transform = "scale(0)";
+      });
+  };
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const shouldShowAll = Object.values(params.selected).every((s) => s === false);
@@ -88,7 +123,8 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
   const handleEvents = {
     legendselectchanged: onLegendChange,
     legendscroll: onLegendScroll,
-    datazoom: onDataZoom
+    datazoom: onDataZoom,
+    mousemove: onMouseMove
   };
 
   return (
@@ -99,7 +135,8 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
       style={{
         height: "100%",
         width: "95%",
-        marginTop: "0.5rem"
+        marginTop: "0.5rem",
+        maxWidth: `${Math.min(maxColumns, columns.length / 1) * COLUMN_WIDTH + EXTRA_WIDTH}px`
       }}
     />
   );
@@ -121,11 +158,16 @@ const getChartOption = (
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
+  const LABEL_MAXIMUM_LENGHT = 13;
   if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const isTimeLog = columns[0].type == ContentType.DateTime;
   const dataColumns = columns.filter((col) => col.property != indexCurve);
+  const isHorizonalScrolling = maxColumns >= columns.length ? true : false;
+  const numberOfColumns = isHorizonalScrolling ? Math.min(maxColumns, columns.length / 1) - 1 : Math.min(maxColumns, columns.length / 1);
+  const maxWidht = isHorizonalScrolling ? numberOfColumns * COLUMN_WIDTH + 65 : numberOfColumns * COLUMN_WIDTH - 120;
+  const columnWidth = numberOfColumns === 0 ? maxWidht : maxWidht / numberOfColumns;
   const minMaxValues = columns
     .map((col) => col.columnOf.mnemonic)
     .map((curve) => {
@@ -171,8 +213,16 @@ const getChartOption = (
         saveAsImage: {}
       }
     },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "none" },
+      showContent: false
+    },
     xAxis: {
       type: "value",
+      position: "top",
+      ellipsis: "...",
+      overflow: "truncate",
       min: (value: { min: number; max: number }) => value.min - VALUE_OFFSET_FROM_COLUMN,
       max: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min + 1 - VALUE_OFFSET_FROM_COLUMN : dataColumns.length),
       minInterval: 1,
@@ -182,6 +232,7 @@ const getChartOption = (
           color: colors.text.staticIconsDefault
         }
       },
+      triggerEvent: true,
       axisLabel: {
         show: true,
         padding: [0, -110, 0, 0],
@@ -195,7 +246,31 @@ const getChartOption = (
           if (index >= dataColumns.length) return "";
           const curve = dataColumns[index].columnOf.mnemonic;
           const minMaxValue = minMaxValues.find((v) => v.curve == curve);
-          return `${curve}\n${+minMaxValue.minValue?.toFixed(3)} - ${+minMaxValue.maxValue?.toFixed(3)}`;
+          const title = curve.length > LABEL_MAXIMUM_LENGHT ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..." : curve;
+          const result = "{title|" + title + "}\n" + "{hr|} \n" + " {minValue|" + +minMaxValue.minValue?.toFixed(3) + "}{maxValue|" + +minMaxValue.maxValue?.toFixed(3) + "}";
+          return result;
+        },
+        rich: {
+          title: {
+            width: columnWidth,
+            align: "center",
+            padding: [0, 0, 0, 0],
+            fontWeight: "bold"
+          },
+          hr: {
+            width: "100%",
+            height: 0
+          },
+          minValue: {
+            width: 40,
+            align: "left",
+            fontWeight: "bold"
+          },
+          maxValue: {
+            width: 40,
+            align: "right",
+            fontWeight: "bold"
+          }
         }
       }
     },
