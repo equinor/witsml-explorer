@@ -10,6 +10,9 @@ jobs:
       - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Merge upstream
         run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
           git pull --unshallow
 
           git remote add upstream https://github.com/equinor/witsml-explorer.git
