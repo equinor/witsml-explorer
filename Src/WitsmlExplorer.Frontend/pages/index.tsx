@@ -21,15 +21,15 @@ import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import {
   DateTimeFormat,
+  DecimalPreference,
   SetDateTimeFormatAction,
+  SetDecimalAction,
   SetModeAction,
   SetThemeAction,
   SetTimeZoneAction,
   TimeZone,
   UserTheme,
-  initOperationStateReducer,
-  SetDecimalAction,
-  DecimalPreference
+  initOperationStateReducer
 } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { QueryContextProvider } from "../contexts/queryContext";
@@ -37,6 +37,7 @@ import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
 import { dark, light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
+import { getLocalStorageItem } from "../tools/localStorageHelpers";
 
 const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
@@ -44,27 +45,27 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {
-      const localStorageTheme = localStorage.getItem(STORAGE_THEME_KEY) as UserTheme;
+      const localStorageTheme = getLocalStorageItem(STORAGE_THEME_KEY) as UserTheme;
       if (localStorageTheme) {
         const action: SetThemeAction = { type: OperationType.SetTheme, payload: localStorageTheme };
         dispatchOperation(action);
       }
-      const storedTimeZone = localStorage.getItem(STORAGE_TIMEZONE_KEY) as TimeZone;
+      const storedTimeZone = getLocalStorageItem(STORAGE_TIMEZONE_KEY) as TimeZone;
       if (storedTimeZone) {
         const action: SetTimeZoneAction = { type: OperationType.SetTimeZone, payload: storedTimeZone };
         dispatchOperation(action);
       }
-      const storedMode = localStorage.getItem(STORAGE_MODE_KEY) as "light" | "dark";
+      const storedMode = getLocalStorageItem(STORAGE_MODE_KEY) as "light" | "dark";
       if (storedMode) {
         const action: SetModeAction = { type: OperationType.SetMode, payload: storedMode == "light" ? light : dark };
         dispatchOperation(action);
       }
-      const storedDateTimeFormat = localStorage.getItem(STORAGE_DATETIMEFORMAT_KEY) as DateTimeFormat;
+      const storedDateTimeFormat = getLocalStorageItem(STORAGE_DATETIMEFORMAT_KEY) as DateTimeFormat;
       if (storedDateTimeFormat) {
         const action: SetDateTimeFormatAction = { type: OperationType.SetDateTimeFormat, payload: storedDateTimeFormat };
         dispatchOperation(action);
       }
-      const storedDecimals = localStorage.getItem(STORAGE_DECIMAL_KEY) as DecimalPreference;
+      const storedDecimals = getLocalStorageItem(STORAGE_DECIMAL_KEY) as DecimalPreference;
       if (storedDecimals) {
         const action: SetDecimalAction = { type: OperationType.SetDecimal, payload: storedDecimals };
         dispatchOperation(action);

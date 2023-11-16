@@ -2,6 +2,7 @@ import React, { Dispatch, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { STORAGE_QUERYVIEW_DATA } from "../components/Constants";
 import { QueryTemplatePreset, ReturnElements, StoreFunction, getQueryTemplateWithPreset } from "../components/ContentViews/QueryViewUtils";
+import { getLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
 
 export interface QueryElement {
   query: string;
@@ -154,7 +155,7 @@ export function QueryContextProvider({ initialQueryState, children }: QueryConte
 
 const retrieveStoredQuery = () => {
   try {
-    const storedQuery = localStorage.getItem(STORAGE_QUERYVIEW_DATA);
+    const storedQuery = getLocalStorageItem(STORAGE_QUERYVIEW_DATA);
     const queryState = JSON.parse(storedQuery);
     validateQueryState(queryState);
     return queryState;
@@ -170,7 +171,7 @@ const setStoredQuery = (queryState: QueryState) => {
       ...queryState,
       queries: queryState.queries.map((query) => ({ ...query, result: "" }))
     };
-    localStorage.setItem(STORAGE_QUERYVIEW_DATA, JSON.stringify(queryStateWithoutResults));
+    setLocalStorageItem(STORAGE_QUERYVIEW_DATA, JSON.stringify(queryStateWithoutResults));
   } catch {
     /* disregard unavailable local storage */
   }

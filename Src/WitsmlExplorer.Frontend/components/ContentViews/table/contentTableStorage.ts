@@ -1,5 +1,6 @@
 import { Table, VisibilityState } from "@tanstack/react-table";
 import { useEffect } from "react";
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from "../../../tools/localStorageHelpers";
 
 export const widthsStorageKey = "-widths";
 const hiddenStorageKey = "-hidden";
@@ -12,32 +13,21 @@ type StorageKeyToPreference = {
 };
 
 export function saveToStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key, preference: StorageKeyToPreference[Key]): void {
-  try {
-    if (viewId != null) {
-      localStorage.setItem(viewId + storageKey, JSON.stringify(preference));
-    }
-  } catch {
-    // disregard unavailable local storage
+  if (viewId != null) {
+    setLocalStorageItem(viewId + storageKey, JSON.stringify(preference));
   }
 }
 
 export function getFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): StorageKeyToPreference[Key] | null {
-  try {
-    if (viewId != null) {
-      return JSON.parse(localStorage.getItem(viewId + storageKey));
-    }
-  } catch {
-    return null;
+  if (viewId != null) {
+    return JSON.parse(getLocalStorageItem(viewId + storageKey));
   }
+  return null;
 }
 
 export function removeFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): void {
-  try {
-    if (viewId != null) {
-      localStorage.removeItem(viewId + storageKey);
-    }
-  } catch {
-    // disregard unavailable local storage
+  if (viewId != null) {
+    removeLocalStorageItem(viewId + storageKey);
   }
 }
 

@@ -12,6 +12,7 @@ import WellboreReference from "../../models/jobs/wellboreReference";
 import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import { Colors } from "../../styles/Colors";
+import { getLocalStorageItem, setLocalStorageItem } from "../../tools/localStorageHelpers";
 import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "../Constants";
 import { StyledAccordionHeader } from "./LogComparisonModal";
 import { objectToProperties, selectAllProperties } from "./MissingDataAgentProperties";
@@ -37,13 +38,13 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const checkString = localStorage.getItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY);
+    const checkString = getLocalStorageItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY);
     const checks = stringToChecks(checkString);
     if (checks.length > 0) setMissingDataChecks(checks);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, JSON.stringify(missingDataChecks));
+    setLocalStorageItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, JSON.stringify(missingDataChecks));
   }, [missingDataChecks]);
 
   const stringToChecks = (checkString: string): MissingDataCheck[] => {

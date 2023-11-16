@@ -20,6 +20,7 @@ import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
+import { getLocalStorageItem } from "../../tools/localStorageHelpers";
 import { STORAGE_FILTER_HIDDENOBJECTS_KEY } from "../Constants";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, { UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
@@ -92,7 +93,7 @@ const ServerManager = (): React.ReactElement => {
 
   const updateVisibleObjects = (supportedObjects: string[]) => {
     const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = localStorage.getItem(STORAGE_FILTER_HIDDENOBJECTS_KEY)?.split(",") || [];
+    const hiddenItems = getLocalStorageItem(STORAGE_FILTER_HIDDENOBJECTS_KEY)?.split(",") || [];
     hiddenItems.forEach((objectType) => (updatedVisibility[objectType as ObjectType] = VisibilityStatus.Hidden));
     Object.values(ObjectType)
       .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
