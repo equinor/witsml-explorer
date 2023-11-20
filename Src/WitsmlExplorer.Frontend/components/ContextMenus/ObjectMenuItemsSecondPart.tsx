@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import {  MenuItem } from "@material-ui/core";
+import { MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import { NavigationState } from "../../contexts/navigationContext";
@@ -28,10 +28,9 @@ export const ObjectMenuItemsSecondPart = (
   openInQueryView: OpenInQueryView,
   wellbore: Wellbore
 ): React.ReactElement[] => {
-
   const { servers } = navigationState;
 
-  return [   
+  return [
     <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedObjects.length !== 1}>
       {servers.map((server: Server) => (
         <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, objectType, (checkedObjects[0] as LogObject)?.indexType)}>

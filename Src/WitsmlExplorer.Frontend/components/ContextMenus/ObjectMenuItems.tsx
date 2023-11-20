@@ -62,7 +62,6 @@ export const ObjectMenuItems = (
     <MenuItem key={"delete"} onClick={() => onClickDeleteObjects(dispatchOperation, checkedObjects, objectType)} disabled={checkedObjects.length === 0}>
       <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("delete", objectType, checkedObjects)}</Typography>
-    </MenuItem>,
-   
+    </MenuItem>
   ];
 };
