@@ -11,7 +11,6 @@ import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
-const EXTRA_WIDTH = 200;
 const TOOLTIP_OFFSET_Y = 30;
 
 interface ControlledTooltipProps {
@@ -40,12 +39,13 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
   const verticalZoom = useRef<[number, number]>([0, 100]);
   const [maxColumns, setMaxColumns] = useState<number>(15);
   const { width: contentViewWidth } = useContext(ContentViewDimensionsContext);
-  const width = Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + EXTRA_WIDTH;
+  const extraWidth = getExtraWidth(data, columns, dateTimeFormat);
+  const width = Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + extraWidth;
   const [controlledTooltip, setControlledTooltip] = useState<ControlledTooltipProps>({ visible: false } as ControlledTooltipProps);
 
   useEffect(() => {
     if (contentViewWidth) {
-      const newMaxColumns = Math.floor((contentViewWidth - EXTRA_WIDTH) / COLUMN_WIDTH);
+      const newMaxColumns = Math.floor((contentViewWidth - extraWidth) / COLUMN_WIDTH);
       if (newMaxColumns !== maxColumns) {
         setMaxColumns(newMaxColumns);
       }
@@ -233,7 +233,7 @@ const getChartOption = (
     xAxis: {
       type: "value",
       position: "top",
-      min: (value: { min: number; max: number }) => value.min - VALUE_OFFSET_FROM_COLUMN,
+      min: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min - VALUE_OFFSET_FROM_COLUMN : 0),
       max: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min + 1 - VALUE_OFFSET_FROM_COLUMN : dataColumns.length),
       minInterval: 1,
       maxInterval: 1,
@@ -358,4 +358,15 @@ const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
 
 const depthFormatter = (params: number, indexUnit: string) => {
   return `${params.toFixed(2)} ${indexUnit}`;
+};
+
+const getExtraWidth = (data: any[], columns: ExportableContentTableColumn<CurveSpecification>[], dateTimeFormat: DateTimeFormat) => {
+  // Estimate the width of the x-axis labels and the grid margin (everything in content view except for the data columns itself)
+  const isTimeLog = columns[0].type == ContentType.DateTime;
+  const indexUnit = columns[0].columnOf.unit;
+  const indexCurve = columns[0].columnOf.mnemonic;
+  const maxIndex = data.slice(-1)[0][indexCurve];
+  const dummy_time_index = 1649415600000;
+  const formattedText = isTimeLog ? timeFormatter(dummy_time_index, dateTimeFormat) : depthFormatter(maxIndex, indexUnit);
+  return formattedText.length * 6.3 + 82;
 };
