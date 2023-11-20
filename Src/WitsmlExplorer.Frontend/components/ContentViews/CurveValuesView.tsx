@@ -17,6 +17,7 @@ import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE, WITSML_INDEX_TYPE_DATE_TIME, WITSM
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import formatDateString from "../DateFormatter";
+import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
 import EditInterval from "./EditInterval";
@@ -29,7 +30,7 @@ const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines
 const TIME_INDEX_OFFSET = 30536000; // offset from current end index that should ensure that any new data is captured (in seconds).
 const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should ensure that any new data is captured.
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
-const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
+const AUTO_REFRESH_TIMEOUT = 0.2; // minutes
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -73,7 +74,7 @@ export const CurveValuesView = (): React.ReactElement => {
   useEffect(() => {
     if (autoRefresh) {
       setRefreshFlag((flag) => !flag);
-      stopAutoRefreshTimer.current = setTimeout(() => setAutoRefresh(false), AUTO_REFRESH_TIMEOUT * MILLIS_IN_SECOND * SECONDS_IN_MINUTE); // Stop auto refresh after 5 minutes to reduce load on the server
+      stopAutoRefreshTimer.current = setTimeout(stopAutoRefreshTimerCallback, AUTO_REFRESH_TIMEOUT * MILLIS_IN_SECOND * SECONDS_IN_MINUTE); // Stop auto refresh after 5 minutes to reduce load on the server
     }
 
     return () => {
@@ -81,6 +82,22 @@ export const CurveValuesView = (): React.ReactElement => {
       if (stopAutoRefreshTimer.current) clearTimeout(stopAutoRefreshTimer.current);
     };
   }, [autoRefresh]);
+
+  const stopAutoRefreshTimerCallback = () => {
+    setAutoRefresh(false);
+    const confirmation = (
+      <ConfirmModal
+        heading={"Stream stopped"}
+        content={<Typography>{`The log data stream was automatically stopped after ${AUTO_REFRESH_TIMEOUT} minutes to reduce the load on the server.`}</Typography>}
+        onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
+        }}
+        confirmText={"OK"}
+        showCancelButton={false}
+      />
+    );
+    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  };
 
   const getDeleteLogCurveValuesJob = useCallback(
     (currentSelected: LogCurveInfoRow[], checkedContentItems: CurveValueRow[], selectedLog: LogObject, tableData: CurveValueRow[]) => {
