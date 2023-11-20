@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Workers
         private bool _isEqualNumOfDecimals;
         private bool _isDecreasing;
         private bool _isDepthLog;
+        private bool _includeIndexDuplicates;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
@@ -55,8 +56,9 @@ namespace WitsmlExplorer.Api.Workers
             _mnemonicsMismatchCount = new Dictionary<string, int>();
 
             // Get logs
-            WitsmlLog sourceLog = await WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
-            WitsmlLog targetLog = await WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
+            WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
+            WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
+            _includeIndexDuplicates = job.IncludeIndexDuplicates;
 
             try
             {
@@ -116,8 +118,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)
         {
-            WitsmlLogData sourceLogData = await WorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
-            WitsmlLogData targetLogData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
+            WitsmlLogData sourceLogData = await LogWorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
+            WitsmlLogData targetLogData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
             Dictionary<string, string> sourceData = WitsmlLogDataToDictionary(sourceLogData);
             Dictionary<string, string> targetData = WitsmlLogDataToDictionary(targetLogData);
 
@@ -133,7 +135,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
         {
-            WitsmlLogData mnemonicData = await WorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
+            WitsmlLogData mnemonicData = await LogWorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
@@ -212,6 +214,11 @@ namespace WitsmlExplorer.Api.Workers
             (Dictionary<string, string> LessDecimals, Dictionary<string, string> MoreDecimals) Logs = _sourceDepthLogDecimals < _targetDepthLogDecimals ? (sourceData, targetData) : (targetData, sourceData);
             List<string> lessDecimalsIndexes = Logs.LessDecimals.Keys.ToList();
             List<string> moreDecimalsIndexes = Logs.MoreDecimals.Keys.ToList();
+
+            if (!_includeIndexDuplicates)
+            {
+                moreDecimalsIndexes = RemoveRoundedIndexDuplicates(moreDecimalsIndexes);
+            }
 
             List<string> allIndexes = lessDecimalsIndexes.Union(moreDecimalsIndexes).ToList();
             allIndexes = SortIndexes(allIndexes);
@@ -296,15 +303,29 @@ namespace WitsmlExplorer.Api.Workers
         private void AddUnequalServerDecimalsReportItem(string mnemonic, string lessDecimalsIndex, string moreDecimalsIndex, string lessDecimalsValue, string moreDecimalsValue, bool isDuplicate = false)
         {
             _mnemonicsMismatchCount[mnemonic]++;
-            _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsItem
+            if (_includeIndexDuplicates)
             {
-                Mnemonic = mnemonic,
-                SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                IndexDuplicate = isDuplicate ? "X" : null
-            });
+                _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsIndexDuplicateItem
+                {
+                    Mnemonic = mnemonic,
+                    SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    IndexDuplicate = isDuplicate ? "X" : null
+                });
+            }
+            else
+            {
+                _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsItem
+                {
+                    Mnemonic = mnemonic,
+                    SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
+                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                });
+            }
         }
 
         private List<string> SortIndexes(List<string> indexes)
@@ -334,7 +355,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private string RoundStringDouble(string value, int digits)
         {
-            return Math.Round(StringHelpers.ToDouble(value), digits).ToString(CultureInfo.InvariantCulture);
+            return Math.Round(StringHelpers.ToDouble(value), digits, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
         }
 
         private List<string> GetIndexDuplicates(List<string> indexes)
@@ -343,6 +364,22 @@ namespace WitsmlExplorer.Api.Workers
                     .Where(g => g.Count() > 1)
                     .Select(y => y.Key)
                     .ToList();
+        }
+
+        private List<string> RemoveRoundedIndexDuplicates(List<string> indexes)
+        {
+            List<string> newIndexes = new List<string>();
+            List<string> roundedIndexes = new List<string>();
+            foreach (string index in indexes)
+            {
+                string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
+                if (!roundedIndexes.Contains(roundedIndex))
+                {
+                    newIndexes.Add(index);
+                    roundedIndexes.Add(roundedIndex);
+                }
+            }
+            return newIndexes;
         }
     }
 }

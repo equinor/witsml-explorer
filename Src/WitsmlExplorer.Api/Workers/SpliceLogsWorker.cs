@@ -13,7 +13,6 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -53,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers
                     WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                     foreach (var mnemonic in logHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1))
                     {
-                        WitsmlLogData logData = await WorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
+                        WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
                         newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDepthLog);
                     }
                 }
@@ -77,8 +76,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLogs> GetLogHeaders(string wellUid, string wellboreUid, string[] logUids)
         {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogsByIds(wellUid, wellboreUid, logUids);
-            return await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            return await LogWorkerTools.GetLogsByIds(GetTargetWitsmlClientOrThrow(), wellUid, wellboreUid, logUids, ReturnElements.HeaderOnly);
         }
 
         private static void VerifyLogHeaders(WitsmlLogs logHeaders)

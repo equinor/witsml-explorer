@@ -5,9 +5,10 @@ import OperationType from "../../contexts/operationType";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
-import Trajectory from "../../models/trajectory";
+import Trajectory, { aziRefValues } from "../../models/trajectory";
 import { DateTimeField } from "./DateTimeField";
 import OperationContext from "../../contexts/operationContext";
+import { Autocomplete } from "@equinor/eds-core-react";
 export interface TrajectoryPropertiesModalProps {
   mode: PropertiesModalMode;
   trajectory: Trajectory;
@@ -27,7 +28,10 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
 
   useEffect(() => {
     setEditableTrajectory({
-      ...trajectory
+      ...trajectory,
+      commonData: {
+        ...trajectory.commonData
+      }
     });
   }, [trajectory]);
 
@@ -83,6 +87,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajStartValid(valid);
                 }}
                 timeZone={timeZone}
+                disabled={editMode}
               />
               <DateTimeField
                 value={editableTrajectory.dTimTrajEnd}
@@ -92,6 +97,7 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   setDTimTrajEndValid(valid);
                 }}
                 timeZone={timeZone}
+                disabled={editMode}
               />
               <TextField
                 id={"serviceCompany"}
@@ -107,9 +113,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 id={"mdMin"}
                 label={"mdMin"}
                 type="number"
+                disabled
                 fullWidth
                 value={editableTrajectory.mdMin}
-                disabled={!editableTrajectory.mdMin}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
@@ -121,9 +127,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 id={"mdMax"}
                 label={"mdMax"}
                 type="number"
+                disabled
                 fullWidth
                 value={editableTrajectory.mdMax}
-                disabled={!editableTrajectory.mdMax}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
@@ -131,15 +137,27 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                   })
                 }
               />
+              <Autocomplete
+                id="aziRef"
+                label="aziRef"
+                options={aziRefValues}
+                initialSelectedOptions={[editableTrajectory.aziRef]}
+                hideClearButton
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableTrajectory({ ...editableTrajectory, aziRef: selectedItems[0] });
+                }}
+                onFocus={(e) => e.preventDefault()}
+              />
               <TextField
-                id={"aziRef"}
-                label={"aziRef"}
-                value={editableTrajectory.aziRef ?? ""}
-                disabled={!editMode}
-                error={editMode && editableTrajectory.aziRef?.length === 0}
-                helperText={editMode && editableTrajectory.aziRef?.length === 0 ? "The aziRef must have value." : ""}
+                id="sourceName"
+                label="sourceName"
+                value={editableTrajectory.commonData.sourceName ?? ""}
                 fullWidth
-                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, aziRef: e.target.value })}
+                disabled={!editMode}
+                onChange={(e) => {
+                  const commonData = { ...editableTrajectory.commonData, sourceName: e.target.value };
+                  setEditableTrajectory({ ...editableTrajectory, commonData });
+                }}
               />
             </>
           }

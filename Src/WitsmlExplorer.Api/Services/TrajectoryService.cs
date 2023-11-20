@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface ITrajectoryService
     {
-        Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid);
+        Task<ICollection<Trajectory>> GetTrajectories(string wellUid, string wellboreUid);
         Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid);
         Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid);
     }
@@ -25,12 +25,12 @@ namespace WitsmlExplorer.Api.Services
         {
         }
 
-        public async Task<IEnumerable<Trajectory>> GetTrajectories(string wellUid, string wellboreUid)
+        public async Task<ICollection<Trajectory>> GetTrajectories(string wellUid, string wellboreUid)
         {
             WitsmlTrajectories witsmlTrajectory = TrajectoryQueries.GetWitsmlTrajectoryByWellbore(wellUid, wellboreUid);
             WitsmlTrajectories result = await _witsmlClient.GetFromStoreAsync(witsmlTrajectory, new OptionsIn(ReturnElements.Requested));
             return result.Trajectories.Select(WitsmlToTrajectory
-                ).OrderBy(trajectory => trajectory.Name);
+                ).OrderBy(trajectory => trajectory.Name).ToList();
         }
 
         public async Task<Trajectory> GetTrajectory(string wellUid, string wellboreUid, string trajectoryUid)
@@ -51,10 +51,56 @@ namespace WitsmlExplorer.Api.Services
                 Uid = tStation.Uid,
                 DTimStn = tStation.DTimStn,
                 TypeTrajStation = tStation.TypeTrajStation,
-                Md = (tStation.Md == null) ? null : new LengthMeasure { Uom = tStation.Md.Uom, Value = StringHelpers.ToDecimal(tStation.Md.Value) },
-                Tvd = (tStation.Tvd == null) ? null : new LengthMeasure { Uom = tStation.Tvd.Uom, Value = StringHelpers.ToDecimal(tStation.Tvd?.Value) },
-                Incl = (tStation.Incl == null) ? null : new LengthMeasure { Uom = tStation.Incl.Uom, Value = StringHelpers.ToDecimal(tStation.Incl?.Value) },
-                Azi = (tStation.Azi == null) ? null : new LengthMeasure { Uom = tStation.Azi.Uom, Value = StringHelpers.ToDecimal(tStation.Azi?.Value) }
+                Md = LengthMeasure.FromWitsml(tStation.Md),
+                Tvd = LengthMeasure.FromWitsml(tStation.Tvd),
+                Incl = LengthMeasure.FromWitsml(tStation.Incl),
+                Azi = LengthMeasure.FromWitsml(tStation.Azi),
+                Dls = LengthMeasure.FromWitsml(tStation.Dls),
+                Mtf = LengthMeasure.FromWitsml(tStation.Mtf),
+                Gtf = LengthMeasure.FromWitsml(tStation.Gtf),
+                DispNs = LengthMeasure.FromWitsml(tStation.DispNs),
+                DispEw = LengthMeasure.FromWitsml(tStation.DispEw),
+                VertSect = LengthMeasure.FromWitsml(tStation.VertSect),
+                RateTurn = LengthMeasure.FromWitsml(tStation.RateTurn),
+                RateBuild = LengthMeasure.FromWitsml(tStation.RateBuild),
+                GravTotalUncert = LengthMeasure.FromWitsml(tStation.GravTotalUncert),
+                DipAngleUncert = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                MagTotalUncert = LengthMeasure.FromWitsml(tStation.MagTotalUncert),
+                SagCorUsed = tStation.SagCorUsed,
+                MagDrlstrCorUsed = tStation.MagDrlstrCorUsed,
+                GravTotalFieldReference = LengthMeasure.FromWitsml(tStation.GravTotalFieldReference),
+                MagTotalFieldReference = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                MagDipAngleReference = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                StatusTrajStation = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                GravAxialRaw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                GravTran1Raw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                GravTran2Raw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                MagAxialRaw = LengthMeasure.FromWitsml(tStation.DipAngleUncert),
+                RawData =
+                        new TrajRawData()
+                        {
+                            MagTran1Raw = LengthMeasure.FromWitsml(tStation.RawData?.MagTran1Raw),
+                            MagTran2Raw = LengthMeasure.FromWitsml(tStation.RawData?.MagTran2Raw)
+                        },
+                CorUsed = new StnTrajCorUsed()
+                {
+                    GravAxialAccelCor = LengthMeasure.FromWitsml(tStation.CorUsed?.GravAxialAccelCor),
+                    GravTran1AccelCor = LengthMeasure.FromWitsml(tStation.CorUsed?.GravTran1AccelCor),
+                    GravTran2AccelCor = LengthMeasure.FromWitsml(tStation.CorUsed?.GravTran2AccelCor),
+                    MagAxialDrlstrCor = LengthMeasure.FromWitsml(tStation.CorUsed?.MagAxialDrlstrCor),
+                    MagTran1DrlstrCor = LengthMeasure.FromWitsml(tStation.CorUsed?.MagTran1DrlstrCor),
+                    MagTran2DrlstrCor = LengthMeasure.FromWitsml(tStation.CorUsed?.MagTran2DrlstrCor),
+                    SagIncCor = LengthMeasure.FromWitsml(tStation.CorUsed?.SagIncCor),
+                    StnMagDeclUsed = LengthMeasure.FromWitsml(tStation.CorUsed?.StnMagDeclUsed),
+                    StnGridCorUsed = LengthMeasure.FromWitsml(tStation.CorUsed?.StnGridCorUsed),
+                    DirSensorOffset = LengthMeasure.FromWitsml(tStation.CorUsed?.DirSensorOffset)
+                },
+                Valid = new StnTrajValid()
+                {
+                    MagTotalFieldCalc = LengthMeasure.FromWitsml(tStation.Valid?.MagTotalFieldCalc),
+                    MagDipAngleCalc = LengthMeasure.FromWitsml(tStation.Valid?.MagDipAngleCalc),
+                    GravTotalFieldCalc = LengthMeasure.FromWitsml(tStation.Valid?.GravTotalFieldCalc)
+                },
             })
                 .OrderBy(tStation => tStation.Md.Value)
                 .ToList();
@@ -75,8 +121,12 @@ namespace WitsmlExplorer.Api.Services
                 DTimTrajStart = trajectory.DTimTrajStart,
                 DTimTrajEnd = trajectory.DTimTrajEnd,
                 ServiceCompany = trajectory.ServiceCompany,
-                DateTimeCreation = trajectory.CommonData?.DTimCreation,
-                DateTimeLastChange = trajectory.CommonData?.DTimLastChange
+                CommonData = new CommonData()
+                {
+                    SourceName = trajectory.CommonData?.SourceName,
+                    DTimLastChange = trajectory.CommonData?.DTimLastChange,
+                    DTimCreation = trajectory.CommonData?.DTimCreation,
+                }
             };
         }
     }

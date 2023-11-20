@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Configuration
 {
     public interface IWitsmlSystemCredentials
     {
-        public ServerCredentials[] WitsmlCreds { get; set; }
+        public IReadOnlyCollection<ServerCredentials> WitsmlCreds { get; set; }
     }
 
     /// <summary>
@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Configuration
     /// </summary>
     public class WitsmlSystemCredentials : IWitsmlSystemCredentials, IDisposable
     {
-        public ServerCredentials[] WitsmlCreds { get; set; }
+        public IReadOnlyCollection<ServerCredentials> WitsmlCreds { get; set; }
         private IDisposable _unregister;
 
         public WitsmlSystemCredentials(IConfiguration configuration)
@@ -48,13 +48,13 @@ namespace WitsmlExplorer.Api.Configuration
             {
                 ServerCredentials cred = new();
                 rule.Bind(cred);
-                if (!cred.IsCredsNullOrEmpty() && cred.Host != null)
+                if (!cred.IsNullOrEmpty() && cred.Host != null)
                 {
                     credsList.Add(cred);
                 }
             }
 
-            WitsmlCreds = credsList.ToArray();
+            WitsmlCreds = credsList;
             _unregister?.Dispose();
             _unregister = configuration.GetReloadToken().RegisterChangeCallback((_) => Bind(configuration), null);
         }

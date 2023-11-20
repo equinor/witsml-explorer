@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IBhaRunService
     {
         Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid);
-        Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
+        Task<ICollection<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
     }
 
     public class BhaRunService : WitsmlService, IBhaRunService
@@ -27,12 +27,12 @@ namespace WitsmlExplorer.Api.Services
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             return result.BhaRuns.Any() ? WitsmlToBhaRun(result.BhaRuns.First()) : null;
         }
-        public async Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
+        public async Task<ICollection<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
             WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRun(wellUid, wellboreUid);
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
             return result.BhaRuns.Select(WitsmlToBhaRun
-                ).OrderBy(bhaRun => bhaRun.Name);
+                ).OrderBy(bhaRun => bhaRun.Name).ToList();
         }
 
         private static BhaRun WitsmlToBhaRun(WitsmlBhaRun bhaRun)

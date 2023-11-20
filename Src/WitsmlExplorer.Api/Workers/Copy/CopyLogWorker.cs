@@ -37,11 +37,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
-            IEnumerable<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
+            ICollection<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
             List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsItemInWitsmlList())).ToList();
 
             Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
-            IEnumerable<QueryResult> results = await copyLogTasksResult;
+            ICollection<QueryResult> results = await copyLogTasksResult;
 
             string errorMessage = "Failed to copy log.";
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
-            return !result.Logs.Any() ? null : result.Logs.First();
+            return result.Logs?.FirstOrDefault();
         }
 
         private static CopyLogDataJob CreateCopyLogDataJob(CopyObjectsJob job, WitsmlLog targetLog)

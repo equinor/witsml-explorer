@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
-            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            ICollection<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
             int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
             int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
 
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 ? job.Source.ComponentUids.Distinct().ToList()
                 : sourceLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
 
-            IEnumerable<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
+            ICollection<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
             List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
             List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 
@@ -202,12 +202,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
                     Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
                 WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
-                if (!sourceData.Logs.Any())
+                WitsmlLog sourceLogWithData = sourceData?.Logs?.FirstOrDefault();
+
+                if (sourceLogWithData == null)
                 {
                     break;
                 }
-
-                WitsmlLog sourceLogWithData = sourceData.Logs.First();
 
                 List<WitsmlData> data = sourceLogWithData.LogData.Data;
                 List<WitsmlData> newData = new();
@@ -226,10 +226,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         if (rowsToCollate.Any())
                         {
                             newData.Add(CollateData(rowsToCollate, targetIndex));
+                            rowsToCollate.Clear();
                         }
                         firstSourceRowIndex = lastSourceRowIndex;
                         targetIndex = nextTargetIndex;
-                        rowsToCollate = new();
                     }
                     rowsToCollate.Add(split[1..]);
                 }
@@ -369,15 +369,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
-            Task<WitsmlLog> targetLog = WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> targetLog = LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
             return sourceLog.Result == null
                 ? throw new Exception($"Could not find source log object: {job.Source.Parent.Description()}")
                 : targetLog.Result == null
                 ? throw new Exception($"Could not find target log object: UidWell: {job.Target.Description()}")
-                : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
+                : (sourceLog.Result, targetLog.Result);
         }
 
         private class CopyResult

@@ -7,9 +7,9 @@ namespace WitsmlExplorer.Api.Jobs
     public record ImportLogDataJob : Job
     {
         public ObjectReference TargetLog { get; init; }
-        public IEnumerable<string> Mnemonics { get; init; }
-        public IEnumerable<string> Units { get; init; }
-        public IEnumerable<IEnumerable<string>> DataRows { get; init; }
+        public ICollection<string> Mnemonics { get; init; }
+        public ICollection<string> Units { get; init; }
+        public ICollection<ICollection<string>> DataRows { get; init; }
 
         public override string Description()
         {

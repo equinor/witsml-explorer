@@ -146,7 +146,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             _logObjectService
                 .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME } }.AsEnumerable()));
+                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME } }.AsCollection()));
 
             var lcis = new List<LogCurveInfo>();
 
@@ -173,14 +173,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             _logObjectService
                 .Setup(los => los.GetLogCurveInfo(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => lcis.AsEnumerable()));
+                .Returns(Task.Run(() => lcis.AsCollection()));
         }
 
         private void SetupDepthLogObject()
         {
             _logObjectService
                 .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD } }.AsEnumerable()));
+                .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD } }.AsCollection()));
 
             var lcis = new List<LogCurveInfo>();
 
@@ -207,7 +207,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             _logObjectService
                 .Setup(los => los.GetLogCurveInfo(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.Run(() => lcis.AsEnumerable()));
+                .Returns(Task.Run(() => lcis.AsCollection()));
         }
 
         private DeleteEmptyMnemonicsJob CreateJob(double nullDepthValue, DateTime nullTimeValue)

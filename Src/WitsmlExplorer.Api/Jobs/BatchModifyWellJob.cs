@@ -7,7 +7,7 @@ namespace WitsmlExplorer.Api.Jobs
 {
     public record BatchModifyWellJob : Job
     {
-        public IEnumerable<Well> Wells { get; init; }
+        public ICollection<Well> Wells { get; init; }
 
         public override string Description()
         {

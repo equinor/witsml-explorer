@@ -106,7 +106,8 @@ export const TRAJECTORY_1: Trajectory = {
   mdMin: 0,
   trajectoryStations: [],
   dTimTrajEnd: null,
-  dTimTrajStart: null
+  dTimTrajStart: null,
+  commonData: null
 };
 export const MESSAGE_1 = {
   dateTimeLastChange: "2021-03-03T18:00:24.439+01:00",

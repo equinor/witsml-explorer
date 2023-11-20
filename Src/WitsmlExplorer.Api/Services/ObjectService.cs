@@ -18,10 +18,10 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IObjectService
     {
-        Task<IEnumerable<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue);
-        Task<IEnumerable<ObjectSearchResult>> GetObjectsByType(EntityType objectType);
-        Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
-        Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
+        Task<ICollection<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue);
+        Task<ICollection<ObjectSearchResult>> GetObjectsByType(EntityType objectType);
+        Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
+        Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
     }
 
@@ -35,15 +35,15 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ObjectSearchResult>> GetObjectsByType(EntityType objectType)
+        public async Task<ICollection<ObjectSearchResult>> GetObjectsByType(EntityType objectType)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
                 throw new ArgumentException($"{nameof(objectType)} must be a valid type of an object on wellbore");
             }
 
-            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectsByType(objectType);
-            IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
+            var query = ObjectQueries.GetWitsmlObjectsByType(objectType);
+            var result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
             if (result?.Objects == null)
             {
                 return new List<ObjectSearchResult>();
@@ -59,10 +59,10 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            );
+            ).ToList();
         }
 
-        public async Task<IEnumerable<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue)
+        public async Task<ICollection<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
@@ -115,15 +115,15 @@ namespace WitsmlExplorer.Api.Services
                 }
 
                 return searchResult;
-            });
+            }).ToList();
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
+        public async Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
         {
             return await GetObjectIdOnly(wellUid, wellboreUid, "", objectType);
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
+        public async Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
@@ -146,7 +146,7 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            );
+            ).ToList();
         }
 
         public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)

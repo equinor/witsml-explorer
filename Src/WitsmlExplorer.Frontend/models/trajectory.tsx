@@ -1,5 +1,6 @@
 import ObjectOnWellbore from "./objectOnWellbore";
 import TrajectoryStation from "./trajectoryStation";
+import CommonData from "./commonData";
 
 export default interface Trajectory extends ObjectOnWellbore {
   mdMin: number;
@@ -8,7 +9,8 @@ export default interface Trajectory extends ObjectOnWellbore {
   dTimTrajStart: string;
   dTimTrajEnd: string;
   serviceCompany?: string;
-  dateTimeCreation?: string;
-  dateTimeLastChange?: string;
   trajectoryStations: TrajectoryStation[];
+  commonData: CommonData;
 }
+
+export const aziRefValues = ["unknown", "grid north", "magnetic north", "true north"];

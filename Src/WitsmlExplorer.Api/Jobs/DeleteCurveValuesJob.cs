@@ -7,8 +7,8 @@ namespace WitsmlExplorer.Api.Jobs
     public record DeleteCurveValuesJob : Job
     {
         public ObjectReference LogReference { get; init; }
-        public IEnumerable<string> Mnemonics { get; init; }
-        public IEnumerable<IndexRange> IndexRanges { get; init; }
+        public ICollection<string> Mnemonics { get; init; }
+        public ICollection<IndexRange> IndexRanges { get; init; }
 
         public override string Description()
         {

@@ -223,15 +223,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
                     if (!wellbores.IsNullOrEmpty())
                     {
-                        wellboreRefs = wellboreRefs.Concat(wellbores.Select(wb =>
-                            new WellboreReference
-                            {
-                                WellboreUid = wb.Uid,
-                                WellboreName = wb.Name,
-                                WellUid = wb.WellUid,
-                                WellName = wb.WellName
-                            }))
-                            .ToList();
+                        wellboreRefs.AddRange(wellbores.Select(wb => new WellboreReference { WellboreUid = wb.Uid, WellboreName = wb.Name, WellUid = wb.WellUid, WellName = wb.WellName }));
                     }
                 }
             }
