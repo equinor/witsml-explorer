@@ -17,6 +17,7 @@ import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModa
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -51,12 +52,13 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="compare" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
+        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>

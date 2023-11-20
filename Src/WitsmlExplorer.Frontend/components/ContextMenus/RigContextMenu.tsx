@@ -13,6 +13,7 @@ import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigProper
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -30,8 +31,9 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Rig, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.Rig, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <Divider key={"divider"} />,
+        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>

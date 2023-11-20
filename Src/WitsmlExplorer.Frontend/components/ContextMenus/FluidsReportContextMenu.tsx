@@ -12,6 +12,7 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -24,7 +25,7 @@ const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElem
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem
           key={"pasteComponent"}
           onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}
@@ -32,7 +33,8 @@ const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElem
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{menuItemText("paste", "fluid", fluidReferences?.componentUids)}</Typography>
-        </MenuItem>
+        </MenuItem>,
+        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore)
       ]}
     />
   );

@@ -16,6 +16,7 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -35,7 +36,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.WbGeometry, navigationState, dispatchOperation, dispatchNavigation, wellbore),
         <MenuItem
           key={"paste"}
           onClick={() => pasteComponents(servers, wbGeometrySectionReferences, dispatchOperation, checkedObjects[0])}
@@ -45,6 +46,7 @@ const WbGeometryObjectContextMenu = (props: ObjectContextMenuProps): React.React
           <Typography color={"primary"}>{menuItemText("paste", "wbGeometry section", wbGeometrySectionReferences?.componentUids)}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
+        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>
