@@ -30,7 +30,7 @@ const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines
 const TIME_INDEX_OFFSET = 30536000; // offset from current end index that should ensure that any new data is captured (in seconds).
 const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should ensure that any new data is captured.
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
-const AUTO_REFRESH_TIMEOUT = 0.2; // minutes
+const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
