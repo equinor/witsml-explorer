@@ -24,7 +24,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
   } = useContext(OperationContext);
 
   return useMemo(() => {
-    const savedWidths = getLocalStorageItem(STORAGE_CONTENTTABLE_WIDTH_KEY, { preKey: viewId });
+    const savedWidths = getLocalStorageItem<{ [label: string]: number }>(viewId + STORAGE_CONTENTTABLE_WIDTH_KEY);
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
       return {
         id: column.label,
@@ -39,7 +39,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
       };
     });
 
-    const savedOrder = getLocalStorageItem(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
+    const savedOrder = getLocalStorageItem<string[]>(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
     if (savedOrder) {
       const sortedColumns = savedOrder.flatMap((label) => {
         const foundColumn = columnDef.find((col) => col.id == label);

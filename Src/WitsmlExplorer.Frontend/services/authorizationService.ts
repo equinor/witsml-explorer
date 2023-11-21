@@ -88,16 +88,16 @@ class AuthorizationService {
   }
 
   public getKeepLoggedInToServer(serverUrl: string): boolean {
-    return getLocalStorageItem(STORAGE_KEEP_SERVER_CREDENTIALS, { preKey: serverUrl }) == "keep";
+    return getLocalStorageItem<string>(serverUrl + STORAGE_KEEP_SERVER_CREDENTIALS) == "keep";
   }
 
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlAuth
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
     if (keep) {
-      setLocalStorageItem(STORAGE_KEEP_SERVER_CREDENTIALS, "keep", { preKey: credentials.server.url });
+      setLocalStorageItem<string>(credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS, "keep");
     } else {
-      removeLocalStorageItem(STORAGE_KEEP_SERVER_CREDENTIALS, { preKey: credentials.server.url });
+      removeLocalStorageItem(credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS);
     }
     const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
     if (!response.ok) {

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { STORAGE_CONTENTTABLE_HIDDEN_KEY, STORAGE_CONTENTTABLE_WIDTH_KEY, getLocalStorageItem, useLocalStorageState } from "../../../tools/localStorageHelpers";
 
 export const useStoreWidthsEffect = (viewId: string | null, table: Table<any>) => {
-  const [, setWidths] = useLocalStorageState(STORAGE_CONTENTTABLE_WIDTH_KEY, { preKey: viewId });
+  const [, setWidths] = useLocalStorageState<{ [label: string]: number }>(viewId + STORAGE_CONTENTTABLE_WIDTH_KEY);
   useEffect(() => {
     if (viewId) {
       const widths = Object.assign({}, ...table.getLeafHeaders().map((header) => ({ [header.id]: header.getSize() })));
@@ -13,7 +13,7 @@ export const useStoreWidthsEffect = (viewId: string | null, table: Table<any>) =
 };
 
 export const useStoreVisibilityEffect = (viewId: string | null, columnVisibility: VisibilityState) => {
-  const [, setVisibility] = useLocalStorageState(STORAGE_CONTENTTABLE_HIDDEN_KEY, { preKey: viewId });
+  const [, setVisibility] = useLocalStorageState<string[]>(viewId + STORAGE_CONTENTTABLE_HIDDEN_KEY);
   useEffect(() => {
     if (viewId) {
       const hiddenColumns = Object.entries(columnVisibility).flatMap(([columnId, isVisible]) => (isVisible ? [] : columnId));
@@ -26,6 +26,6 @@ export const initializeColumnVisibility = (viewId: string | null) => {
   if (viewId == null) {
     return {};
   }
-  const hiddenColumns = getLocalStorageItem(STORAGE_CONTENTTABLE_HIDDEN_KEY, { preKey: viewId });
+  const hiddenColumns = getLocalStorageItem<string[]>(viewId + STORAGE_CONTENTTABLE_HIDDEN_KEY);
   return hiddenColumns == null ? {} : Object.assign({}, ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false })));
 };

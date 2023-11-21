@@ -131,7 +131,7 @@ const removeTab = (state: QueryState, action: QueryAction): QueryState => {
 
 const getInitialQueryState = (initialQueryState: Partial<QueryState>): QueryState => {
   if (initialQueryState) return { ...getDefaultQueryState(), ...initialQueryState };
-  return getLocalStorageItem(STORAGE_QUERYVIEW_DATA, { defaultValue: getDefaultQueryState(), valueVerifier: validateQueryState });
+  return getLocalStorageItem<QueryState>(STORAGE_QUERYVIEW_DATA, { defaultValue: getDefaultQueryState(), valueVerifier: validateQueryState });
 };
 
 export interface QueryContextProviderProps {
@@ -147,7 +147,7 @@ export function QueryContextProvider({ initialQueryState, children }: QueryConte
       ...queryState,
       queries: queryState.queries.map((query) => ({ ...query, result: "" }))
     };
-    setLocalStorageItem(STORAGE_QUERYVIEW_DATA, queryStateWithoutResults);
+    setLocalStorageItem<QueryState>(STORAGE_QUERYVIEW_DATA, queryStateWithoutResults);
   }, [queryState]);
 
   return <QueryContext.Provider value={{ queryState, dispatchQuery }}>{children}</QueryContext.Provider>;

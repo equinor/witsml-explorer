@@ -31,7 +31,7 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
     dispatchOperation,
     operationState: { colors }
   } = useContext(OperationContext);
-  const [missingDataChecks, setMissingDataChecks] = useLocalStorageState(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, {
+  const [missingDataChecks, setMissingDataChecks] = useLocalStorageState<MissingDataCheck[]>(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, {
     defaultValue: [{ id: uuid() } as MissingDataCheck],
     valueVerifier: verifyObjectIsChecks,
     storageTransformer: (checks) => checks.map((check) => ({ ...check, id: uuid() }))

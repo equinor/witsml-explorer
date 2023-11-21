@@ -37,7 +37,7 @@ const SettingsModal = (): React.ReactElement => {
 
   const onChangeTheme = (event: any) => {
     const selectedTheme = event.target.value;
-    setLocalStorageItem(STORAGE_THEME_KEY, selectedTheme);
+    setLocalStorageItem<UserTheme>(STORAGE_THEME_KEY, selectedTheme);
     dispatchOperation({ type: OperationType.SetTheme, payload: selectedTheme });
   };
   const onChangeMode = (event: any) => {
@@ -47,19 +47,19 @@ const SettingsModal = (): React.ReactElement => {
     } else {
       selectedMode = dark;
     }
-    setLocalStorageItem(STORAGE_MODE_KEY, event.target.value);
+    setLocalStorageItem<"light" | "dark">(STORAGE_MODE_KEY, event.target.value);
     dispatchOperation({ type: OperationType.SetMode, payload: selectedMode });
   };
 
   const onChangeDateTimeFormat = (event: any) => {
     const selectedDateTimeFormat = event.target.value;
-    setLocalStorageItem(STORAGE_DATETIMEFORMAT_KEY, selectedDateTimeFormat);
+    setLocalStorageItem<DateTimeFormat>(STORAGE_DATETIMEFORMAT_KEY, selectedDateTimeFormat);
     dispatchOperation({ type: OperationType.SetDateTimeFormat, payload: selectedDateTimeFormat });
   };
 
   const onChangeTimeZone = (event: any) => {
     const selectedTimeZone = event.target.value;
-    setLocalStorageItem(STORAGE_TIMEZONE_KEY, selectedTimeZone);
+    setLocalStorageItem<TimeZone>(STORAGE_TIMEZONE_KEY, selectedTimeZone);
     dispatchOperation({ type: OperationType.SetTimeZone, payload: selectedTimeZone });
   };
 
@@ -67,7 +67,7 @@ const SettingsModal = (): React.ReactElement => {
     const inputDecimals: any = parseInt(event.target.value, 10);
     if (!isNaN(inputDecimals) && inputDecimals >= 0 && inputDecimals <= 10) {
       setDecimalError(false);
-      setLocalStorageItem(STORAGE_DECIMAL_KEY, inputDecimals);
+      setLocalStorageItem<DecimalPreference>(STORAGE_DECIMAL_KEY, inputDecimals);
       dispatchOperation({ type: OperationType.SetDecimal, payload: inputDecimals });
     } else {
       setDecimalError(true);
@@ -77,7 +77,7 @@ const SettingsModal = (): React.ReactElement => {
   const onChangeDecimalPreference = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
     if (event.target.value === DecimalPreference.Raw) {
-      setLocalStorageItem(STORAGE_DECIMAL_KEY, DecimalPreference.Raw);
+      setLocalStorageItem<DecimalPreference>(STORAGE_DECIMAL_KEY, DecimalPreference.Raw);
       dispatchOperation({ type: OperationType.SetDecimal, payload: DecimalPreference.Raw as DecimalPreference });
     }
     setCheckedDecimalPreference(selectedValue);

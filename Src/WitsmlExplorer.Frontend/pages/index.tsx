@@ -44,17 +44,17 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {
-      const localStorageTheme = getLocalStorageItem(STORAGE_THEME_KEY) as UserTheme;
+      const localStorageTheme = getLocalStorageItem<UserTheme>(STORAGE_THEME_KEY);
       if (localStorageTheme) {
         const action: SetThemeAction = { type: OperationType.SetTheme, payload: localStorageTheme };
         dispatchOperation(action);
       }
-      const storedTimeZone = getLocalStorageItem(STORAGE_TIMEZONE_KEY) as TimeZone;
+      const storedTimeZone = getLocalStorageItem<TimeZone>(STORAGE_TIMEZONE_KEY);
       if (storedTimeZone) {
         const action: SetTimeZoneAction = { type: OperationType.SetTimeZone, payload: storedTimeZone };
         dispatchOperation(action);
       }
-      const storedMode = getLocalStorageItem(STORAGE_MODE_KEY) as "light" | "dark";
+      const storedMode = getLocalStorageItem<"light" | "dark">(STORAGE_MODE_KEY);
       if (storedMode) {
         const action: SetModeAction = { type: OperationType.SetMode, payload: storedMode == "light" ? light : dark };
         dispatchOperation(action);

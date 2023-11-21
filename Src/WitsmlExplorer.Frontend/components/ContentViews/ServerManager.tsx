@@ -92,7 +92,7 @@ const ServerManager = (): React.ReactElement => {
 
   const updateVisibleObjects = (supportedObjects: string[]) => {
     const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = getLocalStorageItem(STORAGE_FILTER_HIDDENOBJECTS_KEY) || [];
+    const hiddenItems = getLocalStorageItem<string[]>(STORAGE_FILTER_HIDDENOBJECTS_KEY) || [];
     hiddenItems.forEach((objectType: ObjectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden));
     Object.values(ObjectType)
       .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))

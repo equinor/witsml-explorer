@@ -28,7 +28,7 @@ export const ColumnOptionsMenu = (props: {
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
-  const [, saveOrderToStorage] = useLocalStorageState(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
+  const [, saveOrderToStorage] = useLocalStorageState<string[]>(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -146,7 +146,7 @@ export const ColumnOptionsMenu = (props: {
           <ResetButton
             onClick={() => {
               table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
-              removeLocalStorageItem(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
+              if (viewId) removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
             }}
           >
             Reset ordering
