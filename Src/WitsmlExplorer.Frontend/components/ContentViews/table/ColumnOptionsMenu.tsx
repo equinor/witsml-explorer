@@ -4,8 +4,9 @@ import { Table } from "@tanstack/react-table";
 import { useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../../contexts/operationContext";
+import { useLocalStorageState } from "../../../hooks/useLocalStorageState";
 import { Colors } from "../../../styles/Colors";
-import { STORAGE_CONTENTTABLE_ORDER_KEY, removeLocalStorageItem, useLocalStorageState } from "../../../tools/localStorageHelpers";
+import { STORAGE_CONTENTTABLE_ORDER_KEY, removeLocalStorageItem } from "../../../tools/localStorageHelpers";
 import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 

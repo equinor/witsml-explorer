@@ -1,6 +1,7 @@
 import { Table, VisibilityState } from "@tanstack/react-table";
 import { useEffect } from "react";
-import { STORAGE_CONTENTTABLE_HIDDEN_KEY, STORAGE_CONTENTTABLE_WIDTH_KEY, getLocalStorageItem, useLocalStorageState } from "../../../tools/localStorageHelpers";
+import { useLocalStorageState } from "../../../hooks/useLocalStorageState";
+import { STORAGE_CONTENTTABLE_HIDDEN_KEY, STORAGE_CONTENTTABLE_WIDTH_KEY, getLocalStorageItem } from "../../../tools/localStorageHelpers";
 
 export const useStoreWidthsEffect = (viewId: string | null, table: Table<any>) => {
   const [, setWidths] = useLocalStorageState<{ [label: string]: number }>(viewId + STORAGE_CONTENTTABLE_WIDTH_KEY);

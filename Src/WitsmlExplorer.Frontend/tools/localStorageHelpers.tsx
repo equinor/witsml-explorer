@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 export const STORAGE_THEME_KEY = "selectedTheme";
 export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";
 export const STORAGE_MODE_KEY = "selectedMode";
@@ -74,24 +72,3 @@ export interface StorageOptions<T> {
   valueVerifier?: (value: T) => boolean;
   storageTransformer?: (value: T) => T;
 }
-
-export const useLocalStorageState = <T,>(key: string, options?: StorageOptions<T>): [T | null, React.Dispatch<React.SetStateAction<T | null>>] => {
-  const { defaultValue, delay = 250 } = options || {};
-  const [state, setState] = useState<T | null>(() => {
-    if (typeof window !== "undefined" && key) {
-      return getLocalStorageItem(key, options);
-    }
-    return defaultValue || null;
-  });
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && key) {
-      const dispatch = setTimeout(() => {
-        setLocalStorageItem(key, state, options);
-      }, delay);
-      return () => clearTimeout(dispatch);
-    }
-  }, [key, state]);
-
-  return [state, setState];
-};
