@@ -5,7 +5,6 @@ import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
-import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
@@ -37,7 +36,7 @@ import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
 import { dark, light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
-import { getLocalStorageItem } from "../tools/localStorageHelpers";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY, getLocalStorageItem } from "../tools/localStorageHelpers";
 
 const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();

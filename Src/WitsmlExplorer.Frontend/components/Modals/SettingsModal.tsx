@@ -9,8 +9,7 @@ import { getAccountInfo, msalEnabled, signOut } from "../../msal/MsalAuthProvide
 import AuthorizationService from "../../services/authorizationService";
 import { dark, light } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { setLocalStorageItem } from "../../tools/localStorageHelpers";
-import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../Constants";
+import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY, setLocalStorageItem } from "../../tools/localStorageHelpers";
 import { getOffsetFromTimeZone } from "../DateFormatter";
 import { StyledNativeSelect } from "../Select";
 import ModalDialog from "./ModalDialog";
@@ -31,7 +30,6 @@ const SettingsModal = (): React.ReactElement => {
     operationState: { theme, timeZone, colors, dateTimeFormat, decimals },
     dispatchOperation
   } = useContext(OperationContext);
-
   const [checkedDecimalPreference, setCheckedDecimalPreference] = useState<string>(() => {
     return decimals === DecimalPreference.Raw ? DecimalPreference.Raw : DecimalPreference.Decimal;
   });

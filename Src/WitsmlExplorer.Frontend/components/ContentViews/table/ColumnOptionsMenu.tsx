@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../../contexts/operationContext";
 import { Colors } from "../../../styles/Colors";
-import { orderingStorageKey, removeFromStorage, saveToStorage } from "./contentTableStorage";
+import { STORAGE_CONTENTTABLE_ORDER_KEY, removeLocalStorageItem, useLocalStorageState } from "../../../tools/localStorageHelpers";
 import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
@@ -28,6 +28,7 @@ export const ColumnOptionsMenu = (props: {
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+  const [, saveOrderToStorage] = useLocalStorageState(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -43,7 +44,7 @@ export const ColumnOptionsMenu = (props: {
         order.push(draggedId);
       }
       table.setColumnOrder(order);
-      saveToStorage(viewId, orderingStorageKey, order);
+      if (viewId) saveOrderToStorage(order);
     }
     setDraggedId(null);
     setDraggedOverId(null);
@@ -56,7 +57,7 @@ export const ColumnOptionsMenu = (props: {
       order[index] = order[index - 1];
       order[index - 1] = columnId;
       table.setColumnOrder(order);
-      saveToStorage(viewId, orderingStorageKey, order);
+      if (viewId) saveOrderToStorage(order);
     }
   };
 
@@ -67,7 +68,7 @@ export const ColumnOptionsMenu = (props: {
       order[index] = order[index + 1];
       order[index + 1] = columnId;
       table.setColumnOrder(order);
-      saveToStorage(viewId, orderingStorageKey, order);
+      if (viewId) saveOrderToStorage(order);
     }
   };
 
@@ -145,7 +146,7 @@ export const ColumnOptionsMenu = (props: {
           <ResetButton
             onClick={() => {
               table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
-              removeFromStorage(viewId, orderingStorageKey);
+              removeLocalStorageItem(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
             }}
           >
             Reset ordering

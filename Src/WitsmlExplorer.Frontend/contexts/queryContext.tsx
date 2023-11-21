@@ -1,8 +1,7 @@
 import React, { Dispatch, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { STORAGE_QUERYVIEW_DATA } from "../components/Constants";
 import { QueryTemplatePreset, ReturnElements, StoreFunction, getQueryTemplateWithPreset } from "../components/ContentViews/QueryViewUtils";
-import { getLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
+import { STORAGE_QUERYVIEW_DATA, getLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
 
 export interface QueryElement {
   query: string;
@@ -132,7 +131,7 @@ const removeTab = (state: QueryState, action: QueryAction): QueryState => {
 
 const getInitialQueryState = (initialQueryState: Partial<QueryState>): QueryState => {
   if (initialQueryState) return { ...getDefaultQueryState(), ...initialQueryState };
-  return retrieveStoredQuery();
+  return getLocalStorageItem(STORAGE_QUERYVIEW_DATA, { defaultValue: getDefaultQueryState(), valueVerifier: validateQueryState });
 };
 
 export interface QueryContextProviderProps {
@@ -144,50 +143,31 @@ export function QueryContextProvider({ initialQueryState, children }: QueryConte
   const [queryState, dispatchQuery] = React.useReducer(queryReducer, initialQueryState, getInitialQueryState);
 
   useEffect(() => {
-    const dispatch = setTimeout(() => {
-      setStoredQuery(queryState);
-    }, 500);
-    return () => clearTimeout(dispatch);
+    const queryStateWithoutResults = {
+      ...queryState,
+      queries: queryState.queries.map((query) => ({ ...query, result: "" }))
+    };
+    setLocalStorageItem(STORAGE_QUERYVIEW_DATA, queryStateWithoutResults);
   }, [queryState]);
 
   return <QueryContext.Provider value={{ queryState, dispatchQuery }}>{children}</QueryContext.Provider>;
 }
 
-const retrieveStoredQuery = () => {
-  try {
-    const storedQuery = getLocalStorageItem(STORAGE_QUERYVIEW_DATA);
-    const queryState = JSON.parse(storedQuery);
-    validateQueryState(queryState);
-    return queryState;
-  } catch {
-    return getDefaultQueryState();
-  }
-};
+const validateQueryState = (queryState: QueryState): boolean => {
+  if (!queryState) return false;
 
-const setStoredQuery = (queryState: QueryState) => {
-  try {
-    // As results can be large, we don't store them in local storage
-    const queryStateWithoutResults = {
-      ...queryState,
-      queries: queryState.queries.map((query) => ({ ...query, result: "" }))
-    };
-    setLocalStorageItem(STORAGE_QUERYVIEW_DATA, JSON.stringify(queryStateWithoutResults));
-  } catch {
-    /* disregard unavailable local storage */
-  }
-};
+  const hasValidProperty = (obj: any, prop: string, type: string) => prop in obj && typeof obj[prop] === type;
 
-const validateQueryState = (queryState: QueryState) => {
-  if (!queryState) throw new Error("No query state");
-  if (!("queries" in queryState) || !Array.isArray(queryState.queries)) throw new Error("Invalid queries in query state");
-  if (!("tabIndex" in queryState) || typeof queryState.tabIndex !== "number") throw new Error("Invalid tabIndex in query state");
+  if (!hasValidProperty(queryState, "queries", "object") || !Array.isArray(queryState.queries)) return false;
+  if (!hasValidProperty(queryState, "tabIndex", "number")) return false;
 
-  queryState.queries.forEach((query, index) => {
-    if (!("query" in query) || typeof query.query !== "string") throw new Error(`Invalid query in query state at index ${index}`);
-    if (!("result" in query) || typeof query.result !== "string") throw new Error(`Invalid result in query state at index ${index}`);
-    if (!("storeFunction" in query) || typeof query.storeFunction !== "string") throw new Error(`Invalid storeFunction in query state at index ${index}`);
-    if (!("returnElements" in query) || typeof query.returnElements !== "string") throw new Error(`Invalid returnElements in query state at index ${index}`);
-    if (!("optionsIn" in query) || typeof query.optionsIn !== "string") throw new Error(`Invalid optionsIn in query state at index ${index}`);
-    if (!("tabId" in query) || typeof query.tabId !== "string") throw new Error(`Invalid tabId in query state at index ${index}`);
-  });
+  return queryState.queries.every(
+    (query) =>
+      hasValidProperty(query, "query", "string") &&
+      hasValidProperty(query, "result", "string") &&
+      hasValidProperty(query, "storeFunction", "string") &&
+      hasValidProperty(query, "returnElements", "string") &&
+      hasValidProperty(query, "optionsIn", "string") &&
+      hasValidProperty(query, "tabId", "string")
+  );
 };

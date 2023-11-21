@@ -1,12 +1,12 @@
 import { Checkbox, IconButton, useTheme } from "@material-ui/core";
 import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
-import { useMemo, useContext } from "react";
-import Icon from "../../../styles/Icons";
-import { getFromStorage, orderingStorageKey, widthsStorageKey } from "./contentTableStorage";
-import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
-import { ContentTableColumn, ContentType } from "./tableParts";
+import { useContext, useMemo } from "react";
 import OperationContext from "../../../contexts/operationContext";
 import { DecimalPreference } from "../../../contexts/operationStateReducer";
+import Icon from "../../../styles/Icons";
+import { STORAGE_CONTENTTABLE_ORDER_KEY, STORAGE_CONTENTTABLE_WIDTH_KEY, getLocalStorageItem } from "../../../tools/localStorageHelpers";
+import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
+import { ContentTableColumn, ContentType } from "./tableParts";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -24,7 +24,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
   } = useContext(OperationContext);
 
   return useMemo(() => {
-    const savedWidths = getFromStorage(viewId, widthsStorageKey);
+    const savedWidths = getLocalStorageItem(STORAGE_CONTENTTABLE_WIDTH_KEY, { preKey: viewId });
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
       return {
         id: column.label,
@@ -39,7 +39,7 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
       };
     });
 
-    const savedOrder = getFromStorage(viewId, orderingStorageKey);
+    const savedOrder = getLocalStorageItem(STORAGE_CONTENTTABLE_ORDER_KEY, { preKey: viewId });
     if (savedOrder) {
       const sortedColumns = savedOrder.flatMap((label) => {
         const foundColumn = columnDef.find((col) => col.id == label);
