@@ -1,7 +1,8 @@
 import React, { Dispatch, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { QueryTemplatePreset, ReturnElements, StoreFunction, getQueryTemplateWithPreset } from "../components/ContentViews/QueryViewUtils";
-import { STORAGE_QUERYVIEW_DATA, getLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
+import { useLocalStorageState } from "../hooks/useLocalStorageState";
+import { STORAGE_QUERYVIEW_DATA, getLocalStorageItem } from "../tools/localStorageHelpers";
 
 export interface QueryElement {
   query: string;
@@ -141,13 +142,12 @@ export interface QueryContextProviderProps {
 
 export function QueryContextProvider({ initialQueryState, children }: QueryContextProviderProps) {
   const [queryState, dispatchQuery] = React.useReducer(queryReducer, initialQueryState, getInitialQueryState);
+  const [, setLocalStorageQuery] = useLocalStorageState<QueryState>(STORAGE_QUERYVIEW_DATA, {
+    storageTransformer: (state) => ({ ...state, queries: state.queries.map((query) => ({ ...query, result: "" })) })
+  });
 
   useEffect(() => {
-    const queryStateWithoutResults = {
-      ...queryState,
-      queries: queryState.queries.map((query) => ({ ...query, result: "" }))
-    };
-    setLocalStorageItem<QueryState>(STORAGE_QUERYVIEW_DATA, queryStateWithoutResults);
+    setLocalStorageQuery(queryState);
   }, [queryState]);
 
   return <QueryContext.Provider value={{ queryState, dispatchQuery }}>{children}</QueryContext.Provider>;
