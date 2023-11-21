@@ -25,11 +25,11 @@ const FilterPanel = (): React.ReactElement => {
     } else {
       updatedVisibility[objectType] = VisibilityStatus.Visible;
     }
-    setLocalStorageItem<string[]>(
+    setLocalStorageItem<ObjectType[]>(
       STORAGE_FILTER_HIDDENOBJECTS_KEY,
       Object.entries(updatedVisibility)
         .filter(([, value]) => value == VisibilityStatus.Hidden)
-        .map(([key]) => key)
+        .map(([key]) => key as ObjectType)
     );
     updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
   };
