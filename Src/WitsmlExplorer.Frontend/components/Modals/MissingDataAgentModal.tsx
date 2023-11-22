@@ -1,18 +1,19 @@
 import { Accordion, Autocomplete, Button, Icon, Typography } from "@equinor/eds-core-react";
 import { CloudUpload } from "@material-ui/icons";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import useExport from "../../hooks/useExport";
+import { useLocalStorageState } from "../../hooks/useLocalStorageState";
 import MissingDataJob, { MissingDataCheck } from "../../models/jobs/missingDataJob";
 import WellReference from "../../models/jobs/wellReference";
 import WellboreReference from "../../models/jobs/wellboreReference";
 import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import { Colors } from "../../styles/Colors";
-import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "../Constants";
+import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "../../tools/localStorageHelpers";
 import { StyledAccordionHeader } from "./LogComparisonModal";
 import { objectToProperties, selectAllProperties } from "./MissingDataAgentProperties";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
@@ -31,20 +32,14 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
     dispatchOperation,
     operationState: { colors }
   } = useContext(OperationContext);
-  const [missingDataChecks, setMissingDataChecks] = useState<MissingDataCheck[]>([{ id: uuid() } as MissingDataCheck]);
+  const [missingDataChecks, setMissingDataChecks] = useLocalStorageState<MissingDataCheck[]>(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, {
+    defaultValue: [{ id: uuid() } as MissingDataCheck],
+    valueVerifier: verifyObjectIsChecks,
+    storageTransformer: (checks) => checks.map((check) => ({ ...check, id: uuid() }))
+  });
   const [errors, setErrors] = useState<string[]>([]);
   const { exportData, exportOptions } = useExport();
   const inputFileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const checkString = localStorage.getItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY);
-    const checks = stringToChecks(checkString);
-    if (checks.length > 0) setMissingDataChecks(checks);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, JSON.stringify(missingDataChecks));
-  }, [missingDataChecks]);
 
   const stringToChecks = (checkString: string): MissingDataCheck[] => {
     try {
@@ -54,19 +49,6 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
     } catch (error) {
       return [];
     }
-  };
-
-  const verifyObjectIsChecks = (obj: any): boolean => {
-    if (!Array.isArray(obj)) return false;
-    return obj.every(
-      (check) =>
-        typeof check === "object" &&
-        (!("objectType" in check) || missingDataObjectOptions.includes(check.objectType)) &&
-        (!("properties" in check) ||
-          ("objectType" in check &&
-            Array.isArray(check.properties) &&
-            check.properties.every((property: any) => typeof property === "string" && objectToProperties[check.objectType].includes(property))))
-    );
   };
 
   const validateChecks = (): boolean => {
@@ -230,6 +212,19 @@ const MissingDataAgentModal = (props: MissingDataAgentModalProps): React.ReactEl
         </ModalContentLayout>
       }
     />
+  );
+};
+
+const verifyObjectIsChecks = (obj: any): boolean => {
+  if (!Array.isArray(obj)) return false;
+  return obj.every(
+    (check) =>
+      typeof check === "object" &&
+      (!("objectType" in check) || missingDataObjectOptions.includes(check.objectType)) &&
+      (!("properties" in check) ||
+        ("objectType" in check &&
+          Array.isArray(check.properties) &&
+          check.properties.every((property: any) => typeof property === "string" && objectToProperties[check.objectType].includes(property))))
   );
 };
 
