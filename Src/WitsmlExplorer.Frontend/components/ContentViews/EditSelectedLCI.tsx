@@ -41,7 +41,7 @@ const EditSelectedLCI = (props: EditSelectedLCIProps): React.ReactElement => {
   useEffect(() => {
     const minIndex = selectedLogCurveInfo?.[0]?.minIndex;
     const maxIndex = selectedLogCurveInfo?.[0]?.maxIndex;
-    const selectedMnemonics = selectedLogCurveInfo?.map((lci) => lci.mnemonic);
+    const selectedMnemonics = selectedLogCurveInfo?.map((lci) => lci.mnemonic)?.filter((mnemonic) => mnemonic !== selectedLog.indexCurve);
     setSelectedMnemonics(selectedMnemonics || []);
     setStartIndex(getParsedValue(String(minIndex)));
     setEndIndex(getParsedValue(String(maxIndex)));
