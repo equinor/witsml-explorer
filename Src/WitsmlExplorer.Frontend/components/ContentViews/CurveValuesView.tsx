@@ -20,8 +20,8 @@ import formatDateString from "../DateFormatter";
 import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
-import EditInterval from "./EditInterval";
 import EditNumber from "./EditNumber";
+import EditSelectedLCI from "./EditSelectedLCI";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
@@ -270,9 +270,9 @@ export const CurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          <EditInterval
+          <EditSelectedLCI
             disabled={autoRefresh}
-            key="editinterval"
+            key="editSelectedLCI"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
           />

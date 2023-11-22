@@ -4,7 +4,7 @@ import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import { TooltipLayout } from "../ContextMenus/OptionsContextMenu";
-import { StyledButton } from "./EditInterval";
+import { StyledButton } from "./EditSelectedLCI";
 
 interface EditNumberProps {
   label: string;

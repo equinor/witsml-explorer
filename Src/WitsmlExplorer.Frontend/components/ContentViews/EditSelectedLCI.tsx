@@ -15,13 +15,13 @@ import { Colors, colors, dark } from "../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
 
-interface EditIntervalProps {
+interface EditSelectedLCIProps {
   disabled?: boolean;
   overrideStartIndex?: string;
   overrideEndIndex?: string;
 }
 
-const EditInterval = (props: EditIntervalProps): React.ReactElement => {
+const EditSelectedLCI = (props: EditSelectedLCIProps): React.ReactElement => {
   const { disabled, overrideStartIndex, overrideEndIndex } = props;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
@@ -78,7 +78,7 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
     if (overrideEndIndex) setEndIndex(getParsedValue(overrideEndIndex));
   }, [overrideStartIndex, overrideEndIndex]);
 
-  const submitEditInterval = () => {
+  const submitLCI = () => {
     setIsEdited(false);
     const filteredLCI = logCurveInfo.filter((lci) => selectedMnemonics.includes(lci.mnemonic));
     const logCurveInfoWithUpdatedIndex = filteredLCI.map((logCurveInfo) => {
@@ -129,7 +129,7 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
   const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
   return (
-    <EditIntervalLayout colors={colors}>
+    <Layout colors={colors}>
       <Typography
         style={{
           color: `${colors.interactive.primaryResting}`
@@ -188,14 +188,14 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
           }
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitLCI} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
-    </EditIntervalLayout>
+    </Layout>
   );
 };
 
-const EditIntervalLayout = styled.div<{ colors: Colors }>`
+const Layout = styled.div<{ colors: Colors }>`
   display: flex;
   gap: 0.25rem;
   align-items: center;
@@ -249,4 +249,4 @@ export const StyledButton = styled(Button)`
   align-items: center;
   justify-content: center;
 `;
-export default EditInterval;
+export default EditSelectedLCI;
