@@ -142,20 +142,19 @@ export const CurveValuesView = (): React.ReactElement => {
   );
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
-    const isNewMnemonic = (mnemonic: string) => {
-      return columns.map((column) => column.property).indexOf(mnemonic) < 0;
-    };
-    const newColumns = curveSpecifications
-      .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
-      .map((curveSpecification) => {
-        return {
-          columnOf: curveSpecification,
-          property: curveSpecification.mnemonic,
-          label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-          type: getColumnType(curveSpecification)
-        };
-      });
-    setColumns([...columns, ...newColumns]);
+    const newColumns = curveSpecifications.map((curveSpecification) => {
+      return {
+        columnOf: curveSpecification,
+        property: curveSpecification.mnemonic,
+        label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
+        type: getColumnType(curveSpecification)
+      };
+    });
+    const prevMnemonics = columns.map((column) => column.property);
+    const newMnemonics = newColumns.map((column) => column.property);
+    if (prevMnemonics.length !== newMnemonics.length || prevMnemonics.some((value, index) => value !== newMnemonics[index])) {
+      setColumns(newColumns);
+    }
   };
 
   const getTableData = React.useCallback(() => {

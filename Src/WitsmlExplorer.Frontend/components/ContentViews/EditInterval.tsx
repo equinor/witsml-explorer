@@ -1,12 +1,16 @@
-import { Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
+import { Autocomplete, Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { CSSProperties, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
+import { ComponentType } from "../../models/componentType";
+import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
+import { truncateAbortHandler } from "../../services/apiClient";
+import ComponentService from "../../services/componentService";
 import { Colors, colors, dark } from "../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
@@ -22,12 +26,14 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
   const selectedLog = selectedObject as LogObject;
-
+  const [logCurveInfo, setLogCurveInfo] = useState<LogCurveInfo[]>([]);
+  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
   const [startIndex, setStartIndex] = useState<string>(null);
   const [endIndex, setEndIndex] = useState<string>(null);
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
+  const [isFetchingMnemonics, setIsFetchingMnemonics] = useState<boolean>(true);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -35,9 +41,37 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
   useEffect(() => {
     const minIndex = selectedLogCurveInfo?.[0]?.minIndex;
     const maxIndex = selectedLogCurveInfo?.[0]?.maxIndex;
+    const selectedMnemonics = selectedLogCurveInfo?.map((lci) => lci.mnemonic);
+    setSelectedMnemonics(selectedMnemonics || []);
     setStartIndex(getParsedValue(String(minIndex)));
     setEndIndex(getParsedValue(String(maxIndex)));
   }, []);
+
+  useEffect(() => {
+    setIsFetchingMnemonics(true);
+    if (selectedLog) {
+      const controller = new AbortController();
+
+      const getLogCurveInfo = async () => {
+        const logCurveInfo = await ComponentService.getComponents(
+          selectedLog.wellUid,
+          selectedLog.wellboreUid,
+          selectedLog.uid,
+          ComponentType.Mnemonic,
+          undefined,
+          controller.signal
+        );
+        setLogCurveInfo(logCurveInfo.slice(1)); // Skip the first one as it is the index curve
+        setIsFetchingMnemonics(false);
+      };
+
+      getLogCurveInfo().catch(truncateAbortHandler);
+
+      return () => {
+        controller.abort();
+      };
+    }
+  }, [selectedLog]);
 
   useEffect(() => {
     if (overrideStartIndex) setStartIndex(getParsedValue(overrideStartIndex));
@@ -46,7 +80,8 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
 
   const submitEditInterval = () => {
     setIsEdited(false);
-    const logCurveInfoWithUpdatedIndex = selectedLogCurveInfo.map((logCurveInfo) => {
+    const filteredLCI = logCurveInfo.filter((lci) => selectedMnemonics.includes(lci.mnemonic));
+    const logCurveInfoWithUpdatedIndex = filteredLCI.map((logCurveInfo) => {
       return {
         ...logCurveInfo,
         minIndex: formatIndexValue(startIndex),
@@ -84,6 +119,11 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
       setIndex(e.target.value);
       setIsEdited(true);
     }
+  };
+
+  const onMnemonicsChange = ({ selectedItems }: { selectedItems: string[] }) => {
+    setSelectedMnemonics(selectedItems);
+    setIsEdited(true);
   };
 
   const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
@@ -128,7 +168,27 @@ const EditInterval = (props: EditIntervalProps): React.ReactElement => {
           }}
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval} disabled={!isValidStart || !isValidEnd}>
+      <StartEndIndex>
+        <StyledLabel label="Mnemonics" />
+        <Autocomplete
+          id={"mnemonics"}
+          disabled={disabled || isFetchingMnemonics}
+          label={""}
+          multiple={true}
+          // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
+          variant={selectedMnemonics.length === 0 ? "error" : null}
+          options={logCurveInfo.map((lci) => lci.mnemonic)}
+          selectedOptions={selectedMnemonics}
+          onFocus={(e) => e.preventDefault()}
+          onOptionsChange={onMnemonicsChange}
+          style={
+            {
+              "--eds-input-background": colors.ui.backgroundDefault
+            } as CSSProperties
+          }
+        />
+      </StartEndIndex>
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditInterval} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </EditIntervalLayout>
@@ -149,7 +209,7 @@ const StartEndIndex = styled.div`
 `;
 
 const StyledLabel = styled(Label)`
-  width: 5rem;
+  white-space: nowrap;
   align-items: center;
   font-style: italic;
 `;
