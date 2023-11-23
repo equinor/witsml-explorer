@@ -6,6 +6,8 @@ export interface Indexes {
   targetStart: string | number;
   sourceEnd: string | number;
   targetEnd: string | number;
+  sourceUnit: string;
+  targetUnit: string;
 }
 
 export const missingIndex = "-";
@@ -16,7 +18,9 @@ function logCurveInfoToIndexes(sourceLogCurveInfo?: LogCurveInfo, targetLogCurve
     sourceStart: getStartIndex(sourceLogCurveInfo),
     targetStart: getStartIndex(targetLogCurveInfo),
     sourceEnd: getEndIndex(sourceLogCurveInfo),
-    targetEnd: getEndIndex(targetLogCurveInfo)
+    targetEnd: getEndIndex(targetLogCurveInfo),
+    sourceUnit: sourceLogCurveInfo?.unit,
+    targetUnit: targetLogCurveInfo?.unit
   };
 }
 
@@ -51,7 +55,8 @@ function areMismatched(sourceLogCurveInfo: LogCurveInfo, targetLogCurveInfo: Log
     sourceLogCurveInfo.minDateTimeIndex != targetLogCurveInfo.minDateTimeIndex ||
     sourceLogCurveInfo.maxDateTimeIndex != targetLogCurveInfo.maxDateTimeIndex ||
     sourceLogCurveInfo.minDepthIndex != targetLogCurveInfo.minDepthIndex ||
-    sourceLogCurveInfo.maxDepthIndex != targetLogCurveInfo.maxDepthIndex
+    sourceLogCurveInfo.maxDepthIndex != targetLogCurveInfo.maxDepthIndex ||
+    sourceLogCurveInfo.unit != targetLogCurveInfo.unit
   );
 }
 
