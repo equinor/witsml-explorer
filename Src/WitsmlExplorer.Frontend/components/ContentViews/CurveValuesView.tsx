@@ -21,7 +21,7 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
 import EditNumber from "./EditNumber";
-import EditSelectedLCI from "./EditSelectedLCI";
+import EditSelectedLogCurveInfo from "./EditSelectedLogCurveInfo";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
@@ -270,9 +270,9 @@ export const CurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          <EditSelectedLCI
+          <EditSelectedLogCurveInfo
             disabled={autoRefresh}
-            key="editSelectedLCI"
+            key="editSelectedLogCurveInfo"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
           />

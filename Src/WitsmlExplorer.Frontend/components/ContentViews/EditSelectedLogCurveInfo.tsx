@@ -15,13 +15,13 @@ import { Colors, colors, dark } from "../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
 
-interface EditSelectedLCIProps {
+interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;
   overrideStartIndex?: string;
   overrideEndIndex?: string;
 }
 
-const EditSelectedLCI = (props: EditSelectedLCIProps): React.ReactElement => {
+const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.ReactElement => {
   const { disabled, overrideStartIndex, overrideEndIndex } = props;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
@@ -78,10 +78,10 @@ const EditSelectedLCI = (props: EditSelectedLCIProps): React.ReactElement => {
     if (overrideEndIndex) setEndIndex(getParsedValue(overrideEndIndex));
   }, [overrideStartIndex, overrideEndIndex]);
 
-  const submitLCI = () => {
+  const submitLogCurveInfo = () => {
     setIsEdited(false);
-    const filteredLCI = logCurveInfo.filter((lci) => selectedMnemonics.includes(lci.mnemonic));
-    const logCurveInfoWithUpdatedIndex = filteredLCI.map((logCurveInfo) => {
+    const filteredLogCurveInfo = logCurveInfo.filter((lci) => selectedMnemonics.includes(lci.mnemonic));
+    const logCurveInfoWithUpdatedIndex = filteredLogCurveInfo.map((logCurveInfo) => {
       return {
         ...logCurveInfo,
         minIndex: formatIndexValue(startIndex),
@@ -188,7 +188,7 @@ const EditSelectedLCI = (props: EditSelectedLCIProps): React.ReactElement => {
           }
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitLCI} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
+      <StyledButton variant={"ghost"} color={"primary"} onClick={submitLogCurveInfo} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </Layout>
@@ -249,4 +249,4 @@ export const StyledButton = styled(Button)`
   align-items: center;
   justify-content: center;
 `;
-export default EditSelectedLCI;
+export default EditSelectedLogCurveInfo;
