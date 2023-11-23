@@ -20,8 +20,8 @@ import formatDateString from "../DateFormatter";
 import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
-import EditInterval from "./EditInterval";
 import EditNumber from "./EditNumber";
+import EditSelectedLogCurveInfo from "./EditSelectedLogCurveInfo";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
@@ -142,20 +142,19 @@ export const CurveValuesView = (): React.ReactElement => {
   );
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
-    const isNewMnemonic = (mnemonic: string) => {
-      return columns.map((column) => column.property).indexOf(mnemonic) < 0;
-    };
-    const newColumns = curveSpecifications
-      .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
-      .map((curveSpecification) => {
-        return {
-          columnOf: curveSpecification,
-          property: curveSpecification.mnemonic,
-          label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-          type: getColumnType(curveSpecification)
-        };
-      });
-    setColumns([...columns, ...newColumns]);
+    const newColumns = curveSpecifications.map((curveSpecification) => {
+      return {
+        columnOf: curveSpecification,
+        property: curveSpecification.mnemonic,
+        label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
+        type: getColumnType(curveSpecification)
+      };
+    });
+    const prevMnemonics = columns.map((column) => column.property);
+    const newMnemonics = newColumns.map((column) => column.property);
+    if (prevMnemonics.length !== newMnemonics.length || prevMnemonics.some((value, index) => value !== newMnemonics[index])) {
+      setColumns(newColumns);
+    }
   };
 
   const getTableData = React.useCallback(() => {
@@ -271,9 +270,9 @@ export const CurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          <EditInterval
+          <EditSelectedLogCurveInfo
             disabled={autoRefresh}
-            key="editinterval"
+            key="editSelectedLogCurveInfo"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
           />
