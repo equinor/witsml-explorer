@@ -14,14 +14,14 @@ using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    public class RenameMnemonicWorkerTests
+    public class ModifyLogCurveInfoWorkerTests
     {
         private readonly ModifyLogCurveInfoWorker _worker;
         private const string WellUid = "";
         private const string WellboreUid = "";
         private const string LogUid = "";
 
-        public RenameMnemonicWorkerTests()
+        public ModifyLogCurveInfoWorkerTests()
         {
             IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
@@ -34,10 +34,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         [Fact(Skip = "Should only be run manually")]
         public async void ValidInputRenameMnemonicShouldReturnSuccess()
         {
-            ModifyLogCurveInfoJob job = CreateJobTemplate() with
-            {
-                LogCurveInfo = new LogCurveInfo() { Mnemonic = ""}
-            };
+            ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = "" } };
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
@@ -46,15 +43,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
 
         private static ModifyLogCurveInfoJob CreateJobTemplate()
         {
-            return new ModifyLogCurveInfoJob
-            {
-                LogReference = new ObjectReference
-                {
-                    WellUid = WellUid,
-                    WellboreUid = WellboreUid,
-                    Uid = LogUid
-                }
-            };
+            return new ModifyLogCurveInfoJob { LogReference = new ObjectReference { WellUid = WellUid, WellboreUid = WellboreUid, Uid = LogUid } };
         }
     }
 }

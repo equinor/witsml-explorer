@@ -20,6 +20,7 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
   const { logCurveInfo, dispatchOperation, selectedLog } = props;
   const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfo>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isIndexCurve = logCurveInfo?.mnemonic === selectedLog?.indexCurve;
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -51,22 +52,39 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 error={editableLogCurveInfo.mnemonic.length === 0}
                 helperText={editableLogCurveInfo.mnemonic.length === 0 ? "A logCurveInfo mnemonic cannot be empty. Size must be 1 to 64 characters." : ""}
                 fullWidth
+                disabled={isIndexCurve}
                 inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, mnemonic: e.target.value })}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    mnemonic: e.target.value
+                  })
+                }
               />
               <TextField
                 id="unit"
                 label="unit"
                 defaultValue={editableLogCurveInfo.unit}
                 error={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0}
-                helperText={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0 ? "A unit cannot be empty." : ""}
-                onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, unit: e.target.value })}
+                helperText={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0 ? "A unit cannot be empty. Size must be 1 to 64 characters." : ""}
+                inputProps={{ minLength: 1, maxLength: 64 }}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    unit: e.target.value
+                  })
+                }
               />
               <TextField
                 id="curveDescription"
                 label="curveDescription"
                 defaultValue={editableLogCurveInfo.curveDescription}
-                onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, curveDescription: e.target.value })}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    curveDescription: e.target.value
+                  })
+                }
               />
               <TextField disabled id="typeLogData" label="typeLogData" defaultValue={editableLogCurveInfo.typeLogData} fullWidth />
               <TextField disabled id="mnemAlias" label="mnemAlias" defaultValue={editableLogCurveInfo.mnemAlias} fullWidth />

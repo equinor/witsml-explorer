@@ -96,9 +96,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(updatedLogs);
-            Assert.Equal(expectedMnemonic, updatedLogs.First().Logs.First().LogCurveInfo.First().Mnemonic);
-            Assert.Equal(expectedUnit, updatedLogs.First().Logs.First().LogCurveInfo.First().Unit);
-            Assert.Equal(expectedCurveDescription, updatedLogs.First().Logs.First().LogCurveInfo.First().CurveDescription);
+            Assert.Equal(expectedMnemonic, updatedLogs.FirstOrDefault()?.Logs.FirstOrDefault()?.LogCurveInfo.FirstOrDefault()?.Mnemonic);
+            Assert.Equal(expectedUnit, updatedLogs.FirstOrDefault()?.Logs.FirstOrDefault()?.LogCurveInfo.FirstOrDefault()?.Unit);
+            Assert.Equal(expectedCurveDescription, updatedLogs.FirstOrDefault()?.Logs.FirstOrDefault()?.LogCurveInfo.FirstOrDefault()?.CurveDescription);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.Single(updatedLogs);
-            Assert.Equal(expectedMnemonic, updatedLogs.First().Logs.First().LogCurveInfo.First().Mnemonic);
+            Assert.Equal(expectedMnemonic, updatedLogs.FirstOrDefault()?.Logs.FirstOrDefault()?.LogCurveInfo.FirstOrDefault()?.Mnemonic);
         }
 
         private WitsmlLogs GetTestWitsmlLogs()

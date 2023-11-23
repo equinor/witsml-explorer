@@ -8,5 +8,4 @@ public static class CommonConstants
     public const int DefaultNumberOfRoundedPlaces = 3;
     public const string DataSeparator = ",";
     public const string NewLine = "\n";
-    public const string DefaultUnit = "unitless";
 }

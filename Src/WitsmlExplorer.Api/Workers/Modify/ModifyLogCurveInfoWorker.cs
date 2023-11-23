@@ -53,6 +53,12 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             var originalLogCurveInfoMnemonic = originalLogCurveInfo.Mnemonic;
+            var isLogCurveInfoMnemonicUpdated = originalLogCurveInfoMnemonic != job.LogCurveInfo.Mnemonic;
+            if (logHeader.IndexCurve.Value == originalLogCurveInfoMnemonic && isLogCurveInfoMnemonicUpdated)
+            {
+                throw new InvalidOperationException($"IndexCurve Mnemonic: {originalLogCurveInfoMnemonic} cannot be modified.");
+            }
+
             WitsmlLogs modifyLogCurveInfoQuery = GetModifyLogCurveInfoQuery(job, originalLogCurveInfo);
             QueryResult modifyLogCurveInfoResult = await client.UpdateInStoreAsync(modifyLogCurveInfoQuery);
             if (modifyLogCurveInfoResult.IsSuccessful)
@@ -66,11 +72,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, modifyLogCurveInfoResult.Reason), null);
             }
 
-            if (originalLogCurveInfoMnemonic != job.LogCurveInfo.Mnemonic)
+            if (isLogCurveInfoMnemonicUpdated)
             {
                 var originalMnemonics = GetMnemonics(logHeader, originalLogCurveInfoMnemonic);
-                var updatedMnemonics = string.Join(",", GetMnemonics(logHeader, job.LogCurveInfo.Mnemonic));
-                var updatedUnits = string.Join(",", GetUnits(logHeader, job.LogCurveInfo.Unit));
+                var updatedMnemonics = string.Join(CommonConstants.DataSeparator, GetMnemonics(logHeader, job.LogCurveInfo.Mnemonic));
+                var updatedUnits = string.Join(CommonConstants.DataSeparator, GetUnits(logHeader, job.LogCurveInfo.Unit));
                 WitsmlLog modifyLogData = GetModifyLogDataQuery(job, updatedMnemonics, updatedUnits);
 
                 await using LogDataReader logDataReader = new(client, logHeader, originalMnemonics, Logger);
@@ -172,7 +178,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         private static List<string> GetUnits(WitsmlLog log, string newUnit)
         {
-            var indexCurveUnit = log.LogCurveInfo.FirstOrDefault(x => x.Mnemonic == log.IndexCurve.Value)?.Unit ?? CommonConstants.DefaultUnit;
+            var indexCurveUnit = log.LogCurveInfo.FirstOrDefault(x => x.Mnemonic == log.IndexCurve.Value)?.Unit;
             return new List<string> { indexCurveUnit, newUnit };
         }
 
