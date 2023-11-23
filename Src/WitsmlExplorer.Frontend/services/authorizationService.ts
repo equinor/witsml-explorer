@@ -3,6 +3,7 @@ import { UpdateServerAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
+import { STORAGE_KEEP_SERVER_CREDENTIALS, getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
 import { ApiClient, throwError } from "./apiClient";
 import { AuthorizationClient } from "./authorizationClient";
 
@@ -87,25 +88,16 @@ class AuthorizationService {
   }
 
   public getKeepLoggedInToServer(serverUrl: string): boolean {
-    try {
-      return localStorage.getItem(serverUrl) == "keep";
-    } catch {
-      // ignore unavailable local storage
-    }
-    return false;
+    return getLocalStorageItem<string>(serverUrl + STORAGE_KEEP_SERVER_CREDENTIALS) == "keep";
   }
 
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlAuth
   public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
-    try {
-      if (keep) {
-        localStorage.setItem(credentials.server.url, "keep");
-      } else {
-        localStorage.removeItem(credentials.server.url);
-      }
-    } catch {
-      // ignore unavailable local storage
+    if (keep) {
+      setLocalStorageItem<string>(credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS, "keep");
+    } else {
+      removeLocalStorageItem(credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS);
     }
     const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
     if (!response.ok) {

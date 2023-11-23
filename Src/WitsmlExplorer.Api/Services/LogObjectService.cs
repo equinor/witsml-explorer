@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+using Microsoft.IdentityModel.Tokens;
+
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
@@ -18,10 +20,10 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface ILogObjectService
     {
-        Task<IEnumerable<LogObject>> GetLogs(string wellUid, string wellboreUid);
+        Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
-        Task<IEnumerable<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
+        Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
         Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end);
     }
 
@@ -30,7 +32,7 @@ namespace WitsmlExplorer.Api.Services
     {
         public LogObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<IEnumerable<LogObject>> GetLogs(string wellUid, string wellboreUid)
+        public async Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {
             WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
             WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.HeaderOnly));
@@ -58,7 +60,7 @@ namespace WitsmlExplorer.Api.Services
                         DTimCreation = log.CommonData.DTimCreation,
                         DTimLastChange = log.CommonData.DTimLastChange,
                     }
-                }).OrderBy(log => log.Name);
+                }).OrderBy(log => log.Name).ToList();
         }
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid)
@@ -113,7 +115,7 @@ namespace WitsmlExplorer.Api.Services
             return result.Logs.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid)
+        public async Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid)
         {
             WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
 
@@ -139,7 +141,7 @@ namespace WitsmlExplorer.Api.Services
                         Count = a.Count,
                         DoubleValues = a.DoubleValues
                     }).ToList(),
-                });
+                }).ToList();
         }
 
         public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end)
@@ -162,12 +164,13 @@ namespace WitsmlExplorer.Api.Services
 
             WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
             WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            if (!witsmlLogs.Logs.Any() || witsmlLogs.Logs.First().LogData == null || !witsmlLogs.Logs.First().LogData.Data.Any())
+
+            WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
+
+            if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
             {
                 return new LogData();
             }
-
-            WitsmlLog witsmlLog = witsmlLogs.Logs.First();
 
             if (!startIndexIsInclusive)
             {
@@ -186,32 +189,24 @@ namespace WitsmlExplorer.Api.Services
                 StartIndex = Index.Start(witsmlLog).GetValueAsString(),
                 EndIndex = Index.End(witsmlLog).GetValueAsString(),
                 CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
-                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }),
+                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }).ToList(),
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
 
-        private static IEnumerable<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
+        private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
             List<Dictionary<string, LogDataValue>> result = new();
             string[] mnemonics = logData.MnemonicList.Split(",");
             foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
-                Dictionary<string, LogDataValue> data = new();
-                var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value });
-                if (keyValuePairs.Count() > mnemonics.Length)
+                var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value }).ToList();
+                if (keyValuePairs.Count > mnemonics.Length)
                 {
-                    throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count()}.", (int)HttpStatusCode.InternalServerError);
+                    throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count}.", (int)HttpStatusCode.InternalServerError);
                 }
-                foreach (var keyValuePair in keyValuePairs)
-                {
-                    if (string.IsNullOrEmpty(keyValuePair.value))
-                    {
-                        continue;
-                    }
 
-                    data.Add(mnemonics[keyValuePair.index], new LogDataValue(keyValuePair.value));
-                }
+                var data = keyValuePairs.Where(keyValuePair => !string.IsNullOrEmpty(keyValuePair.value)).ToDictionary(keyValuePair => mnemonics[keyValuePair.index], keyValuePair => new LogDataValue(keyValuePair.value));
                 result.Add(data);
             }
 

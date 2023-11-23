@@ -11,14 +11,14 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IChangeLogService
     {
-        Task<IEnumerable<ChangeLog>> GetChangeLogs(string wellUid, string wellboreUid);
+        Task<ICollection<ChangeLog>> GetChangeLogs(string wellUid, string wellboreUid);
     }
 
     public class ChangeLogService : WitsmlService, IChangeLogService
     {
         public ChangeLogService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<IEnumerable<ChangeLog>> GetChangeLogs(string wellUid, string wellboreUid)
+        public async Task<ICollection<ChangeLog>> GetChangeLogs(string wellUid, string wellboreUid)
         {
             WitsmlChangeLogs witsmlChangeLog = new WitsmlChangeLog()
             {
@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Services
                 }
             }.AsSingletonWitsmlList();
             WitsmlChangeLogs result = await _witsmlClient.GetFromStoreAsync(witsmlChangeLog, new OptionsIn(ReturnElements.Requested));
-            return result.ChangeLogs.Select(WitsmlToChangeLog);
+            return result.ChangeLogs.Select(WitsmlToChangeLog).ToList();
         }
 
         private static ChangeLog WitsmlToChangeLog(WitsmlChangeLog changeLog)

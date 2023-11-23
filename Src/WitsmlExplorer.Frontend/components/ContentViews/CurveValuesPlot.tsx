@@ -9,7 +9,15 @@ import formatDateString from "../DateFormatter";
 import { ContentViewDimensionsContext } from "../PageLayout";
 import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
 
-const COLUMN_WIDTH = 125;
+const COLUMN_WIDTH = 135;
+const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
+const TOOLTIP_OFFSET_Y = 30;
+
+interface ControlledTooltipProps {
+  visible: boolean;
+  position: { x: number; y: number };
+  content: string;
+}
 
 interface CurveValuesPlotProps {
   data: any[];
@@ -28,12 +36,16 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
   const selectedLabels = useRef<Record<string, boolean>>(null);
   const scrollIndex = useRef<number>(0);
   const horizontalZoom = useRef<[number, number]>([0, 100]);
+  const verticalZoom = useRef<[number, number]>([0, 100]);
   const [maxColumns, setMaxColumns] = useState<number>(15);
   const { width: contentViewWidth } = useContext(ContentViewDimensionsContext);
+  const extraWidth = getExtraWidth(data, columns, dateTimeFormat);
+  const width = Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + extraWidth;
+  const [controlledTooltip, setControlledTooltip] = useState<ControlledTooltipProps>({ visible: false } as ControlledTooltipProps);
 
   useEffect(() => {
     if (contentViewWidth) {
-      const newMaxColumns = Math.floor((contentViewWidth - 100) / COLUMN_WIDTH);
+      const newMaxColumns = Math.floor((contentViewWidth - extraWidth) / COLUMN_WIDTH);
       if (newMaxColumns !== maxColumns) {
         setMaxColumns(newMaxColumns);
       }
@@ -51,8 +63,24 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
     maxColumns,
     selectedLabels.current,
     scrollIndex.current,
-    horizontalZoom.current
+    horizontalZoom.current,
+    verticalZoom.current
   );
+
+  const onMouseOver = (e: any) => {
+    if (e.targetType !== "axisLabel" || e.componentType !== "xAxis" || controlledTooltip?.visible) return;
+    const mnemonic = columns[Math.floor(parseInt(e.value)) + 1].label;
+    setControlledTooltip({
+      visible: true,
+      position: { x: e.event.offsetX, y: e.event.offsetY + TOOLTIP_OFFSET_Y },
+      content: mnemonic
+    });
+  };
+
+  const onMouseOut = (e: any) => {
+    if (e.targetType !== "axisLabel" || e.componentType !== "xAxis" || !controlledTooltip?.visible) return;
+    setControlledTooltip({ ...controlledTooltip, visible: false });
+  };
 
   const onLegendChange = (params: { name: string; selected: Record<string, boolean> }) => {
     const shouldShowAll = Object.values(params.selected).every((s) => s === false);
@@ -79,29 +107,58 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
     scrollIndex.current = params.scrollDataIndex;
   };
 
-  const onDataZoom = (params: { dataZoomId: string; start: number; end: number }) => {
+  const onDataZoom = (params: { dataZoomId: string; start: number; end: number; batch: any }) => {
     if (params.dataZoomId == "horizontalZoom") {
       horizontalZoom.current = [params.start, params.end];
+    } else if (params.dataZoomId == "verticalZoom") {
+      verticalZoom.current = [params.start, params.end];
+    } else if (params.batch?.[0]?.dataZoomId == "verticalZoomInside") {
+      verticalZoom.current = [params.batch[0].start, params.batch[0].end];
     }
   };
 
   const handleEvents = {
     legendselectchanged: onLegendChange,
     legendscroll: onLegendScroll,
-    datazoom: onDataZoom
+    datazoom: onDataZoom,
+    mouseover: onMouseOver,
+    mouseout: onMouseOut
   };
 
   return (
-    <ReactEcharts
-      option={chartOption}
-      onEvents={handleEvents}
-      onChartReady={(c) => (chart.current = c)}
-      style={{
-        height: "100%",
-        width: "95%",
-        marginTop: "0.5rem"
-      }}
-    />
+    <div style={{ position: "relative", height: "100%", marginTop: "0.5rem" }}>
+      <ReactEcharts
+        option={chartOption}
+        onEvents={handleEvents}
+        onChartReady={(c) => (chart.current = c)}
+        style={{
+          height: "100%",
+          minWidth: `${width}px`,
+          maxWidth: `${width}px`
+        }}
+      />
+      <div
+        style={{
+          // The style is added inline as using styled-components caused "flash of unstyled content"
+          position: "absolute",
+          maxWidth: "50%",
+          backgroundColor: "#fff",
+          color: "#333",
+          padding: "5px 15px",
+          borderRadius: "2px",
+          boxShadow: "0 0 2px #aaa",
+          transition: "opacity 0.1s ease-in-out",
+          opacity: controlledTooltip.visible ? 1 : 0,
+          transformOrigin: "bottom",
+          top: controlledTooltip.position ? `${controlledTooltip.position.y}px` : "0px",
+          left: controlledTooltip.position ? `${controlledTooltip.position.x}px` : "0px",
+          border: "1px solid black",
+          transform: "translate(-50%, 0)"
+        }}
+      >
+        {controlledTooltip.content}
+      </div>
+    </div>
   );
 });
 CurveValuesPlot.displayName = "CurveValuesPlot";
@@ -117,10 +174,12 @@ const getChartOption = (
   maxColumns: number,
   selectedLabels: Record<string, boolean>,
   scrollIndex: number,
-  horizontalZoom: [number, number]
+  horizontalZoom: [number, number],
+  verticalZoom: [number, number]
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
+  const LABEL_MAXIMUM_LENGHT = 13;
   if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
@@ -173,7 +232,8 @@ const getChartOption = (
     },
     xAxis: {
       type: "value",
-      min: (value: { min: number; max: number }) => value.min - VALUE_OFFSET_FROM_COLUMN,
+      position: "top",
+      min: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min - VALUE_OFFSET_FROM_COLUMN : 0),
       max: (value: { min: number; max: number }) => (value.max - value.min < 1 ? value.min + 1 - VALUE_OFFSET_FROM_COLUMN : dataColumns.length),
       minInterval: 1,
       maxInterval: 1,
@@ -182,6 +242,7 @@ const getChartOption = (
           color: colors.text.staticIconsDefault
         }
       },
+      triggerEvent: true,
       axisLabel: {
         show: true,
         padding: [0, -110, 0, 0],
@@ -195,7 +256,31 @@ const getChartOption = (
           if (index >= dataColumns.length) return "";
           const curve = dataColumns[index].columnOf.mnemonic;
           const minMaxValue = minMaxValues.find((v) => v.curve == curve);
-          return `${curve}\n${+minMaxValue.minValue?.toFixed(3)} - ${+minMaxValue.maxValue?.toFixed(3)}`;
+          const title = curve.length > LABEL_MAXIMUM_LENGHT ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..." : curve;
+          const result = "{title|" + title + "}\n" + "{hr|} \n" + " {minValue|" + +minMaxValue.minValue?.toFixed(3) + "}{maxValue|" + +minMaxValue.maxValue?.toFixed(3) + "}";
+          return result;
+        },
+        rich: {
+          title: {
+            width: MNEMONIC_LABEL_WIDTH,
+            align: "center",
+            padding: [0, 0, 0, 0],
+            fontWeight: "bold"
+          },
+          hr: {
+            width: "100%",
+            height: 0
+          },
+          minValue: {
+            width: 40,
+            align: "left",
+            fontWeight: "bold"
+          },
+          maxValue: {
+            width: 40,
+            align: "right",
+            fontWeight: "bold"
+          }
         }
       }
     },
@@ -215,17 +300,21 @@ const getChartOption = (
       autoRefresh
         ? null
         : {
-            orient: "vertical",
-            filterMode: "empty",
-            type: "inside"
-          },
-      autoRefresh
-        ? null
-        : {
+            id: "verticalZoom",
+            start: verticalZoom[0],
+            end: verticalZoom[1],
             orient: "vertical",
             filterMode: "empty",
             type: "slider",
             labelFormatter: () => ""
+          },
+      autoRefresh
+        ? null
+        : {
+            id: "verticalZoomInside",
+            orient: "vertical",
+            filterMode: "empty",
+            type: "inside"
           },
       maxColumns >= dataColumns.length
         ? null
@@ -269,4 +358,15 @@ const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
 
 const depthFormatter = (params: number, indexUnit: string) => {
   return `${params.toFixed(2)} ${indexUnit}`;
+};
+
+const getExtraWidth = (data: any[], columns: ExportableContentTableColumn<CurveSpecification>[], dateTimeFormat: DateTimeFormat) => {
+  // Estimate the width of the x-axis labels and the grid margin (everything in content view except for the data columns itself)
+  const isTimeLog = columns[0].type == ContentType.DateTime;
+  const indexUnit = columns[0].columnOf.unit;
+  const indexCurve = columns[0].columnOf.mnemonic;
+  const maxIndex = data.slice(-1)[0][indexCurve];
+  const dummy_time_index = 1649415600000;
+  const formattedText = isTimeLog ? timeFormatter(dummy_time_index, dateTimeFormat) : depthFormatter(maxIndex, indexUnit);
+  return formattedText.length * 6.3 + 82;
 };

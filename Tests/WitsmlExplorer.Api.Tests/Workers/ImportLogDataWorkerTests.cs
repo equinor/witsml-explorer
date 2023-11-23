@@ -10,6 +10,7 @@ using Serilog;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -144,7 +145,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             List<string> mnemonics = new() { "Depth", "mnemo1", "mnemo2" };
             List<string> units = new() { "m", "unitless", "unitless" };
-            List<List<string>> dataRows = new()
+            ICollection<ICollection<string>> dataRows = new List<ICollection<string>>
             {
                 new List<string> { "1", "something", "something2" },
                 new List<string> { "2", "something", "something2" },
@@ -168,7 +169,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             List<string> mnemonics = new() { "Time", "mnemo1", "mnemo2" };
             List<string> units = new() { "date time", "unitless", "unitless" };
-            List<List<string>> dataRows = new()
+            ICollection<ICollection<string>> dataRows = new List<ICollection<string>>
             {
                 new List<string> { "2018-01-21T12:24:30.000Z", "something", "something2" },
                 new List<string> { "2019-01-21T12:24:30.000Z", "something", "something2" },

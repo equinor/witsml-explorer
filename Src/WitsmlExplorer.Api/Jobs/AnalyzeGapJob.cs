@@ -17,7 +17,7 @@ public record AnalyzeGapJob : Job
     /// <summary>
     /// Array of mnemonics names
     /// </summary>
-    public IEnumerable<string> Mnemonics { get; init; }
+    public ICollection<string> Mnemonics { get; init; }
 
     /// <summary>
     /// Size of the GAP for depth
