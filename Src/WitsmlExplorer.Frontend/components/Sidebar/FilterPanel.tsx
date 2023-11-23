@@ -8,7 +8,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
-import { STORAGE_FILTER_HIDDENOBJECTS_KEY } from "../Constants";
+import { STORAGE_FILTER_HIDDENOBJECTS_KEY, setLocalStorageItem } from "../../tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -25,12 +25,11 @@ const FilterPanel = (): React.ReactElement => {
     } else {
       updatedVisibility[objectType] = VisibilityStatus.Visible;
     }
-    localStorage.setItem(
+    setLocalStorageItem<ObjectType[]>(
       STORAGE_FILTER_HIDDENOBJECTS_KEY,
       Object.entries(updatedVisibility)
         .filter(([, value]) => value == VisibilityStatus.Hidden)
-        .map(([key]) => key)
-        .join(",")
+        .map(([key]) => key as ObjectType)
     );
     updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
   };
