@@ -17,5 +17,7 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure SensorOffset { get; init; }
         public string MnemAlias { get; init; }
         public List<AxisDefinition> AxisDefinitions { get; init; }
+        public string CurveDescription { get; init; }
+        public string TypeLogData { get; init; }
     }
 }
