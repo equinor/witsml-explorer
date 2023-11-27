@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Models
         public string ObjectiveBha { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlBhaRuns ToWitsml()
         {
             return new WitsmlBhaRun
             {

@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Models
         public string YearEntService { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlRigs ToWitsml()
         {
             return new WitsmlRig
             {

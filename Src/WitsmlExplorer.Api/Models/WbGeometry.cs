@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure DepthWaterMean { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlWbGeometrys ToWitsml()
         {
             return new WitsmlWbGeometry
             {

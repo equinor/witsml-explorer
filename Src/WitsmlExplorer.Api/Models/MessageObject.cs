@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string TypeMessage { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlMessages ToWitsml()
         {
             return new WitsmlMessage
             {

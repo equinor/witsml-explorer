@@ -20,7 +20,7 @@ namespace WitsmlExplorer.Api.Models
         public List<MudLogGeologyInterval> GeologyInterval { get; set; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlMudLogs ToWitsml()
         {
             return new WitsmlMudLog
             {

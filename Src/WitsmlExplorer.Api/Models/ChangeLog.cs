@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string LastChangeType { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlChangeLogs ToWitsml()
         {
             return new WitsmlChangeLog
             {

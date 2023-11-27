@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Models
             return witsmlLog?.Direction?.ToLowerInvariant() ?? WitsmlLog.WITSML_DIRECTION_INCREASING;
         }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlLogs ToWitsml()
         {
             WitsmlLog log = new()
             {

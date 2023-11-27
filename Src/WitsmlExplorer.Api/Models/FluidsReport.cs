@@ -18,7 +18,7 @@ namespace WitsmlExplorer.Api.Models
         public List<Fluid> Fluids { get; set; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlFluidsReports ToWitsml()
         {
             return new WitsmlFluidsReport
             {

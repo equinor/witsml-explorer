@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Models
         public string Description { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlFormationMarkers ToWitsml()
         {
             return new WitsmlFormationMarker
             {

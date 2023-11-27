@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Models
         public string ServiceCompany { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlTrajectories ToWitsml()
         {
             return new WitsmlTrajectory
             {

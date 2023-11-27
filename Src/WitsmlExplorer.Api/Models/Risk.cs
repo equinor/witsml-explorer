@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Models
         public string Mitigation { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlRisks ToWitsml()
         {
             return new WitsmlRisk
             {

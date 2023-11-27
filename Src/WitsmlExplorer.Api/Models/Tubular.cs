@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Models
         public string TypeTubularAssy { get; init; }
         public CommonData CommonData { get; init; }
 
-        public override IWitsmlQueryType ToWitsml()
+        public override WitsmlTubulars ToWitsml()
         {
             return new WitsmlTubular
             {
