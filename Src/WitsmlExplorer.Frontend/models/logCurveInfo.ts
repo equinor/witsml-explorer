@@ -11,6 +11,8 @@ export default interface LogCurveInfo {
   classWitsml: string;
   unit: string;
   sensorOffset: Measure;
+  curveDescription: string;
+  typeLogData: string;
   mnemAlias: string;
   axisDefinitions: AxisDefinition[];
 }

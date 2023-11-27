@@ -17,10 +17,11 @@ import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE, WITSML_INDEX_TYPE_DATE_TIME, WITSM
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
 import formatDateString from "../DateFormatter";
+import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
 import { CurveValuesPlot } from "./CurveValuesPlot";
-import EditInterval from "./EditInterval";
 import EditNumber from "./EditNumber";
+import EditSelectedLogCurveInfo from "./EditSelectedLogCurveInfo";
 import { LogCurveInfoRow } from "./LogCurveInfoListView";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType, ExportableContentTableColumn, Order } from "./table";
 
@@ -29,6 +30,7 @@ const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines
 const TIME_INDEX_OFFSET = 30536000; // offset from current end index that should ensure that any new data is captured (in seconds).
 const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should ensure that any new data is captured.
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
+const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -51,7 +53,8 @@ export const CurveValuesView = (): React.ReactElement => {
   const [refreshDelay, setRefreshDelay] = useState<number>(DEFAULT_REFRESH_DELAY);
   const [refreshFlag, setRefreshFlag] = useState<boolean>(null);
   const controller = useRef(new AbortController());
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
+  const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
   const selectedLog = selectedObject as LogObject;
   const { exportData, exportOptions } = useExport();
 
@@ -63,7 +66,7 @@ export const CurveValuesView = (): React.ReactElement => {
       const startIndex = getCurrentMaxIndex();
       const endIndex = getOffsetIndex(startIndex, TIME_INDEX_OFFSET, DEPTH_INDEX_OFFSET);
       getLogData(startIndex, endIndex).then(() => {
-        timer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * MILLIS_IN_SECOND);
+        refreshDelayTimer.current = setTimeout(() => setRefreshFlag((flag) => !flag), refreshDelay * MILLIS_IN_SECOND);
       });
     }
   }, [refreshFlag]);
@@ -71,12 +74,30 @@ export const CurveValuesView = (): React.ReactElement => {
   useEffect(() => {
     if (autoRefresh) {
       setRefreshFlag((flag) => !flag);
+      stopAutoRefreshTimer.current = setTimeout(stopAutoRefreshTimerCallback, AUTO_REFRESH_TIMEOUT * MILLIS_IN_SECOND * SECONDS_IN_MINUTE); // Stop auto refresh after 5 minutes to reduce load on the server
     }
 
     return () => {
-      if (timer.current) clearTimeout(timer.current);
+      if (refreshDelayTimer.current) clearTimeout(refreshDelayTimer.current);
+      if (stopAutoRefreshTimer.current) clearTimeout(stopAutoRefreshTimer.current);
     };
   }, [autoRefresh]);
+
+  const stopAutoRefreshTimerCallback = () => {
+    setAutoRefresh(false);
+    const confirmation = (
+      <ConfirmModal
+        heading={"Stream stopped"}
+        content={<Typography>{`The log data stream was automatically stopped after ${AUTO_REFRESH_TIMEOUT} minutes to reduce the load on the server.`}</Typography>}
+        onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
+        }}
+        confirmText={"OK"}
+        showCancelButton={false}
+      />
+    );
+    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  };
 
   const getDeleteLogCurveValuesJob = useCallback(
     (currentSelected: LogCurveInfoRow[], checkedContentItems: CurveValueRow[], selectedLog: LogObject, tableData: CurveValueRow[]) => {
@@ -121,20 +142,19 @@ export const CurveValuesView = (): React.ReactElement => {
   );
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
-    const isNewMnemonic = (mnemonic: string) => {
-      return columns.map((column) => column.property).indexOf(mnemonic) < 0;
-    };
-    const newColumns = curveSpecifications
-      .filter((curveSpecification) => isNewMnemonic(curveSpecification.mnemonic))
-      .map((curveSpecification) => {
-        return {
-          columnOf: curveSpecification,
-          property: curveSpecification.mnemonic,
-          label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-          type: getColumnType(curveSpecification)
-        };
-      });
-    setColumns([...columns, ...newColumns]);
+    const newColumns = curveSpecifications.map((curveSpecification) => {
+      return {
+        columnOf: curveSpecification,
+        property: curveSpecification.mnemonic,
+        label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
+        type: getColumnType(curveSpecification)
+      };
+    });
+    const prevMnemonics = columns.map((column) => column.property);
+    const newMnemonics = newColumns.map((column) => column.property);
+    if (prevMnemonics.length !== newMnemonics.length || prevMnemonics.some((value, index) => value !== newMnemonics[index])) {
+      setColumns(newColumns);
+    }
   };
 
   const getTableData = React.useCallback(() => {
@@ -250,9 +270,9 @@ export const CurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          <EditInterval
+          <EditSelectedLogCurveInfo
             disabled={autoRefresh}
-            key="editinterval"
+            key="editSelectedLogCurveInfo"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
           />

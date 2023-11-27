@@ -404,6 +404,8 @@ export function getLogCurveInfo(overrides?: Partial<LogCurveInfo>): LogCurveInfo
     unit: "unit",
     mnemAlias: "mnemAlias",
     axisDefinitions: [],
+    curveDescription: "curveDescription",
+    typeLogData: "typeLogData",
     sensorOffset: getMeasure(),
     ...overrides
   };
