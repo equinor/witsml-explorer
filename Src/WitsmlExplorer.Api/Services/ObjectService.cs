@@ -137,7 +137,7 @@ namespace WitsmlExplorer.Api.Services
             }
             // return ObjectOnWellbore to avoid serializing null fields from concrete WITSML types
             return result.Objects.Select((obj) =>
-                new ObjectOnWellbore()
+                new BaseObjectOnWellbore()
                 {
                     Uid = obj.Uid,
                     WellboreUid = obj.UidWellbore,
@@ -146,7 +146,7 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            ).ToList();
+            ).ToArray();
         }
 
         public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)

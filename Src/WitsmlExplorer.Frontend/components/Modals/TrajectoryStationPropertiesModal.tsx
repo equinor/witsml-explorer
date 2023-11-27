@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import ObjectReference from "../../models/jobs/objectReference";
+import { measureToString } from "../../models/measure";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
@@ -11,7 +12,6 @@ import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
-import { measureToString } from "../../models/measure";
 
 export interface TrajectoryStationPropertiesModalInterface {
   trajectoryStation: TrajectoryStation;
@@ -158,7 +158,7 @@ const TrajectoryStationPropertiesModal = (props: TrajectoryStationPropertiesModa
                 fullWidth
               />
               <TextField disabled id="magDipAngleReference" label="magDipAngleReference" defaultValue={measureToString(editableTrajectoryStation.magDipAngleReference)} fullWidth />
-              <TextField disabled id="statusTrajStation" label="statusTrajStation" defaultValue={measureToString(editableTrajectoryStation.statusTrajStation)} fullWidth />
+              <TextField disabled id="statusTrajStation" label="statusTrajStation" defaultValue={editableTrajectoryStation.statusTrajStation} fullWidth />
               <TextField disabled id="gravAxialRaw" label="gravAxialRaw" defaultValue={measureToString(editableTrajectoryStation.gravAxialRaw)} fullWidth />
               <TextField disabled id="gravTran1Raw" label="gravTran1Raw" defaultValue={measureToString(editableTrajectoryStation.gravTran1Raw)} fullWidth />
               <TextField disabled id="gravTran2Raw" label="gravTran2Raw" defaultValue={measureToString(editableTrajectoryStation.gravTran2Raw)} fullWidth />

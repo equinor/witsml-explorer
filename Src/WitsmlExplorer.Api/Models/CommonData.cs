@@ -1,3 +1,7 @@
+using Witsml.Data;
+
+using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Models
 {
     public class CommonData
@@ -10,5 +14,23 @@ namespace WitsmlExplorer.Api.Models
         public string Comments { get; init; }
         public string AcquisitionTimeZone { get; init; }
         public string DefaultDatum { get; init; }
+    }
+
+    public static class CommonDataExtensions
+    {
+        public static WitsmlCommonData ToWitsml(this CommonData commonData)
+        {
+            return new WitsmlCommonData
+            {
+                SourceName = commonData.SourceName,
+                DTimCreation = StringHelpers.ToUniversalDateTimeString(commonData.DTimCreation),
+                DTimLastChange = StringHelpers.ToUniversalDateTimeString(commonData.DTimLastChange),
+                ItemState = commonData.ItemState,
+                ServiceCategory = commonData.ServiceCategory,
+                Comments = commonData.Comments,
+                AcquisitionTimeZone = commonData.AcquisitionTimeZone,
+                DefaultDatum = commonData.DefaultDatum
+            };
+        }
     }
 }

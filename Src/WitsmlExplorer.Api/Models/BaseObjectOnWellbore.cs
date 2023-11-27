@@ -1,13 +1,11 @@
 
+
 using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class ObjectSearchResult : ObjectOnWellbore
+    public class BaseObjectOnWellbore : ObjectOnWellbore
     {
-        public string SearchProperty { get; set; }
-        public EntityType ObjectType { get; set; }
-
         public override IWitsmlQueryType ToWitsml()
         {
             return null;

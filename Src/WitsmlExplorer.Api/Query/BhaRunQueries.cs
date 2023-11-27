@@ -83,8 +83,8 @@ namespace WitsmlExplorer.Api.Query
                     NumStringRun = bhaRun.NumStringRun,
                     Tubular = new WitsmlRefNameString
                     {
-                        UidRef = bhaRun.TubularUidRef,
-                        Value = bhaRun.Tubular
+                        UidRef = bhaRun.Tubular.UidRef,
+                        Value = bhaRun.Tubular.Value
                     },
                     StatusBha = bhaRun.StatusBha ?? null,
                     NumBitRun = bhaRun.NumBitRun,
