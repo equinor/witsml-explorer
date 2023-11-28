@@ -20,7 +20,7 @@ import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_FILTER_HIDDENOBJECTS_KEY } from "../Constants";
+import { STORAGE_FILTER_HIDDENOBJECTS_KEY, getLocalStorageItem } from "../../tools/localStorageHelpers";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, { UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
 
@@ -92,8 +92,8 @@ const ServerManager = (): React.ReactElement => {
 
   const updateVisibleObjects = (supportedObjects: string[]) => {
     const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = localStorage.getItem(STORAGE_FILTER_HIDDENOBJECTS_KEY)?.split(",") || [];
-    hiddenItems.forEach((objectType) => (updatedVisibility[objectType as ObjectType] = VisibilityStatus.Hidden));
+    const hiddenItems = getLocalStorageItem<ObjectType[]>(STORAGE_FILTER_HIDDENOBJECTS_KEY, { defaultValue: [] });
+    hiddenItems.forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden));
     Object.values(ObjectType)
       .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
       .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));

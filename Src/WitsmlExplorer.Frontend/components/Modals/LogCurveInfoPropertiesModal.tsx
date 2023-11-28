@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import RenameMnemonicJob from "../../models/jobs/renameMnemonicJob";
+import ModifyLogCurveInfoJob from "../../models/jobs/modifyLogCurveInfoJob";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
@@ -20,15 +20,15 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
   const { logCurveInfo, dispatchOperation, selectedLog } = props;
   const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfo>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isIndexCurve = logCurveInfo?.mnemonic === selectedLog?.indexCurve;
 
   const onSubmit = async () => {
     setIsLoading(true);
-    const job: RenameMnemonicJob = {
+    const job: ModifyLogCurveInfoJob = {
       logReference: toObjectReference(selectedLog),
-      mnemonic: logCurveInfo.mnemonic,
-      newMnemonic: editableLogCurveInfo.mnemonic
+      logCurveInfo: editableLogCurveInfo
     };
-    await JobService.orderJob(JobType.RenameMnemonic, job);
+    await JobService.orderJob(JobType.ModifyLogCurveInfo, job);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -41,7 +41,6 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
     <>
       {editableLogCurveInfo && (
         <ModalDialog
-          confirmDisabled={logCurveInfo.mnemonic == editableLogCurveInfo.mnemonic}
           heading={`Edit properties for LogCurve: ${editableLogCurveInfo.mnemonic}`}
           content={
             <Layout>
@@ -51,11 +50,44 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 label="mnemonic"
                 defaultValue={editableLogCurveInfo.mnemonic}
                 error={editableLogCurveInfo.mnemonic.length === 0}
-                helperText={editableLogCurveInfo.mnemonic.length === 0 ? "A logCurveInfo mnemonic must be 1-64 characters" : ""}
+                helperText={editableLogCurveInfo.mnemonic.length === 0 ? "A logCurveInfo mnemonic cannot be empty. Size must be 1 to 64 characters." : ""}
                 fullWidth
+                disabled={isIndexCurve}
                 inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableLogCurveInfo({ ...editableLogCurveInfo, mnemonic: e.target.value })}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    mnemonic: e.target.value
+                  })
+                }
               />
+              <TextField
+                id="unit"
+                label="unit"
+                defaultValue={editableLogCurveInfo.unit}
+                error={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0}
+                helperText={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0 ? "A unit cannot be empty. Size must be 1 to 64 characters." : ""}
+                inputProps={{ minLength: 1, maxLength: 64 }}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    unit: e.target.value
+                  })
+                }
+              />
+              <TextField
+                id="curveDescription"
+                label="curveDescription"
+                defaultValue={editableLogCurveInfo.curveDescription}
+                onChange={(e) =>
+                  setEditableLogCurveInfo({
+                    ...editableLogCurveInfo,
+                    curveDescription: e.target.value
+                  })
+                }
+              />
+              <TextField disabled id="typeLogData" label="typeLogData" defaultValue={editableLogCurveInfo.typeLogData} fullWidth />
+              <TextField disabled id="mnemAlias" label="mnemAlias" defaultValue={editableLogCurveInfo.mnemAlias} fullWidth />
               {logCurveInfo?.axisDefinitions?.map((axisDefinition) => {
                 return (
                   <React.Fragment key={axisDefinition.uid}>
@@ -67,6 +99,11 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 );
               })}
             </Layout>
+          }
+          confirmDisabled={
+            logCurveInfo.mnemonic == editableLogCurveInfo.mnemonic &&
+            logCurveInfo.unit == editableLogCurveInfo.unit &&
+            logCurveInfo.curveDescription == editableLogCurveInfo.curveDescription
           }
           onSubmit={() => onSubmit()}
           isLoading={isLoading}
