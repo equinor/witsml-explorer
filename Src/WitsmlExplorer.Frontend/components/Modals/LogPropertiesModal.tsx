@@ -21,7 +21,9 @@ export interface LogPropertiesModalInterface {
   dispatchOperation: (action: HideModalAction) => void;
 }
 
-const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElement => {
+const LogPropertiesModal = (
+  props: LogPropertiesModalInterface
+): React.ReactElement => {
   const { mode, logObject, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
@@ -35,7 +37,11 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     if (mode === PropertiesModalMode.New) {
       return validText(editableLogObject.serviceCompany, 0, 64);
     } else if (mode === PropertiesModalMode.Edit) {
-      if (logObject.serviceCompany === null && editableLogObject.serviceCompany === null) return true;
+      if (
+        logObject.serviceCompany === null &&
+        editableLogObject.serviceCompany === null
+      )
+        return true;
       return validText(editableLogObject.serviceCompany, 1, 64);
     }
   };
@@ -52,7 +58,8 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     if (mode === PropertiesModalMode.New) {
       return validText(editableLogObject.runNumber, 0, 16);
     } else if (mode === PropertiesModalMode.Edit) {
-      if (logObject.runNumber === null && editableLogObject.runNumber === null) return true;
+      if (logObject.runNumber === null && editableLogObject.runNumber === null)
+        return true;
       return validText(editableLogObject.runNumber, 1, 16);
     }
   };
@@ -70,13 +77,19 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     const wellboreLogJob = {
       logObject: updatedLog
     };
-    await JobService.orderJob(editMode ? JobType.ModifyLogObject : JobType.CreateLogObject, wellboreLogJob);
+    await JobService.orderJob(
+      editMode ? JobType.ModifyLogObject : JobType.CreateLogObject,
+      wellboreLogJob
+    );
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
 
   const onChangeCurve = async (event: any) => {
-    const indexCurve = event.selectedItems[0] === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth;
+    const indexCurve =
+      event.selectedItems[0] === IndexCurve.Time
+        ? IndexCurve.Time
+        : IndexCurve.Depth;
     setEditableLogObject({ ...editableLogObject, indexCurve });
   };
 
@@ -84,8 +97,12 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     const isTimeIndexed = logObject.indexType === WITSML_INDEX_TYPE_DATE_TIME;
     setEditableLogObject({
       ...logObject,
-      startIndex: isTimeIndexed ? formatDateString(logObject.startIndex, timeZone, dateTimeFormat) : logObject.startIndex,
-      endIndex: isTimeIndexed ? formatDateString(logObject.endIndex, timeZone, dateTimeFormat) : logObject.endIndex
+      startIndex: isTimeIndexed
+        ? formatDateString(logObject.startIndex, timeZone, dateTimeFormat)
+        : logObject.startIndex,
+      endIndex: isTimeIndexed
+        ? formatDateString(logObject.endIndex, timeZone, dateTimeFormat)
+        : logObject.endIndex
     });
   }, [logObject]);
 
@@ -93,7 +110,11 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
     <>
       {editableLogObject && (
         <ModalDialog
-          heading={editMode ? `Edit properties for ${editableLogObject.name}` : `New Log`}
+          heading={
+            editMode
+              ? `Edit properties for ${editableLogObject.name}`
+              : `New Log`
+          }
           content={
             <>
               <TextField
@@ -102,31 +123,65 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 value={editableLogObject.uid}
                 disabled={editMode}
                 required
-                helperText={editableLogObject.uid.length === 0 ? "A wellbore uid must be 1-64 characters" : ""}
+                helperText={
+                  editableLogObject.uid.length === 0
+                    ? "A wellbore uid must be 1-64 characters"
+                    : ""
+                }
                 variant={validText(editableLogObject.uid) ? undefined : "error"}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, uid: e.target.value })}
+                onChange={(e: any) =>
+                  setEditableLogObject({
+                    ...editableLogObject,
+                    uid: e.target.value
+                  })
+                }
               />
               <TextField
                 id="name"
                 label="name"
                 defaultValue={editableLogObject.name}
-                helperText={editableLogObject.name.length === 0 ? "A log name must be 1-64 characters" : ""}
-                variant={editableLogObject.name.length === 0 ? "error" : undefined}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, name: e.target.value })}
+                helperText={
+                  editableLogObject.name.length === 0
+                    ? "A log name must be 1-64 characters"
+                    : ""
+                }
+                variant={
+                  editableLogObject.name.length === 0 ? "error" : undefined
+                }
+                onChange={(e: any) =>
+                  setEditableLogObject({
+                    ...editableLogObject,
+                    name: e.target.value
+                  })
+                }
               />
               <TextField
                 disabled
                 id="objectGrowing"
                 label="object growing"
-                defaultValue={editableLogObject.objectGrowing == null ? "" : editableLogObject.objectGrowing ? "true" : "false"}
+                defaultValue={
+                  editableLogObject.objectGrowing == null
+                    ? ""
+                    : editableLogObject.objectGrowing
+                      ? "true"
+                      : "false"
+                }
               />
               <TextField
                 id="serviceCompany"
                 label="service company"
-                helperText={validServiceCompany() ? "" : getServiceCompanyHelperText()}
+                helperText={
+                  validServiceCompany() ? "" : getServiceCompanyHelperText()
+                }
                 variant={validServiceCompany() ? undefined : "error"}
                 defaultValue={editableLogObject.serviceCompany}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, serviceCompany: e.target.value === "" ? null : e.target.value })}
+                onChange={(e: any) =>
+                  setEditableLogObject({
+                    ...editableLogObject,
+                    serviceCompany:
+                      e.target.value === "" ? null : e.target.value
+                  })
+                }
               />
               <TextField
                 id="runNumber"
@@ -134,14 +189,49 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                 helperText={validRunNumber() ? "" : getRunNumberHelperText()}
                 variant={validRunNumber() ? undefined : "error"}
                 defaultValue={editableLogObject.runNumber}
-                onChange={(e: any) => setEditableLogObject({ ...editableLogObject, runNumber: e.target.value === "" ? null : e.target.value })}
+                onChange={(e: any) =>
+                  setEditableLogObject({
+                    ...editableLogObject,
+                    runNumber: e.target.value === "" ? null : e.target.value
+                  })
+                }
               />
-              <TextField disabled id="startIndex" label="start index" defaultValue={editableLogObject.startIndex} />
-              <TextField disabled id="endIndex" label="end index" defaultValue={editableLogObject.endIndex} />
-              <TextField disabled id="wellUid" label="well uid" defaultValue={editableLogObject.wellUid} />
-              <TextField disabled id="wellName" label="well name" defaultValue={editableLogObject.wellName} />
-              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableLogObject.wellboreUid} />
-              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableLogObject.wellboreName} />
+              <TextField
+                disabled
+                id="startIndex"
+                label="start index"
+                defaultValue={editableLogObject.startIndex}
+              />
+              <TextField
+                disabled
+                id="endIndex"
+                label="end index"
+                defaultValue={editableLogObject.endIndex}
+              />
+              <TextField
+                disabled
+                id="wellUid"
+                label="well uid"
+                defaultValue={editableLogObject.wellUid}
+              />
+              <TextField
+                disabled
+                id="wellName"
+                label="well name"
+                defaultValue={editableLogObject.wellName}
+              />
+              <TextField
+                disabled
+                id="wellboreUid"
+                label="wellbore uid"
+                defaultValue={editableLogObject.wellboreUid}
+              />
+              <TextField
+                disabled
+                id="wellboreName"
+                label="wellbore name"
+                defaultValue={editableLogObject.wellboreName}
+              />
               <Autocomplete
                 label="index curve"
                 disabled={editMode}
@@ -156,20 +246,32 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
                     disabled
                     id="dTimCreation"
                     label="commonData.dTimCreation"
-                    defaultValue={formatDateString(logObject?.commonData?.dTimCreation, timeZone, dateTimeFormat)}
+                    defaultValue={formatDateString(
+                      logObject?.commonData?.dTimCreation,
+                      timeZone,
+                      dateTimeFormat
+                    )}
                   />
                   <TextField
                     disabled
                     id="dTimLastChange"
                     label="commonData.dTimLastChange"
-                    defaultValue={formatDateString(logObject?.commonData?.dTimLastChange, timeZone, dateTimeFormat)}
+                    defaultValue={formatDateString(
+                      logObject?.commonData?.dTimLastChange,
+                      timeZone,
+                      dateTimeFormat
+                    )}
                   />
                 </>
               )}
             </>
           }
           confirmDisabled={
-            !validText(editableLogObject.uid) || !validText(editableLogObject.name) || !validText(editableLogObject.indexCurve) || !validServiceCompany() || !validRunNumber()
+            !validText(editableLogObject.uid) ||
+            !validText(editableLogObject.name) ||
+            !validText(editableLogObject.indexCurve) ||
+            !validServiceCompany() ||
+            !validRunNumber()
           }
           onSubmit={() => onSubmit(editableLogObject)}
           isLoading={isLoading}

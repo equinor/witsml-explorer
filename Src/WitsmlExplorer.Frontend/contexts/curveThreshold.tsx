@@ -4,7 +4,9 @@
   hideInactiveCurves: boolean;
 }
 
-export const timeFromMinutesToMilliseconds = (timeInMinutes: number): number => {
+export const timeFromMinutesToMilliseconds = (
+  timeInMinutes: number
+): number => {
   return timeInMinutes * 60 * 1000;
 };
 

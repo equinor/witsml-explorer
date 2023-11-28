@@ -27,7 +27,13 @@ interface Completion {
  * Custom autocomplete for QueryEditor.
  */
 export const customCompleter = {
-  getCompletions: (editor: any, session: Ace.EditSession, pos: Ace.Point, prefix: string, callback: (error: any, results: Completion[]) => void) => {
+  getCompletions: (
+    editor: any,
+    session: Ace.EditSession,
+    pos: Ace.Point,
+    prefix: string,
+    callback: (error: any, results: Completion[]) => void
+  ) => {
     const currentValue = editor.getValue();
     const rows = currentValue.split("\n");
     if (rows[pos.row].includes(">")) return;
@@ -69,7 +75,10 @@ export const getTag = (str: string): string => {
 const getTemplateObject = (rows: string[]): TemplateObjects | null => {
   for (const row of rows) {
     const tag = getTag(row)?.slice(0, -1);
-    if (tag && Object.values(TemplateObjects).includes(tag as TemplateObjects)) {
+    if (
+      tag &&
+      Object.values(TemplateObjects).includes(tag as TemplateObjects)
+    ) {
       return tag as TemplateObjects;
     }
   }
@@ -149,21 +158,28 @@ const customInsertMatch = (editor: any, data: Completion) => {
 /**
  * Completion for the root objects.
  */
-const objectsCompletions: Completion[] = Object.values(TemplateObjects).map((templateObject) => {
-  const uidString = templateObject === TemplateObjects.Well ? 'uid=""' : templateObject === TemplateObjects.Wellbore ? 'uidWell="" uid=""' : 'uidWell="" uidWellbore="" uid=""';
-  return {
-    caption: `${templateObject}s`,
-    snippet:
-      `<${templateObject}s xmlns = "http://www.witsml.org/schemas/1series" version = "1.4.1.1">\n` +
-      `\t<${templateObject} ${uidString}>\n` +
-      `\t\t\n` +
-      `\t</${templateObject}>\n` +
-      `</${templateObject}s>`,
-    completer: {
-      insertMatch: customInsertMatch
-    }
-  };
-});
+const objectsCompletions: Completion[] = Object.values(TemplateObjects).map(
+  (templateObject) => {
+    const uidString =
+      templateObject === TemplateObjects.Well
+        ? 'uid=""'
+        : templateObject === TemplateObjects.Wellbore
+          ? 'uidWell="" uid=""'
+          : 'uidWell="" uidWellbore="" uid=""';
+    return {
+      caption: `${templateObject}s`,
+      snippet:
+        `<${templateObject}s xmlns = "http://www.witsml.org/schemas/1series" version = "1.4.1.1">\n` +
+        `\t<${templateObject} ${uidString}>\n` +
+        `\t\t\n` +
+        `\t</${templateObject}>\n` +
+        `</${templateObject}s>`,
+      completer: {
+        insertMatch: customInsertMatch
+      }
+    };
+  }
+);
 
 /**
  * Generates completion for direct children of the parentObject using the template of templateObject.
@@ -172,7 +188,10 @@ const objectsCompletions: Completion[] = Object.values(TemplateObjects).map((tem
  * @param parentObject - The parent object's tag.
  * @returns An array of completion objects.
  */
-const getCompletionsForObject = (templateObject: TemplateObjects, parentObject: string): Completion[] => {
+const getCompletionsForObject = (
+  templateObject: TemplateObjects,
+  parentObject: string
+): Completion[] => {
   const template = templates[templateObject];
   const rows = template.split("\n");
   const completions = [];
@@ -184,7 +203,9 @@ const getCompletionsForObject = (templateObject: TemplateObjects, parentObject: 
       const shouldAddNewline = !rows[index].includes("/>");
       completions.push({
         caption: tag,
-        snippet: `${rows[index].trim().replace(" /", "")}${shouldAddNewline ? "\n\t\n" : ""}</${tag}>`,
+        snippet: `${rows[index].trim().replace(" /", "")}${
+          shouldAddNewline ? "\n\t\n" : ""
+        }</${tag}>`,
         completer: {
           insertMatch: customInsertMatch
         }

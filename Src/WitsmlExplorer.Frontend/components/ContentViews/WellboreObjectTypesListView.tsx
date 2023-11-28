@@ -5,7 +5,12 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import ObjectService from "../../services/objectService";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 interface ObjectTypeRow extends ContentTableRow {
   uid: string;
@@ -18,11 +23,17 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
 
-  const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
+  const columns: ContentTableColumn[] = [
+    { property: "name", label: "Name", type: ContentType.String }
+  ];
 
   const getRows = (): ObjectTypeRow[] => {
     return Object.values(ObjectType)
-      .filter((objectType) => selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible)
+      .filter(
+        (objectType) =>
+          selectedFilter.objectVisibilityStatus[objectType] ==
+          VisibilityStatus.Visible
+      )
       .map((objectType) => {
         return {
           id: objectType,
@@ -34,15 +45,32 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   };
 
   const onSelect = async (row: ObjectTypeRow) => {
-    const objects = await ObjectService.getObjectsIfMissing(selectedWellbore, row.objectType);
+    const objects = await ObjectService.getObjectsIfMissing(
+      selectedWellbore,
+      row.objectType
+    );
     const action: SelectObjectGroupAction = {
       type: NavigationType.SelectObjectGroup,
-      payload: { objectType: row.objectType, wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objects }
+      payload: {
+        objectType: row.objectType,
+        wellUid: selectedWell.uid,
+        wellboreUid: selectedWellbore.uid,
+        objects
+      }
     };
     dispatchNavigation(action);
   };
 
-  return selectedWellbore ? <ContentTable columns={columns} data={getRows()} onSelect={onSelect} showPanel={false} /> : <></>;
+  return selectedWellbore ? (
+    <ContentTable
+      columns={columns}
+      data={getRows()}
+      onSelect={onSelect}
+      showPanel={false}
+    />
+  ) : (
+    <></>
+  );
 };
 
 export default WellboreObjectTypesListView;

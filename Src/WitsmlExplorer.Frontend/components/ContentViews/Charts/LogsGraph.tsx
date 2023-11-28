@@ -1,11 +1,18 @@
 import * as echarts from "echarts";
-import { CustomSeriesRenderItem, CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams } from "echarts";
+import {
+  CustomSeriesRenderItem,
+  CustomSeriesRenderItemAPI,
+  CustomSeriesRenderItemParams
+} from "echarts";
 
 import React, { useContext, useEffect, useState } from "react";
 import NavigationContext from "../../../contexts/navigationContext";
 import OperationContext from "../../../contexts/operationContext";
 import LogObject from "../../../models/logObject";
-import { calculateLogTypeId, calculateLogTypeTimeId } from "../../../models/wellbore";
+import {
+  calculateLogTypeId,
+  calculateLogTypeTimeId
+} from "../../../models/wellbore";
 import formatDateString from "../../DateFormatter";
 import { ContentTableRow } from "../table";
 import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
@@ -69,9 +76,17 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
-      const filteredLogs = selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup);
+      const filteredLogs = selectedWellbore.logs.filter(
+        (log) =>
+          calculateLogTypeId(selectedWellbore, log.indexType) ===
+          selectedLogTypeGroup
+      );
       if (props.selectedLogs.length > 0) {
-        setLogs(filteredLogs.filter((log) => props.selectedLogs.find((selectedLog) => selectedLog.uid == log.uid)));
+        setLogs(
+          filteredLogs.filter((log) =>
+            props.selectedLogs.find((selectedLog) => selectedLog.uid == log.uid)
+          )
+        );
       } else {
         setLogs(filteredLogs);
       }
@@ -86,12 +101,20 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     return logs.map((log) => {
       const start =
         selectedWellbore && isTimeIndexed()
-          ? +new Date(formatDateString(log.startIndex, timeZone, DateTimeFormat.Raw))
+          ? +new Date(
+              formatDateString(log.startIndex, timeZone, DateTimeFormat.Raw)
+            )
           : log.startIndex === null
-          ? 0
-          : +log.startIndex?.replace("m", "");
+            ? 0
+            : +log.startIndex?.replace("m", "");
       const end =
-        selectedWellbore && isTimeIndexed() ? +new Date(formatDateString(log.endIndex, timeZone, DateTimeFormat.Raw)) : log.endIndex === null ? 0 : +log.endIndex?.replace("m", "");
+        selectedWellbore && isTimeIndexed()
+          ? +new Date(
+              formatDateString(log.endIndex, timeZone, DateTimeFormat.Raw)
+            )
+          : log.endIndex === null
+            ? 0
+            : +log.endIndex?.replace("m", "");
       return {
         name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
         start: start < end ? start : end,
@@ -130,7 +153,9 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   const barHeight = 30;
   const spacing = 30;
   const verticalAxisZoomMaxValue = () => {
-    return (gridMaxHeight() / (categories.length * (barHeight + spacing))) * 100;
+    return (
+      (gridMaxHeight() / (categories.length * (barHeight + spacing))) * 100
+    );
   };
 
   const gridMaxHeight = () => {
@@ -159,8 +184,12 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
-    const startRaw = isTimeIndexed() ? formatDateString(log.startRaw, timeZone, dateTimeFormat) : log.startRaw;
-    const endRaw = isTimeIndexed() ? formatDateString(log.endRaw, timeZone, dateTimeFormat) : log.endRaw;
+    const startRaw = isTimeIndexed()
+      ? formatDateString(log.startRaw, timeZone, dateTimeFormat)
+      : log.startRaw;
+    const endRaw = isTimeIndexed()
+      ? formatDateString(log.endRaw, timeZone, dateTimeFormat)
+      : log.endRaw;
     categories.push(i);
     data.push({
       key: i,
@@ -176,7 +205,10 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     });
   }
 
-  const renderGanttItem: CustomSeriesRenderItem = (params: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI) => {
+  const renderGanttItem: CustomSeriesRenderItem = (
+    params: CustomSeriesRenderItemParams,
+    api: CustomSeriesRenderItemAPI
+  ) => {
     const itemIndex = api.value(dimItemIndex);
     const start = api.coord([api.value(dimStart), itemIndex]);
     const end = api.coord([api.value(dimEnd), itemIndex]);
@@ -329,7 +361,11 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     ]
   };
 
-  return selectedWellbore && !resetCheckedItems ? <ReactLogChart option={option} width="100%" height="700px"></ReactLogChart> : <></>;
+  return selectedWellbore && !resetCheckedItems ? (
+    <ReactLogChart option={option} width="100%" height="700px"></ReactLogChart>
+  ) : (
+    <></>
+  );
 };
 
 export default LogsGraph;

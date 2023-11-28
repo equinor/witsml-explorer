@@ -13,25 +13,46 @@ import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
-const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const FluidsReportContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
-  const fluidReferences = useClipboardComponentReferencesOfType(ComponentType.Fluid);
+  const fluidReferences = useClipboardComponentReferencesOfType(
+    ComponentType.Fluid
+  );
 
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.FluidsReport,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore
+        ),
         <MenuItem
           key={"pasteComponent"}
-          onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}
+          onClick={() =>
+            pasteComponents(
+              servers,
+              fluidReferences,
+              dispatchOperation,
+              checkedObjects[0]
+            )
+          }
           disabled={fluidReferences === null || checkedObjects.length !== 1}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "fluid", fluidReferences?.componentUids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText("paste", "fluid", fluidReferences?.componentUids)}
+          </Typography>
         </MenuItem>
       ]}
     />

@@ -11,7 +11,10 @@ export const STORAGE_CONTENTTABLE_WIDTH_KEY = "-widths";
 export const STORAGE_CONTENTTABLE_HIDDEN_KEY = "-hidden";
 export const STORAGE_CONTENTTABLE_ORDER_KEY = "-ordering";
 
-export const getLocalStorageItem = <T,>(key: string, options?: StorageOptions<T>): T | null => {
+export const getLocalStorageItem = <T,>(
+  key: string,
+  options?: StorageOptions<T>
+): T | null => {
   const { defaultValue, valueVerifier } = options || {};
   try {
     if (typeof window !== "undefined" && key) {
@@ -24,7 +27,10 @@ export const getLocalStorageItem = <T,>(key: string, options?: StorageOptions<T>
     }
   } catch (error) {
     if (error instanceof SyntaxError) {
-      console.warn(`Error parsing localStorage item for key “${key}”. Removing the item from localStorage as the type might have changed.`, error);
+      console.warn(
+        `Error parsing localStorage item for key “${key}”. Removing the item from localStorage as the type might have changed.`,
+        error
+      );
       removeLocalStorageItem(key);
     } else {
       // disregard unavailable local storage
@@ -34,11 +40,17 @@ export const getLocalStorageItem = <T,>(key: string, options?: StorageOptions<T>
   return defaultValue || null;
 };
 
-export const setLocalStorageItem = <T,>(key: string, value: T, options?: StorageOptions<T>): void => {
+export const setLocalStorageItem = <T,>(
+  key: string,
+  value: T,
+  options?: StorageOptions<T>
+): void => {
   const { storageTransformer } = options || {};
   try {
     if (typeof window !== "undefined" && key) {
-      const transformedValue = storageTransformer ? storageTransformer(value) : value;
+      const transformedValue = storageTransformer
+        ? storageTransformer(value)
+        : value;
       localStorage.setItem(key, JSON.stringify(transformedValue));
     }
   } catch (error) {

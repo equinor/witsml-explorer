@@ -26,8 +26,16 @@ export const ChangeLogsListView = (): React.ReactElement => {
         uidObject: changeLog.uidObject,
         nameObject: changeLog.nameObject,
         lastChangeType: changeLog.lastChangeType,
-        dTimCreation: formatDateString(changeLog.commonData.dTimCreation, timeZone, dateTimeFormat),
-        dTimLastChange: formatDateString(changeLog.commonData.dTimLastChange, timeZone, dateTimeFormat)
+        dTimCreation: formatDateString(
+          changeLog.commonData.dTimCreation,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimLastChange: formatDateString(
+          changeLog.commonData.dTimLastChange,
+          timeZone,
+          dateTimeFormat
+        )
       };
     });
   };
@@ -35,14 +43,32 @@ export const ChangeLogsListView = (): React.ReactElement => {
   const columns: ContentTableColumn[] = [
     { property: "uidObject", label: "uidObject", type: ContentType.String },
     { property: "nameObject", label: "nameObject", type: ContentType.String },
-    { property: "lastChangeType", label: "lastChangeType", type: ContentType.DateTime },
-    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
+    {
+      property: "lastChangeType",
+      label: "lastChangeType",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimCreation",
+      label: "commonData.dTimCreation",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimLastChange",
+      label: "commonData.dTimLastChange",
+      type: ContentType.DateTime
+    }
   ];
 
   return (
     Object.is(selectedWellbore?.changeLogs, changeLogs) && (
-      <ContentTable viewId="changeLogsListView" columns={columns} data={getTableData()} showRefresh downloadToCsvFileName="ChangeLogs" />
+      <ContentTable
+        viewId="changeLogsListView"
+        columns={columns}
+        data={getTableData()}
+        showRefresh
+        downloadToCsvFileName="ChangeLogs"
+      />
     )
   );
 };

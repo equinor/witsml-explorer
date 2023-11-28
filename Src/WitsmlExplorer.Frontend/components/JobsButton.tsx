@@ -24,7 +24,12 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   };
 
   return (
-    <StyledButton colors={colors} variant={props.showLabels ? "ghost" : "ghost_icon"} onClick={onClick} disabled={!selectedServer}>
+    <StyledButton
+      colors={colors}
+      variant={props.showLabels ? "ghost" : "ghost_icon"}
+      onClick={onClick}
+      disabled={!selectedServer}
+    >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}
     </StyledButton>

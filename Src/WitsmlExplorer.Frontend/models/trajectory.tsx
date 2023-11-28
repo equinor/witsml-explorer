@@ -13,4 +13,9 @@ export default interface Trajectory extends ObjectOnWellbore {
   commonData: CommonData;
 }
 
-export const aziRefValues = ["unknown", "grid north", "magnetic north", "true north"];
+export const aziRefValues = [
+  "unknown",
+  "grid north",
+  "magnetic north",
+  "true north"
+];

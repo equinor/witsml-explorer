@@ -16,9 +16,19 @@ export default class LogObjectService {
     abortSignal: AbortSignal
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
-    const params = [`startIndex=${encodeURIComponent(startIndex)}`, `endIndex=${encodeURIComponent(endIndex)}`, `startIndexIsInclusive=${startIndexIsInclusive}`];
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join("&")}`;
-    const response = await ApiClient.post(pathName, JSON.stringify(mnemonics), abortSignal);
+    const params = [
+      `startIndex=${encodeURIComponent(startIndex)}`,
+      `endIndex=${encodeURIComponent(endIndex)}`,
+      `startIndexIsInclusive=${startIndexIsInclusive}`
+    ];
+    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
+      "&"
+    )}`;
+    const response = await ApiClient.post(
+      pathName,
+      JSON.stringify(mnemonics),
+      abortSignal
+    );
     if (response.ok) {
       return response.json();
     } else {

@@ -10,15 +10,23 @@ import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { colors } from "../../styles/Colors";
-import MessageComparisonModal, { MessageComparisonModalProps } from "../Modals/MessageComparisonModal";
-import MessagePropertiesModal, { MessagePropertiesModalProps } from "../Modals/MessagePropertiesModal";
+import MessageComparisonModal, {
+  MessageComparisonModalProps
+} from "../Modals/MessageComparisonModal";
+import MessagePropertiesModal, {
+  MessagePropertiesModalProps
+} from "../Modals/MessagePropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
+import ObjectPickerModal, {
+  ObjectPickerProps
+} from "../Modals/ObjectPickerModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
-const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const MessageObjectContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
@@ -27,21 +35,38 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyMessageObjectProps: MessagePropertiesModalProps = { mode, messageObject: checkedObjects[0] as MessageObject, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <MessagePropertiesModal {...modifyMessageObjectProps} /> });
+    const modifyMessageObjectProps: MessagePropertiesModalProps = {
+      mode,
+      messageObject: checkedObjects[0] as MessageObject,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <MessagePropertiesModal {...modifyMessageObjectProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
-      const props: MessageComparisonModalProps = { sourceMessage: checkedObjects[0] as MessageObject, sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
+      const props: MessageComparisonModalProps = {
+        sourceMessage: checkedObjects[0] as MessageObject,
+        sourceServer: selectedServer,
+        targetServer,
+        targetObject,
+        dispatchOperation
+      };
       dispatchOperation({
         type: OperationType.DisplayModal,
         payload: <MessageComparisonModal {...props} />
       });
     };
-    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Message, onPicked };
+    const props: ObjectPickerProps = {
+      sourceObject: checkedObjects[0],
+      objectType: ObjectType.Message,
+      onPicked
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <ObjectPickerModal {...props} />
@@ -51,14 +76,40 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
-        <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.Message,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore
+        ),
+        <MenuItem
+          key={"compare"}
+          onClick={onClickCompare}
+          disabled={checkedObjects.length !== 1}
+        >
+          <StyledIcon
+            name="compare"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`${menuItemText(
+            "Compare",
+            "message",
+            []
+          )}`}</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <MenuItem
+          key={"properties"}
+          onClick={onClickModify}
+          disabled={checkedObjects.length !== 1}
+        >
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}

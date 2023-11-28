@@ -6,8 +6,15 @@ import styled from "styled-components";
 import OperationContext from "../../../contexts/operationContext";
 import { useLocalStorageState } from "../../../hooks/useLocalStorageState";
 import { Colors } from "../../../styles/Colors";
-import { STORAGE_CONTENTTABLE_ORDER_KEY, removeLocalStorageItem } from "../../../tools/localStorageHelpers";
-import { calculateColumnWidth, expanderId, selectId } from "./contentTableUtils";
+import {
+  STORAGE_CONTENTTABLE_ORDER_KEY,
+  removeLocalStorageItem
+} from "../../../tools/localStorageHelpers";
+import {
+  calculateColumnWidth,
+  expanderId,
+  selectId
+} from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
 const lastId = "dummyLastId";
@@ -20,8 +27,18 @@ export const ColumnOptionsMenu = (props: {
   columns: ContentTableColumn[];
   stickyLeftColumns: number;
 }): React.ReactElement => {
-  const { table, checkableRows, expandableRows, viewId, columns, stickyLeftColumns } = props;
-  const firstToggleableIndex = Math.max((checkableRows ? 1 : 0) + (expandableRows ? 1 : 0), stickyLeftColumns);
+  const {
+    table,
+    checkableRows,
+    expandableRows,
+    viewId,
+    columns,
+    stickyLeftColumns
+  } = props;
+  const firstToggleableIndex = Math.max(
+    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
+    stickyLeftColumns
+  );
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -29,17 +46,25 @@ export const ColumnOptionsMenu = (props: {
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
-  const [, saveOrderToStorage] = useLocalStorageState<string[]>(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
+  const [, saveOrderToStorage] = useLocalStorageState<string[]>(
+    viewId + STORAGE_CONTENTTABLE_ORDER_KEY
+  );
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (draggedId != null && draggedOverId != null && draggedId != draggedOverId) {
+    if (
+      draggedId != null &&
+      draggedOverId != null &&
+      draggedId != draggedOverId
+    ) {
       const order = table.getAllLeafColumns().map((d) => d.id);
       const dragItemIndex = order.findIndex((value) => value == draggedId);
       order.splice(dragItemIndex, 1);
       if (draggedOverId != lastId) {
-        const dragOverItemIndex = order.findIndex((value) => value == draggedOverId);
+        const dragOverItemIndex = order.findIndex(
+          (value) => value == draggedOverId
+        );
         order.splice(dragOverItemIndex, 0, draggedId);
       } else {
         order.push(draggedId);
@@ -77,15 +102,29 @@ export const ColumnOptionsMenu = (props: {
     table.setColumnSizing(
       Object.assign(
         {},
-        ...table.getLeafHeaders().map((header) => ({ [header.id]: calculateColumnWidth(header.id, isCompactMode, (header.column.columnDef.meta as { type: ContentType })?.type) }))
+        ...table.getLeafHeaders().map((header) => ({
+          [header.id]: calculateColumnWidth(
+            header.id,
+            isCompactMode,
+            (header.column.columnDef.meta as { type: ContentType })?.type
+          )
+        }))
       )
     );
   };
 
   return (
     <>
-      <Button ref={setMenuAnchor} id="anchor-default" aria-haspopup="true" aria-expanded={isMenuOpen} aria-controls="menu-default" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        Columns {table.getVisibleLeafColumns().length - firstToggleableIndex}/{table.getAllLeafColumns().length - firstToggleableIndex}
+      <Button
+        ref={setMenuAnchor}
+        id="anchor-default"
+        aria-haspopup="true"
+        aria-expanded={isMenuOpen}
+        aria-controls="menu-default"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+      >
+        Columns {table.getVisibleLeafColumns().length - firstToggleableIndex}/
+        {table.getAllLeafColumns().length - firstToggleableIndex}
       </Button>
       <StyledMenu
         open={isMenuOpen}
@@ -97,8 +136,19 @@ export const ColumnOptionsMenu = (props: {
         colors={colors}
       >
         <div style={{ display: "flex" }}>
-          <Checkbox checked={table.getIsAllColumnsVisible()} onChange={table.getToggleAllColumnsVisibilityHandler()} />
-          <Typography style={{ fontFamily: "EquinorMedium", fontSize: "0.875rem", padding: "0.25rem 0 0 0.25rem" }}>Toggle all</Typography>
+          <Checkbox
+            checked={table.getIsAllColumnsVisible()}
+            onChange={table.getToggleAllColumnsVisibilityHandler()}
+          />
+          <Typography
+            style={{
+              fontFamily: "EquinorMedium",
+              fontSize: "0.875rem",
+              padding: "0.25rem 0 0 0.25rem"
+            }}
+          >
+            Toggle all
+          </Typography>
         </div>
         {/* set onDragOver and onDrop on an outer div so that the mouse cursor properly detect a drop area, has an annoying flicker tho */}
         <div
@@ -116,11 +166,22 @@ export const ColumnOptionsMenu = (props: {
               column.id != expanderId &&
               index >= stickyLeftColumns && (
                 <OrderingRow key={column.id}>
-                  <Checkbox checked={column.getIsVisible()} onChange={column.getToggleVisibilityHandler()} />
-                  <OrderingButton variant={"ghost_icon"} onClick={() => onMoveUp(column.id)} disabled={index == firstToggleableIndex}>
+                  <Checkbox
+                    checked={column.getIsVisible()}
+                    onChange={column.getToggleVisibilityHandler()}
+                  />
+                  <OrderingButton
+                    variant={"ghost_icon"}
+                    onClick={() => onMoveUp(column.id)}
+                    disabled={index == firstToggleableIndex}
+                  >
                     <Icon name="chevronUp" />
                   </OrderingButton>
-                  <OrderingButton variant={"ghost_icon"} onClick={() => onMoveDown(column.id)} disabled={index == table.getAllLeafColumns().length - 1}>
+                  <OrderingButton
+                    variant={"ghost_icon"}
+                    onClick={() => onMoveDown(column.id)}
+                    disabled={index == table.getAllLeafColumns().length - 1}
+                  >
                     <Icon name="chevronDown" />
                   </OrderingButton>
                   <Draggable
@@ -133,21 +194,34 @@ export const ColumnOptionsMenu = (props: {
                     draggingStarted={draggedId != null ? 1 : 0}
                     colors={colors}
                   >
-                    <OrderingLabel>{column.columnDef.header.toString()}</OrderingLabel>
+                    <OrderingLabel>
+                      {column.columnDef.header.toString()}
+                    </OrderingLabel>
                   </Draggable>
                 </OrderingRow>
               )
             );
           })}
-          <DummyDrop onDragEnter={() => setDraggedOverId(lastId)} onDragEnd={drop} isDraggedOver={lastId == draggedOverId ? 1 : 0} colors={colors} style={{ marginLeft: "70px" }}>
+          <DummyDrop
+            onDragEnter={() => setDraggedOverId(lastId)}
+            onDragEnd={drop}
+            isDraggedOver={lastId == draggedOverId ? 1 : 0}
+            colors={colors}
+            style={{ marginLeft: "70px" }}
+          >
             <div style={{ visibility: "hidden", height: "15px" }}></div>
           </DummyDrop>
         </div>
         <ResetContainer>
           <ResetButton
             onClick={() => {
-              table.setColumnOrder([...(checkableRows ? [selectId] : []), ...(expandableRows ? [expanderId] : []), ...columns.map((column) => column.label)]);
-              if (viewId) removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
+              table.setColumnOrder([
+                ...(checkableRows ? [selectId] : []),
+                ...(expandableRows ? [expanderId] : []),
+                ...columns.map((column) => column.label)
+              ]);
+              if (viewId)
+                removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
             }}
           >
             Reset ordering
@@ -188,19 +262,30 @@ export const DummyDrop = styled.div<{ isDraggedOver?: number; colors: Colors }>`
       : ""}
 `;
 
-export const Draggable = styled.div<{ isDragged?: number; isDraggedOver?: number; draggingStarted?: number; colors: Colors }>`
+export const Draggable = styled.div<{
+  isDragged?: number;
+  isDraggedOver?: number;
+  draggingStarted?: number;
+  colors: Colors;
+}>`
   cursor: grab;
   user-select: none;
   height: 100%;
   display: flex;
-  ${(props) => (props.isDragged ? `&&&{ background: ${props.colors.interactive.textHighlight}; }` : "")}
+  ${(props) =>
+    props.isDragged
+      ? `&&&{ background: ${props.colors.interactive.textHighlight}; }`
+      : ""}
   ${(props) =>
     props.isDraggedOver
       ? `&&&{
     border-top: 2px solid ${props.colors.infographic.primaryMossGreen};
 }`
       : ""}
-  ${(props) => (props.draggingStarted ? "" : `&:hover { background: ${props.colors.interactive.textHighlight}; }`)}
+  ${(props) =>
+    props.draggingStarted
+      ? ""
+      : `&:hover { background: ${props.colors.interactive.textHighlight}; }`}
 `;
 
 const ResetContainer = styled.div`

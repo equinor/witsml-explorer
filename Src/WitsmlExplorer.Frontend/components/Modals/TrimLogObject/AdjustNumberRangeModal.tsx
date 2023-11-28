@@ -10,8 +10,17 @@ export interface AdjustNumberRangeModalProps {
   onValidChange: (isValid: boolean) => void;
 }
 
-const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.ReactElement => {
-  const { minValue, maxValue, isDescending, onStartValueChanged, onEndValueChanged, onValidChange } = props;
+const AdjustNumberRangeModal = (
+  props: AdjustNumberRangeModalProps
+): React.ReactElement => {
+  const {
+    minValue,
+    maxValue,
+    isDescending,
+    onStartValueChanged,
+    onEndValueChanged,
+    onValidChange
+  } = props;
   const [startValue, setStartIndex] = useState<number>(minValue);
   const [endValue, setEndIndex] = useState<number>(maxValue);
   const [startIndexIsValid, setStartIndexIsValid] = useState<boolean>();
@@ -25,21 +34,29 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
   }, [startValue, endValue]);
 
   useEffect(() => {
-    setStartIndexIsValid(isDescending ? startValue > endValue : endValue > startValue);
-    setEndIndexIsValid(isDescending ? startValue > endValue : endValue > startValue);
+    setStartIndexIsValid(
+      isDescending ? startValue > endValue : endValue > startValue
+    );
+    setEndIndexIsValid(
+      isDescending ? startValue > endValue : endValue > startValue
+    );
   }, [startValue, endValue]);
 
   useEffect(() => {
     onValidChange(startIndexIsValid && endIndexIsValid);
   }, [startIndexIsValid, endIndexIsValid]);
 
-  const handleStartIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartIndexChanged = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.value) {
       setStartIndex(Number(event.target.value));
     }
   };
 
-  const handleEndIndexChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEndIndexChanged = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.value) {
       setEndIndex(Number(event.target.value));
     }
@@ -47,7 +64,11 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
 
   return (
     <>
-      <ButtonGroup aria-label="set depth range button group" color="primary" style={{ margin: ".5rem" }}>
+      <ButtonGroup
+        aria-label="set depth range button group"
+        color="primary"
+        style={{ margin: ".5rem" }}
+      >
         {setRangeButtonValues.map((buttonValue) => {
           return (
             totalDepthSpan > buttonValue && (
@@ -79,7 +100,13 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         value={startValue ?? ""}
         type={"number"}
         error={!startIndexIsValid}
-        helperText={startIndexIsValid ? "" : isDescending ? `Must be higher than ${endValue}` : `Must be lower than ${endValue}`}
+        helperText={
+          startIndexIsValid
+            ? ""
+            : isDescending
+              ? `Must be higher than ${endValue}`
+              : `Must be lower than ${endValue}`
+        }
         onChange={handleStartIndexChanged}
         style={{ paddingBottom: startIndexIsValid ? "23px" : 0 }}
       />
@@ -89,7 +116,13 @@ const AdjustNumberRangeModal = (props: AdjustNumberRangeModalProps): React.React
         value={endValue ?? ""}
         type={"number"}
         error={!endIndexIsValid}
-        helperText={endIndexIsValid ? "" : isDescending ? `Must be lower than ${startValue}` : `Must be higher than ${startValue}`}
+        helperText={
+          endIndexIsValid
+            ? ""
+            : isDescending
+              ? `Must be lower than ${startValue}`
+              : `Must be higher than ${startValue}`
+        }
         onChange={handleEndIndexChanged}
         style={{ paddingBottom: endIndexIsValid ? "23px" : 0 }}
       />

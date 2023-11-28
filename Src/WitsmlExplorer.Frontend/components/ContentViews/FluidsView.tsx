@@ -8,8 +8,15 @@ import FluidsReport from "../../models/fluidsReport";
 import { measureToString } from "../../models/measure";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import FluidContextMenu, { FluidContextMenuProps } from "../ContextMenus/FluidContextMenu";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import FluidContextMenu, {
+  FluidContextMenuProps
+} from "../ContextMenus/FluidContextMenu";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 type FluidAsStrings = {
   [Property in keyof Fluid as Exclude<Property, "rheometers">]: string;
@@ -54,22 +61,40 @@ export const FluidsView = (): React.ReactElement => {
     }
   }, [selectedFluidsReport]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: FluidsRow[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedRows: FluidsRow[]
+  ) => {
     const contextMenuProps: FluidContextMenuProps = {
       checkedFluids: checkedRows.map((row) => row.fluid)
     };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FluidContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <FluidContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const columns: ContentTableColumn[] = [
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "type", label: "type", type: ContentType.String },
-    { property: "locationSample", label: "locationSample", type: ContentType.String },
+    {
+      property: "locationSample",
+      label: "locationSample",
+      type: ContentType.String
+    },
     { property: "dTim", label: "dTim", type: ContentType.String },
     { property: "md", label: "md", type: ContentType.Measure },
     { property: "tvd", label: "tvd", type: ContentType.Measure },
-    { property: "presBopRating", label: "presBopRating", type: ContentType.Measure },
+    {
+      property: "presBopRating",
+      label: "presBopRating",
+      type: ContentType.Measure
+    },
     { property: "mudClass", label: "mudClass", type: ContentType.String },
     { property: "density", label: "density", type: ContentType.Measure },
     { property: "visFunnel", label: "visFunnel", type: ContentType.Measure },
@@ -79,18 +104,42 @@ export const FluidsView = (): React.ReactElement => {
     { property: "gel10Sec", label: "gel10Sec", type: ContentType.Measure },
     { property: "gel10Min", label: "gel10Min", type: ContentType.Measure },
     { property: "gel30Min", label: "gel30Min", type: ContentType.Measure },
-    { property: "filterCakeLtlp", label: "filterCakeLtlp", type: ContentType.Measure },
-    { property: "filtrateLtlp", label: "filtrateLtlp", type: ContentType.Measure },
+    {
+      property: "filterCakeLtlp",
+      label: "filterCakeLtlp",
+      type: ContentType.Measure
+    },
+    {
+      property: "filtrateLtlp",
+      label: "filtrateLtlp",
+      type: ContentType.Measure
+    },
     { property: "tempHthp", label: "tempHthp", type: ContentType.Measure },
     { property: "presHthp", label: "presHthp", type: ContentType.Measure },
-    { property: "filtrateHthp", label: "filtrateHthp", type: ContentType.Measure },
-    { property: "filterCakeHthp", label: "filterCakeHthp", type: ContentType.Measure },
+    {
+      property: "filtrateHthp",
+      label: "filtrateHthp",
+      type: ContentType.Measure
+    },
+    {
+      property: "filterCakeHthp",
+      label: "filterCakeHthp",
+      type: ContentType.Measure
+    },
     { property: "solidsPc", label: "solidsPc", type: ContentType.Measure },
     { property: "waterPc", label: "waterPc", type: ContentType.Measure },
     { property: "oilPc", label: "oilPc", type: ContentType.Measure },
     { property: "sandPc", label: "sandPc", type: ContentType.Measure },
-    { property: "solidsLowGravPc", label: "solidsLowGravPc", type: ContentType.Measure },
-    { property: "solidsCalcPc", label: "solidsCalcPc", type: ContentType.Measure },
+    {
+      property: "solidsLowGravPc",
+      label: "solidsLowGravPc",
+      type: ContentType.Measure
+    },
+    {
+      property: "solidsCalcPc",
+      label: "solidsCalcPc",
+      type: ContentType.Measure
+    },
     { property: "baritePc", label: "baritePc", type: ContentType.Measure },
     { property: "lcm", label: "lcm", type: ContentType.Measure },
     { property: "mbt", label: "mbt", type: ContentType.Measure },
@@ -99,8 +148,16 @@ export const FluidsView = (): React.ReactElement => {
     { property: "pm", label: "pm", type: ContentType.Measure },
     { property: "pmFiltrate", label: "pmFiltrate", type: ContentType.Measure },
     { property: "mf", label: "mf", type: ContentType.Measure },
-    { property: "alkalinityP1", label: "alkalinityP1", type: ContentType.Measure },
-    { property: "alkalinityP2", label: "alkalinityP2", type: ContentType.Measure },
+    {
+      property: "alkalinityP1",
+      label: "alkalinityP1",
+      type: ContentType.Measure
+    },
+    {
+      property: "alkalinityP2",
+      label: "alkalinityP2",
+      type: ContentType.Measure
+    },
     { property: "chloride", label: "chloride", type: ContentType.Measure },
     { property: "calcium", label: "calcium", type: ContentType.Measure },
     { property: "magnesium", label: "magnesium", type: ContentType.Measure },
@@ -108,9 +165,17 @@ export const FluidsView = (): React.ReactElement => {
     { property: "brinePc", label: "brinePc", type: ContentType.Measure },
     { property: "lime", label: "lime", type: ContentType.Measure },
     { property: "electStab", label: "electStab", type: ContentType.Measure },
-    { property: "calciumChloride", label: "calciumChloride", type: ContentType.Measure },
+    {
+      property: "calciumChloride",
+      label: "calciumChloride",
+      type: ContentType.Measure
+    },
     { property: "company", label: "company", type: ContentType.String },
-    { property: "solidsHiGravPc", label: "solidsHiGravPc", type: ContentType.Measure },
+    {
+      property: "solidsHiGravPc",
+      label: "solidsHiGravPc",
+      type: ContentType.Measure
+    },
     { property: "polymer", label: "polymer", type: ContentType.Measure },
     { property: "polyType", label: "polyType", type: ContentType.String },
     { property: "solCorPc", label: "solCorPc", type: ContentType.Measure },
