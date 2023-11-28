@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Models
                 Md = Md?.ToWitsml<WitsmlMeasuredDepthCoord>(),
                 Tvd = Tvd?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
                 NumReport = NumReport,
-                Fluids = Fluids.Select(fluid => fluid?.ToWitsml()).ToList(),
+                Fluids = Fluids?.Select(fluid => fluid?.ToWitsml())?.ToList(),
                 CommonData = CommonData?.ToWitsml()
             }.AsSingletonWitsmlList();
         }

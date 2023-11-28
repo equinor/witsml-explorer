@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Models
                 ObjectGrowing = StringHelpers.OptionalBooleanToString(ObjectGrowing),
                 ServiceCompany = ServiceCompany,
                 RunNumber = RunNumber,
-                IndexCurve = new WitsmlIndexCurve { Value = IndexCurve },
+                IndexCurve = IndexCurve != null ? new WitsmlIndexCurve { Value = IndexCurve } : null,
                 CommonData = CommonData?.ToWitsml(),
                 Direction = Direction
             };

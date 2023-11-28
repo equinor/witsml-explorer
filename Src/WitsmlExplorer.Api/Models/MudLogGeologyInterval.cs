@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Models
                 WtMudAv = mudLogGeologyInterval.WtMudAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
                 EcdTdAv = mudLogGeologyInterval.EcdTdAv?.ToWitsml<Witsml.Data.Measures.Measure>(),
                 DxcAv = mudLogGeologyInterval.DxcAv,
-                Lithologies = mudLogGeologyInterval.Lithologies.Select(lithology => lithology?.ToWitsml()).ToList(),
+                Lithologies = mudLogGeologyInterval.Lithologies?.Select(lithology => lithology?.ToWitsml())?.ToList(),
                 Description = mudLogGeologyInterval.Description,
                 CommonTime = mudLogGeologyInterval.CommonTime?.ToWitsml()
             };

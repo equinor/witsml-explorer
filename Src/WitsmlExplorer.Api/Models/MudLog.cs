@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Models
                 MudLogEngineers = MudLogEngineers,
                 StartMd = StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
                 EndMd = EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
-                GeologyInterval = GeologyInterval.Select(geologyInterval => geologyInterval?.ToWitsml()).ToList(),
+                GeologyInterval = GeologyInterval?.Select(geologyInterval => geologyInterval?.ToWitsml())?.ToList(),
                 CommonData = CommonData?.ToWitsml()
             }.AsSingletonWitsmlList();
         }
