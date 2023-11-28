@@ -24,7 +24,7 @@ jobs:
         run: yarn lint
         working-directory: ./Src/WitsmlExplorer.Frontend
       - name: Prettier
-        run: npx prettier --check .
+        run: npx prettier . --check
       - name: Build
         run: yarn build
         working-directory: ./Src/WitsmlExplorer.Frontend
