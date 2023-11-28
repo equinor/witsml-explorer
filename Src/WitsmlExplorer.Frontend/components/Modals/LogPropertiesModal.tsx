@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import formatDateString from "../DateFormatter";
@@ -67,10 +68,18 @@ const LogPropertiesModal = (props: LogPropertiesModalInterface): React.ReactElem
 
   const onSubmit = async (updatedLog: LogObject) => {
     setIsLoading(true);
-    const wellboreLogJob = {
-      logObject: updatedLog
-    };
-    await JobService.orderJob(editMode ? JobType.ModifyLogObject : JobType.CreateLogObject, wellboreLogJob);
+    if (editMode) {
+      const modifyJob = {
+        object: { ...updatedLog, objectType: ObjectType.Log },
+        objectType: ObjectType.Log
+      };
+      await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
+    } else {
+      const wellboreLogJob = {
+        logObject: updatedLog
+      };
+      await JobService.orderJob(JobType.CreateLogObject, wellboreLogJob);
+    }
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

@@ -6,6 +6,7 @@ import { DateTimeFormat, HideModalAction } from "../../contexts/operationStateRe
 import OperationType from "../../contexts/operationType";
 import BhaRun from "../../models/bhaRun";
 import { itemStateTypes } from "../../models/itemStateTypes";
+import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import { DateTimeField } from "./DateTimeField";
@@ -50,10 +51,11 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
 
   const onSubmit = async (updatedBhaRun: BhaRun) => {
     setIsLoading(true);
-    const wellboreBhaRunJob = {
-      bhaRun: updatedBhaRun
+    const modifyJob = {
+      object: { ...updatedBhaRun, objectType: ObjectType.BhaRun },
+      objectType: ObjectType.BhaRun
     };
-    await JobService.orderJob(JobType.ModifyBhaRun, wellboreBhaRunJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
     dispatchOperation({ type: OperationType.HideModal });
   };
 

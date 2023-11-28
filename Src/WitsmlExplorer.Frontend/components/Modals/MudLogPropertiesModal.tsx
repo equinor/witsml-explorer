@@ -7,6 +7,7 @@ import { itemStateValues } from "../../models/commonData";
 import MaxLength from "../../models/maxLength";
 import MudLog from "../../models/mudLog";
 import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
@@ -34,9 +35,10 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
   const onSubmit = async (updatedMudLog: EditableMudLog) => {
     setIsLoading(true);
     const modifyMudLogJob = {
-      mudLog: { ...updatedMudLog, commonData: updatedMudLog.itemState ? { itemState: updatedMudLog.itemState } : null }
+      object: { ...updatedMudLog, commonData: updatedMudLog.itemState ? { itemState: updatedMudLog.itemState } : null, objectType: ObjectType.MudLog },
+      objectType: ObjectType.MudLog
     };
-    await JobService.orderJob(JobType.ModifyMudLog, modifyMudLogJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyMudLogJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

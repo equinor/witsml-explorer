@@ -2,6 +2,7 @@ import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
@@ -37,9 +38,10 @@ const TubularPropertiesModal = (props: TubularPropertiesModalInterface): React.R
   const onSubmit = async (updatedTubular: Tubular) => {
     setIsLoading(true);
     const wellboreTubularJob = {
-      tubular: updatedTubular
+      object: { ...updatedTubular, objectType: ObjectType.Tubular },
+      objectType: ObjectType.Tubular
     };
-    await JobService.orderJob(JobType.ModifyTubular, wellboreTubularJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, wellboreTubularJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

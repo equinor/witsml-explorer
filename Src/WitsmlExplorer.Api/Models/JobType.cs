@@ -17,18 +17,10 @@ namespace WitsmlExplorer.Api.Models
         DeleteWellbore,
         ModifyLogCurveInfo,
         DeleteEmptyMnemonics,
-        ModifyBhaRun,
-        ModifyFormationMarker,
+        ModifyObjectOnWellbore,
         ModifyGeologyInterval,
-        ModifyLogObject,
-        ModifyMessageObject,
-        ModifyMudLog,
-        ModifyRig,
-        ModifyRisk,
         ModifyTrajectoryStation,
-        ModifyTubular,
         ModifyTubularComponent,
-        ModifyWbGeometry,
         ModifyWbGeometrySection,
         ModifyWell,
         ModifyWellbore,
@@ -50,6 +42,5 @@ namespace WitsmlExplorer.Api.Models
         SpliceLogs,
         CompareLogData,
         CountLogDataRows,
-        ModifyTrajectory
     }
 }

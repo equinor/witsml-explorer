@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             MudLog mudLog = job.MudLog;
             Verify(mudLog);
 
-            WitsmlMudLogs mudLogToCreate = MudLogQueries.SetupMudLogToUpdate(mudLog);
+            WitsmlMudLogs mudLogToCreate = mudLog.ToWitsml();
 
             QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(mudLogToCreate);
             if (result.IsSuccessful)

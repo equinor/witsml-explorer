@@ -4,6 +4,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import MessageObject from "../../models/messageObject";
+import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
@@ -37,10 +38,11 @@ const MessagePropertiesModal = (props: MessagePropertiesModalProps): React.React
 
   const onSubmit = async (updatedMessage: MessageObject) => {
     setIsLoading(true);
-    const wellboreMessageJob = {
-      messageObject: updatedMessage
+    const modifyJob = {
+      object: { ...updatedMessage, objectType: ObjectType.Message },
+      objectType: ObjectType.Message
     };
-    await JobService.orderJob(JobType.ModifyMessageObject, wellboreMessageJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

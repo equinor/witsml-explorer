@@ -8,6 +8,7 @@ import { itemStateTypes } from "../../models/itemStateTypes";
 import MaxLength from "../../models/maxLength";
 import Measure from "../../models/measure";
 import MeasureWithDatum from "../../models/measureWithDatum";
+import { ObjectType } from "../../models/objectType";
 import StratigraphicStruct from "../../models/stratigraphicStruct";
 import JobService, { JobType } from "../../services/jobService";
 import ModalDialog from "./ModalDialog";
@@ -59,15 +60,17 @@ const FormationMarkerPropertiesModal = (props: FormationMarkerPropertiesModalPro
 
   const onSubmit = async () => {
     setIsLoading(true);
-    const modifyFormationMarkerJob = {
-      formationMarker: {
+    const modifyJob = {
+      object: {
         ...editable,
         uid: formationMarker.uid,
         wellboreUid: formationMarker.wellboreUid,
-        wellUid: formationMarker.wellUid
-      }
+        wellUid: formationMarker.wellUid,
+        objectType: ObjectType.FormationMarker
+      },
+      objectType: ObjectType.FormationMarker
     };
-    await JobService.orderJob(JobType.ModifyFormationMarker, modifyFormationMarkerJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
