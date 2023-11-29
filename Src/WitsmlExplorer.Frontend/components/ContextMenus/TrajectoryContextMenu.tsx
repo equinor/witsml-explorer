@@ -32,7 +32,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
-  const trajectoryMenuItems = (): React.ReactElement[] => {
+  const extraMenuItems = (): React.ReactElement[] => {
     return [
       <MenuItem
         key={"paste"}
@@ -52,9 +52,7 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
 
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, trajectoryMenuItems())
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };
