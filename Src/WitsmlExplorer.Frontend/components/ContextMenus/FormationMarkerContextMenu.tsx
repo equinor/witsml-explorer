@@ -25,15 +25,20 @@ const FormationMarkerContextMenu = (props: ObjectContextMenuProps): React.ReactE
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
-        <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
+        ...ObjectMenuItems(checkedObjects, ObjectType.FormationMarker, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())
       ]}
     />
   );

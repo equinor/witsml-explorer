@@ -48,20 +48,23 @@ const MessageObjectContextMenu = (props: ObjectContextMenuProps): React.ReactEle
     });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
-        <MenuItem key={"compare"} onClick={onClickCompare} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`${menuItemText("Compare", "message", [])}`}</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Message, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };
