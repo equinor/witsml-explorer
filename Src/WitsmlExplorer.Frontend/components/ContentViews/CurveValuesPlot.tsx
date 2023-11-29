@@ -69,11 +69,14 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
 
   const onMouseOver = (e: any) => {
     if (e.targetType !== "axisLabel" || e.componentType !== "xAxis" || controlledTooltip?.visible) return;
-    const mnemonic = columns[Math.floor(parseInt(e.value)) + 1].label;
+    const mnemonic = columns[Math.floor(parseInt(e.value)) + 1];
+    const curveData = data.map((obj) => obj[mnemonic.columnOf.mnemonic]).filter(Number.isFinite);
+    const maxValue = curveData.length == 0 ? null : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity);
+    const minValue = curveData.length == 0 ? null : curveData.reduce((min, v) => (min <= v ? min : v), Infinity);
     setControlledTooltip({
       visible: true,
       position: { x: e.event.offsetX, y: e.event.offsetY + TOOLTIP_OFFSET_Y },
-      content: mnemonic
+      content: `${mnemonic.label}\nMin: ${minValue}\nMax: ${maxValue}`
     });
   };
 
@@ -153,7 +156,8 @@ export const CurveValuesPlot = React.memo((props: CurveValuesPlotProps): React.R
           top: controlledTooltip.position ? `${controlledTooltip.position.y}px` : "0px",
           left: controlledTooltip.position ? `${controlledTooltip.position.x}px` : "0px",
           border: "1px solid black",
-          transform: "translate(-50%, 0)"
+          transform: "translate(-50%, 0)",
+          whiteSpace: "pre"
         }}
       >
         {controlledTooltip.content}
@@ -180,6 +184,7 @@ const getChartOption = (
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
   const LABEL_MAXIMUM_LENGHT = 13;
+  const LABEL_NUMBER_MAX_LENGTH = 9;
   if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
@@ -257,7 +262,15 @@ const getChartOption = (
           const curve = dataColumns[index].columnOf.mnemonic;
           const minMaxValue = minMaxValues.find((v) => v.curve == curve);
           const title = curve.length > LABEL_MAXIMUM_LENGHT ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..." : curve;
-          const result = "{title|" + title + "}\n" + "{hr|} \n" + " {minValue|" + +minMaxValue.minValue?.toFixed(3) + "}{maxValue|" + +minMaxValue.maxValue?.toFixed(3) + "}";
+          let minValue = minMaxValue.minValue?.toFixed(3);
+          let maxValue = minMaxValue.maxValue?.toFixed(3);
+          if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
+            minValue = minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
+          }
+          if (maxValue.length > LABEL_NUMBER_MAX_LENGTH) {
+            maxValue = maxValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
+          }
+          const result = `{title|${title}}\n{hr|} \n {minValue|${minValue}}{maxValue|${maxValue}}`;
           return result;
         },
         rich: {
@@ -274,12 +287,14 @@ const getChartOption = (
           minValue: {
             width: 40,
             align: "left",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontSize: 11
           },
           maxValue: {
             width: 40,
             align: "right",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontSize: 11
           }
         }
       }
