@@ -30,7 +30,7 @@ const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, dispatchNavigation,openInQueryView, wellbore, null),
+        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, null),
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
