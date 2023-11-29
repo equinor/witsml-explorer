@@ -12,7 +12,6 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -22,20 +21,22 @@ const FluidsReportContextMenu = (props: ObjectContextMenuProps): React.ReactElem
   const openInQueryView = useOpenInQueryView();
   const fluidReferences = useClipboardComponentReferencesOfType(ComponentType.Fluid);
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"pasteComponent"}
+        onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}
+        disabled={fluidReferences === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "fluid", fluidReferences?.componentUids)}</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, wellbore),
-        <MenuItem
-          key={"pasteComponent"}
-          onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, checkedObjects[0])}
-          disabled={fluidReferences === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "fluid", fluidReferences?.componentUids)}</Typography>
-        </MenuItem>,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore)
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.FluidsReport, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

@@ -32,7 +32,6 @@ import { onClickPaste } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -141,68 +140,70 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     }
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"pastelogcurves"}
+        onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}
+        disabled={logCurvesReference === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
+      </MenuItem>,
+      <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} disabled={checkedObjects.length !== 1} icon="edit">
+        {[
+          <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Adjust range</Typography>
+          </MenuItem>,
+          <MenuItem key={"splice"} onClick={onClickSplice} disabled={checkedObjects.length < 2}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Splice logs</Typography>
+          </MenuItem>
+        ]}
+        ,
+      </NestedMenuItem>,
+      <Divider key={"divider"} />,
+      <NestedMenuItem key={"agentslognestedmenu"} label={"Agents"} disabled={checkedObjects.length !== 1} icon="person">
+        {[
+          <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} header`}</Typography>
+          </MenuItem>,
+          <MenuItem key={"comparelogdata"} onClick={onClickCompareData} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} data`}</Typography>
+          </MenuItem>,
+          <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Analyze gaps</Typography>
+          </MenuItem>,
+          <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
+          </MenuItem>,
+          <MenuItem key={"countLogData"} onClick={onClickCountLogData} disabled={checkedObjects.length !== 1}>
+            <StyledIcon name="assignment" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`${menuItemText("count", "log data", [])}`}</Typography>
+          </MenuItem>
+        ]}
+      </NestedMenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
+        <StyledIcon name="upload" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Import log data from .csv</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, wellbore),
-        <MenuItem
-          key={"pastelogcurves"}
-          onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}
-          disabled={logCurvesReference === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
-        </MenuItem>,
-        <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} disabled={checkedObjects.length !== 1} icon="edit">
-          {[
-            <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>Adjust range</Typography>
-            </MenuItem>,
-            <MenuItem key={"splice"} onClick={onClickSplice} disabled={checkedObjects.length < 2}>
-              <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>Splice logs</Typography>
-            </MenuItem>
-          ]}
-          ,
-        </NestedMenuItem>,
-        <Divider key={"divider"} />,
-        <NestedMenuItem key={"agentslognestedmenu"} label={"Agents"} disabled={checkedObjects.length !== 1} icon="person">
-          {[
-            <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} header`}</Typography>
-            </MenuItem>,
-            <MenuItem key={"comparelogdata"} onClick={onClickCompareData} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} data`}</Typography>
-            </MenuItem>,
-            <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="beat" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>Analyze gaps</Typography>
-            </MenuItem>,
-            <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
-            </MenuItem>,
-            <MenuItem key={"countLogData"} onClick={onClickCountLogData} disabled={checkedObjects.length !== 1}>
-              <StyledIcon name="assignment" color={colors.interactive.primaryResting} />
-              <Typography color={"primary"}>{`${menuItemText("count", "log data", [])}`}</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>,
-        <Divider key={"divider"} />,
-        <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
-          <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Import log data from .csv</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
-        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

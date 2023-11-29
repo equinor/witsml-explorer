@@ -13,7 +13,6 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -31,9 +30,8 @@ const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, dispatchNavigation, wellbore),
+        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, dispatchNavigation,openInQueryView, wellbore, null),
         <Divider key={"divider"} />,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
         <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
           <StyledIcon name="settings" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Properties</Typography>

@@ -13,7 +13,6 @@ import RiskPropertiesModal, { RiskPropertiesModalProps } from "../Modals/RiskPro
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const RiskObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -28,17 +27,19 @@ const RiskObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Risk, navigationState, dispatchOperation, dispatchNavigation, wellbore),
-        <Divider key={"divider"} />,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Risk, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

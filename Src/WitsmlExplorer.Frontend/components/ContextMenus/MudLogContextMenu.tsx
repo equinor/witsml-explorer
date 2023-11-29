@@ -15,7 +15,6 @@ import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -31,25 +30,27 @@ const MudLogContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"paste"}
+        onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0])}
+        disabled={geologyIntervalReferences === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, dispatchNavigation, wellbore),
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteComponents(servers, geologyIntervalReferences, dispatchOperation, checkedObjects[0])}
-          disabled={geologyIntervalReferences === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "geology interval", geologyIntervalReferences?.componentUids)}</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.MudLog, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

@@ -16,7 +16,6 @@ import { PropertiesModalMode } from "../Modals/ModalParts";
 import OperationType from "../../contexts/operationType";
 import TrajectoryPropertiesModal, { TrajectoryPropertiesModalProps } from "../Modals/TrajectoryPropertiesModal";
 import Trajectory from "../../models/trajectory";
-import { ObjectMenuItemsSecondPart } from "./ObjectMenuItemsSecondPart";
 
 const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
@@ -33,24 +32,28 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const trajectoryMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"paste"}
+        onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
+        disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, wellbore),
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
-          disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        ...ObjectMenuItemsSecondPart(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, openInQueryView, wellbore),
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
+        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, trajectoryMenuItems())
       ]}
     />
   );
