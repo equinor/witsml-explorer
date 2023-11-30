@@ -13,7 +13,7 @@ import { truncateAbortHandler } from "../../services/apiClient";
 import ComponentService from "../../services/componentService";
 import { Colors, colors, dark } from "../../styles/Colors";
 import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
-import { formatIndexValue } from "../Modals/SelectIndexToDisplayModal";
+import { formatIndexValue } from "../../tools/IndexHelpers";
 
 interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;
