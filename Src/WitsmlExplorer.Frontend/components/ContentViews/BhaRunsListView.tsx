@@ -40,7 +40,8 @@ export const BhaRunsListView = (): React.ReactElement => {
         dTimStartDrilling: formatDateString(bhaRun.dTimStartDrilling, timeZone, dateTimeFormat),
         dTimStopDrilling: formatDateString(bhaRun.dTimStopDrilling, timeZone, dateTimeFormat),
         dTimCreation: formatDateString(bhaRun.commonData.dTimCreation, timeZone, dateTimeFormat),
-        dTimLastChange: formatDateString(bhaRun.commonData.dTimLastChange, timeZone, dateTimeFormat)
+        dTimLastChange: formatDateString(bhaRun.commonData.dTimLastChange, timeZone, dateTimeFormat),
+        tubular: bhaRun.tubular?.value
       };
     });
   };

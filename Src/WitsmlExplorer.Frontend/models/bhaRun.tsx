@@ -1,11 +1,11 @@
 import CommonData from "./commonData";
 import Measure from "./measure";
 import ObjectOnWellbore from "./objectOnWellbore";
+import RefNameString from "./refNameString";
 
 export default interface BhaRun extends ObjectOnWellbore {
   numStringRun: string;
-  tubular: string;
-  tubularUidRef: string;
+  tubular: RefNameString;
   dTimStart: string;
   dTimStop: string;
   dTimStartDrilling: string;

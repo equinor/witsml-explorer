@@ -1,7 +1,7 @@
 import Measure from "./measure";
-import TrajRawData from "./trajRawData";
 import StnTrajCorUsed from "./stnTrajCorUsed";
 import StnTrajValid from "./stnTrajValid";
+import TrajRawData from "./trajRawData";
 
 export default interface TrajectoryStation {
   uid: string;
@@ -27,7 +27,7 @@ export default interface TrajectoryStation {
   gravTotalFieldReference?: Measure;
   magTotalFieldReference?: Measure;
   magDipAngleReference?: Measure;
-  statusTrajStation?: Measure;
+  statusTrajStation?: string;
   gravAxialRaw?: Measure;
   gravTran1Raw?: Measure;
   gravTran2Raw?: Measure;
