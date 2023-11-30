@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Data.MudLog;
 

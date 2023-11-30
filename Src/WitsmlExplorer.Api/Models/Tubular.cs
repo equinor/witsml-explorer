@@ -1,4 +1,3 @@
-using Witsml.Data;
 using Witsml.Data.Tubular;
 
 namespace WitsmlExplorer.Api.Models
