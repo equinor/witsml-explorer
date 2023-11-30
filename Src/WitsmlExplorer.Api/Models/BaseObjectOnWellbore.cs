@@ -8,7 +8,7 @@ namespace WitsmlExplorer.Api.Models
     {
         public override IWitsmlQueryType ToWitsml()
         {
-            return null;
+            throw new System.NotImplementedException("BaseObjectOnWellbore is not supposed to be converted to a WITSML model");
         }
     }
 }
