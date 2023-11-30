@@ -162,7 +162,7 @@ namespace WitsmlExplorer.Api.Services
                 mnemonics.Insert(0, indexMnemonic);
             }
 
-            WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);  //TODO CHECK
+            WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
             WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
