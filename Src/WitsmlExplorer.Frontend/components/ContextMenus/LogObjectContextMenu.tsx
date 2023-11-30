@@ -150,7 +150,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
       </MenuItem>,
-      <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} disabled={checkedObjects.length !== 1} icon="edit">
+      <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
         {[
           <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
             <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
