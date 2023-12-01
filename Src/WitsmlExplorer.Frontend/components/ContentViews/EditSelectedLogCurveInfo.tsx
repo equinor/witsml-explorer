@@ -182,7 +182,6 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
             selectedOptions={selectedMnemonics}
             onFocus={(e) => e.preventDefault()}
             onOptionsChange={onMnemonicsChange}
-            optionComponent={(props: any) => <div style={{}}>{props}</div>}
             style={
               {
                 "--eds-input-background": colors.ui.backgroundDefault
