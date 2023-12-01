@@ -1,9 +1,15 @@
 import "@testing-library/jest-dom";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { getAxisDefinition, getLogCurveInfo, getLogObject } from "../../../__testUtils__/testUtils";
+import {
+  getAxisDefinition,
+  getLogCurveInfo,
+  getLogObject
+} from "../../../__testUtils__/testUtils";
 import JobService from "../../../services/jobService";
-import LogCurveInfoPropertiesModal, { LogCurveInfoPropertiesModalProps } from "../LogCurveInfoPropertiesModal";
+import LogCurveInfoPropertiesModal, {
+  LogCurveInfoPropertiesModalProps
+} from "../LogCurveInfoPropertiesModal";
 
 jest.mock("../../../services/jobService");
 
@@ -52,7 +58,9 @@ it("AxisDefinition should be shown readonly in the LogCurveInfo modal when inclu
   const axisDefinitionLabel = inDialog.getByText(/axisdefinition/i);
   const orderInput = inDialog.getByRole("textbox", { name: /order/i });
   const countInput = inDialog.getByRole("textbox", { name: /count/i });
-  const doubleValuesInput = inDialog.getByRole("textbox", { name: /doubleValues/i });
+  const doubleValuesInput = inDialog.getByRole("textbox", {
+    name: /doubleValues/i
+  });
 
   expect(uidInput).toHaveValue(expectedLogCurveInfo.uid);
   expect(mnemonicInput).toHaveValue(expectedLogCurveInfo.mnemonic);

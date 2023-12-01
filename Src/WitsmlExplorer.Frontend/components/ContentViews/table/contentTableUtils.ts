@@ -26,7 +26,11 @@ export const constantTableOptions = {
 };
 
 const sortingIconSize = 16;
-export function calculateColumnWidth(label: string, isCompactMode: boolean, type?: ContentType): number {
+export function calculateColumnWidth(
+  label: string,
+  isCompactMode: boolean,
+  type?: ContentType
+): number {
   const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
   switch (label) {
     case "name":
@@ -53,13 +57,21 @@ export function calculateColumnWidth(label: string, isCompactMode: boolean, type
   return Math.max(estimatedLabelLength + padding, 100);
 }
 
-export const toggleRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, currentRow: Row<any>, table: Table<any>) => {
+export const toggleRow = (
+  e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
+  currentRow: Row<any>,
+  table: Table<any>
+) => {
   const previousIndex = table.options.meta?.previousIndex;
   if (e.shiftKey && previousIndex != null) {
     const currentIndex = currentRow.index;
     const sortedRows = table.getSortedRowModel().rows;
-    const sortedPreviousIndex = sortedRows.findIndex((row) => previousIndex == row.index);
-    const sortedCurrentIndex = sortedRows.findIndex((row) => currentIndex == row.index);
+    const sortedPreviousIndex = sortedRows.findIndex(
+      (row) => previousIndex == row.index
+    );
+    const sortedCurrentIndex = sortedRows.findIndex(
+      (row) => currentIndex == row.index
+    );
     if (sortedPreviousIndex == -1 || sortedCurrentIndex == -1) {
       return;
     }
@@ -69,20 +81,35 @@ export const toggleRow = (e: React.MouseEvent<HTMLButtonElement | HTMLDivElement
     for (let i = fromIndex; i <= toIndex; i++) {
       newSelections[sortedRows[i].index] = true;
     }
-    table.setRowSelection({ ...newSelections, ...table.getState().rowSelection });
+    table.setRowSelection({
+      ...newSelections,
+      ...table.getState().rowSelection
+    });
   } else {
     currentRow.toggleSelected();
   }
   table.options.meta?.setPreviousIndex(currentRow.index);
 };
 
-export function isClickable(onSelect: any, id: string, checkableRows: boolean): boolean {
-  return (onSelect != null || checkableRows) && id != selectId && id != expanderId;
+export function isClickable(
+  onSelect: any,
+  id: string,
+  checkableRows: boolean
+): boolean {
+  return (
+    (onSelect != null || checkableRows) && id != selectId && id != expanderId
+  );
 }
 
-export function calculateRowHeight(row: Row<any>, headCellHeight: number, cellHeight: number): number {
+export function calculateRowHeight(
+  row: Row<any>,
+  headCellHeight: number,
+  cellHeight: number
+): number {
   if (row.getIsExpanded() && row.original.inset?.length != 0) {
-    return headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0;
+    return (
+      headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0
+    );
   }
   return cellHeight;
 }
@@ -96,13 +123,20 @@ export const useInitActiveCurveFiltering = (table: Table<any>) => {
   }, [table]);
 };
 
-export const calculateHorizontalSpace = (columnItems: VirtualItem[], totalSize: number, stickyLeftColumns: number) => {
+export const calculateHorizontalSpace = (
+  columnItems: VirtualItem[],
+  totalSize: number,
+  stickyLeftColumns: number
+) => {
   if (columnItems.length <= stickyLeftColumns) {
     return [0, 0];
   }
   const spaceRight = totalSize - columnItems[columnItems.length - 1].end;
   if (stickyLeftColumns > 0) {
-    const spaceLeft = columnItems[stickyLeftColumns].start - columnItems[stickyLeftColumns - 1].start - columnItems[stickyLeftColumns - 1].size;
+    const spaceLeft =
+      columnItems[stickyLeftColumns].start -
+      columnItems[stickyLeftColumns - 1].start -
+      columnItems[stickyLeftColumns - 1].size;
     return [spaceLeft, spaceRight];
   }
   return [columnItems[0].start, spaceRight];

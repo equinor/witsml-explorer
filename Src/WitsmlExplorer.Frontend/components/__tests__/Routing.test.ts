@@ -1,7 +1,12 @@
 import { ParsedUrlQuery } from "querystring";
 import * as url from "url";
 import { NavigationState } from "../../contexts/navigationContext";
-import { getInitialState, SERVER_1, WELLBORE_1, WELL_1 } from "../../contexts/stateReducerTestUtils";
+import {
+  getInitialState,
+  SERVER_1,
+  WELLBORE_1,
+  WELL_1
+} from "../../contexts/stateReducerTestUtils";
 import { getQueryParamsFromState, getQueryParamsFromUrl } from "../Routing";
 
 it("Should include the server, well, and wellbore when generating the URL from state", () => {
@@ -21,7 +26,13 @@ it("Should include the server, well, and wellbore when generating the URL from s
 
   // Rewriting the following assertion may indicate that urls have changed
   // If so, maintainers of software that links to a deployment of Witsml Explorer should be notified
-  expect(result).toStrictEqual(`/?serverUrl=${encodeURIComponent(SERVER_1.url)}&wellUid=${encodeURIComponent(WELL_1.uid)}&wellboreUid=${encodeURIComponent(WELLBORE_1.uid)}`);
+  expect(result).toStrictEqual(
+    `/?serverUrl=${encodeURIComponent(
+      SERVER_1.url
+    )}&wellUid=${encodeURIComponent(
+      WELL_1.uid
+    )}&wellboreUid=${encodeURIComponent(WELLBORE_1.uid)}`
+  );
 });
 
 it("Should get the server url, well uid, and wellbore uid when getting query params from url", () => {

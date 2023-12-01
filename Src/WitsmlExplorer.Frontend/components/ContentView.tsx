@@ -56,7 +56,16 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
 
 const ContentView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore, selectedLogTypeGroup, selectedLogCurveInfo, selectedObjectGroup, selectedObject, selectedServer, currentSelected } = navigationState;
+  const {
+    selectedWell,
+    selectedWellbore,
+    selectedLogTypeGroup,
+    selectedLogCurveInfo,
+    selectedObjectGroup,
+    selectedObject,
+    selectedServer,
+    currentSelected
+  } = navigationState;
   const [view, setView] = useState(<WellsListView />);
 
   useEffect(() => {
@@ -66,7 +75,13 @@ const ContentView = (): React.ReactElement => {
       if (view != null) {
         setView(view);
       } else {
-        throw new Error(`No ${isGroup ? "group" : "object"} view is implemented for item: ${JSON.stringify(selectedObjectGroup)}`);
+        throw new Error(
+          `No ${
+            isGroup ? "group" : "object"
+          } view is implemented for item: ${JSON.stringify(
+            selectedObjectGroup
+          )}`
+        );
       }
     };
 
@@ -96,7 +111,9 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === ViewFlags.ObjectSearchView) {
         setView(<ObjectSearchListView />);
       } else {
-        throw new Error(`No view is implemented for item: ${JSON.stringify(currentSelected)}`);
+        throw new Error(
+          `No view is implemented for item: ${JSON.stringify(currentSelected)}`
+        );
       }
     }
   }, [currentSelected]);

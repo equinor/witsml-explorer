@@ -12,7 +12,12 @@ import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickDeleteComponents,
+  onClickShowObjectOnServer
+} from "./ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -28,7 +33,9 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
   const {
     navigationState: { selectedServer, selectedObject, servers }
   } = useContext(NavigationContext);
-  const fluidReferences = useClipboardComponentReferencesOfType(ComponentType.Fluid);
+  const fluidReferences = useClipboardComponentReferencesOfType(
+    ComponentType.Fluid
+  );
   const selectedFluidsReport = selectedObject as FluidsReport;
 
   const toDelete = createComponentReferences(
@@ -54,20 +61,64 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           disabled={checkedFluids.length === 0}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "fluid", checkedFluids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText("copy", "fluid", checkedFluids)}
+          </Typography>
         </MenuItem>,
-        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.Fluid} componentsToCopy={checkedFluids} />,
-        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, fluidReferences, dispatchOperation, selectedFluidsReport)} disabled={fluidReferences === null}>
+        <CopyComponentsToServerMenuItem
+          key={"copyComponentToServer"}
+          componentType={ComponentType.Fluid}
+          componentsToCopy={checkedFluids}
+        />,
+        <MenuItem
+          key={"paste"}
+          onClick={() =>
+            pasteComponents(
+              servers,
+              fluidReferences,
+              dispatchOperation,
+              selectedFluidsReport
+            )
+          }
+          disabled={fluidReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "fluid", fluidReferences?.componentUids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText("paste", "fluid", fluidReferences?.componentUids)}
+          </Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedFluids.length === 0}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("delete", "fluid", checkedFluids)}</Typography>
+        <MenuItem
+          key={"delete"}
+          onClick={() =>
+            onClickDeleteComponents(
+              dispatchOperation,
+              toDelete,
+              JobType.DeleteComponents
+            )
+          }
+          disabled={checkedFluids.length === 0}
+        >
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {menuItemText("delete", "fluid", checkedFluids)}
+          </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, selectedFluidsReport, ObjectType.FluidsReport)}>
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowObjectOnServer(
+                  dispatchOperation,
+                  server,
+                  selectedFluidsReport,
+                  ObjectType.FluidsReport
+                )
+              }
+            >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}

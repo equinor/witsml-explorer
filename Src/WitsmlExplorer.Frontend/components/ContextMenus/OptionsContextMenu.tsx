@@ -15,8 +15,11 @@ export interface OptionsContextMenuProps {
   onOptionChange: (newValue: string) => void;
 }
 
-const OptionsContextMenu = (props: OptionsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, options, onOptionChange, getOptionInformation } = props;
+const OptionsContextMenu = (
+  props: OptionsContextMenuProps
+): React.ReactElement => {
+  const { dispatchOperation, options, onOptionChange, getOptionInformation } =
+    props;
 
   const handleOptionChange = (option: string) => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -29,8 +32,17 @@ const OptionsContextMenu = (props: OptionsContextMenuProps): React.ReactElement 
         <OptionLayout>
           <Typography color={"primary"}>{pluralize(option)}</Typography>
           {getOptionInformation?.(option) && (
-            <Tooltip title={<TooltipLayout>{getOptionInformation(option)}</TooltipLayout>}>
-              <Icon name="infoCircle" color={colors.interactive.primaryResting} size={18} data-testid={`${option}-info-icon`} />
+            <Tooltip
+              title={
+                <TooltipLayout>{getOptionInformation(option)}</TooltipLayout>
+              }
+            >
+              <Icon
+                name="infoCircle"
+                color={colors.interactive.primaryResting}
+                size={18}
+                data-testid={`${option}-info-icon`}
+              />
             </Tooltip>
           )}
         </OptionLayout>

@@ -12,18 +12,22 @@ export function displayReplaceModal(
   printObject: (object: any) => JSX.Element
 ) {
   const contentIntro =
-    objectsToCopy.length > 1 ? `${existingObjects.length} out of the ${objectsToCopy.length} ${toCopyType}s to copy already` : `The ${toCopyType} you are trying to copy already`;
+    objectsToCopy.length > 1
+      ? `${existingObjects.length} out of the ${objectsToCopy.length} ${toCopyType}s to copy already`
+      : `The ${toCopyType} you are trying to copy already`;
   const content =
     existingObjects.length > 1 ? (
       <span>
-        {contentIntro} exist on the target {targetType}. Do you want to delete and replace them?
+        {contentIntro} exist on the target {targetType}. Do you want to delete
+        and replace them?
         <br />
         Existing {toCopyType}s:
         {existingObjects.map((object) => printObject(object))}
       </span>
     ) : (
       <span>
-        {contentIntro} exists on the target {targetType}. Do you want to delete and replace it?
+        {contentIntro} exists on the target {targetType}. Do you want to delete
+        and replace it?
         <br />
         Existing {toCopyType}:{printObject(existingObjects[0])}
       </span>
@@ -34,9 +38,14 @@ export function displayReplaceModal(
       content={content}
       onConfirm={onConfirm}
       confirmColor={"danger"}
-      confirmText={`Replace ${toCopyType}${existingObjects.length > 1 ? "s" : ""}`}
+      confirmText={`Replace ${toCopyType}${
+        existingObjects.length > 1 ? "s" : ""
+      }`}
       switchButtonPlaces={true}
     />
   );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: confirmation
+  });
 }

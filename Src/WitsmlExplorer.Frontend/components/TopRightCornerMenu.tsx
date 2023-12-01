@@ -11,7 +11,9 @@ import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import JobsButton from "./JobsButton";
 import { SettingsModal } from "./Modals/SettingsModal";
-import UserCredentialsModal, { UserCredentialsModalProps } from "./Modals/UserCredentialsModal";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "./Modals/UserCredentialsModal";
 import ServerManagerButton from "./ServerManagerButton";
 
 const TopRightCornerMenu = (): React.ReactElement => {
@@ -27,7 +29,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
   const showLabels = documentWidth > 1180;
 
   const openSettingsMenu = () => {
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <SettingsModal /> });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <SettingsModal />
+    });
   };
 
   const openCredentialsModal = () => {
@@ -35,10 +40,17 @@ const TopRightCornerMenu = (): React.ReactElement => {
       server: selectedServer,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(selectedServer, username, dispatchNavigation);
+        AuthorizationService.onAuthorized(
+          selectedServer,
+          username,
+          dispatchNavigation
+        );
       }
     };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <UserCredentialsModal {...userCredentialsModalProps} />
+    });
   };
 
   const openQueryView = () => {
@@ -48,18 +60,31 @@ const TopRightCornerMenu = (): React.ReactElement => {
   return (
     <Layout>
       {selectedServer?.currentUsername && (
-        <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openCredentialsModal}>
+        <StyledButton
+          colors={colors}
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openCredentialsModal}
+        >
           <Icon name="person" />
           {showLabels && selectedServer.currentUsername}
         </StyledButton>
       )}
       <ServerManagerButton showLabels={showLabels} />
       <JobsButton showLabels={showLabels} />
-      <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openQueryView} disabled={!selectedServer}>
+      <StyledButton
+        colors={colors}
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openQueryView}
+        disabled={!selectedServer}
+      >
         <Icon name="code" />
         {showLabels && "Query"}
       </StyledButton>
-      <StyledButton colors={colors} variant={showLabels ? "ghost" : "ghost_icon"} onClick={openSettingsMenu}>
+      <StyledButton
+        colors={colors}
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openSettingsMenu}
+      >
         <Icon name="settings" />
         {showLabels && "Settings"}
       </StyledButton>

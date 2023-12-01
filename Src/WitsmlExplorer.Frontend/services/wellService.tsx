@@ -3,7 +3,9 @@ import Well, { emptyWell } from "../models/well";
 import { ApiClient, throwError } from "./apiClient";
 
 export default class WellService {
-  public static async getWells(abortSignal: AbortSignal = null): Promise<Well[]> {
+  public static async getWells(
+    abortSignal: AbortSignal = null
+  ): Promise<Well[]> {
     const response = await ApiClient.get(`api/wells`, abortSignal);
 
     if (response.ok) {
@@ -14,7 +16,10 @@ export default class WellService {
     }
   }
 
-  public static async getWell(wellUid: string, abortSignal: AbortSignal = null): Promise<Well> {
+  public static async getWell(
+    wellUid: string,
+    abortSignal: AbortSignal = null
+  ): Promise<Well> {
     const response = await ApiClient.get(`/api/wells/${wellUid}`, abortSignal);
     if (response.ok) {
       return response.json();

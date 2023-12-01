@@ -3,16 +3,42 @@ import { Server } from "../../models/server";
 import Trajectory from "../../models/trajectory";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { RemoveWellAction, RemoveWellboreAction, RemoveWitsmlServerAction, UpdateWellboreObjectAction } from "../modificationActions";
+import {
+  RemoveWellAction,
+  RemoveWellboreAction,
+  RemoveWitsmlServerAction,
+  UpdateWellboreObjectAction
+} from "../modificationActions";
 import ModificationType from "../modificationType";
 import { NavigationAction } from "../navigationAction";
-import { EMPTY_NAVIGATION_STATE, NavigationState, Selectable } from "../navigationContext";
+import {
+  EMPTY_NAVIGATION_STATE,
+  NavigationState,
+  Selectable
+} from "../navigationContext";
 import { reducer } from "../navigationStateReducer";
-import { LOG_1, SERVER_1, TRAJECTORY_1, WELLBORE_1, WELLBORE_2, WELLS, WELL_1, WELL_2, WELL_3, getInitialState } from "../stateReducerTestUtils";
+import {
+  LOG_1,
+  SERVER_1,
+  TRAJECTORY_1,
+  WELLBORE_1,
+  WELLBORE_2,
+  WELLS,
+  WELL_1,
+  WELL_2,
+  WELL_3,
+  getInitialState
+} from "../stateReducerTestUtils";
 
 it("Should only update list of servers if no server selected", () => {
-  const editedServer: Server = { ...SERVER_1, description: "Another description" };
-  const updateServerAction = { type: ModificationType.UpdateServer, payload: { server: editedServer } };
+  const editedServer: Server = {
+    ...SERVER_1,
+    description: "Another description"
+  };
+  const updateServerAction = {
+    type: ModificationType.UpdateServer,
+    payload: { server: editedServer }
+  };
   const initialState = {
     ...EMPTY_NAVIGATION_STATE,
     servers: [SERVER_1]
@@ -25,8 +51,14 @@ it("Should only update list of servers if no server selected", () => {
 });
 
 it("Should update list of servers, and current selected, if editing current selected server", () => {
-  const editedServer: Server = { ...SERVER_1, description: "Another description" };
-  const selectServerAction = { type: ModificationType.UpdateServer, payload: { server: editedServer } };
+  const editedServer: Server = {
+    ...SERVER_1,
+    description: "Another description"
+  };
+  const selectServerAction = {
+    type: ModificationType.UpdateServer,
+    payload: { server: editedServer }
+  };
   const initialState = {
     ...getInitialState(),
     selectedServer: SERVER_1,
@@ -44,8 +76,18 @@ it("Should update list of servers, and current selected, if editing current sele
 });
 
 it("Should update list of servers when adding a server", () => {
-  const newServer: Server = { id: "1", name: "New server", url: "https://example.com", description: "A new server", roles: [], depthLogDecimals: 0 };
-  const selectServerAction = { type: ModificationType.AddServer, payload: { server: newServer } };
+  const newServer: Server = {
+    id: "1",
+    name: "New server",
+    url: "https://example.com",
+    description: "A new server",
+    roles: [],
+    depthLogDecimals: 0
+  };
+  const selectServerAction = {
+    type: ModificationType.AddServer,
+    payload: { server: newServer }
+  };
   const actual = reducer({ ...getInitialState() }, selectServerAction);
   expect(actual).toStrictEqual({
     ...EMPTY_NAVIGATION_STATE,
@@ -71,7 +113,10 @@ it("Should update logs for selected wellbore", () => {
     selectedWellbore: { ...WELLBORE_1 }
   };
 
-  const updatedWellbore = { ...WELLBORE_1, logs: [{ ...LOG_1, name: "Updated" }] };
+  const updatedWellbore = {
+    ...WELLBORE_1,
+    logs: [{ ...LOG_1, name: "Updated" }]
+  };
   const updatedWell = { ...WELL_1, wellbores: [updatedWellbore] };
 
   const actual = reducer(initialState, updateLogOnWellbore);
@@ -166,7 +211,10 @@ it("Should update refreshed well", () => {
     payload: { well: refreshedWell }
   };
   const afterRefreshWell = reducer(initialState, refreshWellAction);
-  const refreshedWellWithLogs = { ...refreshedWell, wellbores: [{ ...WELLBORE_1_WITH_LOGS, logs: [LOG_1] }] };
+  const refreshedWellWithLogs = {
+    ...refreshedWell,
+    wellbores: [{ ...WELLBORE_1_WITH_LOGS, logs: [LOG_1] }]
+  };
   const expectedListOfWells = [refreshedWellWithLogs, WELL_2, WELL_3];
   const expectedState = {
     ...getInitialState(),
@@ -201,21 +249,33 @@ it("Should update added well", () => {
 
 it("Should update refreshed wellbore", () => {
   const WELLBORE_1_WITH_LOGS = { ...WELLBORE_1, logs: [LOG_1] };
-  const wells = [{ ...WELL_1, wellbores: [WELLBORE_1_WITH_LOGS] }, WELL_2, WELL_3];
+  const wells = [
+    { ...WELL_1, wellbores: [WELLBORE_1_WITH_LOGS] },
+    WELL_2,
+    WELL_3
+  ];
   const initialState = {
     ...getInitialState(),
     wells,
     selectedWellbore: WELLBORE_1_WITH_LOGS
   };
 
-  const refreshedWellbore = { ...WELLBORE_1, name: "wellbore1_renamed", logs: [LOG_1] };
+  const refreshedWellbore = {
+    ...WELLBORE_1,
+    name: "wellbore1_renamed",
+    logs: [LOG_1]
+  };
   const refreshWellboreAction = {
     type: ModificationType.UpdateWellbore,
     payload: { wellbore: refreshedWellbore }
   };
   const afterRefreshWellbore = reducer(initialState, refreshWellboreAction);
   const refreshedWellboreWithLogs = { ...refreshedWellbore, logs: [LOG_1] };
-  const expectedListOfWells = [{ ...WELL_1, wellbores: [refreshedWellboreWithLogs] }, WELL_2, WELL_3];
+  const expectedListOfWells = [
+    { ...WELL_1, wellbores: [refreshedWellboreWithLogs] },
+    WELL_2,
+    WELL_3
+  ];
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,
@@ -225,7 +285,11 @@ it("Should update refreshed wellbore", () => {
 });
 
 it("Should update refreshed log object", () => {
-  const wells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [LOG_1] }] }, WELL_2, WELL_3];
+  const wells = [
+    { ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [LOG_1] }] },
+    WELL_2,
+    WELL_3
+  ];
   const initialState = {
     ...getInitialState(),
     selectedObject: LOG_1,
@@ -235,10 +299,18 @@ it("Should update refreshed log object", () => {
   const refreshedLog = { ...LOG_1, name: "renamed log" };
   const refreshLogAction: UpdateWellboreObjectAction = {
     type: ModificationType.UpdateWellboreObject,
-    payload: { objectToUpdate: refreshedLog, objectType: ObjectType.Log, isDeleted: false }
+    payload: {
+      objectToUpdate: refreshedLog,
+      objectType: ObjectType.Log,
+      isDeleted: false
+    }
   };
   const afterRefreshLog = reducer(initialState, refreshLogAction);
-  const expectedListOfWells = [{ ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [refreshedLog] }] }, WELL_2, WELL_3];
+  const expectedListOfWells = [
+    { ...WELL_1, wellbores: [{ ...WELLBORE_1, logs: [refreshedLog] }] },
+    WELL_2,
+    WELL_3
+  ];
   const expectedState = {
     ...getInitialState(),
     wells: expectedListOfWells,

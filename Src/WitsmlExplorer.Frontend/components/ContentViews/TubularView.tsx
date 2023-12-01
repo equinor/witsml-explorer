@@ -7,8 +7,15 @@ import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TubularComponentContextMenu, { TubularComponentContextMenuProps } from "../ContextMenus/TubularComponentContextMenu";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import TubularComponentContextMenu, {
+  TubularComponentContextMenuProps
+} from "../ContextMenus/TubularComponentContextMenu";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 export interface TubularComponentRow extends ContentTableRow {
   uid: string;
@@ -25,7 +32,9 @@ export interface TubularComponentRow extends ContentTableRow {
 export const TubularView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
-  const [tubularComponents, setTubularComponents] = useState<TubularComponent[]>([]);
+  const [tubularComponents, setTubularComponents] = useState<
+    TubularComponent[]
+  >([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedTubular = selectedObject as Tubular;
@@ -57,7 +66,11 @@ export const TubularView = (): React.ReactElement => {
     }
   }, [selectedTubular]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTubularComponents: TubularComponentRow[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedTubularComponents: TubularComponentRow[]
+  ) => {
     const contextMenuProps: TubularComponentContextMenuProps = {
       checkedTubularComponents,
       dispatchNavigation,
@@ -67,17 +80,35 @@ export const TubularView = (): React.ReactElement => {
       servers
     };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularComponentContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <TubularComponentContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const columns: ContentTableColumn[] = [
     { property: "sequence", label: "sequence", type: ContentType.Number },
-    { property: "typeTubularComponent", label: "typeTubularComp", type: ContentType.String },
+    {
+      property: "typeTubularComponent",
+      label: "typeTubularComp",
+      type: ContentType.String
+    },
     { property: "innerDiameter", label: "id", type: ContentType.Measure },
     { property: "od", label: "od", type: ContentType.Measure },
     { property: "len", label: "len", type: ContentType.Measure },
-    { property: "tubularName", label: "tubular.name", type: ContentType.String },
-    { property: "typeTubularAssy", label: "tubular.typeTubularAssy", type: ContentType.String },
+    {
+      property: "tubularName",
+      label: "tubular.name",
+      type: ContentType.String
+    },
+    {
+      property: "typeTubularAssy",
+      label: "tubular.typeTubularAssy",
+      type: ContentType.String
+    },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
@@ -86,9 +117,15 @@ export const TubularView = (): React.ReactElement => {
       id: tubularComponent.uid,
       sequence: tubularComponent.sequence,
       typeTubularComponent: tubularComponent.typeTubularComponent,
-      innerDiameter: `${tubularComponent.id?.value?.toFixed(4)} ${tubularComponent.id?.uom}`,
-      od: `${tubularComponent.od?.value?.toFixed(4)} ${tubularComponent.od?.uom}`,
-      len: `${tubularComponent.len?.value?.toFixed(4)} ${tubularComponent.len?.uom}`,
+      innerDiameter: `${tubularComponent.id?.value?.toFixed(4)} ${
+        tubularComponent.id?.uom
+      }`,
+      od: `${tubularComponent.od?.value?.toFixed(4)} ${
+        tubularComponent.od?.uom
+      }`,
+      len: `${tubularComponent.len?.value?.toFixed(4)} ${
+        tubularComponent.len?.uom
+      }`,
       tubularName: selectedTubular?.name,
       typeTubularAssy: selectedTubular?.typeTubularAssy,
       uid: tubularComponent.uid,

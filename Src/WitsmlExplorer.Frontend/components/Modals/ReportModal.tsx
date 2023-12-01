@@ -1,4 +1,10 @@
-import { Accordion, Banner, DotProgress, Icon, Typography } from "@equinor/eds-core-react";
+import {
+  Accordion,
+  Banner,
+  DotProgress,
+  Icon,
+  Typography
+} from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
@@ -8,7 +14,11 @@ import BaseReport, { createReport } from "../../models/reports/BaseReport";
 import JobService from "../../services/jobService";
 import NotificationService from "../../services/notificationService";
 import { Colors } from "../../styles/Colors";
-import { ContentTable, ContentTableColumn, ContentType } from "../ContentViews/table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "../ContentViews/table";
 import { StyledAccordionHeader } from "./LogComparisonModal";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 
@@ -75,24 +85,45 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
               {report.summary?.includes("\n") ? (
                 <Accordion>
                   <Accordion.Item>
-                    <StyledAccordionHeader colors={colors}>{report.summary.split("\n")[0]}</StyledAccordionHeader>
-                    <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
-                      <Typography style={{ whiteSpace: "pre-line" }}>{report.summary.split("\n").splice(1).join("\n")}</Typography>
+                    <StyledAccordionHeader colors={colors}>
+                      {report.summary.split("\n")[0]}
+                    </StyledAccordionHeader>
+                    <Accordion.Panel
+                      style={{ backgroundColor: colors.ui.backgroundLight }}
+                    >
+                      <Typography style={{ whiteSpace: "pre-line" }}>
+                        {report.summary.split("\n").splice(1).join("\n")}
+                      </Typography>
                     </Accordion.Panel>
                   </Accordion.Item>
                 </Accordion>
               ) : (
                 <Typography>{report.summary}</Typography>
               )}
-              {columns.length > 0 && <ContentTable columns={columns} data={report.reportItems} downloadToCsvFileName={report.title.replace(/\s+/g, "")} />}
+              {columns.length > 0 && (
+                <ContentTable
+                  columns={columns}
+                  data={report.reportItems}
+                  downloadToCsvFileName={report.title.replace(/\s+/g, "")}
+                />
+              )}
             </>
           ) : (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}>Waiting for the job to finish.</Typography>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "0.5em" }}
+              >
+                <Typography
+                  style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}
+                >
+                  Waiting for the job to finish.
+                </Typography>
                 <DotProgress />
               </div>
-              <Typography>The report will also be available in the jobs view once the job is finished.</Typography>
+              <Typography>
+                The report will also be available in the jobs view once the job
+                is finished.
+              </Typography>
             </>
           )}
         </ContentLayout>
@@ -110,21 +141,31 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   if (!jobId) return null;
 
   useEffect(() => {
-    const unsubscribeOnJobFinished = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(async (notification) => {
-      if (notification.jobId === jobId) {
-        const jobInfo = await JobService.getUserJobInfo(notification.jobId);
-        if (!jobInfo) {
-          setReport(createReport(`The job has finished, but could not find job info for job ${jobId}`));
-        } else {
-          setReport(jobInfo.report);
+    const unsubscribeOnJobFinished =
+      NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(
+        async (notification) => {
+          if (notification.jobId === jobId) {
+            const jobInfo = await JobService.getUserJobInfo(notification.jobId);
+            if (!jobInfo) {
+              setReport(
+                createReport(
+                  `The job has finished, but could not find job info for job ${jobId}`
+                )
+              );
+            } else {
+              setReport(jobInfo.report);
+            }
+          }
         }
-      }
-    });
-    const unsubscribeOnJobFailed = NotificationService.Instance.alertDispatcherAsEvent.subscribe(async (notification) => {
-      if (notification.jobId === jobId) {
-        setReport(createReport(notification.message, notification.reason));
-      }
-    });
+      );
+    const unsubscribeOnJobFailed =
+      NotificationService.Instance.alertDispatcherAsEvent.subscribe(
+        async (notification) => {
+          if (notification.jobId === jobId) {
+            setReport(createReport(notification.message, notification.reason));
+          }
+        }
+      );
 
     return function cleanup() {
       unsubscribeOnJobFinished();

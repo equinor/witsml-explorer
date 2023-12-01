@@ -12,20 +12,32 @@ import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import ObjectReference from "../../models/jobs/objectReference";
 import LogObject from "../../models/logObject";
-import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
+import ObjectOnWellbore, {
+  toObjectReference
+} from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
-import AnalyzeGapModal, { AnalyzeGapModalProps } from "../Modals/AnalyzeGapModal";
-import LogComparisonModal, { LogComparisonModalProps } from "../Modals/LogComparisonModal";
-import LogDataImportModal, { LogDataImportModalProps } from "../Modals/LogDataImportModal";
+import AnalyzeGapModal, {
+  AnalyzeGapModalProps
+} from "../Modals/AnalyzeGapModal";
+import LogComparisonModal, {
+  LogComparisonModalProps
+} from "../Modals/LogComparisonModal";
+import LogDataImportModal, {
+  LogDataImportModalProps
+} from "../Modals/LogDataImportModal";
 import LogPropertiesModal from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import ObjectPickerModal, { ObjectPickerProps } from "../Modals/ObjectPickerModal";
+import ObjectPickerModal, {
+  ObjectPickerProps
+} from "../Modals/ObjectPickerModal";
 import { ReportModal } from "../Modals/ReportModal";
 import SpliceLogsModal from "../Modals/SpliceLogsModal";
-import TrimLogObjectModal, { TrimLogObjectModalProps } from "../Modals/TrimLogObject/TrimLogObjectModal";
+import TrimLogObjectModal, {
+  TrimLogObjectModalProps
+} from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
@@ -33,40 +45,70 @@ import NestedMenuItem from "./NestedMenuItem";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
-const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const LogObjectContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers, selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
-  const logCurvesReference: CopyRangeClipboard = useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
+  const logCurvesReference: CopyRangeClipboard =
+    useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
 
   const onClickProperties = () => {
     const logObject = checkedObjects[0];
-    const logPropertiesModalProps = { mode: PropertiesModalMode.Edit, logObject, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <LogPropertiesModal {...logPropertiesModalProps} /> });
+    const logPropertiesModalProps = {
+      mode: PropertiesModalMode.Edit,
+      logObject,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogPropertiesModal {...logPropertiesModalProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
-    const trimLogObjectProps: TrimLogObjectModalProps = { dispatchNavigation, dispatchOperation, logObject };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <TrimLogObjectModal {...trimLogObjectProps} /> });
+    const trimLogObjectProps: TrimLogObjectModalProps = {
+      dispatchNavigation,
+      dispatchOperation,
+      logObject
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <TrimLogObjectModal {...trimLogObjectProps} />
+    });
   };
 
   const onClickImport = async () => {
-    const logDataImportModalProps: LogDataImportModalProps = { targetLog: checkedObjects[0] };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <LogDataImportModal {...logDataImportModalProps} /> });
+    const logDataImportModalProps: LogDataImportModalProps = {
+      targetLog: checkedObjects[0]
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogDataImportModal {...logDataImportModalProps} />
+    });
   };
   const onClickAnalyzeGaps = () => {
     const logObject = checkedObjects[0];
-    const analyzeGapModalProps: AnalyzeGapModalProps = { logObject, mnemonics: [] };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <AnalyzeGapModal {...analyzeGapModalProps} /> });
+    const analyzeGapModalProps: AnalyzeGapModalProps = {
+      logObject,
+      mnemonics: []
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <AnalyzeGapModal {...analyzeGapModalProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const orderCopyJob = () => {
-    const targetReference: ObjectReference = toObjectReference(checkedObjects[0]);
+    const targetReference: ObjectReference = toObjectReference(
+      checkedObjects[0]
+    );
     const copyJob: CopyComponentsJob = {
       source: logCurvesReference,
       target: targetReference,
@@ -80,13 +122,23 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
   const onClickCompareHeader = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
-      const props: LogComparisonModalProps = { sourceLog: checkedObjects[0], sourceServer: selectedServer, targetServer, targetObject, dispatchOperation };
+      const props: LogComparisonModalProps = {
+        sourceLog: checkedObjects[0],
+        sourceServer: selectedServer,
+        targetServer,
+        targetObject,
+        dispatchOperation
+      };
       dispatchOperation({
         type: OperationType.DisplayModal,
         payload: <LogComparisonModal {...props} />
       });
     };
-    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked };
+    const props: ObjectPickerProps = {
+      sourceObject: checkedObjects[0],
+      objectType: ObjectType.Log,
+      onPicked
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <ObjectPickerModal {...props} />
@@ -95,15 +147,36 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
 
   const onClickCompareData = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const onPicked = async (targetObject: ObjectOnWellbore, targetServer: Server, includeIndexDuplicates: boolean) => {
-      const compareLogDataJob: CompareLogDataJob = { sourceLog: checkedObjects[0], targetLog: targetObject, includeIndexDuplicates };
-      const jobId = await JobService.orderJobAtServer(JobType.CompareLogData, compareLogDataJob, targetServer, selectedServer);
+    const onPicked = async (
+      targetObject: ObjectOnWellbore,
+      targetServer: Server,
+      includeIndexDuplicates: boolean
+    ) => {
+      const compareLogDataJob: CompareLogDataJob = {
+        sourceLog: checkedObjects[0],
+        targetLog: targetObject,
+        includeIndexDuplicates
+      };
+      const jobId = await JobService.orderJobAtServer(
+        JobType.CompareLogData,
+        compareLogDataJob,
+        targetServer,
+        selectedServer
+      );
       if (jobId) {
         const reportModalProps = { jobId };
-        dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+        dispatchOperation({
+          type: OperationType.DisplayModal,
+          payload: <ReportModal {...reportModalProps} />
+        });
       }
     };
-    const props: ObjectPickerProps = { sourceObject: checkedObjects[0], objectType: ObjectType.Log, onPicked, includeIndexDuplicatesOption: true };
+    const props: ObjectPickerProps = {
+      sourceObject: checkedObjects[0],
+      objectType: ObjectType.Log,
+      onPicked,
+      includeIndexDuplicatesOption: true
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <ObjectPickerModal {...props} />
@@ -114,10 +187,16 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logReference: LogObject = checkedObjects[0];
     const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
-    const jobId = await JobService.orderJob(JobType.CheckLogHeader, checkLogHeaderJob);
+    const jobId = await JobService.orderJob(
+      JobType.CheckLogHeader,
+      checkLogHeaderJob
+    );
     if (jobId) {
       const reportModalProps = { jobId };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal {...reportModalProps} />
+      });
     }
   };
 
@@ -133,10 +212,16 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logReference: LogObject = checkedObjects[0];
     const checkLogHeaderJob: CheckLogHeaderJob = { logReference };
-    const jobId = await JobService.orderJob(JobType.CountLogDataRows, checkLogHeaderJob);
+    const jobId = await JobService.orderJob(
+      JobType.CountLogDataRows,
+      checkLogHeaderJob
+    );
     if (jobId) {
       const reportModalProps = { jobId };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal {...reportModalProps} />
+      });
     }
   };
 
@@ -144,57 +229,140 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
     return [
       <MenuItem
         key={"pastelogcurves"}
-        onClick={() => onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)}
+        onClick={() =>
+          onClickPaste(servers, logCurvesReference.serverUrl, orderCopyJob)
+        }
         disabled={logCurvesReference === null || checkedObjects.length !== 1}
       >
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>{menuItemText("paste", "log curve", logCurvesReference?.componentUids)}</Typography>
+        <Typography color={"primary"}>
+          {menuItemText(
+            "paste",
+            "log curve",
+            logCurvesReference?.componentUids
+          )}
+        </Typography>
       </MenuItem>,
       <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
         {[
-          <MenuItem key={"trimlogobject"} onClick={onClickTrimLogObject} disabled={checkedObjects.length !== 1}>
-            <StyledIcon name="formatLine" color={colors.interactive.primaryResting} />
+          <MenuItem
+            key={"trimlogobject"}
+            onClick={onClickTrimLogObject}
+            disabled={checkedObjects.length !== 1}
+          >
+            <StyledIcon
+              name="formatLine"
+              color={colors.interactive.primaryResting}
+            />
             <Typography color={"primary"}>Adjust range</Typography>
           </MenuItem>,
-          <MenuItem key={"splice"} onClick={onClickSplice} disabled={checkedObjects.length < 2}>
-            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+          <MenuItem
+            key={"splice"}
+            onClick={onClickSplice}
+            disabled={checkedObjects.length < 2}
+          >
+            <StyledIcon
+              name="compare"
+              color={colors.interactive.primaryResting}
+            />
             <Typography color={"primary"}>Splice logs</Typography>
           </MenuItem>
         ]}
         ,
       </NestedMenuItem>,
       <Divider key={"divider"} />,
-      <NestedMenuItem key={"agentslognestedmenu"} label={"Agents"} disabled={checkedObjects.length !== 1} icon="person">
+      <NestedMenuItem
+        key={"agentslognestedmenu"}
+        label={"Agents"}
+        disabled={checkedObjects.length !== 1}
+        icon="person"
+      >
         {[
-          <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
-            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} header`}</Typography>
+          <MenuItem
+            key={"comparelogheader"}
+            onClick={onClickCompareHeader}
+            disabled={checkedObjects.length !== 1}
+          >
+            <StyledIcon
+              name="compare"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>{`${menuItemText(
+              "compare",
+              "log",
+              []
+            )} header`}</Typography>
           </MenuItem>,
-          <MenuItem key={"comparelogdata"} onClick={onClickCompareData} disabled={checkedObjects.length !== 1}>
-            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>{`${menuItemText("compare", "log", [])} data`}</Typography>
+          <MenuItem
+            key={"comparelogdata"}
+            onClick={onClickCompareData}
+            disabled={checkedObjects.length !== 1}
+          >
+            <StyledIcon
+              name="compare"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>{`${menuItemText(
+              "compare",
+              "log",
+              []
+            )} data`}</Typography>
           </MenuItem>,
-          <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps} disabled={checkedObjects.length !== 1}>
+          <MenuItem
+            key={"analyzeGaps"}
+            onClick={onClickAnalyzeGaps}
+            disabled={checkedObjects.length !== 1}
+          >
             <StyledIcon name="beat" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>Analyze gaps</Typography>
           </MenuItem>,
-          <MenuItem key={"checkHeader"} onClick={onClickCheckHeader} disabled={checkedObjects.length !== 1}>
-            <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>{`${menuItemText("check", "log header", [])}`}</Typography>
+          <MenuItem
+            key={"checkHeader"}
+            onClick={onClickCheckHeader}
+            disabled={checkedObjects.length !== 1}
+          >
+            <StyledIcon
+              name="compare"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>{`${menuItemText(
+              "check",
+              "log header",
+              []
+            )}`}</Typography>
           </MenuItem>,
-          <MenuItem key={"countLogData"} onClick={onClickCountLogData} disabled={checkedObjects.length !== 1}>
-            <StyledIcon name="assignment" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>{`${menuItemText("count", "log data", [])}`}</Typography>
+          <MenuItem
+            key={"countLogData"}
+            onClick={onClickCountLogData}
+            disabled={checkedObjects.length !== 1}
+          >
+            <StyledIcon
+              name="assignment"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>{`${menuItemText(
+              "count",
+              "log data",
+              []
+            )}`}</Typography>
           </MenuItem>
         ]}
       </NestedMenuItem>,
       <Divider key={"divider"} />,
-      <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
+      <MenuItem
+        key={"importlogdata"}
+        onClick={onClickImport}
+        disabled={checkedObjects.length === 0}
+      >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Import log data from .csv</Typography>
       </MenuItem>,
       <Divider key={"divider"} />,
-      <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
+      <MenuItem
+        key={"properties"}
+        onClick={onClickProperties}
+        disabled={checkedObjects.length !== 1}
+      >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Properties</Typography>
       </MenuItem>
@@ -203,7 +371,18 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
 
   return (
     <ContextMenu
-      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Log, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
+      menuItems={[
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.Log,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore,
+          extraMenuItems()
+        )
+      ]}
     />
   );
 };

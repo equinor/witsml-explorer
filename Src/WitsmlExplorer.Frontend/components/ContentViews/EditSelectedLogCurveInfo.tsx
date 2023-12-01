@@ -1,7 +1,21 @@
-import { Autocomplete, Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
+import {
+  Autocomplete,
+  Button,
+  Icon,
+  Label,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
-import { CSSProperties, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import {
+  CSSProperties,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import styled from "styled-components";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -21,7 +35,9 @@ interface EditSelectedLogCurveInfoProps {
   overrideEndIndex?: string;
 }
 
-const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.ReactElement => {
+const EditSelectedLogCurveInfo = (
+  props: EditSelectedLogCurveInfoProps
+): React.ReactElement => {
   const { disabled, overrideStartIndex, overrideEndIndex } = props;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
@@ -41,7 +57,9 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
   useEffect(() => {
     const minIndex = selectedLogCurveInfo?.[0]?.minIndex;
     const maxIndex = selectedLogCurveInfo?.[0]?.maxIndex;
-    const selectedMnemonics = selectedLogCurveInfo?.map((lci) => lci.mnemonic)?.filter((mnemonic) => mnemonic !== selectedLog.indexCurve);
+    const selectedMnemonics = selectedLogCurveInfo
+      ?.map((lci) => lci.mnemonic)
+      ?.filter((mnemonic) => mnemonic !== selectedLog.indexCurve);
     setSelectedMnemonics(selectedMnemonics || []);
     setStartIndex(getParsedValue(String(minIndex)));
     setEndIndex(getParsedValue(String(maxIndex)));
@@ -80,14 +98,18 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
 
   const submitLogCurveInfo = () => {
     setIsEdited(false);
-    const filteredLogCurveInfo = logCurveInfo.filter((lci) => selectedMnemonics.includes(lci.mnemonic));
-    const logCurveInfoWithUpdatedIndex = filteredLogCurveInfo.map((logCurveInfo) => {
-      return {
-        ...logCurveInfo,
-        minIndex: formatIndexValue(startIndex),
-        maxIndex: formatIndexValue(endIndex)
-      };
-    });
+    const filteredLogCurveInfo = logCurveInfo.filter((lci) =>
+      selectedMnemonics.includes(lci.mnemonic)
+    );
+    const logCurveInfoWithUpdatedIndex = filteredLogCurveInfo.map(
+      (logCurveInfo) => {
+        return {
+          ...logCurveInfo,
+          minIndex: formatIndexValue(startIndex),
+          maxIndex: formatIndexValue(endIndex)
+        };
+      }
+    );
     dispatchNavigation({
       type: NavigationType.ShowCurveValues,
       payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
@@ -103,10 +125,18 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
   };
 
   const getParsedValue = (input: string) => {
-    return isTimeCurve() ? (parseDate(input) ? format(new Date(input), dateTimeFormat) : "") : input;
+    return isTimeCurve()
+      ? parseDate(input)
+        ? format(new Date(input), dateTimeFormat)
+        : ""
+      : input;
   };
 
-  const onTextFieldChange = (e: any, setIndex: Dispatch<SetStateAction<string>>, setIsValid: Dispatch<SetStateAction<boolean>>) => {
+  const onTextFieldChange = (
+    e: any,
+    setIndex: Dispatch<SetStateAction<string>>,
+    setIsValid: Dispatch<SetStateAction<boolean>>
+  ) => {
     if (isTimeCurve()) {
       if (isValid(parseDate(e.target.value))) {
         setIndex(e.target.value);
@@ -121,7 +151,11 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
     }
   };
 
-  const onMnemonicsChange = ({ selectedItems }: { selectedItems: string[] }) => {
+  const onMnemonicsChange = ({
+    selectedItems
+  }: {
+    selectedItems: string[];
+  }) => {
     setSelectedMnemonics(selectedItems);
     setIsEdited(true);
   };
@@ -188,7 +222,17 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
           }
         />
       </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitLogCurveInfo} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
+      <StyledButton
+        variant={"ghost"}
+        color={"primary"}
+        onClick={submitLogCurveInfo}
+        disabled={
+          disabled ||
+          !isValidStart ||
+          !isValidEnd ||
+          selectedMnemonics.length === 0
+        }
+      >
         <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
       </StyledButton>
     </Layout>
