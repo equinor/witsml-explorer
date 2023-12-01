@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/extend-expect";
 import { act, screen, within } from "@testing-library/react";
+import { mockEdsCoreReact } from "../../../__testUtils__/mocks/EDSMocks";
 import { deferred, getJobInfo, getNotification, renderWithContexts } from "../../../__testUtils__/testUtils";
 import JobInfo from "../../../models/jobs/jobInfo";
 import { createReport } from "../../../models/reports/BaseReport";
@@ -9,6 +10,7 @@ import { ReportModal } from "../ReportModal";
 
 jest.mock("../../../services/objectService");
 jest.mock("@microsoft/signalr");
+jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 class ResizeObserver {
   observe() {
