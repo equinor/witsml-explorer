@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
+import { Autocomplete, Button, EdsProvider, Icon, Label, TextField, Typography } from "@equinor/eds-core-react";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
 import { CSSProperties, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
@@ -28,8 +28,8 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
   const selectedLog = selectedObject as LogObject;
   const [logCurveInfo, setLogCurveInfo] = useState<LogCurveInfo[]>([]);
   const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
-  const [startIndex, setStartIndex] = useState<string>(null);
-  const [endIndex, setEndIndex] = useState<string>(null);
+  const [startIndex, setStartIndex] = useState<string>("");
+  const [endIndex, setEndIndex] = useState<string>("");
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
@@ -129,69 +129,73 @@ const EditSelectedLogCurveInfo = (props: EditSelectedLogCurveInfoProps): React.R
   const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
   return (
-    <Layout colors={colors}>
-      <Typography
-        style={{
-          color: `${colors.interactive.primaryResting}`
-        }}
-        variant="h3"
-      >
-        Curve Values
-      </Typography>
-      <StartEndIndex>
-        <StyledLabel label="Start Index" />
-        <StyledTextField
-          disabled={disabled}
-          id="startIndex"
-          value={startIndex}
-          // defaultValue={getDefaultValue(startIndex)}
-          variant={isValidStart ? undefined : "error"}
-          type={isTimeCurve() ? "datetime-local" : ""}
-          step="1"
-          onChange={(e: any) => {
-            onTextFieldChange(e, setStartIndex, setIsValidStart);
+    <EdsProvider density={"compact"}>
+      <Layout colors={colors}>
+        <Typography
+          style={{
+            color: `${colors.interactive.primaryResting}`
           }}
-        />
-      </StartEndIndex>
-      <StartEndIndex>
-        <StyledLabel label="End Index" />
-        <StyledTextField
-          disabled={disabled}
-          id="endIndex"
-          value={endIndex}
-          // defaultValue={getDefaultValue(endIndex)}
-          type={isTimeCurve() ? "datetime-local" : ""}
-          variant={isValidEnd ? undefined : "error"}
-          step="1"
-          onChange={(e: any) => {
-            onTextFieldChange(e, setEndIndex, setIsValidEnd);
-          }}
-        />
-      </StartEndIndex>
-      <StartEndIndex>
-        <StyledLabel label="Mnemonics" />
-        <Autocomplete
-          id={"mnemonics"}
-          disabled={disabled || isFetchingMnemonics}
-          label={""}
-          multiple={true}
-          // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
-          variant={selectedMnemonics.length === 0 ? "error" : null}
-          options={logCurveInfo.map((lci) => lci.mnemonic)}
-          selectedOptions={selectedMnemonics}
-          onFocus={(e) => e.preventDefault()}
-          onOptionsChange={onMnemonicsChange}
-          style={
-            {
-              "--eds-input-background": colors.ui.backgroundDefault
-            } as CSSProperties
-          }
-        />
-      </StartEndIndex>
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitLogCurveInfo} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
-        <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
-      </StyledButton>
-    </Layout>
+          variant="h3"
+        >
+          Curve Values
+        </Typography>
+        <StartEndIndex>
+          <StyledLabel label="Start Index" />
+          <StyledTextField
+            disabled={disabled}
+            id="startIndex"
+            value={startIndex}
+            // defaultValue={getDefaultValue(startIndex)}
+            variant={isValidStart ? undefined : "error"}
+            type={isTimeCurve() ? "datetime-local" : ""}
+            step="1"
+            onChange={(e: any) => {
+              onTextFieldChange(e, setStartIndex, setIsValidStart);
+            }}
+          />
+        </StartEndIndex>
+        <StartEndIndex>
+          <StyledLabel label="End Index" />
+          <StyledTextField
+            disabled={disabled}
+            id="endIndex"
+            value={endIndex}
+            // defaultValue={getDefaultValue(endIndex)}
+            type={isTimeCurve() ? "datetime-local" : ""}
+            variant={isValidEnd ? undefined : "error"}
+            step="1"
+            onChange={(e: any) => {
+              onTextFieldChange(e, setEndIndex, setIsValidEnd);
+            }}
+          />
+        </StartEndIndex>
+        <StartEndIndex>
+          <StyledLabel label="Mnemonics" />
+          <Autocomplete
+            id={"mnemonics"}
+            disabled={disabled || isFetchingMnemonics}
+            label={""}
+            multiple={true}
+            // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
+            variant={selectedMnemonics.length === 0 ? "error" : null}
+            options={logCurveInfo.map((lci) => lci.mnemonic)}
+            selectedOptions={selectedMnemonics}
+            onFocus={(e) => e.preventDefault()}
+            onOptionsChange={onMnemonicsChange}
+            optionComponent={(props: any) => <div style={{}}>{props}</div>}
+            style={
+              {
+                "--eds-input-background": colors.ui.backgroundDefault
+              } as CSSProperties
+            }
+            dropdownHeight={600}
+          />
+        </StartEndIndex>
+        <StyledButton variant={"ghost"} color={"primary"} onClick={submitLogCurveInfo} disabled={disabled || !isValidStart || !isValidEnd || selectedMnemonics.length === 0}>
+          <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
+        </StyledButton>
+      </Layout>
+    </EdsProvider>
   );
 };
 
