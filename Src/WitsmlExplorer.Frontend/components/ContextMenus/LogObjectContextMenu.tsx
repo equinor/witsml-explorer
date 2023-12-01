@@ -163,7 +163,7 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
         ]}
         ,
       </NestedMenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={"divider1"} />,
       <NestedMenuItem key={"agentslognestedmenu"} label={"Agents"} disabled={checkedObjects.length !== 1} icon="person">
         {[
           <MenuItem key={"comparelogheader"} onClick={onClickCompareHeader} disabled={checkedObjects.length !== 1}>
@@ -188,12 +188,12 @@ const LogObjectContextMenu = (props: ObjectContextMenuProps): React.ReactElement
           </MenuItem>
         ]}
       </NestedMenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={"divider2"} />,
       <MenuItem key={"importlogdata"} onClick={onClickImport} disabled={checkedObjects.length === 0}>
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Import log data from .csv</Typography>
       </MenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={"divider3"} />,
       <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Properties</Typography>

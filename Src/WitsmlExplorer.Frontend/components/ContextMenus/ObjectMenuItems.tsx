@@ -42,7 +42,7 @@ export const ObjectMenuItems = (
       <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("Refresh", objectType, null)}</Typography>
     </MenuItem>,
-    <Divider key={"divider"} />,
+    <Divider key={"objectMenuItemsDivider"} />,
     <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, checkedObjects, dispatchOperation, objectType)} disabled={checkedObjects.length === 0}>
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("copy", objectType, checkedObjects)}</Typography>
@@ -72,7 +72,11 @@ export const ObjectMenuItems = (
     ...extraMenuItems,
     <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedObjects.length !== 1}>
       {servers.map((server: Server) => (
-        <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, objectType, (checkedObjects[0] as LogObject)?.indexType)}>
+        <MenuItem
+          key={server.name}
+          onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, objectType, (checkedObjects[0] as LogObject)?.indexType)}
+          disabled={checkedObjects.length !== 1}
+        >
           <Typography color={"primary"}>{server.name}</Typography>
         </MenuItem>
       ))}
