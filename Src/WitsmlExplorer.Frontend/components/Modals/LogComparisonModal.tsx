@@ -12,7 +12,11 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import { Colors } from "../../styles/Colors";
-import { ContentTable, ContentTableColumn, ContentType } from "../ContentViews/table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "../ContentViews/table";
 import formatDateString from "../DateFormatter";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import ProgressSpinner from "../ProgressSpinner";
@@ -28,13 +32,23 @@ export interface LogComparisonModalProps {
   dispatchOperation: DispatchOperation;
 }
 
-const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement => {
-  const { sourceLog, sourceServer, targetServer, targetObject, dispatchOperation } = props;
+const LogComparisonModal = (
+  props: LogComparisonModalProps
+): React.ReactElement => {
+  const {
+    sourceLog,
+    sourceServer,
+    targetServer,
+    targetObject,
+    dispatchOperation
+  } = props;
   const {
     operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
-  const [sourceLogCurveInfo, setSourceLogCurveInfo] = useState<LogCurveInfo[]>(null);
-  const [targetLogCurveInfo, setTargetLogCurveInfo] = useState<LogCurveInfo[]>(null);
+  const [sourceLogCurveInfo, setSourceLogCurveInfo] =
+    useState<LogCurveInfo[]>(null);
+  const [targetLogCurveInfo, setTargetLogCurveInfo] =
+    useState<LogCurveInfo[]>(null);
   const [indexesToShow, setIndexesToShow] = useState<Indexes[]>(null);
   const [sourceType, setSourceType] = useState<string>();
   const [targetType, setTargetType] = useState<string>();
@@ -44,12 +58,30 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
     fetchCurves().then(({ sourceLogCurveInfo, targetLogCurveInfo }) => {
       if (sourceLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
-        const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
-        displayMissingObjectModal(sourceServer, sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
+        const failureMessageSource =
+          "Unable to compare the log as no log curve infos could be fetched from the source log.";
+        displayMissingObjectModal(
+          sourceServer,
+          sourceLog.wellUid,
+          sourceLog.wellboreUid,
+          sourceLog.uid,
+          dispatchOperation,
+          failureMessageSource,
+          ObjectType.Log
+        );
       } else if (targetLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
-        const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
-        displayMissingObjectModal(targetServer, targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
+        const failureMessageTarget =
+          "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
+        displayMissingObjectModal(
+          targetServer,
+          targetObject.wellUid,
+          targetObject.wellboreUid,
+          targetObject.uid,
+          dispatchOperation,
+          failureMessageTarget,
+          ObjectType.Log
+        );
       } else {
         compareLogCurveInfos(sourceLogCurveInfo, targetLogCurveInfo);
       }
@@ -57,30 +89,60 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   }, []);
 
   const fetchCurves = async () => {
-    const fetchSource = ComponentService.getComponents(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, ComponentType.Mnemonic);
-    const fetchTarget = ComponentService.getComponents(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ComponentType.Mnemonic, targetServer);
+    const fetchSource = ComponentService.getComponents(
+      sourceLog.wellUid,
+      sourceLog.wellboreUid,
+      sourceLog.uid,
+      ComponentType.Mnemonic
+    );
+    const fetchTarget = ComponentService.getComponents(
+      targetObject.wellUid,
+      targetObject.wellboreUid,
+      targetObject.uid,
+      ComponentType.Mnemonic,
+      targetServer
+    );
     return {
       sourceLogCurveInfo: await fetchSource,
       targetLogCurveInfo: await fetchTarget
     };
   };
 
-  const compareLogCurveInfos = (sourceLogCurveInfo: LogCurveInfo[], targetLogCurveInfo: LogCurveInfo[]) => {
-    if (indexesToShow !== null || sourceLogCurveInfo === null || targetLogCurveInfo === null) {
+  const compareLogCurveInfos = (
+    sourceLogCurveInfo: LogCurveInfo[],
+    targetLogCurveInfo: LogCurveInfo[]
+  ) => {
+    if (
+      indexesToShow !== null ||
+      sourceLogCurveInfo === null ||
+      targetLogCurveInfo === null
+    ) {
       return;
     }
-    const sourceType = sourceLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
-    const targetType = targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
+    const sourceType =
+      sourceLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
+    const targetType =
+      targetLogCurveInfo[0].minDateTimeIndex == null ? "depth" : "time";
     const indexTypesMatch = sourceType == targetType;
 
     if (indexTypesMatch) {
       if (sourceType == "time") {
         for (const curve of sourceLogCurveInfo.concat(targetLogCurveInfo)) {
-          curve.minDateTimeIndex = formatDateString(curve.minDateTimeIndex, timeZone, dateTimeFormat);
-          curve.maxDateTimeIndex = formatDateString(curve.maxDateTimeIndex, timeZone, dateTimeFormat);
+          curve.minDateTimeIndex = formatDateString(
+            curve.minDateTimeIndex,
+            timeZone,
+            dateTimeFormat
+          );
+          curve.maxDateTimeIndex = formatDateString(
+            curve.maxDateTimeIndex,
+            timeZone,
+            dateTimeFormat
+          );
         }
       }
-      setIndexesToShow(calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo));
+      setIndexesToShow(
+        calculateMismatchedIndexes(sourceLogCurveInfo, targetLogCurveInfo)
+      );
     } else {
       setIndexesToShow([]);
     }
@@ -118,31 +180,91 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
           {(indexesToShow && (
             <>
               <LabelsLayout>
-                <TextField readOnly id="sourceServer" label="Source Server" defaultValue={sourceServer.name} />
-                <TextField readOnly id="targetServer" label="Target Server" defaultValue={targetServer.name} />
-                <TextField readOnly id="sourceWellName" label="Source Well Name" defaultValue={sourceLog.wellName} />
-                <TextField readOnly id="targetWellName" label="Target Well Name" defaultValue={targetObject.wellName} />
-                <TextField readOnly id="sourceWellboreName" label="Source Wellbore Name" defaultValue={sourceLog.wellboreName} />
-                <TextField readOnly id="targetWellboreName" label="Target Wellbore Name" defaultValue={targetObject.wellboreName} />
-                <TextField readOnly id="sourceName" label="Source Log" defaultValue={sourceLog.name + (sourceLog.runNumber == null ? "" : ` (${sourceLog.runNumber})`)} />
-                <TextField readOnly id="targetName" label="Target Log" defaultValue={targetObject.name} />
+                <TextField
+                  readOnly
+                  id="sourceServer"
+                  label="Source Server"
+                  defaultValue={sourceServer.name}
+                />
+                <TextField
+                  readOnly
+                  id="targetServer"
+                  label="Target Server"
+                  defaultValue={targetServer.name}
+                />
+                <TextField
+                  readOnly
+                  id="sourceWellName"
+                  label="Source Well Name"
+                  defaultValue={sourceLog.wellName}
+                />
+                <TextField
+                  readOnly
+                  id="targetWellName"
+                  label="Target Well Name"
+                  defaultValue={targetObject.wellName}
+                />
+                <TextField
+                  readOnly
+                  id="sourceWellboreName"
+                  label="Source Wellbore Name"
+                  defaultValue={sourceLog.wellboreName}
+                />
+                <TextField
+                  readOnly
+                  id="targetWellboreName"
+                  label="Target Wellbore Name"
+                  defaultValue={targetObject.wellboreName}
+                />
+                <TextField
+                  readOnly
+                  id="sourceName"
+                  label="Source Log"
+                  defaultValue={
+                    sourceLog.name +
+                    (sourceLog.runNumber == null
+                      ? ""
+                      : ` (${sourceLog.runNumber})`)
+                  }
+                />
+                <TextField
+                  readOnly
+                  id="targetName"
+                  label="Target Log"
+                  defaultValue={targetObject.name}
+                />
               </LabelsLayout>
               <Accordion>
                 <Accordion.Item>
-                  <StyledAccordionHeader colors={colors}>How are the logs compared?</StyledAccordionHeader>
-                  <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
+                  <StyledAccordionHeader colors={colors}>
+                    How are the logs compared?
+                  </StyledAccordionHeader>
+                  <Accordion.Panel
+                    style={{ backgroundColor: colors.ui.backgroundLight }}
+                  >
                     <List>
                       <List.Item>
-                        The logs are compared based on the <b>logCurveInfo</b> elements. The <b>logData</b> element is <b>not</b> compared.
+                        The logs are compared based on the <b>logCurveInfo</b>{" "}
+                        elements. The <b>logData</b> element is <b>not</b>{" "}
+                        compared.
                       </List.Item>
-                      <List.Item>The table shows only the mnemonics where the indexes do not match, mnemonics that have equal index values are not shown.</List.Item>
-                      <List.Item>Mnemonics that are found in only one of the logs are also included.</List.Item>
                       <List.Item>
-                        Some mnemonics are shown with a dash (“-”) index value, this is caused by one of two reasons:
+                        The table shows only the mnemonics where the indexes do
+                        not match, mnemonics that have equal index values are
+                        not shown.
+                      </List.Item>
+                      <List.Item>
+                        Mnemonics that are found in only one of the logs are
+                        also included.
+                      </List.Item>
+                      <List.Item>
+                        Some mnemonics are shown with a dash (“-”) index value,
+                        this is caused by one of two reasons:
                         <List>
                           <List.Item>The mnemonic is missing</List.Item>
                           <List.Item>
-                            The mnemonic has a <b>logCurveInfo</b> element, but the index is empty.
+                            The mnemonic has a <b>logCurveInfo</b> element, but
+                            the index is empty.
                           </List.Item>
                         </List>
                       </List.Item>
@@ -152,7 +274,8 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
               </Accordion>
               {!indexTypesMatch && (
                 <span>
-                  Unable to compare the logs due to different log types. Source is a {sourceType} log and target is a {targetType} log.
+                  Unable to compare the logs due to different log types. Source
+                  is a {sourceType} log and target is a {targetType} log.
                 </span>
               )}
               {indexesToShow.length != 0 && data && (
@@ -160,16 +283,23 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                   <StyledTypography colors={colors} variant="h5">
                     Listing of Log Curves where indexes do not match
                   </StyledTypography>
-                  <ContentTable columns={columns} data={data} downloadToCsvFileName={"LogHeaderComparison"} />
+                  <ContentTable
+                    columns={columns}
+                    data={data}
+                    downloadToCsvFileName={"LogHeaderComparison"}
+                  />
                 </>
               )}
               {indexesToShow.length == 0 && indexTypesMatch && (
                 <span>
-                  All the {sourceLogCurveInfo.length} source mnemonics match the {targetLogCurveInfo.length} target mnemonics.
+                  All the {sourceLogCurveInfo.length} source mnemonics match the{" "}
+                  {targetLogCurveInfo.length} target mnemonics.
                 </span>
               )}
             </>
-          )) || <ProgressSpinner message="Fetching source and target log curve infos." />}
+          )) || (
+            <ProgressSpinner message="Fetching source and target log curve infos." />
+          )}
         </ModalContentLayout>
       }
     />
@@ -214,7 +344,9 @@ const columns: ContentTableColumn[] = [
   }
 ];
 
-export const StyledAccordionHeader = styled(Accordion.Header)<{ colors: Colors }>`
+export const StyledAccordionHeader = styled(Accordion.Header)<{
+  colors: Colors;
+}>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};
   &:hover {
     background-color: ${(props) => props.colors.ui.backgroundLight};

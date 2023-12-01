@@ -1,7 +1,10 @@
 import React, { useContext, useState } from "react";
 import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "../Constants";
 import ModalDialog from "./ModalDialog";
 import { TextField } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
@@ -32,12 +35,18 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
       gapSize: gapSize,
       timeGapSize: convertToMilliseconds(timeGapSize)
     };
-    const jobId = await JobService.orderJob(JobType.AnalyzeGaps, analyzeGapsJob);
+    const jobId = await JobService.orderJob(
+      JobType.AnalyzeGaps,
+      analyzeGapsJob
+    );
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
     if (jobId) {
       const reportModalProps = { jobId };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <ReportModal {...reportModalProps} /> });
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal {...reportModalProps} />
+      });
     }
   };
 
@@ -49,7 +58,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
     }
   };
 
-  const handleTimeGapSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTimeGapSizeChanged = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setGapSizeIsValid(new RegExp(timePattern).test(event.target.value));
     if (event.target.value) {
       setTimeGapSize(event.target.value);
@@ -79,7 +90,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   placeholder="hh:mm:ss"
                   maxLength={8}
                   helperText={
-                    !gapSizeIsValid ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00" : null
+                    !gapSizeIsValid
+                      ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00"
+                      : null
                   }
                 />
               )}
@@ -90,7 +103,11 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   type="number"
                   value={gapSize}
                   onChange={handleGapSizeChanged}
-                  helperText={!gapSizeIsValid ? "Gap size number must be greater than 0" : null}
+                  helperText={
+                    !gapSizeIsValid
+                      ? "Gap size number must be greater than 0"
+                      : null
+                  }
                 />
               )}
             </>

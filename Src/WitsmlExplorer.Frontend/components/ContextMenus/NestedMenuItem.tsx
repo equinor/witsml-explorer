@@ -1,18 +1,34 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
-import React, { useContext, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  useContext,
+  useImperativeHandle,
+  useRef,
+  useState
+} from "react";
 import OperationContext from "../../contexts/operationContext";
 import { StyledMenu } from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
-  ContainerProps?: React.HTMLAttributes<HTMLElement> & React.RefAttributes<HTMLElement | null>;
+  ContainerProps?: React.HTMLAttributes<HTMLElement> &
+    React.RefAttributes<HTMLElement | null>;
   icon?: string;
 }
 
-const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProps>(function NestedMenuItem(props: NestedMenuItemProps, ref) {
-  const { label, children, icon, tabIndex: tabIndexProp, ContainerProps: ContainerPropsProp = {}, ...MenuItemProps } = props;
+const NestedMenuItem = React.forwardRef<
+  HTMLLIElement | null,
+  NestedMenuItemProps
+>(function NestedMenuItem(props: NestedMenuItemProps, ref) {
+  const {
+    label,
+    children,
+    icon,
+    tabIndex: tabIndexProp,
+    ContainerProps: ContainerPropsProp = {},
+    ...MenuItemProps
+  } = props;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -76,8 +92,14 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
       containerRef.current?.focus();
     }
 
-    if (event.key === "ArrowRight" && event.target === containerRef.current && event.target === active) {
-      const firstChild = menuContainerRef.current?.children[0] as HTMLElement | undefined;
+    if (
+      event.key === "ArrowRight" &&
+      event.target === containerRef.current &&
+      event.target === active
+    ) {
+      const firstChild = menuContainerRef.current?.children[0] as
+        | HTMLElement
+        | undefined;
       firstChild?.focus();
     }
   };
@@ -89,9 +111,20 @@ const NestedMenuItem = React.forwardRef<HTMLLIElement | null, NestedMenuItemProp
   }
 
   return (
-    <div {...ContainerProps} ref={containerRef} onFocus={handleFocus} tabIndex={tabIndex} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onKeyDown={handleKeyDown}>
+    <div
+      {...ContainerProps}
+      ref={containerRef}
+      onFocus={handleFocus}
+      tabIndex={tabIndex}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onKeyDown={handleKeyDown}
+    >
       <MenuItem {...MenuItemProps} ref={menuItemRef}>
-        <StyledIcon name={icon ?? "launch"} color={colors.interactive.primaryResting} />
+        <StyledIcon
+          name={icon ?? "launch"}
+          color={colors.interactive.primaryResting}
+        />
         <Typography color={"primary"}>{label}</Typography>
         <Icon name="arrowDropRight" />
       </MenuItem>

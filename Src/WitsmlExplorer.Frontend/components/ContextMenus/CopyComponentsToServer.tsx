@@ -6,13 +6,17 @@ import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType, getParentType } from "../../models/componentType";
-import ComponentReferences, { createComponentReferences } from "../../models/jobs/componentReferences";
+import ComponentReferences, {
+  createComponentReferences
+} from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
 import { DeleteComponentsJob } from "../../models/jobs/deleteJobs";
 import ObjectReference from "../../models/jobs/objectReference";
 import { ReplaceComponentsJob } from "../../models/jobs/replaceComponentsJob";
 import LogCurveInfo from "../../models/logCurveInfo";
-import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
+import ObjectOnWellbore, {
+  toObjectReference
+} from "../../models/objectOnWellbore";
 import { Server } from "../../models/server";
 import AuthorizationService from "../../services/authorizationService";
 import ComponentService from "../../services/componentService";
@@ -28,7 +32,9 @@ export interface CopyComponentsToServerMenuItemProps {
   componentType: ComponentType;
 }
 
-export const CopyComponentsToServerMenuItem = (props: CopyComponentsToServerMenuItemProps): React.ReactElement => {
+export const CopyComponentsToServerMenuItem = (
+  props: CopyComponentsToServerMenuItemProps
+): React.ReactElement => {
   const { componentsToCopy, componentType } = props;
   const {
     navigationState: { selectedServer, selectedObject, servers }
@@ -36,7 +42,15 @@ export const CopyComponentsToServerMenuItem = (props: CopyComponentsToServerMenu
   const { dispatchOperation } = useContext(OperationContext);
 
   return (
-    <NestedMenuItem key={"copyComponentToServer"} label={`${menuItemText("copy", componentType, componentsToCopy)} to server`} disabled={componentsToCopy.length < 1}>
+    <NestedMenuItem
+      key={"copyComponentToServer"}
+      label={`${menuItemText(
+        "copy",
+        componentType,
+        componentsToCopy
+      )} to server`}
+      disabled={componentsToCopy.length < 1}
+    >
       {servers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
@@ -71,8 +85,17 @@ export interface OnClickCopyComponentToServerProps {
   componentType: ComponentType;
 }
 
-const copyComponentsToServer = async (props: OnClickCopyComponentToServerProps) => {
-  const { targetServer, sourceServer, componentsToCopy, dispatchOperation, sourceParent, componentType } = props;
+const copyComponentsToServer = async (
+  props: OnClickCopyComponentToServerProps
+) => {
+  const {
+    targetServer,
+    sourceServer,
+    componentsToCopy,
+    dispatchOperation,
+    sourceParent,
+    componentType
+  } = props;
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellUid = sourceParent.wellUid;
   const wellboreUid = sourceParent.wellboreUid;
@@ -87,22 +110,51 @@ const copyComponentsToServer = async (props: OnClickCopyComponentToServerProps) 
           return component.uid;
         };
 
-  const targetParent = await ObjectService.getObjectFromServer(wellUid, wellboreUid, parentUid, parentType, targetServer);
+  const targetParent = await ObjectService.getObjectFromServer(
+    wellUid,
+    wellboreUid,
+    parentUid,
+    parentType,
+    targetServer
+  );
   if (targetParent?.uid !== parentUid) {
-    displayMissingObjectModal(targetServer, wellUid, wellboreUid, parentUid, dispatchOperation, `No ${pluralize(componentType)} will be copied.`, parentType);
+    displayMissingObjectModal(
+      targetServer,
+      wellUid,
+      wellboreUid,
+      parentUid,
+      dispatchOperation,
+      `No ${pluralize(componentType)} will be copied.`,
+      parentType
+    );
     return;
   }
-  const sourceComponentReferences: ComponentReferences = createComponentReferences(
-    componentsToCopy.map((component) => getId(component)),
-    sourceParent,
-    componentType,
-    sourceServer.url
-  );
-  const targetParentReference: ObjectReference = toObjectReference(targetParent);
-  const copyJob: CopyComponentsJob = { source: sourceComponentReferences, target: targetParentReference };
+  const sourceComponentReferences: ComponentReferences =
+    createComponentReferences(
+      componentsToCopy.map((component) => getId(component)),
+      sourceParent,
+      componentType,
+      sourceServer.url
+    );
+  const targetParentReference: ObjectReference =
+    toObjectReference(targetParent);
+  const copyJob: CopyComponentsJob = {
+    source: sourceComponentReferences,
+    target: targetParentReference
+  };
 
-  const allTargetComponents = await ComponentService.getComponents(wellUid, wellboreUid, parentUid, componentType, targetServer);
-  const existingTargetComponents = allTargetComponents.filter((component) => componentsToCopy.find((componentToCopy) => getId(componentToCopy) === getId(component)));
+  const allTargetComponents = await ComponentService.getComponents(
+    wellUid,
+    wellboreUid,
+    parentUid,
+    componentType,
+    targetServer
+  );
+  const existingTargetComponents = allTargetComponents.filter((component) =>
+    componentsToCopy.find(
+      (componentToCopy) => getId(componentToCopy) === getId(component)
+    )
+  );
   if (existingTargetComponents.length > 0) {
     const onConfirm = async () => {
       dispatchOperation({ type: OperationType.HideModal });
@@ -114,13 +166,32 @@ const copyComponentsToServer = async (props: OnClickCopyComponentToServerProps) 
         )
       };
       const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
-      await JobService.orderJobAtServer(JobType.ReplaceComponents, replaceJob, targetServer, sourceServer);
+      await JobService.orderJobAtServer(
+        JobType.ReplaceComponents,
+        replaceJob,
+        targetServer,
+        sourceServer
+      );
     };
-    const print = componentType == ComponentType.Mnemonic ? printCurveInfo : printUid;
-    displayReplaceModal(existingTargetComponents, componentsToCopy, componentType, parentType, dispatchOperation, onConfirm, print);
+    const print =
+      componentType == ComponentType.Mnemonic ? printCurveInfo : printUid;
+    displayReplaceModal(
+      existingTargetComponents,
+      componentsToCopy,
+      componentType,
+      parentType,
+      dispatchOperation,
+      onConfirm,
+      print
+    );
   } else {
     AuthorizationService.setSourceServer(sourceServer);
-    JobService.orderJobAtServer(JobType.CopyComponents, copyJob, targetServer, sourceServer);
+    JobService.orderJobAtServer(
+      JobType.CopyComponents,
+      copyJob,
+      targetServer,
+      sourceServer
+    );
   }
 };
 

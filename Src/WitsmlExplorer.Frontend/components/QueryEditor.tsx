@@ -30,7 +30,9 @@ export const QueryEditor = (props: QueryEditorProps) => {
       editor.renderer.$cursorLayer.element.style.display = "none";
     } else {
       editor.completers = [customCompleter];
-      editor.renderer.on("afterRender", (_: any, renderer: any) => updateLinesWithWidgets(editor, renderer));
+      editor.renderer.on("afterRender", (_: any, renderer: any) =>
+        updateLinesWithWidgets(editor, renderer)
+      );
     }
   };
 

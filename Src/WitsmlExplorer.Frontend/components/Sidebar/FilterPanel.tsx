@@ -1,4 +1,10 @@
-﻿import { Checkbox, EdsProvider, Icon, TextField, Typography } from "@equinor/eds-core-react";
+﻿import {
+  Checkbox,
+  EdsProvider,
+  Icon,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@material-ui/core";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
@@ -8,7 +14,10 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
-import { STORAGE_FILTER_HIDDENOBJECTS_KEY, setLocalStorageItem } from "../../tools/localStorageHelpers";
+import {
+  STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  setLocalStorageItem
+} from "../../tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -39,14 +48,33 @@ const FilterPanel = (): React.ReactElement => {
       <Container colors={colors}>
         <NumberInputContainer colors={colors}>
           <span style={{ display: "flex", gap: "7px" }}>
-            <Typography token={{ fontFamily: "EquinorMedium", fontSize: "0.75rem", color: colors.interactive.primaryResting }}>Limit number of wells</Typography>
-            <Typography token={{ fontStyle: "italic", fontFamily: "EquinorRegular", fontSize: "0.75rem", color: colors.text.staticIconsTertiary }}>(0 for no limit)</Typography>
+            <Typography
+              token={{
+                fontFamily: "EquinorMedium",
+                fontSize: "0.75rem",
+                color: colors.interactive.primaryResting
+              }}
+            >
+              Limit number of wells
+            </Typography>
+            <Typography
+              token={{
+                fontStyle: "italic",
+                fontFamily: "EquinorRegular",
+                fontSize: "0.75rem",
+                color: colors.text.staticIconsTertiary
+              }}
+            >
+              (0 for no limit)
+            </Typography>
           </span>
           <StyledTextField
             id="filter-wellLimit"
             type="number"
             min={0}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => updateSelectedFilter({ wellLimit: Number(event.target.value) })}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              updateSelectedFilter({ wellLimit: Number(event.target.value) })
+            }
             value={selectedFilter.wellLimit}
             autoComplete={"off"}
             colors={colors}
@@ -61,12 +89,16 @@ const FilterPanel = (): React.ReactElement => {
             value={"Hide inactive Wells / Wellbores"}
             color={"primary"}
             checked={selectedFilter.isActive}
-            onChange={(event) => updateSelectedFilter({ isActive: event.target.checked })}
+            onChange={(event) =>
+              updateSelectedFilter({ isActive: event.target.checked })
+            }
             label={"Hide inactive Wells / Wellbores"}
             colors={colors}
           />
           <StyledCheckbox
-            onChange={(event) => updateSelectedFilter({ objectGrowing: event.target.checked })}
+            onChange={(event) =>
+              updateSelectedFilter({ objectGrowing: event.target.checked })
+            }
             checked={selectedFilter.objectGrowing}
             id="filter-objectGrowing"
             value={"Only show growing logs"}
@@ -81,8 +113,26 @@ const FilterPanel = (): React.ReactElement => {
         <InnerContainer>
           <NumberInputContainer colors={colors}>
             <span style={{ display: "flex", gap: "7px" }}>
-              <Typography token={{ fontFamily: "EquinorMedium", fontSize: "0.75rem", color: colors.interactive.primaryResting }}>Set threshold for time curve</Typography>
-              <Typography token={{ fontStyle: "italic", fontFamily: "EquinorRegular", fontSize: "0.75rem", color: colors.text.staticIconsTertiary }}> (minutes) </Typography>
+              <Typography
+                token={{
+                  fontFamily: "EquinorMedium",
+                  fontSize: "0.75rem",
+                  color: colors.interactive.primaryResting
+                }}
+              >
+                Set threshold for time curve
+              </Typography>
+              <Typography
+                token={{
+                  fontStyle: "italic",
+                  fontFamily: "EquinorRegular",
+                  fontSize: "0.75rem",
+                  color: colors.text.staticIconsTertiary
+                }}
+              >
+                {" "}
+                (minutes){" "}
+              </Typography>
             </span>
             <StyledTextField
               id="curveThreshold-time"
@@ -91,7 +141,12 @@ const FilterPanel = (): React.ReactElement => {
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 dispatchNavigation({
                   type: NavigationType.SetCurveThreshold,
-                  payload: { curveThreshold: { ...selectedCurveThreshold, timeInMinutes: Number(event.target.value) } }
+                  payload: {
+                    curveThreshold: {
+                      ...selectedCurveThreshold,
+                      timeInMinutes: Number(event.target.value)
+                    }
+                  }
                 })
               }
               value={selectedCurveThreshold.timeInMinutes}
@@ -102,7 +157,15 @@ const FilterPanel = (): React.ReactElement => {
           <StyledCheckbox
             id="curveThreshold-hideInactive"
             onChange={(event) =>
-              dispatchNavigation({ type: NavigationType.SetCurveThreshold, payload: { curveThreshold: { ...selectedCurveThreshold, hideInactiveCurves: event.target.checked } } })
+              dispatchNavigation({
+                type: NavigationType.SetCurveThreshold,
+                payload: {
+                  curveThreshold: {
+                    ...selectedCurveThreshold,
+                    hideInactiveCurves: event.target.checked
+                  }
+                }
+              })
             }
             checked={selectedCurveThreshold.hideInactiveCurves}
             value={"Hide inactive time curves"}
@@ -116,17 +179,35 @@ const FilterPanel = (): React.ReactElement => {
 
         <InnerContainer>
           <ObjectTitleContainer>
-            <Typography token={{ fontSize: "1rem", fontFamily: "EquinorMedium", color: colors.interactive.primaryResting }}>Well Objects</Typography>
+            <Typography
+              token={{
+                fontSize: "1rem",
+                fontFamily: "EquinorMedium",
+                color: colors.interactive.primaryResting
+              }}
+            >
+              Well Objects
+            </Typography>
             <Tooltip title="Objects not supported by the current server are disabled.">
-              <Icon name="infoCircle" color={colors.interactive.primaryResting} size={18} />
+              <Icon
+                name="infoCircle"
+                color={colors.interactive.primaryResting}
+                size={18}
+              />
             </Tooltip>
           </ObjectTitleContainer>
           <ObjectListContainer>
             {Object.values(ObjectType).map((objectType) => (
               <StyledCheckbox
                 label={objectType}
-                checked={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Visible}
-                disabled={selectedFilter.objectVisibilityStatus[objectType] == VisibilityStatus.Disabled}
+                checked={
+                  selectedFilter.objectVisibilityStatus[objectType] ==
+                  VisibilityStatus.Visible
+                }
+                disabled={
+                  selectedFilter.objectVisibilityStatus[objectType] ==
+                  VisibilityStatus.Disabled
+                }
                 key={objectType}
                 colors={colors}
                 onChange={() => switchObjectVisibility(objectType)}

@@ -4,8 +4,20 @@ import { useContext, useMemo } from "react";
 import OperationContext from "../../../contexts/operationContext";
 import { DecimalPreference } from "../../../contexts/operationStateReducer";
 import Icon from "../../../styles/Icons";
-import { STORAGE_CONTENTTABLE_ORDER_KEY, STORAGE_CONTENTTABLE_WIDTH_KEY, getLocalStorageItem } from "../../../tools/localStorageHelpers";
-import { activeId, calculateColumnWidth, componentSortingFn, expanderId, measureSortingFn, selectId, toggleRow } from "./contentTableUtils";
+import {
+  STORAGE_CONTENTTABLE_ORDER_KEY,
+  STORAGE_CONTENTTABLE_WIDTH_KEY,
+  getLocalStorageItem
+} from "../../../tools/localStorageHelpers";
+import {
+  activeId,
+  calculateColumnWidth,
+  componentSortingFn,
+  expanderId,
+  measureSortingFn,
+  selectId,
+  toggleRow
+} from "./contentTableUtils";
 import { ContentTableColumn, ContentType } from "./tableParts";
 
 declare module "@tanstack/react-table" {
@@ -16,7 +28,13 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export const useColumnDef = (viewId: string, columns: ContentTableColumn[], insetColumns: ContentTableColumn[], checkableRows: boolean, stickyLeftColumns: number) => {
+export const useColumnDef = (
+  viewId: string,
+  columns: ContentTableColumn[],
+  insetColumns: ContentTableColumn[],
+  checkableRows: boolean,
+  stickyLeftColumns: number
+) => {
   const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
 
   const {
@@ -24,13 +42,17 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
   } = useContext(OperationContext);
 
   return useMemo(() => {
-    const savedWidths = getLocalStorageItem<{ [label: string]: number }>(viewId + STORAGE_CONTENTTABLE_WIDTH_KEY);
+    const savedWidths = getLocalStorageItem<{ [label: string]: number }>(
+      viewId + STORAGE_CONTENTTABLE_WIDTH_KEY
+    );
     let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
       return {
         id: column.label,
         accessorKey: column.property,
         header: column.label,
-        size: savedWidths ? savedWidths[column.label] : calculateColumnWidth(column.label, isCompactMode, column.type),
+        size: savedWidths
+          ? savedWidths[column.label]
+          : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
         ...addComponentCell(column.type),
@@ -39,18 +61,29 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
       };
     });
 
-    const savedOrder = getLocalStorageItem<string[]>(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
+    const savedOrder = getLocalStorageItem<string[]>(
+      viewId + STORAGE_CONTENTTABLE_ORDER_KEY
+    );
     if (savedOrder) {
       const sortedColumns = savedOrder.flatMap((label) => {
         const foundColumn = columnDef.find((col) => col.id == label);
         return foundColumn == null ? [] : foundColumn;
       });
-      const columnsWithoutOrder = columnDef.filter((col) => !savedOrder.includes(col.id));
+      const columnsWithoutOrder = columnDef.filter(
+        (col) => !savedOrder.includes(col.id)
+      );
       columnDef = sortedColumns.concat(columnsWithoutOrder);
     }
 
-    columnDef = [...(checkableRows ? [getCheckableRowsColumnDef(isCompactMode)] : []), ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []), ...columnDef];
-    const firstToggleableIndex = Math.max((checkableRows ? 1 : 0) + (insetColumns ? 1 : 0), stickyLeftColumns);
+    columnDef = [
+      ...(checkableRows ? [getCheckableRowsColumnDef(isCompactMode)] : []),
+      ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []),
+      ...columnDef
+    ];
+    const firstToggleableIndex = Math.max(
+      (checkableRows ? 1 : 0) + (insetColumns ? 1 : 0),
+      stickyLeftColumns
+    );
     for (let i = 0; i < firstToggleableIndex; i++) {
       columnDef[i].enableHiding = false;
     }
@@ -58,7 +91,9 @@ export const useColumnDef = (viewId: string, columns: ContentTableColumn[], inse
   }, [columns]);
 };
 
-const addActiveCurveFiltering = (columnLabel: string): Partial<ColumnDef<any, any>> => {
+const addActiveCurveFiltering = (
+  columnLabel: string
+): Partial<ColumnDef<any, any>> => {
   return columnLabel == activeId
     ? {
         filterFn: (row) => row.original.isVisibleFunction(),
@@ -70,7 +105,9 @@ const addActiveCurveFiltering = (columnLabel: string): Partial<ColumnDef<any, an
     : {};
 };
 
-const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>> => {
+const addComponentCell = (
+  columnType: ContentType
+): Partial<ColumnDef<any, any>> => {
   return columnType == ContentType.Component
     ? {
         cell: (props) => props.getValue(),
@@ -79,16 +116,25 @@ const addComponentCell = (columnType: ContentType): Partial<ColumnDef<any, any>>
     : {};
 };
 
-const addDecimalPreference = (columnType: ContentType, decimals: DecimalPreference): Partial<ColumnDef<any, any>> => {
-  return (columnType === ContentType.Number || columnType === ContentType.Measure) && decimals !== DecimalPreference.Raw
+const addDecimalPreference = (
+  columnType: ContentType,
+  decimals: DecimalPreference
+): Partial<ColumnDef<any, any>> => {
+  return (columnType === ContentType.Number ||
+    columnType === ContentType.Measure) &&
+    decimals !== DecimalPreference.Raw
     ? {
         cell: (props) => {
           const value = props.getValue();
-          const match = value ? value.toString().match(/([\d.]+)\s*([^\d.]*)/) : null;
+          const match = value
+            ? value.toString().match(/([\d.]+)\s*([^\d.]*)/)
+            : null;
           if (!match) return value;
           const numericValue = parseFloat(match[1]);
           const units = match[2];
-          return isNaN(numericValue) ? value : `${numericValue.toFixed(parseInt(decimals))} ${units}`;
+          return isNaN(numericValue)
+            ? value
+            : `${numericValue.toFixed(parseInt(decimals))} ${units}`;
         }
       }
     : {};
@@ -100,8 +146,19 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     enableHiding: false,
     size: calculateColumnWidth(expanderId, isCompactMode),
     header: ({ table }: { table: Table<any> }) => (
-      <IconButton onClick={() => table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())} size="small" style={{ padding: 0 }}>
-        <Icon name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"} style={{ color: table.options.meta.colors.infographic.primaryMossGreen }} />
+      <IconButton
+        onClick={() =>
+          table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())
+        }
+        size="small"
+        style={{ padding: 0 }}
+      >
+        <Icon
+          name={table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"}
+          style={{
+            color: table.options.meta.colors.infographic.primaryMossGreen
+          }}
+        />
       </IconButton>
     ),
     cell: ({ row, table }) => {
@@ -115,7 +172,12 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
             size="small"
             style={{ margin: "auto", padding: 0 }}
           >
-            <Icon name={row.getIsExpanded() ? "chevronUp" : "chevronDown"} style={{ color: table.options.meta.colors.infographic.primaryMossGreen }} />
+            <Icon
+              name={row.getIsExpanded() ? "chevronUp" : "chevronDown"}
+              style={{
+                color: table.options.meta.colors.infographic.primaryMossGreen
+              }}
+            />
           </IconButton>
         </div>
       ) : (
@@ -125,13 +187,19 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
   };
 };
 
-const getCheckableRowsColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
+const getCheckableRowsColumnDef = (
+  isCompactMode: boolean
+): ColumnDef<any, any> => {
   return {
     id: selectId,
     enableHiding: false,
     size: calculateColumnWidth(selectId, isCompactMode),
     header: ({ table }: { table: Table<any> }) => (
-      <Checkbox checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()} onChange={table.getToggleAllRowsSelectedHandler()} />
+      <Checkbox
+        checked={table.getIsAllRowsSelected()}
+        indeterminate={table.getIsSomeRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}
+      />
     ),
     cell: ({ row, table }: { row: Row<any>; table: Table<any> }) => (
       <div style={{ display: "flex" }}>

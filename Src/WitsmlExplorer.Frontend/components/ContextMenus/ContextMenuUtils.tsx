@@ -7,8 +7,13 @@ import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
-import { DeleteComponentsJob, DeleteObjectsJob } from "../../models/jobs/deleteJobs";
-import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
+import {
+  DeleteComponentsJob,
+  DeleteObjectsJob
+} from "../../models/jobs/deleteJobs";
+import ObjectOnWellbore, {
+  toObjectReferences
+} from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
@@ -26,7 +31,11 @@ export const StyledIcon = styled(Icon)`
 `;
 
 export const pluralize = (text: string) => {
-  return text.charAt(text.length - 1) == "y" ? text.slice(0, text.length - 1) + "ies" : text.charAt(text.length - 1) == "s" ? text : text + "s";
+  return text.charAt(text.length - 1) == "y"
+    ? text.slice(0, text.length - 1) + "ies"
+    : text.charAt(text.length - 1) == "s"
+    ? text
+    : text + "s";
 };
 
 export const pluralizeIfMultiple = (object: string, array: any[] | null) => {
@@ -36,21 +45,37 @@ export const pluralizeIfMultiple = (object: string, array: any[] | null) => {
   return isPlural ? objectPlural : objectLowercase;
 };
 
-export const menuItemText = (operation: string, object: string, array: any[] | null) => {
-  const operationUpperCase = operation.charAt(0).toUpperCase() + operation.slice(1).toLowerCase();
+export const menuItemText = (
+  operation: string,
+  object: string,
+  array: any[] | null
+) => {
+  const operationUpperCase =
+    operation.charAt(0).toUpperCase() + operation.slice(1).toLowerCase();
   const objectPlural = pluralizeIfMultiple(object, array);
   const count = array?.length > 0 ? ` ${array.length} ` : " ";
   return `${operationUpperCase}${count}${objectPlural}`;
 };
 
-export const onClickShowObjectOnServer = async (dispatchOperation: DispatchOperation, server: Server, objectOnWellbore: ObjectOnWellbore, objectType: ObjectType) => {
+export const onClickShowObjectOnServer = async (
+  dispatchOperation: DispatchOperation,
+  server: Server,
+  objectOnWellbore: ObjectOnWellbore,
+  objectType: ObjectType
+) => {
   const host = `${window.location.protocol}//${window.location.host}`;
   const url = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
   window.open(url);
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperation, server: Server, wellbore: Wellbore, objectType: ObjectType, logTypeGroup: string = null) => {
+export const onClickShowGroupOnServer = async (
+  dispatchOperation: DispatchOperation,
+  server: Server,
+  wellbore: Wellbore,
+  objectType: ObjectType,
+  logTypeGroup: string = null
+) => {
   const host = `${window.location.protocol}//${window.location.host}`;
   let url = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
   if (objectType === ObjectType.Log && logTypeGroup != null) {
@@ -60,7 +85,11 @@ export const onClickShowGroupOnServer = async (dispatchOperation: DispatchOperat
   dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
-export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation, objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType) => {
+export const onClickDeleteObjects = async (
+  dispatchOperation: DispatchOperation,
+  objectsOnWellbore: ObjectOnWellbore[],
+  objectType: ObjectType
+) => {
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -79,8 +108,15 @@ export const onClickDeleteObjects = async (dispatchOperation: DispatchOperation,
   );
 };
 
-export const onClickDeleteComponents = async (dispatchOperation: DispatchOperation, componentReferences: ComponentReferences, jobType: JobType) => {
-  const pluralizedName = pluralizeIfMultiple(componentReferences.componentType, componentReferences.componentUids);
+export const onClickDeleteComponents = async (
+  dispatchOperation: DispatchOperation,
+  componentReferences: ComponentReferences,
+  jobType: JobType
+) => {
+  const pluralizedName = pluralizeIfMultiple(
+    componentReferences.componentType,
+    componentReferences.componentUids
+  );
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteComponentsJob = {
@@ -110,8 +146,15 @@ export const onClickRefresh = async (
 ) => {
   if (setIsLoading) setIsLoading(true);
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, objectType);
-  dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType } });
+  const wellboreObjects = await ObjectService.getObjects(
+    wellUid,
+    wellboreUid,
+    objectType
+  );
+  dispatchNavigation({
+    type: ModificationType.UpdateWellboreObjects,
+    payload: { wellboreObjects, wellUid, wellboreUid, objectType }
+  });
   if (setIsLoading) setIsLoading(false);
 };
 
@@ -121,7 +164,12 @@ export const onClickRefreshObject = async (
   dispatchOperation: DispatchOperation,
   dispatchNavigation: DispatchNavigation
 ) => {
-  let freshObject = await ObjectService.getObject(objectOnWellbore.wellUid, objectOnWellbore.wellboreUid, objectOnWellbore.uid, objectType);
+  let freshObject = await ObjectService.getObject(
+    objectOnWellbore.wellUid,
+    objectOnWellbore.wellboreUid,
+    objectOnWellbore.uid,
+    objectType
+  );
   const isDeleted = !freshObject;
   if (isDeleted) {
     freshObject = objectOnWellbore;
@@ -147,11 +195,32 @@ const displayDeleteModal = (
       heading={`Delete ${toDeleteTypeName}?`}
       content={
         <Layout>
-          <TextField readOnly id="server" label="Server" defaultValue={AuthorizationService.selectedServer?.name} tabIndex={-1} />
-          <TextField readOnly id="wellbore" label="Wellbore" defaultValue={wellbore} tabIndex={-1} />
-          {parent != null && <TextField readOnly id="parent_object" label={parentType} defaultValue={parent} tabIndex={-1} />}
+          <TextField
+            readOnly
+            id="server"
+            label="Server"
+            defaultValue={AuthorizationService.selectedServer?.name}
+            tabIndex={-1}
+          />
+          <TextField
+            readOnly
+            id="wellbore"
+            label="Wellbore"
+            defaultValue={wellbore}
+            tabIndex={-1}
+          />
+          {parent != null && (
+            <TextField
+              readOnly
+              id="parent_object"
+              label={parentType}
+              defaultValue={parent}
+              tabIndex={-1}
+            />
+          )}
           <span>
-            This will permanently delete {toDeleteNames.length} {toDeleteTypeName}:
+            This will permanently delete {toDeleteNames.length}{" "}
+            {toDeleteTypeName}:
             <strong>
               {toDeleteNames.map((name, index) => {
                 return (
@@ -170,7 +239,10 @@ const displayDeleteModal = (
       switchButtonPlaces={true}
     />
   );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: confirmation
+  });
 };
 
 const Layout = styled.div`

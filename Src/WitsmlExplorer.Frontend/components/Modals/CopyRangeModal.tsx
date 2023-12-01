@@ -3,9 +3,16 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
-import { CopyRangeClipboard, createComponentReferences } from "../../models/jobs/componentReferences";
+import {
+  CopyRangeClipboard,
+  createComponentReferences
+} from "../../models/jobs/componentReferences";
 import LogObject, { indexToNumber } from "../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "../Constants";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
@@ -25,7 +32,12 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const selectedLog = selectedObject as LogObject;
 
   const onSubmit = async () => {
-    const componentReferences: CopyRangeClipboard = createComponentReferences(props.mnemonics, selectedLog, ComponentType.Mnemonic, selectedServer.url);
+    const componentReferences: CopyRangeClipboard = createComponentReferences(
+      props.mnemonics,
+      selectedLog,
+      ComponentType.Mnemonic,
+      selectedServer.url
+    );
     componentReferences.startIndex = startIndex.toString();
     componentReferences.endIndex = endIndex.toString();
     await navigator.clipboard.writeText(JSON.stringify(componentReferences));
@@ -45,7 +57,9 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
             <AdjustDateTimeModal
               minDate={selectedLog.startIndex}
               maxDate={selectedLog.endIndex}
-              isDescending={selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+              isDescending={
+                selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
+              }
               onStartDateChanged={setStartIndex}
               onEndDateChanged={setEndIndex}
               onValidChange={toggleConfirmDisabled}
@@ -55,7 +69,9 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
             <AdjustNumberRangeModal
               minValue={indexToNumber(selectedLog.startIndex)}
               maxValue={indexToNumber(selectedLog.endIndex)}
-              isDescending={selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+              isDescending={
+                selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
+              }
               onStartValueChanged={setStartIndex}
               onEndValueChanged={setEndIndex}
               onValidChange={toggleConfirmDisabled}

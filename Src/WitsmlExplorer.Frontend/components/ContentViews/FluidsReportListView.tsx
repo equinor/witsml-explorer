@@ -10,7 +10,12 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 export interface FluidsReportRow extends ContentTableRow, FluidsReport {
   fluidsReport: FluidsReport;
@@ -40,8 +45,16 @@ export const FluidsReportsListView = (): React.ReactElement => {
         fluidsReport: fluidsReport,
         md: measureToString(fluidsReport.md),
         tvd: measureToString(fluidsReport.tvd),
-        dTimCreation: formatDateString(fluidsReport.commonData.dTimCreation, timeZone, dateTimeFormat),
-        dTimLastChange: formatDateString(fluidsReport.commonData.dTimLastChange, timeZone, dateTimeFormat)
+        dTimCreation: formatDateString(
+          fluidsReport.commonData.dTimCreation,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimLastChange: formatDateString(
+          fluidsReport.commonData.dTimLastChange,
+          timeZone,
+          dateTimeFormat
+        )
       };
     });
   };
@@ -52,24 +65,54 @@ export const FluidsReportsListView = (): React.ReactElement => {
     { property: "md", label: "md", type: ContentType.Measure },
     { property: "tvd", label: "tvd", type: ContentType.Measure },
     { property: "numReport", label: "numReport", type: ContentType.String },
-    { property: "dTimCreation", label: "dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "dTimLastChange", type: ContentType.DateTime },
+    {
+      property: "dTimCreation",
+      label: "dTimCreation",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimLastChange",
+      label: "dTimLastChange",
+      type: ContentType.DateTime
+    },
     { property: "itemState", label: "itemState", type: ContentType.String },
     { property: "comments", label: "comments", type: ContentType.String },
-    { property: "defaultDatum", label: "defaultDatum", type: ContentType.String }
+    {
+      property: "defaultDatum",
+      label: "defaultDatum",
+      type: ContentType.String
+    }
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
     dispatchNavigation({
       type: NavigationType.SelectObject,
-      payload: { well: selectedWell, wellbore: selectedWellbore, object: fluidsReportRow.fluidsReport, objectType: ObjectType.FluidsReport }
+      payload: {
+        well: selectedWell,
+        wellbore: selectedWellbore,
+        object: fluidsReportRow.fluidsReport,
+        objectType: ObjectType.FluidsReport
+      }
     });
   };
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedFluidsReportRows: FluidsReportRow[]) => {
-    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport), wellbore: selectedWellbore };
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedFluidsReportRows: FluidsReportRow[]
+  ) => {
+    const contextProps: ObjectContextMenuProps = {
+      checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport),
+      wellbore: selectedWellbore
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <FluidsReportContextMenu {...contextProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <FluidsReportContextMenu {...contextProps} />,
+        position
+      }
+    });
   };
 
   return (

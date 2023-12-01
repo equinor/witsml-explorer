@@ -72,39 +72,64 @@ export interface QueryTemplatePreset {
   optionsIn?: string;
 }
 
-export const getQueryTemplateWithPreset = (templatePreset: QueryTemplatePreset): string | undefined => {
+export const getQueryTemplateWithPreset = (
+  templatePreset: QueryTemplatePreset
+): string | undefined => {
   if (!templatePreset) return null;
-  const { wellUid, wellboreUid, objectUid, templateObject, returnElements } = templatePreset;
+  const { wellUid, wellboreUid, objectUid, templateObject, returnElements } =
+    templatePreset;
   let template = getQueryTemplate(templateObject, returnElements);
   if (!template) return null;
   if (objectUid) {
-    template = template.replace(/uidWell="" uidWellbore="" uid=""/g, `uidWell="${wellUid ?? ""}" uidWellbore="${wellboreUid ?? ""}" uid="${objectUid}"`);
+    template = template.replace(
+      /uidWell="" uidWellbore="" uid=""/g,
+      `uidWell="${wellUid ?? ""}" uidWellbore="${
+        wellboreUid ?? ""
+      }" uid="${objectUid}"`
+    );
   } else if (wellboreUid) {
-    template = template.replace(/uidWell="" uid=""/g, `uidWell="${wellUid ?? ""}" uid="${wellboreUid}"`);
+    template = template.replace(
+      /uidWell="" uid=""/g,
+      `uidWell="${wellUid ?? ""}" uid="${wellboreUid}"`
+    );
   } else if (wellUid) {
     template = template.replace(/<well uid="">/g, `<well uid="${wellUid}">`);
   }
   return template;
 };
 
-export const getQueryTemplate = (templateObject: TemplateObjects, returnElements: ReturnElements): string | undefined => {
+export const getQueryTemplate = (
+  templateObject: TemplateObjects,
+  returnElements: ReturnElements
+): string | undefined => {
   if (returnElements === ReturnElements.IdOnly) {
-    if (templateObject === TemplateObjects.Well || templateObject === TemplateObjects.Wellbore || templateObject === TemplateObjects.ChangeLog) {
+    if (
+      templateObject === TemplateObjects.Well ||
+      templateObject === TemplateObjects.Wellbore ||
+      templateObject === TemplateObjects.ChangeLog
+    ) {
       return templates[templateObject + "IdOnly"];
     } else {
       return templates.objectIdOnly.replaceAll("object", templateObject);
     }
   } else if (
     returnElements === ReturnElements.DataOnly &&
-    (templateObject === TemplateObjects.Log || templateObject === TemplateObjects.MudLog || templateObject === TemplateObjects.Trajectory)
+    (templateObject === TemplateObjects.Log ||
+      templateObject === TemplateObjects.MudLog ||
+      templateObject === TemplateObjects.Trajectory)
   ) {
     return templates[templateObject + "DataOnly"];
   } else if (
     returnElements === ReturnElements.HeaderOnly &&
-    (templateObject === TemplateObjects.Log || templateObject === TemplateObjects.MudLog || templateObject === TemplateObjects.Trajectory)
+    (templateObject === TemplateObjects.Log ||
+      templateObject === TemplateObjects.MudLog ||
+      templateObject === TemplateObjects.Trajectory)
   ) {
     return templates[templateObject + "HeaderOnly"];
-  } else if (returnElements === ReturnElements.StationLocationOnly && templateObject === TemplateObjects.Trajectory) {
+  } else if (
+    returnElements === ReturnElements.StationLocationOnly &&
+    templateObject === TemplateObjects.Trajectory
+  ) {
     return templates[templateObject + "StationLocationOnly"];
   } else {
     return templates[templateObject];
@@ -137,7 +162,9 @@ export const formatXml = (xml: string) => {
 };
 
 export const getParserError = (formattedQuery: string) => {
-  const parserErrorMatch = formattedQuery.match(/<parsererror.*?>[\s\S]*?<\/parsererror>/i);
+  const parserErrorMatch = formattedQuery.match(
+    /<parsererror.*?>[\s\S]*?<\/parsererror>/i
+  );
   if (parserErrorMatch) {
     const errorMatch = parserErrorMatch[0]?.match(/<div.*?>([\s\S]*?)<\/div>/i);
     if (errorMatch) {
