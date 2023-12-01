@@ -1,3 +1,4 @@
+import { getMeasureWithDatum } from "../__testUtils__/testUtils";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
 import FormationMarker from "../models/formationMarker";
@@ -56,7 +57,7 @@ export const BHARUN_1: BhaRun = {
   wellboreName: "",
   wellName: "",
   numStringRun: "",
-  tubular: "",
+  tubular: null,
   dTimStart: null,
   dTimStop: null,
   dTimStartDrilling: null,
@@ -68,8 +69,7 @@ export const BHARUN_1: BhaRun = {
   numBitRun: "",
   reasonTrip: "",
   objectiveBha: "",
-  commonData: null,
-  tubularUidRef: ""
+  commonData: null
 };
 export const CHANGELOG_1: ChangeLog = {
   uid: "changelog",
@@ -102,8 +102,8 @@ export const TRAJECTORY_1: Trajectory = {
   wellboreName: "",
   wellName: "",
   aziRef: "",
-  mdMax: 0,
-  mdMin: 0,
+  mdMax: getMeasureWithDatum(),
+  mdMin: getMeasureWithDatum(),
   trajectoryStations: [],
   dTimTrajEnd: null,
   dTimTrajStart: null,

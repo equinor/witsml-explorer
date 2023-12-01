@@ -135,7 +135,7 @@ namespace WitsmlExplorer.Api.Query
                     Summary = risk.Summary,
                     Details = risk.Details,
                     Identification = risk.Identification,
-                    Contingency = risk.Contigency,
+                    Contingency = risk.Contingency,
                     Mitigation = risk.Mitigation,
                     CommonData = new WitsmlCommonData()
                     {

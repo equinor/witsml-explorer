@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
+
+using Witsml.Data.Measures;
+using Witsml.Data.MudLog;
 
 using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -13,5 +18,26 @@ namespace WitsmlExplorer.Api.Models
         public MeasureWithDatum EndMd { get; init; }
         public List<MudLogGeologyInterval> GeologyInterval { get; set; }
         public CommonData CommonData { get; init; }
+
+        public override WitsmlMudLogs ToWitsml()
+        {
+            return new WitsmlMudLog
+            {
+                UidWell = WellUid,
+                NameWell = WellName,
+                UidWellbore = WellboreUid,
+                NameWellbore = WellboreName,
+                Uid = Uid,
+                Name = Name,
+                ObjectGrowing = StringHelpers.OptionalBooleanToString(ObjectGrowing),
+                MudLogCompany = MudLogCompany,
+                MudLogEngineers = MudLogEngineers,
+                StartMd = StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
+                EndMd = EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
+                GeologyInterval = GeologyInterval?.Select(geologyInterval => geologyInterval?.ToWitsml())?.ToList(),
+                CommonData = CommonData?.ToWitsml()
+            }.AsSingletonWitsmlList();
+        }
     }
 }
+

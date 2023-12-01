@@ -1,14 +1,14 @@
-﻿import { TextField } from "@material-ui/core";
+﻿import { Autocomplete } from "@equinor/eds-core-react";
+import { TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
+import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import Trajectory, { aziRefValues } from "../../models/trajectory";
 import JobService, { JobType } from "../../services/jobService";
+import { DateTimeField } from "./DateTimeField";
 import ModalDialog from "./ModalDialog";
 import { PropertiesModalMode, validText } from "./ModalParts";
-import Trajectory, { aziRefValues } from "../../models/trajectory";
-import { DateTimeField } from "./DateTimeField";
-import OperationContext from "../../contexts/operationContext";
-import { Autocomplete } from "@equinor/eds-core-react";
 export interface TrajectoryPropertiesModalProps {
   mode: PropertiesModalMode;
   trajectory: Trajectory;
@@ -115,11 +115,14 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 type="number"
                 disabled
                 fullWidth
-                value={editableTrajectory.mdMin}
+                value={editableTrajectory.mdMin?.value ?? ""}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
-                    mdMin: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                    mdMin: {
+                      ...editableTrajectory.mdMin,
+                      value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                    }
                   })
                 }
               />
@@ -129,11 +132,14 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 type="number"
                 disabled
                 fullWidth
-                value={editableTrajectory.mdMax}
+                value={editableTrajectory.mdMax?.value ?? ""}
                 onChange={(e) =>
                   setEditableTrajectory({
                     ...editableTrajectory,
-                    mdMax: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                    mdMax: {
+                      ...editableTrajectory.mdMax,
+                      value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                    }
                   })
                 }
               />

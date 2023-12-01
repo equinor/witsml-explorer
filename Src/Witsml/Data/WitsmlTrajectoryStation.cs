@@ -124,6 +124,10 @@ namespace Witsml.Data
         [XmlElement("magModelValid")] public string MagModelValid { get; set; }
         [XmlElement("geoModelUsed")] public string GeoModelUsed { get; set; }
         [XmlElement("statusTrajStation")] public string StatusTrajStation { get; set; }
+        [XmlElement("gravAxialRaw")] public WitsmlLinearAccelerationMeasure GravAxialRaw { get; set; }
+        [XmlElement("gravTran1Raw")] public WitsmlLinearAccelerationMeasure GravTran1Raw { get; set; }
+        [XmlElement("gravTran2Raw")] public WitsmlLinearAccelerationMeasure GravTran2Raw { get; set; }
+        [XmlElement("magAxialRaw")] public WitsmlMagneticFluxDensityMeasure MagAxialRaw { get; set; }
         [XmlElement("rawData")] public WitsmlTrajRawData RawData { get; set; }
         [XmlElement("corUsed")] public WitsmlStnTrajCorUsed CorUsed { get; set; }
         [XmlElement("valid")] public WitsmlStnTrajValid Valid { get; set; }

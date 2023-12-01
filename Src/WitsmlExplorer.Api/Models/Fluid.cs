@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
+
+using Witsml.Data;
+using Witsml.Data.Measures;
 
 using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -62,5 +67,71 @@ namespace WitsmlExplorer.Api.Models
         public LengthMeasure HardnessCa { get; init; }
         public LengthMeasure Sulfide { get; init; }
         public string Comments { get; init; }
+    }
+
+    public static class FluidExtensions
+    {
+        public static WitsmlFluid ToWitsml(this Fluid fluid)
+        {
+            return new WitsmlFluid
+            {
+                Uid = fluid.Uid,
+                Type = fluid.Type,
+                LocationSample = fluid.LocationSample,
+                DTim = StringHelpers.ToUniversalDateTimeString(fluid.DTim),
+                Md = fluid.Md?.ToWitsml<WitsmlMeasuredDepthCoord>(),
+                Tvd = fluid.Tvd?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
+                PresBopRating = fluid.PresBopRating?.ToWitsml<WitsmlPressureMeasure>(),
+                MudClass = fluid.MudClass,
+                Density = fluid.Density?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                VisFunnel = fluid.VisFunnel?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                TempVis = fluid.TempVis?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Pv = fluid.Pv?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Yp = fluid.Yp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Gel10Sec = fluid.Gel10Sec?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Gel10Min = fluid.Gel10Min?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Gel30Min = fluid.Gel30Min?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                FilterCakeLtlp = fluid.FilterCakeLtlp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                FiltrateLtlp = fluid.FiltrateLtlp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                TempHthp = fluid.TempHthp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                PresHthp = fluid.PresHthp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                FiltrateHthp = fluid.FiltrateHthp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                FilterCakeHthp = fluid.FilterCakeHthp?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                SolidsPc = fluid.SolidsPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                WaterPc = fluid.WaterPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                OilPc = fluid.OilPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                SandPc = fluid.SandPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                SolidsLowGravPc = fluid.SolidsLowGravPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                SolidsCalcPc = fluid.SolidsCalcPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                BaritePc = fluid.BaritePc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Lcm = fluid.Lcm?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Mbt = fluid.Mbt?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Ph = fluid.Ph,
+                TempPh = fluid.TempPh?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Pm = fluid.Pm?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                PmFiltrate = fluid.PmFiltrate?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Mf = fluid.Mf?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                AlkalinityP1 = fluid.AlkalinityP1?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                AlkalinityP2 = fluid.AlkalinityP2?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Chloride = fluid.Chloride?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Calcium = fluid.Calcium?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Magnesium = fluid.Magnesium?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Potassium = fluid.Potassium?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Rheometers = fluid.Rheometers?.Select(rheometer => rheometer?.ToWitsml()).ToList(),
+                BrinePc = fluid.BrinePc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Lime = fluid.Lime?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                ElectStab = fluid.ElectStab?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                CalciumChloride = fluid.CalciumChloride?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Company = fluid.Company,
+                SolidsHiGravPc = fluid.SolidsHiGravPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Polymer = fluid.Polymer?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                PolyType = fluid.PolyType,
+                SolCorPc = fluid.SolCorPc?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                OilCtg = fluid.OilCtg?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                HardnessCa = fluid.HardnessCa?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Sulfide = fluid.Sulfide?.ToWitsml<Witsml.Data.Measures.Measure>(),
+                Comments = fluid.Comments,
+            };
+        }
     }
 }
