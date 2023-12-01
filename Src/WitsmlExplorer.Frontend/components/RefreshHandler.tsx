@@ -57,8 +57,8 @@ const RefreshHandler = (): React.ReactElement => {
           }
 
           try {
-            // @ts-ignore
             const modificationType: ModificationType =
+              // @ts-ignore
               ModificationType[
                 `${refreshAction.refreshType}${refreshAction.entityType}`
               ];
