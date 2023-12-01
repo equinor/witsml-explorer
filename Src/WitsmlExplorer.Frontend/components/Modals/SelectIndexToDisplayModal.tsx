@@ -9,6 +9,7 @@ import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 
 export interface SelectIndexToDisplayModalProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
@@ -89,15 +90,6 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
       )}
     </>
   );
-};
-
-const indexToNumber = (index: string): number => {
-  if (!index) return null;
-  return Number(index.replace(/[^\d.-]/g, ""));
-};
-
-export const formatIndexValue = (value: string | number): string => {
-  return typeof value === "number" ? String(value) : value;
 };
 
 export default SelectIndexToDisplayModal;
