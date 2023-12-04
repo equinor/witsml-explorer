@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Models
                 Category = Category,
                 SubCategory = SubCategory,
                 ExtendCategory = ExtendCategory,
-                AffectedPersonnel = (AffectedPersonnel != null && AffectedPersonnel.Length != 0) ? AffectedPersonnel?.Split(", ") : null,
+                AffectedPersonnel = !string.IsNullOrEmpty(AffectedPersonnel) ? AffectedPersonnel.Split(", ") : null,
                 DTimStart = StringHelpers.ToUniversalDateTimeString(DTimStart),
                 DTimEnd = StringHelpers.ToUniversalDateTimeString(DTimStart),
                 MdHoleStart = MdHoleStart?.ToWitsml<WitsmlMeasureWithDatum>(),
@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Models
                 Contingency = Contingency,
                 Mitigation = Mitigation,
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }
