@@ -24,6 +24,7 @@ import MudLog from "../models/mudLog";
 import ObjectOnWellbore from "../models/objectOnWellbore";
 import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel } from "../models/objectType";
+import RefNameString from "../models/refNameString";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -179,8 +180,7 @@ export function getBhaRun(overrides?: Partial<BhaRun>): BhaRun {
   return {
     ...getObjectOnWellbore(),
     numStringRun: "",
-    tubular: "",
-    tubularUidRef: "",
+    tubular: getRefNameString(),
     dTimStart: "",
     dTimStop: "",
     dTimStartDrilling: "",
@@ -312,8 +312,8 @@ export function getRisk(overrides?: Partial<RiskObject>): RiskObject {
 export function getTrajectory(overrides?: Partial<Trajectory>): Trajectory {
   return {
     ...getObjectOnWellbore(),
-    mdMin: 0,
-    mdMax: 0,
+    mdMin: getMeasureWithDatum(),
+    mdMax: getMeasureWithDatum(),
     aziRef: "",
     dTimTrajStart: "",
     dTimTrajEnd: "",
@@ -404,6 +404,8 @@ export function getLogCurveInfo(overrides?: Partial<LogCurveInfo>): LogCurveInfo
     unit: "unit",
     mnemAlias: "mnemAlias",
     axisDefinitions: [],
+    curveDescription: "curveDescription",
+    typeLogData: "typeLogData",
     sensorOffset: getMeasure(),
     ...overrides
   };
@@ -430,6 +432,14 @@ export function getStratigraphicStruct(overrides?: Partial<StratigraphicStruct>)
   return {
     value: "",
     kind: "",
+    ...overrides
+  };
+}
+
+export function getRefNameString(overrides?: Partial<RefNameString>): RefNameString {
+  return {
+    uidRef: "",
+    value: "",
     ...overrides
   };
 }

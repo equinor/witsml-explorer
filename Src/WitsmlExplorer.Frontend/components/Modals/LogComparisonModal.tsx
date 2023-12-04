@@ -41,35 +41,31 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
   const [indexTypesMatch, setIndexTypesMatch] = useState<boolean>();
 
   useEffect(() => {
-    const setCurves = async () => {
-      const fetchCurves = async () => {
-        const fetchSource = ComponentService.getComponents(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, ComponentType.Mnemonic);
-        const fetchTarget = ComponentService.getComponents(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ComponentType.Mnemonic, targetServer);
-        return {
-          sourceLogCurveInfo: await fetchSource,
-          targetLogCurveInfo: await fetchTarget
-        };
-      };
-      const { sourceLogCurveInfo, targetLogCurveInfo } = await fetchCurves();
+    fetchCurves().then(({ sourceLogCurveInfo, targetLogCurveInfo }) => {
       if (sourceLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageSource = "Unable to compare the log as no log curve infos could be fetched from the source log.";
         displayMissingObjectModal(sourceServer, sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, dispatchOperation, failureMessageSource, ObjectType.Log);
-        return;
       } else if (targetLogCurveInfo.length == 0) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = "Unable to compare the log as either the log does not exist on the target server or the target log is empty.";
         displayMissingObjectModal(targetServer, targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, dispatchOperation, failureMessageTarget, ObjectType.Log);
-        return;
       } else {
-        setSourceLogCurveInfo(sourceLogCurveInfo);
-        setTargetLogCurveInfo(targetLogCurveInfo);
+        compareLogCurveInfos(sourceLogCurveInfo, targetLogCurveInfo);
       }
-    };
-    setCurves();
+    });
   }, []);
 
-  useEffect(() => {
+  const fetchCurves = async () => {
+    const fetchSource = ComponentService.getComponents(sourceLog.wellUid, sourceLog.wellboreUid, sourceLog.uid, ComponentType.Mnemonic);
+    const fetchTarget = ComponentService.getComponents(targetObject.wellUid, targetObject.wellboreUid, targetObject.uid, ComponentType.Mnemonic, targetServer);
+    return {
+      sourceLogCurveInfo: await fetchSource,
+      targetLogCurveInfo: await fetchTarget
+    };
+  };
+
+  const compareLogCurveInfos = (sourceLogCurveInfo: LogCurveInfo[], targetLogCurveInfo: LogCurveInfo[]) => {
     if (indexesToShow !== null || sourceLogCurveInfo === null || targetLogCurveInfo === null) {
       return;
     }
@@ -91,8 +87,10 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
 
     setSourceType(sourceType);
     setTargetType(targetType);
+    setSourceLogCurveInfo(sourceLogCurveInfo);
+    setTargetLogCurveInfo(targetLogCurveInfo);
     setIndexTypesMatch(indexTypesMatch);
-  }, [sourceLogCurveInfo, targetLogCurveInfo]);
+  };
 
   const data = indexesToShow?.map((mismatches) => {
     return {
@@ -100,7 +98,9 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
       sourceStart: mismatches.sourceStart,
       targetStart: mismatches.targetStart,
       sourceEnd: mismatches.sourceEnd,
-      targetEnd: mismatches.targetEnd
+      targetEnd: mismatches.targetEnd,
+      sourceUnit: mismatches.sourceUnit,
+      targetUnit: mismatches.targetUnit
     };
   });
 
@@ -146,7 +146,6 @@ const LogComparisonModal = (props: LogComparisonModalProps): React.ReactElement 
                           </List.Item>
                         </List>
                       </List.Item>
-                      <List.Item>Differing index values are highlighted with bold text.</List.Item>
                     </List>
                   </Accordion.Panel>
                 </Accordion.Item>
@@ -201,6 +200,16 @@ const columns: ContentTableColumn[] = [
   {
     property: "targetEnd",
     label: "targetEnd",
+    type: ContentType.String
+  },
+  {
+    property: "sourceUnit",
+    label: "sourceUnit",
+    type: ContentType.String
+  },
+  {
+    property: "targetUnit",
+    label: "targetUnit",
     type: ContentType.String
   }
 ];

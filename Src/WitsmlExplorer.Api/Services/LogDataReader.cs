@@ -51,6 +51,22 @@ namespace WitsmlExplorer.Api.Services
         /// <param name="logger">A logger or null</param>
         /// <param name="bufferSize">How many query results to buffer at a time. Defaults to 4.</param>
         public LogDataReader(IWitsmlClient witsmlClient, WitsmlLog sourceLog, List<string> mnemonics, ILogger logger, int bufferSize = 4)
+            : this(witsmlClient, sourceLog, mnemonics, logger, startIndex: Index.Start(sourceLog), endIndex: Index.End(sourceLog), bufferSize)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a LogDataReader that will fetch all data for the interval specified by <paramref name="startIndex"/> and <paramref name="endIndex"/> and by <paramref name="sourceLog"/>, <paramref name="mnemonics"/>.
+        /// Fetching will start immediately on a separate thread and will buffer up to <paramref name="bufferSize"/> query results. IAsyncDisposable is implemented, so the LogDataReader should be constructed with <c>using await</c>.
+        /// </summary>
+        /// <param name="witsmlClient">The witsmlClient used to fetch data</param>
+        /// <param name="sourceLog">A WitsmlLog object used to retrieve well, wellbore, and log uids, and the start, end, type, and mnemonic of the index curve.</param>
+        /// <param name="mnemonics">A list of mnemonics to fetch. The index curve will be added to this list if not present.</param>
+        /// <param name="logger">A logger or null</param>
+        /// <param name="startIndex">Start index of interval for data fetching.</param>
+        /// <param name="endIndex">End index of interval for data fetching.</param>
+        /// <param name="bufferSize">How many query results to buffer at a time. Defaults to 4.</param>
+        public LogDataReader(IWitsmlClient witsmlClient, WitsmlLog sourceLog, List<string> mnemonics, ILogger logger, Index startIndex, Index endIndex, int bufferSize = 4)
         {
             _witsmlClient = witsmlClient ?? throw new ArgumentNullException(nameof(witsmlClient));
             _uidWell = sourceLog?.UidWell ?? throw new ArgumentNullException(nameof(sourceLog));
@@ -59,8 +75,8 @@ namespace WitsmlExplorer.Api.Services
             _indexType = sourceLog.IndexType;
             _buffer = new BufferBlock<WitsmlLogData>(new DataflowBlockOptions() { BoundedCapacity = bufferSize });
 
-            _startIndex = Index.Start(sourceLog);
-            _endIndex = Index.End(sourceLog);
+            _startIndex = startIndex;
+            _endIndex = endIndex;
             _mnemonics = mnemonics ?? throw new ArgumentNullException(nameof(mnemonics));
             _logger = logger;
             if (!mnemonics.Any())

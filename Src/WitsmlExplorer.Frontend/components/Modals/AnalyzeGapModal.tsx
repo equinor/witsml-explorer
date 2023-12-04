@@ -1,12 +1,15 @@
 import React, { useContext, useState } from "react";
 import LogObject from "../../models/logObject";
 import JobService, { JobType } from "../../services/jobService";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../Constants";
+import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
 import ModalDialog from "./ModalDialog";
 import { TextField } from "@equinor/eds-core-react";
 import OperationType from "../../contexts/operationType";
 import { ReportModal } from "./ReportModal";
 import OperationContext from "../../contexts/operationContext";
+import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 
 export interface AnalyzeGapModalProps {
   logObject: LogObject;
@@ -24,13 +27,19 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const [timeGapSize, setTimeGapSize] = useState(initialTime);
   const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
 
+  const isTimeIndexed = logObject.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+  const [startIndex, setStartIndex] = useState<string | number>(isTimeIndexed ? logObject.startIndex : indexToNumber(logObject.startIndex));
+  const [endIndex, setEndIndex] = useState<string | number>(isTimeIndexed ? logObject.endIndex : indexToNumber(logObject.endIndex));
+  const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const onSubmit = async () => {
     setIsLoading(true);
     const analyzeGapsJob = {
       logReference: logObject,
       mnemonics: mnemonics,
       gapSize: gapSize,
-      timeGapSize: convertToMilliseconds(timeGapSize)
+      timeGapSize: convertToMilliseconds(timeGapSize),
+      startIndex: formatIndexValue(startIndex),
+      endIndex: formatIndexValue(endIndex)
     };
     const jobId = await JobService.orderJob(JobType.AnalyzeGaps, analyzeGapsJob);
     setIsLoading(false);
@@ -63,6 +72,10 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
     return (hours * 3600 + minutes * 60 + seconds) * 1000;
   };
 
+  const toggleConfirmDisabled = (isValid: boolean) => {
+    setConfirmDisabled(!isValid);
+  };
+
   return (
     <>
       {log && (
@@ -71,34 +84,54 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
           content={
             <>
               {log.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
-                <TextField
-                  id={"timeGapSize"}
-                  label="gap size"
-                  value={timeGapSize}
-                  onChange={handleTimeGapSizeChanged}
-                  placeholder="hh:mm:ss"
-                  maxLength={8}
-                  helperText={
-                    !gapSizeIsValid ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00" : null
-                  }
-                />
+                <>
+                  <AdjustDateTimeModal
+                    minDate={log.startIndex}
+                    maxDate={log.endIndex}
+                    isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                    onStartDateChanged={setStartIndex}
+                    onEndDateChanged={setEndIndex}
+                    onValidChange={toggleConfirmDisabled}
+                  />
+                  <TextField
+                    id={"timeGapSize"}
+                    label="gap size"
+                    value={timeGapSize}
+                    onChange={handleTimeGapSizeChanged}
+                    placeholder="hh:mm:ss"
+                    maxLength={8}
+                    helperText={
+                      !gapSizeIsValid ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00" : null
+                    }
+                  />
+                </>
               )}
               {log.indexType === WITSML_INDEX_TYPE_MD && (
-                <TextField
-                  id={"gapSize"}
-                  label="gap size"
-                  type="number"
-                  value={gapSize}
-                  onChange={handleGapSizeChanged}
-                  helperText={!gapSizeIsValid ? "Gap size number must be greater than 0" : null}
-                />
+                <>
+                  <AdjustNumberRangeModal
+                    minValue={indexToNumber(log.startIndex)}
+                    maxValue={indexToNumber(log.endIndex)}
+                    isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                    onStartValueChanged={setStartIndex}
+                    onEndValueChanged={setEndIndex}
+                    onValidChange={toggleConfirmDisabled}
+                  />
+                  <TextField
+                    id={"gapSize"}
+                    label="gap size"
+                    type="number"
+                    value={gapSize}
+                    onChange={handleGapSizeChanged}
+                    helperText={!gapSizeIsValid ? "Gap size number must be greater than 0" : null}
+                  />
+                </>
               )}
             </>
           }
           onSubmit={() => onSubmit()}
           isLoading={isLoading}
           confirmText={"Analyze"}
-          confirmDisabled={!gapSizeIsValid}
+          confirmDisabled={!gapSizeIsValid || confirmDisabled}
         />
       )}
     </>
