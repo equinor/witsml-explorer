@@ -31,24 +31,27 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"paste"}
+        onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}
+        disabled={tubularComponentReferences === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}
-          disabled={tubularComponentReferences === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

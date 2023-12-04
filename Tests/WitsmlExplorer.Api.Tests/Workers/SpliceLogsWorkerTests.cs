@@ -359,11 +359,36 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal("IndexCurve", newLogHeader.LogCurveInfo.First().Mnemonic);
         }
 
-        private (SpliceLogsJob, WitsmlLogs, WitsmlLogs) SetupTest(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, Action<WitsmlLogs> logHeaderCallback, Action<WitsmlLogs> logDataCallback)
+        [Theory]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_MD)]
+        [InlineData(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)]
+        public async Task Execute_DifferentIndexCurveNames_HasCorrectHeader(string indexType)
+        {
+            string[] logUids = { "log1Uid", "log2Uid" };
+            int[] startIndexNum = { 0, 0 }; // start indexes for each log
+            int[] endIndexNum = { 10, 10 }; // end indexes for each log
+            string[] indexCurves = { "IndexCurve1", "IndexCurve2" };
+            WitsmlLogs capturedLogHeader = null;
+            WitsmlLogs capturedLogData = null;
+
+            var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log, indexCurves);
+
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+
+            WitsmlLog newLogHeader = capturedLogHeader.Logs.First();
+            WitsmlLog newLogDataHeader = capturedLogData.Logs.First();
+
+            // When Log Curve Info varies between logs, the Log Curve Info of the last log is prioritized.
+            Assert.Equal("IndexCurve2", newLogHeader.IndexCurve.Value);
+            Assert.Equal("IndexCurve2", newLogHeader.LogCurveInfo.First().Mnemonic);
+            Assert.Equal("IndexCurve2", newLogDataHeader.LogData.MnemonicList.Split(',')[0]);
+        }
+
+        private (SpliceLogsJob, WitsmlLogs, WitsmlLogs) SetupTest(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, Action<WitsmlLogs> logHeaderCallback, Action<WitsmlLogs> logDataCallback, string[] indexCurves = null)
         {
             SpliceLogsJob job = CreateSpliceLogsJob(logUids);
-            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, startIndexNum, endIndexNum);
-            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, startIndexNum, endIndexNum);
+            WitsmlLogs logHeaders = CreateSampleLogHeaders(logUids, indexType, startIndexNum, endIndexNum, indexCurves);
+            WitsmlLogs logData = CreateSampleLogData(logUids, indexType, startIndexNum, endIndexNum, indexCurves);
             SetupClient(_witsmlClient, logHeaders, logData, logHeaderCallback, logDataCallback);
             return (job, logHeaders, logData);
         }
@@ -387,7 +412,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private WitsmlLogs CreateSampleLogHeaders(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum)
+        private WitsmlLogs CreateSampleLogHeaders(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, string[] indexCurves = null)
         {
             var isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
             return new WitsmlLogs
@@ -403,24 +428,24 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     StartDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(startIndexNum[i]).ToISODateTimeString(),
                     EndIndex = isDepthLog ? new WitsmlIndex() { Value = (endIndexNum[i]).ToString(), Uom = "m" } : null,
                     EndDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(endIndexNum[i]).ToISODateTimeString(),
-                    IndexCurve = new WitsmlIndexCurve() { Value = "IndexCurve" },
-                    LogCurveInfo = GetLogCurveInfo(logUids, uid, indexType, startIndexNum, endIndexNum)
+                    IndexCurve = new WitsmlIndexCurve() { Value = indexCurves != null ? indexCurves[i] : "IndexCurve" },
+                    LogCurveInfo = GetLogCurveInfo(logUids, uid, indexType, startIndexNum, endIndexNum, indexCurves)
                 }).ToList()
             };
         }
 
-        private WitsmlLogs CreateSampleLogData(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum)
+        private WitsmlLogs CreateSampleLogData(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, string[] indexCurves = null)
         {
             return new WitsmlLogs
             {
-                Logs = logUids.Select(uid => new WitsmlLog
+                Logs = logUids.Select((uid, i) => new WitsmlLog
                 {
                     Uid = uid,
                     UidWell = _wellUid,
                     UidWellbore = _wellboreUid,
                     LogData = new()
                     {
-                        MnemonicList = "IndexCurve,Curve1,Curve2",
+                        MnemonicList = indexCurves != null ? $"{indexCurves[i]},Curve1,Curve2" : "IndexCurve,Curve1,Curve2",
                         UnitList = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD ? "m,Unit1,Unit2" : "DateTime,Unit1,Unit2",
                         Data = GetLogData(logUids, uid, indexType, startIndexNum, endIndexNum)
                     }
@@ -438,7 +463,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return indexes.Select((curveIndex, index) => new WitsmlData() { Data = $"{curveIndex},{uidNum},{index}" }).ToList();
         }
 
-        private List<WitsmlLogCurveInfo> GetLogCurveInfo(string[] logUids, string uid, string indexType, int[] startIndexNum, int[] endIndexNum)
+        private List<WitsmlLogCurveInfo> GetLogCurveInfo(string[] logUids, string uid, string indexType, int[] startIndexNum, int[] endIndexNum, string[] indexCurves = null)
         {
             var uidNum = logUids.ToList().FindIndex(i => i == uid);
             var isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
@@ -450,7 +475,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 new WitsmlLogCurveInfo
                 {
-                    Mnemonic = "IndexCurve",
+                    Mnemonic = indexCurves != null ? indexCurves[uidNum] : "IndexCurve",
                     Unit = isDepthLog ? "m" : "DateTime",
                     MinIndex = minIndex,
                     MinDateTimeIndex = minDateTimeIndex,

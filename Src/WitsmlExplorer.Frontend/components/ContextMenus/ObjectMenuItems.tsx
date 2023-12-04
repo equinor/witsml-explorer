@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@material-ui/core";
 import React from "react";
 import { v4 as uuid } from "uuid";
 import { DispatchNavigation } from "../../contexts/navigationAction";
@@ -31,7 +31,8 @@ export const ObjectMenuItems = (
   dispatchOperation: DispatchOperation,
   dispatchNavigation: DispatchNavigation,
   openInQueryView: OpenInQueryView,
-  wellbore: Wellbore
+  wellbore: Wellbore,
+  extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
   const { selectedServer, servers } = navigationState;
@@ -41,6 +42,7 @@ export const ObjectMenuItems = (
       <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("Refresh", objectType, null)}</Typography>
     </MenuItem>,
+    <Divider key={"divider"} />,
     <MenuItem key={"copy"} onClick={() => copyObjectOnWellbore(selectedServer, checkedObjects, dispatchOperation, objectType)} disabled={checkedObjects.length === 0}>
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("copy", objectType, checkedObjects)}</Typography>
@@ -67,6 +69,7 @@ export const ObjectMenuItems = (
       <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>{menuItemText("delete", objectType, checkedObjects)}</Typography>
     </MenuItem>,
+    ...extraMenuItems,
     <NestedMenuItem key={"showOnServer"} label={"Show on server"} disabled={checkedObjects.length !== 1}>
       {servers.map((server: Server) => (
         <MenuItem key={server.name} onClick={() => onClickShowGroupOnServer(dispatchOperation, server, wellbore, objectType, (checkedObjects[0] as LogObject)?.indexType)}>

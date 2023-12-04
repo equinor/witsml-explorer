@@ -32,24 +32,27 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
+  const extraMenuItems = (): React.ReactElement[] => {
+    return [
+      <MenuItem
+        key={"paste"}
+        onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
+        disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
+      >
+        <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
+      </MenuItem>,
+      <Divider key={"divider"} />,
+      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+        <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>Properties</Typography>
+      </MenuItem>
+    ];
+  };
+
   return (
     <ContextMenu
-      menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
-        <MenuItem
-          key={"paste"}
-          onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
-          disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
-        >
-          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
-        </MenuItem>,
-        <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Properties</Typography>
-        </MenuItem>
-      ]}
+      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
     />
   );
 };

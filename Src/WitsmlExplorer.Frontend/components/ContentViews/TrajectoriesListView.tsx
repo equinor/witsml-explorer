@@ -3,6 +3,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -26,8 +27,9 @@ export const TrajectoriesListView = (): React.ReactElement => {
     }
   }, [selectedWellbore?.trajectories]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, trajectories: Trajectory[]) => {
-    const contextProps: ObjectContextMenuProps = { checkedObjects: trajectories, wellbore: selectedWellbore };
+  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, selectedTrajectories: Trajectory[]) => {
+    const unchangedSelectedTrajectories = trajectories.filter((trajectory) => selectedTrajectories.some((selectedTrajectory) => selectedTrajectory.uid === trajectory.uid));
+    const contextProps: ObjectContextMenuProps = { checkedObjects: unchangedSelectedTrajectories, wellbore: selectedWellbore };
     const position = getContextMenuPosition(event);
     dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextProps} />, position } });
   };
@@ -61,6 +63,8 @@ export const TrajectoriesListView = (): React.ReactElement => {
       dTimTrajEnd: formatDateString(trajectory.dTimTrajEnd, timeZone, dateTimeFormat),
       dateTimeCreation: formatDateString(trajectory.commonData.dTimCreation, timeZone, dateTimeFormat),
       dateTimeLastChange: formatDateString(trajectory.commonData.dTimLastChange, timeZone, dateTimeFormat),
+      mdMin: measureToString(trajectory.mdMin),
+      mdMax: measureToString(trajectory.mdMax),
       id: trajectory.uid
     };
   });

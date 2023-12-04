@@ -82,8 +82,6 @@ namespace WitsmlExplorer.Api.Workers
         private static void VerifyLogHeaders(WitsmlLogs logHeaders)
         {
             if (logHeaders.Logs.IsNullOrEmpty()) throw new ArgumentException("Log headers could not be fetched");
-            var indexCurve = logHeaders.Logs.FirstOrDefault().IndexCurve;
-            if (logHeaders.Logs.Any(log => log.IndexCurve.Value != indexCurve.Value)) throw new ArgumentException("IndexCurve must match for all logs");
             var direction = logHeaders.Logs.FirstOrDefault().Direction;
             if (logHeaders.Logs.Any(log => log.Direction != direction)) throw new ArgumentException("Direction must match for all logs");
             var indexType = logHeaders.Logs.FirstOrDefault().IndexType;
@@ -144,6 +142,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlLog CreateNewLogQuery(WitsmlLogs logHeaders, string newLogUid, string newLogName)
         {
+            // The main data should be taken from the first log, but LogCurveInfo and IndexCurve should be taken from the last log.
             WitsmlLog baseLog = logHeaders.Logs.FirstOrDefault();
             return new()
             {
@@ -154,14 +153,24 @@ namespace WitsmlExplorer.Api.Workers
                 UidWell = baseLog.UidWell,
                 UidWellbore = baseLog.UidWellbore,
                 IndexType = baseLog.IndexType,
-                IndexCurve = baseLog.IndexCurve,
+                IndexCurve = logHeaders.Logs.LastOrDefault().IndexCurve,
                 Direction = baseLog.Direction,
-                LogCurveInfo = logHeaders.Logs
-                    .SelectMany(log => log.LogCurveInfo)
+                LogCurveInfo = GetNewLogCurveInfo(logHeaders)
+            };
+        }
+
+        private static List<WitsmlLogCurveInfo> GetNewLogCurveInfo(WitsmlLogs logHeaders)
+        {
+            // Returns the LogCurveInfo where curves from the last logs are prioritized.
+            // The index curve from the last log is also placed first in the new LogCurveInfo.
+            var indexLogCurveInfo = logHeaders.Logs.LastOrDefault().LogCurveInfo.FirstOrDefault();
+            List<WitsmlLogCurveInfo> otherLogCurveInfos = logHeaders.Logs.SelectMany(log => log.LogCurveInfo.Skip(1)).ToList(); // Skip index curve of each log.
+            var newLogCurveInfo = otherLogCurveInfos
                     .GroupBy(x => x.Mnemonic)
                     .Select(g => g.Last())
-                    .ToList()
-            };
+                    .Prepend(indexLogCurveInfo)
+                    .ToList();
+            return newLogCurveInfo;
         }
 
         private async Task AddDataToLog(string wellUid, string wellboreUid, string logUid, WitsmlLogData data)

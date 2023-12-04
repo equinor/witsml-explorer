@@ -84,19 +84,19 @@ const BhaRunPropertiesModal = (props: BhaRunPropertiesModalProps): React.ReactEl
                 id={"tubular"}
                 label={"tubular"}
                 required
-                value={editableBhaRun.tubular ?? ""}
-                error={editableBhaRun.tubular?.length === 0}
+                value={editableBhaRun.tubular?.value ?? ""}
+                error={editableBhaRun.tubular?.value?.length === 0}
                 fullWidth
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubular: e.target.value })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubular: { ...editableBhaRun.tubular, value: e.target.value } })}
               />
               <TextField
                 id={"tubularUidRef"}
                 label={"tubularUidRef"}
                 required
-                value={editableBhaRun.tubularUidRef ?? ""}
-                error={editableBhaRun.tubularUidRef?.length === 0}
+                value={editableBhaRun.tubular?.uidRef ?? ""}
+                error={editableBhaRun.tubular?.uidRef?.length === 0}
                 fullWidth
-                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubularUidRef: e.target.value })}
+                onChange={(e) => setEditableBhaRun({ ...editableBhaRun, tubular: { ...editableBhaRun.tubular, uidRef: e.target.value } })}
               />
               <DateTimeField
                 value={editableBhaRun.dTimStart}
