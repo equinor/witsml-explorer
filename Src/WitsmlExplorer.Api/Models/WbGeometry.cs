@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Models
                 GapAir = GapAir?.ToWitsml<WitsmlLengthMeasure>(),
                 DepthWaterMean = DepthWaterMean?.ToWitsml<WitsmlLengthMeasure>(),
                 CommonData = CommonData?.ToWitsml(),
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

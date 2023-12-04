@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
                     CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "" }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = trajectoryUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -85,8 +85,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = trajectoryReference.WellUid,
                     UidWellbore = trajectoryReference.WellboreUid,
                     Uid = trajectoryReference.Uid,
-                    TrajectoryStations = ts.AsSingletonList()
-                }.AsSingletonList()
+                    TrajectoryStations = ts.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

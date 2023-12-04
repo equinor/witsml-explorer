@@ -8,11 +8,11 @@ namespace Witsml.Data
 {
     public class WitsmlBhaRun : WitsmlObjectOnWellbore
     {
-        public override WitsmlBhaRuns AsSingletonWitsmlList()
+        public override WitsmlBhaRuns AsItemInWitsmlList()
         {
             return new WitsmlBhaRuns()
             {
-                BhaRuns = this.AsSingletonList()
+                BhaRuns = this.AsItemInList()
             };
         }
 

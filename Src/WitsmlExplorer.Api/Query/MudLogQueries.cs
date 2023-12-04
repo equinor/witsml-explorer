@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Query
                             }).ToList()
                         }
                     },
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

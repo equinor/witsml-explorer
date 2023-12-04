@@ -8,7 +8,11 @@ import RiskObject from "../models/riskObject";
 import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
-import Wellbore, { WellboreObjects, calculateWellboreNodeId, objectTypeToWellboreObjects } from "../models/wellbore";
+import Wellbore, {
+  WellboreObjects,
+  calculateWellboreNodeId,
+  objectTypeToWellboreObjects
+} from "../models/wellbore";
 import AuthorizationService from "../services/authorizationService";
 import {
   AddServerAction,
@@ -31,7 +35,10 @@ import { Action } from "./navigationActions";
 import { NavigationState, allDeselected } from "./navigationContext";
 import { toggleTreeNode, treeNodeIsExpanded } from "./navigationStateReducer";
 
-export const performModificationAction = (state: NavigationState, action: Action) => {
+export const performModificationAction = (
+  state: NavigationState,
+  action: Action
+) => {
   switch (action.type) {
     case ModificationType.AddWell:
       return addWell(state, action);
@@ -88,7 +95,10 @@ const addServer = (state: NavigationState, { payload }: AddServerAction) => {
   };
 };
 
-const updateServer = (state: NavigationState, { payload }: UpdateServerAction) => {
+const updateServer = (
+  state: NavigationState,
+  { payload }: UpdateServerAction
+) => {
   const { server } = payload;
   const index = state.servers.findIndex((s) => s.id === server.id);
   state.servers.splice(index, 1, server);
@@ -96,8 +106,12 @@ const updateServer = (state: NavigationState, { payload }: UpdateServerAction) =
   return {
     ...state,
     servers: [...state.servers],
-    selectedServer: state.selectedServer?.id === server.id ? server : state.selectedServer,
-    currentSelected: state.selectedServer && state.currentSelected === state.selectedServer ? server : state.currentSelected
+    selectedServer:
+      state.selectedServer?.id === server.id ? server : state.selectedServer,
+    currentSelected:
+      state.selectedServer && state.currentSelected === state.selectedServer
+        ? server
+        : state.currentSelected
   };
 };
 
@@ -118,7 +132,9 @@ const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, well.uid);
   const { wellbores: oldWellbores } = wells[wellIndex];
-  const updatedWell = overrideWellbores ? { ...well } : { ...well, wellbores: oldWellbores };
+  const updatedWell = overrideWellbores
+    ? { ...well }
+    : { ...well, wellbores: oldWellbores };
   wells[wellIndex] = updatedWell;
 
   const refreshedWellIsSelected = state.selectedWell?.uid === well.uid;
@@ -126,11 +142,16 @@ const updateWell = (state: NavigationState, { payload }: UpdateWellAction) => {
   return {
     ...state,
     wells,
-    selectedWell: refreshedWellIsSelected ? wells[wellIndex] : state.selectedWell
+    selectedWell: refreshedWellIsSelected
+      ? wells[wellIndex]
+      : state.selectedWell
   };
 };
 
-const addWellbore = (state: NavigationState, { payload }: AddWellboreAction) => {
+const addWellbore = (
+  state: NavigationState,
+  { payload }: AddWellboreAction
+) => {
   const { wellbore } = payload;
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, wellbore.wellUid);
@@ -144,22 +165,31 @@ const addWellbore = (state: NavigationState, { payload }: AddWellboreAction) => 
   };
 };
 
-const updateWellbore = (state: NavigationState, { payload }: UpdateWellboreAction) => {
+const updateWellbore = (
+  state: NavigationState,
+  { payload }: UpdateWellboreAction
+) => {
   const { wellbore } = payload;
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, wellbore.wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellbore.uid);
-  const refreshedWellboreIsSelected = state.selectedWellbore?.uid === wellbore.uid;
+  const refreshedWellboreIsSelected =
+    state.selectedWellbore?.uid === wellbore.uid;
   wells[wellIndex].wellbores[wellboreIndex] = { ...wellbore };
 
   return {
     ...state,
     wells,
-    selectedWellbore: refreshedWellboreIsSelected ? wells[wellIndex].wellbores[wellboreIndex] : state.selectedWellbore
+    selectedWellbore: refreshedWellboreIsSelected
+      ? wells[wellIndex].wellbores[wellboreIndex]
+      : state.selectedWellbore
   };
 };
 
-const updateWellborePartial = (state: NavigationState, { payload }: UpdateWellborePartialAction) => {
+const updateWellborePartial = (
+  state: NavigationState,
+  { payload }: UpdateWellborePartialAction
+) => {
   const { wellboreUid, wellUid, wellboreProperties } = payload;
   const wellIndex = state.wells.findIndex((w) => w.uid === wellUid);
   const well = state.wells[wellIndex];
@@ -171,12 +201,15 @@ const updateWellborePartial = (state: NavigationState, { payload }: UpdateWellbo
   const freshWells = [...state.wells];
   freshWells.splice(wellIndex, 1, updatedWell);
 
-  const refreshedWellboreIsSelected = state.selectedWellbore?.uid === wellbore.uid;
+  const refreshedWellboreIsSelected =
+    state.selectedWellbore?.uid === wellbore.uid;
   const refreshedWellIsSelected = state.selectedWell?.uid === wellbore.wellUid;
   return {
     ...state,
     wells: freshWells,
-    selectedWellbore: refreshedWellboreIsSelected ? updatedWellbore : state.selectedWellbore,
+    selectedWellbore: refreshedWellboreIsSelected
+      ? updatedWellbore
+      : state.selectedWellbore,
     selectedWell: refreshedWellIsSelected ? updatedWell : state.selectedWellbore
   };
 };
@@ -201,7 +234,10 @@ const removeWell = (state: NavigationState, { payload }: RemoveWellAction) => {
   };
 };
 
-const removeWellbore = (state: NavigationState, { payload }: RemoveWellboreAction) => {
+const removeWellbore = (
+  state: NavigationState,
+  { payload }: RemoveWellboreAction
+) => {
   const { wellUid, wellboreUid } = payload;
   const wells = [...state.wells];
   const wellIndex = getWellIndex(wells, wellUid);
@@ -219,16 +255,24 @@ const removeWellbore = (state: NavigationState, { payload }: RemoveWellboreActio
     : {};
 
   const wellboreNodeId = calculateWellboreNodeId({ wellUid, uid: wellboreUid });
-  const shouldCollapseWellbore = treeNodeIsExpanded(state.expandedTreeNodes, wellboreNodeId);
+  const shouldCollapseWellbore = treeNodeIsExpanded(
+    state.expandedTreeNodes,
+    wellboreNodeId
+  );
   return {
     ...state,
     wells,
-    expandedTreeNodes: shouldCollapseWellbore ? toggleTreeNode(state.expandedTreeNodes, wellboreNodeId) : state.expandedTreeNodes,
+    expandedTreeNodes: shouldCollapseWellbore
+      ? toggleTreeNode(state.expandedTreeNodes, wellboreNodeId)
+      : state.expandedTreeNodes,
     ...updatedSelectState
   };
 };
 
-const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAction) => {
+const removeServer = (
+  state: NavigationState,
+  { payload }: RemoveWitsmlServerAction
+) => {
   const { servers, selectedServer } = state;
   const { serverUid } = payload;
 
@@ -247,35 +291,71 @@ const removeServer = (state: NavigationState, { payload }: RemoveWitsmlServerAct
   };
 };
 
-const updateWellboreObjects = (state: NavigationState, { payload }: UpdateWellboreObjectsAction) => {
+const updateWellboreObjects = (
+  state: NavigationState,
+  { payload }: UpdateWellboreObjectsAction
+) => {
   const { wells } = state;
   const { wellboreObjects, wellUid, wellboreUid, objectType } = payload;
   const objectsName = objectTypeToWellboreObjects(objectType);
-  const namedObjects: Partial<Record<keyof WellboreObjects, ObjectOnWellbore[]>> = {};
+  const namedObjects: Partial<
+    Record<keyof WellboreObjects, ObjectOnWellbore[]>
+  > = {};
   namedObjects[objectsName] = wellboreObjects;
-  const freshWells = replacePropertiesInWellbore(wellUid, wells, wellboreUid, namedObjects);
-  const { currentSelected, newSelectedObject } = getCurrentSelectedObjectIfRemoved(state, wellboreObjects, state.selectedObject, wellboreUid, wellUid, objectType);
+  const freshWells = replacePropertiesInWellbore(
+    wellUid,
+    wells,
+    wellboreUid,
+    namedObjects
+  );
+  const { currentSelected, newSelectedObject } =
+    getCurrentSelectedObjectIfRemoved(
+      state,
+      wellboreObjects,
+      state.selectedObject,
+      wellboreUid,
+      wellUid,
+      objectType
+    );
   return {
     ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, wellUid, wellboreUid),
+    ...updateSelectedWellAndWellboreIfNeeded(
+      state,
+      freshWells,
+      wellUid,
+      wellboreUid
+    ),
     selectedObject: newSelectedObject,
     currentSelected,
     wells: freshWells
   };
 };
 
-const updateWellboreObject = (state: NavigationState, { payload }: UpdateWellboreObjectAction) => {
+const updateWellboreObject = (
+  state: NavigationState,
+  { payload }: UpdateWellboreObjectAction
+) => {
   const { wells } = state;
   const { objectToUpdate, objectType, isDeleted } = payload;
   const wellIndex = getWellIndex(wells, objectToUpdate.wellUid);
-  const wellboreIndex = getWellboreIndex(wells, wellIndex, objectToUpdate.wellboreUid);
+  const wellboreIndex = getWellboreIndex(
+    wells,
+    wellIndex,
+    objectToUpdate.wellboreUid
+  );
   const objectsName = objectTypeToWellboreObjects(objectType);
-  const wellboreObjects = [...wells[wellIndex].wellbores[wellboreIndex][objectsName]];
-  const existingObjectIndex = wellboreObjects.findIndex((o) => o.uid === objectToUpdate.uid);
+  const wellboreObjects = [
+    ...wells[wellIndex].wellbores[wellboreIndex][objectsName]
+  ];
+  const existingObjectIndex = wellboreObjects.findIndex(
+    (o) => o.uid === objectToUpdate.uid
+  );
 
   let selectedObject = state.selectedObject;
   let currentSelected = state.currentSelected;
-  const objectToUpdateIsSelected = sameUids(objectToUpdate, state.selectedObject) && state.selectedObjectGroup == objectType;
+  const objectToUpdateIsSelected =
+    sameUids(objectToUpdate, state.selectedObject) &&
+    state.selectedObjectGroup == objectType;
   if (isDeleted) {
     if (existingObjectIndex != -1) {
       wellboreObjects.splice(existingObjectIndex, 1);
@@ -286,22 +366,43 @@ const updateWellboreObject = (state: NavigationState, { payload }: UpdateWellbor
     }
   } else if (existingObjectIndex == -1) {
     //insert objectToUpdate assuming alphabetical order
-    const index = wellboreObjects.findIndex((object) => objectToUpdate.name.localeCompare(object.name) < 1);
-    wellboreObjects.splice(index == -1 ? wellboreObjects.length : index, 0, objectToUpdate);
+    const index = wellboreObjects.findIndex(
+      (object) => objectToUpdate.name.localeCompare(object.name) < 1
+    );
+    wellboreObjects.splice(
+      index == -1 ? wellboreObjects.length : index,
+      0,
+      objectToUpdate
+    );
   } else {
     wellboreObjects[existingObjectIndex] = objectToUpdate;
     if (objectToUpdateIsSelected) {
       selectedObject = objectToUpdate;
-      currentSelected = state.currentSelected == state.selectedObject ? objectToUpdate : state.currentSelected;
+      currentSelected =
+        state.currentSelected == state.selectedObject
+          ? objectToUpdate
+          : state.currentSelected;
     }
   }
 
-  const namedObjects: Partial<Record<keyof WellboreObjects, ObjectOnWellbore[]>> = {};
+  const namedObjects: Partial<
+    Record<keyof WellboreObjects, ObjectOnWellbore[]>
+  > = {};
   namedObjects[objectsName] = wellboreObjects;
-  const freshWells = replacePropertiesInWellbore(objectToUpdate.wellUid, wells, objectToUpdate.wellboreUid, namedObjects);
+  const freshWells = replacePropertiesInWellbore(
+    objectToUpdate.wellUid,
+    wells,
+    objectToUpdate.wellboreUid,
+    namedObjects
+  );
   return {
     ...state,
-    ...updateSelectedWellAndWellboreIfNeeded(state, freshWells, objectToUpdate.wellUid, objectToUpdate.wellboreUid),
+    ...updateSelectedWellAndWellboreIfNeeded(
+      state,
+      freshWells,
+      objectToUpdate.wellUid,
+      objectToUpdate.wellboreUid
+    ),
     wells: freshWells,
     selectedObject,
     currentSelected
@@ -317,7 +418,9 @@ const getCurrentSelectedObjectIfRemoved = (
   updatedWellUid: string,
   objectType: ObjectType
 ) => {
-  const fetchedSelectedObject = objects.find((value) => value.uid === selectedObject?.uid);
+  const fetchedSelectedObject = objects.find(
+    (value) => value.uid === selectedObject?.uid
+  );
   const isCurrentlySelectedObjectRemoved =
     state.selectedWell?.uid == updatedWellUid &&
     state.selectedWellbore?.uid == updatedWellboreUid && // the update happened on the wellbore that is currently being browsed
@@ -326,11 +429,15 @@ const getCurrentSelectedObjectIfRemoved = (
     !fetchedSelectedObject && // the selected object does not exist among the objects fetched from the server, implying deletion
     state.currentSelected == selectedObject; // the object that is currently selected was deleted, requiring update of currently selected object
   //navigate from the currently selected object to its object group if it was deleted
-  const currentSelected = isCurrentlySelectedObjectRemoved ? state.selectedLogTypeGroup ?? state.selectedObjectGroup : state.currentSelected;
+  const currentSelected = isCurrentlySelectedObjectRemoved
+    ? state.selectedLogTypeGroup ?? state.selectedObjectGroup
+    : state.currentSelected;
   return {
     currentSelected,
     //update the selected object if it was fetched
-    newSelectedObject: isCurrentlySelectedObjectRemoved ? null : fetchedSelectedObject ?? selectedObject
+    newSelectedObject: isCurrentlySelectedObjectRemoved
+      ? null
+      : fetchedSelectedObject ?? selectedObject
   };
 };
 
@@ -338,15 +445,32 @@ const getWellIndex = (wells: Well[], wellUid: string) => {
   return wells.findIndex((well) => well.uid === wellUid);
 };
 
-const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string) => {
-  return wells[wellIndex].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
+const getWellboreIndex = (
+  wells: Well[],
+  wellIndex: number,
+  wellboreUid: string
+) => {
+  return wells[wellIndex].wellbores.findIndex(
+    (wellbore) => wellbore.uid === wellboreUid
+  );
 };
 
-const updateSelectedWellAndWellboreIfNeeded = (state: NavigationState, freshWells: Well[], wellUid: string, wellboreUid: string) => {
+const updateSelectedWellAndWellboreIfNeeded = (
+  state: NavigationState,
+  freshWells: Well[],
+  wellUid: string,
+  wellboreUid: string
+) => {
   const wellIndex = getWellIndex(freshWells, wellUid);
   const wellboreIndex = getWellboreIndex(freshWells, wellIndex, wellboreUid);
-  const selectedWell = state.selectedWell?.uid == wellUid ? freshWells[wellIndex] : state.selectedWell;
-  const selectedWellbore = state.selectedWellbore?.uid == wellboreUid ? freshWells[wellIndex].wellbores[wellboreIndex] : state.selectedWellbore;
+  const selectedWell =
+    state.selectedWell?.uid == wellUid
+      ? freshWells[wellIndex]
+      : state.selectedWell;
+  const selectedWellbore =
+    state.selectedWellbore?.uid == wellboreUid
+      ? freshWells[wellIndex].wellbores[wellboreIndex]
+      : state.selectedWellbore;
   return {
     selectedWell,
     selectedWellbore
@@ -357,7 +481,16 @@ const replacePropertiesInWellbore = (
   wellUid: string,
   wells: Well[],
   wellboreUid: string,
-  wellboreProperties: Record<string, BhaRun[] | LogObject[] | Trajectory[] | MessageObject[] | RiskObject[] | Rig[] | WbGeometryObject[]>
+  wellboreProperties: Record<
+    string,
+    | BhaRun[]
+    | LogObject[]
+    | Trajectory[]
+    | MessageObject[]
+    | RiskObject[]
+    | Rig[]
+    | WbGeometryObject[]
+  >
 ): Well[] => {
   const wellIndex = getWellIndex(wells, wellUid);
   const wellboreIndex = getWellboreIndex(wells, wellIndex, wellboreUid);
@@ -368,7 +501,10 @@ const replacePropertiesInWellbore = (
   return [...wells];
 };
 
-const updateServerList = (state: NavigationState, { payload }: UpdateServerListAction) => {
+const updateServerList = (
+  state: NavigationState,
+  { payload }: UpdateServerListAction
+) => {
   if (state.servers) {
     payload.servers.forEach((server) => {
       const existingServer = state.servers.find((s) => s.id == server.id);
@@ -384,7 +520,10 @@ const updateServerList = (state: NavigationState, { payload }: UpdateServerListA
   };
 };
 
-const updateWells = (state: NavigationState, { payload }: UpdateWellsAction) => {
+const updateWells = (
+  state: NavigationState,
+  { payload }: UpdateWellsAction
+) => {
   const { wells } = payload;
   return {
     ...state,
@@ -396,5 +535,9 @@ const sameUids = (object1: ObjectOnWellbore, object2: ObjectOnWellbore) => {
   if (object1 == null || object2 == null) {
     return false;
   }
-  return object1.uid === object2.uid && object1.wellboreUid === object2.wellboreUid && object1.wellUid === object2.wellUid;
+  return (
+    object1.uid === object2.uid &&
+    object1.wellboreUid === object2.wellboreUid &&
+    object1.wellUid === object2.wellUid
+  );
 };

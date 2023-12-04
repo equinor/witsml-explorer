@@ -6,7 +6,11 @@ import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import { treeNodeIsExpanded } from "../../contexts/navigationStateReducer";
 import NavigationType from "../../contexts/navigationType";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import {
+  DisplayModalAction,
+  HideContextMenuAction,
+  HideModalAction
+} from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { DeleteWellJob } from "../../models/jobs/deleteJobs";
@@ -19,18 +23,30 @@ import { colors } from "../../styles/Colors";
 import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
 import { WellRow } from "../ContentViews/WellsListView";
 import ConfirmModal from "../Modals/ConfirmModal";
-import DeleteEmptyMnemonicsModal, { DeleteEmptyMnemonicsModalProps } from "../Modals/DeleteEmptyMnemonicsModal";
-import MissingDataAgentModal, { MissingDataAgentModalProps } from "../Modals/MissingDataAgentModal";
+import DeleteEmptyMnemonicsModal, {
+  DeleteEmptyMnemonicsModalProps
+} from "../Modals/DeleteEmptyMnemonicsModal";
+import MissingDataAgentModal, {
+  MissingDataAgentModalProps
+} from "../Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
-import WellBatchUpdateModal, { WellBatchUpdateModalProps } from "../Modals/WellBatchUpdateModal";
-import WellPropertiesModal, { WellPropertiesModalProps } from "../Modals/WellPropertiesModal";
-import WellborePropertiesModal, { WellborePropertiesModalProps } from "../Modals/WellborePropertiesModal";
+import WellBatchUpdateModal, {
+  WellBatchUpdateModalProps
+} from "../Modals/WellBatchUpdateModal";
+import WellPropertiesModal, {
+  WellPropertiesModalProps
+} from "../Modals/WellPropertiesModal";
+import WellborePropertiesModal, {
+  WellborePropertiesModalProps
+} from "../Modals/WellborePropertiesModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import NestedMenuItem from "./NestedMenuItem";
 
 export interface WellContextMenuProps {
-  dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
+  dispatchOperation: (
+    action: DisplayModalAction | HideModalAction | HideContextMenuAction
+  ) => void;
   well: Well;
   servers?: Server[];
   checkedWellRows?: WellRow[];
@@ -53,29 +69,51 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       country: "",
       timeZone: ""
     };
-    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.New, well: newWell, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
+    const wellPropertiesModalProps: WellPropertiesModalProps = {
+      mode: PropertiesModalMode.New,
+      well: newWell,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellPropertiesModal {...wellPropertiesModalProps} />
+    });
   };
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const nodeId = well.uid;
     if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({ type: NavigationType.CollapseTreeNodeChildren, payload: { nodeId } });
+      dispatchNavigation({
+        type: NavigationType.CollapseTreeNodeChildren,
+        payload: { nodeId }
+      });
     }
     if (selectedWell?.uid == well.uid) {
-      dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+      dispatchNavigation({
+        type: NavigationType.SelectWell,
+        payload: { well }
+      });
     }
 
     const updatedWell = await WellService.getWell(well.uid);
-    dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well: updatedWell, overrideWellbores: true } });
+    dispatchNavigation({
+      type: ModificationType.UpdateWell,
+      payload: { well: updatedWell, overrideWellbores: true }
+    });
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const updatedWells = await WellService.getWells();
-    dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: updatedWells } });
-    dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
+    dispatchNavigation({
+      type: ModificationType.UpdateWells,
+      payload: { wells: updatedWells }
+    });
+    dispatchNavigation({
+      type: NavigationType.SelectServer,
+      payload: { server: selectedServer }
+    });
   };
 
   const onClickNewWellbore = () => {
@@ -91,8 +129,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       wellboreParentName: "",
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = { mode: PropertiesModalMode.New, wellbore: newWellbore, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <WellborePropertiesModal {...wellborePropertiesModalProps} /> });
+    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
+      mode: PropertiesModalMode.New,
+      wellbore: newWellbore,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
+    });
   };
 
   const deleteWell = async () => {
@@ -113,7 +158,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         heading={"Delete well?"}
         content={
           <span>
-            This will permanently delete <strong>{well.name}</strong> with uid: <strong>{well.uid}</strong>
+            This will permanently delete <strong>{well.name}</strong> with uid:{" "}
+            <strong>{well.uid}</strong>
           </span>
         }
         onConfirm={deleteWell}
@@ -122,12 +168,21 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         switchButtonPlaces={true}
       />
     );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   const onClickDeleteEmptyMnemonics = async () => {
-    const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = { wells: [well], dispatchOperation: dispatchOperation };
-    const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} /> };
+    const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
+      wells: [well],
+      dispatchOperation: dispatchOperation
+    };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} />
+    };
     dispatchOperation(action);
   };
 
@@ -141,13 +196,26 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         wellName: well.name
       }
     ];
-    const missingDataAgentModalProps: MissingDataAgentModalProps = { wellReferences: wellReferences, wellboreReferences: [] };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <MissingDataAgentModal {...missingDataAgentModalProps} /> });
+    const missingDataAgentModalProps: MissingDataAgentModalProps = {
+      wellReferences: wellReferences,
+      wellboreReferences: []
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <MissingDataAgentModal {...missingDataAgentModalProps} />
+    });
   };
 
   const onClickProperties = () => {
-    const wellPropertiesModalProps: WellPropertiesModalProps = { mode: PropertiesModalMode.Edit, well, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <WellPropertiesModal {...wellPropertiesModalProps} /> });
+    const wellPropertiesModalProps: WellPropertiesModalProps = {
+      mode: PropertiesModalMode.Edit,
+      well,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellPropertiesModal {...wellPropertiesModalProps} />
+    });
   };
 
   const onClickShowOnServer = async (server: Server) => {
@@ -158,19 +226,31 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   };
 
   const onClickBatchUpdate = () => {
-    const wellBatchUpdateModalProps: WellBatchUpdateModalProps = { wellRows: checkedWellRows, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <WellBatchUpdateModal {...wellBatchUpdateModalProps} /> });
+    const wellBatchUpdateModalProps: WellBatchUpdateModalProps = {
+      wellRows: checkedWellRows,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellBatchUpdateModal {...wellBatchUpdateModalProps} />
+    });
   };
 
   return (
     <ContextMenu
       menuItems={[
         <MenuItem key={"refreshwell"} onClick={onClickRefresh}>
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Refresh well</Typography>
         </MenuItem>,
         <MenuItem key={"refreshallwells"} onClick={onClickRefreshAll}>
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Refresh all wells</Typography>
         </MenuItem>,
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
@@ -182,35 +262,81 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
         <MenuItem key={"deleteWell"} onClick={onClickDelete}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
-        <MenuItem key={"deleteEmptyMnemonics"} onClick={onClickDeleteEmptyMnemonics}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+        <MenuItem
+          key={"deleteEmptyMnemonics"}
+          onClick={onClickDeleteEmptyMnemonics}
+        >
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowOnServer(server)}>
+            <MenuItem
+              key={server.name}
+              onClick={() => onClickShowOnServer(server)}
+            >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
-            <MenuItem key={"openQuery"} onClick={() => openInQueryView({ templateObject: TemplateObjects.Well, storeFunction: StoreFunction.GetFromStore, wellUid: well.uid })}>
-              <StyledIcon name="textField" color={colors.interactive.primaryResting} />
+            <MenuItem
+              key={"openQuery"}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Well,
+                  storeFunction: StoreFunction.GetFromStore,
+                  wellUid: well.uid
+                })
+              }
+            >
+              <StyledIcon
+                name="textField"
+                color={colors.interactive.primaryResting}
+              />
               <Typography color={"primary"}>Open in query view</Typography>
             </MenuItem>,
-            <MenuItem key={"newWell"} onClick={() => openInQueryView({ templateObject: TemplateObjects.Well, storeFunction: StoreFunction.AddToStore, wellUid: uuid() })}>
-              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <MenuItem
+              key={"newWell"}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Well,
+                  storeFunction: StoreFunction.AddToStore,
+                  wellUid: uuid()
+                })
+              }
+            >
+              <StyledIcon
+                name="add"
+                color={colors.interactive.primaryResting}
+              />
               <Typography color={"primary"}>New Well</Typography>
             </MenuItem>,
             <MenuItem
               key={"newWellbore"}
-              onClick={() => openInQueryView({ templateObject: TemplateObjects.Wellbore, storeFunction: StoreFunction.AddToStore, wellUid: well.uid, wellboreUid: uuid() })}
+              onClick={() =>
+                openInQueryView({
+                  templateObject: TemplateObjects.Wellbore,
+                  storeFunction: StoreFunction.AddToStore,
+                  wellUid: well.uid,
+                  wellboreUid: uuid()
+                })
+              }
             >
-              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <StyledIcon
+                name="add"
+                color={colors.interactive.primaryResting}
+              />
               <Typography color={"primary"}>New Wellbore</Typography>
             </MenuItem>
           ]}
@@ -221,12 +347,22 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>,
         checkedWellRows && (
-          <MenuItem key={"batchUpdate"} onClick={onClickBatchUpdate} disabled={checkedWellRows.length == 0}>
-            <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+          <MenuItem
+            key={"batchUpdate"}
+            onClick={onClickBatchUpdate}
+            disabled={checkedWellRows.length == 0}
+          >
+            <StyledIcon
+              name="settings"
+              color={colors.interactive.primaryResting}
+            />
             <Typography color={"primary"}>Batch Update</Typography>
           </MenuItem>
         )

@@ -103,11 +103,17 @@ export interface ContextMenu {
   position: MousePosition;
 }
 
-export const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+export const EMPTY_CONTEXT_MENU: ContextMenu = {
+  component: null,
+  position: { mouseX: null, mouseY: null }
+};
 
 const Light: Colors = light;
 
-export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
+export const initOperationStateReducer = (): [
+  OperationState,
+  Dispatch<Action>
+] => {
   const initialState: OperationState = {
     contextMenu: EMPTY_CONTEXT_MENU,
     progressIndicatorValue: 0,
@@ -121,7 +127,10 @@ export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] 
   return useReducer(reducer, initialState);
 };
 
-export const reducer = (state: OperationState, action: Action | PayloadAction): OperationState => {
+export const reducer = (
+  state: OperationState,
+  action: Action | PayloadAction
+): OperationState => {
   switch (action.type) {
     case OperationType.DisplayContextMenu:
       return displayContextMenu(state, action as DisplayContextMenuAction);
@@ -156,7 +165,10 @@ const hideModal = (state: OperationState) => {
   };
 };
 
-const displayModal = (state: OperationState, { payload }: DisplayModalAction) => {
+const displayModal = (
+  state: OperationState,
+  { payload }: DisplayModalAction
+) => {
   const modals = state.modals.concat(payload);
   return {
     ...state,
@@ -172,7 +184,10 @@ const hideContextMenu = (state: OperationState) => {
   };
 };
 
-const displayContextMenu = (state: OperationState, { payload }: DisplayContextMenuAction) => {
+const displayContextMenu = (
+  state: OperationState,
+  { payload }: DisplayContextMenuAction
+) => {
   return {
     ...state,
     contextMenu: payload
@@ -200,7 +215,10 @@ const setMode = (state: OperationState, { payload }: SetModeAction) => {
   };
 };
 
-const setDateTimeFormat = (state: OperationState, { payload }: SetDateTimeFormatAction) => {
+const setDateTimeFormat = (
+  state: OperationState,
+  { payload }: SetDateTimeFormatAction
+) => {
   return {
     ...state,
     dateTimeFormat: payload

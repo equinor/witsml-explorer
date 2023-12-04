@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Models
                 DTimStartDrilling = StringHelpers.ToUniversalDateTimeString(DTimStartDrilling),
                 DTimStopDrilling = StringHelpers.ToUniversalDateTimeString(DTimStopDrilling),
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

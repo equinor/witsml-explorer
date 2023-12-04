@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         ItemState = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

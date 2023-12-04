@@ -1,8 +1,17 @@
 import "@testing-library/jest-dom/extend-expect";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { deferred, getObjectSearchResult, getServer, renderWithContexts } from "../../../__testUtils__/testUtils";
-import { EMPTY_FILTER, FilterContext, ObjectFilterType } from "../../../contexts/filter";
+import {
+  deferred,
+  getObjectSearchResult,
+  getServer,
+  renderWithContexts
+} from "../../../__testUtils__/testUtils";
+import {
+  EMPTY_FILTER,
+  FilterContext,
+  ObjectFilterType
+} from "../../../contexts/filter";
 import ObjectSearchResult from "../../../models/objectSearchResult";
 import ObjectService from "../../../services/objectService";
 import ContextMenuPresenter from "../../ContextMenus/ContextMenuPresenter";
@@ -13,7 +22,9 @@ jest.mock("../../../services/objectService");
 describe("Search Filter", () => {
   it("A search filter should show a searchable field", () => {
     renderWithContexts(<SearchFilter />);
-    expect(screen.getByRole("textbox", { name: /search/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: /search/i })
+    ).toBeInTheDocument();
   });
 
   it("Typing in the field should update the text", async () => {
@@ -34,7 +45,12 @@ describe("Search Filter", () => {
     const mockUpdateFilter = jest.fn();
 
     renderWithContexts(
-      <FilterContext.Provider value={{ selectedFilter: EMPTY_FILTER, updateSelectedFilter: mockUpdateFilter }}>
+      <FilterContext.Provider
+        value={{
+          selectedFilter: EMPTY_FILTER,
+          updateSelectedFilter: mockUpdateFilter
+        }}
+      >
         <SearchFilter />
       </FilterContext.Provider>
     );
@@ -49,9 +65,13 @@ describe("Search Filter", () => {
   it("Should render the name provided by the context", async () => {
     const initialName = "testWell321";
 
-    renderWithContexts(<SearchFilter />, { initialFilter: { name: initialName } });
+    renderWithContexts(<SearchFilter />, {
+      initialFilter: { name: initialName }
+    });
 
-    expect(screen.getByRole("textbox", { name: /search/i })).toHaveValue(initialName);
+    expect(screen.getByRole("textbox", { name: /search/i })).toHaveValue(
+      initialName
+    );
   });
 
   it("Should be able to show the search options", async () => {
@@ -65,7 +85,9 @@ describe("Search Filter", () => {
       { initialNavigationState: { selectedServer: getServer() } }
     );
 
-    const showOptions = screen.getByRole("button", { name: /show search options/i });
+    const showOptions = screen.getByRole("button", {
+      name: /show search options/i
+    });
     expect(showOptions).toBeEnabled();
 
     await user.click(showOptions);
@@ -93,9 +115,15 @@ describe("Search Filter", () => {
       { initialNavigationState: { selectedServer: getServer() } }
     );
 
-    await user.click(screen.getByRole("button", { name: /show search options/i }));
-    const serviceCompaniesMenuItem = screen.getByRole("menuitem", { name: /service companies/i });
-    const infoIcon = within(serviceCompaniesMenuItem).getByTestId(`${ObjectFilterType.ServiceCompany}-info-icon`);
+    await user.click(
+      screen.getByRole("button", { name: /show search options/i })
+    );
+    const serviceCompaniesMenuItem = screen.getByRole("menuitem", {
+      name: /service companies/i
+    });
+    const infoIcon = within(serviceCompaniesMenuItem).getByTestId(
+      `${ObjectFilterType.ServiceCompany}-info-icon`
+    );
 
     expect(infoIcon).toBeInTheDocument();
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
@@ -115,7 +143,9 @@ describe("Search Filter", () => {
     const { promise, resolve } = deferred<ObjectSearchResult[]>();
     const user = userEvent.setup();
 
-    jest.spyOn(ObjectService, "getObjectsWithParamByType").mockImplementation(() => promise);
+    jest
+      .spyOn(ObjectService, "getObjectsWithParamByType")
+      .mockImplementation(() => promise);
 
     renderWithContexts(
       <>
@@ -125,7 +155,9 @@ describe("Search Filter", () => {
       { initialNavigationState: { selectedServer: getServer() } }
     );
 
-    const showOptions = screen.getByRole("button", { name: /show search options/i });
+    const showOptions = screen.getByRole("button", {
+      name: /show search options/i
+    });
     expect(showOptions).toBeEnabled();
 
     await user.click(showOptions);
@@ -133,9 +165,14 @@ describe("Search Filter", () => {
     const menu = screen.getByRole("menu");
 
     await user.click(within(menu).getByText(/rigs/i));
-    await user.type(screen.getByRole("textbox", { name: /search/i }), "testRig{enter}");
+    await user.type(
+      screen.getByRole("textbox", { name: /search/i }),
+      "testRig{enter}"
+    );
 
-    expect(screen.getByRole("progressbar", { name: /loading options/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("progressbar", { name: /loading options/i })
+    ).toBeInTheDocument();
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
     expect(ObjectService.getObjectsWithParamByType).toHaveBeenCalledTimes(1);
 
@@ -144,8 +181,16 @@ describe("Search Filter", () => {
       resolve(SEARCH_RESULT_RIGS);
     });
 
-    expect(screen.queryByRole("progressbar", { name: /loading options/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("progressbar", { name: /loading options/i })
+    ).not.toBeInTheDocument();
   });
 });
 
-const SEARCH_RESULT_RIGS = [getObjectSearchResult({ searchProperty: "testRig", wellUid: "well1", wellboreUid: "wellbore1" })];
+const SEARCH_RESULT_RIGS = [
+  getObjectSearchResult({
+    searchProperty: "testRig",
+    wellUid: "well1",
+    wellboreUid: "wellbore1"
+  })
+];

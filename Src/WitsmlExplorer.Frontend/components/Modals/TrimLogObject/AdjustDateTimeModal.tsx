@@ -2,7 +2,11 @@ import { Button, ButtonGroup } from "@material-ui/core";
 import { addMilliseconds } from "date-fns";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
-import { dateTimeFormatNoOffset, getOffset, validateIsoDateStringNoOffset } from "../../DateFormatter";
+import {
+  dateTimeFormatNoOffset,
+  getOffset,
+  validateIsoDateStringNoOffset
+} from "../../DateFormatter";
 import { LogHeaderDateTimeField } from "../LogHeaderDateTimeField";
 
 export interface AdjustDateTimeModelProps {
@@ -19,14 +23,31 @@ interface SetRangeButton {
   displayText: string;
 }
 
-const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElement => {
-  const { minDate, maxDate, isDescending, onStartDateChanged, onEndDateChanged, onValidChange } = props;
+const AdjustDateTimeModal = (
+  props: AdjustDateTimeModelProps
+): React.ReactElement => {
+  const {
+    minDate,
+    maxDate,
+    isDescending,
+    onStartDateChanged,
+    onEndDateChanged,
+    onValidChange
+  } = props;
   const [startOffset] = useState<string>(getOffset(minDate));
   const [endOffset] = useState<string>(getOffset(maxDate));
-  const [startIndex, setStartIndex] = useState<string>(formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset));
-  const [endIndex, setEndIndex] = useState<string>(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
-  const [startIndexInitiallyEmpty] = useState<boolean>(startIndex == null || startIndex === "");
-  const [endIndexInitiallyEmpty] = useState<boolean>(endIndex == null || endIndex === "");
+  const [startIndex, setStartIndex] = useState<string>(
+    formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset)
+  );
+  const [endIndex, setEndIndex] = useState<string>(
+    formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
+  );
+  const [startIndexInitiallyEmpty] = useState<boolean>(
+    startIndex == null || startIndex === ""
+  );
+  const [endIndexInitiallyEmpty] = useState<boolean>(
+    endIndex == null || endIndex === ""
+  );
   const setRangeButtons: SetRangeButton[] = [
     { timeInMilliseconds: 3600000, displayText: "hour" },
     { timeInMilliseconds: 21600000, displayText: "6 hours" },
@@ -39,9 +60,17 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
   const endIndexMinValue = isDescending ? null : startIndex;
   const endIndexMaxValue = isDescending ? startIndex : null;
 
-  const validate = (current: string, offset: string, minValue: string, maxValue: string, initiallyEmpty: boolean) => {
+  const validate = (
+    current: string,
+    offset: string,
+    minValue: string,
+    maxValue: string,
+    initiallyEmpty: boolean
+  ) => {
     return (
-      (validateIsoDateStringNoOffset(current, offset) && (!minValue || current >= minValue) && (!maxValue || current <= maxValue)) ||
+      (validateIsoDateStringNoOffset(current, offset) &&
+        (!minValue || current >= minValue) &&
+        (!maxValue || current <= maxValue)) ||
       (initiallyEmpty && (current == null || current === ""))
     );
   };
@@ -52,23 +81,54 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
   }, [startIndex, endIndex]);
 
   useEffect(() => {
-    const startIndexIsValid = validate(startIndex, startOffset, startIndexMinValue, startIndexMaxValue, startIndexInitiallyEmpty);
-    const endIndexIsValid = validate(endIndex, endOffset, endIndexMinValue, endIndexMaxValue, endIndexInitiallyEmpty);
-    onValidChange(startIndexIsValid && endIndexIsValid && (isDescending ? startIndex > endIndex : startIndex < endIndex));
+    const startIndexIsValid = validate(
+      startIndex,
+      startOffset,
+      startIndexMinValue,
+      startIndexMaxValue,
+      startIndexInitiallyEmpty
+    );
+    const endIndexIsValid = validate(
+      endIndex,
+      endOffset,
+      endIndexMinValue,
+      endIndexMaxValue,
+      endIndexInitiallyEmpty
+    );
+    onValidChange(
+      startIndexIsValid &&
+        endIndexIsValid &&
+        (isDescending ? startIndex > endIndex : startIndex < endIndex)
+    );
   }, [startIndex, endIndex]);
 
   return (
     <>
-      <ButtonGroup aria-label="set time range button group" color="primary" style={{ margin: ".5rem" }}>
+      <ButtonGroup
+        aria-label="set time range button group"
+        color="primary"
+        style={{ margin: ".5rem" }}
+      >
         {setRangeButtons.map((buttonValue) => {
           return (
             totalTimeSpan > buttonValue.timeInMilliseconds && (
               <Button
                 key={"last" + buttonValue.displayText}
                 onClick={() => {
-                  const newStartIndex = addMilliseconds(toDate(endIndex + endOffset), -buttonValue.timeInMilliseconds);
-                  setStartIndex(formatInTimeZone(newStartIndex, startOffset, dateTimeFormatNoOffset));
-                  setEndIndex(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
+                  const newStartIndex = addMilliseconds(
+                    toDate(endIndex + endOffset),
+                    -buttonValue.timeInMilliseconds
+                  );
+                  setStartIndex(
+                    formatInTimeZone(
+                      newStartIndex,
+                      startOffset,
+                      dateTimeFormatNoOffset
+                    )
+                  );
+                  setEndIndex(
+                    formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
+                  );
                 }}
               >
                 {"Last " + buttonValue.displayText}
@@ -79,8 +139,12 @@ const AdjustDateTimeModal = (props: AdjustDateTimeModelProps): React.ReactElemen
         <Button
           key={"resetRangeValues"}
           onClick={() => {
-            setStartIndex(formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset));
-            setEndIndex(formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset));
+            setStartIndex(
+              formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset)
+            );
+            setEndIndex(
+              formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
+            );
           }}
         >
           Reset

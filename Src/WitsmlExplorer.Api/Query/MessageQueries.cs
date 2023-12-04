@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
                     Uid = messageUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         Comments = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

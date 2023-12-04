@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = wbGeometryUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = "",
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -88,8 +88,8 @@ namespace WitsmlExplorer.Api.Query
                         CurveConductor = "",
                         DiaDrift = LengthMeasure.ToEmptyWitsml<WitsmlLengthMeasure>(),
                         FactFric = ""
-                    }.AsSingletonList()
-                }.AsSingletonList()
+                    }.AsItemInList()
+                }.AsItemInList()
             };
         }
 
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Query
                 Uid = wbGeometrySection.Uid,
                 Grade = wbGeometrySection.Grade,
                 TypeHoleCasing = wbGeometrySection.TypeHoleCasing,
-                CurveConductor = StringHelpers.OptionalBooleanToString(wbGeometrySection.CurveConductor),
+                CurveConductor = StringHelpers.NullableBooleanToString(wbGeometrySection.CurveConductor),
                 DiaDrift = wbGeometrySection.DiaDrift?.ToWitsml<WitsmlLengthMeasure>(),
                 IdSection = wbGeometrySection.IdSection?.ToWitsml<WitsmlLengthMeasure>(),
                 OdSection = wbGeometrySection.OdSection?.ToWitsml<WitsmlLengthMeasure>(),
@@ -119,8 +119,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wbGeometryReference.WellUid,
                     UidWellbore = wbGeometryReference.WellboreUid,
                     Uid = wbGeometryReference.Uid,
-                    WbGeometrySections = wbgs.AsSingletonList()
-                }.AsSingletonList()
+                    WbGeometrySections = wbgs.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

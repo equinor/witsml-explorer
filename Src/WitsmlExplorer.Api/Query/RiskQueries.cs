@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         DTimCreation = "",
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = riskUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

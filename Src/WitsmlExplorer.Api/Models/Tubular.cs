@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Models
                 Name = Name,
                 TypeTubularAssy = TypeTubularAssy,
                 CommonData = CommonData?.ToWitsml(),
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

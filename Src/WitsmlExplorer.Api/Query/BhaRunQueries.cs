@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Query
                         Comments = "",
                         DefaultDatum = "",
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

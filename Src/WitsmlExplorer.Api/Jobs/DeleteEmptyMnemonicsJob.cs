@@ -14,16 +14,10 @@ namespace WitsmlExplorer.Api.Jobs
     public record DeleteEmptyMnemonicsJob : Job
     {
 
-        public ICollection<WellReference> Wells { get; init; }
-        public ICollection<WellboreReference> Wellbores { get; init; }
+        public ICollection<WellReference> Wells { get; init; } = new List<WellReference>();
+        public ICollection<WellboreReference> Wellbores { get; init; } = new List<WellboreReference>();
         public double NullDepthValue { get; init; }
         public DateTime NullTimeValue { get; init; }
-
-        public DeleteEmptyMnemonicsJob()
-        {
-            Wells = new List<WellReference>();
-            Wellbores = new List<WellboreReference>();
-        }
 
         public override string Description()
         {

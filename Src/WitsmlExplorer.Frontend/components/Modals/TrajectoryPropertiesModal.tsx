@@ -16,12 +16,15 @@ export interface TrajectoryPropertiesModalProps {
   dispatchOperation: (action: HideModalAction) => void;
 }
 
-const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React.ReactElement => {
+const TrajectoryPropertiesModal = (
+  props: TrajectoryPropertiesModalProps
+): React.ReactElement => {
   const { mode, trajectory, dispatchOperation } = props;
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const [editableTrajectory, setEditableTrajectory] = useState<Trajectory>(null);
+  const [editableTrajectory, setEditableTrajectory] =
+    useState<Trajectory>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [, setDTimTrajStartValid] = useState<boolean>(true);
   const [, setDTimTrajEndValid] = useState<boolean>(true);
@@ -48,7 +51,10 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
       const wellboreTrajectoryJob = {
         trajectory: updatedTrajectory
       };
-      await JobService.orderJob(JobType.CreateTrajectory, wellboreTrajectoryJob);
+      await JobService.orderJob(
+        JobType.CreateTrajectory,
+        wellboreTrajectoryJob
+      );
     }
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
@@ -58,7 +64,11 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
     <>
       {editableTrajectory && (
         <ModalDialog
-          heading={editMode ? `Edit properties for ${editableTrajectory.name}` : `New Trajectory`}
+          heading={
+            editMode
+              ? `Edit properties for ${editableTrajectory.name}`
+              : `New Trajectory`
+          }
           content={
             <>
               <TextField
@@ -69,30 +79,75 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 value={editableTrajectory.uid}
                 fullWidth
                 error={!validText(editableTrajectory.uid)}
-                helperText={editableTrajectory.uid.length === 0 ? "A trajectory uid must be 1-64 characters" : ""}
+                helperText={
+                  editableTrajectory.uid.length === 0
+                    ? "A trajectory uid must be 1-64 characters"
+                    : ""
+                }
                 inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, uid: e.target.value })}
+                onChange={(e) =>
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    uid: e.target.value
+                  })
+                }
               />
-              <TextField disabled id="wellUid" label="well uid" defaultValue={editableTrajectory.wellUid} fullWidth />
-              <TextField disabled id="wellName" label="well name" defaultValue={editableTrajectory.wellName} fullWidth />
-              <TextField disabled id="wellboreUid" label="wellbore uid" defaultValue={editableTrajectory.wellboreUid} fullWidth />
-              <TextField disabled id="wellboreName" label="wellbore name" defaultValue={editableTrajectory.wellboreName} fullWidth />
+              <TextField
+                disabled
+                id="wellUid"
+                label="well uid"
+                defaultValue={editableTrajectory.wellUid}
+                fullWidth
+              />
+              <TextField
+                disabled
+                id="wellName"
+                label="well name"
+                defaultValue={editableTrajectory.wellName}
+                fullWidth
+              />
+              <TextField
+                disabled
+                id="wellboreUid"
+                label="wellbore uid"
+                defaultValue={editableTrajectory.wellboreUid}
+                fullWidth
+              />
+              <TextField
+                disabled
+                id="wellboreName"
+                label="wellbore name"
+                defaultValue={editableTrajectory.wellboreName}
+                fullWidth
+              />
               <TextField
                 id={"name"}
                 label={"name"}
                 required
                 value={editableTrajectory.name ?? ""}
                 error={editableTrajectory.name?.length === 0}
-                helperText={editableTrajectory.name?.length === 0 ? "The trajectory name must be 1-64 characters" : ""}
+                helperText={
+                  editableTrajectory.name?.length === 0
+                    ? "The trajectory name must be 1-64 characters"
+                    : ""
+                }
                 fullWidth
                 inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, name: e.target.value })}
+                onChange={(e) =>
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    name: e.target.value
+                  })
+                }
               />
               <DateTimeField
                 value={editableTrajectory.dTimTrajStart}
                 label="dTimTrajStart"
                 updateObject={(dateTime: string, valid: boolean) => {
-                  setEditableTrajectory({ ...editableTrajectory, dTimTrajStart: dateTime });
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    dTimTrajStart: dateTime
+                  });
                   setDTimTrajStartValid(valid);
                 }}
                 timeZone={timeZone}
@@ -102,7 +157,10 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 value={editableTrajectory.dTimTrajEnd}
                 label="dTimTrajEnd"
                 updateObject={(dateTime: string, valid: boolean) => {
-                  setEditableTrajectory({ ...editableTrajectory, dTimTrajEnd: dateTime });
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    dTimTrajEnd: dateTime
+                  });
                   setDTimTrajEndValid(valid);
                 }}
                 timeZone={timeZone}
@@ -111,12 +169,27 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
               <TextField
                 id={"serviceCompany"}
                 label={"serviceCompany"}
-                value={editableTrajectory.serviceCompany ? editableTrajectory.serviceCompany : ""}
-                error={editMode && editableTrajectory.serviceCompany?.length === 0}
-                helperText={editMode && editableTrajectory.serviceCompany?.length === 0 ? "The service company must be 1-64 characters" : ""}
+                value={
+                  editableTrajectory.serviceCompany
+                    ? editableTrajectory.serviceCompany
+                    : ""
+                }
+                error={
+                  editMode && editableTrajectory.serviceCompany?.length === 0
+                }
+                helperText={
+                  editMode && editableTrajectory.serviceCompany?.length === 0
+                    ? "The service company must be 1-64 characters"
+                    : ""
+                }
                 fullWidth
                 inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) => setEditableTrajectory({ ...editableTrajectory, serviceCompany: e.target.value })}
+                onChange={(e) =>
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    serviceCompany: e.target.value
+                  })
+                }
               />
               <TextField
                 id={"mdMin"}
@@ -130,7 +203,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                     ...editableTrajectory,
                     mdMin: {
                       ...editableTrajectory.mdMin,
-                      value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                      value: isNaN(parseFloat(e.target.value))
+                        ? undefined
+                        : parseFloat(e.target.value)
                     }
                   })
                 }
@@ -147,7 +222,9 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                     ...editableTrajectory,
                     mdMax: {
                       ...editableTrajectory.mdMax,
-                      value: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                      value: isNaN(parseFloat(e.target.value))
+                        ? undefined
+                        : parseFloat(e.target.value)
                     }
                   })
                 }
@@ -159,7 +236,10 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 initialSelectedOptions={[editableTrajectory.aziRef]}
                 hideClearButton
                 onOptionsChange={({ selectedItems }) => {
-                  setEditableTrajectory({ ...editableTrajectory, aziRef: selectedItems[0] });
+                  setEditableTrajectory({
+                    ...editableTrajectory,
+                    aziRef: selectedItems[0]
+                  });
                 }}
                 onFocus={(e) => e.preventDefault()}
               />
@@ -170,13 +250,19 @@ const TrajectoryPropertiesModal = (props: TrajectoryPropertiesModalProps): React
                 fullWidth
                 disabled={!editMode}
                 onChange={(e) => {
-                  const commonData = { ...editableTrajectory.commonData, sourceName: e.target.value };
+                  const commonData = {
+                    ...editableTrajectory.commonData,
+                    sourceName: e.target.value
+                  };
                   setEditableTrajectory({ ...editableTrajectory, commonData });
                 }}
               />
             </>
           }
-          confirmDisabled={!validText(editableTrajectory.uid) || !validText(editableTrajectory.name)}
+          confirmDisabled={
+            !validText(editableTrajectory.uid) ||
+            !validText(editableTrajectory.name)
+          }
           onSubmit={() => onSubmit(editableTrajectory)}
           isLoading={isLoading}
         />
