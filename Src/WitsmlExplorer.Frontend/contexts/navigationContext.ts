@@ -20,9 +20,23 @@ interface NavigationContextProps {
   dispatchNavigation: (action: NavigationAction) => void;
 }
 
-const NavigationContext = createContext<NavigationContextProps>({} as NavigationContextProps);
+const NavigationContext = createContext<NavigationContextProps>(
+  {} as NavigationContextProps
+);
 
-export type Selectable = Server | Well | Wellbore | string | BhaRun | LogObject | LogCurveInfoRow[] | Trajectory | MessageObject | RiskObject | Rig | WbGeometryObject;
+export type Selectable =
+  | Server
+  | Well
+  | Wellbore
+  | string
+  | BhaRun
+  | LogObject
+  | LogCurveInfoRow[]
+  | Trajectory
+  | MessageObject
+  | RiskObject
+  | Rig
+  | WbGeometryObject;
 
 export enum ViewFlags {
   Jobs = "jobs",

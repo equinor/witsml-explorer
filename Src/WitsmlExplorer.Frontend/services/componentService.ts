@@ -1,5 +1,9 @@
 import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
-import { ComponentType, ComponentTypeToModel, getParentType } from "../models/componentType";
+import {
+  ComponentType,
+  ComponentTypeToModel,
+  getParentType
+} from "../models/componentType";
 import { Server } from "../models/server";
 import { ApiClient } from "./apiClient";
 
@@ -14,7 +18,11 @@ export default class ComponentService {
   ): Promise<ComponentTypeToModel[Key][]> {
     const componentRoute = pluralize(componentType).toLowerCase();
     const typeRoute = pluralize(getParentType(componentType)).toLowerCase();
-    const response = await ApiClient.get(`/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}/${componentRoute}`, abortSignal, server);
+    const response = await ApiClient.get(
+      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}/${componentRoute}`,
+      abortSignal,
+      server
+    );
     if (response.ok) {
       const text = await response.text();
       if (text.length) {

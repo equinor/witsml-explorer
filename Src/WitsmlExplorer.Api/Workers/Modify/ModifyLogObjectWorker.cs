@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     Name = logObject.Name,
                     RunNumber = logObject.RunNumber,
                     ServiceCompany = logObject.ServiceCompany
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 

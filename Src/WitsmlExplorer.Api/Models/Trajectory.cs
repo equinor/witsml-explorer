@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Models
                 TrajectoryStations = TrajectoryStations?.Select((trajectoryStation) => trajectoryStation?.ToWitsml()).ToList(),
                 ServiceCompany = ServiceCompany,
                 CommonData = CommonData?.ToWitsml(),
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

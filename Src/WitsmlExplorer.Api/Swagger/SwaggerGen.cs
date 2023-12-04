@@ -17,7 +17,7 @@ namespace WitsmlExplorer.Api.Swagger
                     options.OperationFilter<WitsmlHeaderFilter>();
                     if (configuration["OAuth2Enabled"] == "True")
                     {
-                        OpenApiSecurityScheme oAuth2scheme = new()
+                        OpenApiSecurityScheme oAuth2Scheme = new()
                         {
                             In = ParameterLocation.Header,
                             Name = "Authorization",
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Swagger
                             },
                             Type = SecuritySchemeType.OAuth2
                         };
-                        options.AddSecurityDefinition("OAuth2", oAuth2scheme);
+                        options.AddSecurityDefinition("OAuth2", oAuth2Scheme);
                         options.AddSecurityRequirement(new OpenApiSecurityRequirement {
                         {
                             new OpenApiSecurityScheme

@@ -302,7 +302,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             MaxDateTimeIndex = "2023-04-19T00:00:01Z"
                         },
                     },
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -325,7 +325,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             new WitsmlData(){Data = isDepthLog ? DepthDataRow3 : TimeDataRow3}
                         }
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -347,7 +347,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             new WitsmlData(){Data = isDepthLog ? DepthDataRow1 : TimeDataRow1},
                         }
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -372,7 +372,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             },
                         }
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

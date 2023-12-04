@@ -24,7 +24,9 @@ interface DateTimeFieldProps {
  * @param disabled If true, the field is disabled and cannot be edited.
  * @returns
  */
-export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => {
+export const DateTimeField = (
+  props: DateTimeFieldProps
+): React.ReactElement => {
   const { value, label, updateObject, timeZone, disabled } = props;
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
   const isFirefox = navigator.userAgent.includes("Firefox");
@@ -42,7 +44,9 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
     }
     return "";
   };
-  const validate = (current: string) => validateIsoDateString(current) || (initiallyEmpty && (current == null || current === ""));
+  const validate = (current: string) =>
+    validateIsoDateString(current) ||
+    (initiallyEmpty && (current == null || current === ""));
   const isValid = validate(value);
   return (
     <Layout>
@@ -54,7 +58,9 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
         helperText={getHelperText()}
         variant={validate(value) ? undefined : "error"}
         autoComplete="off"
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        onChange={(
+          e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+        ) => {
           updateObject(e.target.value, validate(e.target.value));
         }}
       />
@@ -69,14 +75,20 @@ export const DateTimeField = (props: DateTimeFieldProps): React.ReactElement => 
             type={isFirefox ? "date" : "datetime-local"}
             style={{ width: "44px" }}
             tabIndex={-1} //disable tab focus due to the native datepicker including multiple invisible fields that are not to be used
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+            ) => {
               let toFormat = e.target.value;
               if (validateIsoDateString(value)) {
                 // preserve the ss.SSSXXX (and also HH:mm for Firefox) part of the original value that the datepicker does not set
                 const slice = isFirefox ? value.slice(10) : value.slice(16);
                 toFormat += slice;
               }
-              const formatted = formatDateString(toFormat, timeZone, DateTimeFormat.Raw);
+              const formatted = formatDateString(
+                toFormat,
+                timeZone,
+                DateTimeFormat.Raw
+              );
               updateObject(formatted, validate(formatted));
             }}
           />

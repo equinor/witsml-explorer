@@ -9,11 +9,11 @@ namespace Witsml.Data
     [XmlRoot]
     public class WitsmlMessage : WitsmlObjectOnWellbore
     {
-        public override WitsmlMessages AsSingletonWitsmlList()
+        public override WitsmlMessages AsItemInWitsmlList()
         {
             return new WitsmlMessages()
             {
-                Messages = this.AsSingletonList()
+                Messages = this.AsItemInList()
             };
         }
 

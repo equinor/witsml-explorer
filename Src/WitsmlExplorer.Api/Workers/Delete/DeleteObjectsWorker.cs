@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return await DeleteObjectsOnWellbore(queries, refreshAction);
         }
 
-        private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction)
+        private async Task<(WorkerResult, RefreshAction)> DeleteObjectsOnWellbore(ICollection<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction)
         {
             IWitsmlClient witsmlClient = GetTargetWitsmlClientOrThrow();
             var witsmlObjectOnWellbore = queries.FirstOrDefault();
@@ -44,14 +45,14 @@ namespace WitsmlExplorer.Api.Workers.Delete
             string uidWellbore = witsmlObjectOnWellbore?.UidWellbore;
 
             bool error = false;
-            List<string> successUids = new();
+            ConcurrentBag<string> successUids = new();
             string errorReason = null;
 
             await Task.WhenAll(queries.Select(async (query) =>
             {
                 try
                 {
-                    QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsSingletonWitsmlList());
+                    QueryResult result = await witsmlClient.DeleteFromStoreAsync(query.AsItemInWitsmlList());
                     if (result.IsSuccessful)
                     {
                         Logger.LogInformation("Deleted {ObjectType} successfully, UidWell: {WellUid}, UidWellbore: {WellboreUid}, ObjectUid: {Uid}.",

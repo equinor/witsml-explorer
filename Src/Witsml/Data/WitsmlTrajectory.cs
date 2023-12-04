@@ -9,11 +9,11 @@ namespace Witsml.Data
 {
     public class WitsmlTrajectory : WitsmlObjectOnWellbore
     {
-        public override WitsmlTrajectories AsSingletonWitsmlList()
+        public override WitsmlTrajectories AsItemInWitsmlList()
         {
             return new WitsmlTrajectories()
             {
-                Trajectories = this.AsSingletonList()
+                Trajectories = this.AsItemInList()
             };
         }
 

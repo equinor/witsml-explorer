@@ -10,9 +10,16 @@ import { measureToString } from "../../models/measure";
 import { truncateAbortHandler } from "../../services/apiClient";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogCurveInfoContextMenu, { LogCurveInfoContextMenuProps } from "../ContextMenus/LogCurveInfoContextMenu";
+import LogCurveInfoContextMenu, {
+  LogCurveInfoContextMenuProps
+} from "../ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -36,7 +43,14 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedCurveThreshold, servers } = navigationState;
+  const {
+    selectedServer,
+    selectedWell,
+    selectedWellbore,
+    selectedObject,
+    selectedCurveThreshold,
+    servers
+  } = navigationState;
   const selectedLog = selectedObject as LogObject;
   const { dispatchOperation } = useContext(OperationContext);
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
@@ -49,7 +63,14 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       const controller = new AbortController();
 
       const getLogCurveInfo = async () => {
-        const logCurveInfo = await ComponentService.getComponents(selectedWell.uid, selectedWellbore.uid, selectedLog.uid, ComponentType.Mnemonic, undefined, controller.signal);
+        const logCurveInfo = await ComponentService.getComponents(
+          selectedWell.uid,
+          selectedWellbore.uid,
+          selectedLog.uid,
+          ComponentType.Mnemonic,
+          undefined,
+          controller.signal
+        );
         setLogCurveInfoList(logCurveInfo);
         setIsFetchingData(false);
       };
@@ -62,7 +83,11 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     }
   }, [selectedLog]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogCurveInfoRows: LogCurveInfoRow[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedLogCurveInfoRows: LogCurveInfoRow[]
+  ) => {
     const contextMenuProps: LogCurveInfoContextMenuProps = {
       checkedLogCurveInfoRows,
       dispatchOperation,
@@ -72,29 +97,62 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       servers
     };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogCurveInfoContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <LogCurveInfoContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
-  const calculateIsCurveActive = (logCurveInfo: LogCurveInfo, maxDepth: number): boolean => {
+  const calculateIsCurveActive = (
+    logCurveInfo: LogCurveInfo,
+    maxDepth: number
+  ): boolean => {
     if (isDepthIndex) {
-      return maxDepth - parseFloat(logCurveInfo.maxDepthIndex) < selectedCurveThreshold.depthInMeters;
+      return (
+        maxDepth - parseFloat(logCurveInfo.maxDepthIndex) <
+        selectedCurveThreshold.depthInMeters
+      );
     } else {
-      const dateDifferenceInMilliseconds = new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
-      return dateDifferenceInMilliseconds < timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes);
+      const dateDifferenceInMilliseconds =
+        new Date().valueOf() -
+        new Date(logCurveInfo.maxDateTimeIndex).valueOf();
+      return (
+        dateDifferenceInMilliseconds <
+        timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes)
+      );
     }
   };
 
   const getTableData = () => {
-    const maxDepth = Math.max(...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex)));
+    const maxDepth = Math.max(
+      ...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex))
+    );
     return logCurveInfoList
       .map((logCurveInfo) => {
-        const isActive = selectedLog.objectGrowing && calculateIsCurveActive(logCurveInfo, maxDepth);
+        const isActive =
+          selectedLog.objectGrowing &&
+          calculateIsCurveActive(logCurveInfo, maxDepth);
         return {
           id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
           uid: logCurveInfo.uid,
           mnemonic: logCurveInfo.mnemonic,
-          minIndex: isDepthIndex ? logCurveInfo.minDepthIndex : formatDateString(logCurveInfo.minDateTimeIndex, timeZone, dateTimeFormat),
-          maxIndex: isDepthIndex ? logCurveInfo.maxDepthIndex : formatDateString(logCurveInfo.maxDateTimeIndex, timeZone, dateTimeFormat),
+          minIndex: isDepthIndex
+            ? logCurveInfo.minDepthIndex
+            : formatDateString(
+                logCurveInfo.minDateTimeIndex,
+                timeZone,
+                dateTimeFormat
+              ),
+          maxIndex: isDepthIndex
+            ? logCurveInfo.maxDepthIndex
+            : formatDateString(
+                logCurveInfo.maxDateTimeIndex,
+                timeZone,
+                dateTimeFormat
+              ),
           classWitsml: logCurveInfo.classWitsml,
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),
@@ -110,9 +168,14 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         };
       })
       .sort((curve, curve2) => {
-        if (curve.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()) {
+        if (
+          curve.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()
+        ) {
           return -1;
-        } else if (curve2.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()) {
+        } else if (
+          curve2.mnemonic.toLowerCase() ===
+          selectedLog.indexCurve?.toLowerCase()
+        ) {
           return 1;
         }
         return curve.mnemonic.localeCompare(curve2.mnemonic);
@@ -127,20 +190,36 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   };
 
   const columns: ContentTableColumn[] = [
-    ...(!isDepthIndex ? [{ property: "isActive", label: "active", type: ContentType.String }] : []),
+    ...(!isDepthIndex
+      ? [{ property: "isActive", label: "active", type: ContentType.String }]
+      : []),
     { property: "mnemonic", label: "mnemonic", type: ContentType.String },
-    { property: "minIndex", label: "minIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
-    { property: "maxIndex", label: "maxIndex", type: isDepthIndex ? ContentType.Number : ContentType.DateTime },
+    {
+      property: "minIndex",
+      label: "minIndex",
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
+    },
+    {
+      property: "maxIndex",
+      label: "maxIndex",
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
+    },
     { property: "classWitsml", label: "classWitsml", type: ContentType.String },
     { property: "unit", label: "unit", type: ContentType.String },
-    { property: "sensorOffset", label: "sensorOffset", type: ContentType.Measure },
+    {
+      property: "sensorOffset",
+      label: "sensorOffset",
+      type: ContentType.Measure
+    },
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
   return selectedLog && !isFetchingData ? (
     <ContentTable
-      viewId={isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"}
+      viewId={
+        isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
+      }
       columns={columns}
       data={getTableData()}
       onContextMenu={onContextMenu}

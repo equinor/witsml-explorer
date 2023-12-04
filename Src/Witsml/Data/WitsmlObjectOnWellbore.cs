@@ -5,7 +5,7 @@ namespace Witsml.Data
 {
     public abstract class WitsmlObjectOnWellbore
     {
-        public abstract IWitsmlQueryType AsSingletonWitsmlList();
+        public abstract IWitsmlQueryType AsItemInWitsmlList();
 
         [XmlAttribute("uidWell")]
         public string UidWell { get; set; }

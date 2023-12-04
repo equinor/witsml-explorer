@@ -7,9 +7,16 @@ import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TrajectoryStationContextMenu, { TrajectoryStationContextMenuProps } from "../ContextMenus/TrajectoryStationContextMenu";
+import TrajectoryStationContextMenu, {
+  TrajectoryStationContextMenuProps
+} from "../ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 import { measureToString } from "../../models/measure";
 
 export interface TrajectoryStationRow extends ContentTableRow {
@@ -29,7 +36,9 @@ export const TrajectoryView = (): React.ReactElement => {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
-  const [trajectoryStations, setTrajectoryStations] = useState<TrajectoryStation[]>([]);
+  const [trajectoryStations, setTrajectoryStations] = useState<
+    TrajectoryStation[]
+  >([]);
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedTrajectory = selectedObject as Trajectory;
@@ -61,7 +70,11 @@ export const TrajectoryView = (): React.ReactElement => {
     }
   }, [selectedTrajectory]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedTrajectoryStations: TrajectoryStationRow[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedTrajectoryStations: TrajectoryStationRow[]
+  ) => {
     const contextMenuProps: TrajectoryStationContextMenuProps = {
       checkedTrajectoryStations,
       dispatchNavigation,
@@ -71,13 +84,23 @@ export const TrajectoryView = (): React.ReactElement => {
       servers
     };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryStationContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <TrajectoryStationContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const columns: ContentTableColumn[] = [
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "dTimStn", label: "dTimStn", type: ContentType.DateTime },
-    { property: "typeTrajStation", label: "typeTrajStation", type: ContentType.String },
+    {
+      property: "typeTrajStation",
+      label: "typeTrajStation",
+      type: ContentType.String
+    },
     { property: "md", label: "md", type: ContentType.Number },
     { property: "tvd", label: "tvd", type: ContentType.Number },
     { property: "incl", label: "incl", type: ContentType.Number },
@@ -94,7 +117,11 @@ export const TrajectoryView = (): React.ReactElement => {
     return {
       id: trajectoryStation.uid,
       uid: trajectoryStation.uid,
-      dTimStn: formatDateString(trajectoryStation.dTimStn, timeZone, dateTimeFormat),
+      dTimStn: formatDateString(
+        trajectoryStation.dTimStn,
+        timeZone,
+        dateTimeFormat
+      ),
       typeTrajStation: trajectoryStation.typeTrajStation,
       md: measureToString(trajectoryStation.md),
       tvd: measureToString(trajectoryStation.tvd),

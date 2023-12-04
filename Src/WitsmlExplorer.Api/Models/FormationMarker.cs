@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Models
                 Chronostratigraphic = Chronostratigraphic?.ToWitsmlChronostratigraphyStruct(),
                 Description = Description,
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

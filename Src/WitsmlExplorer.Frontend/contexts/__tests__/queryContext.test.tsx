@@ -1,5 +1,10 @@
 import { v4 as uuid } from "uuid";
-import { QueryTemplatePreset, ReturnElements, StoreFunction, TemplateObjects } from "../../components/ContentViews/QueryViewUtils";
+import {
+  QueryTemplatePreset,
+  ReturnElements,
+  StoreFunction,
+  TemplateObjects
+} from "../../components/ContentViews/QueryViewUtils";
 import { QueryActionType, QueryState, queryReducer } from "../queryContext";
 
 jest.mock("../../templates/templates", () => ({
@@ -27,7 +32,10 @@ describe("QueryContext Reducer", () => {
 
   it("Should update store function", () => {
     const initialState = getInitialState(1);
-    const action = { type: QueryActionType.SetStoreFunction, storeFunction: StoreFunction.UpdateInStore };
+    const action = {
+      type: QueryActionType.SetStoreFunction,
+      storeFunction: StoreFunction.UpdateInStore
+    };
     const newState = queryReducer(initialState, action);
     const queryElement = newState.queries[0];
     expect(queryElement.storeFunction).toEqual(StoreFunction.UpdateInStore);
@@ -35,7 +43,10 @@ describe("QueryContext Reducer", () => {
 
   it("Should update return elements", () => {
     const initialState = getInitialState(1);
-    const action = { type: QueryActionType.SetReturnElements, returnElements: ReturnElements.HeaderOnly };
+    const action = {
+      type: QueryActionType.SetReturnElements,
+      returnElements: ReturnElements.HeaderOnly
+    };
     const newState = queryReducer(initialState, action);
     const queryElement = newState.queries[0];
     expect(queryElement.returnElements).toEqual(ReturnElements.HeaderOnly);
@@ -43,7 +54,10 @@ describe("QueryContext Reducer", () => {
 
   it("Should update options in", () => {
     const initialState = getInitialState(1);
-    const action = { type: QueryActionType.SetOptionsIn, optionsIn: "cascadedDelete=true" };
+    const action = {
+      type: QueryActionType.SetOptionsIn,
+      optionsIn: "cascadedDelete=true"
+    };
     const newState = queryReducer(initialState, action);
     const queryElement = newState.queries[0];
     expect(queryElement.optionsIn).toEqual("cascadedDelete=true");
@@ -60,10 +74,17 @@ describe("QueryContext Reducer", () => {
       wellboreUid: "wellboreUid",
       objectUid: "objectUid"
     };
-    const action = { type: QueryActionType.SetFromTemplatePreset, templatePreset };
+    const action = {
+      type: QueryActionType.SetFromTemplatePreset,
+      templatePreset
+    };
     const newState = queryReducer(initialState, action);
     const queryElement = newState.queries[0];
-    const expectedQuery = getExpectedLogQuery(templatePreset.wellUid, templatePreset.wellboreUid, templatePreset.objectUid);
+    const expectedQuery = getExpectedLogQuery(
+      templatePreset.wellUid,
+      templatePreset.wellboreUid,
+      templatePreset.objectUid
+    );
     expect(queryElement.query).toEqual(expectedQuery);
     expect(queryElement.storeFunction).toEqual(templatePreset.storeFunction);
     expect(queryElement.returnElements).toEqual(templatePreset.returnElements);
@@ -87,7 +108,10 @@ describe("QueryContext Reducer", () => {
 
   it("Should remove tab and select the first tab", () => {
     const initialState = getInitialState(2);
-    const action = { type: QueryActionType.RemoveTab, tabId: initialState.queries[1].tabId };
+    const action = {
+      type: QueryActionType.RemoveTab,
+      tabId: initialState.queries[1].tabId
+    };
     const newState = queryReducer(initialState, action);
     expect(newState.queries.length).toEqual(1);
     expect(newState.tabIndex).toEqual(0);
@@ -121,7 +145,11 @@ const LOG_QUERY = `
 </logs>
 `;
 
-const getExpectedLogQuery = (wellUid: string, wellboreUid: string, logUid: string) => `
+const getExpectedLogQuery = (
+  wellUid: string,
+  wellboreUid: string,
+  logUid: string
+) => `
 <logs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
   <log uidWell="${wellUid}" uidWellbore="${wellboreUid}" uid="${logUid}">
   </log>

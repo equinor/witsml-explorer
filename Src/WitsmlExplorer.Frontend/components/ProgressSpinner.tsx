@@ -11,7 +11,11 @@ const ProgressSpinner = ({ message }: Props): React.ReactElement => {
     <ProgressLayout>
       <InnerProgressLayout>
         <CircularProgress style={{ margin: "auto" }} />
-        {message && <Typography style={{ margin: "auto", paddingTop: "10px" }}>{message}</Typography>}
+        {message && (
+          <Typography style={{ margin: "auto", paddingTop: "10px" }}>
+            {message}
+          </Typography>
+        )}
       </InnerProgressLayout>
     </ProgressLayout>
   );

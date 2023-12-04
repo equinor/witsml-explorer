@@ -8,11 +8,11 @@ namespace Witsml.Data.MudLog
 {
     public class WitsmlMudLog : WitsmlObjectOnWellbore
     {
-        public override WitsmlMudLogs AsSingletonWitsmlList()
+        public override WitsmlMudLogs AsItemInWitsmlList()
         {
             return new WitsmlMudLogs()
             {
-                MudLogs = this.AsSingletonList()
+                MudLogs = this.AsItemInList()
             };
         }
 

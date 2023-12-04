@@ -1,4 +1,11 @@
-import { AccountInfo, Configuration, InteractionRequiredAuthError, PublicClientApplication, RedirectRequest, SilentRequest } from "@azure/msal-browser";
+import {
+  AccountInfo,
+  Configuration,
+  InteractionRequiredAuthError,
+  PublicClientApplication,
+  RedirectRequest,
+  SilentRequest
+} from "@azure/msal-browser";
 import { AuthenticationResult } from "@azure/msal-common";
 
 export const authRequest: RedirectRequest = {
@@ -22,7 +29,8 @@ const msalConfig: Configuration = {
   }
 };
 
-export const msalInstance: PublicClientApplication = new PublicClientApplication(msalConfig);
+export const msalInstance: PublicClientApplication =
+  new PublicClientApplication(msalConfig);
 
 export async function getAccessToken(scopes: string[]): Promise<string | null> {
   let accounts = msalInstance.getAllAccounts();
@@ -72,7 +80,8 @@ export const getAccountInfo = (): AccountInfo | null => {
   return activeAccount;
 };
 
-export const getUserAppRoles = (): string[] => getAccountInfo()?.idTokenClaims?.roles ?? [];
+export const getUserAppRoles = (): string[] =>
+  getAccountInfo()?.idTokenClaims?.roles ?? [];
 
 export const getUsername = (): string | null => getAccountInfo()?.username;
 
@@ -85,7 +94,9 @@ export async function signOut(): Promise<void> {
 
   const logoutRequest = {
     account: activeAccount,
-    logoutHint: activeAccount ? (activeAccount.idTokenClaims as TokenClaims).login_hint : undefined
+    logoutHint: activeAccount
+      ? (activeAccount.idTokenClaims as TokenClaims).login_hint
+      : undefined
   };
 
   msalInstance.logoutRedirect(logoutRequest);

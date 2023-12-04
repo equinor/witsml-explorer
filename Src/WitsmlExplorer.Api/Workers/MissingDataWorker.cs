@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     WellName = wellboreReferences.First().WellName,
                     WellUid = wellboreReferences.First().WellUid
-                }.AsSingletonList();
+                }.AsItemInList();
             }
 
             var query = new WitsmlWells

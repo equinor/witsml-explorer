@@ -182,7 +182,7 @@ public class CountLogDataRowWorkerTest
                 LogData = logData,
                 IndexType = isDepthLog ? WitsmlLog.WITSML_INDEX_TYPE_MD : WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                 LogCurveInfo = logCurveInfo,
-            }.AsSingletonList()
+            }.AsItemInList()
         };
     }
 

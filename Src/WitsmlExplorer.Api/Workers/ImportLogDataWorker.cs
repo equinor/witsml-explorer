@@ -140,7 +140,7 @@ namespace WitsmlExplorer.Api.Workers
                                     Uid = job.Mnemonics.ElementAt(i),
                                     TypeLogData = WitsmlLogCurveInfo.LogDataTypeDouble
                                 }).ToList(),
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }
