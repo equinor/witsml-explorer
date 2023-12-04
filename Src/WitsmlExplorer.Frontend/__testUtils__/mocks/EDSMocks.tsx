@@ -4,12 +4,23 @@ import React from "react";
 export const mockEdsCoreReact = () => {
   const originalModule = jest.requireActual("@equinor/eds-core-react");
 
-  const MockDialog = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+  const MockDialog = ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  );
 
-  const CustomContent = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
-  const Header = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
-  const Title = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
-  const Actions = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+  const CustomContent = ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  );
+  const Header = ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  );
+  const Title = ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  );
+  const Actions = ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  );
+
   MockDialog.CustomContent = CustomContent;
   MockDialog.Header = Header;
   MockDialog.Title = Title;
