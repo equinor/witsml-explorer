@@ -1,6 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
+import { v4 as uuid } from "uuid";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -270,7 +271,7 @@ const LogObjectContextMenu = (
         ]}
         ,
       </NestedMenuItem>,
-      <Divider key={"divider1"} />,
+      <Divider key={uuid()} />,
       <NestedMenuItem
         key={"agentslognestedmenu"}
         label={"Agents"}
@@ -348,7 +349,7 @@ const LogObjectContextMenu = (
           </MenuItem>
         ]}
       </NestedMenuItem>,
-      <Divider key={"divider2"} />,
+      <Divider key={uuid()} />,
       <MenuItem
         key={"importlogdata"}
         onClick={onClickImport}
@@ -357,7 +358,7 @@ const LogObjectContextMenu = (
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Import log data from .csv</Typography>
       </MenuItem>,
-      <Divider key={"divider3"} />,
+      <Divider key={uuid()} />,
       <MenuItem
         key={"properties"}
         onClick={onClickProperties}
