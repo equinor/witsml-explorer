@@ -1,7 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
+import {
+  DisplayModalAction,
+  HideContextMenuAction,
+  HideModalAction
+} from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
 import JobService, { JobType } from "../../services/jobService";
@@ -11,16 +15,23 @@ import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 
 export interface MnemonicsContextMenuProps {
-  dispatchOperation: (action: HideModalAction | HideContextMenuAction | DisplayModalAction) => void;
+  dispatchOperation: (
+    action: HideModalAction | HideContextMenuAction | DisplayModalAction
+  ) => void;
   deleteLogCurveValuesJob: DeleteLogCurveValuesJob;
 }
 
-const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElement => {
+const MnemonicsContextMenu = (
+  props: MnemonicsContextMenuProps
+): React.ReactElement => {
   const { deleteLogCurveValuesJob, dispatchOperation } = props;
 
   const deleteLogCurveValues = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    await JobService.orderJob(JobType.DeleteCurveValues, deleteLogCurveValuesJob);
+    await JobService.orderJob(
+      JobType.DeleteCurveValues,
+      deleteLogCurveValuesJob
+    );
   };
 
   const onClickDelete = async () => {
@@ -33,14 +44,20 @@ const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElem
         switchButtonPlaces={true}
       />
     );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   return (
     <ContextMenu
       menuItems={[
         <MenuItem key={"delete"} onClick={onClickDelete}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>
       ]}
@@ -48,8 +65,12 @@ const MnemonicsContextMenu = (props: MnemonicsContextMenuProps): React.ReactElem
   );
 };
 
-const getContentMessage = (deleteLogCurveValuesJob: DeleteLogCurveValuesJob) => {
-  const mnemonics = deleteLogCurveValuesJob.mnemonics.map((m) => `"${m}"`).join(", ");
+const getContentMessage = (
+  deleteLogCurveValuesJob: DeleteLogCurveValuesJob
+) => {
+  const mnemonics = deleteLogCurveValuesJob.mnemonics
+    .map((m) => `"${m}"`)
+    .join(", ");
   return (
     <>
       <p>This will permanently delete selected index ranges: </p>

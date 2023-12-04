@@ -3,8 +3,18 @@ import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import { NavigationAction } from "../contexts/navigationAction";
-import { SelectLogTypeAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
-import NavigationContext, { NavigationState, Selectable, ViewFlags } from "../contexts/navigationContext";
+import {
+  SelectLogTypeAction,
+  SelectObjectGroupAction,
+  SelectServerAction,
+  SelectWellAction,
+  SelectWellboreAction
+} from "../contexts/navigationActions";
+import NavigationContext, {
+  NavigationState,
+  Selectable,
+  ViewFlags
+} from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
@@ -17,7 +27,14 @@ import TopRightCornerMenu from "./TopRightCornerMenu";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedLogTypeGroup, selectedObjectGroup, currentSelected } = navigationState;
+  const {
+    selectedServer,
+    selectedWell,
+    selectedWellbore,
+    selectedLogTypeGroup,
+    selectedObjectGroup,
+    currentSelected
+  } = navigationState;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -25,7 +42,13 @@ const Nav = (): React.ReactElement => {
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const createBreadcrumbContent = () => {
     const groupCrumbs = Object.keys(ObjectType).map((key) => {
-      return getObjectGroupCrumb(key as ObjectType, selectedObjectGroup, selectedWell, selectedWellbore, dispatchNavigation);
+      return getObjectGroupCrumb(
+        key as ObjectType,
+        selectedObjectGroup,
+        selectedWell,
+        selectedWellbore,
+        dispatchNavigation
+      );
     });
     return [
       getServerCrumb(selectedServer, dispatchNavigation),
@@ -34,7 +57,12 @@ const Nav = (): React.ReactElement => {
       getWellCrumb(selectedWell, dispatchNavigation),
       getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
       ...groupCrumbs,
-      getLogTypeCrumb(selectedLogTypeGroup, selectedWell, selectedWellbore, dispatchNavigation),
+      getLogTypeCrumb(
+        selectedLogTypeGroup,
+        selectedWell,
+        selectedWellbore,
+        dispatchNavigation
+      ),
       getObjectCrumb(navigationState, dispatchNavigation)
     ].filter((item) => item.name);
   };
@@ -47,8 +75,17 @@ const Nav = (): React.ReactElement => {
     <nav>
       <Layout>
         <NavContainer>
-          <Title style={{ color: colors.infographic.primaryMossGreen }}>WITSML Explorer</Title>
-          {breadcrumbContent.length != 0 && <Icon name="chevronRight" color={colors.text.staticIconsTertiary} size={18} style={{ minWidth: "18" }} />}
+          <Title style={{ color: colors.infographic.primaryMossGreen }}>
+            WITSML Explorer
+          </Title>
+          {breadcrumbContent.length != 0 && (
+            <Icon
+              name="chevronRight"
+              color={colors.text.staticIconsTertiary}
+              size={18}
+              style={{ minWidth: "18" }}
+            />
+          )}
           <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
@@ -56,7 +93,10 @@ const Nav = (): React.ReactElement => {
                 href="#"
                 onClick={breadCrumb.onClick}
                 style={{
-                  fontFamily: breadcrumbContent.length - 1 == index ? "EquinorMedium" : "Equinor",
+                  fontFamily:
+                    breadcrumbContent.length - 1 == index
+                      ? "EquinorMedium"
+                      : "Equinor",
                   color: `${colors.infographic.primaryMossGreen}`
                 }}
                 maxWidth={180}
@@ -72,29 +112,51 @@ const Nav = (): React.ReactElement => {
   );
 };
 
-const getServerCrumb = (selectedServer: Server, dispatch: (action: SelectServerAction) => void) => {
+const getServerCrumb = (
+  selectedServer: Server,
+  dispatch: (action: SelectServerAction) => void
+) => {
   return selectedServer
     ? {
         name: selectedServer.name,
-        onClick: () => dispatch({ type: NavigationType.SelectServer, payload: { server: selectedServer } })
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectServer,
+            payload: { server: selectedServer }
+          })
       }
     : {};
 };
 
-const getWellCrumb = (selectedWell: Well, dispatch: (action: SelectWellAction) => void) => {
+const getWellCrumb = (
+  selectedWell: Well,
+  dispatch: (action: SelectWellAction) => void
+) => {
   return selectedWell
     ? {
         name: selectedWell.name,
-        onClick: () => dispatch({ type: NavigationType.SelectWell, payload: { well: selectedWell } })
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectWell,
+            payload: { well: selectedWell }
+          })
       }
     : {};
 };
 
-const getWellboreCrumb = (selectedWellbore: Wellbore, selectedWell: Well, dispatch: (action: SelectWellboreAction) => void) => {
+const getWellboreCrumb = (
+  selectedWellbore: Wellbore,
+  selectedWell: Well,
+  dispatch: (action: SelectWellboreAction) => void
+) => {
   return selectedWellbore
     ? {
         name: selectedWellbore.name,
-        onClick: () => dispatch({ type: NavigationType.SelectWellbore, payload: { well: selectedWell, wellbore: selectedWellbore } })
+        onClick: () =>
+          dispatch({
+            type: NavigationType.SelectWellbore,
+            payload: { well: selectedWell, wellbore: selectedWellbore }
+          })
       }
     : {};
 };
@@ -112,26 +174,46 @@ const getObjectGroupCrumb = (
         onClick: () =>
           dispatch({
             type: NavigationType.SelectObjectGroup,
-            payload: { wellUid: selectedWell.uid, wellboreUid: selectedWellbore.uid, objectType, objects: null }
+            payload: {
+              wellUid: selectedWell.uid,
+              wellboreUid: selectedWellbore.uid,
+              objectType,
+              objects: null
+            }
           })
       }
     : {};
 };
 
-const getLogTypeCrumb = (selectedLogTypeGroup: string, selectedWell: Well, selectedWellbore: Wellbore, dispatch: (action: SelectLogTypeAction) => void) => {
+const getLogTypeCrumb = (
+  selectedLogTypeGroup: string,
+  selectedWell: Well,
+  selectedWellbore: Wellbore,
+  dispatch: (action: SelectLogTypeAction) => void
+) => {
   return selectedLogTypeGroup
     ? {
-        name: selectedLogTypeGroup === calculateLogTypeDepthId(selectedWellbore) ? "Depth" : "Time",
+        name:
+          selectedLogTypeGroup === calculateLogTypeDepthId(selectedWellbore)
+            ? "Depth"
+            : "Time",
         onClick: () =>
           dispatch({
             type: NavigationType.SelectLogType,
-            payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: selectedLogTypeGroup }
+            payload: {
+              well: selectedWell,
+              wellbore: selectedWellbore,
+              logTypeGroup: selectedLogTypeGroup
+            }
           })
       }
     : {};
 };
 
-const getObjectCrumb = (navigationState: NavigationState, dispatch: (action: NavigationAction) => void) => {
+const getObjectCrumb = (
+  navigationState: NavigationState,
+  dispatch: (action: NavigationAction) => void
+) => {
   return navigationState.selectedObject?.name
     ? {
         name: navigationState.selectedObject.name,

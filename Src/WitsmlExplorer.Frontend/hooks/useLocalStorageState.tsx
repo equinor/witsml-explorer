@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { StorageOptions, getLocalStorageItem, setLocalStorageItem } from "../tools/localStorageHelpers";
+import {
+  StorageOptions,
+  getLocalStorageItem,
+  setLocalStorageItem
+} from "../tools/localStorageHelpers";
 
 /**
  * Custom hook that updates localStorage with the current state.
@@ -9,7 +13,10 @@ import { StorageOptions, getLocalStorageItem, setLocalStorageItem } from "../too
  * @param {StorageOptions<T>} [options] - Optional configuration.
  * @returns {[T | null, React.Dispatch<React.SetStateAction<T | null>>]} - The state and a function to update it.
  */
-export const useLocalStorageState = <T,>(key: string, options?: StorageOptions<T>): [T | null, React.Dispatch<React.SetStateAction<T | null>>] => {
+export const useLocalStorageState = <T,>(
+  key: string,
+  options?: StorageOptions<T>
+): [T | null, React.Dispatch<React.SetStateAction<T | null>>] => {
   const { defaultValue, delay = 250 } = options || {};
   const [state, setState] = useState<T | null>(() => {
     if (typeof window !== "undefined" && key) {

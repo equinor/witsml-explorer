@@ -1,6 +1,11 @@
 import "@testing-library/jest-dom/extend-expect";
 import { act, screen, within } from "@testing-library/react";
-import { deferred, getJobInfo, getNotification, renderWithContexts } from "../../../__testUtils__/testUtils";
+import {
+  deferred,
+  getJobInfo,
+  getNotification,
+  renderWithContexts
+} from "../../../__testUtils__/testUtils";
 import JobInfo from "../../../models/jobs/jobInfo";
 import { createReport } from "../../../models/reports/BaseReport";
 import JobService from "../../../services/jobService";
@@ -50,7 +55,9 @@ describe("Report Modal", () => {
       const headerCells = within(rows[0]).getAllByRole("button"); // header cells are buttons to toggle sorting
       expect(headerCells).toHaveLength(Object.keys(REPORT_ITEMS[0]).length);
       Object.keys(REPORT_ITEMS[0]).forEach((key, cellIndex) => {
-        expect(within(headerCells[cellIndex]).getByText(key)).toBeInTheDocument();
+        expect(
+          within(headerCells[cellIndex]).getByText(key)
+        ).toBeInTheDocument();
       });
 
       // Test the data
@@ -58,7 +65,9 @@ describe("Report Modal", () => {
         const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
         expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
         Object.values(reportItem).forEach((value, cellIndex) => {
-          expect(within(cells[cellIndex + 1]).getByText(value)).toBeInTheDocument(); // +1 for the same reason
+          expect(
+            within(cells[cellIndex + 1]).getByText(value)
+          ).toBeInTheDocument(); // +1 for the same reason
         });
       });
     });
@@ -73,9 +82,12 @@ describe("Report Modal", () => {
     });
 
     it("Should show the report once the job has finished", async () => {
-      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } = deferred<JobInfo>();
+      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
+        deferred<JobInfo>();
 
-      jest.spyOn(JobService, "getUserJobInfo").mockImplementation(() => jobInfoPromise);
+      jest
+        .spyOn(JobService, "getUserJobInfo")
+        .mockImplementation(() => jobInfoPromise);
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();

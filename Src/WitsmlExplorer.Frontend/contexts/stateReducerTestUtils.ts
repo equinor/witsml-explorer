@@ -7,13 +7,32 @@ import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Trajectory from "../models/trajectory";
 import Well from "../models/well";
-import Wellbore, { WellboreObjects, objectTypeToWellboreObjects } from "../models/wellbore";
+import Wellbore, {
+  WellboreObjects,
+  objectTypeToWellboreObjects
+} from "../models/wellbore";
 import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
 
-export const SERVER_1: Server = { id: "1", name: "WITSML server", url: "http://example.com", description: "Witsml server", roles: [], depthLogDecimals: 0 };
-export const SERVER_2: Server = { id: "2", name: "WITSML server 2", url: "http://example2.com", description: "Witsml server 2", roles: [], depthLogDecimals: 0 };
+export const SERVER_1: Server = {
+  id: "1",
+  name: "WITSML server",
+  url: "http://example.com",
+  description: "Witsml server",
+  roles: [],
+  depthLogDecimals: 0
+};
+export const SERVER_2: Server = {
+  id: "2",
+  name: "WITSML server 2",
+  url: "http://example2.com",
+  description: "Witsml server 2",
+  roles: [],
+  depthLogDecimals: 0
+};
 export const getEmptyWellboreObjects = () => {
-  const labels = Object.values(ObjectType).map((label) => objectTypeToWellboreObjects(label));
+  const labels = Object.values(ObjectType).map((label) =>
+    objectTypeToWellboreObjects(label)
+  );
   const wellboreObjects: WellboreObjects = {};
   labels.forEach((label) => (wellboreObjects[label] = []));
   return wellboreObjects;
@@ -45,9 +64,30 @@ export const WELLBORE_3: Wellbore = {
   wellType: "",
   isActive: false
 };
-export const WELL_1: Well = { uid: "well1", name: "Well 1", wellbores: [WELLBORE_1], field: "", operator: "", country: "" };
-export const WELL_2: Well = { uid: "well2", name: "Well 2", wellbores: [WELLBORE_2], field: "", operator: "", country: "" };
-export const WELL_3: Well = { uid: "well3", name: "Well 3", wellbores: [WELLBORE_3], field: "", operator: "", country: "" };
+export const WELL_1: Well = {
+  uid: "well1",
+  name: "Well 1",
+  wellbores: [WELLBORE_1],
+  field: "",
+  operator: "",
+  country: ""
+};
+export const WELL_2: Well = {
+  uid: "well2",
+  name: "Well 2",
+  wellbores: [WELLBORE_2],
+  field: "",
+  operator: "",
+  country: ""
+};
+export const WELL_3: Well = {
+  uid: "well3",
+  name: "Well 3",
+  wellbores: [WELLBORE_3],
+  field: "",
+  operator: "",
+  country: ""
+};
 export const WELLS = [WELL_1, WELL_2, WELL_3];
 export const BHARUN_1: BhaRun = {
   uid: "bharun",
@@ -92,7 +132,14 @@ export const FORMATIONMARKER_1: FormationMarker = {
   wellboreName: "",
   wellName: ""
 };
-export const LOG_1: LogObject = { uid: "log1", name: "Log 1", wellUid: WELL_1.uid, wellboreUid: WELLBORE_1.uid, wellboreName: "", wellName: "" };
+export const LOG_1: LogObject = {
+  uid: "log1",
+  name: "Log 1",
+  wellUid: WELL_1.uid,
+  wellboreUid: WELLBORE_1.uid,
+  wellboreName: "",
+  wellName: ""
+};
 export const RIG_1 = { uid: "rig1", name: "Rig 1" };
 export const TRAJECTORY_1: Trajectory = {
   uid: "trajectory1",

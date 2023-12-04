@@ -47,11 +47,16 @@ const ErrorFallback = ({ error }: ErrorFallbackProps): React.ReactElement => {
           padding: "8px"
         }}
       >
-        <p style={{ color: colors.interactive.dangerResting }}>{error?.message}</p>
+        <p style={{ color: colors.interactive.dangerResting }}>
+          {error?.message}
+        </p>
       </div>
       <p>
-        Please report this issue on <a href="https://github.com/equinor/witsml-explorer/issues/new?labels=bug&template=bug-report---.md">GitHub</a> to help us investigate and fix
-        it.
+        Please report this issue on{" "}
+        <a href="https://github.com/equinor/witsml-explorer/issues/new?labels=bug&template=bug-report---.md">
+          GitHub
+        </a>{" "}
+        to help us investigate and fix it.
       </p>
     </div>
   );

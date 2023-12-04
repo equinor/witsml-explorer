@@ -9,7 +9,10 @@ function getDocumentDimensions() {
 }
 
 export default function useDocumentDimensions() {
-  const [documentDimensions, setDocumentDimensions] = useState({ width: 0, height: 0 });
+  const [documentDimensions, setDocumentDimensions] = useState({
+    width: 0,
+    height: 0
+  });
 
   useEffect(() => {
     function handleResize() {

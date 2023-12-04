@@ -39,7 +39,10 @@ function appendDateTime(append: boolean): string {
 }
 
 function useExport(props?: Partial<ExportProperties>): ExportObject {
-  const exportOptions = useMemo(() => ({ ...defaultExportProperties, ...props }), [defaultExportProperties, props]);
+  const exportOptions = useMemo(
+    () => ({ ...defaultExportProperties, ...props }),
+    [defaultExportProperties, props]
+  );
 
   const exportData = useCallback(
     (fileName: string, header: string, data: string) => {
@@ -50,8 +53,12 @@ function useExport(props?: Partial<ExportProperties>): ExportObject {
         })
       );
       link.download = exportOptions.omitSpecialCharactersFromFilename
-        ? `${omitSpecialCharacters(fileName)}${appendDateTime(exportOptions.appendDateTime)}${exportOptions.fileExtension}`
-        : `${fileName}${appendDateTime(exportOptions.appendDateTime)}${exportOptions.fileExtension}`;
+        ? `${omitSpecialCharacters(fileName)}${appendDateTime(
+            exportOptions.appendDateTime
+          )}${exportOptions.fileExtension}`
+        : `${fileName}${appendDateTime(exportOptions.appendDateTime)}${
+            exportOptions.fileExtension
+          }`;
       document.body.appendChild(link);
       link.click();
       //we might not need a timeout for clean up
@@ -63,7 +70,10 @@ function useExport(props?: Partial<ExportProperties>): ExportObject {
     [exportOptions]
   );
 
-  return useMemo(() => ({ exportData, exportOptions }), [exportData, exportOptions]);
+  return useMemo(
+    () => ({ exportData, exportOptions }),
+    [exportData, exportOptions]
+  );
 }
 
 export default useExport;

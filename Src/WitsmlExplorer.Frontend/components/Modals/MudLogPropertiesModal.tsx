@@ -6,11 +6,16 @@ import OperationType from "../../contexts/operationType";
 import { itemStateValues } from "../../models/commonData";
 import MaxLength from "../../models/maxLength";
 import MudLog from "../../models/mudLog";
-import ObjectOnWellbore, { toObjectReference } from "../../models/objectOnWellbore";
+import ObjectOnWellbore, {
+  toObjectReference
+} from "../../models/objectOnWellbore";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
-import { invalidStringInput, undefinedOnUnchagedEmptyString } from "./PropertiesModalUtils";
+import {
+  invalidStringInput,
+  undefinedOnUnchagedEmptyString
+} from "./PropertiesModalUtils";
 
 export interface MudLogPropertiesModalProps {
   mudLog: MudLog;
@@ -22,7 +27,9 @@ interface EditableMudLog extends ObjectOnWellbore {
   itemState?: string;
 }
 
-const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactElement => {
+const MudLogPropertiesModal = (
+  props: MudLogPropertiesModalProps
+): React.ReactElement => {
   const { mudLog } = props;
   const {
     operationState: { timeZone, dateTimeFormat },
@@ -34,7 +41,12 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
   const onSubmit = async (updatedMudLog: EditableMudLog) => {
     setIsLoading(true);
     const modifyMudLogJob = {
-      mudLog: { ...updatedMudLog, commonData: updatedMudLog.itemState ? { itemState: updatedMudLog.itemState } : null }
+      mudLog: {
+        ...updatedMudLog,
+        commonData: updatedMudLog.itemState
+          ? { itemState: updatedMudLog.itemState }
+          : null
+      }
     };
     await JobService.orderJob(JobType.ModifyMudLog, modifyMudLogJob);
     setIsLoading(false);
@@ -47,9 +59,21 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
     }
   }, [mudLog]);
 
-  const invalidName = invalidStringInput(mudLog?.name, editableMudLog?.name, MaxLength.Name);
-  const invalidMudLogCompany = invalidStringInput(mudLog?.mudLogCompany, editableMudLog?.mudLogCompany, MaxLength.Name);
-  const invalidMudLogEngineers = invalidStringInput(mudLog?.mudLogEngineers, editableMudLog?.mudLogEngineers, MaxLength.Description);
+  const invalidName = invalidStringInput(
+    mudLog?.name,
+    editableMudLog?.name,
+    MaxLength.Name
+  );
+  const invalidMudLogCompany = invalidStringInput(
+    mudLog?.mudLogCompany,
+    editableMudLog?.mudLogCompany,
+    MaxLength.Name
+  );
+  const invalidMudLogEngineers = invalidStringInput(
+    mudLog?.mudLogEngineers,
+    editableMudLog?.mudLogEngineers,
+    MaxLength.Description
+  );
   return (
     <>
       {editableMudLog && (
@@ -81,17 +105,57 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
                 originalObject={mudLog}
                 editableObject={editableMudLog}
               />
-              <TextField disabled id="nameWell" label="nameWell" defaultValue={mudLog?.wellName} />
-              <TextField disabled id="nameWellbore" label="nameWellbore" defaultValue={mudLog?.wellboreName} />
-              <TextField disabled id="objectGrowing" label="objectGrowing" defaultValue={`${mudLog?.objectGrowing}`} />
-              <TextField id="startMd" label="startMd" disabled defaultValue={mudLog?.startMd?.value} unit={mudLog?.startMd?.uom} />
-              <TextField id="endMd" label="endMd" disabled defaultValue={mudLog?.endMd?.value} unit={mudLog?.endMd?.uom} />
-              <TextField disabled id="dTimCreation" label="commonData.dTimCreation" defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone, dateTimeFormat)} />
+              <TextField
+                disabled
+                id="nameWell"
+                label="nameWell"
+                defaultValue={mudLog?.wellName}
+              />
+              <TextField
+                disabled
+                id="nameWellbore"
+                label="nameWellbore"
+                defaultValue={mudLog?.wellboreName}
+              />
+              <TextField
+                disabled
+                id="objectGrowing"
+                label="objectGrowing"
+                defaultValue={`${mudLog?.objectGrowing}`}
+              />
+              <TextField
+                id="startMd"
+                label="startMd"
+                disabled
+                defaultValue={mudLog?.startMd?.value}
+                unit={mudLog?.startMd?.uom}
+              />
+              <TextField
+                id="endMd"
+                label="endMd"
+                disabled
+                defaultValue={mudLog?.endMd?.value}
+                unit={mudLog?.endMd?.uom}
+              />
+              <TextField
+                disabled
+                id="dTimCreation"
+                label="commonData.dTimCreation"
+                defaultValue={formatDateString(
+                  mudLog?.commonData?.dTimCreation,
+                  timeZone,
+                  dateTimeFormat
+                )}
+              />
               <TextField
                 disabled
                 id="dTimLastChange"
                 label="commonData.dTimLastChange"
-                defaultValue={formatDateString(mudLog?.commonData?.dTimCreation, timeZone, dateTimeFormat)}
+                defaultValue={formatDateString(
+                  mudLog?.commonData?.dTimCreation,
+                  timeZone,
+                  dateTimeFormat
+                )}
               />
               <Autocomplete
                 id="itemState"
@@ -100,12 +164,17 @@ const MudLogPropertiesModal = (props: MudLogPropertiesModalProps): React.ReactEl
                 initialSelectedOptions={[mudLog?.commonData?.itemState]}
                 hideClearButton
                 onOptionsChange={({ selectedItems }) => {
-                  setEditableMudLog({ ...editableMudLog, itemState: selectedItems[0] });
+                  setEditableMudLog({
+                    ...editableMudLog,
+                    itemState: selectedItems[0]
+                  });
                 }}
               />
             </Layout>
           }
-          confirmDisabled={invalidName || invalidMudLogCompany || invalidMudLogEngineers}
+          confirmDisabled={
+            invalidName || invalidMudLogCompany || invalidMudLogEngineers
+          }
           onSubmit={() => onSubmit(editableMudLog)}
           isLoading={isLoading}
         />
@@ -124,8 +193,17 @@ export interface EditableTextFieldProps {
   editableObject: EditableMudLog;
 }
 
-const EditableTextField = (props: EditableTextFieldProps): React.ReactElement => {
-  const { property, invalid, maxLength, setter, originalObject, editableObject } = props;
+const EditableTextField = (
+  props: EditableTextFieldProps
+): React.ReactElement => {
+  const {
+    property,
+    invalid,
+    maxLength,
+    setter,
+    originalObject,
+    editableObject
+  } = props;
   const originalValue = originalObject[property];
   const value = editableObject[property];
   return (
@@ -134,8 +212,18 @@ const EditableTextField = (props: EditableTextFieldProps): React.ReactElement =>
       label={property}
       defaultValue={value != null ? value : originalValue ?? ""}
       variant={invalid ? "error" : undefined}
-      helperText={invalid ? `${property} must be 1-${maxLength} characters` : ""}
-      onChange={(e: any) => setter({ ...editableObject, [property]: undefinedOnUnchagedEmptyString(originalValue, e.target.value) })}
+      helperText={
+        invalid ? `${property} must be 1-${maxLength} characters` : ""
+      }
+      onChange={(e: any) =>
+        setter({
+          ...editableObject,
+          [property]: undefinedOnUnchagedEmptyString(
+            originalValue,
+            e.target.value
+          )
+        })
+      }
     />
   );
 };

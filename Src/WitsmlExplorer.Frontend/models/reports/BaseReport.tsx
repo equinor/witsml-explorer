@@ -5,7 +5,12 @@ export default interface BaseReport {
   warningMessage?: string;
 }
 
-export const createReport = (title = "", summary = "", reportItems: any[] = [], warningMessage: string = null): BaseReport => {
+export const createReport = (
+  title = "",
+  summary = "",
+  reportItems: any[] = [],
+  warningMessage: string = null
+): BaseReport => {
   return {
     title,
     summary,

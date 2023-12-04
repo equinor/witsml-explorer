@@ -6,8 +6,13 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
 import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import WellContextMenu, { WellContextMenuProps } from "../ContextMenus/WellContextMenu";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "../ContextMenus/ContextMenu";
+import WellContextMenu, {
+  WellContextMenuProps
+} from "../ContextMenus/WellContextMenu";
 import TreeItem from "./TreeItem";
 import WellboreItem from "./WellboreItem";
 
@@ -24,11 +29,24 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
     React.useMemo(() => [well], [well]),
     React.useMemo(() => ({ filterWellbores: true }), [])
   );
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, well: Well) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    well: Well
+  ) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: WellContextMenuProps = { well, servers, dispatchOperation };
+    const contextMenuProps: WellContextMenuProps = {
+      well,
+      servers,
+      dispatchOperation
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <WellContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const onSelectWell = async (well: Well) => {
