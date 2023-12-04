@@ -7,11 +7,11 @@ namespace Witsml.Data
 {
     public class WitsmlFormationMarker : WitsmlObjectOnWellbore
     {
-        public override WitsmlFormationMarkers AsSingletonWitsmlList()
+        public override WitsmlFormationMarkers AsItemInWitsmlList()
         {
             return new WitsmlFormationMarkers()
             {
-                FormationMarkers = this.AsSingletonList()
+                FormationMarkers = this.AsItemInList()
             };
         }
 

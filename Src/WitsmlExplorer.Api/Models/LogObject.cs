@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Models
                 UidWellbore = WellboreUid,
                 NameWellbore = WellboreName,
                 IndexType = IndexType,
-                ObjectGrowing = StringHelpers.OptionalBooleanToString(ObjectGrowing),
+                ObjectGrowing = StringHelpers.NullableBooleanToString(ObjectGrowing),
                 ServiceCompany = ServiceCompany,
                 RunNumber = RunNumber,
                 IndexCurve = IndexCurve != null ? new WitsmlIndexCurve { Value = IndexCurve } : null,
@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Models
                 log.EndDateTimeIndex = EndIndex;
             }
 
-            return log.AsSingletonWitsmlList();
+            return log.AsItemInWitsmlList();
         }
     }
 }

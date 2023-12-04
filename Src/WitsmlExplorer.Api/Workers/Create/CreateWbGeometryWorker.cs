@@ -87,7 +87,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                         SourceName = wbGeometry.CommonData.SourceName,
                         Comments = wbGeometry.CommonData.Comments,
                     },
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 

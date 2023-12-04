@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                     {
                         var logCurves = await GetLogCurveInfos(logToCheck);
 
-                        logCurvesCheckedCount += logCurves.Count();
+                        logCurvesCheckedCount += logCurves.Count;
 
                         var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logToCheck, logCurves);
 
@@ -120,43 +120,34 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             var summary = new StringBuilder();
 
-            if (mnemonicsCheckedCount > 0)
+            switch (mnemonicsCheckedCount)
             {
-                switch (mnemonicsCheckedCount)
-                {
-                    case 0:
-                        summary = summary.AppendFormat("No mnemonics were");
-                        break;
-                    case 1:
-                        summary = summary.AppendFormat("One mnemonic was");
-                        break;
-                    default:
-                        summary = summary.AppendFormat("{0} mnemonics were", mnemonicsCheckedCount.ToString());
-                        break;
-                }
-
-                summary = summary.AppendFormat(" checked for NullDepthValue: \"{0}\" and NullTimeValue: \"{1}\". ",
-                    job.NullDepthValue.ToString(),
-                    job.NullTimeValue.ToISODateTimeString());
-
-                switch (mnemonicsDeletedCount)
-                {
-                    case 0:
-                        summary = summary.AppendFormat("No empty mnemonics were found and deleted.");
-                        break;
-                    case 1:
-                        summary = summary.AppendFormat("One empty mnemonic was found and deleted.");
-                        break;
-                    default:
-                        summary = summary.AppendFormat("{0} empty mnemonics were found and deleted.", mnemonicsDeletedCount.ToString());
-                        break;
-                }
+                case 0:
+                    summary = summary.AppendFormat("No mnemonics were");
+                    break;
+                case 1:
+                    summary = summary.AppendFormat("One mnemonic was");
+                    break;
+                default:
+                    summary = summary.AppendFormat("{0} mnemonics were", mnemonicsCheckedCount.ToString());
+                    break;
             }
-            else
+
+            summary = summary.AppendFormat(" checked for NullDepthValue: \"{0}\" and NullTimeValue: \"{1}\". ",
+                job.NullDepthValue.ToString(),
+                job.NullTimeValue.ToISODateTimeString());
+
+            switch (mnemonicsDeletedCount)
             {
-                summary = summary.AppendFormat("No mnemonics were checked for NullDepthValue: \"{0}\" and NullTimeValue: \"{1}\".",
-                    job.NullDepthValue.ToString(),
-                    job.NullTimeValue.ToISODateTimeString());
+                case 0:
+                    summary = summary.AppendFormat("No empty mnemonics were found and deleted.");
+                    break;
+                case 1:
+                    summary = summary.AppendFormat("One empty mnemonic was found and deleted.");
+                    break;
+                default:
+                    summary = summary.AppendFormat("{0} empty mnemonics were found and deleted.", mnemonicsDeletedCount.ToString());
+                    break;
             }
 
             return summary.ToString();
@@ -178,23 +169,11 @@ namespace WitsmlExplorer.Api.Workers.Delete
             {
                 if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
-                    foreach (var logCurve in logCurves)
-                    {
-                        if (logCurve.MinDepthIndex == nullDepthValueString && logCurve.MaxDepthIndex == nullDepthValueString)
-                        {
-                            nullMnemonics.Add(logCurve);
-                        }
-                    }
+                    nullMnemonics.AddRange(logCurves.Where(logCurve => logCurve.MinDepthIndex == nullDepthValueString && logCurve.MaxDepthIndex == nullDepthValueString));
                 }
                 else if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
                 {
-                    foreach (var logCurve in logCurves)
-                    {
-                        if (logCurve.MinDateTimeIndex == nullTimeValueString && logCurve.MaxDateTimeIndex == nullTimeValueString)
-                        {
-                            nullMnemonics.Add(logCurve);
-                        }
-                    }
+                    nullMnemonics.AddRange(logCurves.Where(logCurve => logCurve.MinDateTimeIndex == nullTimeValueString && logCurve.MaxDateTimeIndex == nullTimeValueString));
                 }
             }
 
@@ -211,7 +190,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return (await _logObjectService.GetLogs(wellboreRef.WellUid, wellboreRef.WellboreUid)).ToList();
         }
 
-        private async Task<ICollection<WellboreReference>> ExtractWellboreRefs(IEnumerable<WellReference> wellRefs)
+        private async Task<ICollection<WellboreReference>> ExtractWellboreRefs(ICollection<WellReference> wellRefs)
         {
             var wellboreRefs = new List<WellboreReference>();
 

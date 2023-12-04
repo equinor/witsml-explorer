@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Console.ListCommands
                     {
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));

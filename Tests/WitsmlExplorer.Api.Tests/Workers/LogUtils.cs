@@ -312,7 +312,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             UnitList = "datetime,m,m",
                             Data = data
                         }
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 };
             }
 
@@ -349,7 +349,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             UnitList = "m,m,m",
                             Data = data
                         }
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 };
             }
 
@@ -387,7 +387,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             UnitList = "m,m,m",
                             Data = data
                         }
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 };
             }
 
@@ -410,7 +410,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             UnitList = "m,m,m",
                             Data = new(data)
                         }
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 });
         }
     }

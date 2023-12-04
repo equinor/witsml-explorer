@@ -6,13 +6,13 @@ namespace WitsmlExplorer.Api.Services
     public static class StringHelpers
     {
         /// <summary>
-        /// Converts "1", "0" and string representation of logical value to boolean
-        /// All other strings converted to false
+        /// Converts "1", "0", NULL and string representation of logical value (true/false) to boolean
+        /// All other strings throws exception
         /// </summary>
         /// <param name="input">string value to convert</param>
         /// <returns> boolean value for given input string</returns>
         ///
-        public static bool ToBooleanSafe(string input)
+        public static bool ToBoolean(string input)
         {
             if (string.IsNullOrEmpty(input) || input == "0")
             {
@@ -24,35 +24,12 @@ namespace WitsmlExplorer.Api.Services
                 return true;
             }
 
-            bool isBoolean = bool.TryParse(input, out bool value);
-
-            return isBoolean ? value : throw new ArgumentException($"Input is not compatible to be parsed to a bool value: {input}");
-        }
-
-        public static bool ToBoolean(string input)
-        {
-            return ToBooleanSafe(input);
-        }
-
-        public static bool? ToNullableBoolean(string input)
-        {
-            if (string.IsNullOrEmpty(input))
+            if (!bool.TryParse(input, out bool value))
             {
-                return null;
+                throw new ArgumentException($"Input is not compatible to be parsed to a bool value: {input}");
             }
 
-            if (input == "1")
-            {
-                return true;
-            }
-            if (input == "0")
-            {
-                return false;
-            }
-
-            bool isBoolean = bool.TryParse(input, out bool value);
-
-            return isBoolean ? value : throw new ArgumentException($"Input is not compatible to be parsed to a bool value: {input}");
+            return value;
         }
 
         /// <summary>
@@ -62,13 +39,9 @@ namespace WitsmlExplorer.Api.Services
         /// <param name="input">bool? value to convert</param>
         /// <returns> string value for given input boolean, or null if input is null</returns>
         ///
-        public static string OptionalBooleanToString(bool? input)
+        public static string NullableBooleanToString(bool? input)
         {
-            if (input == null)
-            {
-                return null;
-            }
-            return (bool)input ? "true" : "false";
+            return input?.ToString().ToLowerInvariant();
         }
 
         public static DateTime? ToDateTime(string input)
@@ -86,7 +59,7 @@ namespace WitsmlExplorer.Api.Services
         public static string ToUniversalDateTimeString(string input)
         {
             DateTime? dateTime = ToDateTime(input);
-            return dateTime.HasValue ? dateTime.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") : null;
+            return dateTime?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
         }
 
         public static decimal ToDecimal(string input)

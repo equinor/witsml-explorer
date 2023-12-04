@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Query
                     Name = mudLog.Name,
                     NameWellbore = mudLog.WellboreName,
                     NameWell = mudLog.WellName,
-                    ObjectGrowing = StringHelpers.OptionalBooleanToString(mudLog.ObjectGrowing),
+                    ObjectGrowing = StringHelpers.NullableBooleanToString(mudLog.ObjectGrowing),
                     MudLogCompany = mudLog.MudLogCompany,
                     MudLogEngineers = mudLog.MudLogEngineers,
                     StartMd = mudLog.StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
@@ -92,7 +92,7 @@ namespace WitsmlExplorer.Api.Query
                         ItemState = mudLog.CommonData.ItemState,
                         SourceName = mudLog.CommonData.SourceName
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -123,7 +123,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Uid = uid
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -164,7 +164,7 @@ namespace WitsmlExplorer.Api.Query
                             }).ToList()
                         }
                     },
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

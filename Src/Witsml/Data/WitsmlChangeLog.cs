@@ -11,7 +11,7 @@ namespace Witsml.Data
         {
             return new WitsmlChangeLogs()
             {
-                ChangeLogs = this.AsSingletonList()
+                ChangeLogs = this.AsItemInList()
             };
         }
 

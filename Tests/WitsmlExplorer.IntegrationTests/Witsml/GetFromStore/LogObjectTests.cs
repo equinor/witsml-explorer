@@ -97,7 +97,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
                     UidWell = UidWellDepth,
                     UidWellbore = UidWellboreDepth
 
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             var result = await _client.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));

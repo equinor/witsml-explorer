@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Models
                 DTimEndOp = StringHelpers.ToUniversalDateTimeString(DTimEndOp),
                 EmailAddress = EmailAddress,
                 FaxNumber = FaxNumber,
-                IsOffshore = StringHelpers.OptionalBooleanToString(IsOffshore),
+                IsOffshore = StringHelpers.NullableBooleanToString(IsOffshore),
                 Manufacturer = Manufacturer,
                 NameContact = NameContact,
                 Owner = Owner,
@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Models
                 TypeRig = TypeRig,
                 YearEntService = YearEntService,
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

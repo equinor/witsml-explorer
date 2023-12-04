@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         ItemState = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimEndOp = StringHelpers.ToUniversalDateTimeString(rig.DTimEndOp),
                     EmailAddress = rig.EmailAddress.NullIfEmpty(),
                     FaxNumber = rig.FaxNumber.NullIfEmpty(),
-                    IsOffshore = StringHelpers.OptionalBooleanToString(rig.IsOffshore),
+                    IsOffshore = StringHelpers.NullableBooleanToString(rig.IsOffshore),
                     Manufacturer = rig.Manufacturer.NullIfEmpty(),
                     NameContact = rig.NameContact.NullIfEmpty(),
                     RatingDrillDepth = rig.RatingDrillDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = rig.RatingDrillDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
@@ -99,7 +99,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = null,
                         ItemState = rig.CommonData.ItemState,
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

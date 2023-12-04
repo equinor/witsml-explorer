@@ -190,7 +190,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             o.UidWellbore = "";
             o.Uid = "";
             o.Name = "";
-            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsItemInWitsmlList();
 
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
@@ -226,7 +226,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Name = "",
                 ServiceCompany = "myCompany"
             };
-            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = log.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
@@ -250,7 +250,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Name = "",
                 ServiceCompany = "myCompany"
             };
-            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = log.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
@@ -271,7 +271,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             o.UidWellbore = "";
             o.Uid = "";
             o.Name = "";
-            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(

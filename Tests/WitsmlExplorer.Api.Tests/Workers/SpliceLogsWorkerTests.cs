@@ -540,7 +540,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                                 UnitList = logs.Logs.First().LogData.UnitList,
                                 Data = dataForCurve.Select(d => new WitsmlData() { Data = d }).ToList()
                             }
-                        }.AsSingletonList()
+                        }.AsItemInList()
                     };
                     return Task.FromResult(newLogData);
                 }

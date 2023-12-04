@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Models
                 NumReport = NumReport,
                 Fluids = Fluids?.Select(fluid => fluid?.ToWitsml())?.ToList(),
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

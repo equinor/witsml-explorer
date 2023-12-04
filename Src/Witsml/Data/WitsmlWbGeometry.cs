@@ -9,11 +9,11 @@ namespace Witsml.Data
 {
     public class WitsmlWbGeometry : WitsmlObjectOnWellbore
     {
-        public override WitsmlWbGeometrys AsSingletonWitsmlList()
+        public override WitsmlWbGeometrys AsItemInWitsmlList()
         {
             return new WitsmlWbGeometrys()
             {
-                WbGeometrys = this.AsSingletonList()
+                WbGeometrys = this.AsItemInList()
             };
         }
 
