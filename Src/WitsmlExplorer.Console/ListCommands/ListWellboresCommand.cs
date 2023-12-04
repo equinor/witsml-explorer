@@ -72,7 +72,7 @@ namespace WitsmlExplorer.Console.ListCommands
                     NameWell = "",
                     NameWellbore = "",
                     ObjectGrowing = "true"
-                }.AsSingletonList()
+                }.AsItemInList()
             };
             WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(liveLogsQuery, new OptionsIn(ReturnElements.Requested));
             var groupedResults = result.Logs

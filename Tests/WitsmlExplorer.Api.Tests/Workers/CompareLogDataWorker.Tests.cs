@@ -730,7 +730,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                                 UnitList = logs.Logs.First().LogData.UnitList,
                                 Data = dataForCurve.Select(d => new WitsmlData() { Data = d }).ToList()
                             }
-                        }.AsSingletonList()
+                        }.AsItemInList()
                     };
                     return Task.FromResult(newLogData);
                 }
@@ -783,7 +783,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         UnitList = unitList,
                         Data = GetLogData(log.Data),
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -810,7 +810,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     EndDateTimeIndex = isDepthLog ? null : log.EndIndex,
                     IndexCurve = new WitsmlIndexCurve() { Value = "IndexCurve" },
                     LogCurveInfo = GetLogCurveInfo(log.IndexType, log.StartIndex, log.EndIndex, log.LogCurveInfo)
-                }.AsSingletonList(),
+                }.AsItemInList(),
             };
         }
 

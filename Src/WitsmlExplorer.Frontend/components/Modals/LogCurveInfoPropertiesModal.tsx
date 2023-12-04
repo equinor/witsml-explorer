@@ -16,9 +16,12 @@ export interface LogCurveInfoPropertiesModalProps {
   selectedLog: LogObject;
 }
 
-const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): React.ReactElement => {
+const LogCurveInfoPropertiesModal = (
+  props: LogCurveInfoPropertiesModalProps
+): React.ReactElement => {
   const { logCurveInfo, dispatchOperation, selectedLog } = props;
-  const [editableLogCurveInfo, setEditableLogCurveInfo] = useState<LogCurveInfo>(null);
+  const [editableLogCurveInfo, setEditableLogCurveInfo] =
+    useState<LogCurveInfo>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isIndexCurve = logCurveInfo?.mnemonic === selectedLog?.indexCurve;
 
@@ -44,13 +47,23 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
           heading={`Edit properties for LogCurve: ${editableLogCurveInfo.mnemonic}`}
           content={
             <Layout>
-              <TextField disabled id="uid" label="uid" defaultValue={editableLogCurveInfo.uid} fullWidth />
+              <TextField
+                disabled
+                id="uid"
+                label="uid"
+                defaultValue={editableLogCurveInfo.uid}
+                fullWidth
+              />
               <TextField
                 id="mnemonic"
                 label="mnemonic"
                 defaultValue={editableLogCurveInfo.mnemonic}
                 error={editableLogCurveInfo.mnemonic.length === 0}
-                helperText={editableLogCurveInfo.mnemonic.length === 0 ? "A logCurveInfo mnemonic cannot be empty. Size must be 1 to 64 characters." : ""}
+                helperText={
+                  editableLogCurveInfo.mnemonic.length === 0
+                    ? "A logCurveInfo mnemonic cannot be empty. Size must be 1 to 64 characters."
+                    : ""
+                }
                 fullWidth
                 disabled={isIndexCurve}
                 inputProps={{ minLength: 1, maxLength: 64 }}
@@ -65,8 +78,16 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                 id="unit"
                 label="unit"
                 defaultValue={editableLogCurveInfo.unit}
-                error={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0}
-                helperText={editableLogCurveInfo.unit == null || editableLogCurveInfo.unit.length === 0 ? "A unit cannot be empty. Size must be 1 to 64 characters." : ""}
+                error={
+                  editableLogCurveInfo.unit == null ||
+                  editableLogCurveInfo.unit.length === 0
+                }
+                helperText={
+                  editableLogCurveInfo.unit == null ||
+                  editableLogCurveInfo.unit.length === 0
+                    ? "A unit cannot be empty. Size must be 1 to 64 characters."
+                    : ""
+                }
                 inputProps={{ minLength: 1, maxLength: 64 }}
                 onChange={(e) =>
                   setEditableLogCurveInfo({
@@ -86,15 +107,47 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
                   })
                 }
               />
-              <TextField disabled id="typeLogData" label="typeLogData" defaultValue={editableLogCurveInfo.typeLogData} fullWidth />
-              <TextField disabled id="mnemAlias" label="mnemAlias" defaultValue={editableLogCurveInfo.mnemAlias} fullWidth />
+              <TextField
+                disabled
+                id="typeLogData"
+                label="typeLogData"
+                defaultValue={editableLogCurveInfo.typeLogData}
+                fullWidth
+              />
+              <TextField
+                disabled
+                id="mnemAlias"
+                label="mnemAlias"
+                defaultValue={editableLogCurveInfo.mnemAlias}
+                fullWidth
+              />
               {logCurveInfo?.axisDefinitions?.map((axisDefinition) => {
                 return (
                   <React.Fragment key={axisDefinition.uid}>
-                    <Typography style={{ paddingTop: "0.5rem" }}>AxisDefinition {axisDefinition.uid}</Typography>
-                    <TextField disabled fullWidth id="order" label="order" defaultValue={axisDefinition.order ?? ""} />
-                    <TextField disabled fullWidth id="count" label="count" defaultValue={axisDefinition.count ?? ""} />
-                    <TextField disabled fullWidth id="doubleValues" label="doubleValues" defaultValue={axisDefinition.doubleValues ?? ""} />
+                    <Typography style={{ paddingTop: "0.5rem" }}>
+                      AxisDefinition {axisDefinition.uid}
+                    </Typography>
+                    <TextField
+                      disabled
+                      fullWidth
+                      id="order"
+                      label="order"
+                      defaultValue={axisDefinition.order ?? ""}
+                    />
+                    <TextField
+                      disabled
+                      fullWidth
+                      id="count"
+                      label="count"
+                      defaultValue={axisDefinition.count ?? ""}
+                    />
+                    <TextField
+                      disabled
+                      fullWidth
+                      id="doubleValues"
+                      label="doubleValues"
+                      defaultValue={axisDefinition.doubleValues ?? ""}
+                    />
                   </React.Fragment>
                 );
               })}
@@ -103,7 +156,8 @@ const LogCurveInfoPropertiesModal = (props: LogCurveInfoPropertiesModalProps): R
           confirmDisabled={
             logCurveInfo.mnemonic == editableLogCurveInfo.mnemonic &&
             logCurveInfo.unit == editableLogCurveInfo.unit &&
-            logCurveInfo.curveDescription == editableLogCurveInfo.curveDescription
+            logCurveInfo.curveDescription ==
+              editableLogCurveInfo.curveDescription
           }
           onSubmit={() => onSubmit()}
           isLoading={isLoading}

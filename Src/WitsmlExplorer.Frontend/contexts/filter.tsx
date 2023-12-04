@@ -70,8 +70,11 @@ export const filterTypeToProperty = {
 // Is shown when hovering over the (i) on the option for that type.
 // Return null for types that should not have any description.
 export const getFilterTypeInformation = (filterType: FilterType): string => {
-  const wildCardString = "Use wildcard ? for one unknown character.\nUse wildcard * for x unknown characters.";
-  const onDemandString = `${pluralize(filterType)} will be fetched on demand by typing 'Enter' or clicking the search icon.`;
+  const wildCardString =
+    "Use wildcard ? for one unknown character.\nUse wildcard * for x unknown characters.";
+  const onDemandString = `${pluralize(
+    filterType
+  )} will be fetched on demand by typing 'Enter' or clicking the search icon.`;
   if (isWellFilterType(filterType) || isWellPropertyFilterType(filterType)) {
     return wildCardString;
   } else if (isObjectFilterType(filterType)) {
@@ -80,8 +83,15 @@ export const getFilterTypeInformation = (filterType: FilterType): string => {
   return null;
 };
 
-export type FilterType = WellFilterType | WellPropertyFilterType | ObjectFilterType;
-export const FilterType = { ...WellFilterType, ...WellPropertyFilterType, ...ObjectFilterType };
+export type FilterType =
+  | WellFilterType
+  | WellPropertyFilterType
+  | ObjectFilterType;
+export const FilterType = {
+  ...WellFilterType,
+  ...WellPropertyFilterType,
+  ...ObjectFilterType
+};
 
 export const isWellFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(WellFilterType).includes(filterType);
@@ -95,8 +105,11 @@ export const isObjectFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(ObjectFilterType).includes(filterType);
 };
 
-export const allVisibleObjects: Record<ObjectType, VisibilityStatus> = {} as Record<ObjectType, VisibilityStatus>;
-Object.values(ObjectType).forEach((object) => (allVisibleObjects[object] = VisibilityStatus.Visible));
+export const allVisibleObjects: Record<ObjectType, VisibilityStatus> =
+  {} as Record<ObjectType, VisibilityStatus>;
+Object.values(ObjectType).forEach(
+  (object) => (allVisibleObjects[object] = VisibilityStatus.Visible)
+);
 
 export const EMPTY_FILTER: Filter = {
   name: "",
@@ -113,22 +126,33 @@ interface FilterContextProps {
   updateSelectedFilter: (partialFilter: Partial<Filter>) => void;
 }
 
-export const FilterContext = React.createContext<FilterContextProps>({} as FilterContextProps);
+export const FilterContext = React.createContext<FilterContextProps>(
+  {} as FilterContextProps
+);
 
 export interface FilterContextProviderProps {
   initialFilter?: Partial<Filter>;
   children?: React.ReactNode;
 }
 
-export function FilterContextProvider({ initialFilter, children }: FilterContextProviderProps) {
-  const [selectedFilter, setSelectedFilter] = React.useState<Filter>({ ...EMPTY_FILTER, ...initialFilter });
+export function FilterContextProvider({
+  initialFilter,
+  children
+}: FilterContextProviderProps) {
+  const [selectedFilter, setSelectedFilter] = React.useState<Filter>({
+    ...EMPTY_FILTER,
+    ...initialFilter
+  });
 
-  const updateSelectedFilter = React.useCallback((partialFilter: Partial<Filter>) => {
-    setSelectedFilter((prevFilter) => ({
-      ...prevFilter,
-      ...partialFilter
-    }));
-  }, []);
+  const updateSelectedFilter = React.useCallback(
+    (partialFilter: Partial<Filter>) => {
+      setSelectedFilter((prevFilter) => ({
+        ...prevFilter,
+        ...partialFilter
+      }));
+    },
+    []
+  );
 
   const contextValue: FilterContextProps = React.useMemo(
     () => ({
@@ -138,7 +162,11 @@ export function FilterContextProvider({ initialFilter, children }: FilterContext
     [selectedFilter, updateSelectedFilter]
   );
 
-  return <FilterContext.Provider value={contextValue}>{children}</FilterContext.Provider>;
+  return (
+    <FilterContext.Provider value={contextValue}>
+      {children}
+    </FilterContext.Provider>
+  );
 }
 
 export interface FilterOptions {
@@ -150,17 +178,26 @@ export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
   filterWellbores: false
 };
 
-const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOptions) => {
+const filterOnName = (
+  wells: Well[],
+  filter: Filter,
+  filterOptions: FilterOptions
+) => {
   const { name, filterType, searchResults } = filter;
   const { filterWellbores, dispatchNavigation } = filterOptions;
   const isObjectFilter = isObjectFilterType(filterType);
   const isWellPropertyFilter = isWellPropertyFilterType(filterType);
   const isWellFilter = isWellFilterType(filterType);
-  const property = isObjectFilter ? "searchProperty" : filterTypeToProperty[filterType];
+  const property = isObjectFilter
+    ? "searchProperty"
+    : filterTypeToProperty[filterType];
 
   if (!name) {
     if (filterOptions.dispatchNavigation) {
-      const expandTreeNodes: ExpandTreeNodesAction = { type: NavigationType.ExpandTreeNodes, payload: { nodeIds: [] } };
+      const expandTreeNodes: ExpandTreeNodesAction = {
+        type: NavigationType.ExpandTreeNodes,
+        payload: { nodeIds: [] }
+      };
       dispatchNavigation(expandTreeNodes);
     }
     if (isWellFilter) {
@@ -179,7 +216,9 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
       if (regex.test(wellPropertyValue ? (wellPropertyValue as string) : "")) {
         filteredWells.push(well);
       } else if (filterType === WellFilterType.WellOrWellbore) {
-        const matchingWellbores = well.wellbores.filter((wellbore) => regex.test(wellbore[property as keyof Wellbore] as string));
+        const matchingWellbores = well.wellbores.filter((wellbore) =>
+          regex.test(wellbore[property as keyof Wellbore] as string)
+        );
         if (matchingWellbores.length > 0) {
           filteredWells.push({
             ...well,
@@ -190,14 +229,24 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
       }
     }
   } else if (isObjectFilter) {
-    const filteredObjects = isSitecomSyntax(name) ? searchResults : searchResults.filter((object) => regex.test(object[property as keyof ObjectSearchResult]));
+    const filteredObjects = isSitecomSyntax(name)
+      ? searchResults
+      : searchResults.filter((object) =>
+          regex.test(object[property as keyof ObjectSearchResult])
+        );
     const filteredWellUids = filteredObjects.map((object) => object.wellUid);
-    const filteredWellAndWellboreUids = filteredObjects.map((object) => [object.wellUid, object.wellboreUid].join(","));
+    const filteredWellAndWellboreUids = filteredObjects.map((object) =>
+      [object.wellUid, object.wellboreUid].join(",")
+    );
 
     for (const well of wells) {
       if (filteredWellUids.includes(well.uid)) {
         if (filterWellbores) {
-          const filteredWellbores = well.wellbores.filter((wellbore) => filteredWellAndWellboreUids.includes([well.uid, wellbore.uid].join(",")));
+          const filteredWellbores = well.wellbores.filter((wellbore) =>
+            filteredWellAndWellboreUids.includes(
+              [well.uid, wellbore.uid].join(",")
+            )
+          );
           filteredWells.push({
             ...well,
             wellbores: filteredWellbores
@@ -210,7 +259,10 @@ const filterOnName = (wells: Well[], filter: Filter, filterOptions: FilterOption
   }
 
   if (filterOptions.dispatchNavigation) {
-    const expandTreeNodes: ExpandTreeNodesAction = { type: NavigationType.ExpandTreeNodes, payload: { nodeIds: treeNodesToExpand } };
+    const expandTreeNodes: ExpandTreeNodesAction = {
+      type: NavigationType.ExpandTreeNodes,
+      payload: { nodeIds: treeNodesToExpand }
+    };
     dispatchNavigation(expandTreeNodes);
   }
 
@@ -237,9 +289,14 @@ export const getSearchRegex = (str: string): RegExp => {
 function filterOnIsActive(wells: Well[], filterOnIsActive: boolean) {
   if (!filterOnIsActive) return wells;
 
-  wells = wells.filter((well: Well) => well.wellbores.some((wellbore) => wellbore.isActive));
+  wells = wells.filter((well: Well) =>
+    well.wellbores.some((wellbore) => wellbore.isActive)
+  );
   return wells.map((well) => {
-    return { ...well, wellbores: [...well.wellbores.filter((wellbore) => wellbore.isActive)] };
+    return {
+      ...well,
+      wellbores: [...well.wellbores.filter((wellbore) => wellbore.isActive)]
+    };
   });
 }
 
@@ -253,7 +310,13 @@ function filterOnObjectGrowing(wells: Well[], filterOnObjectGrowing: boolean) {
         ...well.wellbores.map((wellbore) => {
           return {
             ...wellbore,
-            logs: wellbore.logs ? [...wellbore.logs.filter((logObject) => logObject.objectGrowing)] : wellbore.logs
+            logs: wellbore.logs
+              ? [
+                  ...wellbore.logs.filter(
+                    (logObject) => logObject.objectGrowing
+                  )
+                ]
+              : wellbore.logs
           };
         })
       ]
@@ -265,7 +328,11 @@ function filterOnWellLimit(wells: Well[], wellLimit: number) {
   return wellLimit && wellLimit > 0 ? wells.slice(0, wellLimit) : wells;
 }
 
-export const filterWells = (wells: Well[], filter: Filter, filterOptions: FilterOptions): Well[] => {
+export const filterWells = (
+  wells: Well[],
+  filter: Filter,
+  filterOptions: FilterOptions
+): Well[] => {
   let filteredWells: Well[] = wells;
 
   if (filter) {
@@ -288,14 +355,23 @@ export const filterWells = (wells: Well[], filter: Filter, filterOptions: Filter
  *                  - dispatchNavigation: A function to dispatch an action to expand tree nodes every time the filter changes (optional).
  * @returns The filtered array of wells based on the provided filter criteria.
  */
-export const useWellFilter = (wells: Well[], options?: FilterOptions): Well[] => {
+export const useWellFilter = (
+  wells: Well[],
+  options?: FilterOptions
+): Well[] => {
   const { selectedFilter } = React.useContext(FilterContext);
   const [filteredWells, setFilteredWells] = React.useState<Well[]>([]);
-  let filterOptions = React.useMemo(() => ({ ...DEFAULT_FILTER_OPTIONS, ...options }), [options]);
+  let filterOptions = React.useMemo(
+    () => ({ ...DEFAULT_FILTER_OPTIONS, ...options }),
+    [options]
+  );
   const prevFilter = React.useRef<Filter>(selectedFilter);
 
   React.useEffect(() => {
-    if (prevFilter.current.filterType === selectedFilter.filterType && prevFilter.current.name == selectedFilter.name) {
+    if (
+      prevFilter.current.filterType === selectedFilter.filterType &&
+      prevFilter.current.name == selectedFilter.name
+    ) {
       // Treenodes should only toggle expand state if the filter type or name has changed
       filterOptions = { ...filterOptions, dispatchNavigation: null };
     }

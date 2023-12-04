@@ -7,11 +7,11 @@ namespace Witsml.Data
 {
     public class WitsmlLog : WitsmlObjectOnWellbore
     {
-        public override WitsmlLogs AsSingletonWitsmlList()
+        public override WitsmlLogs AsItemInWitsmlList()
         {
             return new WitsmlLogs()
             {
-                Logs = this.AsSingletonList()
+                Logs = this.AsItemInList()
             };
         }
 

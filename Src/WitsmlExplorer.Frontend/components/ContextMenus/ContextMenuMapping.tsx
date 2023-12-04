@@ -12,7 +12,10 @@ import TrajectoryContextMenu from "./TrajectoryContextMenu";
 import TubularContextMenu from "./TubularContextMenu";
 import WbGeometryObjectContextMenu from "./WbGeometryContextMenu";
 
-export const ObjectTypeToContextMenu: Record<ObjectType, React.ComponentType<ObjectContextMenuProps> | null> = {
+export const ObjectTypeToContextMenu: Record<
+  ObjectType,
+  React.ComponentType<ObjectContextMenuProps> | null
+> = {
   [ObjectType.BhaRun]: BhaRunContextMenu,
   [ObjectType.ChangeLog]: null,
   [ObjectType.FluidsReport]: FluidsReportContextMenu,

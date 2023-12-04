@@ -10,7 +10,11 @@ const WellProgress = ({ children }: Props): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);
   const { wells, selectedServer } = navigationState;
   const showIndicator = wells?.length == 0 && selectedServer != null;
-  return showIndicator ? <ProgressSpinner message="Fetching wells. This may take some time." /> : children;
+  return showIndicator ? (
+    <ProgressSpinner message="Fetching wells. This may take some time." />
+  ) : (
+    children
+  );
 };
 
 export default WellProgress;

@@ -16,7 +16,10 @@ export const useOpenInQueryView = () => {
   const openInQueryView = useCallback(
     (templatePreset: QueryTemplatePreset) => {
       dispatchOperation({ type: OperationType.HideContextMenu });
-      dispatchQuery({ type: QueryActionType.SetFromTemplatePreset, templatePreset });
+      dispatchQuery({
+        type: QueryActionType.SetFromTemplatePreset,
+        templatePreset
+      });
       dispatchNavigation({ type: NavigationType.SelectQueryView, payload: {} });
     },
     [dispatchOperation, dispatchQuery, dispatchNavigation]

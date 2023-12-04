@@ -19,6 +19,8 @@ namespace WitsmlExplorer.Api.Configuration
 {
     public static class Dependencies
     {
+        private const string MissingDatabaseConfigMessage = "Did not detect any configuration for database";
+
         public static void ConfigureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
@@ -55,8 +57,8 @@ namespace WitsmlExplorer.Api.Configuration
             }
             else
             {
-                Log.Error("Did not detect any configuration for database");
-                return;
+                Log.Error(MissingDatabaseConfigMessage);
+                throw new ApplicationException(MissingDatabaseConfigMessage);
             }
 
         }

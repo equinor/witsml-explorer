@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
                     CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "" }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = trajectoryUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -84,12 +84,12 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Uid = uid
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
         /// <summary>
-        /// Create trajectories witsml model. 
+        /// Create trajectories witsml model.
         /// </summary>
         /// <param name="trajectory">API model of trajectory data.</param>
         /// <returns>New instance of WitsmlTrajectories model with added trajectory data.</returns>
@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Query
                     DTimTrajStart = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajStart),
                     DTimTrajEnd = StringHelpers.ToUniversalDateTimeString(trajectory.DTimTrajEnd),
                     CommonData = string.IsNullOrEmpty(trajectory.CommonData?.SourceName) ? null : new WitsmlCommonData() { SourceName = trajectory.CommonData.SourceName }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -150,8 +150,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = trajectoryReference.WellUid,
                     UidWellbore = trajectoryReference.WellboreUid,
                     Uid = trajectoryReference.Uid,
-                    TrajectoryStations = ts.AsSingletonList()
-                }.AsSingletonList()
+                    TrajectoryStations = ts.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

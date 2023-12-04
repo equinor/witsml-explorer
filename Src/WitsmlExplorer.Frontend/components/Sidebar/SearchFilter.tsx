@@ -1,4 +1,10 @@
-import { Button, DotProgress, EdsProvider, Icon, Typography } from "@equinor/eds-core-react";
+import {
+  Button,
+  DotProgress,
+  EdsProvider,
+  Icon,
+  Typography
+} from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled, { CSSProp } from "styled-components";
@@ -24,7 +30,9 @@ import ObjectService from "../../services/objectService";
 import { Colors } from "../../styles/Colors";
 import Icons from "../../styles/Icons";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import OptionsContextMenu, { OptionsContextMenuProps } from "../ContextMenus/OptionsContextMenu";
+import OptionsContextMenu, {
+  OptionsContextMenuProps
+} from "../ContextMenus/OptionsContextMenu";
 import ConfirmModal from "../Modals/ConfirmModal";
 import FilterPanel from "./FilterPanel";
 
@@ -36,21 +44,34 @@ const SearchFilter = (): React.ReactElement => {
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { navigationState } = useContext(NavigationContext);
   const { selectedServer } = navigationState;
-  const [selectedOption, setSelectedOption] = useState<FilterType>(selectedFilter.filterType);
+  const [selectedOption, setSelectedOption] = useState<FilterType>(
+    selectedFilter.filterType
+  );
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [genericSearchResults, setGenericSearchResults] = useState<boolean>(false);
+  const [genericSearchResults, setGenericSearchResults] =
+    useState<boolean>(false);
   const textFieldRef = useRef<HTMLInputElement>(null);
 
-  const FilterPopup: CSSProp = { zIndex: 10, position: "absolute", width: "inherit", top: "6.3rem", minWidth: "174px", paddingRight: "0.1em" };
+  const FilterPopup: CSSProp = {
+    zIndex: 10,
+    position: "absolute",
+    width: "inherit",
+    top: "6.3rem",
+    minWidth: "174px",
+    paddingRight: "0.1em"
+  };
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
-      if (nameFilter !== selectedFilter.name && !isObjectFilterType(selectedOption)) {
+      if (
+        nameFilter !== selectedFilter.name &&
+        !isObjectFilterType(selectedOption)
+      ) {
         updateSelectedFilter({ name: nameFilter });
       }
     }, 400);
@@ -68,12 +89,21 @@ const SearchFilter = (): React.ReactElement => {
 
     const searchResults: ObjectSearchResult[] = [];
     const errors: Error[] = [];
-    const objectTypes = objectFilterTypeToObjects[selectedOption as ObjectFilterType];
+    const objectTypes =
+      objectFilterTypeToObjects[selectedOption as ObjectFilterType];
     const objectPromises = objectTypes.map(async (objectType) => {
       try {
         const objects = fetchAllObjects
-          ? await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], "")
-          : await ObjectService.getObjectsWithParamByType(objectType as ObjectType, filterTypeToProperty[selectedOption], nameFilter);
+          ? await ObjectService.getObjectsWithParamByType(
+              objectType as ObjectType,
+              filterTypeToProperty[selectedOption],
+              ""
+            )
+          : await ObjectService.getObjectsWithParamByType(
+              objectType as ObjectType,
+              filterTypeToProperty[selectedOption],
+              nameFilter
+            );
         searchResults.push(...objects);
       } catch (error) {
         errors.push(error);
@@ -81,7 +111,11 @@ const SearchFilter = (): React.ReactElement => {
     });
     await Promise.all(objectPromises);
     if (errors.length > 0) {
-      if (errors.every((e) => e.message.includes("The server does not support to select"))) {
+      if (
+        errors.every((e) =>
+          e.message.includes("The server does not support to select")
+        )
+      ) {
         showWarning(
           `${errors.join(
             "\n"
@@ -97,7 +131,11 @@ const SearchFilter = (): React.ReactElement => {
       }
     }
     if (errors.length !== objectTypes.length) {
-      updateSelectedFilter({ name: nameFilter, filterType: selectedOption, searchResults });
+      updateSelectedFilter({
+        name: nameFilter,
+        filterType: selectedOption,
+        searchResults
+      });
       setGenericSearchResults(fetchAllObjects);
     }
     setIsLoading(false);
@@ -111,7 +149,9 @@ const SearchFilter = (): React.ReactElement => {
         if (!genericSearchResults) {
           const fetchAllObjects = /^$|[*?]/.test(nameFilter);
           if (fetchAllObjects) {
-            showWarning(`The given search will fetch all ${getListedObjects()}. This might take some time.\n\nDo you still want to proceed?`);
+            showWarning(
+              `The given search will fetch all ${getListedObjects()}. This might take some time.\n\nDo you still want to proceed?`
+            );
             return;
           }
           await fetchObjects(false);
@@ -123,7 +163,9 @@ const SearchFilter = (): React.ReactElement => {
 
   const getListedObjects = (): string => {
     const lf = new Intl.ListFormat("en-US");
-    const pluralizedObjectTypes = objectFilterTypeToObjects[selectedOption as ObjectFilterType].map((o) => pluralize(o));
+    const pluralizedObjectTypes = objectFilterTypeToObjects[
+      selectedOption as ObjectFilterType
+    ].map((o) => pluralize(o));
     return lf.format(pluralizedObjectTypes);
   };
 
@@ -132,7 +174,9 @@ const SearchFilter = (): React.ReactElement => {
     const confirmation = (
       <ConfirmModal
         heading={"Warning: Seach might be slow!"}
-        content={<Typography style={{ whiteSpace: "pre-line" }}>{warning}</Typography>}
+        content={
+          <Typography style={{ whiteSpace: "pre-line" }}>{warning}</Typography>
+        }
         onConfirm={() => {
           dispatchOperation({ type: OperationType.HideModal });
           fetchObjects(true).then(() => openSearchView(selectedOption));
@@ -141,21 +185,34 @@ const SearchFilter = (): React.ReactElement => {
         switchButtonPlaces={true}
       />
     );
-    dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   const openSearchView = (option: FilterType) => {
     if (isWellFilterType(option) || isWellPropertyFilterType(option)) {
-      dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
+      dispatchNavigation({
+        type: NavigationType.SelectServer,
+        payload: { server: selectedServer }
+      });
     }
     if (isObjectFilterType(option)) {
-      dispatchNavigation({ type: NavigationType.SelectObjectOnWellboreView, payload: {} });
+      dispatchNavigation({
+        type: NavigationType.SelectObjectOnWellboreView,
+        payload: {}
+      });
     }
   };
 
   const handleOptionChange = async (newValue: FilterType) => {
     setSelectedOption(newValue);
-    updateSelectedFilter({ name: nameFilter, filterType: newValue, searchResults: [] });
+    updateSelectedFilter({
+      name: nameFilter,
+      filterType: newValue,
+      searchResults: []
+    });
     setGenericSearchResults(false);
     openSearchView(newValue);
   };
@@ -172,7 +229,13 @@ const SearchFilter = (): React.ReactElement => {
       mouseY: textFieldRect?.bottom ?? 0,
       mouseX: textFieldRect?.left ?? 0
     };
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <OptionsContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <OptionsContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   return (
@@ -194,21 +257,50 @@ const SearchFilter = (): React.ReactElement => {
               InputProps={{
                 startAdornment: (
                   <SearchIconLayout>
-                    <Button variant="ghost_icon" disabled={!selectedServer || isLoading} onClick={openOptions} aria-label="Show Search Options">
-                      <Icon name={"chevronDown"} color={colors.interactive.primaryResting} />
+                    <Button
+                      variant="ghost_icon"
+                      disabled={!selectedServer || isLoading}
+                      onClick={openOptions}
+                      aria-label="Show Search Options"
+                    >
+                      <Icon
+                        name={"chevronDown"}
+                        color={colors.interactive.primaryResting}
+                      />
                     </Button>
-                    {isLoading && <DotProgress color={"primary"} size={32} aria-label="Loading Options" />}
+                    {isLoading && (
+                      <DotProgress
+                        color={"primary"}
+                        size={32}
+                        aria-label="Loading Options"
+                      />
+                    )}
                   </SearchIconLayout>
                 ),
                 endAdornment: (
                   <SearchIconLayout>
                     {nameFilter && (
-                      <Button variant="ghost_icon" onClick={() => setNameFilter("")} aria-label="Clear">
-                        <Icon name={"clear"} color={colors.interactive.primaryResting} size={18} />
+                      <Button
+                        variant="ghost_icon"
+                        onClick={() => setNameFilter("")}
+                        aria-label="Clear"
+                      >
+                        <Icon
+                          name={"clear"}
+                          color={colors.interactive.primaryResting}
+                          size={18}
+                        />
                       </Button>
                     )}
-                    <Button variant="ghost_icon" onClick={handleSearch} aria-label="Search">
-                      <Icon name="search" color={colors.interactive.primaryResting} />
+                    <Button
+                      variant="ghost_icon"
+                      onClick={handleSearch}
+                      aria-label="Search"
+                    >
+                      <Icon
+                        name="search"
+                        color={colors.interactive.primaryResting}
+                      />
                     </Button>
                   </SearchIconLayout>
                 ),

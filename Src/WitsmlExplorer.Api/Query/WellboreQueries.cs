@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     Name = "",
                     NameWell = ""
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -137,7 +137,7 @@ namespace WitsmlExplorer.Api.Query
 
             return new WitsmlWellbores
             {
-                Wellbores = witsmlWellbore.AsSingletonList()
+                Wellbores = witsmlWellbore.AsItemInList()
             };
         }
 
@@ -159,7 +159,7 @@ namespace WitsmlExplorer.Api.Query
                         },
                         PurposeWellbore = wellbore.WellborePurpose
 
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 }
                 : new WitsmlWellbores
                 {
@@ -170,7 +170,7 @@ namespace WitsmlExplorer.Api.Query
                         UidWell = wellbore.WellUid,
                         NameWell = wellbore.WellName,
                         PurposeWellbore = wellbore.WellborePurpose
-                    }.AsSingletonList()
+                    }.AsItemInList()
                 };
         }
 
@@ -182,7 +182,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     Uid = wellboreUid,
                     UidWell = wellUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

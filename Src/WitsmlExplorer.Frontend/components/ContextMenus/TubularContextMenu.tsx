@@ -17,17 +17,28 @@ import { pasteComponents } from "./CopyUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 
-const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const TubularContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const tubularComponentReferences = useClipboardComponentReferencesOfType(ComponentType.TubularComponent);
+  const tubularComponentReferences = useClipboardComponentReferencesOfType(
+    ComponentType.TubularComponent
+  );
   const openInQueryView = useOpenInQueryView();
 
   const onClickProperties = async () => {
-    const tubularPropertiesModalProps = { mode: PropertiesModalMode.Edit, tubular: checkedObjects[0] as Tubular, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularPropertiesModal {...tubularPropertiesModalProps} /> });
+    const tubularPropertiesModalProps = {
+      mode: PropertiesModalMode.Edit,
+      tubular: checkedObjects[0] as Tubular,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <TubularPropertiesModal {...tubularPropertiesModalProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -35,14 +46,33 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
     return [
       <MenuItem
         key={"paste"}
-        onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, checkedObjects[0])}
-        disabled={tubularComponentReferences === null || checkedObjects.length !== 1}
+        onClick={() =>
+          pasteComponents(
+            servers,
+            tubularComponentReferences,
+            dispatchOperation,
+            checkedObjects[0]
+          )
+        }
+        disabled={
+          tubularComponentReferences === null || checkedObjects.length !== 1
+        }
       >
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
+        <Typography color={"primary"}>
+          {menuItemText(
+            "paste",
+            "tubular component",
+            tubularComponentReferences?.componentUids
+          )}
+        </Typography>
       </MenuItem>,
       <Divider key={"divider"} />,
-      <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedObjects.length !== 1}>
+      <MenuItem
+        key={"properties"}
+        onClick={onClickProperties}
+        disabled={checkedObjects.length !== 1}
+      >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Properties</Typography>
       </MenuItem>
@@ -51,7 +81,18 @@ const TubularContextMenu = (props: ObjectContextMenuProps): React.ReactElement =
 
   return (
     <ContextMenu
-      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Tubular, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
+      menuItems={[
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.Tubular,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore,
+          extraMenuItems()
+        )
+      ]}
     />
   );
 };

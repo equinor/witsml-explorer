@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     Uid = tubularUid,
                     Name = tubular.Name,
                     TypeTubularAssy = tubular.TypeTubularAssy
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 

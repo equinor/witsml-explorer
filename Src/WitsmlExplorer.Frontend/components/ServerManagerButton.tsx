@@ -11,7 +11,9 @@ export interface ServerManagerButtonProps {
   showLabels: boolean;
 }
 
-const ServerManagerButton = (props: ServerManagerButtonProps): React.ReactElement => {
+const ServerManagerButton = (
+  props: ServerManagerButtonProps
+): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, wells } = navigationState;
   const {
@@ -19,12 +21,19 @@ const ServerManagerButton = (props: ServerManagerButtonProps): React.ReactElemen
   } = useContext(OperationContext);
 
   const onClick = () => {
-    dispatchNavigation({ type: NavigationType.SelectServerManager, payload: {} });
+    dispatchNavigation({
+      type: NavigationType.SelectServerManager,
+      payload: {}
+    });
   };
 
   const connected = selectedServer && wells.length;
   return (
-    <StyledButton colors={colors} variant={props.showLabels ? "ghost" : "ghost_icon"} onClick={onClick}>
+    <StyledButton
+      colors={colors}
+      variant={props.showLabels ? "ghost" : "ghost_icon"}
+      onClick={onClick}
+    >
       <Icon name={connected ? "cloudDownload" : "cloudOff"} />
       {props.showLabels && (connected ? "Server Connections" : "No Connection")}
     </StyledButton>

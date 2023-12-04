@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects?.FirstOrDefault(), _componentType, job.Target, toCopyUids);
-            QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsSingletonWitsmlList());
+            QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsItemInWitsmlList());
             if (!copyResult.IsSuccessful)
             {
                 return LogErrorAndReturnResult(copyResult.Reason);

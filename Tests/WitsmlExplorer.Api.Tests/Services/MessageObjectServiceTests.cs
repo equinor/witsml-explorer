@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                         DTimLastChange = dTimLastChange,
                         Comments = comments
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
             _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlMessages>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested)))

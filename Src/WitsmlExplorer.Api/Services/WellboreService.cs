@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Services
                     SuffixAPI = witsmlWellbore.SuffixAPI,
                     NumGovt = witsmlWellbore.NumGovt,
                     WellStatus = witsmlWellbore.StatusWellbore,
-                    IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
+                    IsActive = StringHelpers.ToBoolean(witsmlWellbore.IsActive),
                     WellborePurpose = witsmlWellbore.PurposeWellbore,
                     WellboreParentUid = witsmlWellbore.ParentWellbore?.UidRef,
                     WellboreParentName = witsmlWellbore.ParentWellbore?.Value,
@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Services
                             WellName = witsmlWellbore.NameWell,
                             WellStatus = witsmlWellbore.StatusWellbore,
                             WellType = witsmlWellbore.TypeWellbore,
-                            IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
+                            IsActive = StringHelpers.ToBoolean(witsmlWellbore.IsActive),
                             DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
                             DateTimeCreation = witsmlWellbore.CommonData.DTimCreation
                         })

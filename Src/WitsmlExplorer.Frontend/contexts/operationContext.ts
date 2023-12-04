@@ -6,5 +6,7 @@ export interface OperationContextProps {
   dispatchOperation: (action: OperationAction) => void;
 }
 
-const OperationContext = createContext<OperationContextProps>({} as OperationContextProps);
+const OperationContext = createContext<OperationContextProps>(
+  {} as OperationContextProps
+);
 export default OperationContext;

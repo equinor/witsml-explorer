@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             ICollection<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
-            List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsSingletonWitsmlList())).ToList();
+            List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsItemInWitsmlList())).ToList();
 
             Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
             ICollection<QueryResult> results = await copyLogTasksResult;
