@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Query
                         Comments = "",
                         DefaultDatum = "",
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -107,7 +107,7 @@ namespace WitsmlExplorer.Api.Query
                         Comments = bhaRun.CommonData.Comments,
                         DefaultDatum = bhaRun.CommonData.DefaultDatum,
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

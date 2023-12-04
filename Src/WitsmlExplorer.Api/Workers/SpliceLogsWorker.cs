@@ -134,7 +134,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             WitsmlLogs query = new()
             {
-                Logs = newLogHeader.AsSingletonList()
+                Logs = newLogHeader.AsItemInList()
             };
             QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(query);
             if (!result.IsSuccessful) throw new ArgumentException($"Could not create log. {result.Reason}");

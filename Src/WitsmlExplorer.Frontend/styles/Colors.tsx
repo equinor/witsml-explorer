@@ -14,8 +14,10 @@ export const light: Colors = {
     primaryHover: tokens.colors.interactive.primary__hover.hex,
     primaryResting: tokens.colors.interactive.primary__resting.hex,
     successResting: tokens.colors.interactive.success__resting.hex,
-    tableHeaderFillResting: tokens.colors.interactive.table__header__fill_resting.hex,
-    tableCellFillActivated: tokens.colors.interactive.table__cell__fill_activated.hex,
+    tableHeaderFillResting:
+      tokens.colors.interactive.table__header__fill_resting.hex,
+    tableCellFillActivated:
+      tokens.colors.interactive.table__cell__fill_activated.hex,
     successHover: tokens.colors.interactive.success__hover.hex,
     sidebarDivider: tokens.colors.interactive.primary__resting.hex,
     checkBoxHover: "",

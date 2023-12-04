@@ -1,10 +1,15 @@
 import { Server } from "../models/server";
 import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
 
-import AuthorizationService, { AuthorizationStatus } from "./authorizationService";
+import AuthorizationService, {
+  AuthorizationStatus
+} from "./authorizationService";
 
 export class ApiClient {
-  private static async getCommonHeaders(targetServer: Server = undefined, sourceServer: Server = undefined): Promise<HeadersInit> {
+  private static async getCommonHeaders(
+    targetServer: Server = undefined,
+    sourceServer: Server = undefined
+  ): Promise<HeadersInit> {
     const authorizationHeader = await ApiClient.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
@@ -26,13 +31,19 @@ export class ApiClient {
 
   public static async getAuthorizationHeader(): Promise<string | null> {
     if (msalEnabled) {
-      const token = await getAccessToken([`${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`]);
+      const token = await getAccessToken([
+        `${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`
+      ]);
       return `Bearer ${token}`;
     }
     return null;
   }
 
-  public static async get(pathName: string, abortSignal: AbortSignal | null = null, server = AuthorizationService.selectedServer): Promise<Response> {
+  public static async get(
+    pathName: string,
+    abortSignal: AbortSignal | null = null,
+    server = AuthorizationService.selectedServer
+  ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       headers: await ApiClient.getCommonHeaders(server),
@@ -56,10 +67,19 @@ export class ApiClient {
       headers: await ApiClient.getCommonHeaders(targetServer, sourceServer),
       credentials: "include"
     };
-    return ApiClient.runHttpRequest(pathName, requestInit, targetServer, sourceServer);
+    return ApiClient.runHttpRequest(
+      pathName,
+      requestInit,
+      targetServer,
+      sourceServer
+    );
   }
 
-  public static async patch(pathName: string, body: string, abortSignal: AbortSignal | null = null): Promise<Response> {
+  public static async patch(
+    pathName: string,
+    body: string,
+    abortSignal: AbortSignal | null = null
+  ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       method: "PATCH",
@@ -71,7 +91,10 @@ export class ApiClient {
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  public static async delete(pathName: string, abortSignal: AbortSignal | null = null): Promise<Response> {
+  public static async delete(
+    pathName: string,
+    abortSignal: AbortSignal | null = null
+  ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       method: "DELETE",
@@ -82,7 +105,13 @@ export class ApiClient {
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  public static runHttpRequest(pathName: string, requestInit: RequestInit, targetServer: Server = undefined, sourceServer: Server = undefined, rerun = true) {
+  public static runHttpRequest(
+    pathName: string,
+    requestInit: RequestInit,
+    targetServer: Server = undefined,
+    sourceServer: Server = undefined,
+    rerun = true
+  ) {
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled) {
@@ -90,7 +119,15 @@ export class ApiClient {
         }
       }
       const url = new URL(getBasePathName() + pathName, getBaseUrl());
-      this.fetchWithRerun(url, requestInit, targetServer, sourceServer, rerun, resolve, reject);
+      this.fetchWithRerun(
+        url,
+        requestInit,
+        targetServer,
+        sourceServer,
+        rerun,
+        resolve,
+        reject
+      );
     });
   }
 
@@ -106,7 +143,15 @@ export class ApiClient {
     fetch(url.toString(), requestInit)
       .then((response) => {
         if (response.status == 401 && rerun) {
-          this.handleUnauthorized(url, requestInit, targetServer, sourceServer, response, resolve, reject);
+          this.handleUnauthorized(
+            url,
+            requestInit,
+            targetServer,
+            sourceServer,
+            response,
+            resolve,
+            reject
+          );
         } else {
           resolve(response);
         }
@@ -141,20 +186,41 @@ export class ApiClient {
       resolve(originalResponse);
       return;
     }
-    const unsub = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
-      if (authorizationState.status == AuthorizationStatus.Cancel) {
-        unsub();
-        resolve(originalResponse);
-      } else if (authorizationState.status == AuthorizationStatus.Authorized && authorizationState.server.id == serverToAuthorize.id) {
-        unsub();
-        const updatedTargetServer = server == "Target" ? authorizationState.server : targetServer;
-        const updatedSourceServer = server == "Source" ? authorizationState.server : sourceServer;
-        // recalculate headers because the usernames might have changed
-        requestInit.headers = await ApiClient.getCommonHeaders(updatedTargetServer, updatedSourceServer);
-        this.fetchWithRerun(url, requestInit, updatedTargetServer, updatedSourceServer, true, resolve, reject);
+    const unsub = AuthorizationService.onAuthorizationChangeEvent.subscribe(
+      async (authorizationState) => {
+        if (authorizationState.status == AuthorizationStatus.Cancel) {
+          unsub();
+          resolve(originalResponse);
+        } else if (
+          authorizationState.status == AuthorizationStatus.Authorized &&
+          authorizationState.server.id == serverToAuthorize.id
+        ) {
+          unsub();
+          const updatedTargetServer =
+            server == "Target" ? authorizationState.server : targetServer;
+          const updatedSourceServer =
+            server == "Source" ? authorizationState.server : sourceServer;
+          // recalculate headers because the usernames might have changed
+          requestInit.headers = await ApiClient.getCommonHeaders(
+            updatedTargetServer,
+            updatedSourceServer
+          );
+          this.fetchWithRerun(
+            url,
+            requestInit,
+            updatedTargetServer,
+            updatedSourceServer,
+            true,
+            resolve,
+            reject
+          );
+        }
       }
+    );
+    AuthorizationService.onAuthorizationChangeDispatch({
+      server: serverToAuthorize,
+      status: AuthorizationStatus.Unauthorized
     });
-    AuthorizationService.onAuthorizationChangeDispatch({ server: serverToAuthorize, status: AuthorizationStatus.Unauthorized });
   }
 }
 

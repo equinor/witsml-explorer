@@ -1,4 +1,10 @@
-import { ContextMenu, OperationState, reducer, TimeZone, UserTheme } from "../operationStateReducer";
+import {
+  ContextMenu,
+  OperationState,
+  reducer,
+  TimeZone,
+  UserTheme
+} from "../operationStateReducer";
 import OperationType from "../operationType";
 
 it("Should set context menu", () => {
@@ -45,7 +51,10 @@ it("Should display properties modal and hide context menu", () => {
   });
 });
 
-const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+const EMPTY_CONTEXT_MENU: ContextMenu = {
+  component: null,
+  position: { mouseX: null, mouseY: null }
+};
 const getEmptyState = (): OperationState => {
   return {
     contextMenu: EMPTY_CONTEXT_MENU,

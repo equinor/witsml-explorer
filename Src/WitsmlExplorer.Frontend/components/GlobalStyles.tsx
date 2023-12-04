@@ -142,7 +142,8 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     }
     li:hover {
      text-decoration: none;
-     background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
+     background-color: ${(props) =>
+       props.colors.interactive.contextMenuItemHover};
     }
   }
 

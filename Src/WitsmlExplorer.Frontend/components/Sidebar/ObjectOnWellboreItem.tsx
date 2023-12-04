@@ -5,7 +5,10 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
 import { WellboreItemContext } from "./WellboreItem";
@@ -18,7 +21,9 @@ interface ObjectOnWellboreItemProps {
   ContextMenu: React.ComponentType<ObjectContextMenuProps>;
 }
 
-const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
+const ObjectOnWellboreItem = (
+  props: ObjectOnWellboreItemProps
+): React.ReactElement => {
   const { nodeId, objectOnWellbore, objectType, selected, ContextMenu } = props;
   const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
@@ -26,9 +31,15 @@ const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElem
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: ObjectContextMenuProps = { checkedObjects: [objectOnWellbore], wellbore };
+    const contextMenuProps: ObjectContextMenuProps = {
+      checkedObjects: [objectOnWellbore],
+      wellbore
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <ContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: { component: <ContextMenu {...contextMenuProps} />, position }
+    });
   };
   return (
     <TreeItem
@@ -37,12 +48,25 @@ const ObjectOnWellboreItem = (props: ObjectOnWellboreItemProps): React.ReactElem
       selected={selected}
       onLabelClick={() => {
         if (objectType === ObjectType.Rig) {
-          dispatchNavigation({ type: NavigationType.SelectObjectGroup, payload: { wellUid: well.uid, wellboreUid: wellbore.uid, objectType: objectType, objects: null } });
+          dispatchNavigation({
+            type: NavigationType.SelectObjectGroup,
+            payload: {
+              wellUid: well.uid,
+              wellboreUid: wellbore.uid,
+              objectType: objectType,
+              objects: null
+            }
+          });
         } else {
-          dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: objectOnWellbore, wellbore, well, objectType } });
+          dispatchNavigation({
+            type: NavigationType.SelectObject,
+            payload: { object: objectOnWellbore, wellbore, well, objectType }
+          });
         }
       }}
-      onContextMenu={(event: React.MouseEvent<HTMLLIElement>) => onContextMenu(event)}
+      onContextMenu={(event: React.MouseEvent<HTMLLIElement>) =>
+        onContextMenu(event)
+      }
     />
   );
 };

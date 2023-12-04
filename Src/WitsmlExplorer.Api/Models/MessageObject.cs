@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Models
                 MessageText = MessageText,
                 TypeMessage = TypeMessage,
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

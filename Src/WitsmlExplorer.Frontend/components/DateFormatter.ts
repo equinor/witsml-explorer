@@ -11,7 +11,11 @@ export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 // date-fns-tz behaves weirdly with minus so we replace it
 const unicodeMinus = "\u2212";
 
-function formatDateString(dateString: string, timeZone: TimeZone, dateTimeFormatString: DateTimeFormat) {
+function formatDateString(
+  dateString: string,
+  timeZone: TimeZone,
+  dateTimeFormatString: DateTimeFormat
+) {
   try {
     if (dateString == null) {
       return null;
@@ -72,7 +76,10 @@ function validateOffset(offset: string): boolean {
 
 export function validateIsoDateString(dateString: string): boolean {
   try {
-    const replaced = dateString.replace(unicodeMinus, "-").replace("+00:00", "Z").replace("-00:00", "Z");
+    const replaced = dateString
+      .replace(unicodeMinus, "-")
+      .replace("+00:00", "Z")
+      .replace("-00:00", "Z");
     const offset = getOffset(replaced);
     if (!offset) {
       return false;
@@ -85,7 +92,10 @@ export function validateIsoDateString(dateString: string): boolean {
   }
 }
 
-export function validateIsoDateStringNoOffset(dateString: string, offset: string): boolean {
+export function validateIsoDateStringNoOffset(
+  dateString: string,
+  offset: string
+): boolean {
   try {
     const parsed = toDate(dateString + offset);
     const formatted = formatInTimeZone(parsed, offset, dateTimeFormatNoOffset);

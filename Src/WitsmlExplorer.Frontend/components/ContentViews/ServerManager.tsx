@@ -1,8 +1,17 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Button, ButtonProps, Table, Typography } from "@equinor/eds-core-react";
+import {
+  Button,
+  ButtonProps,
+  Table,
+  Typography
+} from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { FilterContext, VisibilityStatus, allVisibleObjects } from "../../contexts/filter";
+import {
+  FilterContext,
+  VisibilityStatus,
+  allVisibleObjects
+} from "../../contexts/filter";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction } from "../../contexts/navigationActions";
@@ -12,17 +21,29 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ObjectType } from "../../models/objectType";
 import { Server, emptyServer } from "../../models/server";
-import { adminRole, getUserAppRoles, msalEnabled } from "../../msal/MsalAuthProvider";
-import AuthorizationService, { AuthorizationState, AuthorizationStatus } from "../../services/authorizationService";
+import {
+  adminRole,
+  getUserAppRoles,
+  msalEnabled
+} from "../../msal/MsalAuthProvider";
+import AuthorizationService, {
+  AuthorizationState,
+  AuthorizationStatus
+} from "../../services/authorizationService";
 import CapService from "../../services/capService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
 import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { STORAGE_FILTER_HIDDENOBJECTS_KEY, getLocalStorageItem } from "../../tools/localStorageHelpers";
+import {
+  STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  getLocalStorageItem
+} from "../../tools/localStorageHelpers";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
-import UserCredentialsModal, { UserCredentialsModalProps } from "../Modals/UserCredentialsModal";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "../Modals/UserCredentialsModal";
 
 const NEW_SERVER_ID = "1";
 
@@ -36,12 +57,16 @@ const ServerManager = (): React.ReactElement => {
   const { updateSelectedFilter } = useContext(FilterContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
-  const [authorizationState, setAuthorizationState] = useState<AuthorizationState>();
+  const [authorizationState, setAuthorizationState] =
+    useState<AuthorizationState>();
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents = AuthorizationService.onAuthorizationChangeEvent.subscribe(async (authorizationState) => {
-      setAuthorizationState(authorizationState);
-    });
+    const unsubscribeFromCredentialsEvents =
+      AuthorizationService.onAuthorizationChangeEvent.subscribe(
+        async (authorizationState) => {
+          setAuthorizationState(authorizationState);
+        }
+      );
     return () => {
       unsubscribeFromCredentialsEvents();
     };
@@ -50,20 +75,34 @@ const ServerManager = (): React.ReactElement => {
   useEffect(() => {
     const abortController = new AbortController();
     const onCurrentLoginStateChange = async () => {
-      if (selectedServer == null || wells.length !== 0 || (authorizationState && authorizationState.status != AuthorizationStatus.Authorized)) {
+      if (
+        selectedServer == null ||
+        wells.length !== 0 ||
+        (authorizationState &&
+          authorizationState.status != AuthorizationStatus.Authorized)
+      ) {
         return;
       }
       try {
-        const [wells, supportedObjects] = await Promise.all([WellService.getWells(), CapService.getCapObjects()]);
+        const [wells, supportedObjects] = await Promise.all([
+          WellService.getWells(),
+          CapService.getCapObjects()
+        ]);
         updateVisibleObjects(supportedObjects);
-        dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells: wells } });
+        dispatchNavigation({
+          type: ModificationType.UpdateWells,
+          payload: { wells: wells }
+        });
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
           serverUrl: new URL(selectedServer.url),
           message: error.message,
           isSuccess: false
         });
-        dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: null } });
+        dispatchNavigation({
+          type: NavigationType.SelectServer,
+          payload: { server: null }
+        });
       }
     };
     onCurrentLoginStateChange();
@@ -77,9 +116,14 @@ const ServerManager = (): React.ReactElement => {
     if (isAuthenticated && !hasFetchedServers) {
       const abortController = new AbortController();
       const getServers = async () => {
-        const freshServers = await ServerService.getServers(abortController.signal);
+        const freshServers = await ServerService.getServers(
+          abortController.signal
+        );
         setHasFetchedServers(true);
-        const action: UpdateServerListAction = { type: ModificationType.UpdateServerList, payload: { servers: freshServers } };
+        const action: UpdateServerListAction = {
+          type: ModificationType.UpdateServerList,
+          payload: { servers: freshServers }
+        };
         dispatchNavigation(action);
       };
       getServers();
@@ -92,34 +136,63 @@ const ServerManager = (): React.ReactElement => {
 
   const updateVisibleObjects = (supportedObjects: string[]) => {
     const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(STORAGE_FILTER_HIDDENOBJECTS_KEY, { defaultValue: [] });
-    hiddenItems.forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden));
+    const hiddenItems = getLocalStorageItem<ObjectType[]>(
+      STORAGE_FILTER_HIDDENOBJECTS_KEY,
+      { defaultValue: [] }
+    );
+    hiddenItems.forEach(
+      (objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden)
+    );
     Object.values(ObjectType)
-      .filter((objectType) => !supportedObjects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase()))
-      .forEach((objectType) => (updatedVisibility[objectType] = VisibilityStatus.Disabled));
+      .filter(
+        (objectType) =>
+          !supportedObjects
+            .map((o) => o.toLowerCase())
+            .includes(objectType.toLowerCase())
+      )
+      .forEach(
+        (objectType) =>
+          (updatedVisibility[objectType] = VisibilityStatus.Disabled)
+      );
     updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
   };
 
   const onSelectItem = async (server: Server) => {
     if (server.id === selectedServer?.id) {
-      const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server: null } };
+      const action: SelectServerAction = {
+        type: NavigationType.SelectServer,
+        payload: { server: null }
+      };
       dispatchNavigation(action);
     } else {
       const userCredentialsModalProps: UserCredentialsModalProps = {
         server,
         onConnectionVerified: (username) => {
           dispatchOperation({ type: OperationType.HideModal });
-          AuthorizationService.onAuthorized(server, username, dispatchNavigation);
-          const action: SelectServerAction = { type: NavigationType.SelectServer, payload: { server } };
+          AuthorizationService.onAuthorized(
+            server,
+            username,
+            dispatchNavigation
+          );
+          const action: SelectServerAction = {
+            type: NavigationType.SelectServer,
+            payload: { server }
+          };
           dispatchNavigation(action);
         }
       };
-      dispatchOperation({ type: OperationType.DisplayModal, payload: <UserCredentialsModal {...userCredentialsModalProps} /> });
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <UserCredentialsModal {...userCredentialsModalProps} />
+      });
     }
   };
 
   const onEditItem = (server: Server) => {
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <ServerModal editDisabled={editDisabled} server={server} /> });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <ServerModal editDisabled={editDisabled} server={server} />
+    });
   };
 
   const CellStyle = {
@@ -143,10 +216,20 @@ const ServerManager = (): React.ReactElement => {
   return (
     <>
       <Header>
-        <Typography style={{ color: colors.infographic.primaryMossGreen }} bold={true}>
+        <Typography
+          style={{ color: colors.infographic.primaryMossGreen }}
+          bold={true}
+        >
           Manage Connections
         </Typography>
-        <StyledButton colors={colors} variant="outlined" value={NEW_SERVER_ID} key={NEW_SERVER_ID} disabled={editDisabled} onClick={() => onEditItem(emptyServer())}>
+        <StyledButton
+          colors={colors}
+          variant="outlined"
+          value={NEW_SERVER_ID}
+          key={NEW_SERVER_ID}
+          disabled={editDisabled}
+          onClick={() => onEditItem(emptyServer())}
+        >
           <Icon name="cloudDownload" />
           New server
         </StyledButton>
@@ -170,18 +253,40 @@ const ServerManager = (): React.ReactElement => {
               <Table.Row id={server.id} key={server.id}>
                 <Table.Cell style={CellStyle}>
                   {isConnected(server) ? (
-                    <StyledLink onClick={() => dispatchNavigation({ type: NavigationType.SelectServer, payload: { server } })}>{server.name}</StyledLink>
+                    <StyledLink
+                      onClick={() =>
+                        dispatchNavigation({
+                          type: NavigationType.SelectServer,
+                          payload: { server }
+                        })
+                      }
+                    >
+                      {server.name}
+                    </StyledLink>
                   ) : (
                     server.name
                   )}
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>{server.url}</Table.Cell>
-                <Table.Cell style={CellStyle}>{server.currentUsername == null ? "" : server.currentUsername}</Table.Cell>
+                <Table.Cell style={CellStyle}>
+                  {server.currentUsername == null ? "" : server.currentUsername}
+                </Table.Cell>
                 <Table.Cell style={CloudIconStyle}>
-                  <Icon color={isConnected(server) ? colors.interactive.successResting : colors.text.staticIconsTertiary} name="cloudDownload" />
+                  <Icon
+                    color={
+                      isConnected(server)
+                        ? colors.interactive.successResting
+                        : colors.text.staticIconsTertiary
+                    }
+                    name="cloudDownload"
+                  />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <ConnectButton colors={colors} isConnected={isConnected(server)} onClick={() => onSelectItem(server)} />
+                  <ConnectButton
+                    colors={colors}
+                    isConnected={isConnected(server)}
+                    onClick={() => onSelectItem(server)}
+                  />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
@@ -189,7 +294,18 @@ const ServerManager = (): React.ReactElement => {
                   </Button>
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <Button disabled={editDisabled} variant="ghost" onClick={() => showDeleteServerModal(server, dispatchOperation, dispatchNavigation, selectedServer)}>
+                  <Button
+                    disabled={editDisabled}
+                    variant="ghost"
+                    onClick={() =>
+                      showDeleteServerModal(
+                        server,
+                        dispatchOperation,
+                        dispatchNavigation,
+                        selectedServer
+                      )
+                    }
+                  >
                     <Icon name="deleteToTrash" size={24} />
                   </Button>
                 </Table.Cell>
@@ -220,13 +336,23 @@ const ConnectButton = ({ isConnected, ...props }: ConnectButtonProps) => {
   } = useContext(OperationContext);
 
   return (
-    <StyledConnectButton colors={colors} {...props} variant="outlined" isConnected={isConnected} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <StyledConnectButton
+      colors={colors}
+      {...props}
+      variant="outlined"
+      isConnected={isConnected}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {isConnected ? (isHovered ? "Disconnect" : "Connected") : "Connect"}
     </StyledConnectButton>
   );
 };
 
-const StyledConnectButton = styled(Button)<{ isConnected: boolean; colors: Colors }>`
+const StyledConnectButton = styled(Button)<{
+  isConnected: boolean;
+  colors: Colors;
+}>`
   border-radius: 20px;
   width: 5.75rem;
   height: 1.5rem;

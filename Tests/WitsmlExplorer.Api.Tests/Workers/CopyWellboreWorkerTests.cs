@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWellbore existing = CreateWellbore(wellboreUid);
 
-            WitsmlWellbores existingWells = new() { Wellbores = existing.AsSingletonList() };
+            WitsmlWellbores existingWells = new() { Wellbores = existing.AsItemInList() };
 
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
             string queryText = XmlHelper.Serialize(WellQueries.GetWitsmlWellByUid(wellboreUid));
@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWellbore wellbore = CreateWellbore(wellboreUid);
 
-            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsSingletonList() };
+            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsItemInList() };
 
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
 
@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWellbore wellbore = CreateWellbore(wellboreUid);
 
-            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsSingletonList() };
+            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsItemInList() };
 
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
 

@@ -14,7 +14,12 @@ import { colors } from "../../styles/Colors";
 import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
 import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickDeleteComponents, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickDeleteComponents,
+  onClickShowObjectOnServer
+} from "./ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -29,15 +34,33 @@ export interface TrajectoryStationContextMenuProps {
   servers: Server[];
 }
 
-const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps): React.ReactElement => {
-  const { checkedTrajectoryStations, dispatchOperation, trajectory, selectedServer, servers } = props;
-  const trajectoryStationReferences = useClipboardComponentReferencesOfType(ComponentType.TrajectoryStation);
+const TrajectoryStationContextMenu = (
+  props: TrajectoryStationContextMenuProps
+): React.ReactElement => {
+  const {
+    checkedTrajectoryStations,
+    dispatchOperation,
+    trajectory,
+    selectedServer,
+    servers
+  } = props;
+  const trajectoryStationReferences = useClipboardComponentReferencesOfType(
+    ComponentType.TrajectoryStation
+  );
 
   const onClickProperties = async () => {
-    const trajectoryStationPropertiesModalProps = { trajectoryStation: checkedTrajectoryStations[0].trajectoryStation, trajectory, dispatchOperation };
+    const trajectoryStationPropertiesModalProps = {
+      trajectoryStation: checkedTrajectoryStations[0].trajectoryStation,
+      trajectory,
+      dispatchOperation
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <TrajectoryStationPropertiesModal {...trajectoryStationPropertiesModalProps} />
+      payload: (
+        <TrajectoryStationPropertiesModal
+          {...trajectoryStationPropertiesModalProps}
+        />
+      )
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
@@ -64,27 +87,89 @@ const TrajectoryStationContextMenu = (props: TrajectoryStationContextMenuProps):
           disabled={checkedTrajectoryStations.length === 0}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "trajectory station", checkedTrajectoryStations)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText(
+              "copy",
+              "trajectory station",
+              checkedTrajectoryStations
+            )}
+          </Typography>
         </MenuItem>,
-        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.TrajectoryStation} componentsToCopy={checkedTrajectoryStations} />,
-        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, trajectory)}>
+        <CopyComponentsToServerMenuItem
+          key={"copyComponentToServer"}
+          componentType={ComponentType.TrajectoryStation}
+          componentsToCopy={checkedTrajectoryStations}
+        />,
+        <MenuItem
+          key={"paste"}
+          onClick={() =>
+            pasteComponents(
+              servers,
+              trajectoryStationReferences,
+              dispatchOperation,
+              trajectory
+            )
+          }
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText(
+              "paste",
+              "trajectory station",
+              trajectoryStationReferences?.componentUids
+            )}
+          </Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedTrajectoryStations.length === 0}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("delete", "trajectory station", checkedTrajectoryStations)}</Typography>
+        <MenuItem
+          key={"delete"}
+          onClick={() =>
+            onClickDeleteComponents(
+              dispatchOperation,
+              toDelete,
+              JobType.DeleteComponents
+            )
+          }
+          disabled={checkedTrajectoryStations.length === 0}
+        >
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {menuItemText(
+              "delete",
+              "trajectory station",
+              checkedTrajectoryStations
+            )}
+          </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, trajectory, ObjectType.Trajectory)}>
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowObjectOnServer(
+                  dispatchOperation,
+                  server,
+                  trajectory,
+                  ObjectType.Trajectory
+                )
+              }
+            >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTrajectoryStations.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <MenuItem
+          key={"properties"}
+          onClick={onClickProperties}
+          disabled={checkedTrajectoryStations.length !== 1}
+        >
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}

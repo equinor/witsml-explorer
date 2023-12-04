@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Console.ShowCommands
                     Uid = tubularUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             WitsmlTubulars result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));

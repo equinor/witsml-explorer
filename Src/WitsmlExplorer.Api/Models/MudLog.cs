@@ -29,14 +29,14 @@ namespace WitsmlExplorer.Api.Models
                 NameWellbore = WellboreName,
                 Uid = Uid,
                 Name = Name,
-                ObjectGrowing = StringHelpers.OptionalBooleanToString(ObjectGrowing),
+                ObjectGrowing = StringHelpers.NullableBooleanToString(ObjectGrowing),
                 MudLogCompany = MudLogCompany,
                 MudLogEngineers = MudLogEngineers,
                 StartMd = StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
                 EndMd = EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
                 GeologyInterval = GeologyInterval?.Select(geologyInterval => geologyInterval?.ToWitsml())?.ToList(),
                 CommonData = CommonData?.ToWitsml()
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
         }
     }
 }

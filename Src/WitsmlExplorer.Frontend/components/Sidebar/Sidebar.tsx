@@ -21,7 +21,12 @@ const Sidebar = (): React.ReactElement => {
     wells,
     React.useMemo(() => ({ dispatchNavigation }), [])
   );
-  const WellListing: CSSProp = { display: "grid", gridTemplateColumns: "1fr 18px", justifyContent: "center", alignContent: "stretch" };
+  const WellListing: CSSProp = {
+    display: "grid",
+    gridTemplateColumns: "1fr 18px",
+    justifyContent: "center",
+    alignContent: "stretch"
+  };
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const {
     operationState: { colors }
@@ -34,11 +39,23 @@ const Sidebar = (): React.ReactElement => {
         <WellProgress>
           {filteredWells &&
             (filteredWells.length === 0 ? (
-              <Typography style={{ paddingTop: "1rem" }}>No wells match the current filter</Typography>
+              <Typography style={{ paddingTop: "1rem" }}>
+                No wells match the current filter
+              </Typography>
             ) : (
               <TreeView
-                defaultCollapseIcon={<Icon name="chevronDown" color={colors.interactive.primaryResting} />}
-                defaultExpandIcon={<Icon name="chevronRight" color={colors.interactive.primaryResting} />}
+                defaultCollapseIcon={
+                  <Icon
+                    name="chevronDown"
+                    color={colors.interactive.primaryResting}
+                  />
+                }
+                defaultExpandIcon={
+                  <Icon
+                    name="chevronRight"
+                    color={colors.interactive.primaryResting}
+                  />
+                }
                 defaultEndIcon={<div style={{ width: 24 }} />}
                 expanded={expandedTreeNodes}
               >
@@ -46,9 +63,20 @@ const Sidebar = (): React.ReactElement => {
                   <React.Fragment key={well.uid}>
                     <div style={WellListing}>
                       <WellItem well={well} />
-                      <WellIndicator compactMode={isCompactMode} active={well.wellbores.some((wellbore: Wellbore) => wellbore.isActive)} colors={colors} />
+                      <WellIndicator
+                        compactMode={isCompactMode}
+                        active={well.wellbores.some(
+                          (wellbore: Wellbore) => wellbore.isActive
+                        )}
+                        colors={colors}
+                      />
                     </div>
-                    <Divider style={{ margin: "0px", backgroundColor: colors.interactive.disabledBorder }} />
+                    <Divider
+                      style={{
+                        margin: "0px",
+                        backgroundColor: colors.interactive.disabledBorder
+                      }}
+                    />
                   </React.Fragment>
                 ))}
               </TreeView>
@@ -81,12 +109,20 @@ const SidebarTreeView = styled.div`
   }
 `;
 
-export const WellIndicator = styled.div<{ compactMode: boolean; active: boolean; colors: Colors }>`
+export const WellIndicator = styled.div<{
+  compactMode: boolean;
+  active: boolean;
+  colors: Colors;
+}>`
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin: ${(props) => (props.compactMode ? "0.625rem 0 0 0.5rem" : "1.125rem 0 0 0.5rem")};
-  ${(props) => (props.active ? `background-color: ${props.colors.interactive.successHover};` : `border: 2px solid ${props.colors.text.staticIconsTertiary};`)}
+  margin: ${(props) =>
+    props.compactMode ? "0.625rem 0 0 0.5rem" : "1.125rem 0 0 0.5rem"};
+  ${(props) =>
+    props.active
+      ? `background-color: ${props.colors.interactive.successHover};`
+      : `border: 2px solid ${props.colors.text.staticIconsTertiary};`}
 `;
 
 export default Sidebar;

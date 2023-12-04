@@ -382,10 +382,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private class CopyResult
         {
-            public bool Success { get; set; }
-            public int NumberOfRowsCopied { get; set; }
-            public int OriginalNumberOfRows { get; set; }
-            public string ErrorReason { get; set; }
+            public bool Success { get; init; }
+            public int NumberOfRowsCopied { get; init; }
+            public int OriginalNumberOfRows { get; init; }
+            public string ErrorReason { get; init; }
         }
     }
 }

@@ -17,13 +17,17 @@ export interface DeleteEmptyMnemonicsModalProps {
   dispatchOperation: (action: HideModalAction) => void;
 }
 
-const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React.ReactElement => {
+const DeleteEmptyMnemonicsModal = (
+  props: DeleteEmptyMnemonicsModalProps
+): React.ReactElement => {
   const { wells, wellbores, dispatchOperation } = props;
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
-  const [nullTimeValue, setNullTimeValue] = useState<string>("1900-01-01T00:00:00.000Z");
+  const [nullTimeValue, setNullTimeValue] = useState<string>(
+    "1900-01-01T00:00:00.000Z"
+  );
   const [nullTimeValueValid, setNullTimeValueValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -35,7 +39,12 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
         return { wellUid: x.uid, wellName: x.name };
       }),
       wellbores: wellbores?.map((x) => {
-        return { wellboreUid: x.uid, wellboreName: x.name, wellUid: x.wellUid, wellName: x.wellName };
+        return {
+          wellboreUid: x.uid,
+          wellboreName: x.name,
+          wellUid: x.wellUid,
+          wellName: x.wellName
+        };
       }),
       nullDepthValue: nullDepthValue,
       nullTimeValue: nullTimeValue
@@ -64,7 +73,13 @@ const DeleteEmptyMnemonicsModal = (props: DeleteEmptyMnemonicsModalProps): React
               }}
               timeZone={timeZone}
             />
-            <TextField label="Null depth value" type="number" fullWidth value={nullDepthValue} onChange={(e: any) => setNullDepthValue(+e.target.value)} />
+            <TextField
+              label="Null depth value"
+              type="number"
+              fullWidth
+              value={nullDepthValue}
+              onChange={(e: any) => setNullDepthValue(+e.target.value)}
+            />
           </ContentLayout>
         }
         confirmDisabled={!nullTimeValueValid}

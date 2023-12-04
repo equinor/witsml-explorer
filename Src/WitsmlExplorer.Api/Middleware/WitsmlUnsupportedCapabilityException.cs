@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 namespace WitsmlExplorer.Api.Middleware
 {
@@ -8,7 +9,7 @@ namespace WitsmlExplorer.Api.Middleware
 
         public WitsmlUnsupportedCapabilityException(string message) : base(message)
         {
-            StatusCode = 500;
+            StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
 }

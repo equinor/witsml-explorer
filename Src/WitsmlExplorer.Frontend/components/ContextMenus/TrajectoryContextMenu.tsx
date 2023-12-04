@@ -14,21 +14,34 @@ import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import OperationType from "../../contexts/operationType";
-import TrajectoryPropertiesModal, { TrajectoryPropertiesModalProps } from "../Modals/TrajectoryPropertiesModal";
+import TrajectoryPropertiesModal, {
+  TrajectoryPropertiesModalProps
+} from "../Modals/TrajectoryPropertiesModal";
 import Trajectory from "../../models/trajectory";
 
-const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const TrajectoryContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const trajectoryStationReferences = useClipboardComponentReferencesOfType(ComponentType.TrajectoryStation);
+  const trajectoryStationReferences = useClipboardComponentReferencesOfType(
+    ComponentType.TrajectoryStation
+  );
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyObjectProps: TrajectoryPropertiesModalProps = { mode, trajectory: checkedObjects[0] as Trajectory, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <TrajectoryPropertiesModal {...modifyObjectProps} /> });
+    const modifyObjectProps: TrajectoryPropertiesModalProps = {
+      mode,
+      trajectory: checkedObjects[0] as Trajectory,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <TrajectoryPropertiesModal {...modifyObjectProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -36,14 +49,33 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
     return [
       <MenuItem
         key={"paste"}
-        onClick={() => pasteComponents(servers, trajectoryStationReferences, dispatchOperation, checkedObjects[0])}
-        disabled={trajectoryStationReferences === null || checkedObjects.length !== 1}
+        onClick={() =>
+          pasteComponents(
+            servers,
+            trajectoryStationReferences,
+            dispatchOperation,
+            checkedObjects[0]
+          )
+        }
+        disabled={
+          trajectoryStationReferences === null || checkedObjects.length !== 1
+        }
       >
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>{menuItemText("paste", "trajectory station", trajectoryStationReferences?.componentUids)}</Typography>
+        <Typography color={"primary"}>
+          {menuItemText(
+            "paste",
+            "trajectory station",
+            trajectoryStationReferences?.componentUids
+          )}
+        </Typography>
       </MenuItem>,
       <Divider key={"divider"} />,
-      <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
+      <MenuItem
+        key={"properties"}
+        onClick={onClickModify}
+        disabled={checkedObjects.length !== 1}
+      >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Properties</Typography>
       </MenuItem>
@@ -52,7 +84,18 @@ const TrajectoryContextMenu = (props: ObjectContextMenuProps): React.ReactElemen
 
   return (
     <ContextMenu
-      menuItems={[...ObjectMenuItems(checkedObjects, ObjectType.Trajectory, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore, extraMenuItems())]}
+      menuItems={[
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.Trajectory,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore,
+          extraMenuItems()
+        )
+      ]}
     />
   );
 };

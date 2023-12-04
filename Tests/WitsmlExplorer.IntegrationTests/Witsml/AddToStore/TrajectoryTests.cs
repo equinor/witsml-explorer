@@ -102,7 +102,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.AddToStore
                     AziRef = aziRef,
                     TrajectoryStations = tStations,
                     CommonData = commonData
-                }.AsSingletonList()
+                }.AsItemInList()
             };
 
             return trajectories;
