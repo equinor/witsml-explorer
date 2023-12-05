@@ -40,6 +40,8 @@ const EditSelectedLogCurveInfo = (
   props: EditSelectedLogCurveInfoProps
 ): React.ReactElement => {
   const { disabled, overrideStartIndex, overrideEndIndex } = props;
+  const { operationState } = useContext(OperationContext);
+  const { theme } = operationState;
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedLogCurveInfo } = navigationState;
   const selectedLog = selectedObject as LogObject;
@@ -164,7 +166,7 @@ const EditSelectedLogCurveInfo = (
   const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
   return (
-    <EdsProvider density={"compact"}>
+    <EdsProvider density={theme}>
       <Layout colors={colors}>
         <Typography
           style={{
@@ -180,7 +182,6 @@ const EditSelectedLogCurveInfo = (
             disabled={disabled}
             id="startIndex"
             value={startIndex}
-            // defaultValue={getDefaultValue(startIndex)}
             variant={isValidStart ? undefined : "error"}
             type={isTimeCurve() ? "datetime-local" : ""}
             step="1"
@@ -195,7 +196,6 @@ const EditSelectedLogCurveInfo = (
             disabled={disabled}
             id="endIndex"
             value={endIndex}
-            // defaultValue={getDefaultValue(endIndex)}
             type={isTimeCurve() ? "datetime-local" : ""}
             variant={isValidEnd ? undefined : "error"}
             step="1"

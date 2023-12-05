@@ -1,23 +1,23 @@
-import React from "react";
+import { ReactNode } from "react";
 
 // Dialog uses HTMLDialogElement which is not yet supported by jsdom, so we need to mock it. Keep an eye on https://github.com/jsdom/jsdom/issues/3294 for progress.
 export const mockEdsCoreReact = () => {
   const originalModule = jest.requireActual("@equinor/eds-core-react");
 
-  const MockDialog = ({ children }: { children: React.ReactNode }) => (
+  const MockDialog = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   );
 
-  const CustomContent = ({ children }: { children: React.ReactNode }) => (
+  const CustomContent = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   );
-  const Header = ({ children }: { children: React.ReactNode }) => (
+  const Header = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   );
-  const Title = ({ children }: { children: React.ReactNode }) => (
+  const Title = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   );
-  const Actions = ({ children }: { children: React.ReactNode }) => (
+  const Actions = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   );
 
