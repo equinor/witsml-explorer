@@ -5,6 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
+import { ObjectType } from "../../models/objectType";
 import { riskAffectedPersonnel } from "../../models/riskAffectedPersonnel";
 import { riskCategory } from "../../models/riskCategory";
 import RiskObject from "../../models/riskObject";
@@ -63,10 +64,11 @@ const RiskPropertiesModal = (
 
   const onSubmit = async (updatedRisk: RiskObject) => {
     setIsLoading(true);
-    const wellboreRiskJob = {
-      risk: updatedRisk
+    const modifyJob = {
+      object: { ...updatedRisk, objectType: ObjectType.Risk },
+      objectType: ObjectType.Risk
     };
-    await JobService.orderJob(JobType.ModifyRisk, wellboreRiskJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

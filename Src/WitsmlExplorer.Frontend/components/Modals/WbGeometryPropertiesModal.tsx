@@ -5,6 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
+import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
@@ -56,9 +57,13 @@ const WbGeometryPropertiesModal = (
   const onSubmit = async (updatedWbGeometry: WbGeometryObject) => {
     setIsLoading(true);
     const wellboreWbGeometryJob = {
-      wbGeometry: updatedWbGeometry
+      object: { ...updatedWbGeometry, objectType: ObjectType.WbGeometry },
+      objectType: ObjectType.WbGeometry
     };
-    await JobService.orderJob(JobType.ModifyWbGeometry, wellboreWbGeometryJob);
+    await JobService.orderJob(
+      JobType.ModifyObjectOnWellbore,
+      wellboreWbGeometryJob
+    );
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

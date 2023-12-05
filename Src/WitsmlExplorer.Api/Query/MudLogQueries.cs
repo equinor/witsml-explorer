@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 using Witsml.Data;
@@ -9,7 +8,6 @@ using Witsml.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
-using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -46,84 +44,6 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
                 }).ToList()
-            };
-        }
-
-        public static WitsmlMudLogs SetupMudLogToUpdate(MudLog mudLog)
-        {
-            List<WitsmlMudLogGeologyInterval> geologyIntervals = mudLog.GeologyInterval?.Select(geologyInterval => new WitsmlMudLogGeologyInterval()
-            {
-                Uid = geologyInterval.Uid,
-                TypeLithology = geologyInterval.TypeLithology,
-                MdTop = geologyInterval.MdTop.ToWitsml<WitsmlMeasureWithDatum>(),
-                MdBottom = geologyInterval.MdBottom.ToWitsml<WitsmlMeasureWithDatum>(),
-                Lithologies = geologyInterval.Lithologies?.Select(l => new WitsmlMudLogLithology()
-                {
-                    Uid = l.Uid,
-                    Type = l.Type,
-                    CodeLith = l.CodeLith,
-                    LithPc = new WitsmlIndex { Uom = "%", Value = l.LithPc }
-                }).ToList(),
-                CommonTime = geologyInterval.CommonTime == null ? null : new WitsmlCommonTime
-                {
-                    DTimCreation = geologyInterval.CommonTime.DTimCreation,
-                    DTimLastChange = geologyInterval.CommonTime.DTimLastChange
-                },
-            }).ToList();
-
-            return new WitsmlMudLogs
-            {
-                MudLogs = new WitsmlMudLog
-                {
-                    Uid = mudLog.Uid,
-                    UidWellbore = mudLog.WellboreUid,
-                    UidWell = mudLog.WellUid,
-                    Name = mudLog.Name,
-                    NameWellbore = mudLog.WellboreName,
-                    NameWell = mudLog.WellName,
-                    ObjectGrowing = StringHelpers.NullableBooleanToString(mudLog.ObjectGrowing),
-                    MudLogCompany = mudLog.MudLogCompany,
-                    MudLogEngineers = mudLog.MudLogEngineers,
-                    StartMd = mudLog.StartMd?.ToWitsml<WitsmlMeasureWithDatum>(),
-                    EndMd = mudLog.EndMd?.ToWitsml<WitsmlMeasureWithDatum>(),
-                    GeologyInterval = geologyIntervals,
-                    CommonData = mudLog.CommonData == null ? null : new WitsmlCommonData
-                    {
-                        ItemState = mudLog.CommonData.ItemState,
-                        SourceName = mudLog.CommonData.SourceName
-                    }
-                }.AsItemInList()
-            };
-        }
-
-        public static WitsmlMudLogs CopyGeologyIntervals(IEnumerable<WitsmlMudLogGeologyInterval> geologyIntervals, ObjectReference target)
-        {
-            return new()
-            {
-                MudLogs = new List<WitsmlMudLog> {
-                    new WitsmlMudLog() {
-                        Uid = target.Uid,
-                        UidWellbore = target.WellboreUid,
-                        UidWell = target.WellUid,
-                        GeologyInterval = geologyIntervals.ToList()
-                    }
-                }
-            };
-        }
-        public static WitsmlMudLogs DeleteGeologyIntervals(string wellUid, string wellboreUid, string objectUid, IEnumerable<string> componentUids)
-        {
-            return new WitsmlMudLogs
-            {
-                MudLogs = new WitsmlMudLog
-                {
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
-                    Uid = objectUid,
-                    GeologyInterval = componentUids.Select(uid => new WitsmlMudLogGeologyInterval
-                    {
-                        Uid = uid
-                    }).ToList()
-                }.AsItemInList()
             };
         }
 

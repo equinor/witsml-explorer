@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { ObjectType } from "../../models/objectType";
 import Trajectory, { aziRefValues } from "../../models/trajectory";
 import JobService, { JobType } from "../../services/jobService";
 import { DateTimeField } from "./DateTimeField";
@@ -40,13 +41,21 @@ const TrajectoryPropertiesModal = (
 
   const onSubmit = async (updatedTrajectory: Trajectory) => {
     setIsLoading(true);
-    const wellboreTrajectoryJob = {
-      trajectory: updatedTrajectory
-    };
-    await JobService.orderJob(
-      editMode ? JobType.ModifyTrajectory : JobType.CreateTrajectory,
-      wellboreTrajectoryJob
-    );
+    if (editMode) {
+      const modifyJob = {
+        object: { ...updatedTrajectory, objectType: ObjectType.Trajectory },
+        objectType: ObjectType.Trajectory
+      };
+      await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
+    } else {
+      const wellboreTrajectoryJob = {
+        trajectory: updatedTrajectory
+      };
+      await JobService.orderJob(
+        JobType.CreateTrajectory,
+        wellboreTrajectoryJob
+      );
+    }
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
