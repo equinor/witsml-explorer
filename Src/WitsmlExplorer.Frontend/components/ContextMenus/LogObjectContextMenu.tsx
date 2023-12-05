@@ -140,10 +140,14 @@ const LogObjectContextMenu = (
       objectType: ObjectType.Log,
       onPicked
     };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ObjectPickerModal {...props} />
-    });
+    if (checkedObjects.length === 2) {
+      onPicked(checkedObjects[1], selectedServer);
+    } else {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ObjectPickerModal {...props} />
+      });
+    }
   };
 
   const onClickCompareData = async () => {
@@ -178,10 +182,14 @@ const LogObjectContextMenu = (
       onPicked,
       includeIndexDuplicatesOption: true
     };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ObjectPickerModal {...props} />
-    });
+    if (checkedObjects.length === 2) {
+      onPicked(checkedObjects[1], selectedServer, false);
+    } else {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ObjectPickerModal {...props} />
+      });
+    }
   };
 
   const onClickCheckHeader = async () => {
@@ -275,14 +283,14 @@ const LogObjectContextMenu = (
       <NestedMenuItem
         key={"agentslognestedmenu"}
         label={"Agents"}
-        disabled={checkedObjects.length !== 1}
+        disabled={checkedObjects.length > 2}
         icon="person"
       >
         {[
           <MenuItem
             key={"comparelogheader"}
             onClick={onClickCompareHeader}
-            disabled={checkedObjects.length !== 1}
+            disabled={checkedObjects.length > 2}
           >
             <StyledIcon
               name="compare"
@@ -297,7 +305,7 @@ const LogObjectContextMenu = (
           <MenuItem
             key={"comparelogdata"}
             onClick={onClickCompareData}
-            disabled={checkedObjects.length !== 1}
+            disabled={checkedObjects.length > 2}
           >
             <StyledIcon
               name="compare"
