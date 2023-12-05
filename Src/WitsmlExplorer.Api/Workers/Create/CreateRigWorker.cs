@@ -8,7 +8,6 @@ using Witsml.Data.Rig;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Create;
@@ -30,7 +29,7 @@ public class CreateRigWorker : BaseWorker<CreateRigJob>, IWorker
     {
         Verify(job.Rig);
 
-        WitsmlRigs rigToCreate = RigQueries.CreateRig(job.Rig);
+        WitsmlRigs rigToCreate = job.Rig.ToWitsml();
 
         QueryResult addToStoreResult = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(rigToCreate);
 

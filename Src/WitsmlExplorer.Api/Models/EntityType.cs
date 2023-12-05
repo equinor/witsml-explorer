@@ -95,5 +95,26 @@ namespace WitsmlExplorer.Api.Models
                 _ => null,
             };
         }
+
+        public static Type GetApiTypeFromEntityType(EntityType type)
+        {
+            return type switch
+            {
+                EntityType.BhaRun => typeof(BhaRun),
+                EntityType.FluidsReport => typeof(FluidsReport),
+                EntityType.FormationMarker => typeof(FormationMarker),
+                EntityType.Log => typeof(LogObject),
+                EntityType.Message => typeof(MessageObject),
+                EntityType.MudLog => typeof(MudLog),
+                EntityType.Rig => typeof(Rig),
+                EntityType.Risk => typeof(Risk),
+                EntityType.Tubular => typeof(Tubular),
+                EntityType.Trajectory => typeof(Trajectory),
+                EntityType.WbGeometry => typeof(WbGeometry),
+                EntityType.Well => typeof(Well),
+                EntityType.Wellbore => typeof(Wellbore),
+                _ => null,
+            };
+        }
     }
 }

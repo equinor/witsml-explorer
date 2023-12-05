@@ -1,6 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
+import { v4 as uuid } from "uuid";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -139,10 +140,14 @@ const LogObjectContextMenu = (
       objectType: ObjectType.Log,
       onPicked
     };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ObjectPickerModal {...props} />
-    });
+    if (checkedObjects.length === 2) {
+      onPicked(checkedObjects[1], selectedServer);
+    } else {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ObjectPickerModal {...props} />
+      });
+    }
   };
 
   const onClickCompareData = async () => {
@@ -177,10 +182,14 @@ const LogObjectContextMenu = (
       onPicked,
       includeIndexDuplicatesOption: true
     };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ObjectPickerModal {...props} />
-    });
+    if (checkedObjects.length === 2) {
+      onPicked(checkedObjects[1], selectedServer, false);
+    } else {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ObjectPickerModal {...props} />
+      });
+    }
   };
 
   const onClickCheckHeader = async () => {
@@ -270,18 +279,18 @@ const LogObjectContextMenu = (
         ]}
         ,
       </NestedMenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={uuid()} />,
       <NestedMenuItem
         key={"agentslognestedmenu"}
         label={"Agents"}
-        disabled={checkedObjects.length !== 1}
+        disabled={checkedObjects.length > 2}
         icon="person"
       >
         {[
           <MenuItem
             key={"comparelogheader"}
             onClick={onClickCompareHeader}
-            disabled={checkedObjects.length !== 1}
+            disabled={checkedObjects.length > 2}
           >
             <StyledIcon
               name="compare"
@@ -296,7 +305,7 @@ const LogObjectContextMenu = (
           <MenuItem
             key={"comparelogdata"}
             onClick={onClickCompareData}
-            disabled={checkedObjects.length !== 1}
+            disabled={checkedObjects.length > 2}
           >
             <StyledIcon
               name="compare"
@@ -348,7 +357,7 @@ const LogObjectContextMenu = (
           </MenuItem>
         ]}
       </NestedMenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={uuid()} />,
       <MenuItem
         key={"importlogdata"}
         onClick={onClickImport}
@@ -357,7 +366,7 @@ const LogObjectContextMenu = (
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Import log data from .csv</Typography>
       </MenuItem>,
-      <Divider key={"divider"} />,
+      <Divider key={uuid()} />,
       <MenuItem
         key={"properties"}
         onClick={onClickProperties}

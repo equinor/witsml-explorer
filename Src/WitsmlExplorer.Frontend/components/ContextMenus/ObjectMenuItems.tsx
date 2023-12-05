@@ -64,7 +64,7 @@ export const ObjectMenuItems = (
         {menuItemText("Refresh", objectType, null)}
       </Typography>
     </MenuItem>,
-    <Divider key={"divider"} />,
+    <Divider key={"objectMenuItemsDivider"} />,
     <MenuItem
       key={"copy"}
       onClick={() =>
@@ -158,6 +158,7 @@ export const ObjectMenuItems = (
               (checkedObjects[0] as LogObject)?.indexType
             )
           }
+          disabled={checkedObjects.length !== 1}
         >
           <Typography color={"primary"}>{server.name}</Typography>
         </MenuItem>

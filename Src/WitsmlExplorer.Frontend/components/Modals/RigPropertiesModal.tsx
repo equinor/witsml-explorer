@@ -5,6 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { itemStateTypes } from "../../models/itemStateTypes";
+import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
 import { rigType } from "../../models/rigType";
 import JobService, { JobType } from "../../services/jobService";
@@ -39,13 +40,18 @@ const RigPropertiesModal = (
 
   const onSubmit = async (updatedRig: Rig) => {
     setIsLoading(true);
-    const wellboreRigJob = {
-      rig: updatedRig
-    };
-    await JobService.orderJob(
-      editMode ? JobType.ModifyRig : JobType.CreateRig,
-      wellboreRigJob
-    );
+    if (editMode) {
+      const modifyJob = {
+        object: { ...updatedRig, objectType: ObjectType.Rig },
+        objectType: ObjectType.Rig
+      };
+      await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
+    } else {
+      const wellboreRigJob = {
+        rig: updatedRig
+      };
+      await JobService.orderJob(JobType.CreateRig, wellboreRigJob);
+    }
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

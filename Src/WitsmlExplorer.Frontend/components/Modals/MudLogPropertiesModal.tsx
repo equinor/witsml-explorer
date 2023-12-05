@@ -9,6 +9,7 @@ import MudLog from "../../models/mudLog";
 import ObjectOnWellbore, {
   toObjectReference
 } from "../../models/objectOnWellbore";
+import { ObjectType } from "../../models/objectType";
 import JobService, { JobType } from "../../services/jobService";
 import formatDateString from "../DateFormatter";
 import ModalDialog from "./ModalDialog";
@@ -41,14 +42,16 @@ const MudLogPropertiesModal = (
   const onSubmit = async (updatedMudLog: EditableMudLog) => {
     setIsLoading(true);
     const modifyMudLogJob = {
-      mudLog: {
+      object: {
         ...updatedMudLog,
         commonData: updatedMudLog.itemState
           ? { itemState: updatedMudLog.itemState }
-          : null
-      }
+          : null,
+        objectType: ObjectType.MudLog
+      },
+      objectType: ObjectType.MudLog
     };
-    await JobService.orderJob(JobType.ModifyMudLog, modifyMudLogJob);
+    await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyMudLogJob);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };

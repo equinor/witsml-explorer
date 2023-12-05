@@ -1,13 +1,7 @@
-using System.Globalization;
-using System.Linq;
-
 using Witsml.Data;
 using Witsml.Data.Measures;
 using Witsml.Data.Rig;
 using Witsml.Extensions;
-
-using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -45,59 +39,6 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = "",
                         ItemState = ""
-                    }
-                }.AsItemInList()
-            };
-        }
-
-        public static WitsmlRigs QueryByIds(string wellUid, string wellboreUid, string[] rigUids)
-        {
-            return new WitsmlRigs
-            {
-                Rigs = rigUids.Select((rigUid) => new WitsmlRig
-                {
-                    Uid = rigUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }).ToList()
-            };
-        }
-
-        public static WitsmlRigs CreateRig(Rig rig)
-        {
-            return new()
-            {
-                Rigs = new WitsmlRig
-                {
-                    UidWell = rig.WellUid,
-                    NameWell = rig.WellName,
-                    NameWellbore = rig.WellboreName,
-                    Uid = rig.Uid,
-                    AirGap = rig.AirGap != null ? new WitsmlLengthMeasure { Uom = rig.AirGap.Uom, Value = rig.AirGap.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    Name = rig.Name,
-                    TypeRig = rig.TypeRig.NullIfEmpty(),
-                    Owner = rig.Owner.NullIfEmpty(),
-                    UidWellbore = rig.WellboreUid,
-                    Approvals = rig.Approvals.NullIfEmpty(),
-                    ClassRig = rig.ClassRig.NullIfEmpty(),
-                    DTimStartOp = StringHelpers.ToUniversalDateTimeString(rig.DTimStartOp),
-                    DTimEndOp = StringHelpers.ToUniversalDateTimeString(rig.DTimEndOp),
-                    EmailAddress = rig.EmailAddress.NullIfEmpty(),
-                    FaxNumber = rig.FaxNumber.NullIfEmpty(),
-                    IsOffshore = StringHelpers.NullableBooleanToString(rig.IsOffshore),
-                    Manufacturer = rig.Manufacturer.NullIfEmpty(),
-                    NameContact = rig.NameContact.NullIfEmpty(),
-                    RatingDrillDepth = rig.RatingDrillDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingDrillDepth.Uom, Value = rig.RatingDrillDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    RatingWaterDepth = rig.RatingWaterDepth != null ? new WitsmlLengthMeasure { Uom = rig.RatingWaterDepth.Uom, Value = rig.RatingWaterDepth.Value.ToString(CultureInfo.InvariantCulture) } : null,
-                    Registration = rig.Registration.NullIfEmpty(),
-                    TelNumber = rig.TelNumber.NullIfEmpty(),
-                    YearEntService = rig.YearEntService.NullIfEmpty(),
-                    CommonData = rig.CommonData == null ? null : new WitsmlCommonData()
-                    {
-                        SourceName = rig.CommonData.SourceName,
-                        DTimCreation = null,
-                        DTimLastChange = null,
-                        ItemState = rig.CommonData.ItemState,
                     }
                 }.AsItemInList()
             };
