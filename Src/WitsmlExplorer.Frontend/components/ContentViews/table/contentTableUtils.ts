@@ -15,8 +15,8 @@ export const constantTableOptions = {
   enableMultiRowSelection: true,
   enableSorting: true,
   enableSortingRemoval: true,
-  enableColumnFilters: false,
-  enableFilters: false,
+  enableColumnFilters: true,
+  enableFilters: true,
   enableGlobalFilter: false,
   enableGrouping: false,
   enableMultiRemove: false,
@@ -114,12 +114,12 @@ export function calculateRowHeight(
   return cellHeight;
 }
 
-export const useInitActiveCurveFiltering = (table: Table<any>) => {
+export const useInitFilterFns = (table: Table<any>) => {
   useEffect(() => {
     table
       .getVisibleLeafColumns()
-      .find((col) => col.columnDef.id == activeId)
-      ?.setFilterValue(false);
+      .filter((col) => col.columnDef.filterFn != null)
+      ?.forEach((col) => col.setFilterValue(null));
   }, [table]);
 };
 
