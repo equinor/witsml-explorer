@@ -55,7 +55,6 @@ const LogCurveInfoContextMenu = (
     selectedServer,
     servers
   } = props;
-
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const modalProps = {
@@ -161,6 +160,12 @@ const LogCurveInfoContextMenu = (
             checkedLogCurveInfoRows
           )} with range`}</Typography>
         </MenuItem>,
+        <CopyComponentsToServerMenuItem
+          key={"copyComponentToServerWithRange"}
+          componentType={ComponentType.Mnemonic}
+          componentsToCopy={checkedLogCurveInfoRows}
+          withRange
+        />,
         <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
           componentType={ComponentType.Mnemonic}

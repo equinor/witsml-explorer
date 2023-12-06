@@ -3,10 +3,6 @@ import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
-import {
-  CopyRangeClipboard,
-  createComponentReferences
-} from "../../models/jobs/componentReferences";
 import LogObject, { indexToNumber } from "../../models/logObject";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -16,9 +12,25 @@ import {
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+import { copyComponentsToServer } from "../ContextMenus/CopyComponentsToServerUtils";
+import { Server } from "../../models/server";
+import {
+  CopyRangeClipboard,
+  createComponentReferences
+} from "../../models/jobs/componentReferences";
 
 export interface CopyRangeModalProps {
   mnemonics: string[];
+  targetServer?: Server;
+  withRange?: boolean;
+  componentType?: ComponentType;
+  componentsToCopy?: { uid: string }[];
+}
+
+interface ComponentWithRange {
+  uid: string;
+  minIndex: number | Date;
+  maxIndex: number | Date;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
@@ -32,15 +44,30 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const selectedLog = selectedObject as LogObject;
 
   const onSubmit = async () => {
-    const componentReferences: CopyRangeClipboard = createComponentReferences(
-      props.mnemonics,
-      selectedLog,
-      ComponentType.Mnemonic,
-      selectedServer.url
-    );
-    componentReferences.startIndex = startIndex.toString();
-    componentReferences.endIndex = endIndex.toString();
-    await navigator.clipboard.writeText(JSON.stringify(componentReferences));
+    if (props.withRange === true) {
+      const componentsToCopy = props.componentsToCopy as ComponentWithRange[];
+      const componentsRange = componentsToCopy.filter(
+        (x) => x.minIndex >= startIndex && x.maxIndex <= endIndex
+      );
+      copyComponentsToServer({
+        targetServer: props.targetServer,
+        sourceServer: selectedServer,
+        componentsToCopy: componentsRange,
+        dispatchOperation,
+        sourceParent: selectedObject,
+        componentType: props.componentType
+      });
+    } else {
+      const componentReferences: CopyRangeClipboard = createComponentReferences(
+        props.mnemonics,
+        selectedLog,
+        ComponentType.Mnemonic,
+        selectedServer.url
+      );
+      componentReferences.startIndex = startIndex.toString();
+      componentReferences.endIndex = endIndex.toString();
+      await navigator.clipboard.writeText(JSON.stringify(componentReferences));
+    }
     dispatchOperation({ type: OperationType.HideModal });
   };
 
