@@ -16,3 +16,10 @@ export default interface LogCurveInfo {
   mnemAlias: string;
   axisDefinitions: AxisDefinition[];
 }
+
+export const NULL_DEPTH_INDEX = "-999.25";
+export const NULL_TIME_INDEX = "1900-01-01T00:00:00.000Z";
+
+export const isNullOrEmptyIndex = (index: string) => {
+  return !index || index === NULL_DEPTH_INDEX || index === NULL_TIME_INDEX;
+};

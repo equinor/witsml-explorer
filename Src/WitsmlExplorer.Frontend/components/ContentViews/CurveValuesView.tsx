@@ -573,7 +573,7 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
   }
 };
 
-const CommonPanelContainer = styled.div`
+export const CommonPanelContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;

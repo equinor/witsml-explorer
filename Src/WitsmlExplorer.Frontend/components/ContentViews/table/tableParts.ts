@@ -1,3 +1,4 @@
+import { FilterFn } from "@tanstack/react-table";
 import React from "react";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -8,6 +9,7 @@ export interface ContentTableColumn {
   property: string;
   label: string;
   type: ContentType;
+  filterFn?: FilterFn<any>;
 }
 
 export interface ContentTableRow {
