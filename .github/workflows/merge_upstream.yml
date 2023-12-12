@@ -25,7 +25,9 @@ jobs:
           git checkout main
 
           if test $(git rev-list --left-right --count main...upstream/main | cut -f2) -gt 0; then
-            git merge --no-edit upstream/main
+            git merge --no-commit --no-ff upstream/main
+            git reset -- .github/workflows
+            git commit --no-edit
             git push origin main
             echo "merge_occurred=true" >> $GITHUB_OUTPUT
           else
