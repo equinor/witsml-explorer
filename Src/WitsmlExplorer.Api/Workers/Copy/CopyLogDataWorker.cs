@@ -218,7 +218,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 double targetIndex = double.MinValue;
                 foreach (WitsmlData row in data)
                 {
-                    string[] split = row.Data.Split(",");
+                    string[] split = row.Data.Split(CommonConstants.DataSeparator);
                     lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
                     double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals, MidpointRounding.AwayFromZero);
                     if (Math.Abs(targetIndex - nextTargetIndex) > difference)
@@ -263,14 +263,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 for (int j = 0; j < oldRows.Count; j++)
                 {
-                    if (oldRows[j][i] != "")
+                    if (oldRows[j][i] != string.Empty)
                     {
                         newRow[i] = oldRows[j][i];
                         break;
                     }
                 }
             }
-            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + "," + string.Join(",", newRow) };
+            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + CommonConstants.DataSeparator + string.Join(CommonConstants.DataSeparator, newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
@@ -294,7 +294,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
                 if (!result.IsSuccessful)
                 {
-                    string newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
+                    string newMnemonics = string.Join(CommonConstants.DataSeparator, newLogCurveInfos.Select(lci => lci.Mnemonic));
                     Logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
                               "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetLogUid}. ",
                         newMnemonics, targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
@@ -304,7 +304,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLogData logData)
         {
-            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(",", StringComparison.InvariantCulture)..];
+            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
             return new()
             {
                 Logs = new List<WitsmlLog> {

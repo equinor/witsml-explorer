@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -22,7 +23,7 @@ namespace Witsml.Data
         [XmlElement("objectGrowing")]
         public string ObjectGrowingText
         {
-            get => ObjectGrowing.HasValue ? XmlConvert.ToString(ObjectGrowing.Value) : null;
+            get => ObjectGrowing?.ToString(CultureInfo.InvariantCulture);
             set => ObjectGrowing = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 

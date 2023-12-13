@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task RenameLogObject_EmptyName_ThrowsException()
         {
             ModifyObjectOnWellboreJob job = CreateJobTemplate();
-            job.Object.Name = "";
+            job.Object.Name = string.Empty;
 
             var (workerResult, _) = await _worker.Execute(job);
 

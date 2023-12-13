@@ -21,7 +21,7 @@ namespace Witsml.Data
             {
                 _allElements = value;
                 // System.Text.Json does not support serializing XML documents so we serialize the contents verbatim for now
-                Verbatim = string.Join("", value.Select(element => element.OuterXml));
+                Verbatim = string.Join(string.Empty, value.Select(element => element.OuterXml));
             }
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Workers;
@@ -35,12 +36,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     new WitsmlLogCurveInfo
                     {
                         Mnemonic = "IndexCurve",
-                        Unit = "m",
+                        Unit = CommonConstants.Unit.Meter,
                     },
                     new WitsmlLogCurveInfo
                     {
                         Mnemonic = "Curve1",
-                        Unit = "m",
+                        Unit = CommonConstants.Unit.Meter,
                     },
                 }
             };
@@ -68,7 +69,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     new WitsmlLogCurveInfo
                     {
                         Mnemonic = "IndexCurve",
-                        Unit = "m",
+                        Unit = CommonConstants.Unit.Meter,
                     },
                     new WitsmlLogCurveInfo
                     {
@@ -83,7 +84,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     new WitsmlLogCurveInfo
                     {
                         Mnemonic = "Curve2",
-                        Unit = "m",
+                        Unit = CommonConstants.Unit.Meter,
                     },
                 }
             };

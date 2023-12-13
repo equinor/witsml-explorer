@@ -8,8 +8,6 @@ namespace Witsml.Data.Curves;
 /// </summary>
 public class TimeSpanIndex : Index
 {
-    private const string TimeSpanPattern = @"hh\:mm\:ss";
-
     public TimeSpan Value { get; }
 
     public TimeSpanIndex(TimeSpan value)
@@ -36,7 +34,7 @@ public class TimeSpanIndex : Index
 
     public override string GetValueAsString()
     {
-        return Value.ToString(TimeSpanPattern, CultureInfo.InvariantCulture);
+        return Value.ToString(CommonConstants.TimeSpanIndex.Pattern, CultureInfo.InvariantCulture);
     }
 
     public override bool IsContinuous(Index that)
