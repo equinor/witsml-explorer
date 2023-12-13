@@ -19,10 +19,7 @@ import {
 
 export interface CopyRangeModalProps {
   mnemonics: string[];
-  onSubmit?: (
-    minIndex: string | number,
-    maxIndex: string | number
-  ) => void;
+  onSubmit?: (minIndex: string | number, maxIndex: string | number) => void;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
