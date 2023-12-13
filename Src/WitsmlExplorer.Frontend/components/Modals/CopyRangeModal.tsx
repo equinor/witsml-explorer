@@ -19,7 +19,7 @@ import {
 
 export interface CopyRangeModalProps {
   mnemonics: string[];
-  onSubmitOverride?: (
+  onSubmit?: (
     minIndex: string | number,
     maxIndex: string | number
   ) => void;
@@ -34,7 +34,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
   const selectedLog = selectedObject as LogObject;
-  const { onSubmitOverride: onSubmitOverride } = props;
+  const { onSubmit: onSubmitOverride } = props;
 
   const onSubmit = async () => {
     if (onSubmitOverride) {

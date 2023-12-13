@@ -52,7 +52,7 @@ export const CopyComponentsToServerMenuItem = (
                 if (withRange === true) {
                   const copyRangeModalProps: CopyRangeModalProps = {
                     mnemonics: [],
-                    onSubmitOverride(startIndex, endIndex) {
+                    onSubmit(startIndex, endIndex) {
                       const componentsToCopyWithRange =
                         componentsToCopy as ComponentWithRange[];
                       const componentsRange = componentsToCopyWithRange.filter(
