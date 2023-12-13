@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellJob job = CreateJobTemplate(null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
-            job = CreateJobTemplate("");
+            job = CreateJobTemplate(string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellJob job = CreateJobTemplate(name: null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
-            job = CreateJobTemplate(name: "");
+            job = CreateJobTemplate(name: string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellJob job = CreateJobTemplate(timeZone: null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
-            job = CreateJobTemplate(timeZone: "");
+            job = CreateJobTemplate(timeZone: string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("TimeZone cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);

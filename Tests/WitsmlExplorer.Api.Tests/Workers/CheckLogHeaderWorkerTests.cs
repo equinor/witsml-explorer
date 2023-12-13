@@ -232,7 +232,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 if (options.MaxReturnNodes == 1)
                 {
-                    if (logs.Logs[0].LogData.MnemonicList == "")
+                    if (logs.Logs[0].LogData.MnemonicList == string.Empty)
                     {
                         return Task.FromResult(GetTestLogDataFirstRow(indexType));
                     }

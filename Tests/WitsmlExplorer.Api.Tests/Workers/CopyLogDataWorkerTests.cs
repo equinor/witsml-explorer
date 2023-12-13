@@ -76,7 +76,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             await _worker.Execute(job);
 
-            Assert.Equal(string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME]), updatedLogs.First().Logs.First().LogData.MnemonicList);
+            Assert.Equal(string.Join(CommonConstants.DataSeparator, SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME]), updatedLogs.First().Logs.First().LogData.MnemonicList);
             Assert.Equal(5, updatedLogs.First().Logs.First().LogData.Data.Count);
         }
 
@@ -92,7 +92,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             await _worker.Execute(job);
 
-            Assert.Equal(string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]), updatedLogs.First().Logs.First().LogData.MnemonicList);
+            Assert.Equal(string.Join(CommonConstants.DataSeparator, SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]), updatedLogs.First().Logs.First().LogData.MnemonicList);
             Assert.Equal(5, updatedLogs.First().Logs.First().LogData.Data.Count);
         }
 
@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             await _worker.Execute(job);
 
-            Assert.Equal(string.Join(",", SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]), updatedLogs.First().Logs.First().LogData.MnemonicList);
+            Assert.Equal(string.Join(CommonConstants.DataSeparator, SourceMnemonics[WitsmlLog.WITSML_INDEX_TYPE_MD]), updatedLogs.First().Logs.First().LogData.MnemonicList);
             Assert.Equal(5, updatedLogs.First().Logs.First().LogData.Data.Count);
         }
 
@@ -136,8 +136,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.NotNull(query);
-            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
+            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(CommonConstants.DataSeparator);
             Assert.Equal(job.Source.ComponentUids, queriedMnemonics);
             Assert.Equal(job.Source.ComponentUids, copiedMnemonics);
         }
@@ -166,8 +166,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             await _worker.Execute(job);
 
             Assert.NotNull(query);
-            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(",");
-            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(",");
+            string[] queriedMnemonics = query.Logs.First().LogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] copiedMnemonics = updatedLogs.Last().Logs.First().LogData.MnemonicList.Split(CommonConstants.DataSeparator);
             Assert.Contains(indexMnemonic, queriedMnemonics);
             Assert.Contains(indexMnemonic, copiedMnemonics);
         }

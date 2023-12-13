@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -24,7 +25,7 @@ namespace Witsml.Data
         [XmlElement("original")]
         public string OriginalText
         {
-            get => Original.HasValue ? XmlConvert.ToString(Original.Value) : null;
+            get => Original?.ToString(CultureInfo.InvariantCulture);
             set => Original = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
         [XmlElement("description")] public string Description { get; set; }

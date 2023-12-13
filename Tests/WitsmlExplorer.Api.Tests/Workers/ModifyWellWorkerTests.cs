@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameWell_EmptyName_ThrowsException()
         {
-            ModifyWellJob job = CreateJobTemplate(WellUid, "");
+            ModifyWellJob job = CreateJobTemplate(WellUid, string.Empty);
 
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);

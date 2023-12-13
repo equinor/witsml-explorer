@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
 
@@ -82,8 +83,8 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLog headerResultLog = (WitsmlLog)headerResult.Objects.First();
             string headerEndIndex = isDepthLog ? headerResultLog.EndIndex.Value : headerResultLog.EndDateTimeIndex;
             string headerStartIndex = isDepthLog ? headerResultLog.StartIndex.Value : headerResultLog.StartDateTimeIndex;
-            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? "");
-            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? "");
+            Dictionary<string, string> headerStartValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MinIndex?.Value : l.MinDateTimeIndex) ?? string.Empty);
+            Dictionary<string, string> headerEndValues = headerResultLog.LogCurveInfo.ToDictionary(l => l.Mnemonic, l => (isDepthLog ? l.MaxIndex?.Value : l.MaxDateTimeIndex) ?? string.Empty);
             return (headerStartValues, headerEndValues, headerStartIndex, headerEndIndex, headerResultLog.IndexCurve.Value);
         }
 
@@ -102,16 +103,16 @@ namespace WitsmlExplorer.Api.Workers
             {
                 return null;
             }
-            var endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(",")).ToList();
-            string[] startResultLogData = dataStartResultLog.LogData.Data?.FirstOrDefault()?.Data.Split(",");
+            var endResultLogData = dataEndResultLog.LogData.Data?.Select(data => data.Data.Split(CommonConstants.DataSeparator)).ToList();
+            string[] startResultLogData = dataStartResultLog.LogData.Data?.FirstOrDefault()?.Data.Split(CommonConstants.DataSeparator);
             if (startResultLogData.IsNullOrEmpty() || endResultLogData.IsNullOrEmpty())
             {
                 return null;
             }
-            IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == "" ? "" : startResultLogData[0]);
+            IEnumerable<string> dataStartIndexes = startResultLogData.Select(data => data == String.Empty ? String.Empty : startResultLogData[0]);
             IEnumerable<string> dataEndIndexes = ExtractColumnIndexes(endResultLogData);
-            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList?.Split(",");
-            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList?.Split(",");
+            string[] startMnemonics = dataStartResultLog.LogData.MnemonicList?.Split(CommonConstants.DataSeparator);
+            string[] endMnemonics = dataEndResultLog.LogData.MnemonicList?.Split(CommonConstants.DataSeparator);
             if (startMnemonics == null || endMnemonics == null)
             {
                 return null;
@@ -128,7 +129,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task<Dictionary<string, string>> AddStartIndexForMissingMnemonics(string wellUid, string wellboreUid, string logUid, Dictionary<string, string> dataStartValues, string[] startMnemonics, string[] endMnemonics, string indexCurve)
         {
             string[] missingMnemonics = endMnemonics.Where(mnemonic => !startMnemonics.Contains(mnemonic))
-                .Concat(dataStartValues.Where((entry) => entry.Value == "").Select((entry) => entry.Key)).Distinct().ToArray();
+                .Concat(dataStartValues.Where((entry) => entry.Value == string.Empty).Select((entry) => entry.Key)).Distinct().ToArray();
             if (missingMnemonics.Any())
             {
                 IEnumerable<WitsmlLogs> missingIndexQueries = missingMnemonics.Select(mnemonic => LogQueries.GetLogContent(wellUid, wellboreUid, logUid, null, new List<string>() { indexCurve, mnemonic }, null, null));
@@ -136,7 +137,7 @@ namespace WitsmlExplorer.Api.Workers
                 List<Task<WitsmlLogs>> missingDataResults = missingIndexQueries.Select(query => GetTargetWitsmlClientOrThrow().GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.DataOnly, MaxReturnNodes: 1))).ToList();
                 await Task.WhenAll(missingDataResults);
                 IEnumerable<WitsmlLog> missingLogs = missingDataResults.Select(r => (WitsmlLog)r.Result.Objects.First());
-                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData?.Data?.FirstOrDefault()?.Data?.Split(",")?[0] ?? "");
+                IEnumerable<string> missingDataIndexes = missingLogs.Select(l => l.LogData?.Data?.FirstOrDefault()?.Data?.Split(CommonConstants.DataSeparator)?[0] ?? string.Empty);
                 // Insert the indexes from the missing mnemonics to the original dict.
                 missingDataIndexes
                     .Select((value, index) => new { mnemonic = missingMnemonics[index], value })

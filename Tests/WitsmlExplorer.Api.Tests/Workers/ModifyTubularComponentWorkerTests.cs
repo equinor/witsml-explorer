@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             ModifyTubularComponentJob job = CreateJobTemplate();
-            job.TubularComponent.Id = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.TubularComponent.Id = new Measure.LengthMeasure { Value = expectedValue, Uom = CommonConstants.Unit.Feet };
             List<WitsmlTubulars> updatedTubulars = await MockJob(job);
             WitsmlLengthMeasure id = updatedTubulars.First().Tubulars.First().TubularComponents.First().Id;
             decimal actual = decimal.Parse(id.Value);
@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             ModifyTubularComponentJob job = CreateJobTemplate();
-            job.TubularComponent.Od = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.TubularComponent.Od = new Measure.LengthMeasure { Value = expectedValue, Uom = CommonConstants.Unit.Feet };
             List<WitsmlTubulars> updatedTubulars = await MockJob(job);
             WitsmlLengthMeasure od = updatedTubulars.First().Tubulars.First().TubularComponents.First().Od;
             decimal actual = decimal.Parse(od.Value);
@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const int expectedValue = 10;
             ModifyTubularComponentJob job = CreateJobTemplate();
-            job.TubularComponent.Len = new Measure.LengthMeasure { Value = expectedValue, Uom = "ft" };
+            job.TubularComponent.Len = new Measure.LengthMeasure { Value = expectedValue, Uom = CommonConstants.Unit.Feet };
             List<WitsmlTubulars> updatedTubulars = await MockJob(job);
             WitsmlLengthMeasure len = updatedTubulars.First().Tubulars.First().TubularComponents.First().Len;
             decimal actual = decimal.Parse(len.Value);

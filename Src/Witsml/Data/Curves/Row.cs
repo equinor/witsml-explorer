@@ -11,7 +11,7 @@ namespace Witsml.Data.Curves
 
         public Row(string commaSeparated)
         {
-            string[] row = commaSeparated.Split(",");
+            string[] row = commaSeparated.Split(CommonConstants.DataSeparator);
             Index = DateTimeIndex.TryParseISODate(row.First(), out DateTimeIndex witsmlDateTime)
                 ? witsmlDateTime
                 : new DepthIndex(double.Parse(row.First(), CultureInfo.InvariantCulture));

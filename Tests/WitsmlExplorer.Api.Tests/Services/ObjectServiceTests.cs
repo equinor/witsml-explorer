@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     It.Is<IWitsmlObjectList>((queryIn) =>
                         queryIn.Objects.First().UidWell == uidWell &&
                         queryIn.Objects.First().UidWellbore == uidWellbore &&
-                        queryIn.Objects.First().Uid == "" &&
+                        queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlLogs().TypeName
                     ),
                     It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
@@ -112,7 +112,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     It.Is<IWitsmlObjectList>((queryIn) =>
                         queryIn.Objects.First().UidWell == uidWell &&
                         queryIn.Objects.First().UidWellbore == uidWellbore &&
-                        queryIn.Objects.First().Uid == "" &&
+                        queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlMessages().TypeName
                     ),
                     It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
