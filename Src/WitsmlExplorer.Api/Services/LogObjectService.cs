@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.IdentityModel.Tokens;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
@@ -181,8 +182,8 @@ namespace WitsmlExplorer.Api.Services
                 }
             }
 
-            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(",");
-            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(",");
+            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(CommonConstants.DataSeparator);
 
             return new LogData
             {
@@ -197,10 +198,10 @@ namespace WitsmlExplorer.Api.Services
         private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
             List<Dictionary<string, LogDataValue>> result = new();
-            string[] mnemonics = logData.MnemonicList.Split(",");
+            string[] mnemonics = logData.MnemonicList.Split(CommonConstants.DataSeparator);
             foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
-                var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value }).ToList();
+                var keyValuePairs = valueRow.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
                 if (keyValuePairs.Count > mnemonics.Length)
                 {
                     throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count}.", (int)HttpStatusCode.InternalServerError);

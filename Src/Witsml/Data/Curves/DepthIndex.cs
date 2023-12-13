@@ -6,10 +6,6 @@ namespace Witsml.Data.Curves
 {
     public class DepthIndex : Index
     {
-        private const double OffsetEpsilon = 1e-3;
-        private const double Epsilon = 1e-5;
-        public const double NullValue = -999.25;
-
         public double Value { get; }
         public DepthUnit Uom { get; }
 
@@ -40,7 +36,7 @@ namespace Witsml.Data.Curves
         private bool HasSameUnitAs(DepthIndex that) => Uom.Equals(that.Uom);
 
         [Obsolete("AddEpsilon is deprecated due to assuming 3 decimals of precision for depth indexes. Some WITSML servers do not use 3 decimals.")]
-        public override Index AddEpsilon() => new DepthIndex(Value + OffsetEpsilon, Uom);
+        public override Index AddEpsilon() => new DepthIndex(Value + CommonConstants.DepthIndex.OffsetEpsilon, Uom);
 
         private Index Subtract(Index that)
         {
@@ -55,7 +51,7 @@ namespace Witsml.Data.Curves
             {
                 throw new ArgumentException("Cannot compare depths with different unit types");
             }
-            var isEqual = Math.Abs(Value - thatDepthIndex.Value) < Epsilon;
+            var isEqual = Math.Abs(Value - thatDepthIndex.Value) < CommonConstants.DepthIndex.Epsilon;
             return isEqual ? 0 : Value.CompareTo(thatDepthIndex.Value);
         }
 
@@ -82,7 +78,7 @@ namespace Witsml.Data.Curves
         public override bool IsNegative() => Value <= 0.0;
         public override bool IsNullValue()
         {
-            return Math.Abs(Value - NullValue) < 0;
+            return Math.Abs(Value - CommonConstants.DepthIndex.NullValue) < 0;
         }
 
 

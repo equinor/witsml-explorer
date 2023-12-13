@@ -8,14 +8,14 @@ namespace Witsml.Extensions
         {
             return witsmlLog.StartIndex == null && string.IsNullOrEmpty(witsmlLog.StartDateTimeIndex)
                 ? null
-                : string.Equals(witsmlLog.IndexType, WitsmlLog.WITSML_INDEX_TYPE_MD, System.StringComparison.Ordinal) ? witsmlLog.StartIndex != null ? witsmlLog.StartIndex.ToString() : "" : witsmlLog.StartDateTimeIndex;
+                : string.Equals(witsmlLog.IndexType, WitsmlLog.WITSML_INDEX_TYPE_MD, System.StringComparison.Ordinal) ? witsmlLog.StartIndex != null ? witsmlLog.StartIndex.ToString() : string.Empty : witsmlLog.StartDateTimeIndex;
         }
 
         public static string GetEndIndexAsString(this WitsmlLog witsmlLog)
         {
             return witsmlLog.EndIndex == null && string.IsNullOrEmpty(witsmlLog.EndDateTimeIndex)
                 ? null
-                : string.Equals(witsmlLog.IndexType, WitsmlLog.WITSML_INDEX_TYPE_MD, System.StringComparison.Ordinal) ? witsmlLog.EndIndex != null ? witsmlLog.EndIndex.ToString() : "" : witsmlLog.EndDateTimeIndex;
+                : string.Equals(witsmlLog.IndexType, WitsmlLog.WITSML_INDEX_TYPE_MD, System.StringComparison.Ordinal) ? witsmlLog.EndIndex != null ? witsmlLog.EndIndex.ToString() : string.Empty : witsmlLog.EndDateTimeIndex;
         }
 
 

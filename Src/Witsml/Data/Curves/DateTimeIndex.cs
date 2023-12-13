@@ -5,10 +5,7 @@ namespace Witsml.Data.Curves
 {
     public class DateTimeIndex : Index
     {
-
         public DateTime Value { get; }
-        public const string IsoPattern = "yyyy-MM-ddTHH:mm:ss.fffZ";
-        public const string NullValue = "1900-01-01T00:00:00.000Z";
 
         public DateTimeIndex(DateTime dateTime)
         {
@@ -17,14 +14,14 @@ namespace Witsml.Data.Curves
 
         public static DateTimeIndex FromString(string dateString)
         {
-            return DateTime.TryParseExact(dateString, IsoPattern, null, DateTimeStyles.None, out DateTime parsedDateTime)
+            return DateTime.TryParseExact(dateString, CommonConstants.DateTimeIndex.IsoPattern, null, DateTimeStyles.None, out DateTime parsedDateTime)
                 ? new DateTimeIndex(parsedDateTime)
                 : throw new Exception($"Date format not recognized: {dateString}");
         }
 
         public static bool TryParseISODate(string dateString, out DateTimeIndex dateTimeIndex)
         {
-            if (DateTime.TryParseExact(dateString, IsoPattern, null, DateTimeStyles.None, out DateTime tmpDateTime))
+            if (DateTime.TryParseExact(dateString, CommonConstants.DateTimeIndex.IsoPattern, null, DateTimeStyles.None, out DateTime tmpDateTime))
             {
                 dateTimeIndex = new DateTimeIndex(tmpDateTime);
                 return true;
@@ -48,7 +45,7 @@ namespace Witsml.Data.Curves
 
         public override string GetValueAsString()
         {
-            return Value.ToUniversalTime().ToString(IsoPattern, CultureInfo.InvariantCulture);
+            return Value.ToUniversalTime().ToString(CommonConstants.DateTimeIndex.IsoPattern, CultureInfo.InvariantCulture);
         }
 
         public override bool IsContinuous(Index that)
@@ -65,7 +62,7 @@ namespace Witsml.Data.Curves
 
         public override bool IsNullValue()
         {
-            return Value.Date.Equals(DateTime.Parse(NullValue));
+            return Value.Date.Equals(DateTime.Parse(CommonConstants.DateTimeIndex.NullValue));
         }
 
         public override string ToString()

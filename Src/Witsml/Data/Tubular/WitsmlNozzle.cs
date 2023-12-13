@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -15,7 +16,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("index")]
         public string IndexText
         {
-            get => Index.HasValue ? XmlConvert.ToString(Index.Value) : null;
+            get => Index?.ToString(CultureInfo.InvariantCulture);
             set => Index = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 

@@ -11,7 +11,7 @@ namespace Witsml.Data.Curves
 
         public Point(string commaSeparated)
         {
-            string[] values = commaSeparated.Split(",");
+            string[] values = commaSeparated.Split(CommonConstants.DataSeparator);
             Index = DateTimeIndex.TryParseISODate(values.First(), out DateTimeIndex witsmlDateTime)
                 ? witsmlDateTime
                 : new DepthIndex(double.Parse(values.First(), CultureInfo.InvariantCulture));
@@ -26,7 +26,10 @@ namespace Witsml.Data.Curves
 
         public int GetValueAsInt()
         {
-            return Value is DoubleValue value ? (int)value.Get() : throw new InvalidCastException("Unable to cast String values to integers");
+            return Value is DoubleValue value
+                ? (int)value.Get()
+                : throw new InvalidCastException(
+                    "Unable to cast String values to integers");
         }
 
         public double GetValueAsDouble()

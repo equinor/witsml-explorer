@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,7 +26,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("valveFloat")]
         public string ValveFloatText
         {
-            get => ValveFloat.HasValue ? XmlConvert.ToString(ValveFloat.Value) : null;
+            get => ValveFloat?.ToString(CultureInfo.InvariantCulture);
             set => ValveFloat = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
@@ -34,7 +35,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("sourceNuclear")]
         public string SourceNuclearText
         {
-            get => SourceNuclear.HasValue ? XmlConvert.ToString(SourceNuclear.Value) : null;
+            get => SourceNuclear?.ToString(CultureInfo.InvariantCulture);
             set => SourceNuclear = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
