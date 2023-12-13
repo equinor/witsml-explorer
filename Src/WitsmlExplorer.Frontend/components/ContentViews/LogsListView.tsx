@@ -16,6 +16,7 @@ import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import LogsGraph from "./Charts/LogsGraph";
+import { CommonPanelContainer } from "./CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
@@ -197,16 +198,6 @@ export const LogsListView = (): React.ReactElement => {
     <></>
   );
 };
-
-const CommonPanelContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  > p {
-    margin-left: -1rem;
-  }
-`;
 
 const ContentContainer = styled.div`
   display: flex;

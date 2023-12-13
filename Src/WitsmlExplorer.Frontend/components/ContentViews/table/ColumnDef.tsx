@@ -55,6 +55,8 @@ export const useColumnDef = (
           : calculateColumnWidth(column.label, isCompactMode, column.type),
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
+        enableColumnFilter: column.filterFn != null,
+        filterFn: column.filterFn,
         ...addComponentCell(column.type),
         ...addActiveCurveFiltering(column.label),
         ...addDecimalPreference(column.type, decimals)
@@ -64,6 +66,7 @@ export const useColumnDef = (
     const savedOrder = getLocalStorageItem<string[]>(
       viewId + STORAGE_CONTENTTABLE_ORDER_KEY
     );
+
     if (savedOrder) {
       const sortedColumns = savedOrder.flatMap((label) => {
         const foundColumn = columnDef.find((col) => col.id == label);
@@ -80,13 +83,16 @@ export const useColumnDef = (
       ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []),
       ...columnDef
     ];
+
     const firstToggleableIndex = Math.max(
       (checkableRows ? 1 : 0) + (insetColumns ? 1 : 0),
       stickyLeftColumns
     );
+
     for (let i = 0; i < firstToggleableIndex; i++) {
       columnDef[i].enableHiding = false;
     }
+
     return columnDef;
   }, [columns]);
 };

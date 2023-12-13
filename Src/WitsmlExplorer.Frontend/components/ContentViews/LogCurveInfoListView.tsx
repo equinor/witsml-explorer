@@ -1,10 +1,11 @@
+import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
 import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
-import LogCurveInfo from "../../models/logCurveInfo";
+import LogCurveInfo, { isNullOrEmptyIndex } from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { measureToString } from "../../models/measure";
 import { truncateAbortHandler } from "../../services/apiClient";
@@ -14,6 +15,7 @@ import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "../ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "../DateFormatter";
+import { CommonPanelContainer } from "./CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
@@ -56,6 +58,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -130,6 +133,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     const maxDepth = Math.max(
       ...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex))
     );
+
     return logCurveInfoList
       .map((logCurveInfo) => {
         const isActive =
@@ -197,7 +201,12 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     {
       property: "minIndex",
       label: "minIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
+      filterFn: (row) => {
+        return (
+          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
+        );
+      }
     },
     {
       property: "maxIndex",
@@ -215,11 +224,22 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
+  const panelElements = [
+    <CommonPanelContainer key="hideEmptyMnemonics">
+      <Switch
+        checked={hideEmptyMnemonics}
+        onChange={() => setHideEmptyMnemonics(!hideEmptyMnemonics)}
+      />
+      <Typography>Hide Empty Curves</Typography>
+    </CommonPanelContainer>
+  ];
+
   return selectedLog && !isFetchingData ? (
     <ContentTable
       viewId={
         isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
       }
+      panelElements={panelElements}
       columns={columns}
       data={getTableData()}
       onContextMenu={onContextMenu}
