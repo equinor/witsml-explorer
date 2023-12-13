@@ -9,8 +9,8 @@ public static class CommonConstants
     public const string DataSeparator = ",";
     public const string PropertySeparator = ".";
     public const string NewLine = "\n";
-    public const int DefaultClientRequestTimeOut = 90;
-    public const int DefaultReloadInterval = 15;
+    public const int DefaultClientRequestTimeOutSeconds = 90;
+    public const int DefaultReloadIntervalMinutes = 15;
 
     public static class DepthIndex
     {

@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Extensions
                     new DefaultAzureCredential(),
                     new AzureKeyVaultConfigurationOptions()
                     {
-                        ReloadInterval = TimeSpan.FromMinutes(CommonConstants.DefaultReloadInterval)
+                        ReloadInterval = TimeSpan.FromMinutes(CommonConstants.DefaultReloadIntervalMinutes)
                     });
             }
             return configuration;

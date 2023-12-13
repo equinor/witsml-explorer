@@ -46,7 +46,7 @@ namespace Witsml
                 options.Hostname = hostname;
                 options.Credentials = new WitsmlCredentials(username, password);
                 options.ClientCapabilities = clientCapabilities;
-                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOut);
+                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                 options.LogQueries = logQueries;
             })
         { }
