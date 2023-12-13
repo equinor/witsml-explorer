@@ -17,19 +17,25 @@ export interface CopyComponentsToServerMenuItemProps {
   withRange?: boolean;
 }
 
+interface ComponentWithRange {
+  uid: string;
+  minIndex: number | Date;
+  maxIndex: number | Date;
+}
+
 export const CopyComponentsToServerMenuItem = (
   props: CopyComponentsToServerMenuItemProps
 ): React.ReactElement => {
-  const { componentsToCopy, componentType } = props;
+  const { componentsToCopy, componentType, withRange } = props;
   const {
     navigationState: { selectedServer, selectedObject, servers }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const menuComponents = menuItemText("copy", componentType, componentsToCopy);
   const menuText =
-    props.withRange === true
+    withRange === true
       ? menuComponents + " with range to server"
-      : menuComponents + "to server";
+      : menuComponents + " to server";
 
   return (
     <NestedMenuItem
@@ -43,13 +49,25 @@ export const CopyComponentsToServerMenuItem = (
             <MenuItem
               key={server.name}
               onClick={() => {
-                if (props.withRange === true) {
+                if (withRange === true) {
                   const copyRangeModalProps: CopyRangeModalProps = {
-                    targetServer: server,
-                    componentsToCopy: componentsToCopy,
-                    componentType: componentType,
-                    withRange: true,
-                    mnemonics: []
+                    mnemonics: [],
+                    onSubmitOverride(startIndex, endIndex) {
+                      const componentsToCopyWithRange =
+                        componentsToCopy as ComponentWithRange[];
+                      const componentsRange = componentsToCopyWithRange.filter(
+                        (x) =>
+                          x.minIndex >= startIndex && x.maxIndex <= endIndex
+                      );
+                      copyComponentsToServer({
+                        targetServer: server,
+                        sourceServer: selectedServer,
+                        componentsToCopy: componentsRange,
+                        dispatchOperation,
+                        sourceParent: selectedObject,
+                        componentType: componentType
+                      });
+                    }
                   };
                   dispatchOperation({
                     type: OperationType.DisplayModal,

@@ -12,8 +12,6 @@ import {
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
-import { copyComponentsToServer } from "../ContextMenus/CopyComponentsToServerUtils";
-import { Server } from "../../models/server";
 import {
   CopyRangeClipboard,
   createComponentReferences
@@ -21,16 +19,10 @@ import {
 
 export interface CopyRangeModalProps {
   mnemonics: string[];
-  targetServer?: Server;
-  withRange?: boolean;
-  componentType?: ComponentType;
-  componentsToCopy?: { uid: string }[];
-}
-
-interface ComponentWithRange {
-  uid: string;
-  minIndex: number | Date;
-  maxIndex: number | Date;
+  onSubmitOverride?: (
+    minIndex: string | number,
+    maxIndex: string | number
+  ) => void;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
@@ -42,21 +34,11 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
   const selectedLog = selectedObject as LogObject;
+  const { onSubmitOverride: onSubmitOverride } = props;
 
   const onSubmit = async () => {
-    if (props.withRange === true) {
-      const componentsToCopy = props.componentsToCopy as ComponentWithRange[];
-      const componentsRange = componentsToCopy.filter(
-        (x) => x.minIndex >= startIndex && x.maxIndex <= endIndex
-      );
-      copyComponentsToServer({
-        targetServer: props.targetServer,
-        sourceServer: selectedServer,
-        componentsToCopy: componentsRange,
-        dispatchOperation,
-        sourceParent: selectedObject,
-        componentType: props.componentType
-      });
+    if (onSubmitOverride) {
+      onSubmitOverride(startIndex, endIndex);
     } else {
       const componentReferences: CopyRangeClipboard = createComponentReferences(
         props.mnemonics,
