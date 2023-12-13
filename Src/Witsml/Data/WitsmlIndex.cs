@@ -7,10 +7,10 @@ namespace Witsml.Data
     public class WitsmlIndex
     {
         [XmlAttribute("uom")]
-        public string Uom { get; set; } = "";
+        public string Uom { get; set; } = string.Empty;
 
         [XmlText]
-        public string Value { get; set; } = "";
+        public string Value { get; set; } = string.Empty;
 
         public WitsmlIndex() { }
 

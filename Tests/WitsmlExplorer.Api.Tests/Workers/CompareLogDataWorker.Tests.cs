@@ -72,7 +72,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0" }
             };
 
@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0" }
             };
 
@@ -136,7 +136,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "2",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0", "2,0" }
             };
 
@@ -145,7 +145,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "2",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,99", "2,0" }
             };
 
@@ -212,7 +212,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0" }
             };
 
@@ -221,7 +221,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
                 Data = new() { "0,0,0", "1,0,0" }
             };
 
@@ -300,7 +300,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0" }
             };
 
@@ -309,7 +309,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "2",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0", "2,0" }
             };
 
@@ -376,7 +376,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,0", "1,0" }
             };
 
@@ -385,7 +385,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0",
                 EndIndex = "1",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0,", "1," }
             };
 
@@ -468,7 +468,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.03",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.01,11", "0.02,22", "0.03,33" }
             };
 
@@ -477,7 +477,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.03",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.012,11", "0.016,99", "0.028,33" }
             };
 
@@ -507,7 +507,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.03",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.012,11", "0.016,99", "0.028,33" }
             };
 
@@ -516,7 +516,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.03",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.01,11", "0.02,22", "0.03,33" }
             };
 
@@ -548,7 +548,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.01",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.01,11" }
             };
 
@@ -557,7 +557,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.011",
                 EndIndex = "0.0013",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.011,11", "0.012,99", "0.013,11" }
             };
 
@@ -580,7 +580,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.01",
                 EndIndex = "0.01",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.01,11" }
             };
 
@@ -589,7 +589,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.011",
                 EndIndex = "0.0013",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.011,11", "0.012,99", "0.013,11" }
             };
 
@@ -636,7 +636,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.00",
                 EndIndex = "0.02",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.00,00", "0.01,11", "0.02,22" }
             };
 
@@ -645,7 +645,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IndexType = indexType,
                 StartIndex = "0.010",
                 EndIndex = "0.030",
-                LogCurveInfo = new() { ("IndexCurve", "m"), ("Curve1", "Unit1") },
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
                 Data = new() { "0.010,11", "0.020,22", "0.030,33" }
             };
 
@@ -705,13 +705,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     string uid = logs.Logs.First().Uid;
                     WitsmlLog log = logData.Logs.Find(l => l.Uid == uid);
                     IEnumerable<string> data = log.LogData.Data.Select(d => d.Data);
-                    string mnemonic = logs.Logs.First().LogData.MnemonicList.Split(',')[1];
-                    int mnemonicIndex = log.LogData.MnemonicList.Split(',').ToList().FindIndex(m => m == mnemonic);
+                    string mnemonic = logs.Logs.FirstOrDefault()?.LogData.MnemonicList.Split(CommonConstants.DataSeparator)[1];
+                    int mnemonicIndex = log.LogData.MnemonicList.Split(CommonConstants.DataSeparator).ToList().FindIndex(m => m == mnemonic);
                     List<string> dataForCurve = new List<string>();
                     foreach (string dataRow in data)
                     {
-                        string index = dataRow.Split(',')[0];
-                        string mnemonicData = dataRow.Split(',')[mnemonicIndex];
+                        string index = dataRow.Split(CommonConstants.DataSeparator)[0];
+                        string mnemonicData = dataRow.Split(CommonConstants.DataSeparator)[mnemonicIndex];
                         if (!string.IsNullOrEmpty(mnemonicData))
                         {
                             dataForCurve.Add($"{index},{mnemonicData}");
@@ -758,12 +758,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private WitsmlLogs CreateSampleLogData(string wellUid, string wellboreUid, string logUid, TestLog log)
         {
-            string mnemonicsList = "";
-            string unitList = "";
+            string mnemonicsList = string.Empty;
+            string unitList = string.Empty;
             foreach ((string, string) mnemonic in log.LogCurveInfo)
             {
-                mnemonicsList += mnemonic.Item1 + ",";
-                unitList += mnemonic.Item2 + ",";
+                mnemonicsList += mnemonic.Item1 + CommonConstants.DataSeparator;
+                unitList += mnemonic.Item2 + CommonConstants.DataSeparator;
             }
 
             // Remove last "," in mnemonic list and unit list
@@ -804,9 +804,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     UidWellbore = wellboreUid,
                     Direction = WitsmlLog.WITSML_DIRECTION_INCREASING,
                     IndexType = log.IndexType,
-                    StartIndex = isDepthLog ? new WitsmlIndex() { Value = log.StartIndex, Uom = "m" } : null,
+                    StartIndex = isDepthLog ? new WitsmlIndex() { Value = log.StartIndex, Uom = CommonConstants.Unit.Meter } : null,
                     StartDateTimeIndex = isDepthLog ? null : log.StartIndex,
-                    EndIndex = isDepthLog ? new WitsmlIndex() { Value = log.EndIndex, Uom = "m" } : null,
+                    EndIndex = isDepthLog ? new WitsmlIndex() { Value = log.EndIndex, Uom = CommonConstants.Unit.Meter } : null,
                     EndDateTimeIndex = isDepthLog ? null : log.EndIndex,
                     IndexCurve = new WitsmlIndexCurve() { Value = "IndexCurve" },
                     LogCurveInfo = GetLogCurveInfo(log.IndexType, log.StartIndex, log.EndIndex, log.LogCurveInfo)
@@ -817,9 +817,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private List<WitsmlLogCurveInfo> GetLogCurveInfo(string indexType, string startIndex, string endIndex, List<(string, string)> logCurveInfo)
         {
             var isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
-            var minIndex = isDepthLog ? new WitsmlIndex() { Value = startIndex, Uom = "m" } : null;
+            var minIndex = isDepthLog ? new WitsmlIndex() { Value = startIndex, Uom = CommonConstants.Unit.Meter } : null;
             var minDateTimeIndex = isDepthLog ? null : startIndex;
-            var maxIndex = isDepthLog ? new WitsmlIndex() { Value = endIndex, Uom = "m" } : null;
+            var maxIndex = isDepthLog ? new WitsmlIndex() { Value = endIndex, Uom = CommonConstants.Unit.Meter } : null;
             var maxDateTimeIndex = isDepthLog ? null : endIndex;
             var curveInfo = logCurveInfo.Select(mnemonic => new WitsmlLogCurveInfo
             {

@@ -141,7 +141,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
 
-                var data = dataRow.Split(',');
+                var data = dataRow.Split(CommonConstants.DataSeparator);
                 var index = data.First();
                 var value = data.Last();
 
@@ -342,7 +342,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private Dictionary<string, string> WitsmlLogDataToDictionary(WitsmlLogData logData)
         {
-            return logData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
+            return logData.Data?.ToDictionary(row => row.Data.Split(CommonConstants.DataSeparator).First(), row => row.Data.Split(CommonConstants.DataSeparator).Last());
         }
 
         private void VerifyLogs(WitsmlLog sourceLog, WitsmlLog targetLog)

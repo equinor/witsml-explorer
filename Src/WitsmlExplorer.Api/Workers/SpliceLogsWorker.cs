@@ -42,8 +42,8 @@ namespace WitsmlExplorer.Api.Workers
 
                 WitsmlLogData newLogData = new()
                 {
-                    MnemonicList = string.Join(",", newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic)),
-                    UnitList = string.Join(",", newLogHeader.LogCurveInfo.Select(lci => lci.Unit)),
+                    MnemonicList = string.Join(CommonConstants.DataSeparator, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic)),
+                    UnitList = string.Join(CommonConstants.DataSeparator, newLogHeader.LogCurveInfo.Select(lci => lci.Unit)),
                     Data = new() // Will be populated in the loop below
                 };
 
@@ -90,30 +90,30 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlLogData SpliceLogDataForCurve(WitsmlLogData primaryData, WitsmlLogData secondaryData, string mnemonic, bool isDepthLog)
         {
-            int mnemonicIndex = primaryData.MnemonicList.Split(',').ToList().FindIndex(m => m == mnemonic);
-            Dictionary<string, string> primaryDict = primaryData.Data?.ToDictionary(row => row.Data.Split(',')[0], row => row.Data) ?? new();
+            int mnemonicIndex = primaryData.MnemonicList.Split(CommonConstants.DataSeparator).ToList().FindIndex(m => m == mnemonic);
+            Dictionary<string, string> primaryDict = primaryData.Data?.ToDictionary(row => row.Data.Split(CommonConstants.DataSeparator)[0], row => row.Data) ?? new();
             string startIndex = null;
             string endIndex = null;
             if (primaryDict.Any())
             {
-                var firstElementForCurve = primaryDict.FirstOrDefault(x => x.Value.Split(',')[mnemonicIndex] != "");
+                var firstElementForCurve = primaryDict.FirstOrDefault(x => x.Value.Split(CommonConstants.DataSeparator)[mnemonicIndex] != string.Empty);
                 startIndex = firstElementForCurve.Equals(default(KeyValuePair<string, string>)) ? null : firstElementForCurve.Key;
-                var lastElementForCurve = primaryDict.LastOrDefault(x => x.Value.Split(',')[mnemonicIndex] != "");
+                var lastElementForCurve = primaryDict.LastOrDefault(x => x.Value.Split(CommonConstants.DataSeparator)[mnemonicIndex] != string.Empty);
                 endIndex = lastElementForCurve.Equals(default(KeyValuePair<string, string>)) ? null : lastElementForCurve.Key;
             }
 
             foreach (var dataRow in secondaryData.Data.Select(row => row.Data))
             {
-                var rowIndex = dataRow.Split(',').First();
+                var rowIndex = dataRow.Split(CommonConstants.DataSeparator).First();
                 if ((startIndex == null && endIndex == null)
                     || isDepthLog && (StringHelpers.ToDouble(rowIndex) < StringHelpers.ToDouble(startIndex) || StringHelpers.ToDouble(rowIndex) > StringHelpers.ToDouble(endIndex))
                     || !isDepthLog && (DateTime.Parse(rowIndex) < DateTime.Parse(startIndex) || DateTime.Parse(rowIndex) > DateTime.Parse(endIndex)))
                 {
-                    var newCellValue = dataRow.Split(',').Last();
-                    var currentRowValue = (primaryDict.GetValueOrDefault(rowIndex)?.Split(',') ?? Enumerable.Repeat("", primaryData.MnemonicList.Split(',').Length)).ToList();
+                    var newCellValue = dataRow.Split(CommonConstants.DataSeparator).Last();
+                    var currentRowValue = (primaryDict.GetValueOrDefault(rowIndex)?.Split(CommonConstants.DataSeparator) ?? Enumerable.Repeat("", primaryData.MnemonicList.Split(CommonConstants.DataSeparator).Length)).ToList();
                     currentRowValue[0] = rowIndex;
                     currentRowValue[mnemonicIndex] = newCellValue;
-                    primaryDict[rowIndex] = string.Join(",", currentRowValue);
+                    primaryDict[rowIndex] = string.Join(CommonConstants.DataSeparator, currentRowValue);
                 }
             }
 

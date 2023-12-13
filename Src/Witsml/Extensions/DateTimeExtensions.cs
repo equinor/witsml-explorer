@@ -9,7 +9,7 @@ namespace Witsml.Extensions
     {
         public static string ToISODateTimeString(this DateTime dateTime)
         {
-            return dateTime.ToUniversalTime().ToString(DateTimeIndex.IsoPattern, CultureInfo.InvariantCulture);
+            return dateTime.ToUniversalTime().ToString(CommonConstants.DateTimeIndex.IsoPattern, CultureInfo.InvariantCulture);
         }
     }
 }

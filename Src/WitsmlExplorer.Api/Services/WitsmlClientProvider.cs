@@ -79,7 +79,7 @@ namespace WitsmlExplorer.Api.Services
                         options.Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
-                        options.RequestTimeOut = TimeSpan.FromSeconds(90);
+                        options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
             }
@@ -98,7 +98,7 @@ namespace WitsmlExplorer.Api.Services
                         options.Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
-                        options.RequestTimeOut = TimeSpan.FromSeconds(90);
+                        options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
             }

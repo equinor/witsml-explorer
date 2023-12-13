@@ -209,8 +209,8 @@ public class AnalyzeGapWorkerTests
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
-                StartIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
-                EndIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                StartIndex = new WitsmlIndex(new DepthIndex(startIndex, CommonConstants.Unit.Meter)),
+                EndIndex = new WitsmlIndex(new DepthIndex(endIndex, CommonConstants.Unit.Meter)),
                 StartDateTimeIndex = startDateTimeIndex,
                 EndDateTimeIndex = endDateTimeIndex,
                 IndexCurve = new WitsmlIndexCurve() { Value = "Depth" },
@@ -222,24 +222,24 @@ public class AnalyzeGapWorkerTests
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "Depth",
-                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, CommonConstants.Unit.Meter)),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, CommonConstants.Unit.Meter)),
                         MinDateTimeIndex = minDateTimeIndex,
                         MaxDateTimeIndex = maxDateTimeIndex,
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "BPOS",
-                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, CommonConstants.Unit.Meter)),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, CommonConstants.Unit.Meter)),
                         MinDateTimeIndex = minDateTimeIndex,
                         MaxDateTimeIndex = maxDateTimeIndex
                     },
                     new WitsmlLogCurveInfo()
                     {
                         Mnemonic = "SPM1",
-                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, "m")),
-                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, "m")),
+                        MinIndex = new WitsmlIndex(new DepthIndex(minIndex, CommonConstants.Unit.Meter)),
+                        MaxIndex = new WitsmlIndex(new DepthIndex(maxIndex, CommonConstants.Unit.Meter)),
                         MinDateTimeIndex = minDateTimeIndex,
                         MaxDateTimeIndex = maxDateTimeIndex
                     },

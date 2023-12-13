@@ -16,7 +16,7 @@ namespace Witsml.Xml
             using var writer = XmlWriter.Create(textWriter, settings);
 
             var namespaces = new XmlSerializerNamespaces();
-            namespaces.Add("", "http://www.witsml.org/schemas/1series");
+            namespaces.Add(string.Empty, "http://www.witsml.org/schemas/1series");
 
             var serializer = new XmlSerializer(item.GetType());
             serializer.Serialize(writer, item, namespaces);

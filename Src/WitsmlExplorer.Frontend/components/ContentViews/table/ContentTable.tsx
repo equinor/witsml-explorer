@@ -45,7 +45,7 @@ import {
   measureSortingFn,
   selectId,
   toggleRow,
-  useInitActiveCurveFiltering
+  useInitFilterFns
 } from "./contentTableUtils";
 import { ContentTableColumn, ContentTableProps } from "./tableParts";
 
@@ -166,7 +166,7 @@ export const ContentTable = React.memo(
 
     useStoreWidthsEffect(viewId, table);
     useStoreVisibilityEffect(viewId, columnVisibility);
-    useInitActiveCurveFiltering(table);
+    useInitFilterFns(table);
 
     const tableContainerRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -237,7 +237,7 @@ export const ContentTable = React.memo(
         onContextMenu(
           e,
           row.original,
-          table.getSelectedRowModel().flatRows.map((r) => r.original)
+          table.getFilteredSelectedRowModel().flatRows.map((r) => r.original)
         );
       }
     };
@@ -260,7 +260,9 @@ export const ContentTable = React.memo(
           <Panel
             checkableRows={checkableRows}
             panelElements={panelElements}
-            numberOfCheckedItems={Object.keys(rowSelection).length}
+            numberOfCheckedItems={
+              table.getFilteredSelectedRowModel().flatRows.length
+            }
             numberOfItems={data?.length}
             table={table}
             viewId={viewId}

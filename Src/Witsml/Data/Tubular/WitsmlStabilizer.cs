@@ -34,7 +34,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("factFric")]
         public string FactFricText
         {
-            get => FactFric.HasValue ? XmlConvert.ToString(FactFric.Value) : null;
+            get => FactFric?.ToString(CultureInfo.InvariantCulture);
             set => FactFric = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture);
         }
 
