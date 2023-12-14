@@ -84,8 +84,9 @@ namespace WitsmlExplorer.Api.Services
         private async Task<bool> UserHasRoleForHost(string[] roles, Uri host)
         {
             ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
+            bool systemCredsExists = _witsmlServerCredentials.WitsmlCreds.Any(n => n.Host.EqualsIgnoreCase(host));
             bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(host)).Any(n => n.Roles != null && n.Roles.Intersect(roles).Any());
-            return validRole;
+            return systemCredsExists & validRole;
         }
 
         private string Encrypt(string inputString)
@@ -122,31 +123,22 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache.SetItem(cacheId, credentials.Host, encryptedPassword, ttl, credentials.UserId);
         }
 
-        private async Task<List<ServerCredentials>> GetSystemCredentialsByToken(string token, Uri server)
+        private async Task<ServerCredentials> GetSystemCredentialsByToken(string token, Uri server)
         {
-            List<ServerCredentials> results = new List<ServerCredentials>();
+            ServerCredentials result = new();
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
             string[] userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
             _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
-            ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
-            string credentialId = allServers.Where(n => n.Url.EqualsIgnoreCase(server))?.Select(n => n.CredentialId)?.FirstOrDefault();
             if (await UserHasRoleForHost(userRoles, server))
             {
-                var matchingCredentials = string.IsNullOrEmpty(credentialId)
-                    ? _witsmlServerCredentials.WitsmlCreds.Where(n => n.Host.EqualsIgnoreCase(server))
-                    : _witsmlServerCredentials.WitsmlCreds.Where(n => n.CredentialId.Equals(credentialId, StringComparison.InvariantCultureIgnoreCase));
-
-                foreach (var credential in matchingCredentials)
+                result = _witsmlServerCredentials.WitsmlCreds.Single(n => n.Host.EqualsIgnoreCase(server));
+                if (!result.IsNullOrEmpty())
                 {
-                    if (!credential.IsNullOrEmpty())
-                    {
-                        CacheCredentials(GetClaimFromToken(token, SUBJECT), credential, 1.0);
-                        results.Add(credential);
-                    }
+                    CacheCredentials(GetClaimFromToken(token, SUBJECT), result, 1.0);
                 }
             }
-            return results;
+            return result;
         }
 
         public string GetClaimFromToken(string token, string claim)
@@ -174,13 +166,10 @@ namespace WitsmlExplorer.Api.Services
             List<string> usernames = credentials == null ? new() : credentials.Keys.ToList();
             if (_useOAuth2)
             {
-                List<ServerCredentials> systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), serverUrl);
-                foreach (var systemCredential in systemCredentials)
+                ServerCredentials systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), serverUrl);
+                if (!systemCredentials.IsNullOrEmpty() && !usernames.Contains(systemCredentials.UserId))
                 {
-                    if (!systemCredential.IsNullOrEmpty() && !usernames.Contains(systemCredential.UserId))
-                    {
-                        usernames.Add(systemCredential.UserId);
-                    }
+                    usernames.Add(systemCredentials.UserId);
                 }
             }
             return usernames.ToArray();
@@ -209,9 +198,8 @@ namespace WitsmlExplorer.Api.Services
             ServerCredentials creds = GetCredentialsFromCache(eh, server, username);
             if (creds == null && _useOAuth2)
             {
-                List<ServerCredentials> credsList = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
-                creds = credsList.FirstOrDefault(c => string.Equals(c.UserId, username, StringComparison.Ordinal));
-                if (creds == null || creds.IsNullOrEmpty())
+                creds = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
+                if (creds.IsNullOrEmpty() || !string.Equals(creds.UserId, username, StringComparison.Ordinal))
                 {
                     return null;
                 }

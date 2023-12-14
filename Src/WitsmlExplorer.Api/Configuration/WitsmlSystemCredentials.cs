@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Configuration
     ///       "ObjectB":  { "Host": "my_host_2", "UserId": "my_user_2", "Password": "my_user_2" }
     ///    }
     /// </c>
-    /// Example keyvault entries ("homeserver" will be used as CredentialId):
+    /// Example keyvault entries ("homeserver" will be ignored):
     /// <c>
     ///    witsmlcreds--homeserver--host
     ///    witsmlcreds--homeserver--userid
@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Configuration
             List<IConfigurationSection> creds = configuration.GetSection(ConfigConstants.WitsmlServerCredsSection).GetChildren().ToList();
             foreach (IConfigurationSection rule in creds)
             {
-                ServerCredentials cred = new() { CredentialId = rule.Key };
+                ServerCredentials cred = new();
                 rule.Bind(cred);
                 if (!cred.IsNullOrEmpty() && cred.Host != null)
                 {

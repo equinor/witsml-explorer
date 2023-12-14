@@ -1,10 +1,4 @@
-import {
-  Button,
-  Icon,
-  Label,
-  TextField,
-  Tooltip
-} from "@equinor/eds-core-react";
+import { Button, Label, TextField } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
@@ -199,27 +193,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   defaultValue={server.roles?.join(" ")}
                   onChange={(e: any) =>
                     setServer({ ...server, roles: e.target.value.split(" ") })
-                  }
-                  disabled={props.editDisabled}
-                />
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                  <Label label="Credential Id" style={labelStyle} />
-                  <Tooltip title="If this field is set, the server will use the credential with the given id to authenticate. Otherwise, the server will use the Server URL to find the credential.">
-                    <Icon
-                      name="infoCircle"
-                      color={colors.interactive.primaryResting}
-                      size={18}
-                    />
-                  </Tooltip>
-                </div>
-                <TextField
-                  id="creds"
-                  defaultValue={server.credentialId ?? ""}
-                  onChange={(e: any) =>
-                    setServer({
-                      ...server,
-                      credentialId: e.target.value.trim()
-                    })
                   }
                   disabled={props.editDisabled}
                 />
