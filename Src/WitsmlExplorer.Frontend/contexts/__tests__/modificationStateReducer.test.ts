@@ -82,6 +82,7 @@ it("Should update list of servers when adding a server", () => {
     url: "https://example.com",
     description: "A new server",
     roles: [],
+    credentialIds: [],
     depthLogDecimals: 0
   };
   const selectServerAction = {

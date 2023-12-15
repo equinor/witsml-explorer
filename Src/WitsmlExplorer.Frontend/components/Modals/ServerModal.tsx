@@ -203,8 +203,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   disabled={props.editDisabled}
                 />
                 <div style={{ display: "flex", flexDirection: "row" }}>
-                  <Label label="Credential Id" style={labelStyle} />
-                  <Tooltip title="If this field is set, the server will use the credential with the given id to authenticate. Otherwise, the server will use the Server URL to find the credential.">
+                  <Label
+                    label="Credential Ids (space delimited)"
+                    style={labelStyle}
+                  />
+                  <Tooltip title="If this field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
                       color={colors.interactive.primaryResting}
@@ -214,11 +217,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 </div>
                 <TextField
                   id="creds"
-                  defaultValue={server.credentialId ?? ""}
+                  defaultValue={server.credentialIds?.join(" ") ?? ""}
                   onChange={(e: any) =>
                     setServer({
                       ...server,
-                      credentialId: e.target.value.trim()
+                      credentialIds: e.target.value.split(" ")
                     })
                   }
                   disabled={props.editDisabled}
