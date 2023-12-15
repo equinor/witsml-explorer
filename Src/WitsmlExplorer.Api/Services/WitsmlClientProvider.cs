@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.Services
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
-                        options.Hostname = _httpHeaders.TargetServer;
+                        options.Hostname = _targetCreds.Host.ToString();
                         options.Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Services
                 _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
-                        options.Hostname = _httpHeaders.SourceServer;
+                        options.Hostname = _sourceCreds.Host.ToString();
                         options.Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
