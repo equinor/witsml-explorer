@@ -77,7 +77,7 @@ Credentials will be mapped on URL from secrets with the server list. `Server` en
     "url": "https://witsml007.someserver/store/WITSML",
     "description": "Equinor testserver. Do not edit any datasets",
     "roles": [ "user" ],
-    "credentialId": ""
+    "credentialIds": []
 }
 ```
 
@@ -98,12 +98,12 @@ If you have multiple servers that use the same credentials, you can configure th
 To share system-user credentials:
 
 1. Create a single set of secrets in Azure Keyvault. The secrets should follow the same naming convention as individual server credentials, even with a valid host. For example, `witsmlcreds--shareduser--host`, `witsmlcreds--shareduser--password`, and `witsmlcreds--shareduser--userid`.
-2. While creating or editing a server in Witsml Explorer, set `Credential Id` to match credentialId (middle) part in the shared credentials' name. Following the previous example, this should be set to `shareduser`.
+2. While creating or editing a server in Witsml Explorer, set `Credential Ids` to match credentialId (middle) part in the shared credentials' name. Following the previous example, this should be set to `shareduser`. If you have multiple sets of shared credentials, both of these can be added: `shareduser shareduser2`.
 3. Repeat this process for all servers you want to use `shareduser`.
 
-Note: Only users with the admin role can set or change the `Credential Id` for a server. Regular users will not be able to modify it.
+Note: Only users with the admin role can set or change the `Credential Ids` for a server. Regular users will not be able to modify it.
 
-When a server is queried, the backend will first check if you have a role that overlaps with the server roles. Then, if the credential Id is set, the backend will fetch the shared credentials from Azure Keyvault using the credential Id. If it is not set, the backend will fetch the server-specific credentials as before.
+When a server is queried, the backend will first check if you have a role that overlaps with the server roles. Then, if the credential Ids is set, the backend will use the credential ids to match credentials from Azure Keyvault. If it is not set, the backend will fetch the server-specific credentials as before.
 
 ## System user credentials flow
 
@@ -225,6 +225,7 @@ Content-Type: application/json
 WitsmlTargetServer: https://witsmlserver.using.system.creds/store/WITSML
 WitsmlTargetUsername: system-user123
 ```
+
 **3. Authorize WITSML credentials**
 
 If you do not have system credentials in keyvault and need to use Basic credentials, you must `authorize` first like below before using endpoints with the given server.

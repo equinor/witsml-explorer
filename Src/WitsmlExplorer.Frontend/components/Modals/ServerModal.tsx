@@ -198,13 +198,18 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   id="role"
                   defaultValue={server.roles?.join(" ")}
                   onChange={(e: any) =>
-                    setServer({ ...server, roles: e.target.value.split(" ") })
+                    setServer({
+                      ...server,
+                      roles: e.target.value
+                        .split(" ")
+                        .filter((role: string) => role.trim() !== "")
+                    })
                   }
                   disabled={props.editDisabled}
                 />
                 <div style={{ display: "flex", flexDirection: "row" }}>
-                  <Label label="Credential Id" style={labelStyle} />
-                  <Tooltip title="If this field is set, the server will use the credential with the given id to authenticate. Otherwise, the server will use the Server URL to find the credential.">
+                  <Label label="Credential Ids" style={labelStyle} />
+                  <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
                       color={colors.interactive.primaryResting}
@@ -214,11 +219,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 </div>
                 <TextField
                   id="creds"
-                  defaultValue={server.credentialId ?? ""}
+                  defaultValue={server.credentialIds?.join(" ") ?? ""}
                   onChange={(e: any) =>
                     setServer({
                       ...server,
-                      credentialId: e.target.value.trim()
+                      credentialIds: e.target.value
+                        .split(" ")
+                        .filter((id: string) => id.trim() !== "")
                     })
                   }
                   disabled={props.editDisabled}
