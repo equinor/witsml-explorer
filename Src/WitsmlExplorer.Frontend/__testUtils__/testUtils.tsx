@@ -129,7 +129,6 @@ export function getServer(overrides?: Partial<Server>): Server {
     description: "serverDescription",
     url: "serverUrl",
     roles: [],
-    credentialIds: [],
     depthLogDecimals: 0,
     ...overrides
   };

@@ -11,7 +11,7 @@ namespace WitsmlExplorer.Api.Models
             Url = server.Url;
             Description = server.Description;
             Roles = server.Roles;
-            CredentialIds = server.CredentialIds;
+            CredentialId = server.CredentialId;
             Id = server.Id;
             DepthLogDecimals = server.DepthLogDecimals;
         }

@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Url = new Uri("http://some.url.without.its.own.keyvault.secret.com"),
                     Description = "Testserver that does not have its url specified in a keyvault secret",
                     Roles = new List<string>() {"validrole","developer"},
-                    CredentialIds = new List<string> { "systemCredentialId1", "systemCredentialId2" }
+                    CredentialId = "systemCredentialId1"
                 },
                 new Server()
                 {
@@ -85,7 +85,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Url = new Uri("http://url3.com"),
                     Description = "Testserver with invalid credentialId and without its url specified in a keyvault secret",
                     Roles = new List<string>() {"validrole","developer"},
-                    CredentialIds = new List<string> { "invalidSystemCredentialId" }
+                    CredentialId = "invalidSystemCredentialId"
                 }
             });
 
@@ -146,7 +146,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetLoggedInUsernames_AllValidWithCredentialIds_ReturnUsernames()
+        public async Task GetLoggedInUsernames_AllValidWithCredentialId_ReturnUsername()
         {
             // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.without.its.own.keyvault.secret.com" and role: ["validrole"]
             // 2. CONFIG:   There does NOT exist system credentials in keyvault for server with URL: "http://some.url.without.its.own.keyvault.secret.com"
@@ -158,13 +158,13 @@ namespace WitsmlExplorer.Api.Tests.Services
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
             string[] usernames = await _oauthCredentialsService.GetLoggedInUsernames(eh, new Uri(server));
+            Assert.Single(usernames);
             Assert.Contains("systemuser", usernames);
-            Assert.Contains("systemuser2", usernames);
             _oauthCredentialsService.RemoveAllCachedCredentials();
         }
 
         [Fact]
-        public async Task GetLoggedInUsernames_AllValidWithInvalidCredentialId_ReturnEmpty()
+        public async Task GetLoggedInUsernames_AllValidWithInvalidCredentialId_ReturnUsername()
         {
             // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.without.its.own.keyvault.secret.com" and role: ["validrole"]
             // 2. CONFIG:   There does NOT exist system credentials in keyvault for server with URL: "http://some.url.without.its.own.keyvault.secret.com"

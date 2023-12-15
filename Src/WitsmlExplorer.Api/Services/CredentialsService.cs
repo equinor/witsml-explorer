@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
 using Witsml.Data;
@@ -130,18 +129,14 @@ namespace WitsmlExplorer.Api.Services
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
             string[] userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
             _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
+            ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
+            string credentialId = allServers.Where(n => n.Url.EqualsIgnoreCase(server))?.Select(n => n.CredentialId)?.FirstOrDefault();
             if (await UserHasRoleForHost(userRoles, server))
             {
-                ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
-                List<string> credentialIds = allServers
-                    .Where(n => n.Url.EqualsIgnoreCase(server) && !n.CredentialIds.IsNullOrEmpty())
-                    ?.SelectMany(n => n.CredentialIds)
-                    ?.ToList()
-                    ?? new List<string>();
-                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", credentialIds.Count == 0 ? "host" : $"credentialIds {string.Join(", ", credentialIds)}", server);
-                var matchingCredentials = credentialIds.IsNullOrEmpty()
+                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", string.IsNullOrEmpty(credentialId) ? "host" : $"credentialId {credentialId}", server);
+                var matchingCredentials = string.IsNullOrEmpty(credentialId)
                     ? _witsmlServerCredentials.WitsmlCreds.Where(n => n.Host.EqualsIgnoreCase(server))
-                    : _witsmlServerCredentials.WitsmlCreds.Where(n => credentialIds.Contains(n.CredentialId, StringComparer.InvariantCultureIgnoreCase));
+                    : _witsmlServerCredentials.WitsmlCreds.Where(n => n.CredentialId.Equals(credentialId, StringComparison.InvariantCultureIgnoreCase));
 
                 foreach (var credential in matchingCredentials)
                 {
