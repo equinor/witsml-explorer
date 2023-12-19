@@ -39,6 +39,7 @@ import SpliceLogsModal from "../Modals/SpliceLogsModal";
 import TrimLogObjectModal, {
   TrimLogObjectModalProps
 } from "../Modals/TrimLogObject/TrimLogObjectModal";
+import { getBatchModifyMenuItem } from "./BatchModifyMenuItem";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
@@ -275,7 +276,12 @@ const LogObjectContextMenu = (
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Splice logs</Typography>
-          </MenuItem>
+          </MenuItem>,
+          getBatchModifyMenuItem(
+            checkedObjects,
+            ObjectType.Log,
+            dispatchOperation
+          )
         ]}
         ,
       </NestedMenuItem>,
