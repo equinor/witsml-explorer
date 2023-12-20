@@ -14,7 +14,7 @@ import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import { rigType } from "models/rigType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface RigPropertiesModalProps {
@@ -30,17 +30,11 @@ const RigPropertiesModal = (
   const {
     operationState: { timeZone }
   } = useContext(OperationContext);
-  const [editableRig, setEditableRig] = useState<Rig>(null);
+  const [editableRig, setEditableRig] = useState<Rig>({ ...rig });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dTimStartOpValid, setDTimStartOpValid] = useState<boolean>(true);
   const [dTimEndOpValid, setDTimEndOpValid] = useState<boolean>(true);
   const editMode = mode === PropertiesModalMode.Edit;
-
-  useEffect(() => {
-    setEditableRig({
-      ...rig
-    });
-  }, [rig]);
 
   const onSubmit = async (updatedRig: Rig) => {
     setIsLoading(true);
@@ -325,6 +319,66 @@ const RigPropertiesModal = (
                         : parseFloat(e.target.value),
                       uom: uom
                     }
+                  });
+                }}
+              />
+              <TextField
+                id={"owner"}
+                label={"owner"}
+                fullWidth
+                value={editableRig.owner ?? ""}
+                onChange={(e) => {
+                  setEditableRig({
+                    ...editableRig,
+                    owner: e.target.value
+                  });
+                }}
+              />
+              <TextField
+                id={"manufacturer"}
+                label={"manufacturer"}
+                fullWidth
+                value={editableRig.manufacturer ?? ""}
+                onChange={(e) => {
+                  setEditableRig({
+                    ...editableRig,
+                    manufacturer: e.target.value
+                  });
+                }}
+              />
+              <TextField
+                id={"classRig"}
+                label={"classRig"}
+                fullWidth
+                value={editableRig.classRig ?? ""}
+                onChange={(e) => {
+                  setEditableRig({
+                    ...editableRig,
+                    classRig: e.target.value
+                  });
+                }}
+              />
+              <TextField
+                id={"approvals"}
+                label={"approvals"}
+                fullWidth
+                value={editableRig.approvals ?? ""}
+                onChange={(e) => {
+                  setEditableRig({
+                    ...editableRig,
+                    approvals: e.target.value
+                  });
+                }}
+              />
+              <TextField
+                id={"registration"}
+                label={"registration"}
+                fullWidth
+                value={editableRig.registration ?? ""}
+                onChange={(e) => {
+                  setEditableRig({
+                    ...editableRig,
+                    registration: e.target.value
                   });
                 }}
               />
