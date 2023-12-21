@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -24,12 +25,22 @@ interface LogItemProps {
   selected: boolean;
   nodeId: string;
   objectGrowing: boolean;
+  to: string;
 }
 
 const LogItem = (props: LogItemProps): React.ReactElement => {
-  const { log: log, well, wellbore, selected, nodeId, objectGrowing } = props;
+  const {
+    log: log,
+    well,
+    wellbore,
+    selected,
+    nodeId,
+    objectGrowing,
+    to
+  } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const { dispatchNavigation } = useContext(NavigationContext);
+  const navigate = useNavigate();
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -58,12 +69,13 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
-      onLabelClick={() =>
+      onLabelClick={() => {
         dispatchNavigation({
           type: NavigationType.SelectObject,
           payload: { object: log, well, wellbore, objectType: ObjectType.Log }
-        })
-      }
+        });
+        navigate(to);
+      }}
     />
   );
 };

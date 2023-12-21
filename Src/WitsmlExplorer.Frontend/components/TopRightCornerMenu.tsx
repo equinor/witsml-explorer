@@ -1,5 +1,6 @@
 import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
+import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
@@ -35,6 +36,8 @@ const TopRightCornerMenu = (): React.ReactElement => {
     });
   };
 
+  const { serverId } = useParams();
+
   const openCredentialsModal = () => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server: selectedServer,
@@ -69,17 +72,23 @@ const TopRightCornerMenu = (): React.ReactElement => {
           {showLabels && selectedServer.currentUsername}
         </StyledButton>
       )}
-      <ServerManagerButton showLabels={showLabels} />
-      <JobsButton showLabels={showLabels} />
-      <StyledButton
-        colors={colors}
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openQueryView}
-        disabled={!selectedServer}
-      >
-        <Icon name="code" />
-        {showLabels && "Query"}
-      </StyledButton>
+      <Link to="/">
+        <ServerManagerButton showLabels={showLabels} />
+      </Link>
+      <Link to={`${serverId}/jobs`}>
+        <JobsButton showLabels={showLabels} />
+      </Link>
+      <Link to={`${serverId}/query`}>
+        <StyledButton
+          colors={colors}
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openQueryView}
+          disabled={!selectedServer}
+        >
+          <Icon name="code" />
+          {showLabels && "Query"}
+        </StyledButton>
+      </Link>
       <StyledButton
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}

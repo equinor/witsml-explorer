@@ -6,6 +6,7 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   FilterContext,
@@ -59,6 +60,7 @@ const ServerManager = (): React.ReactElement => {
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const [authorizationState, setAuthorizationState] =
     useState<AuthorizationState>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =
@@ -93,6 +95,11 @@ const ServerManager = (): React.ReactElement => {
           type: ModificationType.UpdateWells,
           payload: { wells: wells }
         });
+        console.log("lakjdlaksjdlasdkjalsdjkalkdjaldskjaldj");
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        // console.log(server);
+        // navigate(`${server.id}/wells`);
+        navigate(`${selectedServer.id}/wells`);
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
           serverUrl: new URL(selectedServer.url),

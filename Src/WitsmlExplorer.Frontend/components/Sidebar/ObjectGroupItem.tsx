@@ -1,4 +1,5 @@
 import React, { ReactNode, useCallback, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
@@ -40,6 +41,7 @@ interface ObjectGroupItemProps {
   ) => void;
   children?: ReactNode;
   isActive?: boolean;
+  to?: string;
 }
 
 const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
@@ -49,7 +51,8 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
     ObjectContextMenu,
     onGroupContextMenu,
     children,
-    isActive
+    isActive,
+    to
   } = props;
   const {
     dispatchNavigation,
@@ -59,6 +62,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
   const { wellbore, well } = useContext(WellboreItemContext);
   const { selectedFilter } = useContext(FilterContext);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onSelectObjectGroup = useCallback(async () => {
     setIsLoading(true);
@@ -76,6 +80,7 @@ const ObjectGroupItem = (props: ObjectGroupItemProps): React.ReactElement => {
       }
     });
     setIsLoading(false);
+    if (to) navigate(to);
   }, [well, wellbore, objectType]);
 
   const toggleTreeNode = useCallback(async () => {

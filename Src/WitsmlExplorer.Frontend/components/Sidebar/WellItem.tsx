@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -29,6 +30,9 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
     React.useMemo(() => [well], [well]),
     React.useMemo(() => ({ filterWellbores: true }), [])
   );
+  const { serverId } = useParams();
+  const navigate = useNavigate();
+
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
     well: Well
@@ -51,6 +55,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
 
   const onSelectWell = async (well: Well) => {
     dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    navigate(`${serverId}/wells/${well.uid}/wellbores`);
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useCallback, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -38,6 +39,8 @@ const LogTypeItem = (): React.ReactElement => {
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
+  const { serverId } = useParams();
+  const navigate = useNavigate();
 
   const onSelectType = async (logTypeGroup: string) => {
     const action: SelectLogTypeAction = {
@@ -45,6 +48,11 @@ const LogTypeItem = (): React.ReactElement => {
       payload: { well, wellbore, logTypeGroup: logTypeGroup }
     };
     dispatchNavigation(action);
+    navigate(
+      `${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}/logs/${
+        logTypeGroup === logTypeGroupDepth ? "depth" : "time"
+      }`
+    );
   };
 
   const onContextMenu = (
@@ -101,7 +109,8 @@ const LogTypeItem = (): React.ReactElement => {
           well,
           wellbore,
           logGroup,
-          isSelected
+          isSelected,
+          serverId
         )}
       </TreeItem>
       <TreeItem
@@ -119,7 +128,8 @@ const LogTypeItem = (): React.ReactElement => {
           well,
           wellbore,
           logGroup,
-          isSelected
+          isSelected,
+          serverId
         )}
       </TreeItem>
     </>
@@ -136,20 +146,25 @@ const listLogItemsByType = (
   well: Well,
   wellbore: Wellbore,
   logGroup: string,
-  isSelected: (log: LogObject) => boolean
+  isSelected: (log: LogObject) => boolean,
+  serverId: string
 ) => {
   return logObjects?.map((log) => (
-    <LogItem
-      key={calculateObjectNodeId(log, ObjectType.Log)}
-      log={log}
-      well={well}
-      wellbore={wellbore}
-      logGroup={logGroup}
-      logTypeGroup={calculateLogTypeId(wellbore, logType)}
-      nodeId={calculateObjectNodeId(log, ObjectType.Log)}
-      selected={isSelected(log)}
-      objectGrowing={log.objectGrowing}
-    />
+    <React.Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
+      <LogItem
+        log={log}
+        well={well}
+        wellbore={wellbore}
+        logGroup={logGroup}
+        logTypeGroup={calculateLogTypeId(wellbore, logType)}
+        nodeId={calculateObjectNodeId(log, ObjectType.Log)}
+        selected={isSelected(log)}
+        objectGrowing={log.objectGrowing}
+        to={`${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}/logs/${
+          logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+        }/${log.uid}`}
+      />
+    </React.Fragment>
   ));
 };
 

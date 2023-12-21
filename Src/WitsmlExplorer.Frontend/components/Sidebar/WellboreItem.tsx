@@ -1,5 +1,6 @@
 import { useTheme } from "@material-ui/core";
 import React, { createContext, useCallback, useContext, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import ModificationType from "../../contexts/modificationType";
 import {
@@ -71,6 +72,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+
+  const { serverId, wellUid, wellboreUid } = useParams();
+  const navigate = useNavigate();
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -204,6 +208,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     };
     dispatchNavigation(selectWellbore);
     getExpandableObjectCount();
+    navigate(`${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}`);
   };
 
   const onIconClick = () => {
@@ -228,17 +233,25 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         isLoading={isFetchingCount}
       >
         <WellboreItemContext.Provider value={{ wellbore, well }}>
-          <ObjectGroupItem objectType={ObjectType.BhaRun} />
+          <ObjectGroupItem
+            objectType={ObjectType.BhaRun}
+            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/bharuns`}
+          />
           <ObjectGroupItem
             objectType={ObjectType.ChangeLog}
             onGroupContextMenu={preventContextMenuPropagation}
+            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/changelogs`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.fluidsReports}
             objectType={ObjectType.FluidsReport}
             ObjectContextMenu={FluidsReportContextMenu}
+            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/fluidsreports`}
           />
-          <ObjectGroupItem objectType={ObjectType.FormationMarker} />
+          <ObjectGroupItem
+            objectType={ObjectType.FormationMarker}
+            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/formationmarkers`}
+          />
           <ObjectGroupItem
             objectType={ObjectType.Log}
             onGroupContextMenu={(event, _, setIsLoading) =>
@@ -247,6 +260,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             isActive={
               wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)
             }
+            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/logs`}
           >
             <LogTypeItem />
           </ObjectGroupItem>
