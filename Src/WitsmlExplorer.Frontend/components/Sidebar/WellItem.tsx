@@ -30,7 +30,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
     React.useMemo(() => [well], [well]),
     React.useMemo(() => ({ filterWellbores: true }), [])
   );
-  const { serverId } = useParams();
+  const { serverUrl } = useParams();
   const navigate = useNavigate();
 
   const onContextMenu = (
@@ -55,7 +55,9 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
 
   const onSelectWell = async (well: Well) => {
     dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
-    navigate(`${serverId}/wells/${well.uid}/wellbores`);
+    navigate(
+      `servers/${encodeURIComponent(serverUrl)}/wells/${well.uid}/wellbores`
+    );
   };
 
   return (

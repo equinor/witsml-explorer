@@ -20,56 +20,57 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <ServerManager /> },
-      { path: ":serverId/wells", element: <WellsListView /> },
+
+      { path: "servers/:serverUrl/wells", element: <WellsListView /> },
       {
-        path: ":serverId/wells/:wellUid/wellbores",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores",
         element: <WellboresListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid",
         element: <WellboreObjectTypesListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/bharuns",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/bharuns",
         element: <BhaRunsListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/changelogs",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/changelogs",
         element: <ChangeLogsListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/fluidsreports",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/fluidsreports",
         element: <FluidsReportsListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/formationmarkers",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/formationmarkers",
         element: <FormationMarkersListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/logs",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/logs",
         element: <LogTypeListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/logs/depth",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/logs/depth",
         element: <LogsListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/logs/time",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/logs/time",
         element: <LogsListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/logs/depth/:logUid",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/logs/depth/:logUid",
         element: <LogCurveInfoListView />
       },
       {
-        path: ":serverId/wells/:wellUid/wellbores/:wellboreUid/logs/time/:logUid",
+        path: "servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/logs/time/:logUid",
         element: <LogCurveInfoListView />
       },
       {
-        path: ":serverId/jobs",
+        path: "servers/:serverUrl/jobs",
         element: <JobsView />
       },
-      { path: ":serverId/query", element: <QueryView /> }
+      { path: "servers/:serverUrl/query", element: <QueryView /> }
     ]
   }
 ]);

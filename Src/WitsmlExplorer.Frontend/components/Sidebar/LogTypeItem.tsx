@@ -39,7 +39,7 @@ const LogTypeItem = (): React.ReactElement => {
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
-  const { serverId } = useParams();
+  const { serverUrl } = useParams();
   const navigate = useNavigate();
 
   const onSelectType = async (logTypeGroup: string) => {
@@ -49,9 +49,9 @@ const LogTypeItem = (): React.ReactElement => {
     };
     dispatchNavigation(action);
     navigate(
-      `${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}/logs/${
-        logTypeGroup === logTypeGroupDepth ? "depth" : "time"
-      }`
+      `servers/${encodeURIComponent(serverUrl)}/wells/${well.uid}/wellbores/${
+        wellbore.uid
+      }/logs/${logTypeGroup === logTypeGroupDepth ? "depth" : "time"}`
     );
   };
 
@@ -110,7 +110,7 @@ const LogTypeItem = (): React.ReactElement => {
           wellbore,
           logGroup,
           isSelected,
-          serverId
+          serverUrl
         )}
       </TreeItem>
       <TreeItem
@@ -129,7 +129,7 @@ const LogTypeItem = (): React.ReactElement => {
           wellbore,
           logGroup,
           isSelected,
-          serverId
+          serverUrl
         )}
       </TreeItem>
     </>
@@ -147,7 +147,7 @@ const listLogItemsByType = (
   wellbore: Wellbore,
   logGroup: string,
   isSelected: (log: LogObject) => boolean,
-  serverId: string
+  serverUrl: string
 ) => {
   return logObjects?.map((log) => (
     <React.Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
@@ -160,7 +160,9 @@ const listLogItemsByType = (
         nodeId={calculateObjectNodeId(log, ObjectType.Log)}
         selected={isSelected(log)}
         objectGrowing={log.objectGrowing}
-        to={`${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}/logs/${
+        to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+          well.uid
+        }/wellbores/${wellbore.uid}/logs/${
           logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
         }/${log.uid}`}
       />

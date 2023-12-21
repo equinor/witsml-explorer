@@ -61,6 +61,7 @@ const ServerManager = (): React.ReactElement => {
   const [authorizationState, setAuthorizationState] =
     useState<AuthorizationState>();
   const navigate = useNavigate();
+  console.log(authorizationState);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =
@@ -99,7 +100,7 @@ const ServerManager = (): React.ReactElement => {
         console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         // console.log(server);
         // navigate(`${server.id}/wells`);
-        navigate(`${selectedServer.id}/wells`);
+        navigate(`servers/${encodeURIComponent(selectedServer.url)}/wells`);
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
           serverUrl: new URL(selectedServer.url),

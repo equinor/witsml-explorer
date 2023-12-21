@@ -73,7 +73,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     operationState: { colors }
   } = useContext(OperationContext);
 
-  const { serverId, wellUid, wellboreUid } = useParams();
+  const { serverUrl, wellUid, wellboreUid } = useParams();
   const navigate = useNavigate();
 
   const onContextMenu = (
@@ -208,7 +208,11 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     };
     dispatchNavigation(selectWellbore);
     getExpandableObjectCount();
-    navigate(`${serverId}/wells/${well.uid}/wellbores/${wellbore.uid}`);
+    navigate(
+      `servers/${encodeURIComponent(serverUrl)}/wells/${well.uid}/wellbores/${
+        wellbore.uid
+      }`
+    );
   };
 
   const onIconClick = () => {
@@ -235,22 +239,30 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         <WellboreItemContext.Provider value={{ wellbore, well }}>
           <ObjectGroupItem
             objectType={ObjectType.BhaRun}
-            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/bharuns`}
+            to={`servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/bharuns`}
           />
           <ObjectGroupItem
             objectType={ObjectType.ChangeLog}
             onGroupContextMenu={preventContextMenuPropagation}
-            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/changelogs`}
+            to={`servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/changelogs`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.fluidsReports}
             objectType={ObjectType.FluidsReport}
             ObjectContextMenu={FluidsReportContextMenu}
-            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/fluidsreports`}
+            to={`servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/fluidsreports`}
           />
           <ObjectGroupItem
             objectType={ObjectType.FormationMarker}
-            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/formationmarkers`}
+            to={`servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/formationmarkers`}
           />
           <ObjectGroupItem
             objectType={ObjectType.Log}
@@ -260,7 +272,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             isActive={
               wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)
             }
-            to={`${serverId}/wells/${wellUid}/wellbores/${wellboreUid}/logs`}
+            to={`servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/logs`}
           >
             <LogTypeItem />
           </ObjectGroupItem>
